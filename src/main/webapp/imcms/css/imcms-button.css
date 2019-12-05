@@ -137,52 +137,51 @@ a[class^="imcms"].imcms-button--neutral:hover {
     height: 20px;
 }
 
-.imcms-button--close {
-    background-color: transparent;
+.imcms-button--window-normal {
     display: block;
-    float: right;
-    margin: 0 0 0 11px;
-    padding: 0;
-    position: relative;
+    background: url("/imcms/images/window/icons_window_size_normal.png") no-repeat center;
     width: 15px;
     height: 15px;
+    opacity: 0.5;
+    padding: 0;
 }
 
-.imcms-button--close:before {
-    content: "";
-    background-color: #2f4047;
+.imcms-button--window-auto {
     display: block;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 13px;
-    height: 1px;
-    -webkit-transform: rotate(45deg);
-    -moz-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    -o-transform: rotate(45deg);
-    transform: rotate(45deg);
+    background: url("/imcms/images/window/icons_window_size_auto.png") no-repeat center;
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+    padding: 0;
 }
 
-.imcms-button--close:after {
-    content: "";
-    background-color: #2f4047;
+.imcms-button--window-maximize {
     display: block;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 13px;
-    height: 1px;
-    -webkit-transform: rotate(-45deg);
-    -moz-transform: rotate(-45deg);
-    -ms-transform: rotate(-45deg);
-    -o-transform: rotate(-45deg);
-    transform: rotate(-45deg);
+    background: url("/imcms/images/window/icons_window_size_maximize.png") no-repeat center;
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+    padding: 0;
 }
 
-.imcms-button--close:hover:before,
-.imcms-button--close:hover:after {
-    background-color: #da1a1a;
+.imcms-button--close {
+    display: block;
+    background: url("/imcms/images/window/icons_window_close.png") no-repeat center;
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+    padding: 0;
+}
+
+.imcms-button--window-normal:hover,
+.imcms-button--window-normal:active,
+.imcms-button--window-auto:hover,
+.imcms-button--window-auto:active,
+.imcms-button--window-maximize:hover,
+.imcms-button--window-maximize:active,
+.imcms-button--close:hover,
+.imcms-button--close:active {
+    opacity: 1;
 }
 
 .imcms-button--prev {

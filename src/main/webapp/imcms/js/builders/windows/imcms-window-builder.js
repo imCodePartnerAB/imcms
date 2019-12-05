@@ -6,6 +6,16 @@
 const windowComponents = require('imcms-window-components-builder');
 const windowKeysController = require('imcms-window-keys-controller');
 const $ = require('jquery');
+const cookies = require('imcms-cookies');
+
+const windowAutoSizeClassName = 'imcms-modal-size--auto';
+const windowMaximizeSizeClassName = 'imcms-modal-size--maximize';
+const windowSizeCookieName = 'page-info-size';
+const windowSizeCookieValues = {
+    normal: 'normal',
+    auto: 'auto',
+    max: 'max',
+};
 
 function setBodyScrollingRule(overflowValue) {
     $("body").css("overflow", overflowValue);
@@ -22,6 +32,41 @@ function getScrollTopAndDisable() {
     $window.scrollTop(0);
 
     return prevScrollTop;
+}
+
+function normalizeWindowSize($window) {
+    cookies.setCookie(windowSizeCookieName, windowSizeCookieValues.normal, {expires: 30});
+
+    $window
+        .removeClass(windowAutoSizeClassName)
+        .removeClass(windowMaximizeSizeClassName);
+}
+
+function autoWindowSize($window) {
+    normalizeWindowSize($window);
+
+    cookies.setCookie(windowSizeCookieName, windowSizeCookieValues.auto, {expires: 30});
+
+    $window.addClass(windowAutoSizeClassName);
+}
+
+function maximizeWindowSize($window) {
+    normalizeWindowSize($window);
+
+    cookies.setCookie(windowSizeCookieName, windowSizeCookieValues.max, {expires: 30});
+
+    $window.addClass(windowMaximizeSizeClassName);
+}
+
+function refreshWindowSizeFromCookie($window) {
+    switch (cookies.getCookie(windowSizeCookieName)) {
+        case windowSizeCookieValues.auto:
+            $window.addClass(windowAutoSizeClassName);
+            break;
+        case windowSizeCookieValues.max:
+            $window.addClass(windowMaximizeSizeClassName);
+            break;
+    }
 }
 
 module.exports = class WindowBuilder {
@@ -81,6 +126,8 @@ module.exports = class WindowBuilder {
             this.loadDataStrategy && setTimeout(() => this.loadDataStrategy.apply(null, arguments));
             this.$editor.css("display", "block");
 
+            refreshWindowSizeFromCookie(this.$editor);
+
             this.disableKeyBindings || windowKeysController.registerWindow(
                 this.onEscKeyPressed, this.onEnterKeyPressed
             );
@@ -135,5 +182,20 @@ module.exports = class WindowBuilder {
     buildHead(title, onCloseClick) {
         onCloseClick = onCloseClick || this.closeWindow.bind(this);
         return windowComponents.buildHead(title, onCloseClick);
+    }
+
+    /**
+     * Builds head with specified title and toolbar that contains 3 resize buttons and close button
+     * @param {string} title
+     * @param {function} onCloseClick
+     * @returns {*} head as jQuery element
+     */
+    buildHeadWithResizing(title, onCloseClick) {
+        return windowComponents.buildHeadWithResizing(title, {
+            onWindowNormalClick: () => normalizeWindowSize(this.$editor),
+            onWindowAutoClick: () => autoWindowSize(this.$editor),
+            onWindowMaximizeClick: () => maximizeWindowSize(this.$editor),
+            onCloseClick: onCloseClick
+        });
     }
 };

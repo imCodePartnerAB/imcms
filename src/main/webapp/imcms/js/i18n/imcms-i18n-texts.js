@@ -83,6 +83,10 @@ const texts = {
             discardChangesQuestion: 'Ignorera ändringar?',
             textEditor: 'Textredigerare',
             imageEditor: 'Bildredigerare',
+            normal: 'Vanligt',
+            auto: 'Auto',
+            maximize: 'Maximera',
+            close: 'Stänga',
             filterPolicy: {
                 restricted: 'Endast text',
                 relaxed: 'Kraftigt filter',
@@ -107,8 +111,10 @@ const texts = {
                 sameFrame: "Samma ram",
                 newWindow: "Nytt fönster",
                 replaceAll: "Ersätt alla",
-                alias: "Dokumentets alias",
+                alias: "Förenklad adress",
                 aliasPlaceholder: "detta-dokument-alias",
+                makeSuggestion: 'Ge ett förslag',
+                confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
                 missingLangRuleTitle: "Om det begärda språket saknas:",
                 showInDefault: "Visa i standardspråk om det är aktiverat",
                 doNotShow: "Visa inte alls"
@@ -896,6 +902,10 @@ const texts = {
             discardChangesQuestion: 'Discard changes?',
             textEditor: 'Text Editor',
             imageEditor: 'Image Editor',
+            normal: 'Normal',
+            auto: 'Auto',
+            maximize: 'Maximize',
+            close: 'Close',
             filterPolicy: {
                 restricted: 'Text only',
                 relaxed: 'Strong filter',

@@ -65,7 +65,15 @@ define("imcms-file-tab-builder",
         }
 
         function buildFilesRow(files) {
-            return (files || []).map(buildFileRow);
+            files = files || [];
+
+            const emptyOrHasDefault = files.length === 0 || files.find(file => file.defaultFile === true);
+
+            if ($filesListContainerBody.children().length === 0 && !emptyOrHasDefault) {
+                files[0].defaultFile = true;
+            }
+
+            return files.map(buildFileRow);
         }
 
         function appendFiles(files) {

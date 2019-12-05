@@ -7,6 +7,7 @@
 
 const BEM = require('imcms-bem-builder');
 const components = require('imcms-components-builder');
+const texts = require('imcms-i18n-texts');
 
 module.exports = {
     /**
@@ -20,6 +21,39 @@ module.exports = {
         elements: {
             "title": components.texts.titleText("<div>", title),
             "button": components.buttons.closeButton({click: onCloseClick})
+        }
+    }).buildBlockStructure("<div>"),
+    /**
+     * Builds head with specified title and toolbar that contains 3 resize buttons and close button
+     * @param {string} title
+     * @param {function} onWindowNormalClick
+     * @param {function} onWindowAutoClick
+     * @param {function} onWindowMaximizeClick
+     * @param {function} onCloseClick
+     * @returns {*} head as jQuery element
+     */
+    buildHeadWithResizing: (title, {onWindowNormalClick, onWindowAutoClick, onWindowMaximizeClick, onCloseClick}) => new BEM({
+        block: "imcms-head",
+        elements: {
+            "title": components.texts.titleText("<div>", title),
+            "toolbar": components.buttons.buttonsContainer('<div>', [
+                components.buttons.windowNormalButton({
+                    title: texts.toolTipText.normal,
+                    click: onWindowNormalClick,
+                }),
+                components.buttons.windowAutoButton({
+                    title: texts.toolTipText.auto,
+                    click: onWindowAutoClick,
+                }),
+                components.buttons.windowMaximizeButton({
+                    title: texts.toolTipText.maximize,
+                    click: onWindowMaximizeClick,
+                }),
+                components.buttons.closeButton({
+                    title: texts.toolTipText.close,
+                    click: onCloseClick,
+                }),
+            ]),
         }
     }).buildBlockStructure("<div>"),
     /**
