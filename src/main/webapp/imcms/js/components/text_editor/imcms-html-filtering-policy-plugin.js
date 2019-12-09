@@ -52,7 +52,7 @@ define(
                                 .data('htmlFilteringPolicy', policy);
 
 
-                            textUtils.saveContent(editor);
+                            textUtils.saveContent(editor, null, true);
                         }
 
                         $policies.remove();

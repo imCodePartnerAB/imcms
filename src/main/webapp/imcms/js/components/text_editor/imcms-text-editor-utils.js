@@ -6,9 +6,9 @@ define(
     'imcms-text-editor-utils',
     [
         'tinymce', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder',
-        'imcms-text-editor-types', 'imcms-i18n-texts'
+        'imcms-text-editor-types', 'imcms-html-filtering-policies', 'imcms-i18n-texts'
     ],
-    function (tinyMCE, textsRestApi, events, $, modal, editorTypes, texts) {
+    function (tinyMCE, textsRestApi, events, $, modal, editorTypes, filteringPolicies, texts) {
 
         texts = texts.editors.text;
 
@@ -38,9 +38,13 @@ define(
             activeEditor = activeTextEditor;
         }
 
-        function saveContent(editor, onSaved) {
+        function saveContent(editor, onSaved, withFilter) {
             const textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
+
+            if (!withFilter) {
+                textDTO.htmlFilteringPolicy = filteringPolicies.allowAll;
+            }
 
             switch (textDTO.type) {
                 case editorTypes.html:

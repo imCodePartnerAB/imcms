@@ -27,10 +27,10 @@ public class DocumentStoredFieldsDTO {
 
     private Integer currentVersion;
 
-    @JsonFormat(pattern = "yyyy-mm-dd hh:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date modified;
 
-    @JsonFormat(pattern = "yyyy-mm-dd hh:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date published;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {

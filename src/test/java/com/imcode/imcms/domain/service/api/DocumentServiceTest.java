@@ -858,6 +858,15 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getUniqueAlias_When_Alias_NotExists_Existed_NotUpdatedAlias() {
         final String aliasName = "test-alias";
+
+        final Meta meta1 = createAndSaveMeta();
+
+        final Property property1 = new Property();
+        property1.setDocId(meta1.getId());
+        property1.setName("imcms.document.alias");
+        property1.setValue(aliasName + 1);
+        propertyRepository.save(property1);
+
         assertEquals(aliasName, documentService.getUniqueAlias(aliasName));
     }
 
@@ -865,14 +874,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     public void getUniqueAlias_When_Alias_Exists_Existed_AliasWithCounter() {
         final String aliasName = "test-alias";
 
-        Meta meta = createAndSaveMeta();
+        final Meta meta = createAndSaveMeta();
 
         final Property property = new Property();
         property.setDocId(meta.getId());
         property.setName("imcms.document.alias");
         property.setValue(aliasName);
         propertyRepository.save(property);
-        Imcms.getUser().getId();
+
         assertEquals(aliasName + "-1", documentService.getUniqueAlias(aliasName));
     }
 
