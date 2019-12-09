@@ -214,6 +214,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             final String langCode = commonContent.getLanguage().getCode();
             indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
+            //copied for search ignore case sensitivity
+            indexDoc.addField(DocumentIndex.FIELD_META_HEADLINE + "_" + langCode, headline.toLowerCase());
+
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD + "_" + langCode, headline);
             indexDoc.addField(DocumentIndex.FIELD__META_TEXT + "_" + langCode, menuText);
         }
