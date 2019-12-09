@@ -31,13 +31,13 @@ public class DocumentSearchQueryConverter {
                 StringUtils.isNotBlank(searchQuery.getTerm())
                         ? Arrays.stream(new String[]{
                         DocumentIndex.FIELD__META_ID,
-                        DocumentIndex.FIELD__META_HEADLINE + "_" + searchingUser.getLanguage(),
+                        DocumentIndex.FIELD_META_HEADLINE + "_" + searchingUser.getLanguage(),
                         DocumentIndex.FIELD__META_TEXT,
                         DocumentIndex.FIELD__KEYWORD,
                         DocumentIndex.FIELD__TEXT,
                         DocumentIndex.FIELD__VERSION_NO,
                         DocumentIndex.FIELD__ALIAS,
-                        DocumentIndex.FIELD_URL})
+                        DocumentIndex.FIELD__URL})
                         .map(field -> String.format("%s:*%s*", field,
                                 searchQuery.getTerm().replaceAll("\\s+", "?")))
                         .collect(Collectors.joining(" "))
