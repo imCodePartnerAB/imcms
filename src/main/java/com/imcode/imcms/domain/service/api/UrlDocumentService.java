@@ -61,7 +61,7 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
         final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
         final String url = get(docId).getDocumentURL().getUrl();
 
-        solrInputDocument.addField(DocumentIndex.FIELD_URL, url);
+        solrInputDocument.addField(DocumentIndex.FIELD__URL, url);
 
         return solrInputDocument;
     }

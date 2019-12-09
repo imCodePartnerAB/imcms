@@ -40,7 +40,7 @@ public interface DocumentIndex {
     String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
     String FIELD__ROLE_ID = "role_id";
     String FIELD__STATUS = "status";
-    String FIELD_URL = "url";
+    String FIELD__URL = "url";
 
     String FIELD__PARENTS_COUNT = "parents_count";
     String FIELD__CHILDREN_COUNT = "children_count";
@@ -65,6 +65,9 @@ public interface DocumentIndex {
     String FIELD__HAS_CHILDREN = "has_children";
 
     String FIELD__SEARCH_ENABLED = "search_enabled";
+
+    //TODO: Add configuration in solrconfig file for ignore case sensitivity! and remove this field!
+    String FIELD_META_HEADLINE = "meta_headline_l";
 
     /**
      * Searches documents.
