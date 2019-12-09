@@ -32,6 +32,7 @@ public class DocumentSearchQueryConverter {
                         ? Arrays.stream(new String[]{
                         DocumentIndex.FIELD__META_ID,
                         DocumentIndex.FIELD_META_HEADLINE + "_" + searchingUser.getLanguage(),
+                        DocumentIndex.FIELD__META_HEADLINE + "_" + searchingUser.getLanguage(),
                         DocumentIndex.FIELD__META_TEXT,
                         DocumentIndex.FIELD__KEYWORD,
                         DocumentIndex.FIELD__TEXT,
