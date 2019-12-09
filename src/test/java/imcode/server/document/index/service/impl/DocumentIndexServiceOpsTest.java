@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.when;
@@ -53,6 +54,7 @@ class DocumentIndexServiceOpsTest {
     private static final List<String> mockData = new ArrayList<>();
 
     private static String titleField;
+    private static String titleFieldLower;
     private static int documentSize = 10;
     private static boolean addedInitDocuments;
     private static SolrClient solrClient;
@@ -75,6 +77,7 @@ class DocumentIndexServiceOpsTest {
         Imcms.setUser(user);
 
         titleField = DocumentIndex.FIELD__META_HEADLINE + "_" + user.getLanguage();
+        titleFieldLower = DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage();
 
         mockData.add(")_fwEf$");
         mockData.add("wefGErg(");
@@ -419,6 +422,24 @@ class DocumentIndexServiceOpsTest {
 
         assertEquals(solrDocumentList.size(), 0);
         assertTrue(solrDocumentList.isEmpty());
+    }
+
+    @Test
+    public void getDocument_When_SearchInLowerCase_Expect_CorrectResult() throws Exception {
+        final int id = ++documentSize;
+        final String headLine = "HeadLine_test".toUpperCase();
+        final String inputTest = "headline_test";
+        final SolrInputDocument solrInputDocument = addRequiredFields(id);
+        solrInputDocument.addField(titleField, headLine);
+        solrInputDocument.addField(titleFieldLower, headLine.toLowerCase());
+        indexDocument(id, solrInputDocument);
+
+        searchQueryDTO.setTerm(inputTest);
+
+        final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertFalse(solrDocumentList.isEmpty());
+        assertEquals(solrDocumentList.size(), 1);
     }
 
     @Test

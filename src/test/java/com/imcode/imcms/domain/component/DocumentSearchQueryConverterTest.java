@@ -67,6 +67,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         final String expected = Arrays.stream(new String[]{
                 DocumentIndex.FIELD__META_ID,
+                DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
                 DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD,
@@ -75,6 +76,30 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
                 DocumentIndex.FIELD__ALIAS,
                 DocumentIndex.FIELD__URL})
                 .map(field -> String.format("%s:*%s*", field, term))
+                .collect(Collectors.joining(" "));
+
+        assertThat(solrQuery.get(CommonParams.Q), is(expected));
+    }
+
+    @Test
+    public void convert_When_TermIsNotNullAndHaveSpace_Expect_SearchBySpecifiedFieldsWithTerm() {
+        final String term = "test test2";
+
+        searchQueryDTO.setTerm(term);
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        final String expected = Arrays.stream(new String[]{
+                DocumentIndex.FIELD__META_ID,
+                DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
+                DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
+                DocumentIndex.FIELD__META_TEXT,
+                DocumentIndex.FIELD__KEYWORD,
+                DocumentIndex.FIELD__TEXT,
+                DocumentIndex.FIELD__VERSION_NO,
+                DocumentIndex.FIELD__ALIAS,
+                DocumentIndex.FIELD__URL})
+                .map(field -> String.format("%s:*%s*", field, term).replaceAll("\\s+", "?"))
                 .collect(Collectors.joining(" "));
 
         assertThat(solrQuery.get(CommonParams.Q), is(expected));
