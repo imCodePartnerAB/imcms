@@ -77,7 +77,8 @@
     width: 16.66%;
 }
 
-.imcms-document-list-titles__title--col-6 {
+.imcms-document-list-titles__title--col-6,
+.imcms-document-item__info--col-6 {
     width: 10%;
 }
 

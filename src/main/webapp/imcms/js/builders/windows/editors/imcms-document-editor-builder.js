@@ -290,22 +290,40 @@ define("imcms-document-editor-builder",
 
         function highlightDefaultSorting() {
             const $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
-            highlightSoring($defaultSortingHeader);
+            highlightSorting($defaultSortingHeader);
         }
 
-        function highlightSoring($sortingHeader) {
+        function highlightSorting($sortingHeader) {
+            if (isActiveHeader($sortingHeader)) {
+                const $sortingIcon = $sortingHeader.find(".imcms-document-list-title-row__icon");
+                toggleSortingIcon($sortingIcon)
+            }
+
             $(".imcms-document-list-titles__title--active").removeClass("imcms-document-list-titles__title--active");
             $sortingHeader.addClass("imcms-document-list-titles__title--active");
+        }
+
+        function toggleSortingIcon($sortingIcon) {
+            const sortUpClassName = "imcms-control--sort-up";
+            const sortDownClassName = "imcms-control--sort-down";
+
+            $sortingIcon.hasClass(sortUpClassName)
+                ? $sortingIcon.removeClass(sortUpClassName).addClass(sortDownClassName)
+                : $sortingIcon.removeClass(sortDownClassName).addClass(sortUpClassName);
+        }
+
+        function isActiveHeader($sortingHeader) {
+            return $sortingHeader.hasClass("imcms-document-list-titles__title--active");
         }
 
         function processSameSorting(bySorting, $sortingHeader) {
             if (isAlreadyAscendingSorting()) {
                 setSortingDirection(desc);
-                highlightSoring($sortingHeader);
+                highlightSorting($sortingHeader);
 
             } else if (isDefaultSorting(bySorting)) {
                 setSortingDirection(asc);
-                highlightSoring($sortingHeader);
+                highlightSorting($sortingHeader);
 
             } else {
                 setDefaultSortProperties();
@@ -319,50 +337,52 @@ define("imcms-document-editor-builder",
 
             } else {
                 setSortBy(bySorting);
-                highlightSoring($sortingHeader);
+                highlightSorting($sortingHeader);
             }
 
             appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
         }
 
         function buildDocumentListTitlesRow() {
-            const $idColumnHead = $("<div>", {
+            const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
-                click: function () {
-                    onClickSorting(defaultSortPropertyValue, $(this));
-                }
+                bySorting: defaultSortPropertyValue,
+                modifiers: ["col-1"],
             });
-            $idColumnHead.modifiers = ["col-1"];
 
-            const $titleColumnHead = $("<div>", {
+            const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                click: function () {
-                    onClickSorting("meta_headline_" + imcms.userLanguage, $(this));
-                }
+                bySorting: "meta_headline_" + imcms.userLanguage,
+                modifiers: ["col-3"],
             });
-            $titleColumnHead.modifiers = ["col-5"];
 
-            const $aliasColumnHead = $("<div>", {
+            const $aliasColumnHead = buildTitleRow({
                 text: texts.sort.alias,
-                click: function () {
-                    onClickSorting("alias", $(this));
-                }
+                bySorting: "alias",
+                modifiers: ["col-2"],
             });
-            $aliasColumnHead.modifiers = ["col-3"];
 
-            const $typeColumnHead = $("<div>", {text: texts.sort.type});
-            $typeColumnHead.modifiers = ["col-1"];
+            const $modifiedColumnHead = buildTitleRow({
+                text: texts.sort.modified,
+                bySorting: "modified_datetime",
+                modifiers: ["col-1"],
+            });
 
-            const $statusColumnHead = $("<div>", {text: texts.sort.status});
-            $statusColumnHead.modifiers = ["col-2"];
+            const $publishedColumnHead = buildTitleRow({
+                text: texts.sort.published,
+                bySorting: "publication_start_datetime",
+                modifiers: ["col-1"],
+            });
 
-            const $versionColumnHead = $('<div>', {
+            const $versionColumnHead = buildTitleRow({
                 text: texts.sort.version,
-                click: function () {
-                    onClickSorting('version_no', $(this))
-                }
+                bySorting: 'version_no',
+                modifiers: ['col-1'],
             });
-            $versionColumnHead.modifiers = ['col-6'];
+
+            const $typeColumnHead = buildTitleRow({text: texts.sort.type, modifiers: ["col-1"]});
+
+            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-2"]});
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -371,12 +391,43 @@ define("imcms-document-editor-builder",
                         $idColumnHead,
                         $titleColumnHead,
                         $aliasColumnHead,
+                        $modifiedColumnHead,
+                        $publishedColumnHead,
                         $versionColumnHead,
                         $typeColumnHead,
                         $statusColumnHead
                     ]
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        function buildTitleRow({text, bySorting, modifiers}) {
+            const emptyIcon = $('<div>');
+
+            const sortIcon = bySorting
+                ? components.controls.sortDown()
+                : emptyIcon;
+
+            const titleRow = $("<div>", {
+                text: text,
+            });
+
+            const titleRowBem = new BEM({
+                block: "imcms-document-list-title-row",
+                elements: {
+                    "title": titleRow,
+                    "icon": sortIcon,
+                }
+            }).buildBlockStructure("<div>", {
+                click: function () {
+                    if (bySorting) {
+                        onClickSorting(bySorting, $(this))
+                    }
+                },
+            });
+            titleRowBem.modifiers = modifiers;
+
+            return titleRowBem;
         }
 
         function createFrame(event) {
@@ -813,20 +864,16 @@ define("imcms-document-editor-builder",
                 href: imcms.contextPath + "/" + document.id,
                 title: title
             });
-            $docItemTitle.modifiers = ["col-5", "title"];
+            $docItemTitle.modifiers = ["col-3", "title"];
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
-            $docItemAlias.modifiers = ["col-3", "alias"];
+            $docItemAlias.modifiers = ["col-2", "alias"];
 
-            const $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-1", "type"];
+            const $docItemModified = components.texts.titleText("<div>", document.modified);
+            $docItemModified.modifiers = ["col-1", "modified"];
 
-            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
-            $docStatus.modifiers = ["col-2", "status"];
-
-            const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
-            $originalDocStatus.modifiers = ["originalStatus"];
-            $originalDocStatus.css({"display": "none"});
+            const $docItemPublished = components.texts.titleText("<div>", document.published);
+            $docItemPublished.modifiers = ["col-1", "published"];
 
             const $currentVersion = document.currentVersion === WORKING_VERSION
                 ? $('<div>', {
@@ -836,8 +883,17 @@ define("imcms-document-editor-builder",
                 : $('<div>', {
                     value: document.currentVersion
                 }).css({'opacity': '0'});
+            $currentVersion.modifiers = ['col-1', 'currentVersion'];
 
-            $currentVersion.modifiers = ['col-6', 'currentVersion'];
+            const $docItemType = components.texts.titleText("<div>", document.type);
+            $docItemType.modifiers = ["col-1", "type"];
+
+            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
+            $docStatus.modifiers = ["col-1", "status"];
+
+            const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
+            $originalDocStatus.modifiers = ["originalStatus"];
+            $originalDocStatus.css({"display": "none"});
 
             const elements = [
                 {
@@ -845,6 +901,9 @@ define("imcms-document-editor-builder",
                         $docItemId,
                         $docItemTitle,
                         $docItemAlias,
+                        $docItemModified,
+                        $docItemPublished,
+                        $currentVersion,
                         $docItemType,
                         $docStatus,
                         $originalDocStatus
@@ -852,10 +911,6 @@ define("imcms-document-editor-builder",
                 },
                 {"controls": buildDocItemControls(document, opts)}
             ];
-
-
-            elements[0].info.splice(3, 0, $currentVersion);
-
 
             const $moveControl = components.controls.move();
             const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});

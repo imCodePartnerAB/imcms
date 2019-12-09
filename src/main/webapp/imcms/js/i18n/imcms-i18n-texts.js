@@ -261,6 +261,8 @@ const texts = {
                     id: "ID",
                     title: "Titel",
                     alias: "Alias",
+                    modified: "Ändrad",
+                    published: "Publicerad",
                     type: "Typ",
                     status: "Status",
                     version: 'Version'
@@ -1080,6 +1082,8 @@ const texts = {
                     id: "ID",
                     title: "Title",
                     alias: "Alias",
+                    modified: "Modified",
+                    published: "Published",
                     type: "Type",
                     status: "Status",
                     version: 'Version'
