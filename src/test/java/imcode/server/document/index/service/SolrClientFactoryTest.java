@@ -94,9 +94,9 @@ public class SolrClientFactoryTest {
         }
     }
 
-    //todo cache in CI problem..
-    @Test
-    public void createHttpSolrClient_When_RecreateDataDirIsSet_Expect_Recreated() throws IOException, SolrServerException {
+    //todo cache in CI problem doesn't complete..
+//    @Test
+//    public void createHttpSolrClient_When_RecreateDataDirIsSet_Expect_Recreated() throws IOException, SolrServerException {
 //        try {
 //            SolrClient httpSolrClient = SolrClientFactory.createHttpSolrClient(
 //                    SOLR_URL + "/" + CORE, false
@@ -120,7 +120,7 @@ public class SolrClientFactoryTest {
 //            // solr is not set up, ok.
 //            checkException(e);
 //        }
-    }
+//    }
 
     private void coreExists(String coreName) throws IOException, SolrServerException {
         final CoreAdminRequest coreAdminRequest = new CoreAdminRequest();
