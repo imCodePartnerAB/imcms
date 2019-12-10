@@ -143,7 +143,7 @@ define("imcms-document-editor-builder",
                 });
 
                 $textField.$input.on("input", function () {
-                    const textFieldValue = $(this).val().trim();
+                    const textFieldValue = $(this).val().toLowerCase().trim();
                     if (searchQueryObj[term] !== textFieldValue) {
                         appendDocuments(term, textFieldValue, true, true);
                     }
