@@ -839,19 +839,9 @@ define("imcms-document-editor-builder",
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
 
-            const $docItemId = components.texts.titleText("<div>", "");
-
-            $docItemId.append(new BEM({
-                block: "imcms-title",
-                elements: {
-                    "link": ""
-                }
-            }).buildBlockElement("link", "<a>", {
+            const $docItemId = components.texts.titleText("<a>", document.id, {
                 href: imcms.contextPath + "/" + document.id,
-                html: document.id,
-                target: "_blank"
-            }));
-
+            });
             $docItemId.modifiers = ["col-1", "id"];
 
             const title = (document.commonContents)
