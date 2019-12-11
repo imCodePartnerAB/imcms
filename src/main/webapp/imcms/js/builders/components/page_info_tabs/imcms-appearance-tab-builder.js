@@ -100,7 +100,7 @@ define("imcms-appearance-tab-builder",
                 $pageTitle = components.texts.textBox("<div>", {
                     name: "title",
                     text: texts.title,
-                    value: commonContent.headline
+                    value: commonContent.docId ? commonContent.headline : ''
                 }),
                 $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
