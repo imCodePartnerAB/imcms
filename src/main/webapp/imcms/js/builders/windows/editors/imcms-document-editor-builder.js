@@ -63,6 +63,9 @@ define("imcms-document-editor-builder",
         let sendSearchDocRequest = true;
         let errorMsg;
 
+        const sortUpClassName = "imcms-control--sort-up";
+        const sortDownClassName = "imcms-control--sort-down";
+
         function buildErrorBlock() {
             errorMsg = components.texts.errorText("<div>", texts.error.searchFailed, {style: 'display: none;'});
             return errorMsg;
@@ -80,6 +83,7 @@ define("imcms-document-editor-builder",
 
             if (setDefaultSort) {
                 setDefaultSortProperties();
+                setDefaultSortingIcons();
             }
 
             docSearchRestApi.read(searchQueryObj)
@@ -304,12 +308,13 @@ define("imcms-document-editor-builder",
         }
 
         function toggleSortingIcon($sortingIcon) {
-            const sortUpClassName = "imcms-control--sort-up";
-            const sortDownClassName = "imcms-control--sort-down";
-
             $sortingIcon.hasClass(sortUpClassName)
                 ? $sortingIcon.removeClass(sortUpClassName).addClass(sortDownClassName)
                 : $sortingIcon.removeClass(sortDownClassName).addClass(sortUpClassName);
+        }
+
+        function setDefaultSortingIcons() {
+            $(".imcms-document-list-titles__title .imcms-control--sort-up").removeClass(sortUpClassName).addClass(sortDownClassName);
         }
 
         function isActiveHeader($sortingHeader) {
@@ -328,6 +333,7 @@ define("imcms-document-editor-builder",
             } else {
                 setDefaultSortProperties();
                 highlightDefaultSorting();
+                setDefaultSortingIcons();
             }
         }
 
@@ -337,6 +343,7 @@ define("imcms-document-editor-builder",
 
             } else {
                 setSortBy(bySorting);
+                setDefaultSortingIcons();
                 highlightSorting($sortingHeader);
             }
 
@@ -365,13 +372,13 @@ define("imcms-document-editor-builder",
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
                 bySorting: "modified_datetime",
-                modifiers: ["col-1"],
+                modifiers: ["col-6"],
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: "publication_start_datetime",
-                modifiers: ["col-1"],
+                modifiers: ["col-6"],
             });
 
             const $versionColumnHead = buildTitleRow({
@@ -382,7 +389,7 @@ define("imcms-document-editor-builder",
 
             const $typeColumnHead = buildTitleRow({text: texts.sort.type, modifiers: ["col-1"]});
 
-            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-2"]});
+            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-7"]});
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -859,11 +866,11 @@ define("imcms-document-editor-builder",
             const $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
             $docItemAlias.modifiers = ["col-2", "alias"];
 
-            const $docItemModified = components.texts.titleText("<div>", document.modified);
-            $docItemModified.modifiers = ["col-1", "modified"];
+            const $docItemModified = components.texts.titleText("<div>", document.modified, {title: document.modified});
+            $docItemModified.modifiers = ["col-6", "modified"];
 
-            const $docItemPublished = components.texts.titleText("<div>", document.published);
-            $docItemPublished.modifiers = ["col-1", "published"];
+            const $docItemPublished = components.texts.titleText("<div>", document.published, {title: document.published});
+            $docItemPublished.modifiers = ["col-6", "published"];
 
             const $currentVersion = document.currentVersion === WORKING_VERSION
                 ? $('<div>', {
@@ -878,8 +885,8 @@ define("imcms-document-editor-builder",
             const $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-1", "type"];
 
-            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
-            $docStatus.modifiers = ["col-1", "status"];
+            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus), {title: getDocumentStatusText(document.documentStatus)});
+            $docStatus.modifiers = ["col-7", "status"];
 
             const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];

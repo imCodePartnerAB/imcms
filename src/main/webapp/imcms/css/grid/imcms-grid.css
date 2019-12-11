@@ -82,6 +82,11 @@
     width: 10%;
 }
 
+.imcms-document-list-titles__title--col-7,
+.imcms-document-item__info--col-7 {
+    width: 13%;
+}
+
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-item__info--col-3,
