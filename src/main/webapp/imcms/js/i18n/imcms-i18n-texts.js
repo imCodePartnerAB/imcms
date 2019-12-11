@@ -98,7 +98,11 @@ const texts = {
         },
         pageInfo: {
             document: "Dokument",
-            newDocument: "Nytt dokument",
+            newDocument: {
+                text: "Nyyt TEXT-document",
+                url: "Nyyt URL-document",
+                file: "Nyyt FIL-dokument",
+            },
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
             oneLanguageShouldBeEnabled: "Minst ett språk måste vara aktiverat!",
@@ -919,7 +923,11 @@ const texts = {
         },
         pageInfo: {
             document: "Document",
-            newDocument: "New Document",
+            newDocument: {
+                text: "New TEXT document",
+                url: "New URL document",
+                file: "New FILE document",
+            },
             confirmMessage: "Save changes?",
             confirmMessageOnCancel: "Do you really want to exit?",
             oneLanguageShouldBeEnabled: "At least one language must be enabled!",
