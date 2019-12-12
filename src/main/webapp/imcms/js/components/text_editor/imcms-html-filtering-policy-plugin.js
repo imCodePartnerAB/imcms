@@ -34,7 +34,7 @@ define(
                     return;
                 }
 
-                const $policies = buildPoliciesSelect($textEditor);
+                const $policies = buildPoliciesSelect();
 
                 $btn.append($policies);
 
@@ -52,7 +52,9 @@ define(
                                 .data('htmlFilteringPolicy', policy);
 
 
-                            textUtils.saveContent(editor, null, true);
+                            textUtils.saveContent(editor, textDTO => {
+                                $textEditor.html(textDTO.text);
+                            }, true);
                         }
 
                         $policies.remove();
@@ -63,17 +65,14 @@ define(
             };
         }
 
-        function buildPoliciesSelect($textEditor) {
-
-            const currentPolicy = $textEditor.attr('data-html-filtering-policy');
+        function buildPoliciesSelect() {
 
             const elements = Object.keys(filteringPolicies).map(key => {
                 const policyName = filteringPolicies[key];
 
                 return {
                     'policy': $('<div>', {
-                        'class': 'settings-section__setting'
-                            + ((currentPolicy === policyName) ? ' settings-section__setting--enabled' : ''),
+                        'class': 'settings-section__setting',
                         text: policyToName[policyName],
                         title: policyToTitle[policyName],
                         'data-policy': policyName

@@ -61,12 +61,12 @@ define(
             }
 
             textsRestApi.create(textDTO)
-                .done(() => {
+                .done(receivedTextDTO => {
                     events.trigger('imcms-version-modified');
                     editor.startContent = editor.getContent();
                     editor.setDirty(false);
 
-                    onSaved && onSaved.call && onSaved.call();
+                    onSaved && onSaved.call && onSaved.call(null, receivedTextDTO);
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
