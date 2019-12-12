@@ -41,7 +41,8 @@ define(
         function buildParentSelect() {
             $parentDocIdInput = components.texts.textBox("<div>", {
                 name: "title",
-                text: texts.selectParent
+                text: texts.selectParent + ":",
+                placeholder: texts.selectParentPlaceholder,
             });
 
             return new BEM({
