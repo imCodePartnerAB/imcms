@@ -303,6 +303,7 @@ const texts = {
                 buildByCurrentDocId: "Välj detta dokument som profil",
                 selectProfile: "Välj profil",
                 selectParent: "Välj 'förälder'",
+                selectParentPlaceholder: "Ange dokument-ID",
                 error: {
                     loadProfilesFailed: "Misslyckades med att hämta kategorier. Försök igen"
                 }
@@ -1128,6 +1129,7 @@ const texts = {
                 buildByCurrentDocId: "This document’s settings",
                 selectProfile: "Select profile",
                 selectParent: "Select parent document",
+                selectParentPlaceholder: "State document ID",
                 error: {
                     loadProfilesFailed: "Failed to fetch categories. Try again"
                 }
