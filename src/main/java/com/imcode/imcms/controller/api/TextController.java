@@ -23,7 +23,7 @@ public class TextController {
 
     @PostMapping
     @CheckAccess(AccessType.TEXT)
-    public void saveText(@ModelAttribute TextDTO textDTO) {
-        textService.save(textDTO);
+    public TextDTO saveText(@ModelAttribute TextDTO textDTO) {
+        return new TextDTO(textService.save(textDTO));
     }
 }

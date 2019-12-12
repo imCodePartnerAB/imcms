@@ -317,8 +317,3 @@ input.imcms-editor-content--text {
     padding: 5px;
     cursor: pointer;
 }
-
-.filtering-policies__policy.settings-section__setting--enabled:after {
-    top: 0;
-    margin-left: 8px;
-}

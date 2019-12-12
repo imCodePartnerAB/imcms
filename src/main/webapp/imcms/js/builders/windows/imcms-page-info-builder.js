@@ -6,10 +6,10 @@ define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
-        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder'
+        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types'
     ],
     (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-     modal, texts, appearanceTab) => {
+     modal, texts, appearanceTab, docTypes) => {
 
         texts = texts.pageInfo;
 
@@ -17,7 +17,7 @@ define("imcms-page-info-builder",
         let $title = $('<a>');
 
         function buildPageInfoHead() {
-            const $head = pageInfoWindowBuilder.buildHeadWithResizing(texts.document + ': ', closePageInfo);
+            const $head = pageInfoWindowBuilder.buildHeadWithResizing(texts.document + ' - ', closePageInfo);
             $head.find(".imcms-head__title").append($title);
 
             return $head;
@@ -158,9 +158,16 @@ define("imcms-page-info-builder",
                 .done((document) => {
                     documentDTO = document;
                     const linkData = '/api/admin/page-info?meta-id=' + document.id;
+
+                    const newDocText = document.type === docTypes.TEXT
+                        ? texts.newDocument.text
+                        : document.type === docTypes.URL
+                            ? texts.newDocument.url
+                            : texts.newDocument.file;
+
                     $title.text((document.id)
                         ? linkData
-                        : texts.newDocument).css({'text-transform': 'lowercase', 'color': '#fff2f9'});
+                        : newDocText).css({'text-transform': 'initial', 'color': '#fff2f9'});
 
                     $title.attr('href', linkData);
 

@@ -98,7 +98,11 @@ const texts = {
         },
         pageInfo: {
             document: "Dokument",
-            newDocument: "Nytt dokument",
+            newDocument: {
+                text: "Nyyt TEXT-document",
+                url: "Nyyt URL-document",
+                file: "Nyyt FIL-dokument",
+            },
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
             oneLanguageShouldBeEnabled: "Minst ett språk måste vara aktiverat!",
@@ -299,6 +303,7 @@ const texts = {
                 buildByCurrentDocId: "Välj detta dokument som profil",
                 selectProfile: "Välj profil",
                 selectParent: "Välj 'förälder'",
+                selectParentPlaceholder: "Ange dokument-ID",
                 error: {
                     loadProfilesFailed: "Misslyckades med att hämta kategorier. Försök igen"
                 }
@@ -919,7 +924,11 @@ const texts = {
         },
         pageInfo: {
             document: "Document",
-            newDocument: "New Document",
+            newDocument: {
+                text: "New TEXT document",
+                url: "New URL document",
+                file: "New FILE document",
+            },
             confirmMessage: "Save changes?",
             confirmMessageOnCancel: "Do you really want to exit?",
             oneLanguageShouldBeEnabled: "At least one language must be enabled!",
@@ -1120,6 +1129,7 @@ const texts = {
                 buildByCurrentDocId: "This document’s settings",
                 selectProfile: "Select profile",
                 selectParent: "Select parent document",
+                selectParentPlaceholder: "State document ID",
                 error: {
                     loadProfilesFailed: "Failed to fetch categories. Try again"
                 }

@@ -151,6 +151,15 @@
     background: #d0e9f9;
 }
 
+.imcms-document-items-list__document-items .imcms-document-items__document-item a {
+    color:#0b94d8;
+    text-decoration:none;
+}
+
+.imcms-document-items-list__document-items .imcms-document-items__document-item a:hover {
+    text-decoration:underline;
+}
+
 .imcms-document-item:after {
     content: "";
     display: block;
