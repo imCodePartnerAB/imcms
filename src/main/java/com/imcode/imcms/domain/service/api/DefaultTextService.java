@@ -2,11 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.TextHistoryService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -24,8 +20,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.*;
-import static com.imcode.imcms.model.Text.Type.*;
+import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.RELAXED;
+import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.RESTRICTED;
+import static com.imcode.imcms.model.Text.Type.EDITOR;
+import static com.imcode.imcms.model.Text.Type.HTML;
 
 @Service("textService")
 @Transactional
@@ -71,7 +69,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     }
 
     @Override
-    public void save(Text text) {
+    public Text save(Text text) {
         final Integer docId = text.getDocId();
         final Version version = versionService.getDocumentWorkingVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
@@ -85,7 +83,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
                 && Objects.equals(textJPA.getText(), textContent)
                 && Objects.equals(textJPA.getType(), type)
                 && Objects.equals(textJPA.getHtmlFilteringPolicy(), filteringPolicy)
-        ) return;
+        ) return textJPA;
 
         if ((EDITOR.equals(type) || HTML.equals(type))
                 && (RESTRICTED.equals(filteringPolicy) || RELAXED.equals(filteringPolicy)))
@@ -96,11 +94,13 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final TextJPA newTextJPA = new TextJPA(text, version, language);
         newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
 
-        repository.save(newTextJPA);
+        final Text savedText = repository.save(newTextJPA);
 
         super.updateWorkingVersion(docId);
 
         textHistoryService.save(text);
+
+        return savedText;
     }
 
     @Override
