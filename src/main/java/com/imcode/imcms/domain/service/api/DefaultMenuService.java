@@ -42,6 +42,13 @@ import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.
 public class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
 
+    private static final String DATA_META_ID_ATTRIBUTE = "data-meta-id";
+    private static final String DATA_INDEX_ATTRIBUTE = "data-index";
+    private static final String DATA_TREEKEY_ATTRIBUTE = "data-treekey";
+    private static final String DATA_LEVEL_ATTRIBUTE = "data-level";
+    private static final String DATA_SUBLEVELS_ATTRIBUTE = "data-sublvls";
+    private static final String CLASS_ATTRIBUTE = "class";
+
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
     private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
@@ -197,6 +204,122 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         setHasNewerVersionsInItems(menuItemsOf);
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
+    }
+
+    @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
+                                       boolean nested, String attributes, String treeKey, String wrap) {
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+        if (!nested) {
+            convertItemsToFlatList(menuItemsOf);
+        }
+
+        setHasNewerVersionsInItems(menuItemsOf);
+
+        return convertToMenuHtml(docId, menuIndex, menuItemsOf, nested, attributes, treeKey, wrap);
+    }
+
+    private String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
+                                     String attributes, String treeKey, String wrap) {
+        List<MenuItemDTO> menuItems;
+        String ulTag = "<ul>";
+        String ulTagClose = "</ul>";
+        String ulData = "<ul data-menu-index=\"%d\" data-doc-id=\"%d\">";
+        StringBuilder buildContentMenu = new StringBuilder();
+        buildContentMenu.append(ulData);
+
+        if (nested) {
+            menuItems = menuItemDTOS;
+        } else {
+            menuItems = menuItemDTOS.stream()
+                    .flatMap(MenuItemDTO::flattened)
+                    .collect(Collectors.toList());
+        }
+
+        String[] wrapElements = wrap.split(",");
+
+        for (MenuItemDTO menuItemDTO : menuItems) {
+            if (attributes.contains("data")) {
+
+                String contentItemElement = String.format(
+                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
+                        DATA_META_ID_ATTRIBUTE, menuItemDTO.getDocumentId(),
+                        DATA_INDEX_ATTRIBUTE, 1,
+                        DATA_TREEKEY_ATTRIBUTE, treeKey,
+                        DATA_LEVEL_ATTRIBUTE, 1,
+                        DATA_SUBLEVELS_ATTRIBUTE, !menuItemDTO.getChildren().isEmpty(),
+                        menuItemDTO.getTitle()).concat("\n");
+
+                buildContentMenu.append(contentItemElement);
+                if (!menuItemDTO.getChildren().isEmpty()) {
+                    buildChildsContentMenuItem(buildContentMenu, menuItemDTO.getChildren(), treeKey, 0);
+                }
+            }
+        }
+
+        buildContentMenu.append(ulTagClose);
+
+        return String.format(buildContentMenu.toString(), menuIndex, docId);
+    }
+
+    private String buildChildsContentMenuItem(StringBuilder content, List<MenuItemDTO> childrenItems, String treeKey, int count) {
+        String ulTagClose = "</ul>";
+        StringBuilder contentBuilder = new StringBuilder();
+        int index = 0;
+        int countCall = count;
+
+        for (MenuItemDTO itemDTO : childrenItems) {
+            if (!itemDTO.getChildren().isEmpty()) {
+                content.append(String.format(
+                        "<ul><li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
+                        DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
+                        DATA_INDEX_ATTRIBUTE, index,
+                        DATA_TREEKEY_ATTRIBUTE, treeKey,
+                        DATA_LEVEL_ATTRIBUTE, 1,
+                        DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
+                        itemDTO.getDocumentId()).concat("\n<ul>"));
+
+                buildChildsContentMenuItem(content, itemDTO.getChildren(), "20", count++);
+            } else {
+                contentBuilder.append(singleBuildContentItem(itemDTO));
+            }
+        }
+        contentBuilder.append(ulTagClose);
+        content.append(contentBuilder);
+
+        return content.toString();
+    }
+
+    private String singleBuildContentItem(MenuItemDTO itemDTO) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int index = 0;
+
+        stringBuilder.append(String.format(
+                "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
+                DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
+                DATA_INDEX_ATTRIBUTE, index,
+                DATA_TREEKEY_ATTRIBUTE, "k",
+                DATA_LEVEL_ATTRIBUTE, 1,
+                DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
+                itemDTO.getDocumentId()).concat("\n"));
+
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
+                                      boolean nested, String attributes, String treeKey, String wrap) {
+        return null;
+    }
+
+    @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex) {
+        return null;
+    }
+
+    @Override
+    public String getPublicMenuAsHtml(int docId, int menuIndex) {
+        return null;
     }
 
     @Override
