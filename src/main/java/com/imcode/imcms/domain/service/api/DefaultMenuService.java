@@ -21,7 +21,6 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -132,13 +131,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private void convertItemsToFlatList(List<MenuItemDTO> menuItems) {
-        final List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
-
-        for (MenuItemDTO menuItemDTO : menuItems) {
-            childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
-        }
-
-        menuItems.addAll(childrenMenuItems);
+        menuItems.addAll(menuItems.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .collect(Collectors.toList()));
     }
 
     private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
@@ -212,6 +207,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
             convertItemsToFlatList(menuItemsOf);
+            getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
@@ -452,19 +448,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
         return documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId());
-    }
-
-    private List<MenuItemDTO> getAllNestedMenuItems(MenuItemDTO menuItemDTO) {
-        List<MenuItemDTO> nestedMenuItems = new ArrayList<>();
-        for (MenuItemDTO menuItem : menuItemDTO.getChildren()) {
-            if (!menuItem.getChildren().isEmpty()) {
-                nestedMenuItems.add(menuItem);
-                nestedMenuItems.addAll(getAllNestedMenuItems(menuItem));
-            } else {
-                nestedMenuItems.add(menuItem);
-            }
-        }
-        return nestedMenuItems;
     }
 
     private List<MenuItemDTO> getAndSetUpEmptyChildrenMenuItems(List<MenuItemDTO> menuItemDTOs) {
