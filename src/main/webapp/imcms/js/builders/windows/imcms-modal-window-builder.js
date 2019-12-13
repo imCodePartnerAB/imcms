@@ -22,9 +22,30 @@ define(
             });
         }
 
+        function buildSaveButton(callback) {
+            return components.buttons.positiveButton({
+                text: texts.save,
+                click: callback
+            });
+        }
+
+        function buildCreateButton(callback) {
+            return components.buttons.positiveButton({
+                text: texts.create,
+                click: callback
+            });
+        }
+
         function buildNoButton(callback) {
             return components.buttons.negativeButton({
                 text: texts.no,
+                click: callback
+            });
+        }
+
+        function buildCancelButton(callback) {
+            return components.buttons.negativeButton({
+                text: texts.cancel,
                 click: callback
             });
         }
@@ -51,6 +72,30 @@ define(
                 block: "imcms-modal-footer",
                 elements: {
                     "button": [$yesButton, $noButton]
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildSaveFooter(onConfirmed, onDeclined) {
+            const $saveButton = buildSaveButton(onConfirmed);
+            const $cancelButton = buildCancelButton(onDeclined);
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": [$saveButton, $cancelButton]
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildCreateFooter(onConfirmed, onDeclined) {
+            const $createButton = buildCreateButton(onConfirmed);
+            const $cancelButton = buildCancelButton(onDeclined);
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": [$createButton, $cancelButton]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -110,24 +155,21 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildCreateBody(text, textField, checkBoxIsDir) {
+        function buildCreatorBody(textField, checkBoxIsDir) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
-                    "text": components.texts.infoText("<div>", text),
                     "name": textField,
                     "is-directory": checkBoxIsDir
                 }
             }).buildBlockStructure("<div>");
         }
 
-        function buildEditBody(text, textField, checkBoxIsDir, textarea, editCheckBox) {
+        function buildEditorBody(textField, textarea, editCheckBox) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
-                    "text": components.texts.infoText("<div>", text),
                     "name": textField,
-                    "is-directory": checkBoxIsDir,
                     "edit-content": editCheckBox,
                     "content": textarea
                 }
@@ -173,24 +215,24 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function fileCreateModalWindow(question, textField, checkBoxIsDir, onConfirmed, onDeclined) {
+        function CreateCreatorModalWindow(textField, checkBoxIsDir, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-create-modal-window",
                 elements: {
-                    "modal-head": buildHead(texts.title),
-                    "modal-body": buildCreateBody(question, textField, checkBoxIsDir),
-                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                    "modal-head": buildHead(texts.createFileOrDirectory),
+                    "modal-body": buildCreatorBody(textField, checkBoxIsDir),
+                    "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }
 
-        function CreateModalWindowEdit(question, textField, checkBoxIsDir, textarea, editCheckBox, onConfirmed, onDeclined) {
+        function CreateEditorModalWindow(textField, textarea, editCheckBox, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-edit-modal-window",
                 elements: {
-                    "modal-head": buildHead(texts.title), //need rename
-                    "modal-body": buildEditBody(question, textField, checkBoxIsDir, textarea, editCheckBox),
-                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                    "modal-head": buildHead(texts.editFile),
+                    "modal-body": buildEditorBody(textField, textarea, editCheckBox),
+                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -244,17 +286,17 @@ define(
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
-        const CreateModalWindow = function (question, textField, checkBoxIsDir, callback) {
+        const CreateModalWindow = function (textField, checkBoxIsDir, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = fileCreateModalWindow(question, textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
+            this.$modal = CreateCreatorModalWindow(textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
         };
 
-        const CreateModalWindowEditor = function (question, textField, checkBoxIsDir, textarea, editCheckBox, callback) {
+        const EditorModalWindow = function (textField, textarea, editCheckBox, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = CreateModalWindowEdit(
-                question, textField, checkBoxIsDir, textarea, editCheckBox, this.onConfirmed, this.onDeclined
+            this.$modal = CreateEditorModalWindow(
+                textField, textarea, editCheckBox, this.onConfirmed, this.onDeclined
             );
         };
 
@@ -310,7 +352,7 @@ define(
 
         CreateModalWindow.prototype = Object.create(ModalWindow.prototype);
 
-        CreateModalWindowEditor.prototype = Object.create(ModalWindow.prototype);
+        EditorModalWindow.prototype = Object.create(ModalWindow.prototype);
 
         ModalOptionalWindow.prototype = Object.create(ModalWindow.prototype);
 
@@ -336,14 +378,14 @@ define(
                 .appendTo($("body"));
         }
 
-        function buildCreateModalWindow(question, textField, checkBoxIsDir, callback) {
-            return new CreateModalWindow(question, textField, checkBoxIsDir, callback)
+        function buildCreateModalWindow(textField, checkBoxIsDir, callback) {
+            return new CreateModalWindow(textField, checkBoxIsDir, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
 
-        function buildEditModalWindow(question, textField, checkBoxIsDir, textarea, editCheckBox, callback) {
-            return new CreateModalWindowEditor(question, textField, checkBoxIsDir, textarea, editCheckBox, callback)
+        function buildEditModalWindow(textField, textarea, editCheckBox, callback) {
+            return new EditorModalWindow(textField, textarea, editCheckBox, callback)
                 .addShadow()
                 .appendTo($("body"));
         }

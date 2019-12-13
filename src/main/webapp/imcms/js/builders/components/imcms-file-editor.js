@@ -653,11 +653,8 @@ define(
         }
 
         function prepareOnEditFile(confirmEditFile) {
-            modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
-                if (!confirmed) return;
-
                 editCheckBox = buildIsEditCheckBox();
-                let isDirectory = 'DIRECTORY' === currentFile.fileType;
+                const isDirectory = 'DIRECTORY' === currentFile.fileType;
                 newFileNameField.setValue(currentFile.fileName);
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
                 setEnableEditContent();
@@ -669,12 +666,11 @@ define(
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
 
                 confirmEditFile();
-            });
         }
 
         function confirmEditFile(onRenameFile, onEditFileContent) {
             return modal.buildEditFileModalWindow(
-                texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
+                newFileNameField, contentTextArea, editCheckBox, confirmed => {
                     if (confirmed && !editCheckBox.isChecked()) {
                         onRenameFile()
                     }
@@ -775,7 +771,7 @@ define(
             newFileNameField.setValue('').$input.removeAttr('disabled');
             checkBoxIsDirectory.$input.removeAttr('disabled');
             return modal.buildCreateFileModalWindow(
-                texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                newFileNameField, checkBoxIsDirectory, confirmed => {
                     if (confirmed) {
                         onConfirm();
                     }
