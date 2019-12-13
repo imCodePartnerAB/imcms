@@ -252,7 +252,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
                 buildContentMenu.append(contentItemElement);
                 if (!menuItemDTO.getChildren().isEmpty()) {
-                    buildChildsContentMenuItem(buildContentMenu, menuItemDTO.getChildren(), treeKey, 0);
+                    buildChildsContentMenuItem(buildContentMenu.append("<ul>"), menuItemDTO.getChildren(), treeKey);
                 }
             }
         }
@@ -262,16 +262,15 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return String.format(buildContentMenu.toString(), menuIndex, docId);
     }
 
-    private String buildChildsContentMenuItem(StringBuilder content, List<MenuItemDTO> childrenItems, String treeKey, int count) {
+    private String buildChildsContentMenuItem(StringBuilder content, List<MenuItemDTO> childrenItems, String treeKey) {
         String ulTagClose = "</ul>";
         StringBuilder contentBuilder = new StringBuilder();
         int index = 0;
-        int countCall = count;
 
         for (MenuItemDTO itemDTO : childrenItems) {
             if (!itemDTO.getChildren().isEmpty()) {
                 content.append(String.format(
-                        "<ul><li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
+                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
                         DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
                         DATA_INDEX_ATTRIBUTE, index,
                         DATA_TREEKEY_ATTRIBUTE, treeKey,
@@ -279,7 +278,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                         DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
                         itemDTO.getDocumentId()).concat("\n<ul>"));
 
-                buildChildsContentMenuItem(content, itemDTO.getChildren(), "20", count++);
+                buildChildsContentMenuItem(content, itemDTO.getChildren(), "20");
             } else {
                 contentBuilder.append(singleBuildContentItem(itemDTO));
             }
