@@ -67,6 +67,27 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex, String language, boolean nested, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getVisibleMenuAsHtml(
+                docId, menuIndex, language, nested, attributes, treeKey, wrap);
+    }
+
+    @Override
+    public String getPublicMenuAsHtml(int docId, int menuIndex, String language, boolean nested, String attributes, String treeKey, String wrap) {
+        return null;
+    }
+
+    @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex) {
+        return null;
+    }
+
+    @Override
+    public String getPublicMenuAsHtml(int docId, int menuIndex) {
+        return null;
+    }
+
+    @Override
     public List<Menu> getAll() {
         return defaultMenuService.getAll();
     }
