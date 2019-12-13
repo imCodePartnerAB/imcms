@@ -240,9 +240,15 @@ const texts = {
         modal: {
             doNotShowAgain: "Visa inte igen",
             title: "Bekräfta",
+            editFile: "Redigera fil",
+            editDirectory: "Redigera mapp",
+            createFileOrDirectory: "Skapa fil/mapp",
             yes: "Ja",
             no: "Nej",
-            ok: "Ok"
+            ok: "Ok",
+            cancel: "Avbryt",
+            save: "Spara",
+            create: "Skapa",
         },
         editors: {
             document: {
@@ -601,8 +607,6 @@ const texts = {
             },
             files: {
                 name: 'Filer',
-                createFile: 'Skapa fil',
-                editorFile: 'Redigera fil',
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
                 add: 'Lägg till',
@@ -610,7 +614,6 @@ const texts = {
                 moveLeft: 'Flytta vänster',
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
-                warnChangeMessage: 'Vill du verkligen redigera?',
                 warnDeleteMessage: 'Vill du verkligen ta bort filen?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
@@ -1066,9 +1069,15 @@ const texts = {
         modal: {
             doNotShowAgain: "Do not show again",
             title: "Confirm",
+            editFile: "Edit file",
+            editDirectory: "Edit directory",
+            createFileOrDirectory: "Create file/directory",
             yes: "Yes",
             no: "No",
-            ok: "Ok"
+            ok: "Ok",
+            cancel: "Cancel",
+            save: "Save",
+            create: "Create",
         },
         editors: {
             document: {
@@ -1427,8 +1436,6 @@ const texts = {
             },
             files: {
                 name: 'Files',
-                createFile: 'Create file',
-                editorFile: 'Edit file',
                 upload: 'Upload',
                 rename: 'Change name',
                 add: 'Add',
@@ -1436,7 +1443,6 @@ const texts = {
                 moveLeft: 'Move left',
                 copyRight: 'Copy right',
                 copyLeft: 'Copy left',
-                warnChangeMessage: 'Do you really want to change file?',
                 warnDeleteMessage: 'Do you really want to delete the file?',
                 warnEditMessage: 'Do you really edit content file?',
                 warnViewDocMessage: 'Do you want to redirect on current document?',
