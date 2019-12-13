@@ -63,8 +63,10 @@ define("imcms-document-editor-builder",
         let sendSearchDocRequest = true;
         let errorMsg;
 
-        const sortUpClassName = "imcms-control--sort-up";
-        const sortDownClassName = "imcms-control--sort-down";
+        const sortAscClassName = "imcms-control--sort-asc";
+        const sortDescClassName = "imcms-control--sort-desc";
+        const sortAscClass = "." + sortAscClassName;
+        const sortDescClass = "." + sortDescClassName;
 
         function buildErrorBlock() {
             errorMsg = components.texts.errorText("<div>", texts.error.searchFailed, {style: 'display: none;'});
@@ -308,13 +310,15 @@ define("imcms-document-editor-builder",
         }
 
         function toggleSortingIcon($sortingIcon) {
-            $sortingIcon.hasClass(sortUpClassName)
-                ? $sortingIcon.removeClass(sortUpClassName).addClass(sortDownClassName)
-                : $sortingIcon.removeClass(sortDownClassName).addClass(sortUpClassName);
+            $sortingIcon.hasClass(sortDescClassName)
+                ? $sortingIcon.removeClass(sortDescClassName).addClass(sortAscClassName)
+                : $sortingIcon.removeClass(sortAscClassName).addClass(sortDescClassName);
         }
 
         function setDefaultSortingIcons() {
-            $(".imcms-document-list-titles__title .imcms-control--sort-up").removeClass(sortUpClassName).addClass(sortDownClassName);
+            $(".imcms-document-list-titles__title " + sortDescClass)
+                .removeClass(sortDescClassName)
+                .addClass(sortAscClassName);
         }
 
         function isActiveHeader($sortingHeader) {
@@ -412,7 +416,7 @@ define("imcms-document-editor-builder",
             const emptyIcon = $('<div>');
 
             const sortIcon = bySorting
-                ? components.controls.sortDown()
+                ? components.controls.sortAsc()
                 : emptyIcon;
 
             const titleRow = $("<div>", {
