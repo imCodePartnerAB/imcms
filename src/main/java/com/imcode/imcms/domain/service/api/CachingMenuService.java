@@ -132,4 +132,9 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
                                                            final List<MenuItemDTO> menuItems) {
         return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort, menuItems);
     }
+
+    @Override
+    public List<String> getMenuItemsAsHtmlByData(String dataClass) {
+        return null;
+    }
 }

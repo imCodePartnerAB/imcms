@@ -218,7 +218,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
                                      String attributes, String treeKey, String wrap) {
         List<MenuItemDTO> menuItems;
-        String ulTag = "<ul>";
         String ulTagClose = "</ul>";
         String ulData = "<ul data-menu-index=\"%d\" data-doc-id=\"%d\">";
         StringBuilder buildContentMenu = new StringBuilder();
@@ -235,22 +234,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         String[] wrapElements = wrap.split(",");
 
         for (MenuItemDTO menuItemDTO : menuItems) {
-            if (attributes.contains("data")) {
-
-                String contentItemElement = String.format(
-                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
-                        DATA_META_ID_ATTRIBUTE, menuItemDTO.getDocumentId(),
-                        DATA_INDEX_ATTRIBUTE, 1,
-                        DATA_TREEKEY_ATTRIBUTE, treeKey,
-                        DATA_LEVEL_ATTRIBUTE, 1,
-                        DATA_SUBLEVELS_ATTRIBUTE, !menuItemDTO.getChildren().isEmpty(),
-                        menuItemDTO.getTitle()).concat("\n");
-
-                buildContentMenu.append(contentItemElement);
-                if (!menuItemDTO.getChildren().isEmpty()) {
-                    buildChildsContentMenuItem(buildContentMenu.append("<ul>"), menuItemDTO.getChildren(), treeKey);
-                }
+            buildContentMenu.append(buildParentMenuItem(menuItemDTO, attributes, treeKey, 1));
+            if (!menuItemDTO.getChildren().isEmpty()) {
+                buildChildsContentMenuItem(buildContentMenu.append("<ul>"), menuItemDTO.getChildren(), treeKey, 1);
             }
+
         }
 
         buildContentMenu.append(ulTagClose);
@@ -258,25 +246,42 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return String.format(buildContentMenu.toString(), menuIndex, docId);
     }
 
-    private String buildChildsContentMenuItem(StringBuilder content, List<MenuItemDTO> childrenItems, String treeKey) {
+    private String buildParentMenuItem(MenuItemDTO parentMenuItem, String attributes, String treeKey, Integer dataLevel) {
+        StringBuilder content = new StringBuilder();
+        if (attributes.contains("data")) {
+            String contentItemElement = String.format(
+                    "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
+                    DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
+                    DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
+                    DATA_TREEKEY_ATTRIBUTE, treeKey,
+                    DATA_LEVEL_ATTRIBUTE, dataLevel,
+                    DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
+                    parentMenuItem.getTitle()).concat("\n");
+
+            content.append(contentItemElement);
+        }
+
+        return content.toString();
+    }
+
+    private String buildChildsContentMenuItem(StringBuilder content, List<MenuItemDTO> childrenItems, String treeKey, Integer dataLvl) {
         String ulTagClose = "</ul>";
         StringBuilder contentBuilder = new StringBuilder();
-        int index = 0;
 
         for (MenuItemDTO itemDTO : childrenItems) {
             if (!itemDTO.getChildren().isEmpty()) {
                 content.append(String.format(
                         "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
                         DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
-                        DATA_INDEX_ATTRIBUTE, index,
+                        DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
                         DATA_TREEKEY_ATTRIBUTE, treeKey,
-                        DATA_LEVEL_ATTRIBUTE, 1,
+                        DATA_LEVEL_ATTRIBUTE, dataLvl,
                         DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
                         itemDTO.getDocumentId()).concat("\n<ul>"));
 
-                buildChildsContentMenuItem(content, itemDTO.getChildren(), "20");
+                buildChildsContentMenuItem(content, itemDTO.getChildren(), "20", dataLvl);
             } else {
-                contentBuilder.append(singleBuildContentItem(itemDTO));
+                contentBuilder.append(singleBuildContentItem(itemDTO, 1));
             }
         }
         contentBuilder.append(ulTagClose);
@@ -285,16 +290,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return content.toString();
     }
 
-    private String singleBuildContentItem(MenuItemDTO itemDTO) {
+    private String singleBuildContentItem(MenuItemDTO itemDTO, Integer dataLvl) {
         StringBuilder stringBuilder = new StringBuilder();
-        int index = 0;
-
         stringBuilder.append(String.format(
                 "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
                 DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
-                DATA_INDEX_ATTRIBUTE, index,
+                DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
                 DATA_TREEKEY_ATTRIBUTE, "k",
-                DATA_LEVEL_ATTRIBUTE, 1,
+                DATA_LEVEL_ATTRIBUTE, dataLvl,
                 DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
                 itemDTO.getDocumentId()).concat("\n"));
 
@@ -467,5 +470,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .peek(docItem ->
                         docItem.setHasNewerVersion(versionService.hasNewerVersion(docItem.getDocumentId()))
                 );
+    }
+
+    @Override
+    public List<String> getMenuItemsAsHtmlByData(String dataClass) {
+        return null;
     }
 }
