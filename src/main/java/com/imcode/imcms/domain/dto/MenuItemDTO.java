@@ -32,6 +32,10 @@ public class MenuItemDTO implements Serializable {
 
     private boolean hasNewerVersion;
 
+    private Integer dataLevel;
+
+    private Integer dataIndex;
+
     private List<MenuItemDTO> children = new ArrayList<>();
 
     public Stream<MenuItemDTO> flattened() {
