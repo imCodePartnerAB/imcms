@@ -317,3 +317,7 @@ input.imcms-editor-content--text {
     padding: 5px;
     cursor: pointer;
 }
+
+.mce-floatpanel {
+    position: absolute !important;
+}
