@@ -26,7 +26,7 @@ define(
         require('tinymce/plugins/fullscreen');
 
         const sourceCodePlugin = 'code';
-        const fontPlugins = ['bold', 'italic', 'underline'].join(' ');
+        const fontPlugins = ['bold', 'italic', 'underline', 'styleselect'].join(' ');
         const listsPlugins = ['bullist', 'numlist'].join(' ');
         const horizontalLinePlugin = 'hr';
         const textAlignPlugins = ['alignleft', 'aligncenter', 'alignright', 'alignjustify'].join(' ');
@@ -54,6 +54,15 @@ define(
             switchModePlugins,
             htmlFilteringPolicyPlugins
         ].join(' | ');
+
+        const styleFormats = [
+            {title: 'Heading 2', block: 'h2'},
+            {title: 'Heading 3', block: 'h3'},
+            {title: 'Heading 4', block: 'h4'},
+            {title: 'Heading 5', block: 'h5'},
+            {title: 'Heading 6', block: 'h6'},
+            {title: 'Normal', block: 'p'},
+        ];
 
         const inlineEditorConfig = {
             skin_url: imcms.contextPath + '/imcms/css/tinymce/skins/white',
@@ -85,7 +94,8 @@ define(
             },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
-            toolbar: toolbar
+            toolbar: toolbar,
+            style_formats: styleFormats,
         };
 
         function clearSaveBtnText(editor) {
