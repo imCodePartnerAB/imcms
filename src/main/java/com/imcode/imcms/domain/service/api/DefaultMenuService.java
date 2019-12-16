@@ -21,6 +21,7 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 
@@ -130,10 +132,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
     }
 
-    private void convertItemsToFlatList(List<MenuItemDTO> menuItems) {
-        menuItems.addAll(menuItems.stream()
+    private List<MenuItemDTO> convertItemsToFlatList(List<MenuItemDTO> menuItems) {
+        return menuItems.stream()
                 .flatMap(MenuItemDTO::flattened)
-                .collect(Collectors.toList()));
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
@@ -206,13 +209,39 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                                        boolean nested, String attributes, String treeKey, String wrap) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
-            convertItemsToFlatList(menuItemsOf);
-            getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
+            menuItemsOf = getAndSetUpEmptyChildrenMenuItems(convertItemsToFlatList(menuItemsOf));
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
+        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
-        return convertToMenuHtml(docId, menuIndex, menuItemsOf, nested, attributes, treeKey, wrap);
+        return convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
+    }
+
+    private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
+        List<MenuItemDTO> flatMenuItems = convertItemsToFlatList(menuItems);
+
+        return IntStream.range(0, flatMenuItems.size())
+                .mapToObj(i -> {
+                    MenuItemDTO menuItemDTO = flatMenuItems.get(i);
+                    menuItemDTO.setDataIndex(i);
+                    return menuItemDTO;
+                }).collect(Collectors.toList());
+
+    }
+
+    private List<MenuItemDTO> getStartedMenuItemsOf(List<MenuItemDTO> menuItems) {
+        List<MenuItemDTO> currentMenuItems = new ArrayList<>();
+        for (int i = 0; i < menuItems.size(); i++) {
+            if (menuItems.get(i).getChildren().isEmpty()) {
+                currentMenuItems.add(menuItems.get(i));
+            } else {
+                currentMenuItems.add(menuItems.get(i));
+                long amountSkipElement = menuItems.get(i).getChildren().stream().flatMap(MenuItemDTO::flattened).count();
+                i += amountSkipElement;
+            }
+        }
+        return currentMenuItems;
     }
 
     private String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
