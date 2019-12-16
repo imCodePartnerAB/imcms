@@ -7,7 +7,7 @@ import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.List;
 
-public interface MenuService extends VersionedContentService, DeleterByDocumentId {
+public interface MenuService extends VersionedContentService, DeleterByDocumentId, MenuAsHtmlService {
 
     List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort);
 
@@ -23,18 +23,6 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
     List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested);
 
     List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested);
-
-    String getVisibleMenuAsHtml(int docId, int menuIndex,
-                                String language, boolean nested,
-                                String attributes, String treeKey, String wrap);
-
-    String getPublicMenuAsHtml(int docId, int menuIndex,
-                               String language, boolean nested,
-                               String attributes, String treeKey, String wrap);
-
-    String getVisibleMenuAsHtml(int docId, int menuIndex);
-
-    String getPublicMenuAsHtml(int docId, int menuIndex);
 
     List<Menu> getAll();
 
