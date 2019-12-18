@@ -217,12 +217,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
+        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
 
         return convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
 
-    private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
+    private List<MenuItemDTO> getFlatMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
         List<MenuItemDTO> flatMenuItems = convertItemsToFlatList(menuItems);
 
         return IntStream.range(0, flatMenuItems.size())
