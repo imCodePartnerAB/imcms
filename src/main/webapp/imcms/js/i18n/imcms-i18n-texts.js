@@ -618,8 +618,10 @@ const texts = {
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
                 title: {
-                    createFileName: 'Ny fil / katalognamn',
+                    createFileName: 'Fil/Katalognamn',
                     createDirectory: 'Katalog',
+                    fileName: 'Filnamn',
+                    directoryName: 'Katalognamn',
                     delete: 'Radera',
                     move: 'Flytta',
                     copy: 'Kopiera',
@@ -1447,8 +1449,10 @@ const texts = {
                 warnEditMessage: 'Do you really edit content file?',
                 warnViewDocMessage: 'Do you want to redirect on current document?',
                 title: {
-                    createFileName: 'New file/directory name',
+                    createFileName: 'File/Directory name',
                     createDirectory: 'Directory',
+                    fileName: 'File name',
+                    directoryName: 'Directory name',
                     delete: 'Delete',
                     move: 'Move',
                     copy: 'Copy',
