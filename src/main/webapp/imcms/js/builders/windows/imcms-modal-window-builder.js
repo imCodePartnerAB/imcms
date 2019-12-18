@@ -155,7 +155,7 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildCreatorBody(textField, checkBoxIsDir) {
+        function buildCreateFileBody(textField, checkBoxIsDir) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
@@ -165,13 +165,22 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildEditorBody(textField, textarea, editCheckBox) {
+        function buildEditFileBody(textField, textarea, editCheckBox) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
                     "name": textField,
                     "edit-content": editCheckBox,
                     "content": textarea
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildEditDirectoryBody(textField) {
+            return new BEM({
+                block: "imcms-modal-body",
+                elements: {
+                    "name": textField,
                 }
             }).buildBlockStructure("<div>");
         }
@@ -215,23 +224,34 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function CreateCreatorModalWindow(textField, checkBoxIsDir, onConfirmed, onDeclined) {
+        function CreateCreateFileModalWindow(textField, checkBoxIsDir, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-create-modal-window",
                 elements: {
                     "modal-head": buildHead(texts.createFileOrDirectory),
-                    "modal-body": buildCreatorBody(textField, checkBoxIsDir),
+                    "modal-body": buildCreateFileBody(textField, checkBoxIsDir),
                     "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }
 
-        function CreateEditorModalWindow(textField, textarea, editCheckBox, onConfirmed, onDeclined) {
+        function CreateEditFileModalWindow(textField, textarea, editCheckBox, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-edit-modal-window",
                 elements: {
                     "modal-head": buildHead(texts.editFile),
-                    "modal-body": buildEditorBody(textField, textarea, editCheckBox),
+                    "modal-body": buildEditFileBody(textField, textarea, editCheckBox),
+                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function CreateEditDirectoryModalWindow(textField, onConfirmed, onDeclined) {
+            return new BEM({
+                block: "imcms-edit-modal-window",
+                elements: {
+                    "modal-head": buildHead(texts.editDirectory),
+                    "modal-body": buildEditDirectoryBody(textField),
                     "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
@@ -286,17 +306,25 @@ define(
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
-        const CreateModalWindow = function (textField, checkBoxIsDir, callback) {
+        const CreateFileModalWindow = function (textField, checkBoxIsDir, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = CreateCreatorModalWindow(textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
+            this.$modal = CreateCreateFileModalWindow(textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
         };
 
-        const EditorModalWindow = function (textField, textarea, editCheckBox, callback) {
+        const EditFileModalWindow = function (textField, textarea, editCheckBox, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = CreateEditorModalWindow(
+            this.$modal = CreateEditFileModalWindow(
                 textField, textarea, editCheckBox, this.onConfirmed, this.onDeclined
+            );
+        };
+
+        const EditDirectoryModalWindow = function (textField, callback) {
+            this.onConfirmed = this.buildOnDecide(true, callback);
+            this.onDeclined = this.buildOnDecide(false, callback);
+            this.$modal = CreateEditDirectoryModalWindow(
+                textField, this.onConfirmed, this.onDeclined
             );
         };
 
@@ -350,9 +378,10 @@ define(
             }
         };
 
-        CreateModalWindow.prototype = Object.create(ModalWindow.prototype);
+        CreateFileModalWindow.prototype = Object.create(ModalWindow.prototype);
 
-        EditorModalWindow.prototype = Object.create(ModalWindow.prototype);
+        EditFileModalWindow.prototype = Object.create(ModalWindow.prototype);
+        EditDirectoryModalWindow.prototype = Object.create(ModalWindow.prototype);
 
         ModalOptionalWindow.prototype = Object.create(ModalWindow.prototype);
 
@@ -378,14 +407,20 @@ define(
                 .appendTo($("body"));
         }
 
-        function buildCreateModalWindow(textField, checkBoxIsDir, callback) {
-            return new CreateModalWindow(textField, checkBoxIsDir, callback)
+        function buildCreateFileModalWindow(textField, checkBoxIsDir, callback) {
+            return new CreateFileModalWindow(textField, checkBoxIsDir, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
 
-        function buildEditModalWindow(textField, textarea, editCheckBox, callback) {
-            return new EditorModalWindow(textField, textarea, editCheckBox, callback)
+        function buildEditFileModalWindow(textField, textarea, editCheckBox, callback) {
+            return new EditFileModalWindow(textField, textarea, editCheckBox, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
+        function buildEditDirectoryModalWindow(textField, callback) {
+            return new EditDirectoryModalWindow(textField, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -420,8 +455,9 @@ define(
             buildErrorWindow,
             buildOptionalModalWindow,
             buildViewModalWindow,
-            buildCreateFileModalWindow: buildCreateModalWindow,
-            buildEditFileModalWindow: buildEditModalWindow,
+            buildCreateFileModalWindow,
+            buildEditFileModalWindow,
+            buildEditDirectoryModalWindow,
             buildConfirmWindow: (question, onConfirm) => {
                 buildModalWindow(question, confirm => {
                     confirm && onConfirm.call();
