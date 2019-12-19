@@ -104,7 +104,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         setHasNewerVersionsInItems(menuItemsOf);
 
         if (!nested || !typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
-            convertItemsToFlatList(menuItemsOf);
+            menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -116,17 +116,18 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO) {
+        List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
         if (!menuDTO.isNested() && menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in flat menu!");
         }
 
         if (!menuDTO.isNested() || !menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
-            convertItemsToFlatList(menuDTO.getMenuItems());
+            menuItems = convertItemsToFlatList(menuDTO.getMenuItems());
         }
 
         final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
         //double map because from client to fetch itemsDTO which have only doc id and no more info..
-        final List<MenuItemDTO> menuItemsDTO = menuDTO.getMenuItems().stream()
+        final List<MenuItemDTO> menuItemsDTO = menuItems.stream()
                 .map(menuItemDtoToMenuItem)
                 .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
                 .collect(Collectors.toList());
@@ -140,7 +141,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
-            convertItemsToFlatList(menuItemsOf);
+            menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
@@ -152,7 +153,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         if (!nested) {
-            convertItemsToFlatList(menuItemsOf);
+            menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
