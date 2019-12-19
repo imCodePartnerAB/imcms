@@ -136,54 +136,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
     }
 
-    private List<MenuItemDTO> convertItemsToFlatList(List<MenuItemDTO> menuItems) {
-        return menuItems.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
-        switch (TypeSort.valueOf(typeSort)) {
-            case TREE_SORT:
-                return menuItems;
-            case MANUAL:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems);
-            case ALPHABETICAL_ASC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
-                                Comparator.nullsLast(String::compareToIgnoreCase)))
-                        .collect(Collectors.toList());
-            case ALPHABETICAL_DESC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
-                                Comparator.nullsLast(String::compareToIgnoreCase)).reversed())
-                        .collect(Collectors.toList());
-            case PUBLISHED_DATE_ASC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
-                                Comparator.nullsLast(Comparator.reverseOrder())))
-                        .collect(Collectors.toList());
-            case PUBLISHED_DATE_DESC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
-                                Comparator.nullsLast(Comparator.naturalOrder())))
-                        .collect(Collectors.toList());
-            case MODIFIED_DATE_ASC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
-                                Comparator.nullsLast(Comparator.reverseOrder())))
-                        .collect(Collectors.toList());
-            case MODIFIED_DATE_DESC:
-                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
-                                Comparator.nullsLast(Comparator.naturalOrder())))
-                        .collect(Collectors.toList());
-            default:
-                return Collections.EMPTY_LIST;//never come true...
-        }
-    }
-
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
@@ -222,146 +174,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
 
-    private List<MenuItemDTO> getFlatMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
-        List<MenuItemDTO> flatMenuItems = convertItemsToFlatList(menuItems);
-
-        return IntStream.range(0, flatMenuItems.size())
-                .mapToObj(i -> {
-                    MenuItemDTO menuItemDTO = flatMenuItems.get(i);
-                    menuItemDTO.setDataIndex(i);
-                    return menuItemDTO;
-                }).collect(Collectors.toList());
-
-    }
-
-    private List<MenuItemDTO> getStartedMenuItemsOf(List<MenuItemDTO> menuItems) {
-        List<MenuItemDTO> currentMenuItems = new ArrayList<>();
-        for (int i = 0; i < menuItems.size(); i++) {
-            if (menuItems.get(i).getChildren().isEmpty()) {
-                currentMenuItems.add(menuItems.get(i));
-            } else {
-                currentMenuItems.add(menuItems.get(i));
-                long amountSkipElement = menuItems.get(i).getChildren().stream().flatMap(MenuItemDTO::flattened).count();
-                i += amountSkipElement;
-            }
-        }
-        return currentMenuItems;
-    }
-
-    private String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
-                                     String attributes, String treeKey, String wrap) {
-        List<MenuItemDTO> menuItems;
-        String ulData = "<ul data-menu-index=\"%d\" data-doc-id=\"%d\">";
-        StringBuilder buildContentMenu = new StringBuilder();
-        buildContentMenu.append(ulData);
-
-        if (nested) {
-            menuItems = menuItemDTOS;
-        } else {
-            menuItems = menuItemDTOS.stream()
-                    .flatMap(MenuItemDTO::flattened)
-                    .collect(Collectors.toList());
-        }
-
-        List<String> wrappers = StringUtils.isBlank(wrap) ? Collections.EMPTY_LIST : Arrays.asList(wrap.split(","));
-        Collections.reverse(wrappers);
-
-        for (int i = 0; i < menuItems.size(); i++) {
-            String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
-
-            buildContentMenu.append(getBuiltMainParentMenuItem(menuItems.get(i), attributes, dataTreeKey, 1, wrappers));
-
-            if (!menuItems.get(i).getChildren().isEmpty()) {
-                buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), menuItems.get(i).getChildren(),
-                        dataTreeKey, 2, wrappers);
-            }
-        }
-        buildContentMenu.append(UL_TAG_CLOSE);
-
-        return String.format(buildContentMenu.toString(), menuIndex, docId);
-    }
-
-    private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, String attributes,
-                                              String treeKey, Integer dataLevel, List<String> wrappers) {
-        StringBuilder content = new StringBuilder();
-        if (attributes.contains("data")) {
-            String htmlContentItemElement = String.format(
-                    "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
-                    DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
-                    DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
-                    DATA_TREEKEY_ATTRIBUTE, treeKey,
-                    DATA_LEVEL_ATTRIBUTE, dataLevel,
-                    DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
-                    parentMenuItem.getTitle()).concat("\n");
-
-
-            htmlContentItemElement = getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
-
-            content.append(htmlContentItemElement);
-        }
-
-        return content.toString();
-    }
-
-    private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
-                                              String treeKey, Integer dataLvl, List<String> wrappers) {
-
-        StringBuilder contentMenuItems = new StringBuilder();
-        for (int i = 0; i < childrenItems.size(); i++) {
-            if (!childrenItems.get(i).getChildren().isEmpty()) {
-
-                String htmlContentMenuItem = String.format(
-                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
-                        DATA_META_ID_ATTRIBUTE, childrenItems.get(i).getDocumentId(),
-                        DATA_INDEX_ATTRIBUTE, childrenItems.get(i).getDataIndex(),
-                        DATA_TREEKEY_ATTRIBUTE, treeKey + "." + ((i + 1) * 10),
-                        DATA_LEVEL_ATTRIBUTE, dataLvl,
-                        DATA_SUBLEVELS_ATTRIBUTE, !childrenItems.get(i).getChildren().isEmpty(),
-                        childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN);
-
-                htmlContentMenuItem = getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
-                contentMenu.append(htmlContentMenuItem);
-
-                buildChildrenContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
-                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers);
-            } else {
-                contentMenuItems.append(getBuildContentMenuItem(childrenItems.get(i), dataLvl,
-                        treeKey + "." + ((i + 1) * 10), wrappers));
-            }
-        }
-        contentMenuItems.append(UL_TAG_CLOSE);
-        contentMenu.append(contentMenuItems);
-    }
-
-    private String getBuildContentMenuItem(MenuItemDTO itemDTO, Integer dataLvl, String treeKey, List<String> wrappers) {
-        String contentMenuItem = String.format(
-                "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
-                DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
-                DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
-                DATA_TREEKEY_ATTRIBUTE, treeKey,
-                DATA_LEVEL_ATTRIBUTE, dataLvl,
-                DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
-                itemDTO.getDocumentId()).concat("\n");
-
-        contentMenuItem = getWrappedContent(contentMenuItem, wrappers, itemDTO);
-
-        return contentMenuItem;
-    }
-
-    //fix wrapping elements, position...
-    private String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
-        for (String wrap : wrappers) {
-            if (wrap.trim().equals("a")) {
-                content = String.format("<%s href=/%d>".concat(content).concat("</%s>"),
-                        wrap.trim(), itemDTO.getDocumentId(), wrap.trim());
-            } else {
-                content = String.format("<%s>".concat(content).concat("</%s>"),
-                        wrap.trim(), wrap.trim());
-            }
-        }
-        return content;
-    }
-
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       boolean nested, String attributes, String treeKey, String wrap) {
@@ -370,6 +182,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex) {
+        return null;
+    }
+
+    @Override
+    public List<String> getMenuItemsAsHtmlByData(String dataClass) {
         return null;
     }
 
@@ -520,8 +337,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 })
                 .collect(Collectors.toList());
     }
-
     // TODO: 27.11.19 maybe need add new column hasNewerVersion jpa in future?
+
     private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
         items.stream()
                 .flatMap(MenuItemDTO::flattened)
@@ -530,8 +347,191 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 );
     }
 
-    @Override
-    public List<String> getMenuItemsAsHtmlByData(String dataClass) {
-        return null;
+    private List<MenuItemDTO> convertItemsToFlatList(List<MenuItemDTO> menuItems) {
+        return menuItems.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
+        switch (TypeSort.valueOf(typeSort)) {
+            case TREE_SORT:
+                return menuItems;
+            case MANUAL:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems);
+            case ALPHABETICAL_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
+                                Comparator.nullsLast(String::compareToIgnoreCase)))
+                        .collect(Collectors.toList());
+            case ALPHABETICAL_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
+                                Comparator.nullsLast(String::compareToIgnoreCase)).reversed())
+                        .collect(Collectors.toList());
+            case PUBLISHED_DATE_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
+                                Comparator.nullsLast(Comparator.reverseOrder())))
+                        .collect(Collectors.toList());
+            case PUBLISHED_DATE_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
+                        .collect(Collectors.toList());
+            case MODIFIED_DATE_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
+                                Comparator.nullsLast(Comparator.reverseOrder())))
+                        .collect(Collectors.toList());
+            case MODIFIED_DATE_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
+                        .collect(Collectors.toList());
+            default:
+                return Collections.EMPTY_LIST;//never come true...
+        }
+    }
+
+    private List<MenuItemDTO> getFlatMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
+        List<MenuItemDTO> flatMenuItems = convertItemsToFlatList(menuItems);
+
+        return IntStream.range(0, flatMenuItems.size())
+                .mapToObj(i -> {
+                    MenuItemDTO menuItemDTO = flatMenuItems.get(i);
+                    menuItemDTO.setDataIndex(i);
+                    return menuItemDTO;
+                }).collect(Collectors.toList());
+
+    }
+
+    private List<MenuItemDTO> getStartedMenuItemsOf(List<MenuItemDTO> menuItems) {
+        List<MenuItemDTO> currentMenuItems = new ArrayList<>();
+        for (int i = 0; i < menuItems.size(); i++) {
+            if (menuItems.get(i).getChildren().isEmpty()) {
+                currentMenuItems.add(menuItems.get(i));
+            } else {
+                currentMenuItems.add(menuItems.get(i));
+                long amountSkipElement = menuItems.get(i).getChildren().stream().flatMap(MenuItemDTO::flattened).count();
+                i += amountSkipElement;
+            }
+        }
+        return currentMenuItems;
+    }
+
+    private String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
+                                     String attributes, String treeKey, String wrap) {
+        List<MenuItemDTO> menuItems;
+        String ulData = "<ul data-menu-index=\"%d\" data-doc-id=\"%d\">";
+        StringBuilder buildContentMenu = new StringBuilder();
+        buildContentMenu.append(ulData);
+
+        if (nested) {
+            menuItems = menuItemDTOS;
+        } else {
+            menuItems = menuItemDTOS.stream()
+                    .flatMap(MenuItemDTO::flattened)
+                    .collect(Collectors.toList());
+        }
+
+        List<String> wrappers = StringUtils.isBlank(wrap) ? Collections.EMPTY_LIST : Arrays.asList(wrap.split(","));
+        Collections.reverse(wrappers);
+
+        for (int i = 0; i < menuItems.size(); i++) {
+            String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
+
+            buildContentMenu.append(getBuiltMainParentMenuItem(menuItems.get(i), attributes, dataTreeKey, 1, wrappers));
+
+            if (!menuItems.get(i).getChildren().isEmpty()) {
+                buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), menuItems.get(i).getChildren(),
+                        dataTreeKey, 2, wrappers);
+            }
+        }
+        buildContentMenu.append(UL_TAG_CLOSE);
+
+        return String.format(buildContentMenu.toString(), menuIndex, docId);
+    }
+
+    private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, String attributes,
+                                              String treeKey, Integer dataLevel, List<String> wrappers) {
+        StringBuilder content = new StringBuilder();
+        if (attributes.contains("data")) {
+            String htmlContentItemElement = String.format(
+                    "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
+                    DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
+                    DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
+                    DATA_TREEKEY_ATTRIBUTE, treeKey,
+                    DATA_LEVEL_ATTRIBUTE, dataLevel,
+                    DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
+                    parentMenuItem.getTitle()).concat("\n");
+
+
+            htmlContentItemElement = getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
+
+            content.append(htmlContentItemElement);
+        }
+
+        return content.toString();
+    }
+
+    private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
+                                              String treeKey, Integer dataLvl, List<String> wrappers) {
+
+        StringBuilder contentMenuItems = new StringBuilder();
+        for (int i = 0; i < childrenItems.size(); i++) {
+            if (!childrenItems.get(i).getChildren().isEmpty()) {
+
+                String htmlContentMenuItem = String.format(
+                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
+                        DATA_META_ID_ATTRIBUTE, childrenItems.get(i).getDocumentId(),
+                        DATA_INDEX_ATTRIBUTE, childrenItems.get(i).getDataIndex(),
+                        DATA_TREEKEY_ATTRIBUTE, treeKey + "." + ((i + 1) * 10),
+                        DATA_LEVEL_ATTRIBUTE, dataLvl,
+                        DATA_SUBLEVELS_ATTRIBUTE, !childrenItems.get(i).getChildren().isEmpty(),
+                        childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN);
+
+                htmlContentMenuItem = getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
+                contentMenu.append(htmlContentMenuItem);
+
+                buildChildrenContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
+                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers);
+            } else {
+                contentMenuItems.append(getBuildContentMenuItem(childrenItems.get(i), dataLvl,
+                        treeKey + "." + ((i + 1) * 10), wrappers));
+            }
+        }
+        contentMenuItems.append(UL_TAG_CLOSE);
+        contentMenu.append(contentMenuItems);
+    }
+
+    private String getBuildContentMenuItem(MenuItemDTO itemDTO, Integer dataLvl, String treeKey, List<String> wrappers) {
+        String contentMenuItem = String.format(
+                "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
+                DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
+                DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
+                DATA_TREEKEY_ATTRIBUTE, treeKey,
+                DATA_LEVEL_ATTRIBUTE, dataLvl,
+                DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
+                itemDTO.getDocumentId()).concat("\n");
+
+        contentMenuItem = getWrappedContent(contentMenuItem, wrappers, itemDTO);
+
+        return contentMenuItem;
+    }
+
+    //fix wrapping elements, position...
+    private String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
+        for (String wrap : wrappers) {
+            if (wrap.trim().equals("a")) {
+                content = String.format("<%s href=/%d>".concat(content).concat("</%s>"),
+                        wrap.trim(), itemDTO.getDocumentId(), wrap.trim());
+            } else {
+                content = String.format("<%s>".concat(content).concat("</%s>"),
+                        wrap.trim(), wrap.trim());
+            }
+        }
+        return content;
     }
 }
