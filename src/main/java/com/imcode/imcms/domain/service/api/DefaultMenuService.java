@@ -263,7 +263,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     .collect(Collectors.toList());
         }
 
-        List<String> wrappers = Arrays.asList(wrap.split(","));
+        List<String> wrappers = StringUtils.isBlank(wrap) ? Collections.EMPTY_LIST : Arrays.asList(wrap.split(","));
+        Collections.reverse(wrappers);
 
         for (int i = 0; i < menuItems.size(); i++) {
             String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
@@ -271,8 +272,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             buildContentMenu.append(getBuiltMainParentMenuItem(menuItems.get(i), attributes, dataTreeKey, 1, wrappers));
 
             if (!menuItems.get(i).getChildren().isEmpty()) {
-                buildChildrensContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), menuItems.get(i).getChildren(),
-                        dataTreeKey, 2);
+                buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), menuItems.get(i).getChildren(),
+                        dataTreeKey, 2, wrappers);
             }
         }
         buildContentMenu.append(UL_TAG_CLOSE);
@@ -284,7 +285,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         StringBuilder content = new StringBuilder();
         if (attributes.contains("data")) {
-            String contentItemElement = String.format(
+            String htmlContentItemElement = String.format(
                     "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
                     DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
                     DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
@@ -293,40 +294,47 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
                     parentMenuItem.getTitle()).concat("\n");
 
-            content.append(contentItemElement);
+
+            htmlContentItemElement = getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
+
+            content.append(htmlContentItemElement);
         }
 
         return content.toString();
     }
 
-    private void buildChildrensContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
-                                               String treeKey, Integer dataLvl) {
+    private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
+                                              String treeKey, Integer dataLvl, List<String> wrappers) {
 
         StringBuilder contentMenuItems = new StringBuilder();
         for (int i = 0; i < childrenItems.size(); i++) {
             if (!childrenItems.get(i).getChildren().isEmpty()) {
-                contentMenu.append(String.format(
+
+                String htmlContentMenuItem = String.format(
                         "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
                         DATA_META_ID_ATTRIBUTE, childrenItems.get(i).getDocumentId(),
                         DATA_INDEX_ATTRIBUTE, childrenItems.get(i).getDataIndex(),
                         DATA_TREEKEY_ATTRIBUTE, treeKey + "." + ((i + 1) * 10),
                         DATA_LEVEL_ATTRIBUTE, dataLvl,
                         DATA_SUBLEVELS_ATTRIBUTE, !childrenItems.get(i).getChildren().isEmpty(),
-                        childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN));
+                        childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN);
 
-                buildChildrensContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
-                        treeKey + "." + ((i + 1) * 10), dataLvl + 1);
+                htmlContentMenuItem = getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
+                contentMenu.append(htmlContentMenuItem);
+
+                buildChildrenContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
+                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers);
             } else {
                 contentMenuItems.append(getBuildContentMenuItem(childrenItems.get(i), dataLvl,
-                        treeKey + "." + ((i + 1) * 10)));
+                        treeKey + "." + ((i + 1) * 10), wrappers));
             }
         }
         contentMenuItems.append(UL_TAG_CLOSE);
         contentMenu.append(contentMenuItems);
     }
 
-    private String getBuildContentMenuItem(MenuItemDTO itemDTO, Integer dataLvl, String treeKey) {
-        return String.format(
+    private String getBuildContentMenuItem(MenuItemDTO itemDTO, Integer dataLvl, String treeKey, List<String> wrappers) {
+        String contentMenuItem = String.format(
                 "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
                 DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
                 DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
@@ -334,6 +342,24 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 DATA_LEVEL_ATTRIBUTE, dataLvl,
                 DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
                 itemDTO.getDocumentId()).concat("\n");
+
+        contentMenuItem = getWrappedContent(contentMenuItem, wrappers, itemDTO);
+
+        return contentMenuItem;
+    }
+
+    //fix wrapping elements, position...
+    private String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
+        for (String wrap : wrappers) {
+            if (wrap.trim().equals("a")) {
+                content = String.format("<%s href=/%d>".concat(content).concat("</%s>"),
+                        wrap.trim(), itemDTO.getDocumentId(), wrap.trim());
+            } else {
+                content = String.format("<%s>".concat(content).concat("</%s>"),
+                        wrap.trim(), wrap.trim());
+            }
+        }
+        return content;
     }
 
     @Override
