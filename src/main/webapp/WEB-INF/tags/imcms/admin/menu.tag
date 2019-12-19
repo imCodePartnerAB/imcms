@@ -6,6 +6,9 @@
 <%@ attribute name="document" required="false" type="java.lang.String" %>
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
 <%@ attribute name="post" required="false" type="java.lang.String" %>
+<%@ attribute name="attributes" required="false" type="java.lang.String" %>
+<%@ attribute name="treeKey" required="false" type="java.lang.Integer" %>
+<%@ attribute name="wrap" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="nested" required="false" type="java.lang.Boolean" %>
