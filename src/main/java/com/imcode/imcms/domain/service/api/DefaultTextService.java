@@ -146,4 +146,16 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     protected TextJPA removeId(TextJPA entity, Version version) {
         return new TextJPA(entity, version);
     }
+
+    @Override
+    public Text filter(Text text) {
+        final String textContent = text.getText();
+        final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
+
+        if (RESTRICTED.equals(filteringPolicy) || RELAXED.equals(filteringPolicy)) {
+            text.setText(textContentFilter.cleanText(textContent, filteringPolicy));
+        }
+
+        return text;
+    }
 }

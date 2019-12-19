@@ -18,4 +18,6 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
 
     Set<Text> getPublicTexts(int docId, Language language);
 
+    Text filter(Text text);
+
 }
