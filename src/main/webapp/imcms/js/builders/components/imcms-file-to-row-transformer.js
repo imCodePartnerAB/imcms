@@ -33,15 +33,22 @@ define(
                     click: getOnFileClicked(file, buildViewFunc),
                 };
 
+                const withClick = callback => {
+                    return function() {
+                        getOnFileClicked(file, buildViewFunc).call(this);
+                        callback();
+                    }
+                };
+
                 if (file.fileType === 'FILE' && TEMPLATE_PATTERN.test(file.fullPath)) {
                     return new BEM({
                         block: "template-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
-                            'add-to-group': components.controls.plus(fileEditor.addTemplateToGroup).attr("title", texts.addToGroup),
-                            'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
-                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete),
+                            'add-to-group': components.controls.plus(withClick(fileEditor.addTemplateToGroup)).attr("title", texts.addToGroup),
+                            'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),
+                            'edit': components.controls.edit(withClick(fileEditor.bindEditFile(this.subFilesContainerIndex))).attr("title", texts.edit),
+                            'delete': components.controls.remove(withClick(() => fileEditor.deleteFile(file))).attr("title", texts.delete),
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file.fileType === 'FILE') {
@@ -49,9 +56,9 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
-                            'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
-                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
+                            'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),
+                            'edit': components.controls.edit(withClick(fileEditor.bindEditFile(this.subFilesContainerIndex))).attr("title", texts.edit),
+                            'delete': components.controls.remove(withClick(() => fileEditor.deleteFile(file))).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file.fileType === 'DIRECTORY' && file.fileName === "/..") {
@@ -66,8 +73,8 @@ define(
                         block: "directory-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName + '/'}),
-                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
+                            'edit': components.controls.edit(withClick(fileEditor.bindEditFile(this.subFilesContainerIndex))).attr("title", texts.edit),
+                            'delete': components.controls.remove(withClick(() => fileEditor.deleteFile(file))).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }

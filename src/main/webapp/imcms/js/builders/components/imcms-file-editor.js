@@ -630,7 +630,9 @@ define(
             ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
         }
 
-        const newFileNameField = buildCreateField();
+        const newFileNameField = buildFileNameField(texts.title.createFileName);
+        const editDirectoryNameField = buildFileNameField(texts.title.directoryName);
+        const editFileNameField = buildFileNameField(texts.title.fileName);
         const checkBoxIsDirectory = buildIsDirectoryCheckBox();
         const contentTextArea = buildContentTextArea();
         let editCheckBox;
@@ -644,23 +646,24 @@ define(
             }
             if (editCheckBox.isChecked()) {
                 contentTextArea.$input.removeAttr('disabled');
-                newFileNameField.$input.attr('disabled', 'disabled');
+                editFileNameField.$input.attr('disabled', 'disabled');
                 checkBoxIsDirectory.$input.attr('disabled', 'disabled');
             } else {
                 contentTextArea.$input.attr('disabled', 'disabled');
-                newFileNameField.$input.removeAttr('disabled');
+                editFileNameField.$input.removeAttr('disabled');
             }
         }
 
         function prepareOnEditFile(confirmEditFile) {
-            modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
-                if (!confirmed) return;
-
                 editCheckBox = buildIsEditCheckBox();
-                let isDirectory = 'DIRECTORY' === currentFile.fileType;
-                newFileNameField.setValue(currentFile.fileName);
-                checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
-                setEnableEditContent();
+
+                if (currentFile.fileType === 'FILE') {
+                    editFileNameField.setValue(currentFile.fileName);
+                    setEnableEditContent();
+                } else {
+                    editDirectoryNameField.setValue(currentFile.fileName);
+                }
+
                 const pathFile = {
                     path: currentFile.fullPath
                 };
@@ -669,12 +672,16 @@ define(
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
 
                 confirmEditFile();
-            });
         }
 
-        function confirmEditFile(onRenameFile, onEditFileContent) {
-            return modal.buildEditFileModalWindow(
-                texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
+        function confirmEdit(onRenameFile, onEditFileContent) {
+            return currentFile.fileType === 'DIRECTORY'
+                ? modal.buildEditDirectoryModalWindow(editDirectoryNameField, confirmed => {
+                    if (confirmed) {
+                        onRenameFile();
+                    }
+                })
+                : modal.buildEditFileModalWindow(editFileNameField, contentTextArea, editCheckBox, confirmed => {
                     if (confirmed && !editCheckBox.isChecked()) {
                         onRenameFile()
                     }
@@ -685,10 +692,10 @@ define(
         }
 
         function onEditFileContent() {
-            let name = newFileNameField.getValue();
-            let currentFullPath = this.getTargetDirectoryPath() + "/" + name;
+            const name = currentFile.fileType === 'FILE' ? editFileNameField.getValue() : editDirectoryNameField.getValue();
+            const currentFullPath = this.getTargetDirectoryPath() + "/" + name;
 
-            let fileToSaveWithContent = {
+            const fileToSaveWithContent = {
                 fileName: name,
                 fullPath: currentFullPath,
                 content: contentTextArea.getValue()
@@ -705,7 +712,10 @@ define(
         }
 
         function onRenameFile() {
-            const name = newFileNameField.getValue();
+            const name = currentFile.fileType === 'FILE'
+                ? editFileNameField.getValue()
+                : editDirectoryNameField.getValue();
+
             if (!name) return;
 
             const targetSubFilesContainer = this.getTargetSubFilesContainer();
@@ -744,9 +754,9 @@ define(
             });
         }
 
-        function buildCreateField() {
+        function buildFileNameField(label) {
             return components.texts.textField('<div>', {
-                text: texts.title.createFileName
+                text: label
             });
 
         }
@@ -772,10 +782,10 @@ define(
         }
 
         function confirmAddFile(onConfirm) {
-            newFileNameField.setValue('').$input.removeAttr('disabled');
+            newFileNameField.setValue('');
             checkBoxIsDirectory.$input.removeAttr('disabled');
             return modal.buildCreateFileModalWindow(
-                texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                newFileNameField, checkBoxIsDirectory, confirmed => {
                     if (confirmed) {
                         onConfirm();
                     }
@@ -945,7 +955,7 @@ define(
             const editFileContent = onEditFileContent.bind({
                 getTargetDirectoryPath: () => getDirPathByIndex(subFilesContainerIndex)
             });
-            const buildConfirmEdit = () => confirmEditFile(renameFile, editFileContent);
+            const buildConfirmEdit = () => confirmEdit(renameFile, editFileContent);
             return () => prepareOnEditFile(buildConfirmEdit);
         }
 
