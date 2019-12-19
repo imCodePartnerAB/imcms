@@ -103,6 +103,19 @@ define(
                 .css('display', 'block');
         }
 
+        function filterContent(content, filteringPolicy, onFiltered) {
+            const textDTO = {
+                text: content,
+                htmlFilteringPolicy: filteringPolicy,
+            };
+
+            textsRestApi.filter(textDTO)
+                .done(receivedTextDTO => {
+                    onFiltered && onFiltered(receivedTextDTO);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.filterFailed));
+        }
+
         return {
             ACTIVE_EDIT_AREA_CLASS: ACTIVE_EDIT_AREA_CLASS,
             ACTIVE_EDIT_AREA_CLASS_$: ACTIVE_EDIT_AREA_CLASS_$,
@@ -111,7 +124,8 @@ define(
             saveContent: saveContent,
             setEditorFocus: setEditorFocus,
             onEditorBlur: onEditorBlur,
-            showEditButton: showEditButton
+            showEditButton: showEditButton,
+            filterContent,
         };
     }
 );
