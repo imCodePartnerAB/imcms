@@ -9,5 +9,7 @@ define("imcms-texts-rest-api", ["imcms-rest-api"], function (rest) {
     // custom non-json POST call
     api.create = rest.ajax.bind({url: apiPath, type: "POST", json: false});
 
+    api.filter = rest.ajax.bind({url: apiPath + '/filter', type: "POST", json: false});
+
     return api;
 });
