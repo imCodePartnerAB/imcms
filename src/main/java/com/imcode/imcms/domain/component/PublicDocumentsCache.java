@@ -150,16 +150,17 @@ public class PublicDocumentsCache implements DocumentsCache {
         final List<Integer> documentIds = documentMapper.getAllDocumentIds();
         amountDocsInCaches.set(0);
 
-        logger.info("Start adding docs in public cache");
+        logger.info("Start adding docs in public cache.");
 
         languages.forEach(langCode -> {
             for (Integer docId : documentIds) {
-                documentLoaderCachingProxy.addAllDocumentsInAllCache(docId, langCode);
+                documentLoaderCachingProxy.addDocumentInAllCache(docId, langCode);
                 amountDocsInCaches.incrementAndGet();
             }
         });
 
-        logger.info("All documents have added in public cache");
+        amountDocsInCaches.set(-1);
+        logger.info("All documents have added in public cache.");
     }
 
     @Override
