@@ -14,6 +14,7 @@ define(
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
+        const TIME_PER_ONE_RECACHE = 25;
         const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
@@ -406,7 +407,7 @@ define(
                         $loading.show();
 
                         temporalDataApi.addDocumentsInCache().done(totalAmount => {
-                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_REINDEX));
+                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_RECACHE));
                             time.getLabel().show();
 
                             const interval = setInterval(
@@ -440,7 +441,7 @@ define(
                         return;
                     }
 
-                    time.setMillis(calculateTimeByAmount(totalAmount, currentAmount, TIME_PER_ONE_REINDEX));
+                    time.setMillis(calculateTimeByAmount(totalAmount, currentAmount, TIME_PER_ONE_RECACHE));
                     const percent = getPercent(totalAmount, currentAmount);
                     $loading.text(percent + '%');
                 });
