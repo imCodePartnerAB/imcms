@@ -29,4 +29,8 @@ public interface DocumentsCache {
     boolean isDocumentAlreadyCached(String cacheKey);
 
     void setDisableCachesByProperty();
+
+    void addDocsInCache();
+
+    long getAmountOfCachedDocuments();
 }

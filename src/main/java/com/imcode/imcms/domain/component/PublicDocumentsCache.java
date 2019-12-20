@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -9,12 +11,14 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +30,12 @@ import java.util.stream.Collectors;
 @Getter
 public class PublicDocumentsCache implements DocumentsCache {
 
+    private static final Logger logger = Logger.getLogger(PublicDocumentsCache.class);
     private final List<String> languages;
+    private final DocumentMapper documentMapper;
+    private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
+
+    private AtomicLong amountDocsInCaches = new AtomicLong(-1);
 
     private Ehcache cache;
 
@@ -37,8 +46,11 @@ public class PublicDocumentsCache implements DocumentsCache {
     private String isDisableCache;
 
     @Autowired
-    public PublicDocumentsCache(LanguageService languageService) {
+    public PublicDocumentsCache(LanguageService languageService, DocumentMapper documentMapper,
+                                DocumentLoaderCachingProxy documentLoaderCachingProxy) {
         languages = languageService.getAvailableLanguages().stream().map(Language::getCode).collect(Collectors.toList());
+        this.documentMapper = documentMapper;
+        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
     }
 
     @Override
@@ -131,5 +143,27 @@ public class PublicDocumentsCache implements DocumentsCache {
                 publicDocCache.removeAll();
             }
         }
+    }
+
+    @Override
+    public void addDocsInCache() {
+        final List<Integer> documentIds = documentMapper.getAllDocumentIds();
+        amountDocsInCaches.set(0);
+
+        logger.info("Start adding docs in public cache");
+
+        languages.forEach(langCode -> {
+            for (Integer docId : documentIds) {
+                documentLoaderCachingProxy.addAllDocumentsInAllCache(docId, langCode);
+                amountDocsInCaches.incrementAndGet();
+            }
+        });
+
+        logger.info("All documents have added in public cache");
+    }
+
+    @Override
+    public long getAmountOfCachedDocuments() {
+        return amountDocsInCaches.get();
     }
 }
