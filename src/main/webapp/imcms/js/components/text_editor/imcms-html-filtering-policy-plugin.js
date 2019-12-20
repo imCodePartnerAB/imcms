@@ -17,12 +17,10 @@ define(
         const policyToName = {};
         policyToName[filteringPolicies.restricted] = texts.filterPolicy.restricted;
         policyToName[filteringPolicies.relaxed] = texts.filterPolicy.relaxed;
-        policyToName[filteringPolicies.allowAll] = texts.filterPolicy.allowedAll;
 
         const policyToTitle = {};
         policyToTitle[filteringPolicies.restricted] = texts.filterPolicy.titleRestricted;
         policyToTitle[filteringPolicies.relaxed] = texts.filterPolicy.titleRelaxed;
-        policyToTitle[filteringPolicies.allowAll] = texts.filterPolicy.titleAllowedAll;
 
         function getOnClick(editor, $btn) {
             const $textEditor = $(editor.$());
@@ -52,9 +50,10 @@ define(
                                 .data('htmlFilteringPolicy', policy);
 
 
-                            textUtils.saveContent(editor, textDTO => {
+                            const filteringPolicy = $(editor.$()).data().htmlFilteringPolicy;
+                            textUtils.filterContent(editor.getContent(), filteringPolicy, textDTO => {
                                 $textEditor.html(textDTO.text);
-                            }, true);
+                            });
                         }
 
                         $policies.remove();
@@ -66,19 +65,19 @@ define(
         }
 
         function buildPoliciesSelect() {
+            const displayedPolicies =[
+                filteringPolicies.restricted,
+                filteringPolicies.relaxed,
+            ];
 
-            const elements = Object.keys(filteringPolicies).map(key => {
-                const policyName = filteringPolicies[key];
-
-                return {
+            const elements = displayedPolicies.map(policyName => ({
                     'policy': $('<div>', {
                         'class': 'settings-section__setting',
                         text: policyToName[policyName],
                         title: policyToTitle[policyName],
                         'data-policy': policyName
                     })
-                }
-            });
+            }));
 
             return new BEM({
                 block: 'filtering-policies',
