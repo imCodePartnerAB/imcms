@@ -136,7 +136,6 @@ public class DocumentLoaderCachingProxy {
                 return null;
             }
 
-            getDocIdByAlias(meta.getAlias());
             DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
             DocumentVersion version = versionInfo.getWorkingVersion();
             DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
@@ -186,6 +185,7 @@ public class DocumentLoaderCachingProxy {
                 return null;
             }
 
+            getDocIdByAlias(meta.getAlias());
             DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
             DocumentVersion version = versionInfo.getLatestVersion();
             DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
