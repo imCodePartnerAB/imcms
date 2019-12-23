@@ -22,4 +22,7 @@ public interface TemporalDataService {
 
     String getDateDocumentReIndex() throws IOException;
 
+    String getDateAddedInCacheDocuments() throws IOException;
+
+    long addDocumentsInCacheAndGetDocumentsCount();
 }

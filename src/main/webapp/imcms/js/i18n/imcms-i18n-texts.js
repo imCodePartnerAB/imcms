@@ -817,6 +817,7 @@ const texts = {
                     deletePublicDocCache: 'Töm publik dokumentcahce',
                     deleteOtherCache: 'Töm annan cache',
                     deleteStaticCache: 'Töm statisk cache',
+                    buildCacheDocument: 'Bygg up cache'
                 },
                 init: 'Verkställ',
                 initIndexing: 'Indexerar',
@@ -824,6 +825,9 @@ const texts = {
                 lastUpdate: 'Indexerad',
                 timeLeft: 'Tid kvar',
                 lastDeleteCache: 'Raderad',
+                caching: 'Caching',
+                initCaching: 'Bygg caches',
+                lastBuildCache: "Skapad"
             },
             menuTab: {
                 name: 'Meny'
@@ -1650,6 +1654,7 @@ const texts = {
                     deletePublicDocCache: 'Delete public documents cache',
                     deleteOtherCache: 'Delete other web cache',
                     deleteStaticCache: 'Delete static web cache',
+                    buildCacheDocument: 'Build cache'
                 },
                 init: 'Init',
                 initIndexing: 'Indexes',
@@ -1657,6 +1662,9 @@ const texts = {
                 lastUpdate: 'Last updated',
                 timeLeft: 'Time left',
                 lastDeleteCache: 'Last updated',
+                caching: 'Caching',
+                initCaching: 'Build Caches',
+                lastBuildCache: 'Built'
             },
             menuTab: {
                 name: 'Menu'

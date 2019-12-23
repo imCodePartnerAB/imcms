@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -32,6 +33,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
     private static final String PUBLIC_DOC_CACHE_DATE_REGEX = "(Public-document-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
     private static final String STATIC_CONTENT_CACHE_DATE_REGEX = "(Static-content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
     private static final String CONTENT_CACHE_DATE_REGEX = "(Content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
+    private static final String RECACHE_DATE_REGEX = "(Last-date-recache:)\\s+([\\d|-]*\\s+[\\d|:]*)";
 
     private final static Logger logger = Logger.getLogger(DefaultTemporalDataService.class);
 
@@ -44,18 +46,25 @@ public class DefaultTemporalDataService implements TemporalDataService {
     private final Pattern patternDocCacheDate = Pattern.compile(PUBLIC_DOC_CACHE_DATE_REGEX);
     private final Pattern patternStaticContentCacheDate = Pattern.compile(STATIC_CONTENT_CACHE_DATE_REGEX);
     private final Pattern patternContentCacheDate = Pattern.compile(CONTENT_CACHE_DATE_REGEX);
+    private final Pattern patternReCacheDate = Pattern.compile(RECACHE_DATE_REGEX);
 
     private final DocumentIndexServiceOps documentIndexServiceOps;
     private final DocumentService<DocumentDTO> defaultDocumentService;
+    private final DocumentsCache documentsCache;
 
     @Value("/WEB-INF/logs/error.log")
     private Path path;
 
-    public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache, ResolvingQueryIndex resolvingQueryIndex, DocumentIndexServiceOps documentIndexServiceOps, DocumentService<DocumentDTO> defaultDocumentService) {
+    public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache,
+                                      ResolvingQueryIndex resolvingQueryIndex,
+                                      DocumentIndexServiceOps documentIndexServiceOps,
+                                      DocumentService<DocumentDTO> defaultDocumentService,
+                                      DocumentsCache documentsCache) {
         this.publicDocumentsCache = publicDocumentsCache;
         this.resolvingQueryIndex = resolvingQueryIndex;
         this.documentIndexServiceOps = documentIndexServiceOps;
         this.defaultDocumentService = defaultDocumentService;
+        this.documentsCache = documentsCache;
     }
 
     @Override
@@ -109,6 +118,21 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public String getDateDocumentReIndex() throws IOException {
         return getLastDateModification(patternReindexDate);
+    }
+
+    @Override
+    public String getDateAddedInCacheDocuments() throws IOException {
+        return getLastDateModification(patternReCacheDate);
+    }
+
+    @Override
+    public long addDocumentsInCacheAndGetDocumentsCount() {
+        if (documentsCache.getAmountOfCachedDocuments() == -1) {
+            documentsCache.addDocsInCache();
+            logger.info("Last-date-recache: " + formatter.format(new Date()));
+        }
+
+        return defaultDocumentService.countDocuments();
     }
 
     private String getLastDateModification(Pattern pattern) throws IOException {

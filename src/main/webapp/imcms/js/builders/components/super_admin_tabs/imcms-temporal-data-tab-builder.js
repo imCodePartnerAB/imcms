@@ -14,6 +14,7 @@ define(
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
+        const TIME_PER_ONE_RECACHE = 25;
         const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
@@ -331,12 +332,145 @@ define(
             }).buildBlockStructure('<div>');
         }
 
+        function buildReCacheRow() {
+            function buildReCacheTitleMessage() {
+                return components.texts.titleText('<div>', texts.actions.buildCacheDocument, {});
+            }
+
+            function init($button, date) {
+                temporalDataApi.getAmountOfCachedDocuments().done(currentAmount => {
+                    if (currentAmount !== -1) {
+                        $button
+                            .attr('disabled', '')
+                            .text(texts.caching)
+                            .addClass(DISABLED_BUTTON_CLASS_NAME);
+
+                        const interval = setInterval(
+                            () => disableButtonWhileIndexing($button, date, interval),
+                            LOADING_INTERVAL
+                        );
+                    }
+                });
+            }
+
+            function disableButtonWhileIndexing($button, date, interval) {
+                temporalDataApi.getAmountOfCachedDocuments().done(currentAmount => {
+                    if (currentAmount === -1) {
+                        clearInterval(interval);
+                        date.updateDate();
+                        $button
+                            .removeAttr('disabled')
+                            .removeClass(DISABLED_BUTTON_CLASS_NAME)
+                            .text(texts.init);
+                    }
+                });
+            }
+
+            function buildReCacheActions() {
+                const $loading = buildLoadingAnimation();
+                const $success = buildSuccessAnimation();
+
+                const lastUpdate = new DateLabel(temporalDataApi.getDateReCacheDocuments, texts.lastBuildCache);
+                const timeLeft = new TimeLabel(texts.timeLeft);
+                timeLeft.getLabel().hide();
+
+                const $button = components.buttons.warningButton({
+                    'class': 'imcms-buttons imcms-form__field',
+                    text: texts.initCaching,
+                    click: () => buildCacheRequest($button, $loading, $success, lastUpdate, timeLeft),
+                });
+
+                init($button, lastUpdate);
+
+                return new BEM({
+                    block: 'actions',
+                    elements: {
+                        'button': $button,
+                        'date': lastUpdate.getLabel(),
+                        'loading': $loading,
+                        'success': $success,
+                        'time': timeLeft.getLabel(),
+                    },
+                }).buildBlockStructure('<div>');
+            }
+
+            function buildCacheRequest($button, $loading, $success, date, time) {
+                $button
+                    .attr('disabled', '')
+                    .text(texts.caching)
+                    .addClass(DISABLED_BUTTON_CLASS_NAME);
+                $success.hide();
+
+                temporalDataApi.getAmountOfCachedDocuments().done(currentAmount => {
+                    if (currentAmount === -1) {
+                        $loading.text('0%');
+                        $loading.show();
+
+                        temporalDataApi.addDocumentsInCache().done(totalAmount => {
+                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_RECACHE));
+                            time.getLabel().show();
+
+                            const interval = setInterval(
+                                () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
+                                LOADING_INTERVAL
+                            );
+                        });
+                    } else {
+                        const interval = setInterval(
+                            () => disableButtonWhileIndexing($button, date, interval),
+                            LOADING_INTERVAL
+                        );
+                    }
+                });
+            }
+
+            function updateLoading($button, $loading, $success, interval, totalAmount, date, time) {
+                temporalDataApi.getAmountOfCachedDocuments().done(currentAmount => {
+
+                    if (currentAmount === -1) {
+                        clearInterval(interval);
+                        date.updateDate();
+                        $button
+                            .removeAttr('disabled')
+                            .removeClass(DISABLED_BUTTON_CLASS_NAME)
+                            .text(texts.initCaching);
+                        $loading.hide();
+                        $success.show();
+                        time.getLabel().hide();
+
+                        return;
+                    }
+
+                    time.setMillis(calculateTimeByAmount(totalAmount, currentAmount, TIME_PER_ONE_RECACHE));
+                    const percent = getPercent(totalAmount, currentAmount);
+                    $loading.text(percent + '%');
+                });
+            }
+
+            function calculateTimeByAmount(totalAmount, currentAmount, timePerOne) {
+                return (totalAmount - currentAmount) * timePerOne;
+            }
+
+            function getPercent(totalAmount, currentAmount) {
+                return Math.round(100 / totalAmount * currentAmount);
+            }
+
+            return new BEM({
+                block: 'imcms-content-action-row',
+                elements: {
+                    'action-title': buildReCacheTitleMessage(),
+                    'actions': buildReCacheActions(),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
 
         return new SuperAdminTab(texts.name, [
             buildReindexRow(),
             buildPublicDocumentCacheRow(),
             buildStaticContentRow(),
             buildOtherContentRow(),
+            buildReCacheRow()
         ]);
     }
 );

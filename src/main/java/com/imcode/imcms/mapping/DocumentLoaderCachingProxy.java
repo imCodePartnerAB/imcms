@@ -173,6 +173,32 @@ public class DocumentLoaderCachingProxy {
     }
 
     /**
+     * Adding all exist documents to cache
+     */
+    @SuppressWarnings("unchecked")
+    public void addDocumentInAllCache(final int docId, final String docLanguageCode) {
+        List<CacheWrapper> caches = Arrays.asList(defaultDocs, workingDocs);
+        caches.forEach(typeCache -> typeCache.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+            DocumentMeta meta = getMeta(docId);
+
+            if (meta == null) {
+                return null;
+            }
+
+            getDocIdByAlias(meta.getAlias());
+            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
+            DocumentVersion version = versionInfo.getLatestVersion();
+            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
+
+            doc.setMeta(meta.clone());
+            doc.setVersionNo(version.getNo());
+            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+
+            return loader.loadAndInitContent(doc);
+        }));
+    }
+
+    /**
      * @return custom doc or null if doc does not exists
      */
     public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
