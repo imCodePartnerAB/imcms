@@ -103,7 +103,7 @@ define(
                 .css('display', 'block');
         }
 
-        function filterContent(content, filteringPolicy, onFiltered) {
+        function filterContent(content, filteringPolicy, onSuccess, onFail) {
             const textDTO = {
                 text: content,
                 htmlFilteringPolicy: filteringPolicy,
@@ -111,9 +111,12 @@ define(
 
             textsRestApi.filter(textDTO)
                 .done(receivedTextDTO => {
-                    onFiltered && onFiltered(receivedTextDTO);
+                    onSuccess && onSuccess(receivedTextDTO);
                 })
-                .fail(() => modal.buildErrorWindow(texts.error.filterFailed));
+                .fail(() => {
+                    onFail && onFail();
+                    modal.buildErrorWindow(texts.error.filterFailed)
+                });
         }
 
         return {
