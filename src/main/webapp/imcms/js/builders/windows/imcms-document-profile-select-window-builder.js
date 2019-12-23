@@ -12,7 +12,7 @@ define(
 
         texts = texts.editors.newDocumentProfile;
 
-        let radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect,
+        let radioButtonsGroup, $parentDocIdInput, $parentDocOptionTitle, $profilesSelect, $profileSelectBlock, $parentSelect,
             $validationErrorBlock;
 
         function buildProfileSelect() {
@@ -45,15 +45,18 @@ define(
                 placeholder: texts.selectParentPlaceholder,
             });
 
+            $parentDocOptionTitle = components.texts.secondaryText("<div>", texts.buildByParent).css({"display": "none"});
+
             return new BEM({
                 block: "imcms-parent-select",
                 elements: {
-                    "text-box": $parentDocIdInput
+                    "text-box": $parentDocIdInput,
+                    "option-info": $parentDocOptionTitle,
                 }
             }).buildBlockStructure("<div>", {"style": "display: none;"});
         }
 
-        let $currentDocIdOption, $profilesOption;
+        let $currentDocIdOption, $profilesOption, $docIdOption;
 
         function buildChoosingRadio($profileSelect, $parentSelect) {
             const $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
@@ -69,7 +72,7 @@ define(
                 }
             }).css("display", "none");
 
-            const $docIdOption = components.radios.imcmsRadio("<div>", {
+            $docIdOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByParent,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "docId",
@@ -210,9 +213,14 @@ define(
                         profilesExist = true;
                     }
 
-                    let isInMenu = config && config.inMenu;
+                    const isInMenu = config && config.inMenu;
                     const cssDisplayValue = isInMenu ? "block" : "none";
                     $currentDocIdOption.css({"display": cssDisplayValue});
+
+                    if (!profilesExist && !isInMenu) {
+                        $docIdOption.css({"display": "none"});
+                        $parentDocOptionTitle.css({"display": "block"});
+                    }
 
                     const checkedValue = isInMenu
                         ? "currentDocId"
