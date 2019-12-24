@@ -111,7 +111,7 @@ define(
                 elements: {
                     "origin-size": [$heightBlock, $widthBlock]
                 }
-            }).buildBlockStructure("<div>", {text: "Orig "});
+            }).buildBlockStructure("<div>").hide();
         }
 
         function zoom(delta) {
@@ -397,7 +397,7 @@ define(
             ]);
         }
 
-        let $imgUrl;
+        const $imgUrl = $("<a>");
         let imageData;
 
         module.exports = {
@@ -424,10 +424,6 @@ define(
                     }
                 });
 
-                const $imgUrlContainer = bodyHeadBEM.buildElement("img-url", "<div>", {
-                    text: "Url: "
-                }).append($imgUrl = $("<a>"));
-
                 const $heightWidthBlock = buildHeightWidthBlock();
 
                 return bodyHeadBEM.buildBlock("<div>", [
@@ -436,8 +432,6 @@ define(
                     }, {
                         "button": $showHideRightPanelBtn,
                         modifiers: ["right-panel"]
-                    }, {
-                        "img-url": $imgUrlContainer
                     }, {
                         "img-origin-size": $heightWidthBlock
                     }
