@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -50,7 +49,6 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     private final DocumentIndexServiceOps documentIndexServiceOps;
     private final DocumentService<DocumentDTO> defaultDocumentService;
-    private final DocumentsCache documentsCache;
 
     @Value("/WEB-INF/logs/error.log")
     private Path path;
@@ -58,13 +56,11 @@ public class DefaultTemporalDataService implements TemporalDataService {
     public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache,
                                       ResolvingQueryIndex resolvingQueryIndex,
                                       DocumentIndexServiceOps documentIndexServiceOps,
-                                      DocumentService<DocumentDTO> defaultDocumentService,
-                                      DocumentsCache documentsCache) {
+                                      DocumentService<DocumentDTO> defaultDocumentService) {
         this.publicDocumentsCache = publicDocumentsCache;
         this.resolvingQueryIndex = resolvingQueryIndex;
         this.documentIndexServiceOps = documentIndexServiceOps;
         this.defaultDocumentService = defaultDocumentService;
-        this.documentsCache = documentsCache;
     }
 
     @Override
@@ -125,14 +121,19 @@ public class DefaultTemporalDataService implements TemporalDataService {
         return getLastDateModification(patternReCacheDate);
     }
 
+    /**
+     * @return amount available common contents documents by all languages
+     */
     @Override
     public long addDocumentsInCacheAndGetDocumentsCount() {
-        if (documentsCache.getAmountOfCachedDocuments() == -1) {
-            documentsCache.addDocsInCache();
+        if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
+            publicDocumentsCache.addDocsInCache();
             logger.info("Last-date-recache: " + formatter.format(new Date()));
         }
 
-        return defaultDocumentService.countDocuments();
+        int countAvailableLangs = publicDocumentsCache.getLanguages().size();
+
+        return defaultDocumentService.countDocuments() * countAvailableLangs;
     }
 
     private String getLastDateModification(Pattern pattern) throws IOException {
