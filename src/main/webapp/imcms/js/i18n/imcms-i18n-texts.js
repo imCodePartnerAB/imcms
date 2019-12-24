@@ -243,6 +243,7 @@ const texts = {
             editFile: "Redigera fil",
             editDirectory: "Redigera mapp",
             createFileOrDirectory: "Skapa fil/mapp",
+            options: "Alternative",
             yes: "Ja",
             no: "Nej",
             ok: "Ok",
@@ -457,7 +458,8 @@ const texts = {
             text: {
                 confirmSave: "Spara ändringar?",
                 error: {
-                    createFailed: 'Misslyckades med att spara text. Försök igen'
+                    createFailed: 'Misslyckades med att spara text. Försök igen',
+                    filterFailed: 'Det gick inte att filtrera text. Try again',
                 }
             }
         },
@@ -765,7 +767,6 @@ const texts = {
                 },
                 error: {
                     createFailed: 'Misslyckades med att skapa profil. Försök igen',
-                    filterFailed: 'Det gick inte att filtrera text. Try again',
                     loadFailed: 'Misslyckades med att hämta profiler. Försök igen',
                     errorMessage: 'Tyvärr, men du gjorde fel!'
                 }
@@ -1079,6 +1080,7 @@ const texts = {
             editFile: "Edit file",
             editDirectory: "Edit directory",
             createFileOrDirectory: "Create file/directory",
+            options: "Options",
             yes: "Yes",
             no: "No",
             ok: "Ok",
@@ -1169,7 +1171,6 @@ const texts = {
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 error: {
                     createFailed: 'Failed to save menu. Try again',
-                    filterFailed: 'Failed to filter text. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
                     loadFailed: 'Failed to load. Try again'
                 },
@@ -1294,7 +1295,8 @@ const texts = {
             text: {
                 confirmSave: "Save changes?",
                 error: {
-                    createFailed: 'Failed to save text. Try again'
+                    createFailed: 'Failed to save text. Try again',
+                    filterFailed: 'Failed to filter text. Try again',
                 }
             }
         },

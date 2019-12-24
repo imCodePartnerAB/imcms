@@ -222,5 +222,6 @@ module.exports = {
     errorText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-error-msg").text(text || ""),
     infoText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-info-msg").text(text || ""),
     infoHtml: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-info-msg").html(text || ""),
-    titleText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-title").text(text || "")
+    titleText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-title").text(text || ""),
+    secondaryText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-secondary-msg").text(text || ""),
 };

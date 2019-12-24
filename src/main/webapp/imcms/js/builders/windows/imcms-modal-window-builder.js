@@ -133,6 +133,19 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function buildFooterWithButtonGroup(buttonGroup, onButtonClick) {
+            const buttonsWithClosing = buttonGroup.map(button =>
+                button.click(onButtonClick)
+            );
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": buttonsWithClosing
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function createLayout() {
             return $("<div>", {"class": "imcms-modal-layout imcms-modal-layout--front"});
         }
@@ -300,6 +313,17 @@ define(
             }).buildBlockStructure("<div>", {"class": "imcms-modal-window--error"});
         }
 
+        function createModalWindowWithButtonGroup(message, buttonGroup, onButtonClick) {
+            return new BEM({
+                block: 'imcms-modal-buttons-window',
+                elements: {
+                    "modal-head": buildHead(texts.options),
+                    "modal-body": buildBody(message),
+                    "modal-footer": buildFooterWithButtonGroup(buttonGroup, onButtonClick)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         const ModalWindow = function (question, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
@@ -349,12 +373,17 @@ define(
             this.$modal = createModalErrorWindow(message, this.onConfirmed);
         };
 
+        const ModalWindowWithButtonGroup = function (message, buttonGroup) {
+            this.onButtonClick = this.buildOnDecide(true),
+            this.$modal = createModalWindowWithButtonGroup(message, buttonGroup, this.onButtonClick);
+        };
+
         ModalWindow.prototype = {
             buildOnDecide: function (isConfirm, callback) {
                 const context = this;
 
                 return () => {
-                    callback(isConfirm);
+                    callback && callback(isConfirm);
                     context.closeModal();
                     return false;
                 };
@@ -384,6 +413,8 @@ define(
         EditDirectoryModalWindow.prototype = Object.create(ModalWindow.prototype);
 
         ModalOptionalWindow.prototype = Object.create(ModalWindow.prototype);
+
+        ModalWindowWithButtonGroup.prototype = Object.create(ModalWindow.prototype);
 
         ModalWarningWindow.prototype = Object.create(ModalWindow.prototype);
         ModalWarningWindow.prototype.confirmAction = function (callback) {
@@ -449,6 +480,12 @@ define(
                 .appendTo($("body"));
         }
 
+        function buildModalWindowWithButtonGroup(message, buttonsGroup) {
+            return new ModalWindowWithButtonGroup(message, buttonsGroup)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
         module.exports = {
             buildModalWindow,
             buildWarningWindow,
@@ -458,6 +495,7 @@ define(
             buildCreateFileModalWindow,
             buildEditFileModalWindow,
             buildEditDirectoryModalWindow,
+            buildModalWindowWithButtonGroup,
             buildConfirmWindow: (question, onConfirm) => {
                 buildModalWindow(question, confirm => {
                     confirm && onConfirm.call();

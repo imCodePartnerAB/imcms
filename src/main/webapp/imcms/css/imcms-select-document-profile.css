@@ -18,7 +18,6 @@
     display: block;
     padding: 25px 20px 0 20px;
     width: 100%;
-    height: 220px;
 }
 
 .imcms-document-profile-select-window__head {
@@ -39,6 +38,7 @@
     width: 100%;
     background-color: #f3f5f7;
     display: block;
+    padding-top: 17px;
 }
 
 .imcms-document-profile-select-window__body .imcms-document-profile__parent-select .imcms-parent-select__text-box .imcms-input {

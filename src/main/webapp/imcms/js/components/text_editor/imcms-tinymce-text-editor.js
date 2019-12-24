@@ -24,6 +24,7 @@ define(
         require('tinymce/plugins/code');
         require('tinymce/plugins/save');
         require('tinymce/plugins/fullscreen');
+        require('tinymce/plugins/paste');
 
         const sourceCodePlugin = 'code';
         const fontPlugins = ['bold', 'italic', 'underline', 'styleselect'].join(' ');
@@ -93,9 +94,10 @@ define(
                 htmlFilteringPolicyPlugin.initHtmlFilteringPolicy(editor);
             },
             valid_elements: '*[*]',
-            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
+            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save paste'],
             toolbar: toolbar,
             style_formats: styleFormats,
+            paste_postprocess: (plugin, args) => htmlFilteringPolicyPlugin.buildPoliciesModal(args.node),
         };
 
         function clearSaveBtnText(editor) {
@@ -112,7 +114,9 @@ define(
 
         function initSaveContentConfirmation(editor) {
             editor.on('blur', () => {
-                textEditorUtils.onEditorBlur(editor);
+                if (!$('.imcms-modal-buttons-window').length) {
+                    textEditorUtils.onEditorBlur(editor);
+                }
             });
         }
 

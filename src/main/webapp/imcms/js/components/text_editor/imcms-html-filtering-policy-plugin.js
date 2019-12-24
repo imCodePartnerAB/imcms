@@ -6,9 +6,9 @@ define(
     'imcms-html-filtering-policy-plugin',
     [
         'imcms-text-editor-toolbar-button-builder', 'imcms-html-filtering-policies', 'imcms-bem-builder', 'jquery',
-        'imcms-text-editor-utils', 'imcms-i18n-texts'
+        'imcms-text-editor-utils', 'imcms-i18n-texts', 'imcms-modal-window-builder', 'imcms-components-builder'
     ],
-    function (toolbarButtonBuilder, filteringPolicies, BEM, $, textUtils, texts) {
+    function (toolbarButtonBuilder, filteringPolicies, BEM, $, textUtils, texts, modal, components) {
 
         texts = texts.toolTipText;
 
@@ -17,10 +17,14 @@ define(
         const policyToName = {};
         policyToName[filteringPolicies.restricted] = texts.filterPolicy.restricted;
         policyToName[filteringPolicies.relaxed] = texts.filterPolicy.relaxed;
+        policyToName[filteringPolicies.allowAll] = texts.filterPolicy.allowedAll;
 
         const policyToTitle = {};
         policyToTitle[filteringPolicies.restricted] = texts.filterPolicy.titleRestricted;
         policyToTitle[filteringPolicies.relaxed] = texts.filterPolicy.titleRelaxed;
+        policyToTitle[filteringPolicies.allowAll] = texts.filterPolicy.titleAllowedAll;
+
+        const PASTE_CONTAINER_ID = 'pasted_content';
 
         function getOnClick(editor, $btn) {
             const $textEditor = $(editor.$());
@@ -85,8 +89,37 @@ define(
             }).buildBlockStructure('<div>')
         }
 
+        function buildPoliciesModal(node) {
+            const $node = $(node);
+
+            const $meta = $($node.children()[0]);
+            $meta.remove();
+
+            const content = $node.html();
+
+            $node.html(`<span id="${PASTE_CONTAINER_ID}">&nbsp</span>`);
+
+            const buttons = Object.values(filteringPolicies).map(policy => components.buttons.positiveButton({
+                text: policyToName[policy],
+                click: () => filterAndPasteContent(content, policy),
+            }));
+
+            modal.buildModalWindowWithButtonGroup('title', buttons);
+        }
+
+        function filterAndPasteContent(content, policy) {
+            const $pasteContainer = $(`#${PASTE_CONTAINER_ID}`);
+
+            textUtils.filterContent(content, policy, textDto => {
+                $pasteContainer.replaceWith(textDto.text);
+            }, () => {
+                $pasteContainer.replaceWith(content);
+            })
+        }
+
         return {
             pluginName: '/html_filtering_policy',
+            buildPoliciesModal,
             initHtmlFilteringPolicy: function (editor) {
                 editor.addButton(this.pluginName, {
                     icon: 'html-filtering-policy-icon',

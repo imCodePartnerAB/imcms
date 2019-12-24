@@ -14,6 +14,14 @@
     line-height: 18px;
 }
 
+.imcms-secondary-msg {
+    color: #808080de;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
 .imcms-title {
     color: #2f4047;
     font-family: 'Source Sans Pro', sans-serif;

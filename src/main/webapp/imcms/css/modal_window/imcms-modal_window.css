@@ -17,7 +17,8 @@
 .imcms-edit-modal-window,
 .imcms-create-modal-window,
 .imcms-modal-view-window,
-.imcms-modal-optional-window {
+.imcms-modal-optional-window,
+.imcms-modal-buttons-window {
     position: fixed;
     -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
     -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
@@ -88,6 +89,22 @@
     background-color: #d9edf7;
 }
 
+.imcms-modal-buttons-window {
+    overflow: hidden;
+    top: -webkit-calc(50% - 250px);
+    top: -moz-calc(50% - 250px);
+    top: -ms-calc(50% - 250px);
+    top: -o-calc(50% - 250px);
+    top: calc(50% - 250px);
+    left: -webkit-calc(50% - 130px);
+    left: -moz-calc(50% - 130px);
+    left: -ms-calc(50% - 130px);
+    left: -o-calc(50% - 130px);
+    left: calc(50% - 130px);
+    width: auto;
+    background-color: #f3f5f7;
+}
+
 .imcms-edit-modal-window .imcms-modal-body__content {
     margin: 0;
     width: 100%;
@@ -120,7 +137,8 @@
 .imcms-modal-window__modal-head,
 .imcms-edit-modal-window__modal-head,
 .imcms-create-modal-window__modal-head,
-.imcms-modal-optional-window__modal-head {
+.imcms-modal-optional-window__modal-head,
+.imcms-modal-buttons-window__modal-head {
     background-color: #389ecf;
 }
 
