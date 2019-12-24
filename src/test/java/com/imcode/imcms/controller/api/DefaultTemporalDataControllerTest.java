@@ -56,11 +56,4 @@ public class DefaultTemporalDataControllerTest extends AbstractControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(linkData);
         performRequestBuilderExpectedOk(requestBuilder);
     }
-
-    @Test
-    public void getDateDocumentReindex_Expected_OkResult() throws Exception {
-        final String linkData = controllerPath() + "/date-reindex";
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(linkData);
-        performRequestBuilderExpectedOk(requestBuilder);
-    }
 }
