@@ -18,6 +18,10 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -31,16 +35,18 @@ import java.util.stream.Collectors;
 public class PublicDocumentsCache implements DocumentsCache {
 
     private static final Logger logger = Logger.getLogger(PublicDocumentsCache.class);
+
+    private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
     private final List<String> languages;
     private final DocumentMapper documentMapper;
     private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
+    private final static Object lock = new Object();
+    private final ExecutorService cacheRebuildExecutor = Executors.newSingleThreadExecutor();
+    private volatile Future cacheRebuildFuture = CompletableFuture.completedFuture(null);
 
     private AtomicLong amountDocsInCaches = new AtomicLong(-1);
 
     private Ehcache cache;
-
-    private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
-
     //set on String because may has default value empty line - false
     @Value("${cacheDisable}")
     private String isDisableCache;
@@ -147,24 +153,38 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public void addDocsInCache() {
-        final List<Integer> documentIds = documentMapper.getAllDocumentIds();
-        amountDocsInCaches.set(0);
-
-        logger.info("Start adding docs in public cache.");
-
-        languages.forEach(langCode -> {
-            for (Integer docId : documentIds) {
-                documentLoaderCachingProxy.addDocumentInAllCache(docId, langCode);
-                amountDocsInCaches.incrementAndGet();
+        synchronized (lock) {
+            if (cacheRebuildFuture.isDone()) {
+                cacheRebuildFuture = cacheRebuildExecutor.submit(this::addDocumentInCaches);
             }
-        });
-
-        amountDocsInCaches.set(-1);
-        logger.info("All documents have added in public cache.");
+        }
     }
 
     @Override
     public long getAmountOfCachedDocuments() {
         return amountDocsInCaches.get();
+    }
+
+    private void addDocumentInCaches() {
+        logger.debug("Start adding docs in public cache.");
+        final List<Integer> documentIds = documentMapper.getAllDocumentIds();
+
+        amountDocsInCaches.set(0);
+
+        languages.forEach(langCode -> {
+            for (Integer docId : documentIds) {
+                documentLoaderCachingProxy.removeDocFromCache(docId);
+                logger.debug("Document deleted from cache with id " + docId);
+
+                documentLoaderCachingProxy.addDocumentInAllCache(docId, langCode);
+                logger.info(String.format("Document with id %d and language %s was added in cache", docId, langCode));
+
+                amountDocsInCaches.incrementAndGet();
+                logger.info("Last amount cache " + amountDocsInCaches.get());
+            }
+        });
+
+        amountDocsInCaches.set(-1);
+        logger.info("All documents have added in public cache.");
     }
 }

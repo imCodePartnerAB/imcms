@@ -17,6 +17,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -185,7 +186,7 @@ public class DocumentLoaderCachingProxy {
                 return null;
             }
 
-            getDocIdByAlias(meta.getAlias());
+            getDocIdByAlias(StringUtils.defaultIfBlank(meta.getAlias(), docId + ""));
             DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
             DocumentVersion version = versionInfo.getLatestVersion();
             DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());

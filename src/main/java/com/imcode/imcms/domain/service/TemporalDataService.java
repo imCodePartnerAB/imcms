@@ -24,5 +24,5 @@ public interface TemporalDataService {
 
     String getDateAddedInCacheDocuments() throws IOException;
 
-    long addDocumentsInCacheAndGetDocumentsCount();
+    long addDocumentsInCacheAndGetDocContentCount();
 }

@@ -14,7 +14,7 @@ define(
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
-        const TIME_PER_ONE_RECACHE = 25;
+        const TIME_PER_ONE_RECACHE = 45;
         const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
@@ -346,14 +346,14 @@ define(
                             .addClass(DISABLED_BUTTON_CLASS_NAME);
 
                         const interval = setInterval(
-                            () => disableButtonWhileIndexing($button, date, interval),
+                            () => disableButtonWhileCaching($button, date, interval),
                             LOADING_INTERVAL
                         );
                     }
                 });
             }
 
-            function disableButtonWhileIndexing($button, date, interval) {
+            function disableButtonWhileCaching($button, date, interval) {
                 temporalDataApi.getAmountOfCachedDocuments().done(currentAmount => {
                     if (currentAmount === -1) {
                         clearInterval(interval);
@@ -417,7 +417,7 @@ define(
                         });
                     } else {
                         const interval = setInterval(
-                            () => disableButtonWhileIndexing($button, date, interval),
+                            () => disableButtonWhileCaching($button, date, interval),
                             LOADING_INTERVAL
                         );
                     }
@@ -442,7 +442,7 @@ define(
                     }
 
                     time.setMillis(calculateTimeByAmount(totalAmount, currentAmount, TIME_PER_ONE_RECACHE));
-                    const percent = getPercent(totalAmount, currentAmount);
+                    let percent = getPercent(totalAmount, currentAmount);
                     $loading.text(percent + '%');
                 });
             }

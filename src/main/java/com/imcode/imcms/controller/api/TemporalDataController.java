@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.service.TemporalDataService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,16 +16,16 @@ import java.io.IOException;
 public class TemporalDataController {
 
     private final TemporalDataService temporalDataService;
-    private final DocumentsCache documentsCache;
+    private final PublicDocumentsCache documentsCache;
 
-    TemporalDataController(TemporalDataService temporalDataService, DocumentsCache documentsCache) {
+    TemporalDataController(TemporalDataService temporalDataService, PublicDocumentsCache documentsCache) {
         this.temporalDataService = temporalDataService;
         this.documentsCache = documentsCache;
     }
 
     @PostMapping("/document-recache")
     public long addDocumentsInCache() {
-        return temporalDataService.addDocumentsInCacheAndGetDocumentsCount();
+        return temporalDataService.addDocumentsInCacheAndGetDocContentCount();
     }
 
     @GetMapping("/count-cached")
