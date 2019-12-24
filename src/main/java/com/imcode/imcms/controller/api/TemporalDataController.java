@@ -25,7 +25,7 @@ public class TemporalDataController {
 
     @PostMapping("/document-recache")
     public long addDocumentsInCache() {
-        return temporalDataService.addDocumentsInCacheAndGetDocumentsCount();
+        return temporalDataService.addDocumentsInCacheAndGetDocContentCount();
     }
 
     @GetMapping("/count-cached")

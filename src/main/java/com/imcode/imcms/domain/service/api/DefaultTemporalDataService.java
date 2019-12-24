@@ -125,7 +125,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
      * @return amount available common contents documents by all languages
      */
     @Override
-    public long addDocumentsInCacheAndGetDocumentsCount() {
+    public long addDocumentsInCacheAndGetDocContentCount() {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
             publicDocumentsCache.addDocsInCache();
             logger.info("Last-date-recache: " + formatter.format(new Date()));
