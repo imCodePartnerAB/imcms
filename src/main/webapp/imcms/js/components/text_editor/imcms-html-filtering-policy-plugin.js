@@ -104,7 +104,7 @@ define(
                 click: () => filterAndPasteContent(content, policy),
             }));
 
-            modal.buildModalWindowWithButtonGroup('title', buttons);
+            modal.buildModalWindowWithButtonGroup(texts.filterPolicy.chooseFilter, buttons);
         }
 
         function filterAndPasteContent(content, policy) {

@@ -93,7 +93,8 @@ const texts = {
                 allowedAll: 'Inget filter',
                 titleRestricted: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll. Alla taggar istället för <p> och <br> kommer att tas bort men innehållet bevaras.',
                 titleRelaxed: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll. Alla taggar istället för basic (b, i, li, sub, a) kommer att tas bort men innehåll bevaras.',
-                titleAllowedAll: 'Allt är tillåtet'
+                titleAllowedAll: 'Allt är tillåtet',
+                chooseFilter: 'Välj filter för klistrade data'
             }
         },
         pageInfo: {
@@ -930,7 +931,8 @@ const texts = {
                 allowedAll: 'No filter',
                 titleRestricted: 'Illegal tags (head, script, embed, style) will be removed with content. All tags instead of <p> and <br> will be removed but content kept.',
                 titleRelaxed: 'Illegal tags (head, script, embed, style) will be removed with content. All tags instead of basic (b, i, li, sub, a) will be removed but content kept.',
-                titleAllowedAll: 'Everything is allowed'
+                titleAllowedAll: 'Everything is allowed',
+                chooseFilter: 'Choose filter for pasted data'
             }
         },
         pageInfo: {
