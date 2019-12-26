@@ -81,13 +81,38 @@ define(
                 $tag = opts.$tag;
                 imageData = opts.imageData;
 
-                function buildSelectImageBtnContainer() {
+                function buildActionImageBtnContainer() {
 
-                    const $selectImageBtn = components.buttons.neutralButton({
-                        text: texts.selectImage,
-                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
-                    });
-                    return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
+                    function generateSuggestedAltText() {
+                        if (imageData.alternateText.trim() !== '') {
+                            modal.buildModalWindow(texts.warnChange, confirmed => {
+                                if (!confirmed) return;
+
+                                replaceAndAddImageNameInAltText();
+                            });
+                        } else {
+                            replaceAndAddImageNameInAltText();
+                        }
+                    }
+
+                    function replaceAndAddImageNameInAltText() {
+                        $(`[name='altText']`).val(imageData.name.replace(/[_-]/gi, ' ').replace(/.[^.]+$/, ''));
+                    }
+
+                    const $actionButtons = [
+                        components.buttons.neutralButton({
+                            text: texts.selectImage,
+                            click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
+                        }),
+
+                        components.buttons.positiveButton({
+                            class: 'suggest-alt-text',
+                            text: texts.suggestAltText,
+                            click: generateSuggestedAltText
+                        })
+                    ];
+
+                    return components.buttons.buttonsContainer("<div>", $actionButtons);
                 }
 
                 function buildAltTextBox() {
@@ -332,7 +357,7 @@ define(
                         }
                     });
 
-                    const $selectImageBtnContainer = buildSelectImageBtnContainer();
+                    const $actionImageBtnContainer = buildActionImageBtnContainer();
                     const $altTextBox = buildAltTextBox();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
@@ -341,7 +366,7 @@ define(
                     const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
-                        {"buttons": $selectImageBtnContainer},
+                        {"buttons": $actionImageBtnContainer},
                         {"text-box": $altTextBox},
                         {"text-box": $imageLinkTextBox},
                         {"flags": opts.imageDataContainers.$langFlags},
@@ -377,12 +402,8 @@ define(
                     return imageRequestData;
                 }
 
-                function setOrRemoveAltAttribute($image, imageDTO) {
-                    if (imageDTO.alternateText) {
-                        $image.attr("alt", imageDTO.alternateText);
-                    } else {
-                        $image.removeAttr("alt");
-                    }
+                function setAltAttribute($image, imageDTO) {
+                    $image.attr("alt", imageDTO.alternateText);
                 }
 
                 function addOrRemoveLinkElementIfNeeded($image, imageDTO) {
@@ -458,18 +479,17 @@ define(
                 function reloadImageOnPage(imageDTO) {
 
                     const $image = $tag.find(".imcms-editor-content img").first();
+                    const defaultPath = imcms.contextPath + '/imcms/images/icon_missing_image.png';
 
                     /** @namespace imageDTO.generatedFilePath */
                     let filePath = imageDTO.generatedFilePath;
 
+                    setAltAttribute($image, imageDTO);
                     if (filePath) {
                         filePath = location.origin + imcms.contextPath + filePath;
-
-                        setOrRemoveAltAttribute($image, imageDTO);
                         addOrRemoveLinkElementIfNeeded($image, imageDTO);
                         setHrefAttribute($image, imageDTO);
                     } else {
-                        $image.removeAttr("alt");
                         $image.parent().removeAttr("href");
                     }
 
@@ -481,7 +501,11 @@ define(
                             return;
                         }
 
-                        $image.attr("src", filePath);
+                        if (filePath) {
+                            $image.attr("src", filePath);
+                        } else {
+                            $image.attr("src", defaultPath);
+                        }
 
                         if ($image.attr("data-mce-src")) {
                             $image.attr("data-mce-src", filePath);
