@@ -20,6 +20,11 @@
     z-index: 20;
 }
 
+.suggest-alt-text {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
 .imcms-image_editor__head .imcms-head__title {
     color: #0b94d8;
     text-align: left;
