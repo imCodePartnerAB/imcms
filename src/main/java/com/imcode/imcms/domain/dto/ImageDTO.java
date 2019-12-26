@@ -6,6 +6,7 @@ import imcode.util.image.Format;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.beans.ConstructorProperties;
 import java.util.List;
@@ -55,7 +56,7 @@ public class ImageDTO extends ImageData {
         this.linkUrl = "";
         this.generatedFilePath = "";
         this.generatedFilename = "";
-        this.alternateText = "";
+        this.alternateText = " ";
         this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;
@@ -82,7 +83,7 @@ public class ImageDTO extends ImageData {
         this.linkUrl = ofNullable(from.linkUrl).orElse("");
         this.generatedFilePath = ofNullable(from.generatedFilePath).orElse("");
         this.generatedFilename = ofNullable(from.generatedFilename).orElse("");
-        this.alternateText = ofNullable(from.alternateText).orElse("");
+        this.alternateText = StringUtils.defaultIfEmpty(from.alternateText.trim(), " ");
         this.format = from.format;
         this.width = from.width;
         this.height = from.height;
