@@ -15,6 +15,16 @@ const buttonsBEM = new BEM({
 const getButtonBuilder = (modifier) =>
     (tag, attributes) => buttonsBEM.buildElement('button', tag, attributes, [modifier]);
 
+function buildButtonWithIcon({button, icon}, attributes) {
+    return new BEM({
+        block: 'imcms-icon-button ' + button.attr('class'),
+        elements: {
+            'icon': icon,
+            'button': button,
+        }
+    }).buildBlockStructure('<div>', attributes);
+}
+
 module.exports = {
     imcmsButton: (attributes, modifiers) => buttonsBEM.buildElement('button', '<button>', attributes, modifiers),
     negative: getButtonBuilder('negative'),
@@ -122,4 +132,5 @@ module.exports = {
         return this.openInNewWindow('<button>', attributes);
     },
     buttonsContainer: (tag, elements, attributes) => buttonsBEM.buildBlock(tag, elements, attributes, 'button'),
+    buttonWithIcon: buildButtonWithIcon,
 };

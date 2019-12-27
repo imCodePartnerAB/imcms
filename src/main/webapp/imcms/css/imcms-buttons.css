@@ -18,3 +18,20 @@
     line-height: 40px;
     margin: 0 10px;
 }
+
+.imcms-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 21px;
+}
+
+.imcms-icon-button .imcms-button:last-child {
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.imcms-icon-button:hover .imcms-button {
+    color: inherit;
+}
