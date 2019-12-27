@@ -11,8 +11,18 @@
 }
 
 .imcms-editable-controls-area__buttons {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     overflow: hidden;
+}
+
+.imcms-editable-controls-area__buttons .imcms-buttons__button {
+    margin-top: 20px;
+}
+
+.imcms-editable-controls-area__buttons .imcms-icon-button:hover .imcms-control {
+    filter: invert(60%);
 }
 
 .imcms-editable-controls-area__buttons .imcms-button--neutral {
