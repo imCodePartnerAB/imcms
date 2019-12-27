@@ -99,18 +99,21 @@ define(
                         $(`[name='altText']`).val(imageData.name.replace(/[_-]/gi, ' ').replace(/.[^.]+$/, ''));
                     }
 
-                    const $actionButtons = [
-                        components.buttons.neutralButton({
+                    const $selectImageButton = components.buttons.buttonWithIcon({
+                        button: components.buttons.positiveButton({
                             text: texts.selectImage,
-                            click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
                         }),
+                        icon: components.controls.images(),
+                    }, {
+                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
+                    });
 
-                        components.buttons.positiveButton({
-                            class: 'suggest-alt-text',
-                            text: texts.suggestAltText,
-                            click: generateSuggestedAltText
-                        })
-                    ];
+                    const $makeSuggestButton = components.buttons.positiveButton({
+                        text: texts.suggestAltText,
+                        click: generateSuggestedAltText
+                    });
+
+                    const $actionButtons = [$selectImageButton, $makeSuggestButton];
 
                     return components.buttons.buttonsContainer("<div>", $actionButtons);
                 }
