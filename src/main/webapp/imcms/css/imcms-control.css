@@ -153,3 +153,8 @@
 .imcms-control--sort-desc {
     background-image: url("/imcms/images/controls/sorting/icon_sort_desc.png");
 }
+
+.imcms-control--images {
+    background-size: contain;
+    background-image: url("/imcms/images/controls/icon_images_white.png");
+}

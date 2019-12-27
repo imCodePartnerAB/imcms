@@ -48,5 +48,7 @@ module.exports = {
 
     sortAsc: onclick => buildControl('sort-asc', onclick),
 
+    images: onclick => buildControl('images', onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };
