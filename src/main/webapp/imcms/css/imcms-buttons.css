@@ -34,4 +34,5 @@
 
 .imcms-icon-button:hover .imcms-button {
     color: inherit;
+    transition: none;
 }
