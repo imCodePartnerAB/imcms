@@ -100,9 +100,9 @@ const texts = {
         pageInfo: {
             document: "Dokument",
             newDocument: {
-                text: "Nyyt TEXT-document",
-                url: "Nyyt URL-document",
-                file: "Nyyt FIL-dokument",
+                text: "Nytt TEXT-document",
+                url: "Nytt URL-document",
+                file: "Nytt FIL-dokument",
             },
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
@@ -391,7 +391,7 @@ const texts = {
             image: {
                 title: "Bild-redigerare",
                 proportion: "Lås proportioner",
-                presetCrop: "Förinställt beskärnings",
+                presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
                 panels: {
                     bottom: {
@@ -1231,7 +1231,7 @@ const texts = {
             image: {
                 title: "Image Editor",
                 proportion: "Proportions locked",
-                presetCrop: "Preset crop",
+                presetCrop: "Preset crop format",
                 crop: "Crop",
                 panels: {
                     bottom: {
