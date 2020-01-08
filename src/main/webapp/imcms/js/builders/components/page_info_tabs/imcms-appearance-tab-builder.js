@@ -105,7 +105,7 @@ define("imcms-appearance-tab-builder",
                 $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
                     text: texts.menuText,
-                    html: commonContent.menuText,
+                    html: commonContent.docId ? commonContent.menuText : '',
                     name: "menu-text"
                 }),
                 $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]);
