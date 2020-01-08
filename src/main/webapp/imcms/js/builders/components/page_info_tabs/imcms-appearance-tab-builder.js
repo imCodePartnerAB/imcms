@@ -27,6 +27,8 @@ define("imcms-appearance-tab-builder",
             const $aliasTitle = components.texts.titleText("<div>", texts.alias);
 
             const $aliasPrefix = components.texts.titleText("<div>", "/");
+            $aliasPrefix.modifiers = ["mb-0"];
+            $aliasPrefix.css('line-height', '46px');
 
             tabData.$documentAlias = components.texts.textBox("<div>", {
                 placeholder: texts.aliasPlaceholder
@@ -45,7 +47,7 @@ define("imcms-appearance-tab-builder",
                     "item": [$aliasPrefix, tabData.$documentAlias, $suggestAliasButton],
                 }
             }).buildBlockStructure('<div>', {
-                class: "imcms-field__item--row imcms-field__item--align-items-baseline"
+                class: "imcms-field__item--row"
             });
 
             return pageInfoInnerStructureBEM.buildBlock("<div>", [

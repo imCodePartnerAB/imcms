@@ -4,12 +4,12 @@
     padding: 0;
 }
 
-.imcms-field__item--align-items-baseline {
-    align-items: baseline;
-}
-
 .imcms-field__item--ml-auto {
     margin-left: auto;
+}
+
+.imcms-field__item--mb-0 {
+    margin-bottom: 0!important;
 }
 
 .imcms-field__item--w-50 {
