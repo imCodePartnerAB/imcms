@@ -53,6 +53,8 @@ define("imcms-document-editor-builder",
         const asc = "ASC";
         const desc = "DESC";
 
+        const defaultSortingAttribute = 'default-sorting';
+
         const searchQueryObj = {
             "term": "",
             "userId": null,
@@ -319,6 +321,16 @@ define("imcms-document-editor-builder",
             $(".imcms-document-list-titles__title " + sortDescClass)
                 .removeClass(sortDescClassName)
                 .addClass(sortAscClassName);
+
+            $(`.imcms-document-list-titles__title[${defaultSortingAttribute}] ${sortAscClass}`)
+                .removeClass(sortAscClassName)
+                .addClass(sortDescClassName);
+        }
+
+        function discardPreviousSortingIcon() {
+            $(".imcms-document-list__titles").find(sortDescClass)
+                .removeClass(sortDescClassName)
+                .addClass(sortAscClassName);
         }
 
         function isActiveHeader($sortingHeader) {
@@ -347,7 +359,7 @@ define("imcms-document-editor-builder",
 
             } else {
                 setSortBy(bySorting);
-                setDefaultSortingIcons();
+                discardPreviousSortingIcon();
                 highlightSorting($sortingHeader);
             }
 
@@ -413,21 +425,21 @@ define("imcms-document-editor-builder",
         }
 
         function buildTitleRow({text, bySorting, modifiers}) {
-            const emptyIcon = $('<div>');
+            const $emptyIcon = $('<div>');
 
-            const sortIcon = bySorting
-                ? components.controls.sortAsc()
-                : emptyIcon;
+            const $sortIcon = bySorting
+                ? bySorting === defaultSortPropertyValue ? components.controls.sortDesc() : components.controls.sortAsc()
+                : $emptyIcon;
 
-            const titleRow = $("<div>", {
+            const $titleRow = $("<div>", {
                 text: text,
             });
 
-            const titleRowBem = new BEM({
+            const $titleRowBem = new BEM({
                 block: "imcms-document-list-title-row",
                 elements: {
-                    "title": titleRow,
-                    "icon": sortIcon,
+                    "title": $titleRow,
+                    "icon": $sortIcon,
                 }
             }).buildBlockStructure("<div>", {
                 click: function () {
@@ -436,9 +448,13 @@ define("imcms-document-editor-builder",
                     }
                 },
             });
-            titleRowBem.modifiers = modifiers;
+            $titleRowBem.modifiers = modifiers;
 
-            return titleRowBem;
+            if (bySorting === defaultSortPropertyValue) {
+                $titleRowBem.attr(defaultSortingAttribute, '');
+            }
+
+            return $titleRowBem;
         }
 
         function createFrame(event) {

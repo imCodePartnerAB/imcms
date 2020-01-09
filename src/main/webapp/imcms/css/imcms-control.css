@@ -147,11 +147,11 @@
 }
 
 .imcms-control--sort-asc {
-    background-image: url("/imcms/images/controls/sorting/icon_sort_asc.png");
+    background-image: url("/imcms/images/controls/sorting/icon_sort_asc.svg");
 }
 
 .imcms-control--sort-desc {
-    background-image: url("/imcms/images/controls/sorting/icon_sort_desc.png");
+    background-image: url("/imcms/images/controls/sorting/icon_sort_desc.svg");
 }
 
 .imcms-control--images {
