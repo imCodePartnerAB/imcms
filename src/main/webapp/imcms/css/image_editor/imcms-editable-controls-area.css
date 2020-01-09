@@ -77,6 +77,14 @@
     left: unset;
 }
 
+.action-alt-text-container__alt-suggest-btn {
+    margin-top: 10px;
+}
+
+.action-alt-text-container {
+    margin-top: 10px;
+}
+
 .imcms-advanced-mode__file-format {
     float: left;
     width: 40%;
