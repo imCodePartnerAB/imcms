@@ -74,8 +74,23 @@
     height: 95%;
 }
 
+.imcms-search-row {
+    display: flex;
+    align-items: flex-end;
+}
+
 .imcms-search-row__users-list-button .imcms-button {
     float: none;
+    white-space: nowrap;
+}
+
+.imcms-search-row__users-activity-filter label {
+    margin: 0;
+}
+
+.imcms-search-row__users-activity-filter {
+    margin-top: 38px!important;
+    margin-bottom: auto!important;
 }
 
 .imcms-form__field .imcms-user-title-row.imcms-title {

@@ -14,7 +14,6 @@
     border-radius: 5px;
     display: inline-block;
     position: relative;
-    height: 100%;
 }
 
 .imcms-select__drop-down-list--active {
@@ -46,6 +45,7 @@
     position: relative;
     padding: 8px 20px 8px 15px;
     display: block;
+    line-height: 19px;
 }
 
 .imcms-select__drop-down-list--active .imcms-drop-down-list__select-item:after {
