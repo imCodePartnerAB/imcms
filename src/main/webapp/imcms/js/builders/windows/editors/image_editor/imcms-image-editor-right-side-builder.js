@@ -83,6 +83,20 @@ define(
 
                 function buildActionImageBtnContainer() {
 
+                    const $selectImageBtn = components.buttons.buttonWithIcon({
+                        button: components.buttons.positiveButton({
+                            text: texts.selectImage,
+                        }),
+                        icon: components.controls.images(),
+                    }, {
+                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
+                    });
+
+                    return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
+                }
+
+
+                function buildAltTextContainer() {
                     function generateSuggestedAltText() {
                         if (imageData.alternateText.trim() !== '') {
                             modal.buildModalWindow(texts.warnChange, confirmed => {
@@ -96,33 +110,29 @@ define(
                     }
 
                     function replaceAndAddImageNameInAltText() {
-                        $(`[name='altText']`).val(imageData.name.replace(/[_-]/gi, ' ').replace(/.[^.]+$/, ''));
+                        $(`[name='altText']`).val(`${imageData.name.replace(/[_-]/gi, ' ').replace(/.[^.]+$/, '')}`);
                     }
 
-                    const $selectImageButton = components.buttons.buttonWithIcon({
-                        button: components.buttons.positiveButton({
-                            text: texts.selectImage,
-                        }),
-                        icon: components.controls.images(),
-                    }, {
-                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
-                    });
-
                     const $makeSuggestButton = components.buttons.positiveButton({
+                        class: 'suggest-alt-text',
                         text: texts.suggestAltText,
                         click: generateSuggestedAltText
                     });
 
-                    const $actionButtons = [$selectImageButton, $makeSuggestButton];
-
-                    return components.buttons.buttonsContainer("<div>", $actionButtons);
-                }
-
-                function buildAltTextBox() {
-                    return opts.imageDataContainers.$altText = components.texts.textBox("<div>", {
+                    const $textBox = components.texts.textBox("<div>", {
                         text: texts.altText,
                         name: "altText"
                     });
+
+                    opts.imageDataContainers.$altText = $textBox;
+
+                    return new BEM({
+                        block: 'action-alt-text-container',
+                        elements: {
+                            'alt-text-box': $textBox,
+                            'alt-suggest-btn': $makeSuggestButton
+                        }
+                    }).buildBlockStructure("<div>");
                 }
 
                 function buildImageLinkTextBox() {
@@ -361,7 +371,7 @@ define(
                     });
 
                     const $actionImageBtnContainer = buildActionImageBtnContainer();
-                    const $altTextBox = buildAltTextBox();
+                    const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
                     const $allLangs = buildAllLanguagesCheckbox();
@@ -370,7 +380,7 @@ define(
 
                     return editableControlsBEM.buildBlock("<div>", [
                         {"buttons": $actionImageBtnContainer},
-                        {"text-box": $altTextBox},
+                        {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
                         {"flags": opts.imageDataContainers.$langFlags},
                         {"checkboxes": $allLangs},
