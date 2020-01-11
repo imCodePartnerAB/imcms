@@ -57,10 +57,18 @@ define("imcms-appearance-tab-builder",
         }
 
         function writeSuggestedAliasToTextInput(textInput) {
-            const content = tabData.commonContents.find(element => element.name === "English")
-                || tabData.commonContents[0];
+            const filteredCommonContents = tabData.commonContents.filter(element => element.pageTitle.getValue());
 
-            const title = content.pageTitle.getValue()
+            if (filteredCommonContents.length === 0) {
+                return;
+            }
+
+            const $commonContent = filteredCommonContents.find(element => element.name === "English")
+                || filteredCommonContents[0];
+
+            const content = $commonContent.pageTitle.getValue();
+
+            const title = content
                 .trim()
                 .toLowerCase()
                 .replace(/[äå]/g, "a")
