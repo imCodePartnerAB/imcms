@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -38,6 +39,16 @@ public class TextDocumentDataInitializer extends DocumentDataInitializer {
         textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(template));
 
         return textDocumentDTO;
+    }
+
+    public List<TextDocumentDTO> createTextDocuments(Integer count) {
+        templateDataInitializer.cleanRepositories();
+        List<TextDocumentDTO> textDocuments = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            textDocuments.add(createTextDocument());
+        }
+
+        return textDocuments;
     }
 
     @Override
