@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
+import com.imcode.imcms.domain.dto.DataAvailableDocumentInfo;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemporalDataService;
@@ -19,7 +20,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import static com.imcode.imcms.persistence.entity.Meta.DocumentType.TEXT;
 import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.STATIC_CACHE_NAME;
 import static net.sf.ehcache.CacheManager.getCacheManager;
@@ -121,19 +124,23 @@ public class DefaultTemporalDataService implements TemporalDataService {
         return getLastDateModification(patternReCacheDate);
     }
 
-    /**
-     * @return amount available common contents documents by all languages
-     */
     @Override
-    public long addDocumentsInCacheAndGetDocContentCount() {
+    public DataAvailableDocumentInfo addDocumentsInCacheAndGetDocContentCount() {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
             publicDocumentsCache.addDocsInCache();
             logger.info("Last-date-recache: " + formatter.format(new Date()));
         }
 
-        int countAvailableLangs = publicDocumentsCache.getLanguages().size();
+        List<Integer> docIds = publicDocumentsCache.getDocumentMapper().getAllDocumentIds().stream()
+                .map(defaultDocumentService::get)
+                .filter(doc -> doc.getType().equals(TEXT))
+                .map(DocumentDTO::getId)
+                .collect(Collectors.toList());
 
-        return defaultDocumentService.countDocuments() * countAvailableLangs;
+        final Integer countAvailableLangs = publicDocumentsCache.getLanguages().size();
+        final Integer countAvailableDocs = (int) defaultDocumentService.countDocuments() * countAvailableLangs;
+
+        return new DataAvailableDocumentInfo(docIds, countAvailableDocs);
     }
 
     private String getLastDateModification(Pattern pattern) throws IOException {
