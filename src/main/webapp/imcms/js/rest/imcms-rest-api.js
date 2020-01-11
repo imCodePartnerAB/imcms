@@ -31,7 +31,9 @@ function logAjaxResponse(type, url, count, response) {
 }
 
 function ajax(data, callback) {
-    const url = imcms.contextPath + API_PREFIX + this.url;
+    const url = (this.withoutPrefix === undefined)
+        ? imcms.contextPath + API_PREFIX + this.url
+        : imcms.contextPath + this.url;
     const type = this.type;
     const contentType = (this.contentType === undefined) // exactly
         ? ('application/' + (this.json ? 'json' : 'x-www-form-urlencoded') + '; charset=UTF-8')
