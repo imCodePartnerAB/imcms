@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
+import com.imcode.imcms.domain.dto.DataAvailableDocumentInfo;
 import com.imcode.imcms.domain.service.TemporalDataService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +25,7 @@ public class TemporalDataController {
     }
 
     @PostMapping("/document-recache")
-    public long addDocumentsInCache() {
+    public DataAvailableDocumentInfo addDocumentsInCache() {
         return temporalDataService.addDocumentsInCacheAndGetDocContentCount();
     }
 
