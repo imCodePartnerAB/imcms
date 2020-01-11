@@ -6,9 +6,9 @@ define(
     'imcms-temporal-data-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-temporal-data-rest-api',
-        'imcms-components-builder', 'jquery'
+        'imcms-components-builder', 'jquery', 'imcms-doc-view-request-api'
     ],
-    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $) {
+    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $, requestDocView) {
 
         texts = texts.superAdmin.temporalContent;
 
@@ -405,16 +405,23 @@ define(
                     if (currentAmount === -1) {
                         $loading.text('0%');
                         $loading.show();
-
-                        temporalDataApi.addDocumentsInCache().done(totalAmount => {
-                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_RECACHE));
+                        temporalDataApi.addDocumentsInCache().done(dataDocInfo => {
+                            time.setMillis(calculateTimeByAmount(dataDocInfo.countAvailableDocs, 0, TIME_PER_ONE_RECACHE));
                             time.getLabel().show();
 
                             const interval = setInterval(
-                                () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
+                                () => updateLoading($button, $loading, $success, interval, dataDocInfo.countAvailableDocs, date, time),
                                 LOADING_INTERVAL
                             );
+
+
+                            // dataDocInfo.docIds.forEach(docId => {
+                            //     requestDocView.simulationDocRequest(docId).done(
+                            //
+                            //     );
+                            // })
                         });
+
                     } else {
                         const interval = setInterval(
                             () => disableButtonWhileCaching($button, date, interval),
