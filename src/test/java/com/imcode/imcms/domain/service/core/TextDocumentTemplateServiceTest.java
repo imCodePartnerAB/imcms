@@ -2,7 +2,9 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
+import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,9 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private TextDocumentTemplateService textDocumentTemplateService;
 
+    @Autowired
+    private UrlDocumentDataInitializer urlDocumentDataInitializer;
+
     private TextDocumentTemplate saved;
 
     @Autowired
@@ -32,6 +37,7 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() {
         templateDataInitializer.cleanRepositories();
+        urlDocumentDataInitializer.cleanRepositories();
         saved = new TextDocumentTemplateDTO(
                 templateDataInitializer.createData(DOC_ID, "demo", "demo")
         );
@@ -44,6 +50,14 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
 
         final TextDocumentTemplate receivedTextDocumentTemplateDTO = oTemplate.get();
         assertEquals(receivedTextDocumentTemplateDTO, saved);
+    }
+
+    @Test
+    public void get_When_DocNotText_Expected_EmptyResult() {
+        UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument();
+        final Optional<TextDocumentTemplate> oTemplate = textDocumentTemplateService.get(urlDocumentDTO.getId());
+        assertFalse(oTemplate.isPresent());
+        assertEquals(Optional.empty(), oTemplate);
     }
 
     @Test
