@@ -415,11 +415,11 @@ define(
                             );
 
 
-                            // dataDocInfo.docIds.forEach(docId => {
-                            //     requestDocView.simulationDocRequest(docId).done(
-                            //
-                            //     );
-                            // })
+                            dataDocInfo.docIds.forEach(docId => {
+                                requestDocView.simulationDocRequest(docId).done(
+
+                                );
+                            })
                         });
 
                     } else {
