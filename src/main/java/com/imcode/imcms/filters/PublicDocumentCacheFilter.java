@@ -49,7 +49,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                          HttpServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
 
-        if (Imcms.getUser().isDefaultUser()) {
+        if (Imcms.getUser().isDefaultUser() || documentsCache.getAmountOfCachedDocuments() >= 0) {
 
             final ImcmsServices services = Imcms.getServices();
 
