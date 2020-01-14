@@ -7,7 +7,6 @@
 
 .imcms-editable-img-controls__control-button {
     display: inline-block;
-    margin-top: 10px;
 }
 
 .imcms-editable-img-controls__control-size,
@@ -18,16 +17,12 @@
     vertical-align: top;
 }
 
-.imcms-editable-img-controls__control-size {
-    width: 25%;
-}
-
 .imcms-editable-img-controls__control-size .imcms-edit-size__number {
     padding-right: 10px;
 }
 
 .imcms-editable-img-controls__control-scale-n-rotate {
-    width: 35%;
+    width: 50%;
 }
 
 .imcms-editable-img-controls__control-view {
@@ -35,7 +30,7 @@
 }
 
 .imcms-editable-img-control-tabs {
-    padding-top: 21px;
+    margin: auto 0 0 auto;
 }
 
 .imcms-editable-img-control-tabs__tab {
@@ -73,16 +68,4 @@
     display: inline-block;
     padding-left: 15px;
     line-height: 65px;
-}
-
-@media screen and (max-width: 1300px) {
-    .imcms-editable-img-controls__control-scale-n-rotate {
-        width: 30%;
-    }
-}
-
-@media screen and (max-width: 1150px) {
-    .imcms-editable-img-controls__control-scale-n-rotate {
-        width: 30%;
-    }
 }

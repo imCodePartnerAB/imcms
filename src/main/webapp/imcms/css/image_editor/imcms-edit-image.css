@@ -1,7 +1,11 @@
 .imcms-edit-image {
-    text-align: center;
-    display: inline-block;
-    padding-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imcms-edit-image .imcms-button {
+    margin-left: 20px;
 }
 
 .imcms-edit-image__button {
@@ -18,5 +22,7 @@
 }
 
 .imcms-image-toolbar__toolbar {
+    display: flex;
+    align-items: center;
     height: 100%;
 }
