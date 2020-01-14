@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -77,17 +78,17 @@ public class ViewDocumentController {
     }
 
     @RequestMapping({"", "/"})
-    public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
+    public ModelAndView goToStartPage(@RequestParam(required = false) boolean isReCache, HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
             throws ServletException, IOException {
 
         final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
         final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
 
-        return processDocView(textDocument, request, response, mav);
+        return processDocView(textDocument, request, response, mav, isReCache);
     }
 
     @RequestMapping("/**")
-    public ModelAndView getDocument(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
+    public ModelAndView getDocument(@RequestParam(required = false) boolean isReCache, HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
             throws ServletException, IOException {
 
         final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
@@ -95,13 +96,13 @@ public class ViewDocumentController {
 
         final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
 
-        return processDocView(textDocument, request, response, mav);
+        return processDocView(textDocument, request, response, mav, isReCache);
     }
 
     private ModelAndView processDocView(TextDocumentDomainObject textDocument,
                                         HttpServletRequest request,
                                         HttpServletResponse response,
-                                        ModelAndView mav) throws ServletException, IOException {
+                                        ModelAndView mav, boolean isReCache) throws ServletException, IOException {
 
         final UserDomainObject user = Imcms.getUser();
 
@@ -173,7 +174,7 @@ public class ViewDocumentController {
         mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
         mav.addObject("language", language);
-        mav.addObject("isAdmin", user.isSuperAdmin());
+        mav.addObject("isAdmin", isReCache ? false : user.isSuperAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);

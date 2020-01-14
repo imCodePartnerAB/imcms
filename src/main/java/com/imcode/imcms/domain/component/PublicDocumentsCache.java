@@ -35,11 +35,12 @@ import java.util.stream.Collectors;
 public class PublicDocumentsCache implements DocumentsCache {
 
     private static final Logger logger = Logger.getLogger(PublicDocumentsCache.class);
-
     private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
+
     private final List<String> languages;
     private final DocumentMapper documentMapper;
     private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
+
     private final static Object lock = new Object();
     private final ExecutorService cacheRebuildExecutor = Executors.newSingleThreadExecutor();
     private volatile Future cacheRebuildFuture = CompletableFuture.completedFuture(null);
@@ -173,10 +174,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
         languages.forEach(langCode -> {
             for (Integer docId : documentIds) {
-                documentLoaderCachingProxy.removeDocFromCache(docId);
-                logger.debug("Document deleted from cache with id " + docId);
-
-                documentLoaderCachingProxy.addDocumentInAllCache(docId, langCode);
+                documentLoaderCachingProxy.addDocumentDataInCaches(docId, langCode);
                 logger.info(String.format("Document with id %d and language %s was added in cache", docId, langCode));
 
                 amountDocsInCaches.incrementAndGet();

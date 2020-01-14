@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.DataAvailableDocumentInfo;
+
 import java.io.IOException;
 
 public interface TemporalDataService {
@@ -24,5 +26,5 @@ public interface TemporalDataService {
 
     String getDateAddedInCacheDocuments() throws IOException;
 
-    long addDocumentsInCacheAndGetDocContentCount();
+    DataAvailableDocumentInfo addDocumentsInCacheAndGetDocContentCount();
 }
