@@ -421,6 +421,7 @@ const texts = {
                     cancelTitle: "Avbryt ändringar",
                     applyChangeText: "Tillämpa",
                     applyChangeTitle: "Applicera förändringar",
+                    removeCropping: "Ta bort beskärning",
                     rotationTitle: "Aktivera rotationsreglage"
                 },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
@@ -1261,6 +1262,7 @@ const texts = {
                     cancelTitle: "Cancel changes",
                     applyChangeText: "Apply",
                     applyChangeTitle: "Apply changes",
+                    removeCropping: "Remove cropping",
                     rotationTitle: "Activate rotation controls"
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
