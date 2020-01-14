@@ -133,6 +133,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
         List<Integer> docIds = publicDocumentsCache.getDocumentMapper().getAllDocumentIds().stream()
                 .map(defaultDocumentService::get)
+                .filter(doc -> doc.getCommonContents().stream().findAny().get().isEnabled())
                 .filter(doc -> doc.getType().equals(TEXT))
                 .map(DocumentDTO::getId)
                 .collect(Collectors.toList());

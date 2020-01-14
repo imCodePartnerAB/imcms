@@ -14,6 +14,7 @@ import net.sf.ehcache.constructs.web.Header;
 import net.sf.ehcache.constructs.web.PageInfo;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -42,6 +43,8 @@ import java.util.function.BooleanSupplier;
  */
 public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
+    private final static Logger logger = Logger.getLogger(PublicDocumentCacheFilter.class);
+
     private DocumentsCache documentsCache;
 
     @Override
@@ -50,6 +53,8 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                          FilterChain chain) throws ServletException, IOException {
 
         if (Imcms.getUser().isDefaultUser() || documentsCache.getAmountOfCachedDocuments() >= 0) {
+
+            logger.info("Amount cached documents after each request: - " + documentsCache.getAmountOfCachedDocuments());
 
             final ImcmsServices services = Imcms.getServices();
 
@@ -90,6 +95,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
                         if (!isSameETag && isDocumentAlreadyCached) {
                             documentsCache.invalidateItem(cacheKey);
+                            logger.info("Invalidate cache the page from docId and cacheKey: " + documentIdString + " " + cacheKey);
                         }
                     }
                 }
@@ -97,6 +103,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                 if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
                         super.doFilter(request, response, chain);
+                        logger.info("Build cache the page from docId: " + documentIdString + " with cache key " + cacheKey);
                         return;
                     } catch (Exception e) {
                         throw new ServletException(e);
