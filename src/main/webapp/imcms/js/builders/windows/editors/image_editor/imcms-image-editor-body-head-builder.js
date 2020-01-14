@@ -246,6 +246,16 @@ define(
             }));
         }
 
+        let $removeCroppingButton;
+
+        function getRemoveCroppingButton() {
+            return $removeCroppingButton || ($removeCroppingButton = components.buttons.negativeButton({
+                text: texts.buttons.removeCropping,
+                style: 'display: none;',
+                click: () => cropper.initImageCropper(imageData),
+            }));
+        }
+
         let $showImageRotationControls;
 
         function getShowImageRotationControls() {
@@ -331,6 +341,7 @@ define(
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
                     imageProportionsLocker.getProportionsText(),
+                    getRemoveCroppingButton(),
                     getApplyChangesButton(),
                 )
                 .onCancel(() => {
@@ -365,6 +376,7 @@ define(
                     "button": [
                         imageProportionsLocker.getProportionsButton(),
                         imageProportionsLocker.getProportionsText(),
+                        getRemoveCroppingButton(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),
@@ -446,6 +458,7 @@ define(
                     imageProportionsLocker.getProportionsButton(),
                     imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
+                    getRemoveCroppingButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
                     getZoomPlusButton(),
