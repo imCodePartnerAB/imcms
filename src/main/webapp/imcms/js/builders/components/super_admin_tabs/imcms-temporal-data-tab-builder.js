@@ -416,7 +416,10 @@ define(
 
 
                             dataDocInfo.docIds.forEach(docId => {
-                                requestDocView.simulationDocRequest(docId).done(
+                                let requestData = {
+                                    isReCache: true
+                                };
+                                requestDocView.simulationDocRequest(docId, requestData).done(
 
                                 );
                             })
