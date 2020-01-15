@@ -40,9 +40,10 @@ define(
 
                 if (file.fileType === 'FILE' && fileEditor.isTemplate(file)) {
                     return new BEM({
-                        block: "template-row",
+                        block: "file-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
+                            'file-size': $('<div>', {text: file.size}),
                             'add-to-group': components.controls.plus(withClick(fileEditor.addTemplateToGroup)).attr("title", texts.addToGroup),
                             'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),
                             'edit': components.controls.edit(withClick(fileEditor.bindEditFile(this.subFilesContainerIndex))).attr("title", texts.edit),
@@ -54,6 +55,7 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
+                            'file-size': $('<div>', {text: file.size}),
                             'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),
                             'edit': components.controls.edit(withClick(fileEditor.bindEditFile(this.subFilesContainerIndex))).attr("title", texts.edit),
                             'delete': components.controls.remove(withClick(() => fileEditor.deleteFile(file))).attr("title", texts.delete)
