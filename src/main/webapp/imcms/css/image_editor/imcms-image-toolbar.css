@@ -48,10 +48,6 @@
     margin-right: 2%;
 }
 
-.imcms-image-toolbar__button--right-panel {
-    float: right;
-}
-
 @media screen and (max-width: 790px) {
     .imcms-image-toolbar__img-origin-size {
         margin-right: 1%;

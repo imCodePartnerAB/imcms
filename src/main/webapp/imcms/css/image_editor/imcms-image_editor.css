@@ -32,6 +32,7 @@
 }
 
 .imcms-image_editor__image-characteristics {
+    display: flex;
     border-bottom: 1px solid #d3d8de;
     padding: 0;
     height: 64px;
