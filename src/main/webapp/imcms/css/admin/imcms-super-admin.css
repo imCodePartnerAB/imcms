@@ -322,7 +322,6 @@
 .file-row,
 .directory-row,
 .root-directory-row,
-.template-row,
 .path-row {
     padding: 5px;
     cursor: pointer;
@@ -342,8 +341,7 @@
 .directory-row:hover,
 .doc-info-row:hover,
 .root-directory-row:hover,
-.template-info-row:hover,
-.template-row:hover {
+.template-info-row:hover {
     background-color: #dfedff;
 }
 
@@ -354,30 +352,28 @@
     width: 50%;
 }
 
-.template-row__file-name,
-.directory-row__file-name,
-.file-row__file-name,
-.template-info-row__template-name,
-.root-directory-row__file-name {
-    margin-right: auto;
-    word-break: break-all;
-}
-
 .root-directory-row__delete {
     margin-right: 1%;
 }
 
-.file-row__download,
-.file-row__edit,
-.file-row__delete,
-.template-row__add-to-group,
-.template-row__download,
-.template-row__edit,
-.template-row__delete,
-.root-directory-row__delete,
-.directory-row__edit,
-.directory-row__delete {
+.file-row *,
+.root-directory-row *,
+.directory-row * {
     width: 6%;
+}
+
+.directory-row__file-name,
+.file-row__file-name,
+.template-info-row__template-name,
+.root-directory-row__file-name {
+    width: auto;
+    margin-right: auto;
+    word-break: break-all;
+}
+
+.file-row__file-size {
+    width: auto;
+    margin-right: 10px;
 }
 
 .files-table__file-row--selected,
