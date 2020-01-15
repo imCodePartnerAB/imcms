@@ -16,6 +16,7 @@ public class SourceFile implements Cloneable, Serializable {
     private String fullPath;
     private FileType fileType;
     private byte[] contents;
+    private String size;
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
