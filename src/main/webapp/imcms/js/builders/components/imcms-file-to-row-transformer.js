@@ -4,8 +4,6 @@ define(
 
         texts = texts.superAdmin.files.title;
 
-        const TEMPLATE_PATTERN = new RegExp('.(JSP|HTML)$', 'gi');
-
         function getOnFileDblClicked(file, buildViewFunc) {
             return function () {
                 const $this = $(this);
@@ -40,7 +38,7 @@ define(
                     }
                 };
 
-                if (file.fileType === 'FILE' && TEMPLATE_PATTERN.test(file.fullPath)) {
+                if (file.fileType === 'FILE' && fileEditor.isTemplate(file)) {
                     return new BEM({
                         block: "template-row",
                         elements: {

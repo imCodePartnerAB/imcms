@@ -9,6 +9,7 @@ define(
 
         const CONTEXT_URL = '/api/files/file/';
         const FILE_SRC_URL = imcms.contextPath + CONTEXT_URL;
+        const TEMPLATE_ROOT_PATH = '/WEB-INF/templates/text';
 
         const selectedFileHighlightingClassName = 'files-table__file-row--selected';
         const selectedDirHighlightingClassName = 'files-table__directory-row--selected';
@@ -452,22 +453,26 @@ define(
             return array;
         }
 
+        const $templateGroupEditor = new BEM({
+            block: 'group-editor',
+            elements: {
+                'create-button': $templateGroupCreateButton,
+                'select': $templateGroupSelect,
+                'name-row': $templateGroupNameTextField,
+                'default-buttons': $templateGroupDefaultButtons,
+                'edit-buttons': $templateGroupEditButtons,
+                'templates-data-title': $templatesTableTitle,
+                'templates-data': $templatesTable
+            }
+        }).buildBlockStructure('<div>', {});
+
         function getTemplateGroupEditor() {
             $templateGroupNameTextField.$input.attr('disabled', 'disabled');
             $templateGroupNameTextField.css('display', 'none');
 
-            return new BEM({
-                block: 'group-editor',
-                elements: {
-                    'templates-group-create-button': $templateGroupCreateButton,
-                    'template-group-select': $templateGroupSelect,
-                    'template-group-name-row': $templateGroupNameTextField,
-                    'template-group-default-buttons': $templateGroupDefaultButtons,
-                    'template-group-edit-buttons': $templateGroupEditButtons,
-                    'templates-data-title': $templatesTableTitle,
-                    'templates-data': $templatesTable
-                }
-            }).buildBlockStructure('<div>', {});
+            $templateGroupEditor.hide();
+
+            return $templateGroupEditor;
         }
 
         function getViewDocById($docRow, doc) {
@@ -488,9 +493,7 @@ define(
                     'doc-id': $('<div>', {text: texts.documentData.docId}),
                     'doc-type': $('<div>', {text: texts.documentData.docType})
                 }
-            }).buildBlockStructure('<div>', {
-                'class': 'table-title'
-            });
+            }).buildBlockStructure('<div>');
         }
 
         function updateHighlightingForDir(elem) {
@@ -509,10 +512,18 @@ define(
                 deleteAllHighlightingInSubFilesContainer(getSubFilesContainerByChildRow($fileSourceRow), selectedDirHighlightingClassName);
             }
             if (file.fileType === 'DIRECTORY' && isDblClick) {
+                if (file.physicalPath.startsWith(TEMPLATE_ROOT_PATH)) {
+                    $templateGroupEditor.show();
+                } else {
+                    $templateGroupEditor.hide();
+                    $docsNumberLabel.hide();
+                    $documentsContainer.find('.documents-data').remove();
+                }
+
                 onDirectoryDblClick.call(this, $fileRow, file);
             } else if (file.fileType === 'FILE' && isDblClick) {
                 onFileDblClick(file);
-            } else if (file.fileType === 'FILE' && isTemplate(file.fullPath)) {
+            } else if (file.fileType === 'FILE' && isTemplate(file)) {
                 onTemplateClick(file);
             }
         }
@@ -574,9 +585,9 @@ define(
             return pattern.test(fileName);
         }
 
-        function isTemplate(fileName) {
+        function isTemplate(file) {
             const pattern = new RegExp('.(JSP|HTML)$', 'gi');
-            return pattern.test(fileName);
+            return pattern.test(file.fileName) && file.physicalPath.startsWith(TEMPLATE_ROOT_PATH);
         }
 
         function fileToImgElement(file) {
@@ -970,6 +981,7 @@ define(
         }
 
         const fileEditor = {
+            isTemplate,
             bindViewSubFilesContainer,
             bindUploadFile,
             bindAddFile,
