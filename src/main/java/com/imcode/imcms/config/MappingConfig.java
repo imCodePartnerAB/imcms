@@ -1,42 +1,16 @@
 package com.imcode.imcms.config;
 
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
-import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import com.imcode.imcms.domain.dto.ImageHistoryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.TextHistoryDTO;
-import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -48,7 +22,6 @@ import imcode.util.image.Resize;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.fs.Path;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -57,15 +30,11 @@ import org.springframework.core.io.Resource;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -74,8 +43,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
+import static ucar.httpservices.HTTPAuthStore.log;
 
 /**
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
@@ -226,7 +198,7 @@ class MappingConfig {
 
     @Bean
     public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + Path.SEPARATOR;
+        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
         // Path.SEPARATOR slashes use in everywhere, for different OS
 
         return image -> {
@@ -273,7 +245,7 @@ class MappingConfig {
 
     @Bean
     public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + Path.SEPARATOR;
+        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
         // Path.SEPARATOR slashes use in everywhere, for different OS
 
         return image -> {
@@ -519,31 +491,7 @@ class MappingConfig {
 
             imageFileDTO.setUploaded(formattedDate);
 
-            long fileSize = imageFile.length();
-
-            final String suffix;
-
-            final long k = 1000L;
-            final long square = k * k;
-            final long cube = square * k;
-
-            if (fileSize >= cube) {
-                suffix = "GB"; // I hope it's not the real case
-                fileSize /= cube;
-
-            } else if (fileSize >= square) {
-                suffix = "MB";
-                fileSize /= square;
-
-            } else if (fileSize >= k) {
-                suffix = "kB";
-                fileSize /= k;
-
-            } else {
-                suffix = "B";
-            }
-
-            imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+            imageFileDTO.setSize(getFileSize(imageFile));
 
             final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
 
@@ -555,6 +503,34 @@ class MappingConfig {
 
             return imageFileDTO;
         };
+    }
+
+    private String getFileSize(File file) {
+        long fileSize = file.length();
+
+        final String suffix;
+
+        final long k = 1000L;
+        final long square = k * k;
+        final long cube = square * k;
+
+        if (fileSize >= cube) {
+            suffix = "GB"; // I hope it's not the real case
+            fileSize /= cube;
+
+        } else if (fileSize >= square) {
+            suffix = "MB";
+            fileSize /= square;
+
+        } else if (fileSize >= k) {
+            suffix = "kB";
+            fileSize /= k;
+
+        } else {
+            suffix = "B";
+        }
+
+        return fileSize + suffix;
     }
 
     @Bean
@@ -610,6 +586,24 @@ class MappingConfig {
             textHistoryDTO.setModifiedBy(new UserDTO(modifierUser));
 
             return textHistoryDTO;
+        };
+    }
+
+    @Bean
+    public BiFunction<Path, Boolean, SourceFile> fileToSourceFile(@Value("${rootPath}") Path rootPath) {
+        return (path, withContent) -> {
+            final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
+            final String physicalPath = path.toAbsolutePath().toString().substring(rootPath.toString().length());;
+            byte[] contents = null;
+            try {
+                if (withContent) contents = Files.readAllBytes(path);
+            } catch (IOException e) {
+                log.info("File has not content!!!");
+                contents = null;
+            }
+            final String size = getFileSize(path.toFile());
+
+            return new SourceFile(path.getFileName().toString(), physicalPath, path.toString(), fileType, contents, size);
         };
     }
 
