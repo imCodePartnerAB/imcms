@@ -54,7 +54,7 @@
 
 .category-admin .imcms-buttons *:nth-child(2),
 .roles-editor__role-view-buttons *:nth-child(2),
-.group-editor__template-group-default-buttons *:nth-child(2) {
+.group-editor__default-buttons *:nth-child(2) {
     margin-left: auto;
 }
 
@@ -244,11 +244,11 @@
     width: 50%;
 }
 
-.group-editor > *:not(.group-editor__templates-group-create-button) {
+.group-editor > *:not(.group-editor__create-button) {
     width: 98%;
 }
 
-.group-editor__templates-group-create-button {
+.group-editor__create-button {
     margin-bottom: 10px;
 }
 
@@ -278,7 +278,7 @@
     cursor: pointer;
 }
 
-.title-doc-row.table-title {
+.title-doc-row {
     display: flex;
     font-weight: 600;
     margin-bottom: 10px;
@@ -354,25 +354,17 @@
     width: 50%;
 }
 
-.file-row__file-name {
-    width: 60%;
-    word-break: break-all;
-}
-
-.directory-row__file-name {
-    width: 70%;
-    word-break: break-all;
-}
-
+.template-row__file-name,
+.directory-row__file-name,
+.file-row__file-name,
 .template-info-row__template-name,
 .root-directory-row__file-name {
-    width: 80%;
+    margin-right: auto;
     word-break: break-all;
 }
 
-.template-row__file-name {
-    width: 50%;
-    word-break: break-all;
+.root-directory-row__delete {
+    margin-right: 1%;
 }
 
 .file-row__download,
@@ -385,7 +377,7 @@
 .root-directory-row__delete,
 .directory-row__edit,
 .directory-row__delete {
-    width: 10%;
+    width: 6%;
 }
 
 .files-table__file-row--selected,
