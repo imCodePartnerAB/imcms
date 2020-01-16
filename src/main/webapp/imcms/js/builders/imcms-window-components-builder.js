@@ -8,6 +8,7 @@
 const BEM = require('imcms-bem-builder');
 const components = require('imcms-components-builder');
 const texts = require('imcms-i18n-texts');
+const $ = require('jquery');
 
 module.exports = {
     /**
@@ -19,6 +20,7 @@ module.exports = {
     buildHead: (title, onCloseClick) => new BEM({
         block: "imcms-head",
         elements: {
+            "logo": $('<a>'),
             "title": components.texts.titleText("<div>", title),
             "button": components.buttons.closeButton({click: onCloseClick})
         }
@@ -35,6 +37,7 @@ module.exports = {
     buildHeadWithResizing: (title, {onWindowNormalClick, onWindowAutoClick, onWindowMaximizeClick, onCloseClick}) => new BEM({
         block: "imcms-head",
         elements: {
+            "logo": $('<a>'),
             "title": components.texts.titleText("<div>", title),
             "toolbar": components.buttons.buttonsContainer('<div>', [
                 components.buttons.windowNormalButton({
@@ -64,6 +67,7 @@ module.exports = {
     buildNonClosableHead: title => new BEM({
         block: "imcms-head",
         elements: {
+            "logo": $('<a>'),
             "title": components.texts.titleText("<div>", title)
         }
     }).buildBlockStructure("<div>"),
