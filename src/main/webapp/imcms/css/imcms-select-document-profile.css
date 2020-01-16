@@ -20,14 +20,8 @@
     width: 100%;
 }
 
-.imcms-document-profile-select-window__head {
-    background-color: #389ecf;
-}
-
-.imcms-document-profile-select-window__head button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
+.imcms-document-profile-select-window__head .imcms-head__logo {
+    display: none;
 }
 
 .imcms-document-profile-select-window__body .imcms-document-profile__parent-select .imcms-parent-select__text-box {

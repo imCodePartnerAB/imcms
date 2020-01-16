@@ -1023,7 +1023,7 @@ define("imcms-document-editor-builder",
 
             $head.find('.imcms-title').append(titleUrl.css({
                 'text-transform': 'lowercase',
-                'color': '#0b94d8'
+                'color': '#fff2f9'
             }));
 
             return $head;

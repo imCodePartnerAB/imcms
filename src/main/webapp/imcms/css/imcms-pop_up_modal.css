@@ -37,10 +37,6 @@
     transition: 0.12s;
 }
 
-.imcms-pop-up-modal__head {
-    background-color: #389ecf;
-}
-
 .imcms-pop-up-modal__left-side {
     background-color: #fff;
     position: relative;
@@ -52,13 +48,6 @@
 
 .imcms-pop-up-modal__footer {
     background-color: #f3f5f7;
-}
-
-.imcms-pop-up-modal .imcms-pop-up-modal__head .imcms-head__toolbar,
-.imcms-pop-up-modal .imcms-pop-up-modal__head .imcms-button.imcms-button--close.imcms-head__button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
 }
 
 .imcms-modal-window__modal-body .imcms-checkbox__label {

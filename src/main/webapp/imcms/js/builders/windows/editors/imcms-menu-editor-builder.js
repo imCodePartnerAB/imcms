@@ -1101,7 +1101,7 @@ define("imcms-menu-editor-builder",
 
             $title.text(linkData).css({
                 'text-transform': 'lowercase',
-                'color': '#0b94d8'
+                'color': '#fff2f9'
             });
 
             $title.attr('href', linkData)

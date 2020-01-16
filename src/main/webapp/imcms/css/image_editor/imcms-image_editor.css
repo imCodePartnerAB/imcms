@@ -9,28 +9,6 @@
     user-select: auto;
 }
 
-.imcms-image_editor__head {
-    background-color: #fff;
-    -webkit-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    -moz-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    padding-left: 42px;
-    padding-right: 42px;
-    position: relative;
-    z-index: 20;
-}
-
-.imcms-image_editor__head .imcms-head__title {
-    color: #0b94d8;
-    text-align: left;
-}
-
-.imcms-image_editor__head button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
-}
-
 .imcms-image_editor__image-characteristics {
     display: flex;
     border-bottom: 1px solid #d3d8de;

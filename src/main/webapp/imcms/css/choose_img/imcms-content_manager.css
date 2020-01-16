@@ -10,25 +10,6 @@
     clear: both;
 }
 
-.imcms-content-manager__head {
-    background-color: #fff;
-    -webkit-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    -moz-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    position: relative;
-    z-index: 20;
-}
-
-.imcms-content-manager__head button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
-}
-
-.imcms-content-manager__head .imcms-head__title {
-    color: #0b94d8;
-}
-
 .imcms-content-manager__left-side {
     background-color: #545c6f;
     margin-top: -42px;

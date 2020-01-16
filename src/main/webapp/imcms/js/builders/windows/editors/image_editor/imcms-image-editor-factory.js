@@ -36,7 +36,7 @@ module.exports = {
 
             $imageInfo.text(linkData).css({
                 'text-transform': 'lowercase',
-                'color': '#0b94d8'
+                'color': '#fff2f9'
             });
 
             $imageInfo.attr('href', linkData)
@@ -48,7 +48,7 @@ module.exports = {
 
             $imageInfo.text(linkData).css({
                 'text-transform': 'lowercase',
-                'color': '#0b94d8'
+                'color': '#fff2f9'
             });
 
             $imageInfo.attr('href', linkData)

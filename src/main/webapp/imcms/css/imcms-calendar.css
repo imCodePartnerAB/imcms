@@ -20,14 +20,6 @@
     z-index: 50;
 }
 
-.imcms-calendar__header {
-    text-align: center;
-    display: block;
-    position: relative;
-    width: 100%;
-    height: 20px;
-}
-
 .imcms-calendar__button {
     padding: 10px;
     position: absolute;

@@ -21,14 +21,8 @@
     height: auto;
 }
 
-.imcms-document-type-select-window__head {
-    background-color: #389ecf;
-}
-
-.imcms-document-type-select-window__head button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
+.imcms-document-type-select-window__head .imcms-head__logo {
+    display: none;
 }
 
 .imcms-document-type-select-window__head .imcms-button--close:before,

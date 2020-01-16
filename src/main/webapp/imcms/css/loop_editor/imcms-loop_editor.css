@@ -2,27 +2,6 @@
     width: 100%;
 }
 
-.imcms-loop-editor__head {
-    background-color: #fff;
-    -webkit-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    -moz-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 20;
-}
-
-.imcms-loop-editor__head button {
-    position: absolute;
-    top: 13px;
-    right: 13px;
-}
-
-.imcms-loop-editor__head .imcms-head__title {
-    color: #0b94d8;
-}
-
 .imcms-loop-editor-body {
     height: 100%;
 }
