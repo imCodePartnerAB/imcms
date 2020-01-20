@@ -52,9 +52,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                          HttpServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
 
-        if (Imcms.getUser().isDefaultUser() || documentsCache.getAmountOfCachedDocuments() >= 0) {
-
-            logger.info("Amount cached documents after each request: - " + documentsCache.getAmountOfCachedDocuments());
+        if (Imcms.getUser().isDefaultUser()) {
 
             final ImcmsServices services = Imcms.getServices();
 
@@ -103,7 +101,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                 if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
                         super.doFilter(request, response, chain);
-                        logger.info("Build cache the page from docId: " + documentIdString + " with cache key " + cacheKey);
+                        documentsCache.setStateImcmsCaching(request);
                         return;
                     } catch (Exception e) {
                         throw new ServletException(e);
