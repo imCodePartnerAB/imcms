@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
+import static imcode.server.ImcmsConstants.SESSION_ACTIVE_CACHE;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -158,6 +161,16 @@ public class PublicDocumentsCache implements DocumentsCache {
             if (cacheRebuildFuture.isDone()) {
                 cacheRebuildFuture = cacheRebuildExecutor.submit(this::addDocumentInCaches);
             }
+        }
+    }
+
+    @Override
+    public void setStateImcmsCaching(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute(SESSION_ACTIVE_CACHE) != null) {
+            amountDocsInCaches.incrementAndGet();
+        } else {
+            amountDocsInCaches.set(-1);
         }
     }
 
