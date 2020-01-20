@@ -415,14 +415,14 @@ define(
                             );
 
 
-                            dataDocInfo.docIds.forEach(docId => {
-                                let requestData = {
-                                    isReCache: true
-                                };
-                                requestDocView.simulationDocRequest(docId, requestData).done(
-
-                                );
-                            })
+                            // dataDocInfo.docIds.forEach(docId => {
+                            //     let requestData = {
+                            //         isReCache: true
+                            //     };
+                            //     requestDocView.simulationDocRequest(docId, requestData).done(
+                            //
+                            //     );
+                            // })
                         });
 
                     } else {
