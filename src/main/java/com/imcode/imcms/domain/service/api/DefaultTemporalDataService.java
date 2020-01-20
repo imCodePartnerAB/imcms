@@ -10,7 +10,9 @@ import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Meta.DocumentType.TEXT;
+import static com.imcode.imcms.persistence.entity.Meta.PublicationStatus.APPROVED;
 import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.STATIC_CACHE_NAME;
 import static net.sf.ehcache.CacheManager.getCacheManager;
@@ -125,9 +128,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
     }
 
     @Override
-    public DataAvailableDocumentInfo addDocumentsInCacheAndGetDocContentCount() {
+    public DataAvailableDocumentInfo addDocumentsInCacheAndGetDocContentCount(HttpServletRequest request) {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
-            publicDocumentsCache.addDocsInCache();
             logger.info("Last-date-recache: " + formatter.format(new Date()));
         }
 
@@ -135,8 +137,15 @@ public class DefaultTemporalDataService implements TemporalDataService {
                 .map(defaultDocumentService::get)
                 .filter(doc -> doc.getCommonContents().stream().findAny().get().isEnabled())
                 .filter(doc -> doc.getType().equals(TEXT))
+                .filter(doc -> doc.getPublicationStatus().equals(APPROVED))
                 .map(DocumentDTO::getId)
                 .collect(Collectors.toList());
+
+        for (Integer docId: docIds) {
+            RestTemplate restTemplate = new RestTemplate();
+            String path = "http://localhost:8080/" + docId; //todo fix it hard code
+            restTemplate.getForObject(path, String.class);
+        }
 
         final Integer countAvailableLangs = publicDocumentsCache.getLanguages().size();
         final Integer countAvailableDocs = (int) defaultDocumentService.countDocuments() * countAvailableLangs;
