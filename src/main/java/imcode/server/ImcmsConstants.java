@@ -163,6 +163,8 @@ ImcmsConstants {
     public static final String OTHER_CACHE_NAME = "OtherContentCachingFilter";
     public static final String STATIC_CACHE_NAME = "StaticContentCachingFilter";
 
+    public static final String SESSION_ACTIVE_CACHE = "Caching";
+
     private ImcmsConstants() {
         throw new AssertionError();
     }
