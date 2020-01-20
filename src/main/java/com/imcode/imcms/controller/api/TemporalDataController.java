@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -25,8 +26,8 @@ public class TemporalDataController {
     }
 
     @PostMapping("/document-recache")
-    public DataAvailableDocumentInfo addDocumentsInCache() {
-        return temporalDataService.addDocumentsInCacheAndGetDocContentCount();
+    public DataAvailableDocumentInfo addDocumentsInCache(HttpServletRequest request) {
+        return temporalDataService.addDocumentsInCacheAndGetDocContentCount(request);
     }
 
     @GetMapping("/count-cached")
