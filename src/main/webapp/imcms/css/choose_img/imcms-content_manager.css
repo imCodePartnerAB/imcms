@@ -38,11 +38,41 @@
     background-color: #d3d8de;
 }
 
+.imcms-toolbar-images-select {
+    display: flex;
+    border-bottom: 1px solid #d3d8de;
+    margin-right: 27px;
+    padding: 10px 0;
+}
+
+.imcms-toolbar-images-select__sorting {
+    margin-left: auto;
+}
+
 .imcms-content-manager__right-side {
     background-color: #f3f3fc;
     border-bottom: 1px solid #d3d8de;
     position: relative;
-    z-index: 10;
+    overflow-y: visible;
+    padding-right: 0;
+}
+
+.imcms-toolbar-images-select__sorting {
+    width: 15%;
+}
+
+.imcms-toolbar-images-select__sorting .imcms-select__label {
+    margin-bottom: 10px;
+}
+
+.imcms-toolbar-images-select__sorting .imcms-select__drop-down-list {
+    width: 100%;
+}
+
+.imcms-right-side__images-container {
+    overflow-y: auto;
+    height: inherit;
+    margin-top: 5px;
 }
 
 .imcms-content-manager__footer {
