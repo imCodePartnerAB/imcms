@@ -41,7 +41,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -557,16 +556,14 @@ class MappingConfig {
                     return imageFolderDTO;
                 }
 
-                Stream.of(files)
-                        .sorted()
-                        .forEach(file -> {
-                            if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
-                                subFolders.add(this.apply(file, false));
+                for (File file : files) {
+                    if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
+                        subFolders.add(this.apply(file, false));
 
-                            } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
-                                folderFiles.add(fileToImageFileDTO.apply(file));
-                            }
-                        });
+                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                        folderFiles.add(fileToImageFileDTO.apply(file));
+                    }
+                }
 
                 imageFolderDTO.setFiles(folderFiles);
                 imageFolderDTO.setFolders(subFolders);
@@ -593,7 +590,7 @@ class MappingConfig {
     public BiFunction<Path, Boolean, SourceFile> fileToSourceFile(@Value("${rootPath}") Path rootPath) {
         return (path, withContent) -> {
             final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
-            final String physicalPath = path.toAbsolutePath().toString().substring(rootPath.toString().length());;
+            final String physicalPath = path.toAbsolutePath().toString().substring(rootPath.toString().length());
             byte[] contents = null;
             try {
                 if (withContent) contents = Files.readAllBytes(path);
