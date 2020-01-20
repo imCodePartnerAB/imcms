@@ -1,3 +1,7 @@
+.imcms-document-editor__head {
+    position: absolute;
+}
+
 .imcms-document-editor-body {
     height: 100%;
 }
