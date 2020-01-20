@@ -25,16 +25,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -65,6 +61,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Autowired
+    private BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
@@ -81,25 +80,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         documentDataInitializer.cleanRepositories();
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
         Files.deleteIfExists(templateDirectory.resolve(testFileName));
-    }
-
-    private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
-        return new SourceFile(
-                filePath.getFileName().toString(),
-                getRelatedPath(filePath),
-                filePath.toString(),
-                fileType,
-                null
-        );
-    }
-
-    private SourceFile toSourceFile(Path filePath) {
-        final SourceFile.FileType fileType = filePath.toFile().isDirectory() ? DIRECTORY : FILE;
-        return toSourceFile(filePath, fileType);
-    }
-
-    private String getRelatedPath(Path path) {
-        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
     }
 
     @Test
@@ -174,8 +154,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootDir);
         Files.createDirectory(secondRootDir);
         final List<SourceFile> files = Arrays.asList(
-                toSourceFile(firstRootDir),
-                toSourceFile(secondRootDir)
+                fileToSourceFile.apply(firstRootDir, false),
+                fileToSourceFile.apply(secondRootDir, false)
         );
 
         assertEquals(files.size(), fileService.getRootFiles().size());
@@ -192,7 +172,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
-        final List<SourceFile> files = Collections.singletonList(toSourceFile(pathFile));
+        final List<SourceFile> files = Collections.singletonList(fileToSourceFile.apply(pathFile, false));
 
         final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
 
@@ -211,8 +191,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
 
         final List<SourceFile> expectedFiles = Arrays.asList(
-                toSourceFile(pathDir2),
-                toSourceFile(pathFile)
+                fileToSourceFile.apply(pathDir2, false),
+                fileToSourceFile.apply(pathFile, false)
         );
         final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
 
@@ -238,7 +218,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
 
         final Path pathNewFile = pathDir.resolve(" ");
-        final SourceFile newFile = toSourceFile(pathNewFile, FILE);
+        final SourceFile newFile = fileToSourceFile.apply(pathNewFile, true);
 
         assertThrows(EmptyFileNameException.class, () -> fileService.createFile(newFile, false));
 
@@ -252,7 +232,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
 
         final Path pathNewFile = pathDir.resolve(testFileName);
-        final SourceFile newFile = toSourceFile(pathNewFile, FILE);
+        final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
 
         final SourceFile createdFile = fileService.createFile(newFile, false);
 
@@ -269,8 +249,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(Files.exists(pathFile));
 
-        final SourceFile newFile = toSourceFile(pathFile);
-        final SourceFile newDir = toSourceFile(pathDir);
+        final SourceFile newFile = fileToSourceFile.apply(pathFile, false);
+        final SourceFile newDir = fileToSourceFile.apply(pathDir, false);
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newFile, false));
         assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newDir, true));

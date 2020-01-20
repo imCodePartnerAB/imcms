@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.BiFunction;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -74,6 +75,9 @@ public class FileControllerTest extends AbstractControllerTest {
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
 
+    @Autowired
+    private BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
+
     @BeforeEach
     @AfterEach
     public void setUp() throws IOException {
@@ -95,7 +99,7 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final SourceFile sourceFileTest = toSourceFile(pathFile);
+        final SourceFile sourceFileTest = fileToSourceFile.apply(pathFile, true);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/get-file")
                 .param("path", pathFile.toString());
@@ -248,7 +252,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertFalse(Files.exists(pathFile));
 
-        SourceFile sourceFile = toSourceFile(pathFile, FILE);
+        SourceFile sourceFile = fileToSourceFile.apply(pathFile, false);
 
         performPostWithContentExpectOk(sourceFile);
 
@@ -263,10 +267,13 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectory(firstRootPath);
 
-        SourceFile sourceFile = toSourceFile(pathDir, DIRECTORY);
+        final SourceFile sourceFile = fileToSourceFile.apply(pathDir, false);
+        sourceFile.setFileType(DIRECTORY);
 
         assertFalse(Files.exists(pathDir));
+
         performPostWithContentExpectOk(sourceFile);
+
         assertTrue(Files.exists(pathDir));
         assertTrue(Files.isDirectory(pathDir));
     }
@@ -309,7 +316,7 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final SourceFile file = toSourceFile(pathFile);
+        final SourceFile file = fileToSourceFile.apply(pathFile, false);
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(file);
 
@@ -325,7 +332,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectories(pathDir);
 
-        final SourceFile directory = toSourceFile(pathDir);
+        final SourceFile directory = fileToSourceFile.apply(pathDir, false);
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(directory);
 
@@ -552,22 +559,4 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.delete(pathTemplateFile);
     }
 
-    private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
-        return new SourceFile(
-                filePath.getFileName().toString(),
-                getRelatedPath(filePath),
-                filePath.toString(),
-                fileType,
-                fileType == DIRECTORY ? null : new byte[0]
-        );
-    }
-
-    private SourceFile toSourceFile(Path filePath) {
-        final SourceFile.FileType fileType = filePath.toFile().isDirectory() ? DIRECTORY : FILE;
-        return toSourceFile(filePath, fileType);
-    }
-
-    private String getRelatedPath(Path path) {
-        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
-    }
 }
