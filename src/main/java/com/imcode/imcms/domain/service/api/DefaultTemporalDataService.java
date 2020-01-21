@@ -138,6 +138,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public void addDocumentsInCache(HttpServletRequest request) {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
+            publicDocumentsCache.setCachingActive(true);
             final HttpHeaders headers = new HttpHeaders();
             headers.set(IMCMS_HEADER_CACHING_ACTIVE, Boolean.toString(true));
             final HttpEntity httpEntity = new HttpEntity(headers);
@@ -156,10 +157,10 @@ public class DefaultTemporalDataService implements TemporalDataService {
                     restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
                 } catch (HttpClientErrorException e) {
                     logger.error("Status code " + e.getStatusCode() + docId);
-                    throw new HttpClientErrorException(e.getStatusCode());
                 }
             }
             logger.info("Last-date-recache: " + formatter.format(new Date()));
+            publicDocumentsCache.setCachingActive(false);
         }
     }
 
