@@ -1,7 +1,5 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.DataAvailableDocumentInfo;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -27,5 +25,7 @@ public interface TemporalDataService {
 
     String getDateAddedInCacheDocuments() throws IOException;
 
-    DataAvailableDocumentInfo addDocumentsInCacheAndGetDocContentCount(HttpServletRequest request);
+    void addDocumentsInCache(HttpServletRequest request);
+
+    int getTotalAmountDocIdsForCaching();
 }
