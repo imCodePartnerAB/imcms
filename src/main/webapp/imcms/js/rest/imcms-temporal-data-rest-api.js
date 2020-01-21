@@ -30,7 +30,7 @@ define('imcms-temporal-data-rest-api', ['imcms-rest-api'], function (rest) {
         json: false
     });
 
-    api.addDocumentsInCache = () => rest.ajax.call({url: `${url}/document-recache`, type: 'POST', json: false});
+    api.addDocumentsInCache = () => rest.ajax.call({url: `${url}/document-recache`, type: 'POST', json: true});
 
     api.getAmountOfCachedDocuments = () => rest.ajax.call({url: `${url}/count-cached`, type: 'GET', json: false});
 
