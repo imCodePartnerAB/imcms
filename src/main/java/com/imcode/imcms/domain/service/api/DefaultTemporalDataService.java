@@ -155,7 +155,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
                     restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
                 } catch (HttpClientErrorException e) {
-                    logger.error("Page not found " + docId);
+                    logger.error("Status code " + e.getStatusCode() + docId);
+                    throw new HttpClientErrorException(e.getStatusCode());
                 }
             }
             logger.info("Last-date-recache: " + formatter.format(new Date()));
