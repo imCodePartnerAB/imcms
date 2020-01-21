@@ -1,12 +1,15 @@
+.imcms-right-side__images-container::-webkit-scrollbar-track,
 .imcms-right-side::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
+.imcms-right-side__images-container::-webkit-scrollbar,
 .imcms-right-side::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
 }
 
+.imcms-right-side__images-container::-webkit-scrollbar-thumb,
 .imcms-right-side::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }

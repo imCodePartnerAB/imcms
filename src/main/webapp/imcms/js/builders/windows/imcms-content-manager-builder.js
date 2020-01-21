@@ -37,6 +37,25 @@ define(
                 }).buildBlockStructure("<div>");
             }
 
+            function buildRightSide() {
+                return new BEM({
+                    block: 'imcms-right-side',
+                    elements: {
+                        'tools': buildToolsContainer(),
+                        'images-container': $imagesContainer = $("<div>"),
+                    }
+                }).buildBlockStructure('<div>');
+            }
+
+            function buildToolsContainer() {
+                return new BEM({
+                    block: 'imcms-toolbar-images-select',
+                    elements: {
+                        'sorting': imageContentBuilder.buildSortingSelect(),
+                    }
+                }).buildBlockStructure('<div>');
+            }
+
             function buildFooter() {
                 function openCloseFolders() {
                     const $btn = $(this);
@@ -117,7 +136,7 @@ define(
                 elements: {
                     "head": buildHead(),
                     "left-side": $foldersContainer = buildFoldersContainer(),
-                    "right-side": $imagesContainer = $("<div>", {"class": "imcms-right-side"}),
+                    "right-side": buildRightSide(),
                     "footer": $footer = buildFooter()
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});

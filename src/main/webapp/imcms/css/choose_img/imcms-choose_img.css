@@ -69,6 +69,14 @@
     background-color: #fff;
 }
 
+.imcms-choose-img-wrap.imcms-last-added-img {
+    background-color: #d0e9f9;
+}
+
+.imcms-choose-img-wrap.imcms-last-added-img:hover {
+    background-color: #bee4fd;
+}
+
 .imcms-choose-img-wrap.image-chosen {
     background-color: #95e298;
 }
@@ -78,6 +86,7 @@
 }
 
 .image-chosen,
+.imcms-last-added-img,
 .imcms-choose-img-wrap:hover {
     border-radius: 5px;
     -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);

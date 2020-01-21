@@ -19,12 +19,20 @@ define("imcms-image-content-builder",
 
         let selectedFullImagePath;
 
-        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn;
+        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect;
 
         let viewModel = {
             root: {},
             folders: [],
             $images: []
+        };
+
+        const sortingValues = {
+            default: 'default',
+            nameAsc: 'name-asc',
+            nameDesc: 'name-desc',
+            dateNewFirst: 'date-new-first',
+            dateOldFirst: 'date-old-first',
         };
 
         const rootFolderBEM = new BEM({
@@ -368,6 +376,8 @@ define("imcms-image-content-builder",
             folder.$images.forEach($image => {
                 $image.css("display", "block");
             });
+
+            sortImagesBySortingValue(getSelectedSortingBy());
         }
 
         function onFolderClick(folder) {
@@ -643,7 +653,105 @@ define("imcms-image-content-builder",
             });
         }
 
+        function buildSortingSelect() {
+            return $sortingSelect = components.selects.imcmsSelect("<div>", {
+                text: texts.sortBy,
+                onSelected: sortImagesBySortingValue,
+            }, [{
+                text: texts.sorting.default,
+                "data-value": sortingValues.default,
+            }, {
+                text: texts.sorting.az,
+                "data-value": sortingValues.nameAsc,
+            }, {
+                text: texts.sorting.za,
+                "data-value": sortingValues.nameDesc,
+            }, {
+                text: texts.sorting.dateNewFirst,
+                "data-value": sortingValues.dateNewFirst,
+            }, {
+                text: texts.sorting.dateOldFirst,
+                "data-value": sortingValues.dateOldFirst,
+            }]);
+        }
+
+        function getSelectedSortingBy() {
+            return $sortingSelect.getSelectedValue() || sortingValues.default;
+        }
+
+        function sortImagesBySortingValue(sortingValue) {
+            switch (sortingValue) {
+                case sortingValues.nameAsc: {
+                    sortImagesWithCompareFunction((v1, v2) => v1.name.localeCompare(v2.name));
+                    return;
+                }
+                case sortingValues.nameDesc: {
+                    sortImagesWithCompareFunction((v1, v2) => v2.name.localeCompare(v1.name));
+                    return;
+                }
+                case sortingValues.dateNewFirst: {
+                    sortImagesWithCompareFunction((v1, v2) => Date.parse(v2.uploaded) - Date.parse(v1.uploaded));
+                    return;
+                }
+                case sortingValues.dateOldFirst: {
+                    sortImagesWithCompareFunction((v1, v2) => Date.parse(v1.uploaded) - Date.parse(v2.uploaded));
+                    return;
+                }
+                case sortingValue.default:
+                default: {
+                    sortByDefault();
+                    return;
+                }
+            }
+        }
+
+        function sortByDefault() {
+            const lastAddedFiles = activeFolder.files
+                .sort((v1, v2) => Date.parse(v2.uploaded) - Date.parse(v1.uploaded))
+                .slice(0, 5);
+
+            const lastAddedFilesNames = lastAddedFiles.map(file => file.name);
+
+            const sortedByNameWithoutLastAddedFiles = activeFolder.files
+                .sort((v1, v2) => v1.name.localeCompare(v2.name))
+                .filter(file => !lastAddedFilesNames.includes(file.name));
+
+            sortedByNameWithoutLastAddedFiles.unshift(...lastAddedFiles);
+
+            activeFolder.files = sortedByNameWithoutLastAddedFiles;
+
+            updateSortedImages();
+
+            activeFolder.$images.slice(0, 5).forEach(highlightLastAddedImage);
+        }
+
+        function highlightLastAddedImage($image) {
+            $image.addClass('imcms-last-added-img');
+        }
+
+        function sortImagesWithCompareFunction(compareFunction) {
+            activeFolder.files = activeFolder.files.sort(compareFunction);
+
+            updateSortedImages();
+        }
+
+        function updateSortedImages() {
+            selectedImage = null;
+            $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
+
+            viewModel.$images = viewModel.$images.filter($image => $image.css('display') === 'none');
+            activeFolder.$images.forEach($image => $image.remove());
+            activeFolder.$images = null;
+
+            buildImagesNotRecursive(activeFolder);
+
+            activeFolder.$images.forEach($image => $image.css('display', 'block'));
+
+            $imagesContainer.append(activeFolder.$images);
+        }
+
         return {
+            buildSortingSelect,
             getSelectedImage: () => selectedImage,
             loadAndBuildContent: options => {
                 $foldersContainer = options.foldersContainer;

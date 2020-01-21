@@ -380,6 +380,14 @@ const texts = {
                 newFolderName: "Nytt mappnamn",
                 add: "LÄGG TILL+",
                 openImage: "Öppna bild i nytt fönster",
+                sortBy: 'Sortera på',
+                sorting: {
+                    default: 'Standard',
+                    az: 'A-Ö',
+                    za: 'Ö-A',
+                    dateNewFirst: 'Datum (nya först)',
+                    dateOldFirst: 'Date (gamla först)',
+                },
                 error: {
                     removeFailed: 'Misslyckades med att ta bort. Försök igen',
                     checkFailed: 'Misslyckades med att kontrollera. Försök igen',
@@ -1221,6 +1229,14 @@ const texts = {
                 newFolderName: "New folder name",
                 add: "ADD+",
                 openImage: "Open image in new window",
+                sortBy: 'Sort by',
+                sorting: {
+                    default: 'Default',
+                    az: 'A-Z',
+                    za: 'Z-A',
+                    dateNewFirst: 'Date (new first)',
+                    dateOldFirst: 'Date (old first)',
+                },
                 error: {
                     removeFailed: 'Failed to remove. Try again',
                     checkFailed: 'Failed to check. Try again',
