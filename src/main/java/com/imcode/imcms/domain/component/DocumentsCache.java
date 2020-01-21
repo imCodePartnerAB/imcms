@@ -30,8 +30,6 @@ public interface DocumentsCache {
 
     void setDisableCachesByProperty();
 
-    void addDocsInCache();
-
     void setStateImcmsCaching(HttpServletRequest request);
 
     long getAmountOfCachedDocuments();
