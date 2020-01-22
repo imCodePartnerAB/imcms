@@ -160,6 +160,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
                         path = String.format("%s://%s:%s/", request.getScheme(), request.getServerName(), serverPort) + docData;
                     }
 
+                    logger.info("Will call request by URL " + path);
                     restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
                     publicDocumentsCache.setAmountOfCachedDocuments(i + 1);
                 } catch (HttpClientErrorException e) {
