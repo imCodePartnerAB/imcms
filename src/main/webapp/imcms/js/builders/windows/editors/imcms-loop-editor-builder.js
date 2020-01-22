@@ -20,12 +20,12 @@ define("imcms-loop-editor-builder",
 
         let currentLoop;
 
-        const LOOP_ITEM_CLASS = "imcms-loop-item";
+        const LOOP_ITEM_CLASS = "imcms-document-item";
 
         const itemsBEM = new BEM({
-            block: "imcms-loop-items",
+            block: "imcms-document-items-list",
             elements: {
-                "item": LOOP_ITEM_CLASS
+                "document-item": LOOP_ITEM_CLASS
             }
         });
 
@@ -131,7 +131,7 @@ define("imcms-loop-editor-builder",
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
-                block: "imcms-loop-list-titles",
+                block: "imcms-document-list-titles",
                 elements: {
                     "title": [$id, $content, $isEnabled]
                 }
@@ -177,7 +177,7 @@ define("imcms-loop-editor-builder",
 
         function buildLoopList(loop) {
             return new BEM({
-                block: "imcms-loop-list",
+                block: "imcms-document-list",
                 elements: {
                     "titles": buildTitles(),
                     "items": $listItems = buildItems(loop)
