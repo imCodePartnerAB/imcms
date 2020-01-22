@@ -15,11 +15,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-import static imcode.server.ImcmsConstants.IMCMS_HEADER_CACHING_ACTIVE;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -35,7 +32,6 @@ public class PublicDocumentsCache implements DocumentsCache {
     private final List<String> languages;
 
     private AtomicLong amountDocsInCaches = new AtomicLong(-1);
-    private AtomicBoolean isCachingActive = new AtomicBoolean(false);
 
     private Ehcache cache;
     //set on String because may has default value empty line - false
@@ -140,21 +136,12 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
-    public void setStateImcmsCaching(HttpServletRequest request) {
-        if (request.getHeader(IMCMS_HEADER_CACHING_ACTIVE) != null || isCachingActive.get()) {
-            amountDocsInCaches.incrementAndGet();
-        } else {
-            amountDocsInCaches.set(-1);
-        }
-    }
-
-    @Override
     public long getAmountOfCachedDocuments() {
         return amountDocsInCaches.get();
     }
 
     @Override
-    public void setCachingActive(boolean isActive) {
-        isCachingActive.set(isActive);
+    public void setAmountOfCachedDocuments(Integer number) {
+        amountDocsInCaches.set(number);
     }
 }
