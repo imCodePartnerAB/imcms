@@ -27,15 +27,15 @@
 }
 
 .imcms-menu-item__hasNewerVersion {
-    width: 3%;
-    background: url("/imcms/images/icon_newer_version.png") no-repeat center;
-    max-height: 45px;
-    line-height: 45px;
-    text-transform: none;
-    text-align: left;
-    float: left;
-    text-overflow: ellipsis;
-    overflow: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imcms-menu-item__hasNewerVersion .imcms-control {
+    cursor: auto;
+    width: 18px;
+    height: 18px;
 }
 
 .imcms-menu-item__docId {

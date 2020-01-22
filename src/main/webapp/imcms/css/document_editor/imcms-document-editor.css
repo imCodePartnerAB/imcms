@@ -235,7 +235,15 @@
 }
 
 .imcms-document-item__info--currentVersion {
-    background: url("/imcms/images/icon_newer_version.png") no-repeat center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imcms-document-item__info--currentVersion .imcms-control {
+    cursor: auto;
+    width: 18px;
+    height: 18px;
 }
 
 @media screen and (max-height: 800px) {
