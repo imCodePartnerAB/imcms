@@ -37,6 +37,13 @@ public class DefaultTemporalDataControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void getAmountOfTextDocDataForCaching_Expected_OkResult() throws Exception {
+        final String linkData = controllerPath() + "/count-data";
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(linkData);
+        performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
     public void getAmountOfIndexedDocuments_Expected_OkResult() throws Exception {
         final String linkData = controllerPath() + "/indexed-documents-amount";
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(linkData);
