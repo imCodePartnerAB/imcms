@@ -158,3 +158,8 @@
     background-size: contain;
     background-image: url("/imcms/images/controls/icon_images_white.png");
 }
+
+.imcms-control--star {
+    background-size: contain;
+    background-image: url("/imcms/images/controls/icon_newer_version.png");
+}

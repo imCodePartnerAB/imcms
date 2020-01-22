@@ -50,5 +50,7 @@ module.exports = {
 
     images: onclick => buildControl('images', onclick),
 
+    star: onclick => buildControl('star', onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };
