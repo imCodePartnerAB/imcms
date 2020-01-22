@@ -27,5 +27,5 @@ public interface TemporalDataService {
 
     void addDocumentsInCache(HttpServletRequest request);
 
-    int getTotalAmountDocIdsForCaching();
+    int getTotalAmountTextDocDataForCaching();
 }

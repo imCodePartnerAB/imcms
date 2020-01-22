@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.TemporalDataService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -138,35 +140,41 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public void addDocumentsInCache(HttpServletRequest request) {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
-            publicDocumentsCache.setCachingActive(true);
+            publicDocumentsCache.setAmountOfCachedDocuments(0);
             final HttpHeaders headers = new HttpHeaders();
             headers.set(IMCMS_HEADER_CACHING_ACTIVE, Boolean.toString(true));
+
             final HttpEntity httpEntity = new HttpEntity(headers);
             final int serverPort = request.getServerPort();
-            String path;
+            final List<String> docIdsAndAlias = getCountPublishedTextDocIdAndAlias();
 
-            for (Integer docId : getCountPublishedTextDocIds()) {
+            String path = null;
+
+            for (int i = 0; i < docIdsAndAlias.size(); i++) {
+                final String docData = docIdsAndAlias.get(i);
                 try {
                     RestTemplate restTemplate = new RestTemplate();
                     if ((serverPort == 80) || (serverPort == 443)) {
-                        path = String.format("%s://%s/", request.getScheme(), request.getServerName()) + docId;
+                        path = String.format("%s://%s/", request.getScheme(), request.getServerName()) + docData;
                     } else {
-                        path = String.format("%s://%s:%s/", request.getScheme(), request.getServerName(), serverPort) + docId;
+                        path = String.format("%s://%s:%s/", request.getScheme(), request.getServerName(), serverPort) + docData;
                     }
 
                     restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
+                    publicDocumentsCache.setAmountOfCachedDocuments(i + 1);
                 } catch (HttpClientErrorException e) {
-                    logger.error("Status code " + e.getStatusCode() + docId);
+                    logger.error(String.format("Status code %s , on the path URL %s !", e.getStatusCode(), path));
                 }
             }
             logger.info("Last-date-recache: " + formatter.format(new Date()));
-            publicDocumentsCache.setCachingActive(false);
+            publicDocumentsCache.setAmountOfCachedDocuments(-1);
+
         }
     }
 
     @Override
-    public int getTotalAmountDocIdsForCaching() {
-        return getCountPublishedTextDocIds().size();
+    public int getTotalAmountTextDocDataForCaching() {
+        return getCountPublishedTextDocIdAndAlias().size();
     }
 
     private String getLastDateModification(Pattern pattern) throws IOException {
@@ -188,13 +196,25 @@ public class DefaultTemporalDataService implements TemporalDataService {
         return validDateLine;
     }
 
-    private List<Integer> getCountPublishedTextDocIds() {
-        return documentMapper.getAllDocumentIds().stream()
+    private List<String> getCountPublishedTextDocIdAndAlias() {
+        final List<String> docIdsAndAlias = new ArrayList<>();
+        final List<DocumentDTO> documentsDTO = documentMapper.getAllDocumentIds().stream()
                 .map(defaultDocumentService::get)
                 .filter(doc -> doc.getCommonContents().stream().findAny().get().isEnabled())
                 .filter(doc -> doc.getType().equals(TEXT))
                 .filter(doc -> doc.getPublicationStatus().equals(APPROVED))
-                .map(DocumentDTO::getId)
                 .collect(Collectors.toList());
+
+        docIdsAndAlias.addAll(documentsDTO.stream()
+                .map(DocumentDTO::getId)
+                .map(Objects::toString)
+                .collect(Collectors.toList()));
+
+        docIdsAndAlias.addAll(documentsDTO.stream()
+                .map(DocumentDTO::getAlias)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList()));
+
+        return docIdsAndAlias;
     }
 }
