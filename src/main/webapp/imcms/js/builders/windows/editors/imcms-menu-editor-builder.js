@@ -811,12 +811,11 @@ define("imcms-menu-editor-builder",
                     });
             }
 
-            const $blockVersion = $('<div>');
-
+            const $blockVersion = menuElementTree.hasNewerVersion
+                ? components.controls.star()
+                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
             elements.push({
-                hasNewerVersion: menuElementTree.hasNewerVersion
-                    ? $blockVersion.css({'opacity': '1'})
-                    : $blockVersion.css({'opacity': '0'})
+                hasNewerVersion: $('<div>').addClass('imcms-grid-coll-1').append($blockVersion)
             });
 
 
@@ -903,7 +902,7 @@ define("imcms-menu-editor-builder",
                 });
 
                 let $versionColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-17",
+                    "class": "imcms-grid-coll-1",
                     text: texts.version
                 });
                 let containerHeadTitle;

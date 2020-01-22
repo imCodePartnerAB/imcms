@@ -892,14 +892,10 @@ define("imcms-document-editor-builder",
             const $docItemPublished = components.texts.titleText("<div>", document.published, {title: document.published});
             $docItemPublished.modifiers = ["col-6", "published"];
 
-            const $currentVersion = document.currentVersion === WORKING_VERSION
-                ? $('<div>', {
-                    value: document.currentVersion
-                }).css({'opacity': '1'})
-
-                : $('<div>', {
-                    value: document.currentVersion
-                }).css({'opacity': '0'});
+            const $star = document.currentVersion === WORKING_VERSION
+                ? components.controls.star()
+                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
+            const $currentVersion = $('<div>').append($star);
             $currentVersion.modifiers = ['col-1', 'currentVersion'];
 
             const $docItemType = components.texts.titleText("<div>", document.type);
