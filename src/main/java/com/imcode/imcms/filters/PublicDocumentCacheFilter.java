@@ -101,7 +101,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                 if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
                         super.doFilter(request, response, chain);
-                        documentsCache.setStateImcmsCaching(request);
                         return;
                     } catch (Exception e) {
                         throw new ServletException(e);
@@ -110,7 +109,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             }
             documentsCache.setDisableCachesByProperty();
         }
-
         chain.doFilter(request, response);
     }
 

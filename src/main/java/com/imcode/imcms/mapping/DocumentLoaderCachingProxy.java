@@ -3,7 +3,6 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.PropertyService;
@@ -11,16 +10,13 @@ import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Config;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -174,37 +170,6 @@ public class DocumentLoaderCachingProxy {
 
             return loader.loadAndInitContent(doc);
         });
-    }
-
-    /**
-     * Adding all exist documents to cache
-     */
-    @SuppressWarnings("unchecked")
-    public void addDocumentDataInCaches(final int docId, final String docLanguageCode) {
-        final List<CacheWrapper> caches = Arrays.asList(defaultDocs, workingDocs);
-        final Ehcache publicEhcache = Imcms.getServices().getManagedBean(PublicDocumentsCache.class).getCache();
-        final Supplier<DocumentDomainObject> docLoadedData = () -> {
-            DocumentMeta meta = getMeta(docId);
-
-            if (meta == null) {
-                return null;
-            }
-
-            getDocIdByAlias(StringUtils.defaultIfBlank(meta.getAlias(), docId + ""));
-            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
-            DocumentVersion version = versionInfo.getDefaultVersion();
-            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
-
-            doc.setMeta(meta.clone());
-            doc.setVersionNo(version.getNo());
-            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
-
-            return loader.loadAndInitContent(doc);
-        };
-        if (publicEhcache.get(new DocCacheKey(docId, docLanguageCode)) == null) {
-            publicEhcache.put(new Element(new DocCacheKey(docId, docLanguageCode), docLoadedData));
-        }
-        caches.forEach(typeCache -> typeCache.getOrPut(new DocCacheKey(docId, docLanguageCode), docLoadedData));
     }
 
     /**

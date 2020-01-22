@@ -6,15 +6,15 @@ define(
     'imcms-temporal-data-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-temporal-data-rest-api',
-        'imcms-components-builder', 'jquery', 'imcms-doc-view-request-api'
+        'imcms-components-builder', 'jquery'
     ],
-    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $, requestDocView) {
+    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $) {
 
         texts = texts.superAdmin.temporalContent;
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
-        const TIME_PER_ONE_RECACHE = 45;
+        const TIME_PER_ONE_RECACHE = 500;
         const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
@@ -405,24 +405,16 @@ define(
                     if (currentAmount === -1) {
                         $loading.text('0%');
                         $loading.show();
-                        temporalDataApi.addDocumentsInCache().done(dataDocInfo => {
-                            time.setMillis(calculateTimeByAmount(dataDocInfo.countAvailableDocs, 0, TIME_PER_ONE_RECACHE));
+                        temporalDataApi.getTotalForCachingDocIdsAndAlias().done(totalAmount => {
+                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_RECACHE));
                             time.getLabel().show();
 
+                            temporalDataApi.addDocumentsInCache().done(); //setInterval 2 sec?
+
                             const interval = setInterval(
-                                () => updateLoading($button, $loading, $success, interval, dataDocInfo.countAvailableDocs, date, time),
+                                () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
                                 LOADING_INTERVAL
                             );
-
-
-                            // dataDocInfo.docIds.forEach(docId => {
-                            //     let requestData = {
-                            //         isReCache: true
-                            //     };
-                            //     requestDocView.simulationDocRequest(docId, requestData).done(
-                            //
-                            //     );
-                            // })
                         });
 
                     } else {

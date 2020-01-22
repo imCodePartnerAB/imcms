@@ -34,6 +34,8 @@ define('imcms-temporal-data-rest-api', ['imcms-rest-api'], function (rest) {
 
     api.getAmountOfCachedDocuments = () => rest.ajax.call({url: `${url}/count-cached`, type: 'GET', json: false});
 
+    api.getTotalForCachingDocIdsAndAlias = () => rest.ajax.call({url: `${url}/count-data`, type: 'GET', json: false});
+
     api.getDateReCacheDocuments = () => rest.ajax.call({url: `${url}/date-recache`, type: 'GET', json: false});
 
     return api;

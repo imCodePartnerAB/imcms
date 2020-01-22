@@ -1,12 +1,9 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
-import lombok.Getter;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
@@ -17,16 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-import static imcode.server.ImcmsConstants.SESSION_ACTIVE_CACHE;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -34,19 +24,12 @@ import static imcode.server.ImcmsConstants.SESSION_ACTIVE_CACHE;
  * 06.09.18.
  */
 @Component
-@Getter
 public class PublicDocumentsCache implements DocumentsCache {
 
     private static final Logger logger = Logger.getLogger(PublicDocumentsCache.class);
     private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
 
     private final List<String> languages;
-    private final DocumentMapper documentMapper;
-    private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
-
-    private final static Object lock = new Object();
-    private final ExecutorService cacheRebuildExecutor = Executors.newSingleThreadExecutor();
-    private volatile Future cacheRebuildFuture = CompletableFuture.completedFuture(null);
 
     private AtomicLong amountDocsInCaches = new AtomicLong(-1);
 
@@ -56,11 +39,8 @@ public class PublicDocumentsCache implements DocumentsCache {
     private String isDisableCache;
 
     @Autowired
-    public PublicDocumentsCache(LanguageService languageService, DocumentMapper documentMapper,
-                                DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+    public PublicDocumentsCache(LanguageService languageService) {
         languages = languageService.getAvailableLanguages().stream().map(Language::getCode).collect(Collectors.toList());
-        this.documentMapper = documentMapper;
-        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
     }
 
     @Override
@@ -156,46 +136,12 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
-    public void addDocsInCache() {
-        synchronized (lock) {
-            if (cacheRebuildFuture.isDone()) {
-                cacheRebuildFuture = cacheRebuildExecutor.submit(this::addDocumentInCaches);
-            }
-        }
-    }
-
-    @Override
-    public void setStateImcmsCaching(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        if (session.getAttribute(SESSION_ACTIVE_CACHE) != null) {
-            amountDocsInCaches.incrementAndGet();
-        } else {
-            amountDocsInCaches.set(-1);
-        }
-    }
-
-    @Override
     public long getAmountOfCachedDocuments() {
         return amountDocsInCaches.get();
     }
 
-    private void addDocumentInCaches() {
-        logger.debug("Start adding docs in public cache.");
-        final List<Integer> documentIds = documentMapper.getAllDocumentIds();
-
-        amountDocsInCaches.set(0);
-
-        languages.forEach(langCode -> {
-            for (Integer docId : documentIds) {
-                documentLoaderCachingProxy.addDocumentDataInCaches(docId, langCode);
-                logger.info(String.format("Document with id %d and language %s was added in cache", docId, langCode));
-
-                amountDocsInCaches.incrementAndGet();
-                logger.info("Last amount cache " + amountDocsInCaches.get());
-            }
-        });
-
-        amountDocsInCaches.set(-1);
-        logger.info("All documents have added in public cache.");
+    @Override
+    public void setAmountOfCachedDocuments(Integer number) {
+        amountDocsInCaches.set(number);
     }
 }
