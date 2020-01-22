@@ -124,7 +124,7 @@
     float: right;
 }
 
-.imcms-document-items-list__document-items .imcms-document-items__document-item:hover {
+.imcms-document-item:hover {
     background: #d0e9f9;
 }
 

@@ -16,11 +16,13 @@
 .imcms-document-item__info--col-3,
 .imcms-document-item__info--col-4,
 .imcms-document-item__info--col-5,
+.imcms-document-item__info--col-10,
 .imcms-document-list-titles__title--col-1,
 .imcms-document-list-titles__title--col-2,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-list-titles__title--col-4,
 .imcms-document-list-titles__title--col-5,
+.imcms-document-list-titles__title--col-10,
 .imcms-loop-list-titles__title--col-1,
 .imcms-loop-list-titles__title--col-2,
 .imcms-loop-list-titles__title--col-3,
@@ -140,6 +142,8 @@
     width: 75%;
 }
 
+.imcms-document-list-titles__title--col-10,
+.imcms-document-item__info--col-10,
 .imcms-loop-list-titles__title--col-10,
 .imcms-loop-item__info--col-10,
 .imcms-grid-coll-10 {

@@ -1,22 +1,3 @@
-.imcms-loop-items {
-    display: block;
-    position: relative;
-    width: 100%;
-}
-
-.imcms-loop-items:before {
-    content: "";
-    display: block;
-    clear: both;
-}
-
-.imcms-loop-list__items {
-    display: block;
-    padding-top: 12px;
-    overflow: auto;
-    width: 100%;
-}
-
 .imcms-menu-editor__body .imcms-loop-list__items {
     height: -webkit-calc(100% - 25px);
     height: -moz-calc(100% - 25px);
@@ -25,10 +6,14 @@
     height: calc(100% - 25px);
 }
 
-.imcms-loop-editor .imcms-loop-list__items {
+.imcms-loop-editor .imcms-document-list__items {
     height: -webkit-calc(100% - 80px);
     height: -moz-calc(100% - 80px);
     height: -ms-calc(100% - 80px);
     height: -o-calc(100% - 80px);
     height: calc(100% - 80px);
+}
+
+.imcms-loop-editor .imcms-document-item .imcms-checkbox label:before {
+    top: 15px;
 }
