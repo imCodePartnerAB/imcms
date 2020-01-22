@@ -29,9 +29,9 @@ public class TemporalDataController {
         temporalDataService.addDocumentsInCache(request);
     }
 
-    @GetMapping("/count-docId")
-    public int getAmountOfTextDocIds() {
-        return temporalDataService.getTotalAmountDocIdsForCaching();
+    @GetMapping("/count-data")
+    public int getAmountOfTextDocDataForCaching() {
+        return temporalDataService.getTotalAmountTextDocDataForCaching();
     }
 
     @GetMapping("/count-cached")
