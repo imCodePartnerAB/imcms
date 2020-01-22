@@ -109,8 +109,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             }
             documentsCache.setDisableCachesByProperty();
         }
-
-        documentsCache.setStateImcmsCaching(request);
         chain.doFilter(request, response);
     }
 
