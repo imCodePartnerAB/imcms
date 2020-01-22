@@ -14,7 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -163,8 +163,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
                     logger.info("Will call request by URL " + path);
                     restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
                     publicDocumentsCache.setAmountOfCachedDocuments(i + 1);
-                } catch (HttpClientErrorException e) {
-                    logger.error(String.format("Status code %s , on the path URL %s !", e.getStatusCode(), path));
+                } catch (RestClientException r) {
+                    logger.error(String.format("Not connect on the path URL %s !", path));
                 }
             }
             logger.info("Last-date-recache: " + formatter.format(new Date()));
