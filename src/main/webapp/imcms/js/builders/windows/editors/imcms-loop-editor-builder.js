@@ -58,7 +58,11 @@ define("imcms-loop-editor-builder",
         }
 
         function onLoopSaved() {
-            reloadElement($($tag.children()[0]));
+            reloadElement($tag, () => {
+                // TODO: It doesn't work with import in arguments
+                const editorsInit = require("imcms-editors-initializer");
+                editorsInit.initEditors();
+            });
             loopWindowBuilder.closeWindow();
             events.trigger("imcms-version-modified");
         }

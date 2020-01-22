@@ -56,7 +56,7 @@
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
-                <div class="imcms-editor-area__content imcms-editor-area__content--loop imcms-editor-content">${loopContent}</div>
+                <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
                         <div class="imcms-editor-area__control-title">${editLabel}</div>
