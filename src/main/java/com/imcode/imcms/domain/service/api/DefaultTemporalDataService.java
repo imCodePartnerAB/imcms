@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -206,15 +205,12 @@ public class DefaultTemporalDataService implements TemporalDataService {
                 .filter(doc -> doc.getPublicationStatus().equals(APPROVED))
                 .collect(Collectors.toList());
 
-        docIdsAndAlias.addAll(documentsDTO.stream()
-                .map(DocumentDTO::getId)
-                .map(Objects::toString)
-                .collect(Collectors.toList()));
-
-        docIdsAndAlias.addAll(documentsDTO.stream()
-                .map(DocumentDTO::getAlias)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList()));
+        for (DocumentDTO documentDTO : documentsDTO) {
+            if (StringUtils.isNotBlank(documentDTO.getAlias())) {
+                docIdsAndAlias.add(documentDTO.getAlias());
+            }
+            docIdsAndAlias.add(documentDTO.getId().toString());
+        }
 
         return docIdsAndAlias;
     }
