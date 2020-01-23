@@ -103,9 +103,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                         super.doFilter(request, response, chain);
                         return;
                     } catch (Exception e) {
-                        if (documentsCache.getAmountOfCachedDocuments() == -1) {
-                            throw new ServletException(e);
-                        }
+                        throw new ServletException(e);
                     }
                 }
             }
