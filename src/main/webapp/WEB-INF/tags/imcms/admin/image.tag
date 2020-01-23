@@ -63,7 +63,7 @@
         </c:if>
 
         <c:set var="alt"
-               value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
+               value="${empty image.alternateText ? ' alt=\" \"' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
 
         <c:choose>
             <c:when test="${empty image.linkUrl}">
