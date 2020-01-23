@@ -963,7 +963,10 @@ define("imcms-menu-editor-builder",
                 });
             }
 
-            return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
+            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
+            $newDocButtonContainer.modifiers = ["grid-col-2"];
+
+            return $newDocButtonContainer;
         }
 
         let mapTypesSort = new Map();
