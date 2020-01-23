@@ -14,7 +14,7 @@ define(
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
-        const TIME_PER_ONE_RECACHE = 500;
+        const TIME_PER_ONE_RECACHE = 3000;
         const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
