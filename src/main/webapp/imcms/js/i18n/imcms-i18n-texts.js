@@ -255,7 +255,7 @@ const texts = {
         editors: {
             document: {
                 title: "Dokumenthanterare",
-                newDoc: "Nytt dokument",
+                newDoc: "Ny",
                 freeText: "Fri text",
                 freeTextPlaceholder: "Skriv för att söka dokument",
                 owner: "Ägare",
@@ -271,13 +271,13 @@ const texts = {
                 },
                 sort: {
                     id: "ID",
-                    title: "Titel",
+                    title: "Rubrik",
                     alias: "Alias",
                     modified: "Ändrad",
-                    published: "Publicerad",
+                    published: "Publ",
                     type: "Typ",
                     status: "Status",
-                    version: 'Version'
+                    version: 'Ver'
                 },
                 status: {
                     published: "Publicerad",
@@ -324,11 +324,11 @@ const texts = {
                 edit: "Redigera Sid-info",
                 id: "ID",
                 docTitle: "Rubrik",
-                publishDate: 'Publicerad',
+                publishDate: 'Publ',
                 publishedTimePrompt: 'Aldrig publicerad!',
                 modifiedDate: 'Ändrad',
                 status: "Status",
-                version: 'Version',
+                version: 'Ver',
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 titleTypeSort: "Sortera på",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
@@ -1122,11 +1122,11 @@ const texts = {
                     id: "ID",
                     title: "Title",
                     alias: "Alias",
-                    modified: "Modified",
-                    published: "Published",
+                    modified: "Changed",
+                    published: "Publ",
                     type: "Type",
-                    status: "Status",
-                    version: 'Version'
+                    status: "State",
+                    version: 'Ver'
                 },
                 status: {
                     published: "Approved, published",
@@ -1173,11 +1173,11 @@ const texts = {
                 edit: "Edit",
                 id: "ID",
                 docTitle: "Title",
-                publishDate: 'Published',
-                modifiedDate: 'Modified',
+                publishDate: 'Publ',
+                modifiedDate: 'Changed',
                 publishedTimePrompt: 'Never published!',
-                status: "Status",
-                version: 'Version',
+                status: "State",
+                version: 'Ver',
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
                 titleTypeSort: "Sort on",
@@ -1194,8 +1194,8 @@ const texts = {
                     alphabeticalDesc: 'Alphabetical (Z-A)',
                     publishedDateAsc: 'Published (new first)',
                     publishedDateDesc: 'Published (old first)',
-                    modifiedDateAsc: 'Modified (new first)',
-                    modifiedDateDesc: 'Modified (old first)',
+                    modifiedDateAsc: 'Changed (new first)',
+                    modifiedDateDesc: 'Changed (old first)',
 
                 }
             },
