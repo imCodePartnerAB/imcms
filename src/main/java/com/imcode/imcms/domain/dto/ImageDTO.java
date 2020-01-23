@@ -83,7 +83,7 @@ public class ImageDTO extends ImageData {
         this.linkUrl = ofNullable(from.linkUrl).orElse("");
         this.generatedFilePath = ofNullable(from.generatedFilePath).orElse("");
         this.generatedFilename = ofNullable(from.generatedFilename).orElse("");
-        this.alternateText = StringUtils.defaultIfEmpty(from.alternateText.trim(), " ");
+        this.alternateText = from.getAlternateText() != null ? StringUtils.defaultIfEmpty(from.alternateText.trim(), " ") : " ";
         this.format = from.format;
         this.width = from.width;
         this.height = from.height;
