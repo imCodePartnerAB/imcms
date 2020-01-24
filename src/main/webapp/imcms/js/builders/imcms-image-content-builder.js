@@ -475,7 +475,12 @@ define("imcms-image-content-builder",
             imageFile.path = `${getFolderPath(activeFolder.$folder)}/${imageFile.name}`;
 
             imageFilesREST.remove(imageFile)
-                .done(response => response && $(element).parent().parent().remove())
+                .done(response => {
+                    response && $(element).parent().parent().remove();
+
+                    const indexOfImageFileForDeleting = activeFolder.files.findIndex(file => file.name === imageFile.name);
+                    activeFolder.files.splice(indexOfImageFileForDeleting, 1);
+                })
                 .fail(response => buildImageUsagesModal(response.responseJSON));
         }
 
