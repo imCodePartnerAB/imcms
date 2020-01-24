@@ -1,9 +1,7 @@
 .imcms-editor-area__text-toolbar .text-toolbar-wrapper,
 .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel {
-    border: 2px solid rgba(0, 149, 217, 0.58) !important; /* this should be important, inline styles need to be overwritten */
-    border-bottom-width: 1px !important; /* this should be important, inline styles need to be overwritten */
+    border: 0 !important; /* this should be important, inline styles need to be overwritten */
     width: 100% !important; /* this should be important, inline styles need to be overwritten */
-    border-radius: 5px 5px 0 0;
 }
 
 .mce-btn-group {
@@ -241,6 +239,13 @@
 .mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last .mce-container-body.mce-stack-layout {
     height: 30px !important;
     width: 100% !important;
+}
+
+.mce-panel,
+.text-toolbar-wrapper {
+    background-color: #8bc7e4 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
 }
 
 .imcms-editor-content--text {
