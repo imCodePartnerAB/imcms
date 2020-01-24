@@ -6,7 +6,6 @@ import imcode.util.image.Format;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.beans.ConstructorProperties;
 import java.util.List;
@@ -83,7 +82,7 @@ public class ImageDTO extends ImageData {
         this.linkUrl = ofNullable(from.linkUrl).orElse("");
         this.generatedFilePath = ofNullable(from.generatedFilePath).orElse("");
         this.generatedFilename = ofNullable(from.generatedFilename).orElse("");
-        this.alternateText = from.getAlternateText() != null ? StringUtils.defaultIfEmpty(from.alternateText.trim(), " ") : " ";
+        this.alternateText = defaultToTrim(from.getAlternateText());
         this.format = from.format;
         this.width = from.width;
         this.height = from.height;
@@ -103,5 +102,9 @@ public class ImageDTO extends ImageData {
     @ConstructorProperties({"spaceAround"})
     public ImageDTO(SpaceAroundDTO spaceAround) {
         this.spaceAround = spaceAround;
+    }
+
+    private String defaultToTrim(String text) {
+        return null == text || text.isEmpty() ? " " : text.trim();
     }
 }
