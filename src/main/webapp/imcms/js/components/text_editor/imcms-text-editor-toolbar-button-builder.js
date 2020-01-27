@@ -12,12 +12,12 @@ define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', 'jquery
             return $btn = new BEM({
                 block: blockName,
                 elements: {
-                    'icon': $('<div>', {
+                    'icon': $('<button>', {
                         'class': 'text-toolbar__icon'
                     })
                 }
             }).buildBlockStructure('<div>', {
-                class: 'text-toolbar__button'
+                class: 'mce-widget mce-btn text-toolbar__button'
                     + (isDisabled ? (' ' + classDisabled) : '')
                     + (isActive ? (' ' + classActive) : ''),
                 title: title,

@@ -20,6 +20,7 @@
 .imcms-editor-area__text-toolbar .text-toolbar__button {
     display: inline-block;
     width: 24px;
+    margin-right: 2px;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button--active {
@@ -37,7 +38,8 @@
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .text-toolbar__icon {
-    height: 20px;
+    height: 100%;
+    width: 100%;
 }
 
 .text-toolbar-wrapper {
