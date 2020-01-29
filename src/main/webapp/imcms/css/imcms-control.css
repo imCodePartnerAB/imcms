@@ -12,6 +12,13 @@
 
 .imcms-control--vertical_move {
     background-image: url("/imcms/images/controls/icon_up_down_move_control.svg");
+    opacity: 0.4;
+}
+
+.imcms-control--vertical_move:hover {
+    opacity: 1;
+    /* Black to blue (#009FDC) */
+    filter: invert(55%) sepia(97%) saturate(4160%) hue-rotate(169deg) brightness(99%) contrast(101%);
 }
 
 .imcms-control--download {
