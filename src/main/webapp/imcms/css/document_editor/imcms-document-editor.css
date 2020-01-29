@@ -16,7 +16,7 @@
 
 .imcms-document-list__titles {
     display: flex;
-    padding: 0 27px 0 70px;
+    padding: 0 27px 0 35px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
 }
@@ -96,9 +96,9 @@
 }
 
 .imcms-document-item {
-    display: block;
+    display: flex;
     overflow: hidden;
-    padding-left: 70px;
+    padding-left: 35px;
     padding-right: 20px;
     position: relative;
     width: 100%;
@@ -111,8 +111,10 @@
     float: left;
     height: 45px;
     padding-left: 5px;
+    margin-right: 3px;
     text-overflow: ellipsis;
     overflow: inherit;
+    font-weight: normal;
 }
 
 .imcms-document-item__controls {
@@ -165,6 +167,10 @@
     padding-top: 12px;
     overflow: auto;
     width: 100%;
+}
+
+.imcms-document-item__info--id {
+    text-align: right;
 }
 
 .imcms-document-items__document-item--published-waiting,
