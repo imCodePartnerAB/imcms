@@ -70,6 +70,17 @@ define("imcms-document-editor-builder",
         const sortAscClass = "." + sortAscClassName;
         const sortDescClass = "." + sortDescClassName;
 
+        const menuItemsListSelector = '.imcms-menu-items-list';
+        const menuItemsSelector = '.imcms-menu-items';
+
+        function get$menuItemsList() {
+            return $(menuItemsListSelector);
+        }
+
+        function get$menuItems() {
+            return $(menuItemsSelector);
+        }
+
         function buildErrorBlock() {
             errorMsg = components.texts.errorText("<div>", texts.error.searchFailed, {style: 'display: none;'});
             return errorMsg;
@@ -297,7 +308,7 @@ define("imcms-document-editor-builder",
         }
 
         function highlightDefaultSorting() {
-            const $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
+            const $defaultSortingHeader = $(".imcms-document-editor-body .imcms-document-list-titles__title").first();
             highlightSorting($defaultSortingHeader);
         }
 
@@ -370,42 +381,48 @@ define("imcms-document-editor-builder",
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
                 bySorting: defaultSortPropertyValue,
-                modifiers: ["col-1"],
+                elementClass: "imcms-grid-coll-18",
             });
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
                 bySorting: "meta_headline_" + imcms.userLanguage,
-                modifiers: ["col-3"],
+                elementClass: "imcms-flex--flex-3",
             });
 
             const $aliasColumnHead = buildTitleRow({
                 text: texts.sort.alias,
                 bySorting: "alias",
-                modifiers: ["col-2"],
+                elementClass: "imcms-flex--flex-2",
             });
 
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
                 bySorting: "modified_datetime",
-                modifiers: ["col-6"],
+                elementClass: "imcms-grid-coll-13",
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: "publication_start_datetime",
-                modifiers: ["col-6"],
+                elementClass: "imcms-grid-coll-13",
             });
 
             const $versionColumnHead = buildTitleRow({
                 text: texts.sort.version,
                 bySorting: 'version_no',
-                modifiers: ['col-1'],
+                elementClass: 'imcms-grid-coll-18',
             });
 
-            const $typeColumnHead = buildTitleRow({text: texts.sort.type, modifiers: ["col-1"]});
+            const $typeColumnHead = buildTitleRow({
+                text: texts.sort.type,
+                elementClass: "imcms-grid-coll-18"
+            });
 
-            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-7"]});
+            const $statusColumnHead = buildTitleRow({
+                text: texts.sort.status,
+                elementClass: "imcms-grid-coll-17"
+            });
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -424,7 +441,7 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildTitleRow({text, bySorting, modifiers}) {
+        function buildTitleRow({text, bySorting, modifiers, elementClass}) {
             const $emptyIcon = $('<div>');
 
             const $sortIcon = bySorting
@@ -442,6 +459,7 @@ define("imcms-document-editor-builder",
                     "icon": $sortIcon,
                 }
             }).buildBlockStructure("<div>", {
+                class: elementClass,
                 click: function () {
                     if (bySorting) {
                         onClickSorting(bySorting, $(this))
@@ -470,7 +488,7 @@ define("imcms-document-editor-builder",
                 docId: parseInt(frameItemDocId)
             };
 
-            $menuArea = $(".imcms-menu-items-tree");
+            $menuArea = get$menuItemsList();
             $frameLayout.addClass("imcms-frame-layout")
                 .css({
                     "display": "none",
@@ -629,7 +647,7 @@ define("imcms-document-editor-builder",
 
         function checkByDocIdInMenuEditor(documentId) {
             let status = false;
-            $(".imcms-menu-items").each(function () {
+            get$menuItems().each(function () {
                 if (parseInt($(this).attr("data-document-id")) === documentId) {
                     status = true;
                 }
@@ -643,9 +661,8 @@ define("imcms-document-editor-builder",
         }
 
         function getMenuDocByObjId(obj) {
-            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
-            let menuDoc = null
-            ;
+            const menuDocs = get$menuItemsList().find(menuItemsSelector);
+            let menuDoc = null;
 
             menuDocs.each(function () {
                 if ($(this).attr("data-document-id") === obj) {
@@ -657,13 +674,13 @@ define("imcms-document-editor-builder",
         }
 
         function disableHighlightingMenuDoc() {
-            $(".imcms-menu-items-tree").find(".imcms-menu-items").css({
+            get$menuItemsList().find(menuItemsSelector).css({
                 "border": "none"
             });
         }
 
         function removedPreviousItemFrame() {
-            const $menuTree = $(".imcms-menu-items-tree"),
+            const $menuTree = get$menuItemsList(),
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item"),
                 $frameParent = $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]")
                     .parent("[data-menu-items-lvl]")
@@ -678,7 +695,7 @@ define("imcms-document-editor-builder",
         function slideUpMenuDocIfItClose(menuDoc) {
             const showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
 
-            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+            if (!showHidBtn.hasClass("imcms-document-item__btn--open")) {
                 showHidBtn.trigger("click");
             }
         }
@@ -720,7 +737,7 @@ define("imcms-document-editor-builder",
                         'border': '1px dashed blue'
                     });
                 } else {
-                    $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").css({
+                    get$menuItemsList().find(".imcms-doc-item-copy").css({
                         'border': '1px dashed red'
                     });
                 }
@@ -760,7 +777,7 @@ define("imcms-document-editor-builder",
 
         function getDocumentParent() {
             const allMenuDocObjArray = {},
-                itemTree = $(".imcms-menu-items-tree"),
+                itemTree = get$menuItemsList(),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 $frame = $(".imcms-document-items--frame"),
                 frameTop = $frame.offset().top
@@ -771,7 +788,7 @@ define("imcms-document-editor-builder",
 
             // get all menu doc coords
             menuDocs.each(function () {
-                allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
+                allMenuDocObjArray[$(this).closest(menuItemsSelector).attr("data-document-id")] = {
                     top: $(this).offset().top,
                     bottom: $(this).offset().top + $(this).outerHeight()
                 };
@@ -833,7 +850,9 @@ define("imcms-document-editor-builder",
             }
 
             if (detectTargetArea(event)) {
-                if ($(".imcms-menu-items-tree").find("[data-document-id=" + frameItem.attr("data-id") + "]").length === 0) {
+                const $menuItemsList = get$menuItemsList();
+
+                if ($menuItemsList.find("[data-document-id=" + frameItem.attr("data-id") + "]").length === 0) {
                     insertedParent = getDocumentParent();
                     setDataInputParams(insertedParent, frameItem);
                 }
@@ -841,7 +860,7 @@ define("imcms-document-editor-builder",
                 $menuArea.css({
                     "border-color": "transparent"
                 });
-                $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").removeClass("imcms-doc-item-copy");
+                $menuItemsList.find(".imcms-doc-item-copy").removeClass("imcms-doc-item-copy");
                 disableHighlightingMenuDoc();
             }
 
@@ -868,8 +887,9 @@ define("imcms-document-editor-builder",
 
             const $docItemId = components.texts.titleText("<a>", document.id, {
                 href: imcms.contextPath + "/" + document.id,
+                class: "imcms-grid-coll-18",
             });
-            $docItemId.modifiers = ["col-1", "id"];
+            $docItemId.modifiers = ["id"];
 
             const title = (document.commonContents)
                 ? document.commonContents
@@ -879,30 +899,46 @@ define("imcms-document-editor-builder",
 
             const $docItemTitle = components.texts.titleText("<a>", title, {
                 href: imcms.contextPath + "/" + document.id,
-                title: title
+                title: title,
+                class: "imcms-flex--flex-3",
             });
-            $docItemTitle.modifiers = ["col-3", "title"];
+            $docItemTitle.modifiers = ["title"];
 
-            const $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
-            $docItemAlias.modifiers = ["col-2", "alias"];
+            const $docItemAlias = components.texts.titleText("<div>", document.alias, {
+                title: "/" + document.alias,
+                class: "imcms-flex--flex-2",
+            });
+            $docItemAlias.modifiers = ["alias"];
 
-            const $docItemModified = components.texts.titleText("<div>", document.modified, {title: document.modified});
-            $docItemModified.modifiers = ["col-6", "modified"];
+            const $docItemModified = components.texts.titleText("<div>", document.modified, {
+                title: document.modified,
+                class: "imcms-grid-coll-13",
+            });
+            $docItemModified.modifiers = ["modified"];
 
-            const $docItemPublished = components.texts.titleText("<div>", document.published, {title: document.published});
-            $docItemPublished.modifiers = ["col-6", "published"];
+            const $docItemPublished = components.texts.titleText("<div>", document.published, {
+                title: document.published,
+                class: "imcms-grid-coll-13",
+            });
+            $docItemPublished.modifiers = ["published"];
 
             const $star = document.currentVersion === WORKING_VERSION
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star);
-            $currentVersion.modifiers = ['col-1', 'currentVersion'];
 
-            const $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-1", "type"];
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
+            $currentVersion.modifiers = ['currentVersion'];
 
-            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus), {title: getDocumentStatusText(document.documentStatus)});
-            $docStatus.modifiers = ["col-7", "status"];
+            const $docItemType = components.texts.titleText("<div>", document.type, {
+                class: "imcms-grid-coll-18",
+            });
+            $docItemType.modifiers = ["type"];
+
+            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus), {
+                title: getDocumentStatusText(document.documentStatus),
+                class: "imcms-grid-coll-17",
+            });
+            $docStatus.modifiers = ["status"];
 
             const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];
