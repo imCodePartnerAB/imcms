@@ -544,14 +544,8 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
             frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").attr('value'));
 
-            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
-
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
-                "background-color": "#e9e9f5",
-                "position": "absolute",
-                "z-index": 11001,
-                "width": widthValue,
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });

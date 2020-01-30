@@ -425,13 +425,11 @@ define("imcms-menu-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
-
             $frame.css({
                 "background-color": "#e9e9f5",
                 "position": "absolute",
                 "z-index": 11001,
-                "width": widthValue,
+                "width": "40%",
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });

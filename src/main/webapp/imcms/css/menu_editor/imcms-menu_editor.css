@@ -88,6 +88,22 @@
     -moz-user-select: none;
 }
 
+.imcms-menu-items--frame {
+    background-color: #e9e9f5;
+    position: absolute;
+    z-index: 11001;
+    width: 40%;
+}
+
+.imcms-menu-items--frame .imcms-document-item:hover .imcms-document-item__controls {
+    right: auto;
+    left: 0;
+}
+
+.imcms-menu-items--frame .imcms-document-item:hover .imcms-document-item__controls:last-child {
+    display: none;
+}
+
 @media screen and (max-width: 1500px) {
     .imcms-menu-editor *,
     .imcms-menu-editor *::placeholder {

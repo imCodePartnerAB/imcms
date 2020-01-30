@@ -75,6 +75,22 @@
     width: 100%;
 }
 
+.imcms-document-items--frame {
+    background-color: #e9e9f5;
+    position: absolute;
+    z-index: 11001;
+    width: 40%;
+}
+
+.imcms-document-items--frame .imcms-document-item:hover .imcms-document-item__controls {
+    right: auto;
+    left: 0;
+}
+
+.imcms-document-items--frame .imcms-document-item:hover .imcms-document-item__controls:last-child {
+    display: none;
+}
+
 .imcms-document-items--is-drag {
     background: #858585;
     opacity: .5;
