@@ -382,6 +382,7 @@ define("imcms-document-editor-builder",
                 text: texts.sort.id,
                 bySorting: defaultSortPropertyValue,
                 elementClass: "imcms-grid-coll-18",
+                modifiers: ["id"],
             });
 
             const $titleColumnHead = buildTitleRow({
@@ -399,29 +400,34 @@ define("imcms-document-editor-builder",
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
                 bySorting: "modified_datetime",
-                elementClass: "imcms-grid-coll-13",
+                elementClass: "imcms-grid-coll-15",
+                modifiers: ['date'],
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: "publication_start_datetime",
-                elementClass: "imcms-grid-coll-13",
+                elementClass: "imcms-grid-coll-15",
+                modifiers: ['date'],
             });
 
             const $versionColumnHead = buildTitleRow({
                 text: texts.sort.version,
                 bySorting: 'version_no',
                 elementClass: 'imcms-grid-coll-18',
+                modifiers: ['currentVersion'],
             });
 
             const $typeColumnHead = buildTitleRow({
                 text: texts.sort.type,
-                elementClass: "imcms-grid-coll-18"
+                elementClass: "imcms-grid-coll-18",
+                modifiers: ['type'],
             });
 
             const $statusColumnHead = buildTitleRow({
                 text: texts.sort.status,
-                elementClass: "imcms-grid-coll-17"
+                elementClass: 'imcms-grid-coll-17',
+                modifiers: ['status'],
             });
 
             return new BEM({
@@ -904,23 +910,23 @@ define("imcms-document-editor-builder",
             });
             $docItemTitle.modifiers = ["title"];
 
-            const $docItemAlias = components.texts.titleText("<div>", document.alias, {
-                title: "/" + document.alias,
+            const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
+                title: document.alias && ("/" + document.alias),
                 class: "imcms-flex--flex-2",
             });
             $docItemAlias.modifiers = ["alias"];
 
             const $docItemModified = components.texts.titleText("<div>", document.modified, {
                 title: document.modified,
-                class: "imcms-grid-coll-13",
+                class: "imcms-grid-coll-15",
             });
-            $docItemModified.modifiers = ["modified"];
+            $docItemModified.modifiers = ["date"];
 
             const $docItemPublished = components.texts.titleText("<div>", document.published, {
                 title: document.published,
-                class: "imcms-grid-coll-13",
+                class: "imcms-grid-coll-15",
             });
-            $docItemPublished.modifiers = ["published"];
+            $docItemPublished.modifiers = ["date"];
 
             const $star = document.currentVersion === WORKING_VERSION
                 ? components.controls.star()

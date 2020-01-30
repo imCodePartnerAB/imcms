@@ -722,6 +722,29 @@ define("imcms-menu-editor-builder",
             });
             $titleText.modifiers = ['title'];
 
+            const $publishedDate = components.texts.titleText('<div>', getConverted(menuElementTree.publishedDate), {
+                title: texts.publishDate,
+                class: 'imcms-grid-coll-3',
+            });
+            $publishedDate.modifiers = ['date'];
+
+            const $modifiedDate = components.texts.titleText('<div>', getConverted(menuElementTree.modifiedDate), {
+                title: texts.modifiedDate,
+                class: 'imcms-grid-coll-3',
+            });
+            $modifiedDate.modifiers = ['date'];
+
+            const $star = menuElementTree.hasNewerVersion
+                ? components.controls.star()
+                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            $currentVersion.modifiers = ['currentVersion'];
+
+            const $documentStatus = components.texts.titleText("<div>", documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus), {
+                class: 'imcms-grid-coll-13'
+            });
+            $documentStatus.modifiers = ['status'];
+
             const elements = [$docId, $titleText];
 
             if (menuElementTree.children.length) {
@@ -731,39 +754,15 @@ define("imcms-menu-editor-builder",
             switch (typeSort) {
                 case PUBLISHED_DATE_ASC:
                 case PUBLISHED_DATE_DESC:
-                    const $publishedDate = components.texts.titleText('<div>', getConverted(menuElementTree.publishedDate), {
-                        title: texts.publishDate,
-                        class: 'imcms-grid-coll-3',
-                    });
-                    $publishedDate.modifiers = ['published'];
                     elements.push($publishedDate);
                     break;
                 case MODIFIED_DATE_ASC:
                 case MODIFIED_DATE_DESC:
-                    const $modifiedDate = components.texts.titleText('<div>', getConverted(menuElementTree.modifiedDate), {
-                        title: texts.modifiedDate,
-                        class: 'imcms-grid-coll-3',
-                    });
-                    $modifiedDate.modifiers = ['modified'];
                     elements.push($modifiedDate);
                     break;
             }
 
-            const $documentVersion = menuElementTree.hasNewerVersion
-                ? components.controls.star()
-                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $documentVersionContainer = $('<div>')
-                .addClass('imcms-grid-coll-1')
-                .append($documentVersion);
-
-            $documentVersionContainer.modifiers = ['currentVersion'];
-            elements.push($documentVersionContainer);
-
-            const $documentStatus = components.texts.titleText("<div>", documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus), {
-                    class: 'imcms-grid-coll-13'
-            });
-            $documentStatus.modifiers = ['status'];
-            elements.push($documentStatus);
+            elements.push($currentVersion, $documentStatus);
 
             const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree)];
 
@@ -835,48 +834,54 @@ define("imcms-menu-editor-builder",
 
             function buildMenuTitlesRow() {
                 const $idColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-1",
+                    class: "imcms-grid-coll-1",
                     text: texts.id
                 });
+                $idColumnHead.modifiers = ["id"];
 
                 const $titleColumnHead = $("<div>", {
-                    "class": "imcms-flex--flex-1",
+                    class: "imcms-flex--flex-1",
                     text: texts.docTitle
                 });
 
-                let $publishedDateHead = $("<div>", {
-                    "class": "imcms-grid-coll-3",
+                const $publishedDateHead = $("<div>", {
+                    class: "imcms-grid-coll-3",
                     text: texts.publishDate
                 });
+                $publishedDateHead.modifiers = ["date"];
 
-                let $modifiedDateHead = $("<div>", {
-                    "class": "imcms-grid-coll-3",
+                const $modifiedDateHead = $("<div>", {
+                    class: "imcms-grid-coll-3",
                     text: texts.modifiedDate
                 });
+                $modifiedDateHead.modifiers = ["date"];
 
-                let $statusColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-13",
-                    text: texts.status
-                });
-
-                let $versionColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-1",
+                const $versionColumnHead = $("<div>", {
+                    class: "imcms-grid-coll-1",
                     text: texts.version
                 });
-                let containerHeadTitle;
+                $versionColumnHead.modifiers = ["currentVersion"];
+
+                const $statusColumnHead = $("<div>", {
+                    class: "imcms-grid-coll-13",
+                    text: texts.status
+                });
+                $statusColumnHead.modifiers = ["status"];
+
+                const containerHeadTitle = [$idColumnHead, $titleColumnHead];
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
                     case PUBLISHED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedDateHead, $versionColumnHead, $statusColumnHead];
+                        containerHeadTitle.push($publishedDateHead);
                         break;
                     case MODIFIED_DATE_ASC:
                     case MODIFIED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedDateHead, $versionColumnHead, $statusColumnHead];
+                        containerHeadTitle.push($modifiedDateHead);
                         break;
-                    default:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $versionColumnHead, $statusColumnHead];
                 }
+
+                containerHeadTitle.push($versionColumnHead, $statusColumnHead);
 
                 return new BEM({
                     block: "imcms-document-list-titles",
