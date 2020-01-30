@@ -240,6 +240,31 @@
     border-top: 1px solid #d3d8de;
 }
 
+.imcms-document-item__info--id,
+.imcms-document-list-titles__title--id {
+    min-width: 60px;
+}
+
+.imcms-document-item__info--date,
+.imcms-document-list-titles__title--date {
+    min-width: 120px;
+}
+
+.imcms-document-item__info--currentVersion,
+.imcms-document-list-titles__title--currentVersion {
+    min-width: 50px;
+}
+
+.imcms-document-item__info--type,
+.imcms-document-list-titles__title--type {
+    min-width: 45px;
+}
+
+.imcms-document-item__info--status,
+.imcms-document-list-titles__title--status {
+    min-width: 140px;
+}
+
 .imcms-document-item__info--currentVersion {
     display: flex;
     justify-content: center;
