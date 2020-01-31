@@ -617,7 +617,9 @@ define("imcms-menu-editor-builder",
 
                 function changeStatus() {
                     const $status = $oldMenuItem.find(".imcms-document-item__info--status").first();
-                    $status.text(documentEditorBuilder.getDocumentStatusText(document.documentStatus));
+                    const statusTexts = documentEditorBuilder.getDocumentStatusTexts(document.documentStatus, document.published);
+                    $status.text(statusTexts.title);
+                    $status.attr('title', statusTexts.tooltip);
                 }
 
                 function toggleClass() {
@@ -735,10 +737,15 @@ define("imcms-menu-editor-builder",
             const $star = menuElementTree.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            const $currentVersion = $('<div>')
+                .append($star)
+                .addClass('imcms-grid-coll-1')
+                .attr('title', documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip);
             $currentVersion.modifiers = ['currentVersion'];
 
-            const $documentStatus = components.texts.titleText("<div>", documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus), {
+            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, getConverted(menuElementTree.publishedDate));
+            const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
+                title: documentStatusTexts.tooltip,
                 class: 'imcms-grid-coll-13'
             });
             $documentStatus.modifiers = ['status'];

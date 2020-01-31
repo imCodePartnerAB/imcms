@@ -870,16 +870,39 @@ define("imcms-document-editor-builder",
             isMouseDown = false;
         });
 
-        function getDocumentStatusText(documentStatus) {
+        function getDocumentStatusTexts(documentStatus, publishedDate) {
             return {
-                PUBLISHED: texts.status.published,
-                PUBLISHED_WAITING: texts.status.publishedWaiting,
-                IN_PROCESS: texts.status.inProcess,
-                DISAPPROVED: texts.status.disapproved,
-                ARCHIVED: texts.status.archived,
-                PASSED: texts.status.passed
-
+                PUBLISHED: {
+                    title: texts.status.title.published,
+                    tooltip: texts.status.tooltip.published + ' ' + publishedDate,
+                },
+                PUBLISHED_WAITING: {
+                    title: texts.status.title.publishedWaiting,
+                    tooltip: texts.status.tooltip.publishedWaiting,
+                },
+                IN_PROCESS: {
+                    title: texts.status.title.inProcess,
+                    tooltip: texts.status.tooltip.inProcess,
+                },
+                DISAPPROVED: {
+                    title: texts.status.title.disapproved,
+                    tooltip: texts.status.tooltip.disapproved,
+                },
+                ARCHIVED: {
+                    title: texts.status.archived,
+                    tooltip: texts.status.archived,
+                },
+                PASSED: {
+                    title: texts.status.passed,
+                    tooltip: texts.status.passed,
+                },
             }[documentStatus];
+        }
+
+        function getDocumentVersionTexts(hasNewerVersion) {
+            return hasNewerVersion
+            ? { tooltip: texts.version.tooltip.hasNewerVersion }
+            : { tooltip: texts.version.tooltip.noWorkingVersion }
         }
 
         /** @namespace document.documentStatus */
@@ -926,7 +949,10 @@ define("imcms-document-editor-builder",
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
 
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
+            const $currentVersion = $('<div>')
+                .append($star)
+                .addClass('imcms-grid-coll-18')
+                .attr('title', getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip);
             $currentVersion.modifiers = ['currentVersion'];
 
             const $docItemType = components.texts.titleText("<div>", document.type, {
@@ -934,8 +960,9 @@ define("imcms-document-editor-builder",
             });
             $docItemType.modifiers = ["type"];
 
-            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus), {
-                title: getDocumentStatusText(document.documentStatus),
+            const docStatusTexts = getDocumentStatusTexts(document.documentStatus, document.published);
+            const $docStatus = components.texts.titleText("<div>", docStatusTexts.title, {
+                title: docStatusTexts.tooltip,
                 class: "imcms-grid-coll-17",
             });
             $docStatus.modifiers = ["status"];
@@ -1179,15 +1206,16 @@ define("imcms-document-editor-builder",
         });
 
         return {
-            buildBody: buildBody,
-            loadDocumentEditorContent: loadDocumentEditorContent,
-            clearData: clearData,
-            buildDocument: buildDocument,
-            incrementDocumentNumber: incrementDocumentNumber,
-            addDocumentToList: addDocumentToList,
-            getDocumentStatusText: getDocumentStatusText,
-            refreshDocumentInList: refreshDocumentInList,
-            getDocumentById: getDocumentById,
+            buildBody,
+            loadDocumentEditorContent,
+            clearData,
+            buildDocument,
+            incrementDocumentNumber,
+            addDocumentToList,
+            getDocumentStatusTexts,
+            getDocumentVersionTexts,
+            refreshDocumentInList,
+            getDocumentById,
             build: function () {
                 documentWindowBuilder.buildWindow.apply(documentWindowBuilder, arguments);
             }
