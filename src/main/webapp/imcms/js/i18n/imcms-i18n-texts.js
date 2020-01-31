@@ -397,7 +397,10 @@ const texts = {
                 }
             },
             image: {
-                title: "Bild-redigerare",
+                title: "Redigera bild",
+                page: 'sida ',
+                imageName: 'bild ',
+                teaser: 'Teaser-bild',
                 proportion: "Lås proportioner",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
@@ -1246,7 +1249,10 @@ const texts = {
                 }
             },
             image: {
-                title: "Image Editor",
+                title: "Edit Image",
+                page: 'page ',
+                imageName: 'image ',
+                teaser: "Teaser image ",
                 proportion: "Proportions locked",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
