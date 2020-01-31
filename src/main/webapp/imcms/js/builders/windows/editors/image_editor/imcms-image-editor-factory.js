@@ -5,17 +5,24 @@ const texts = require('imcms-i18n-texts').editors.image;
 const bodyHeadBuilder = require('imcms-image-editor-body-head-builder');
 const BEM = require('imcms-bem-builder');
 
-const $imageInfo = $('<a>');
+const $imageLinkInfo = $('<a>', {
+    id: 'data-link-image'
+});
+const $imageLinkContainerInfo = $('<div>', {
+    "class": 'image-editor-info',
+    html: $imageLinkInfo
+});
 
 module.exports = {
     buildEditor: opts => {
         const $rightSidePanel = rightSideBuilder.build(opts);
         const $leftSide = leftSideBuilder.build();
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
-        const $head = opts.imageWindowBuilder.buildHead(texts.title + ": " + opts.$tag.attr('data-doc-id')
-            + "-" + opts.$tag.attr('data-index') + " ");
+        const $head = opts.imageWindowBuilder.buildHead(texts.title + "- " + texts.page + opts.$tag.attr('data-doc-id')
+            + ", " + texts.imageName + opts.$tag.attr('data-index') + " - "
+            + texts.teaser + "(" + opts.$tag.width() + " x " + opts.$tag.height() + ")");
 
-        $head.find('.imcms-title').append($imageInfo);
+        $head.find('.imcms-title').append($imageLinkContainerInfo);
 
         return new BEM({
             block: "imcms-image_editor",
@@ -34,24 +41,18 @@ module.exports = {
                 + '&loop-index=' + $tag.attr('data-loop-index')
                 + '&loop-entry-index=' + $tag.attr('data-loop-entry-index');
 
-            $imageInfo.text(linkData).css({
-                'text-transform': 'lowercase',
-                'color': '#fff2f9'
-            });
+            $imageLinkInfo.text(linkData);
 
-            $imageInfo.attr('href', linkData)
+            $imageLinkInfo.attr('href', linkData)
 
         } else {
             const linkData = '/api/admin/image?meta-id='
                 + $tag.attr('data-doc-id')
                 + '&index=' + $tag.attr('data-index');
 
-            $imageInfo.text(linkData).css({
-                'text-transform': 'lowercase',
-                'color': '#fff2f9'
-            });
+            $imageLinkInfo.text(linkData);
 
-            $imageInfo.attr('href', linkData)
+            $imageLinkInfo.attr('href', linkData)
         }
         rightSideBuilder.updateImageData($tag, imageData);
     }

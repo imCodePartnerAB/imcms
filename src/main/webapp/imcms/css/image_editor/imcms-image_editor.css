@@ -92,3 +92,13 @@
         padding: 0 20px;
     }
 }
+
+.image-editor-info {
+    display: inline;
+    text-transform: lowercase;
+    margin-left: 50%;
+}
+
+#data-link-image {
+    color: #fff2f9;
+}
