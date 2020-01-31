@@ -279,13 +279,29 @@ const texts = {
                     status: "Status",
                     version: 'Ver'
                 },
+                version: {
+                    tooltip: {
+                        hasNewerVersion: 'Dokumentet har en opublicerad arbetsversion',
+                        noWorkingVersion: 'Dokumentet har ingen arbetsversion',
+                    },
+                },
                 status: {
-                    published: "Publicerad",
-                    publishedWaiting: "Godkänd, väntar",
-                    inProcess: "Nytt, under arbete",
-                    disapproved: "Ej godkänd",
-                    archived: "Arkiverat",
-                    passed: "Avslutad"
+                    title: {
+                        published: "Publicerad",
+                        publishedWaiting: "Godkänd, väntar",
+                        inProcess: "Nytt, u a",
+                        disapproved: "Ej godkänd",
+                        archived: "Arkiverat",
+                        passed: "Avslutad"
+                    },
+                    tooltip: {
+                        published: "Dokumentet är publicerat",
+                        publishedWaiting: "Godkänd, väntar",
+                        inProcess: "Dokumentet är nytt och under arbete",
+                        disapproved: "Ej godkänd",
+                        archived: "Arkiverat",
+                        passed: "Avslutad"
+                    },
                 },
                 error: {
                     searchFailed: 'Inga sökresultat',
@@ -1128,13 +1144,29 @@ const texts = {
                     status: "State",
                     version: 'Ver'
                 },
+                version: {
+                    tooltip: {
+                        hasNewerVersion: 'The document has an unpublished working version',
+                        noWorkingVersion: 'The document has no working version',
+                    },
+                },
                 status: {
-                    published: "Approved, published",
-                    publishedWaiting: "Approved, waiting",
-                    inProcess: "New",
-                    disapproved: "Disapproved",
-                    archived: "Archived",
-                    passed: "Publication end"
+                    title: {
+                        published: "Approved, published",
+                        publishedWaiting: "Approved, waiting",
+                        inProcess: "New, u c",
+                        disapproved: "Disapproved",
+                        archived: "Archived",
+                        passed: "Publication end"
+                    },
+                    tooltip: {
+                        published: "The document is published",
+                        publishedWaiting: "Approved, waiting",
+                        inProcess: "The document is new and under construction",
+                        disapproved: "Disapproved",
+                        archived: "Archived",
+                        passed: "Publication end"
+                    },
                 },
                 error: {
                     searchFailed: 'No search result',
