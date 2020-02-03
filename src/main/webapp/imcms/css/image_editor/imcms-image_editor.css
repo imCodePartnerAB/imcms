@@ -94,7 +94,7 @@
 }
 
 .image-editor-info {
-    display: inline;
+    display: -webkit-inline-box;
     text-transform: lowercase;
     margin-left: 50%;
 }
