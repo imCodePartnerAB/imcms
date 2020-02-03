@@ -189,6 +189,7 @@ module.exports = {
                             'imcms-rule-to-row-transformer',
                             'imcms-field-wrapper',
                             'imcms-category-types-editor',
+                            'imcms-overlays-builder',
                         ]
                     },
                     windows: {

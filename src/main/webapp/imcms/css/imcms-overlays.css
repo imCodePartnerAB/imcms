@@ -1,0 +1,118 @@
+.imcms-tooltip {
+    display: block;
+    position: absolute;
+    will-change: transform;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 999999;
+    opacity: 0;
+    -webkit-transition: opacity .15s linear;
+    transition: opacity .15s linear;
+}
+
+.imcms-tooltip.right,
+.imcms-tooltip.left {
+    padding: 0 .4rem;
+}
+
+.imcms-tooltip.top,
+.imcms-tooltip.bottom {
+    padding: .4rem 0;
+}
+
+.imcms-tooltip.show {
+    opacity: 1;
+}
+
+.imcms-tooltip__text {
+    background-color: #2e3f47;
+    color: #fff;
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    white-space: normal;
+    line-break: auto;
+    font-size: .875rem;
+    word-wrap: break-word;
+}
+
+.imcms-tooltip__arrow {
+    position: absolute;
+    display: block;
+    width: .8rem;
+    height: .4rem;
+}
+
+.imcms-tooltip.right .imcms-tooltip__arrow {
+    left: 0;
+    width: .4rem;
+    height: .8rem;
+}
+
+.imcms-tooltip.left .imcms-tooltip__arrow {
+    right: 0;
+    width: .4rem;
+    height: .8rem;
+}
+
+.imcms-tooltip.right .imcms-tooltip__arrow,
+.imcms-tooltip.left .imcms-tooltip__arrow {
+    top: calc(50% - .4rem);
+}
+
+.imcms-tooltip.top .imcms-tooltip__arrow {
+    bottom: 0;
+}
+
+.imcms-tooltip.bottom .imcms-tooltip__arrow {
+    top: 0;
+}
+
+.imcms-tooltip.top .imcms-tooltip__arrow,
+.imcms-tooltip.bottom .imcms-tooltip__arrow {
+    left: calc(50% - .8rem);
+}
+
+
+.imcms-tooltip__arrow::before {
+    position: absolute;
+    content: "";
+    border-color: transparent;
+    border-style: solid;
+}
+
+.imcms-tooltip.right .imcms-tooltip__arrow::before {
+    right: 0;
+    border-width: .4rem .4rem .4rem 0;
+    border-right-color: #2e3f47;
+}
+
+.imcms-tooltip.left .imcms-tooltip__arrow::before {
+    left: 0;
+    border-width: .4rem 0 .4rem .4rem;
+    border-left-color: #2e3f47;
+}
+
+.imcms-tooltip.top .imcms-tooltip__arrow::before {
+    top: 0;
+    border-width: .4rem .4rem 0;
+    border-top-color: #2e3f47;
+}
+
+.imcms-tooltip.bottom .imcms-tooltip__arrow::before {
+    bottom: 0;
+    border-width: 0 .4rem .4rem;
+    border-bottom-color: #2e3f47;
+}
+
