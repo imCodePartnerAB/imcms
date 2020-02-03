@@ -52,5 +52,7 @@ module.exports = {
 
     star: onclick => buildControl('star', onclick),
 
+    permalink: onClick => buildControl('permalink', onClick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };
