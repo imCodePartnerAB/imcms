@@ -4,14 +4,24 @@ const $ = require('jquery');
 const texts = require('imcms-i18n-texts').editors.image;
 const bodyHeadBuilder = require('imcms-image-editor-body-head-builder');
 const BEM = require('imcms-bem-builder');
+const components = require('imcms-components-builder');
+
 
 const $imageLinkInfo = $('<a>', {
     id: 'data-link-image'
 });
-const $imageLinkContainerInfo = $('<div>', {
-    "class": 'image-editor-info',
-    html: $imageLinkInfo
-});
+
+const $imageLinkContainerInfo = new BEM({
+    block: 'image-editor-info',
+    elements: {
+        'icon-link': $('<div>', {
+            html: components.controls.permalink()
+        }),
+        'data-link': $('<div>', {
+            html: $imageLinkInfo
+        })
+    }
+}).buildBlockStructure('<div>');
 
 module.exports = {
     buildEditor: opts => {
