@@ -96,9 +96,13 @@
 .image-editor-info {
     display: -webkit-inline-box;
     text-transform: lowercase;
-    margin-left: 50%;
+    margin-left: 40%;
 }
 
 #data-link-image {
     color: #fff2f9;
+}
+
+.imcms-control--permalink {
+    margin-top: 14px;
 }
