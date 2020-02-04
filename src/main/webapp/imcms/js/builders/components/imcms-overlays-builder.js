@@ -20,16 +20,16 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder'], function ($, B
         const createOverlay = ({element, overlay, delay = 0, placement = 'top'}) => {
 
             const correctDelay = getCorrectDelay(delay);
-
             overlay.addClass(placement);
 
             let onEnterTimeout, onLeaveTimeout;
-
             element
                 .mouseenter(() => {
                     clearTimeout(onLeaveTimeout);
 
-                    if (!$('body').find(overlay).length) {
+                    const $body = $('body');
+
+                    if (!$body.find(overlay).length && $body.find(element).length) {
                         onEnterTimeout = setTimeout(() => {
                             $('body').append(overlay);
 
