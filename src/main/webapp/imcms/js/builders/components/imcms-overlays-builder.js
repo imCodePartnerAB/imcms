@@ -83,7 +83,7 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder'], function ($, B
                     };
                 case 'bottom':
                     return {
-                        top: elementOffset.top + overlayScale.height,
+                        top: elementOffset.top + elementScale.height,
                         left: elementOffset.left,
                     };
                 case 'left':
@@ -94,7 +94,7 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder'], function ($, B
                 case 'top':
                 default:
                     return {
-                        top: elementOffset.top - elementScale.height,
+                        top: elementOffset.top - overlayScale.height,
                         left: elementOffset.left + elementScale.width / 2 - overlayScale.width / 2,
                     };
             }
