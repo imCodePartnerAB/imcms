@@ -9,11 +9,11 @@ define("imcms-document-editor-builder",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
         "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
         "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api",
-        "imcms-modal-window-builder"
+        "imcms-modal-window-builder", "imcms-overlays-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, modal) {
+              docProfileSelectBuilder, docCopyRestApi, modal, overlays) {
 
         texts = texts.editors.document;
 
@@ -599,8 +599,7 @@ define("imcms-document-editor-builder",
                         onConfirm
                     );
                 });
-
-                $controlCopy.prop('title', texts.controls.copy.title);
+                addTooltip($controlCopy, texts.controls.copy.title, 'left');
                 controls.push($controlCopy);
             }
 
@@ -608,7 +607,7 @@ define("imcms-document-editor-builder",
                 const $controlEdit = components.controls.edit(() => {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
-                $controlEdit.prop('title', texts.controls.edit.title);
+                addTooltip($controlEdit, texts.controls.edit.title, 'left');
                 controls.push($controlEdit);
             }
 
@@ -922,38 +921,36 @@ define("imcms-document-editor-builder",
 
             const $docItemTitle = components.texts.titleText("<a>", title, {
                 href: imcms.contextPath + "/" + document.id,
-                title: title,
                 class: "imcms-flex--flex-3",
             });
             $docItemTitle.modifiers = ["title"];
+            addTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
-                title: document.alias && ("/" + document.alias),
                 class: "imcms-flex--flex-2",
             });
             $docItemAlias.modifiers = ["alias"];
+            document.alias && addTooltip($docItemAlias, "/" + document.alias);
 
             const $docItemModified = components.texts.titleText("<div>", document.modified, {
-                title: document.modified,
                 class: "imcms-grid-coll-15",
             });
             $docItemModified.modifiers = ["date"];
+            document.modified && addTooltip($docItemModified, document.modified);
 
             const $docItemPublished = components.texts.titleText("<div>", document.published, {
-                title: document.published,
                 class: "imcms-grid-coll-15",
             });
             $docItemPublished.modifiers = ["date"];
+            document.published && addTooltip($docItemPublished, document.published);
 
             const $star = document.currentVersion === WORKING_VERSION
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
 
-            const $currentVersion = $('<div>')
-                .append($star)
-                .addClass('imcms-grid-coll-18')
-                .attr('title', getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip);
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
             $currentVersion.modifiers = ['currentVersion'];
+            addTooltip($currentVersion, getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip);
 
             const $docItemType = components.texts.titleText("<div>", document.type, {
                 class: "imcms-grid-coll-18",
@@ -962,10 +959,10 @@ define("imcms-document-editor-builder",
 
             const docStatusTexts = getDocumentStatusTexts(document.documentStatus, document.published);
             const $docStatus = components.texts.titleText("<div>", docStatusTexts.title, {
-                title: docStatusTexts.tooltip,
                 class: "imcms-grid-coll-17",
             });
             $docStatus.modifiers = ["status"];
+            addTooltip($docStatus, docStatusTexts.tooltip, 'left');
 
             const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];
@@ -1007,6 +1004,15 @@ define("imcms-document-editor-builder",
                 block: "imcms-document-item",
                 elements: elements
             }).buildBlockStructure("<div>");
+        }
+
+        function addTooltip(element, text, placement = 'top') {
+            overlays.createOverlay({
+                element: element,
+                overlay: overlays.tooltip(text),
+                delay: {show: 400},
+                placement: placement,
+            });
         }
 
         function buildDocumentItemContainer(document, opts, isUsed) {

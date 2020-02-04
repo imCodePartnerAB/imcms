@@ -8,11 +8,12 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api",
+        "imcms-overlays-builder"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder, typesSortRestAPI) {
+              docProfileSelectBuilder, typesSortRestAPI, overlays) {
 
         texts = texts.editors.menu;
 
@@ -645,11 +646,13 @@ define("imcms-menu-editor-builder",
 
             const $controlRemove = components.controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
-            }).attr("title", texts.remove);
+            });
+            addTooltip($controlRemove, texts.remove);
 
             const $controlEdit = components.controls.edit(() => {
                 pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
-            }).attr("title", texts.edit);
+            });
+            addTooltip($controlEdit, texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
                 docCopyRestApi.copy(menuElementTree.documentId)
@@ -665,7 +668,8 @@ define("imcms-menu-editor-builder",
                         appendNewMenuItem(copiedDocument);
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
-            }).attr("title", texts.copy);
+            });
+            addTooltip($controlCopy, texts.copy);
 
             return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
@@ -709,46 +713,44 @@ define("imcms-menu-editor-builder",
         function buildMenuItem(menuElementTree, typeSort) {
 
             const $docId = components.texts.titleText('<a>', menuElementTree.documentId, {
-                title: menuElementTree.documentId,
                 href: '/' + menuElementTree.documentId,
                 target: '_blank',
                 class: 'imcms-grid-coll-1',
             });
             $docId.modifiers = ['id'];
+            addTooltip($docId, menuElementTree.documentId, 'right');
 
             const $titleText = components.texts.titleText('<div>', menuElementTree.title, {
-                title: menuElementTree.title,
                 class: 'imcms-flex--flex-1',
             });
             $titleText.modifiers = ['title'];
+            addTooltip($titleText, menuElementTree.title, 'right');
 
             const $publishedDate = components.texts.titleText('<div>', getConverted(menuElementTree.publishedDate), {
-                title: texts.publishDate,
                 class: 'imcms-grid-coll-3',
             });
             $publishedDate.modifiers = ['date'];
+            addTooltip($publishedDate, texts.publishDate);
 
             const $modifiedDate = components.texts.titleText('<div>', getConverted(menuElementTree.modifiedDate), {
                 title: texts.modifiedDate,
                 class: 'imcms-grid-coll-3',
             });
-            $modifiedDate.modifiers = ['date'];
+            addTooltip($modifiedDate, texts.modifiedDate);
 
             const $star = menuElementTree.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>')
-                .append($star)
-                .addClass('imcms-grid-coll-1')
-                .attr('title', documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip);
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            addTooltip($currentVersion, documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip);
             $currentVersion.modifiers = ['currentVersion'];
 
             const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, getConverted(menuElementTree.publishedDate));
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
-                title: documentStatusTexts.tooltip,
                 class: 'imcms-grid-coll-13'
             });
             $documentStatus.modifiers = ['status'];
+            addTooltip($documentStatus, documentStatusTexts.tooltip);
 
             const elements = [$docId, $titleText];
 
@@ -779,6 +781,15 @@ define("imcms-menu-editor-builder",
                 ]
             }).buildBlockStructure("<div>", {
                 class: "imcms-menu-item"
+            });
+        }
+
+        function addTooltip(element, text, placement = 'top') {
+            overlays.createOverlay({
+                element: element,
+                overlay: overlays.tooltip(text),
+                delay: {show: 400},
+                placement: placement,
             });
         }
 
