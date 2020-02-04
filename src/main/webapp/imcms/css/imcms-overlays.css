@@ -81,7 +81,7 @@
 
 .imcms-tooltip.top .imcms-tooltip__arrow,
 .imcms-tooltip.bottom .imcms-tooltip__arrow {
-    left: calc(50% - .8rem);
+    left: calc(50% - .4rem);
 }
 
 
