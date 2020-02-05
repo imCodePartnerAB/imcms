@@ -39,7 +39,8 @@ function buildHeightControl() {
         placeholder: texts.height,
         text: heightLabelText,
         error: "Error",
-        onValidChange: onValidHeightChange
+        onValidChange: onValidHeightChange,
+        disabled: 'disabled'
     });
 
     imageResize.setHeightControl($heightControl.getInput());
@@ -57,7 +58,8 @@ function buildWidthControl() {
         placeholder: texts.width,
         text: widthLabelText,
         error: "Error",
-        onValidChange: onValidWidthChange
+        onValidChange: onValidWidthChange,
+        disabled: 'disabled'
     });
 
     imageResize.setWidthControl($widthControl.getInput());
