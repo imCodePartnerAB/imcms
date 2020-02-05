@@ -13,6 +13,7 @@ define(
               ToolbarViewBuilder, cropper) {
 
         texts = texts.editors.image;
+        let imageData;
 
         const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
             .hide(
@@ -28,20 +29,39 @@ define(
             );
 
         function toggleImgArea() {
-
-            function initPreviewImageArea() {
+            function initPreviewImageArea(imageData) {
                 const $previewImg = previewImage.getPreviewImage();
                 const $editableImg = editableImage.getImage();
+                let styleEditableImage = $editableImg.attr('style');
+                const resultStyleObj = {};
+                styleEditableImage.split(';')
+                    .map(x => x.trim())
+                    .filter(x => !!x)
+                    .forEach(x => {
+                        const styleKeyAndValue = x.split(':').map(x => x.trim());
+                        resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                    });
 
-                $previewImg.attr('src', $editableImg.attr('src'));
-                $previewImg.attr('style', $editableImg.attr('style'));
+                resultStyleObj['background-size'] = imageData.width + 'px ' + imageData.height + 'px';
+                resultStyleObj['height'] = imageData.height + 'px';
+                resultStyleObj['width'] = imageData.width + 'px';
+
+                let stylePreviewImage = '';
+
+                for (let [key, value] of Object.entries(resultStyleObj)) {
+                    stylePreviewImage += `${ key}: ${value}; `;
+                }
+
+                $previewImg.attr('data-src', $editableImg.attr('data-src'));
+                $previewImg.attr('style', stylePreviewImage);
+
             }
 
             const $previewImageArea = previewImage.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
 
             if ($(this).data("tab") === "prev") {
-                initPreviewImageArea();
+                initPreviewImageArea(imageData);
                 toggleImageAreaToolbarViewBuilder.build();
 
                 $previewImageArea.css({
@@ -87,31 +107,6 @@ define(
                 textHide: texts.panels.right.hide,
                 textShow: texts.panels.right.show
             });
-        }
-
-        function buildHeightWidthBlock() {
-            const $heightBlock = new BEM({
-                block: "imcms-img-origin-size",
-                elements: {
-                    "height-title": components.texts.titleText("<span>", "H:"),
-                    "height-value": originImageHeightBlock.getContainer(),
-                }
-            }).buildBlockStructure("<div>");
-
-            const $widthBlock = new BEM({
-                block: "imcms-img-origin-size",
-                elements: {
-                    "width-title": components.texts.titleText("<span>", "W:"),
-                    "width-value": originImageWidthBlock.getContainer(),
-                }
-            }).buildBlockStructure("<div>");
-
-            return new BEM({
-                block: "imcms-title imcms-image-characteristic",
-                elements: {
-                    "origin-size": [$heightBlock, $widthBlock]
-                }
-            }).buildBlockStructure("<div>").hide();
         }
 
         function zoom(delta) {
@@ -410,7 +405,6 @@ define(
         }
 
         const $imgUrl = $("<a>");
-        let imageData;
 
         module.exports = {
             showOriginalImageArea: () => toggleImgArea.call($tabOriginal),
@@ -436,16 +430,12 @@ define(
                     }
                 });
 
-                const $heightWidthBlock = buildHeightWidthBlock();
-
                 return bodyHeadBEM.buildBlock("<div>", [
                     {
                         "toolbar": buildToolbar()
                     }, {
                         "button": $showHideRightPanelBtn,
                         modifiers: ["right-panel"]
-                    }, {
-                        "img-origin-size": $heightWidthBlock
                     }
                 ]);
             },
