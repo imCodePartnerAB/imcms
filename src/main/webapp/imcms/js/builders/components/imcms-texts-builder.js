@@ -154,7 +154,8 @@ module.exports = {
                 id: id,
                 name: attributes.name,
                 placeholder: attributes.placeholder,
-                click: activateNumberBox
+            click: activateNumberBox,
+            disabled: attributes.disabled
             })
             .on('change keyup input', function (e) { // click
                 if (e.key === "ArrowDown") {
