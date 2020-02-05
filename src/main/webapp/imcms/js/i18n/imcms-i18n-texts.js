@@ -404,6 +404,7 @@ const texts = {
                 proportion: "Lås proportioner",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
+                activeTitle: 'Aktiv bild:',
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -461,6 +462,8 @@ const texts = {
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
                 removeAndClose: "Ta bort och stäng",
                 saveAndClose: "Spara och stäng",
+                restrictedStyle: 'Begränsad stil:',
+                infoStyle: 'Den använda bilden är begränsad till den här stilen.',
                 exif: {
                     button: "Visa exif info"
                 },
@@ -1256,6 +1259,7 @@ const texts = {
                 proportion: "Proportions locked",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
+                activeTitle: 'Active image:',
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",
@@ -1313,6 +1317,8 @@ const texts = {
                 altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
                 removeAndClose: "Remove and close",
                 saveAndClose: "Save and close",
+                restrictedStyle: 'Restricted style:',
+                infoStyle: 'The used image is restricted to this style.',
                 exif: {
                     button: "Show exif info"
                 },
