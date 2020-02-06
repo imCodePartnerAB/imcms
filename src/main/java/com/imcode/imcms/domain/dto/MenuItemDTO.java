@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.imcode.imcms.persistence.entity.Meta;
 import lombok.Data;
 
@@ -26,9 +27,20 @@ public class MenuItemDTO implements Serializable {
 
     private DocumentStatus documentStatus;
 
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    private Date createdDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date publishedDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date modifiedDate;
+
+    private String createdBy;
+
+    private String publishedBy;
+
+    private String modifiedBy;
 
     private boolean hasNewerVersion;
 

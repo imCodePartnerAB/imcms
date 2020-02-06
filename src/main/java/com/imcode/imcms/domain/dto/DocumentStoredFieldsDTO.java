@@ -28,10 +28,19 @@ public class DocumentStoredFieldsDTO {
     private Integer currentVersion;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    private Date created;
+
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date modified;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date published;
+
+    private String createdBy;
+
+    private String modifiedBy;
+
+    private String publishedBy;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
@@ -40,8 +49,12 @@ public class DocumentStoredFieldsDTO {
         documentStatus = from.documentStatus();
         alias = from.alias();
         currentVersion = from.versionNo();
+        created = from.created();
         modified = from.modified();
         published = from.publicationStart();
+        createdBy = from.createdBy();
+        publishedBy = from.publicationStartBy();
+        modifiedBy = from.modifiedBy();
     }
 
 }
