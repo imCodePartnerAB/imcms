@@ -4,10 +4,10 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
-        'imcms-crop-coords-controllers'
+        'imcms-crop-coords-controllers', 'imcms-editable-image'
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
+              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers, editableImage) {
 
         texts = texts.editors.image;
 
@@ -80,6 +80,21 @@ define(
                 const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
                 imageData = opts.imageData;
+
+                function buildActiveImageInfo() {
+                    return new BEM({
+                        block: 'imcms-image-info',
+                        elements: {
+                            'title': components.texts.titleText('<div>', texts.activeTitle),
+                            'path': $('<div>', {
+                                text: `${imcms.imagesPath}/${imageData.path}`
+                            }),
+                            'common-info': $('<div>', {
+                                text: `${imageData.width} x ${imageData.height}`
+                            })
+                        }
+                    }).buildBlockStructure('<div>');
+                }
 
                 function buildActionImageBtnContainer() {
 
@@ -362,6 +377,7 @@ define(
                     const editableControlsBEM = new BEM({
                         block: "imcms-editable-controls-area",
                         elements: {
+                            'place-info': 'imcms-image-info',
                             "buttons": "imcms-buttons",
                             "text-box": "imcms-text-box",
                             "flags": "imcms-flags",
@@ -370,6 +386,7 @@ define(
                         }
                     });
 
+                    const $infoImage = buildActiveImageInfo();
                     const $actionImageBtnContainer = buildActionImageBtnContainer();
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
@@ -379,6 +396,7 @@ define(
                     const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
+                        {'place-info': $infoImage},
                         {"buttons": $actionImageBtnContainer},
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
