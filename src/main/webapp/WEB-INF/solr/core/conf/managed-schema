@@ -90,6 +90,9 @@
         <field name="doc_type_id" type="int" indexed="true" stored="true"/>
         <field name="creator_id" type="int" indexed="true" stored="false"/>
         <field name="publisher_id" type="int" indexed="true" stored="false"/>
+        <field name="creator_name" type="string" indexed="false" stored="true"/>
+        <field name="modifier_name" type="string" indexed="false" stored="true"/>
+        <field name="publisher_name" type="string" indexed="false" stored="true"/>
         <field name="created_datetime" type="date" indexed="true" stored="true"/>
         <field name="modified_datetime" type="date" indexed="true" stored="true"/>
         <field name="activated_datetime" type="date" indexed="true" stored="true"/>
