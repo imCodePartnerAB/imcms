@@ -30,7 +30,7 @@ module.exports = {
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
         const $head = opts.imageWindowBuilder.buildHead(texts.title + "- " + texts.page + opts.$tag.attr('data-doc-id')
             + ", " + texts.imageName + opts.$tag.attr('data-index') + " - "
-            + texts.teaser + "(" + opts.$tag.width() + " x " + opts.$tag.height() + ")");
+            + texts.teaser + "(" + opts.imageData.width + " x " + opts.imageData.height + ")");
 
         $head.find('.imcms-title').append($imageLinkContainerInfo);
 
