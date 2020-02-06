@@ -10,7 +10,8 @@ import org.apache.solr.common.SolrDocument;
 import java.util.Date;
 import java.util.List;
 
-import static imcode.util.Utility.*;
+import static imcode.util.Utility.isDateInFuture;
+import static imcode.util.Utility.isDateInPast;
 
 /**
  * Document's fields stored in a Solr index.
@@ -58,12 +59,24 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
     }
 
+    public String createdBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
+    }
+
     public Date modified() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
     }
 
+    public String modifiedBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIER_NAME);
+    }
+
     public Date publicationStart() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
+    }
+
+    public String publicationStartBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLISHER_NAME);
     }
 
     public Date archived() {

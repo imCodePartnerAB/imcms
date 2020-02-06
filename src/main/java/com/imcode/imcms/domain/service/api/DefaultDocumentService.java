@@ -3,15 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DeleterByDocumentId;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.PropertyService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -223,8 +215,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         indexDoc.addField(DocumentIndex.FIELD__DOC_TYPE_ID, doc.getType().ordinal());
         indexDoc.addField(DocumentIndex.FIELD__CREATOR_ID, doc.getCreated().getId());
+        indexDoc.addField(DocumentIndex.FIELD__CREATOR_NAME, doc.getCreated().getBy());
 
         addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLISHER_ID, doc.getPublished().getId());
+
+        addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIER_NAME, doc.getModified().getBy());
+        addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLISHER_NAME, doc.getPublished().getBy());
 
         addFieldIfNotNull.accept(DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreated().getFormattedDate());
         addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getModified().getFormattedDate());
