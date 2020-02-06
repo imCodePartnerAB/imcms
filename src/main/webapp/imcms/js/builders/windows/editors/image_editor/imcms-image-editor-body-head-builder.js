@@ -26,6 +26,7 @@ define(
                 getZoomPlusButton(),
                 getZoomMinusButton(),
                 getZoomResetButton(),
+                getFitButton()
             );
 
         function toggleImgArea() {
@@ -280,6 +281,18 @@ define(
             }))
         }
 
+        let $fitButton;
+
+        function getFitButton() {
+            return $fitButton || ($fitButton = components.buttons.fitButton({
+                title: 'change that on bootstrap',
+                click: function () {
+
+                },
+                style: 'display: none;'
+            }))
+        }
+
         let $zoomResetButton;
 
         function getZoomResetButton() {
@@ -375,6 +388,7 @@ define(
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),
+                        getFitButton(),
                         getShowImageRotationControls(),
                         getRotateLeftButton(),
                         getRotateRightButton(),
@@ -454,6 +468,7 @@ define(
                     getZoomPlusButton(),
                     getZoomMinusButton(),
                     getZoomResetButton(),
+                    getFitButton(),
 
                 ].forEach($elem => $elem.hide());
 
