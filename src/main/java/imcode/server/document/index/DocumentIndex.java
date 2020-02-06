@@ -56,6 +56,9 @@ public interface DocumentIndex {
     String FIELD__MIME_TYPE = "mime_type";
     String FIELD__CREATOR_ID = "creator_id";
     String FIELD__PUBLISHER_ID = "publisher_id";
+    String FIELD__CREATOR_NAME = "creator_name";
+    String FIELD__MODIFIER_NAME = "modifier_name";
+    String FIELD__PUBLISHER_NAME = "publisher_name";
     String FIELD__PROPERTY_PREFIX = "property.";
     String FIELD__ALIAS = "alias";
     String FIELD__TEMPLATE = "template";
