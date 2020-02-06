@@ -260,6 +260,7 @@ const texts = {
                 freeTextPlaceholder: "Skriv för att söka dokument",
                 owner: "Ägare",
                 category: "Kategori",
+                by: 'av',
                 controls: {
                     edit: {
                         title: "Redigera"
@@ -278,6 +279,21 @@ const texts = {
                     type: "Typ",
                     status: "Status",
                     version: 'Ver'
+                },
+                id: {
+                    tooltip: {
+                        createdOn: 'Skapad'
+                    }
+                },
+                modified: {
+                    tooltip: {
+                        lastChangedOn: 'Dokumentet ändrades senast',
+                    }
+                },
+                published: {
+                    tooltip: {
+                        publishedOn: 'Dokumentet publicerades',
+                    }
                 },
                 version: {
                     tooltip: {
@@ -1125,6 +1141,7 @@ const texts = {
                 freeTextPlaceholder: "Type to find document",
                 owner: "Owner",
                 category: "Category",
+                by: 'by',
                 controls: {
                     edit: {
                         title: "Edit"
@@ -1143,6 +1160,21 @@ const texts = {
                     type: "Type",
                     status: "State",
                     version: 'Ver'
+                },
+                id: {
+                    tooltip: {
+                        createdOn: 'Created on'
+                    }
+                },
+                modified: {
+                    tooltip: {
+                        lastChangedOn: 'The document was last changed on',
+                    }
+                },
+                published: {
+                    tooltip: {
+                        publishedOn: 'The document was published on',
+                    }
                 },
                 version: {
                     tooltip: {
