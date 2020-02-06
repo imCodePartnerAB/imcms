@@ -718,7 +718,11 @@ define("imcms-menu-editor-builder",
                 class: 'imcms-grid-coll-1',
             });
             $docId.modifiers = ['id'];
-            addTooltip($docId, menuElementTree.documentId, 'right');
+            addTooltip(
+                $docId,
+                documentEditorBuilder.getIdTooltipText(menuElementTree.documentId, menuElementTree.createdDate, menuElementTree.createdBy),
+                'right'
+            );
 
             const $titleText = components.texts.titleText('<div>', menuElementTree.title, {
                 class: 'imcms-flex--flex-1',
@@ -726,17 +730,22 @@ define("imcms-menu-editor-builder",
             $titleText.modifiers = ['title'];
             addTooltip($titleText, menuElementTree.title, 'right');
 
-            const $publishedDate = components.texts.titleText('<div>', getConverted(menuElementTree.publishedDate), {
+            const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
                 class: 'imcms-grid-coll-3',
             });
             $publishedDate.modifiers = ['date'];
-            addTooltip($publishedDate, texts.publishDate);
+            addTooltip(
+                $publishedDate,
+                documentEditorBuilder.getPublishedDateTooltipText(menuElementTree.publishedDate, menuElementTree.publishedBy),
+            );
 
-            const $modifiedDate = components.texts.titleText('<div>', getConverted(menuElementTree.modifiedDate), {
-                title: texts.modifiedDate,
+            const $modifiedDate = components.texts.titleText('<div>', menuElementTree.modifiedDate, {
                 class: 'imcms-grid-coll-3',
             });
-            addTooltip($modifiedDate, texts.modifiedDate);
+            addTooltip(
+                $modifiedDate,
+                documentEditorBuilder.getModifiedDateTooltipText(menuElementTree.modifiedDate, menuElementTree.modifiedBy),
+            );
 
             const $star = menuElementTree.hasNewerVersion
                 ? components.controls.star()
@@ -745,7 +754,7 @@ define("imcms-menu-editor-builder",
             addTooltip($currentVersion, documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip);
             $currentVersion.modifiers = ['currentVersion'];
 
-            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, getConverted(menuElementTree.publishedDate));
+            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, menuElementTree.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
                 class: 'imcms-grid-coll-13'
             });
@@ -791,23 +800,6 @@ define("imcms-menu-editor-builder",
                 delay: {show: 400},
                 placement: placement,
             });
-        }
-
-        function getConverted(date) {
-            const regexIsOnlyNumber = new RegExp('^[0-9]+$');
-
-            if (date !== null && date !== '') {
-                const parsedDate = regexIsOnlyNumber.test(date)
-                    ? new Date(parseInt(date))
-                    : new Date(date);
-
-                return parsedDate.getFullYear() +
-                    "-" + ("0" + (parsedDate.getMonth() + 1)).slice(-2) +
-                    "-" + ("0" + parsedDate.getDate()).slice(-2) +
-                    " " + parsedDate.getHours() + ":" + ("0" + parsedDate.getMinutes()).slice(-2)
-
-            }
-            return texts.publishedTimePrompt;
         }
 
         function buildMenuItemTree(menuElementTree, level, typeSort) {

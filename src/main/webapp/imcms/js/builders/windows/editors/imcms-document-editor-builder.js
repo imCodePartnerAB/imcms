@@ -904,6 +904,18 @@ define("imcms-document-editor-builder",
             : { tooltip: texts.version.tooltip.noWorkingVersion }
         }
 
+        function getIdTooltipText(id, date, user) {
+            return `${id}. ${texts.id.tooltip.createdOn} ${date} ${texts.by} ${user}`
+        }
+        
+        function getModifiedDateTooltipText(date, user) {
+            return `${texts.modified.tooltip.lastChangedOn} ${date} ${texts.by} ${user}`
+        }
+
+        function getPublishedDateTooltipText(date, user) {
+            return `${texts.published.tooltip.publishedOn} ${date} ${texts.by} ${user}`
+        }
+
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
 
@@ -912,6 +924,7 @@ define("imcms-document-editor-builder",
                 class: "imcms-grid-coll-18",
             });
             $docItemId.modifiers = ["id"];
+            addTooltip($docItemId, getIdTooltipText(document.id, document.created, document.createdBy), 'right');
 
             const title = (document.commonContents)
                 ? document.commonContents
@@ -936,13 +949,17 @@ define("imcms-document-editor-builder",
                 class: "imcms-grid-coll-15",
             });
             $docItemModified.modifiers = ["date"];
-            document.modified && addTooltip($docItemModified, document.modified);
+            if (document.modified) {
+                addTooltip($docItemModified, getModifiedDateTooltipText(document.modified, document.modifiedBy));
+            }
 
             const $docItemPublished = components.texts.titleText("<div>", document.published, {
                 class: "imcms-grid-coll-15",
             });
             $docItemPublished.modifiers = ["date"];
-            document.published && addTooltip($docItemPublished, document.published);
+            if (document.published) {
+                addTooltip($docItemPublished, getPublishedDateTooltipText(document.published, document.publishedBy));
+            }
 
             const $star = document.currentVersion === WORKING_VERSION
                 ? components.controls.star()
@@ -1220,6 +1237,9 @@ define("imcms-document-editor-builder",
             addDocumentToList,
             getDocumentStatusTexts,
             getDocumentVersionTexts,
+            getIdTooltipText,
+            getModifiedDateTooltipText,
+            getPublishedDateTooltipText,
             refreshDocumentInList,
             getDocumentById,
             build: function () {
