@@ -20,11 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -97,8 +93,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
         menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
+        menuItemDTO.setCreatedDate(documentDTO.getCreated().getFormattedDate());
         menuItemDTO.setPublishedDate(documentDTO.getPublished().getFormattedDate());
         menuItemDTO.setModifiedDate(documentDTO.getModified().getFormattedDate());
+        menuItemDTO.setCreatedBy(documentDTO.getCreated().getBy());
+        menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
+        menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
         menuItemDTO.setHasNewerVersion(versionService.hasNewerVersion(docId));
 
         return menuItemDTO;
