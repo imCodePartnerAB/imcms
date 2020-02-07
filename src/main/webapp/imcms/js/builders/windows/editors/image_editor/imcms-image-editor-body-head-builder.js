@@ -194,7 +194,7 @@ define(
 
         function onRotationActivated() {
             let previousRotateDegrees = parseInt(
-                editableImage.getImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
+                previewImage.getPreviewImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
             );
 
             new ToolbarViewBuilder()
