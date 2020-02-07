@@ -18,21 +18,22 @@ define(
         const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
             .hide(
                 getShowImageRotationControls(),
-                imageEditSizeControls.getEditSizeControls(),
                 getRevertButton(),
-                getCroppingButton(),
+                getCroppingButton()
             )
             .show(
                 getZoomPlusButton(),
                 getZoomMinusButton(),
+                getPercentageRatio(),
                 getZoomResetButton(),
                 getFitButton()
             );
 
         function toggleImgArea() {
-            function initPreviewImageArea(imageData) {
+            const $editableImg = editableImage.getImage();
+
+            function initPreviewImageArea(imageData, $editableImg) {
                 const $previewImg = previewImage.getPreviewImage();
-                const $editableImg = editableImage.getImage();
                 let styleEditableImage = $editableImg.attr('style');
                 const resultStyleObj = {};
                 styleEditableImage.split(';')
@@ -56,21 +57,26 @@ define(
                 $previewImg.attr('data-src', $editableImg.attr('data-src'));
                 $previewImg.attr('style', stylePreviewImage);
 
+                imageEditSizeControls.setWidth(imageData.width);
+                imageEditSizeControls.setHeight(imageData.height);
             }
 
             const $previewImageArea = previewImage.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
 
             if ($(this).data("tab") === "prev") {
-                initPreviewImageArea(imageData);
-                toggleImageAreaToolbarViewBuilder.build();
+                initPreviewImageArea(imageData, $editableImg);
+                toggleImageAreaToolbarViewBuilder.buildEditorElement();
 
                 $previewImageArea.css({
                     "z-index": "50",
                     "display": "block"
                 });
             } else {
-                toggleImageAreaToolbarViewBuilder.cancelChanges();
+                imageEditSizeControls.setWidth(imageResize.getWidth());
+                imageEditSizeControls.setHeight(imageResize.getHeight());
+                toggleImageAreaToolbarViewBuilder.build();
+
 
                 $previewImageArea.css({
                     "z-index": "10",
@@ -375,6 +381,17 @@ define(
             }))
         }
 
+        let $percentageRatio;
+
+        function getPercentageRatio() {
+            return $percentageRatio || ($percentageRatio = components.texts.textField("<div>", {
+                name: "percentage",
+                error: "Error",
+                disabled: 'disabled',
+                style: 'display: none;',
+            }))
+        }
+
         let $scaleAndRotateControls;
 
         function getScaleAndRotateControls() {
@@ -387,6 +404,7 @@ define(
                         getRemoveCroppingButton(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
+                        getPercentageRatio(),
                         getZoomResetButton(),
                         getFitButton(),
                         getShowImageRotationControls(),
