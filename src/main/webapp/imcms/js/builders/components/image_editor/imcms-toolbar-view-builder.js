@@ -29,6 +29,11 @@ module.exports = class ToolbarViewBuilder {
         });
     }
 
+    showAll() {
+        this.toShow$.slideDown('fast');
+        this.toHide$.slideDown('fast');
+    }
+
     hide(...hideUs$) {
         hideUs$.forEach($hideMe => {
             this.toHide$ = this.toHide$.add($hideMe)
@@ -68,4 +73,10 @@ module.exports = class ToolbarViewBuilder {
         currentToolbarView = this;
         this._onShow();
     }
+
+    buildEditorElement() {
+        currentToolbarView = this;
+        this.showAll();
+    }
+
 };
