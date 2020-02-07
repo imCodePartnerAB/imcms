@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-const previewImage = require('imcms-preview-image-area')
+const previewImage = require('imcms-preview-image-area');
 const sizeControls = require('imcms-image-edit-size-controls');
 
 const angleNorth = {
