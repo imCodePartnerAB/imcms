@@ -5,6 +5,7 @@
 const BEM = require('imcms-bem-builder');
 const $ = require('jquery');
 const events = require('imcms-events');
+const previewImageArea = require('imcms-preview-image-area');
 
 let isImageProportionsInverted = false;
 
@@ -106,7 +107,7 @@ function getCroppingImage() {
 }
 
 function onImageLoad() {
-    const $img = $(this);
+    const $img = previewImageArea.getPreviewImage();
     const shadowLayout = getShadowLayout();
 
     setTimeout(() => {
@@ -122,12 +123,18 @@ function onImageLoad() {
             width: width,
             height: height,
         });
+
+        $image.css({
+            width: width,
+            height: height,
+        })
+
     });
 }
 
 function getImage() {
     return $image || ($image = setFunctionality($("<img>", {
-        "class": "imcms-editable-img",
+        "class": "imcms-preview-img",
         load: onImageLoad,
     })))
 }
