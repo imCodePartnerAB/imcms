@@ -7,10 +7,10 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
-              ToolbarViewBuilder, cropper) {
+    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
+              ToolbarViewBuilder, cropper, editableImageArea) {
 
         texts = texts.editors.image;
         let imageData;
@@ -33,7 +33,7 @@ define(
             const $editableImg = editableImage.getImage();
 
             function initPreviewImageArea(imageData, $editableImg) {
-                const $previewImg = previewImage.getPreviewImage();
+                const $previewImg = previewImageArea.getPreviewImage();
                 let styleEditableImage = $editableImg.attr('style');
                 const resultStyleObj = {};
                 styleEditableImage.split(';')
@@ -61,12 +61,18 @@ define(
                 imageEditSizeControls.setHeight(imageData.height);
             }
 
-            const $previewImageArea = previewImage.getPreviewImageArea();
+            const $previewImageArea = previewImageArea.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
+            const $editableArea = editableImageArea.getEditableImageArea();
 
             if ($(this).data("tab") === "prev") {
                 initPreviewImageArea(imageData, $editableImg);
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
+
+                $editableArea.css({
+                    "z-index": "10",
+                    'display': "none"
+                });
 
                 $previewImageArea.css({
                     "z-index": "50",
@@ -77,10 +83,14 @@ define(
                 imageEditSizeControls.setHeight(imageResize.getHeight());
                 toggleImageAreaToolbarViewBuilder.build();
 
-
                 $previewImageArea.css({
                     "z-index": "10",
                     "display": "none"
+                });
+
+                $editableArea.css({
+                    "z-index": "50",
+                    'display': "block"
                 });
             }
 
@@ -117,7 +127,7 @@ define(
         }
 
         function zoom(delta) {
-            const $previewArea = previewImage.getPreviewImage();
+            const $previewArea = previewImageArea.getPreviewImage();
 
             if (!delta) {
                 $previewArea.css('zoom', 1);
@@ -194,7 +204,7 @@ define(
 
         function onRotationActivated() {
             let previousRotateDegrees = parseInt(
-                previewImage.getPreviewImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
+                previewImageArea.getPreviewImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
             );
 
             new ToolbarViewBuilder()
@@ -218,7 +228,7 @@ define(
         function getCroppingProportionsInfo() {
             return components.texts.infoText(
                 '<div>',
-                `${imageResize.isProportionsLockedByStyle() ? texts.presetCrop : texts.crop}: ${imageResize.getWidth()} x ${imageResize.getHeight()}`,
+                `${imageResize.isProportionsLockedByStyle() ? texts.presetCrop : texts.crop}: ${imageResize.getPreviewWidth()} x ${imageResize.getPreviewHeight()}`,
                 {
                     'class': 'imcms-image-crop-proportions-info',
                     style: 'display: block;'
@@ -494,7 +504,7 @@ define(
 
                 getSwitchViewControls().show();
 
-                previewImage.clearData();
+                previewImageArea.clearData();
 
                 imageProportionsLocker.enableProportionsLock();
 
