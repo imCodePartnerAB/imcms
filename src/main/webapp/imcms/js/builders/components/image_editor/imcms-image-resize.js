@@ -5,9 +5,11 @@
 const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
+const previewImage = require('imcms-preview-image-area');
 
 let saveProportions = true; // by default
 const original = {};
+const preview = {};
 const currentSize = {};
 let proportionsCoefficient;
 
@@ -123,6 +125,14 @@ module.exports = {
 
         this.setCurrentSize(originalWidth, originalHeight);
     },
+
+    getPreview: () => preview,
+    setPreview(previewWidth, previewHeight) {
+        preview.width = previewWidth;
+        preview.height = previewHeight;
+
+        this.setCurrentSize(previewWidth, previewHeight);
+    },
     setWidthControl($control) {
         $widthControl = $control
     },
@@ -159,10 +169,10 @@ module.exports = {
      * @param newWidth
      */
     setWidthStrict(padding, newWidth) {
-        editableImage.setBackgroundWidth(original.width);
-        editableImage.getImage().width(newWidth);
+        previewImage.setBackgroundWidth(preview.width);
+        previewImage.getPreviewImage().width(newWidth);
 
-        if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
+        if (padding >= 0) previewImage.setBackgroundPositionX(-padding);
 
         $widthControl.val(newWidth);
     },
@@ -173,10 +183,10 @@ module.exports = {
      * @param newHeight
      */
     setHeightStrict(padding, newHeight) {
-        editableImage.setBackgroundHeight(original.height);
-        editableImage.getImage().height(newHeight);
+        previewImage.setBackgroundHeight(preview.height);
+        previewImage.getPreviewImage().height(newHeight);
 
-        if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
+        if (padding >= 0) previewImage.setBackgroundPositionY(-padding);
 
         $heightControl.val(newHeight);
     },
@@ -188,6 +198,10 @@ module.exports = {
     getWidth: () => editableImage.getImage().width(),
 
     getHeight: () => editableImage.getImage().height(),
+
+    getPreviewWidth: () => previewImage.getPreviewImage().width(),
+
+    getPreviewHeight: () => previewImage.getPreviewImage().height(),
 
     setMaxWidth(maxWidthValue) {
         maxWidth = maxWidthValue
@@ -268,5 +282,7 @@ module.exports = {
         proportionsCoefficient = 1;
         original.width = null;
         original.height = null;
+        preview.width = null;
+        preview.height = null;
     },
 };
