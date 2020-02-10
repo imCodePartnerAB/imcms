@@ -38,6 +38,64 @@ function clear() {
 }
 
 module.exports = {
+    setPreviewImageSource: (path, onLoad) => {
+        const src = `${imcms.contextPath}/${imcms.imagesPath}/${path}`;
+
+        $previewImg.attr('data-src', src);
+        $previewImg.removeAttr('style'); // not sure
+        $previewImg.css('background-image', `url('${src}')`);
+
+        const actualImage = new Image();
+        actualImage.src = src;
+
+        actualImage.onload = function () {
+            $previewImg.css('background-size', `${this.width}px ${this.height}px`);
+
+            require('imcms-image-resize').setPreview(this.width, this.height);
+
+            onLoad && onLoad.call();
+        };
+    },
+
+    setBackgroundPositionX(newPositionX) {
+        $previewImg[0].style.backgroundPositionX = `${newPositionX}px`
+    },
+
+    setBackgroundPositionY(newPositionY) {
+        $previewImg[0].style.backgroundPositionY = `${newPositionY}px`
+    },
+
+    setBacBackgroundSize(width, height) {
+        $previewImg.css('background-size', `${width}px ${height}px`);
+    },
+
+    getBackgroundPositionX() {
+        return parseInt($previewImg[0].style.backgroundPositionX, 10)
+    },
+
+    getBackgroundPositionY() {
+        return parseInt($previewImg[0].style.backgroundPositionY, 10)
+    },
+
+    setBackgroundWidth(newWidth) {
+        const backgroundSize = $previewImg[0].style.backgroundSize;
+        this.setBacBackgroundSize(newWidth, backgroundSize ? this.getBackgroundHeight() : 0);
+    },
+
+    setBackgroundHeight(newHeight) {
+        const backgroundSize = $previewImg[0].style.backgroundSize;
+        this.setBacBackgroundSize(backgroundSize ? this.getBackgroundWidth() : 0, newHeight);
+    },
+
+    getBackgroundWidth() {
+        const backgroundSize = $previewImg[0].style.backgroundSize;
+        return backgroundSize ? parseInt(backgroundSize.split(' ')[0], 10) : 0
+    },
+
+    getBackgroundHeight() {
+        const backgroundSize = $previewImg[0].style.backgroundSize;
+        return (backgroundSize && backgroundSize.includes(' ')) ? parseInt(backgroundSize.split(' ')[1], 10) : 0
+    },
     getPreviewImage: getPreviewImage,
     getPreviewImageArea: getPreviewImageArea,
     clearData: clear,
