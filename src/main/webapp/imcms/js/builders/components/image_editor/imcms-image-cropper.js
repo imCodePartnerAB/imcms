@@ -666,11 +666,11 @@ module.exports = {
         cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
-        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth);
-        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
+        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
+        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
         imageResize.setCurrentSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing(imageData, true);
+        imageResize.updateSizing(imageData, false);
     },
     destroyImageCropper: destroy
 };

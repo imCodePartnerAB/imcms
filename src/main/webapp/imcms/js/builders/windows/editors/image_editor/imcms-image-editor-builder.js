@@ -108,17 +108,17 @@ define(
                     const height = cropRegion.cropY2 - cropRegion.cropY1;
 
                     imageResize.setCurrentSize(width, height);
-                    imageResize.setWidthStrict(cropRegion.cropX1, width);
-                    imageResize.setHeightStrict(cropRegion.cropY1, height);
+                    imageResize.setWidthStrict(cropRegion.cropX1, width, true);
+                    imageResize.setHeightStrict(cropRegion.cropY1, height, true);
 
-                    imageResize.setWidth(imageData.width);
-                    imageResize.setHeight(imageData.height);
+                    imageResize.setWidth(imageData.width, true);
+                    imageResize.setHeight(imageData.height, true);
 
                 } else {
                     const original = imageResize.getOriginal();
-                    imageResize.setWidthStrict(0, original.width);
-                    imageResize.setHeightStrict(0, original.height);
-                    imageResize.updateSizing(imageData);
+                    imageResize.setWidthStrict(0, original.width, true);
+                    imageResize.setHeightStrict(0, original.height, true);
+                    imageResize.updateSizing(imageData, true);
                 }
 
                 imageRotate.rotateImage(imageData.rotateDirection);

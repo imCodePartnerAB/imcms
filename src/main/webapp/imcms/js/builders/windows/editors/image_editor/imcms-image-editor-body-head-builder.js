@@ -79,8 +79,8 @@ define(
                     "display": "block"
                 });
             } else {
-                imageEditSizeControls.setWidth(imageResize.getWidth());
-                imageEditSizeControls.setHeight(imageResize.getHeight());
+                imageEditSizeControls.setWidth(imageResize.getWidth(), true);
+                imageEditSizeControls.setHeight(imageResize.getHeight(), true);
                 toggleImageAreaToolbarViewBuilder.build();
 
                 $previewImageArea.css({
