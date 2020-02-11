@@ -4,6 +4,7 @@
  */
 const $ = require('jquery');
 const BEM = require('imcms-bem-builder');
+const imcms = require('imcms');
 
 let $previewImageArea;
 let $previewImgContainer;
@@ -38,20 +39,19 @@ function clear() {
 }
 
 module.exports = {
-    setPreviewImageSource: (path, onLoad) => {
+    setPreviewImageSource: (imageData, path, onLoad) => {
         const src = `${imcms.contextPath}/${imcms.imagesPath}/${path}`;
 
         $previewImg.attr('data-src', src);
-        $previewImg.removeAttr('style'); // not sure
         $previewImg.css('background-image', `url('${src}')`);
 
         const actualImage = new Image();
         actualImage.src = src;
 
         actualImage.onload = function () {
-            $previewImg.css('background-size', `${this.width}px ${this.height}px`);
+            $previewImg.css('background-size', `${imageData.width}px ${imageData.height}px`);
 
-            require('imcms-image-resize').setPreview(this.width, this.height);
+            require('imcms-image-resize').setPreview(imageData.width, imageData.height);
 
             onLoad && onLoad.call();
         };
