@@ -6,7 +6,6 @@ const angles = require('imcms-image-crop-angles');
 const Limit = require('imcms-numeric-limiter');
 const $ = require('jquery');
 const cropArea = require('imcms-cropping-area');
-const editableImage = require('imcms-editable-image');
 const imageResize = require('imcms-image-resize');
 const previewImageArea = require('imcms-preview-image-area');
 
@@ -668,7 +667,7 @@ module.exports = {
 
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
-        imageResize.setCurrentSize(croppedWidth, croppedHeight);
+        imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
         imageResize.updateSizing(imageData, false);
     },
