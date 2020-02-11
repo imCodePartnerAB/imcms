@@ -27,46 +27,16 @@ define(
                 getPercentageRatio(),
                 getZoomResetButton(),
                 getFitButton()
-            );
+            )
+            .originControlSizeShow(imageEditSizeControls.getOriginSizeControls())
+            .prevControlSizeHide(imageEditSizeControls.getEditSizeControls());
 
         function toggleImgArea() {
-            const $editableImg = editableImage.getImage();
-
-            function initPreviewImageArea(imageData, $editableImg) {
-                const $previewImg = previewImageArea.getPreviewImage();
-                let styleEditableImage = $editableImg.attr('style');
-                const resultStyleObj = {};
-                styleEditableImage.split(';')
-                    .map(x => x.trim())
-                    .filter(x => !!x)
-                    .forEach(x => {
-                        const styleKeyAndValue = x.split(':').map(x => x.trim());
-                        resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
-                    });
-
-                resultStyleObj['background-size'] = imageData.width + 'px ' + imageData.height + 'px';
-                resultStyleObj['height'] = imageData.height + 'px';
-                resultStyleObj['width'] = imageData.width + 'px';
-
-                let stylePreviewImage = '';
-
-                for (let [key, value] of Object.entries(resultStyleObj)) {
-                    stylePreviewImage += `${ key}: ${value}; `;
-                }
-
-                $previewImg.attr('data-src', $editableImg.attr('data-src'));
-                $previewImg.attr('style', stylePreviewImage);
-
-                imageEditSizeControls.setWidth(imageData.width);
-                imageEditSizeControls.setHeight(imageData.height);
-            }
-
             const $previewImageArea = previewImageArea.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
             const $editableArea = editableImageArea.getEditableImageArea();
 
             if ($(this).data("tab") === "prev") {
-                initPreviewImageArea(imageData, $editableImg);
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
 
                 $editableArea.css({
@@ -79,8 +49,8 @@ define(
                     "display": "block"
                 });
             } else {
-                imageEditSizeControls.setWidth(imageResize.getWidth(), true);
-                imageEditSizeControls.setHeight(imageResize.getHeight(), true);
+                imageEditSizeControls.setWidth(imageResize.getWidth());
+                imageEditSizeControls.setHeight(imageResize.getHeight());
                 toggleImageAreaToolbarViewBuilder.build();
 
                 $previewImageArea.css({
@@ -168,9 +138,10 @@ define(
         }
 
         let $tabOriginal;
+        let $tabPreview;
 
         function buildSwitchViewControls() {
-            const $preview = components.texts.titleText("<div>", texts.preview, {
+            $tabPreview = components.texts.titleText("<div>", texts.preview, {
                 "data-tab": "prev",
                 click: toggleImgArea
             });
@@ -178,12 +149,12 @@ define(
                 "data-tab": "origin",
                 click: toggleImgArea
             });
-            $tabOriginal.modifiers = ["active"];
+            $tabPreview.modifiers = ["active"];
 
             return new BEM({
                 block: "imcms-editable-img-control-tabs",
                 elements: {
-                    "tab": [$preview, $tabOriginal]
+                    "tab": [$tabOriginal, $tabPreview]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -408,6 +379,10 @@ define(
             return $scaleAndRotateControls || ($scaleAndRotateControls = new BEM({
                 block: "imcms-edit-image",
                 elements: {
+                    'size-place': [
+                        imageEditSizeControls.getEditSizeControls(),
+                        imageEditSizeControls.getOriginSizeControls(),
+                    ],
                     "button": [
                         imageProportionsLocker.getProportionsButton(),
                         imageProportionsLocker.getProportionsText(),
@@ -422,7 +397,7 @@ define(
                         getRotateRightButton(),
                         getCroppingButton(),
                         getRevertButton(),
-                    ]
+                    ],
                 }
             }).buildBlockStructure("<div>"))
         }
@@ -432,13 +407,11 @@ define(
             return new BEM({
                 block: "imcms-editable-img-controls",
                 elements: {
-                    "control-size": '',
                     'control-button': '',
                     "control-scale-n-rotate": '',
                     "control-view": '',
                 }
             }).buildBlock("<div>", [
-                {"control-size": imageEditSizeControls.getEditSizeControls()},
                 {'control-button': getCancelChangesButton()},
                 {"control-scale-n-rotate": getScaleAndRotateControls()},
                 {"control-button": getApplyChangesButton()},
@@ -450,6 +423,8 @@ define(
 
         module.exports = {
             showOriginalImageArea: () => toggleImgArea.call($tabOriginal),
+
+            showPreviewImageArea: () => toggleImgArea.call($tabPreview),
 
             build: function ($rightSidePanel, _imageData) {
                 imageData = _imageData;
