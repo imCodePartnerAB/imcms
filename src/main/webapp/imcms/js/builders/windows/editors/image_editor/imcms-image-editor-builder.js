@@ -7,10 +7,11 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts"
+        'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
+        'imcms-preview-image-area'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls, modal, texts) {
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea) {
 
         texts = texts.editors.image;
 
@@ -42,12 +43,44 @@ define(
             $imgUrl.attr("title", imageData.path);
         }
 
+        function initSize(imageData, isOriginalImage) {
+            const cropRegion = imageData.cropRegion;
+
+            if (cropRegion
+                && (cropRegion.cropX1 >= 0)
+                && (cropRegion.cropX2 >= 1)
+                && (cropRegion.cropY1 >= 0)
+                && (cropRegion.cropY2 >= 1)) {
+                const width = cropRegion.cropX2 - cropRegion.cropX1;
+                const height = cropRegion.cropY2 - cropRegion.cropY1;
+
+                imageResize.setCurrentSize(width, height);
+                imageResize.setWidthStrict(cropRegion.cropX1, width, isOriginalImage);
+                imageResize.setHeightStrict(cropRegion.cropY1, height, isOriginalImage);
+
+                imageResize.setWidth(imageData.width, isOriginalImage);
+                imageResize.setHeight(imageData.height, isOriginalImage);
+
+            } else {
+                const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
+                imageResize.setWidthStrict(0, image.width, isOriginalImage);
+                imageResize.setHeightStrict(0, image.height, isOriginalImage);
+                imageResize.updateSizing(imageData, true);
+            }
+
+            imageRotate.rotateImage(imageData.rotateDirection);
+        }
+
         function fillLeftSideData(imageData) {
             if (!imageData.path) return;
 
-            editableImage.getImage().hide();
+            prevImageArea.getPreviewImage().hide();
 
             editableImage.setImageSource(imageData.path, () => {
+                initSize(imageData, true)
+            });
+
+            prevImageArea.setPreviewImageSource(imageData, imageData.path, () => {
                 const style = $tag.data('style');
                 const resultStyleObj = {};
 
@@ -93,36 +126,12 @@ define(
                     }
 
                     if (imageResize.isProportionsLockedByStyle()) {
-                        imageResize.setCurrentSize(imageData.width, imageData.height);
+                        imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
                     }
                 }
 
-                const cropRegion = imageData.cropRegion;
-
-                if (cropRegion
-                    && (cropRegion.cropX1 >= 0)
-                    && (cropRegion.cropX2 >= 1)
-                    && (cropRegion.cropY1 >= 0)
-                    && (cropRegion.cropY2 >= 1)) {
-                    const width = cropRegion.cropX2 - cropRegion.cropX1;
-                    const height = cropRegion.cropY2 - cropRegion.cropY1;
-
-                    imageResize.setCurrentSize(width, height);
-                    imageResize.setWidthStrict(cropRegion.cropX1, width, true);
-                    imageResize.setHeightStrict(cropRegion.cropY1, height, true);
-
-                    imageResize.setWidth(imageData.width, true);
-                    imageResize.setHeight(imageData.height, true);
-
-                } else {
-                    const original = imageResize.getOriginal();
-                    imageResize.setWidthStrict(0, original.width, true);
-                    imageResize.setHeightStrict(0, original.height, true);
-                    imageResize.updateSizing(imageData, true);
-                }
-
-                imageRotate.rotateImage(imageData.rotateDirection);
-                editableImage.getImage().show();
+                initSize(imageData, false);
+                prevImageArea.getPreviewImage().show();
             });
         }
 
@@ -131,7 +140,7 @@ define(
 
             if (!image) return;
 
-            bodyHeadBuilder.showOriginalImageArea();
+            bodyHeadBuilder.showPreviewImageArea();
 
             imageData.cropRegion = image.cropRegion;
             imageData.align = image.align;
