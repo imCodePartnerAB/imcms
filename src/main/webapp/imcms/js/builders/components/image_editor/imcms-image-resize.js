@@ -11,6 +11,7 @@ let saveProportions = true; // by default
 const original = {};
 const preview = {};
 const currentSize = {};
+const currentPrevSize = {};
 let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
@@ -55,7 +56,7 @@ function setWidth(newWidth, isOriginal) {
         previewImage.setBackgroundWidth(newImageBackgroundWidth);
         previewImage.setBackgroundPositionX(newImageLeft);
 
-        $widthControl.val(newWidth);
+        $widthPreviewControl.val(newWidth);
     }
 
 }
@@ -86,7 +87,7 @@ function setHeight(newHeight, isOriginal) {
         previewImage.setBackgroundHeight(newImageBackgroundHeight);
         previewImage.setBackgroundPositionY(newImageTop);
 
-        $heightControl.val(newHeight);
+        $heightPreviewControl.val(newHeight);
     }
 }
 
@@ -121,6 +122,7 @@ function updateHeightProportionally(newWidth, isOriginal) {
 }
 
 let $heightControl, $widthControl;
+let $heightPreviewControl, $widthPreviewControl;
 
 module.exports = {
     resetToOriginal(imageData) {
@@ -141,10 +143,35 @@ module.exports = {
         this.setCurrentSize(width, height);
         this.updateSizing(imageData, true);
     },
+
+    resetToPreview(imageData) {
+        this.setHeightStrict(0, preview.height, false);
+        this.setWidthStrict(0, preview.width, false);
+
+        let width, height;
+
+        if (minWidth && minHeight) {
+            width = minWidth;
+            height = minHeight;
+
+        } else {
+            width = preview.width;
+            height = preview.height;
+        }
+
+        this.setCurrentPreviewSize(width, height);
+        this.updateSizing(imageData, true);
+    },
     setCurrentSize(width, height) {
         currentSize.width = width;
         currentSize.height = height;
         proportionsCoefficient = currentSize.width / currentSize.height;
+    },
+    setCurrentPreviewSize(width, height) {
+        currentPrevSize.width = width;
+        currentPrevSize.height = height;
+        proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
+
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
@@ -162,7 +189,7 @@ module.exports = {
         preview.width = previewWidth;
         preview.height = previewHeight;
 
-        this.setCurrentSize(previewWidth, previewHeight);
+        this.setCurrentPreviewSize(previewWidth, previewHeight);
     },
     setWidthControl($control) {
         $widthControl = $control
@@ -170,6 +197,14 @@ module.exports = {
 
     setHeightControl($control) {
         $heightControl = $control
+    },
+
+    setPreviewWidthControl($control) {
+        $widthPreviewControl = $control
+    },
+
+    setPreviewHeightControl($control) {
+        $heightPreviewControl = $control
     },
 
     isProportionsLockedByStyle() {
@@ -214,7 +249,7 @@ module.exports = {
 
             if (padding >= 0) previewImage.setBackgroundPositionX(-padding);
 
-            $widthControl.val(newWidth);
+            $widthPreviewControl.val(newWidth);
         }
     },
 
@@ -238,7 +273,7 @@ module.exports = {
 
             if (padding >= 0) previewImage.setBackgroundPositionY(-padding);
 
-            $heightControl.val(newHeight);
+            $heightPreviewControl.val(newHeight);
         }
     },
 
