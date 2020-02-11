@@ -29,7 +29,7 @@ function onValidWidthChange() {
     newVal && imageResize.setWidthProportionally(newVal);
 }
 
-let $heightControl, $widthControl;
+let $heightControl, $widthControl, $hPreviewControl, $wPreviewControl;
 let widthLabelText = "W";
 let heightLabelText = "H";
 
@@ -42,7 +42,7 @@ function buildHeightControl() {
         onValidChange: onValidHeightChange
     });
 
-    imageResize.setHeightControl($heightControl.getInput());
+    imageResize.setHeightControl($heightControl.getInput().attr('disabled', 'disabled'));
 
     return $heightControl
 }
@@ -60,7 +60,7 @@ function buildWidthControl() {
         onValidChange: onValidWidthChange
     });
 
-    imageResize.setWidthControl($widthControl.getInput());
+    imageResize.setWidthControl($widthControl.getInput().attr('disabled', 'disabled'));
 
     return $widthControl
 }
@@ -69,30 +69,88 @@ function getWidthControl() {
     return $widthControl ? $widthControl : buildWidthControl()
 }
 
-let $title;
 
-function getTitle() {
-    return $title || ($title = components.texts.titleText("<div>", texts.displaySize))
+function buildPreviewHeightControl() {
+    $hPreviewControl = components.texts.textNumber("<div>", {
+        name: "prev-height",
+        placeholder: texts.height,
+        text: heightLabelText,
+        error: "Error",
+        onValidChange: onValidHeightChange
+    });
+
+    imageResize.setPreviewHeightControl($hPreviewControl.getInput());
+
+    return $hPreviewControl
 }
 
-function buildEditSizeControls() {
+function getPreviewHeightControl() {
+    return $hPreviewControl ? $hPreviewControl : buildPreviewHeightControl()
+}
+
+function buildPreviewWidthControl() {
+    $wPreviewControl = components.texts.textNumber("<div>", {
+        name: "prev-width",
+        placeholder: texts.width,
+        text: widthLabelText,
+        error: "Error",
+        onValidChange: onValidWidthChange
+    });
+
+    imageResize.setPreviewWidthControl($wPreviewControl.getInput());
+
+    return $wPreviewControl
+}
+
+function getPreviewWidthControl() {
+    return $wPreviewControl ? $wPreviewControl : buildPreviewWidthControl()
+}
+
+let $title, $titlePrev;
+
+function getTitle() {
+    return $title || ($title = components.texts.titleText("<div>", texts.originSize))
+}
+
+function getPrevTitle() {
+    return $titlePrev || ($titlePrev = components.texts.titleText("<div>", texts.displaySize))
+}
+
+function buildOriginalSizeControls() {
 
     return new BEM({
-        block: "imcms-edit-size",
+        block: "imcms-original-size",
         elements: [
             {"title": getTitle()},
             {"number": getWidthControl()},
             {"number": getHeightControl()}
         ]
-    }).buildBlockStructure("<div>");
+    }).buildBlockStructure("<div>", {style: 'display: none;'});
 }
 
-let $sizeControls;
+function buildPreviewSizeControls() {
+
+    return new BEM({
+        block: "imcms-edit-size",
+        elements: [
+            {"title": getPrevTitle()},
+            {"number": getPreviewWidthControl()},
+            {"number": getPreviewHeightControl()}
+        ]
+    }).buildBlockStructure("<div>", {style: 'display: none;'});
+}
+
+let $originalSizeControls;
+let $prevSizeControls;
 
 module.exports = {
     getWidthControl: getWidthControl,
 
     getHeightControl: getHeightControl,
+
+    getPreviewHeightControl: getPreviewHeightControl,
+
+    getPreviewWidthControl: getPreviewWidthControl,
 
     swapControls: (isInverted) => {
         $widthControl.find('label').text((isInverted) ? heightLabelText : widthLabelText);
@@ -102,5 +160,11 @@ module.exports = {
 
     setWidth: (newWidth) => getWidthControl().getInput().val(newWidth),
 
-    getEditSizeControls: () => $sizeControls || ($sizeControls = buildEditSizeControls()),
+    setPrevHeight: (newHeight) => getPreviewHeightControl().getInput().val(newHeight),
+
+    setPrevWidth: (newWidth) => getPreviewWidthControl().getInput().val(newWidth),
+
+    getOriginSizeControls: () => $originalSizeControls || ($originalSizeControls = buildOriginalSizeControls()),
+
+    getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildPreviewSizeControls()),
 };
