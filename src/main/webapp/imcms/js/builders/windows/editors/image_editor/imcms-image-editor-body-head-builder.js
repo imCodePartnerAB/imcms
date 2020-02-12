@@ -97,15 +97,28 @@ define(
         }
 
         function zoom(delta) {
-            const $previewArea = previewImageArea.getPreviewImage();
+            if ($('.imcms-editable-img-control-tabs__tab--active').data('tab') === "prev") {
+                const $previewArea = previewImageArea.getPreviewImage();
 
-            if (!delta) {
-                $previewArea.css('zoom', 1);
-                return;
+                if (!delta) {
+                    $previewArea.css('zoom', 1);
+                    return;
+                }
+
+                const currentZoom = parseFloat($previewArea.css('zoom'));
+                $previewArea.css('zoom', currentZoom + delta);
+
+            } else {
+                const $originArea = editableImage.getImage();
+
+                if (!delta) {
+                    $originArea.css('zoom', 1);
+                    return;
+                }
+
+                const currentZoom = parseFloat($originArea.css('zoom'));
+                $originArea.css('zoom', currentZoom + delta);
             }
-
-            const currentZoom = parseFloat($previewArea.css('zoom'));
-            $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {
@@ -128,7 +141,7 @@ define(
                 cropY2: 0,
             };
             imageRotate.rotateImage("NORTH");
-            imageResize.resetToOriginal(imageData);
+            imageResize.resetToPreview(imageData);
         }
 
         let $switchViewControls;
