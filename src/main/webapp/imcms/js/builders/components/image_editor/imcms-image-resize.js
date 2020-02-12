@@ -141,7 +141,7 @@ module.exports = {
         }
 
         this.setCurrentSize(width, height);
-        this.updateSizing(imageData, true);
+        this.updateSizing(imageData, true, true);
     },
 
     resetToPreview(imageData) {
@@ -160,7 +160,7 @@ module.exports = {
         }
 
         this.setCurrentPreviewSize(width, height);
-        this.updateSizing(imageData, true);
+        this.updateSizing(imageData, true, false);
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
@@ -361,8 +361,11 @@ module.exports = {
             }
         }
 
-        setHeightProportionally(currentSize.height, isOriginal);
-        setWidthProportionally(currentSize.width, isOriginal);
+        const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
+        const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
+
+        setHeightProportionally(currentHeight, isOriginal);
+        setWidthProportionally(currentWidth, isOriginal);
     },
 
     clearData() {

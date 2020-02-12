@@ -65,7 +65,7 @@ define(
                 const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
                 imageResize.setWidthStrict(0, image.width, isOriginalImage);
                 imageResize.setHeightStrict(0, image.height, isOriginalImage);
-                imageResize.updateSizing(imageData, true);
+                imageResize.updateSizing(imageData, true, isOriginalImage);
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
