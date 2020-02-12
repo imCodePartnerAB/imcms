@@ -405,6 +405,7 @@ function init(_imageData) {
     cropArea.getCroppingBlock().css("z-index", "50");
 
     const $image = previewImageArea.getPreviewImage();
+    const previewImage = imageResize.getPreview();
     const src = $image.attr('data-src');
 
     cropArea.getCroppingArea().css({
@@ -455,7 +456,7 @@ function init(_imageData) {
 
     removeCroppingListeners();
 
-    setElementWidthHeight(cropArea.getCroppingImage(), previewImageWidth, previewImageHeight);
+    setElementWidthHeight(cropArea.getCroppingImage(), previewImage.width, previewImage.height);
     setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
     setElementTopLeft($croppingArea, cropRegion.cropY1, cropRegion.cropX1);
     setElementTopLeft(cropArea.getCroppingImage(), -cropRegion.cropY1, -cropRegion.cropX1);
