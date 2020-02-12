@@ -21,12 +21,12 @@ function getNewVal($input) {
 
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
-    newVal && imageResize.setHeightProportionally(newVal);
+    newVal && imageResize.setHeightProportionally(newVal, false);
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
-    newVal && imageResize.setWidthProportionally(newVal);
+    newVal && imageResize.setWidthProportionally(newVal, false);
 }
 
 let $heightControl, $widthControl, $hPreviewControl, $wPreviewControl;
