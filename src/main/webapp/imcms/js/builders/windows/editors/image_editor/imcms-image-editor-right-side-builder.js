@@ -562,8 +562,8 @@ define(
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageData.width = imageResize.getWidth();
-                        imageData.height = imageResize.getHeight();
+                        imageData.width = imageResize.getPreviewWidth();
+                        imageData.height = imageResize.getPreviewHeight();
                         const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
