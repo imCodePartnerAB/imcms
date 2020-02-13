@@ -9,6 +9,11 @@
     user-select: auto;
 }
 
+.common-info-image {
+    width: 50%;
+    display: contents;
+}
+
 .imcms-image_editor__image-characteristics {
     display: flex;
     border-bottom: 1px solid #d3d8de;
