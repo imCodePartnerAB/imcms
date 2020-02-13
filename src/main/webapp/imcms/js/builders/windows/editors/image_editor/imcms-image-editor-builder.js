@@ -109,20 +109,20 @@ define(
 
                     let width = resultStyleObj.width;
 
-                    if (width && !isNaN(width = parseInt(width, 10))) {
+                    if (width) {
                         imageData.width = width;
                         imageResize.setMaxWidth(width);
                         imageResize.setMinWidth(width);
-                        editSizeControls.getWidthControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let height = resultStyleObj.height;
 
-                    if (height && !isNaN(height = parseInt(height, 10))) {
+                    if (height) {
                         imageData.height = height;
                         imageResize.setMaxHeight(height);
                         imageResize.setMinHeight(height);
-                        editSizeControls.getHeightControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getPreviewHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
                     if (imageResize.isProportionsLockedByStyle()) {
