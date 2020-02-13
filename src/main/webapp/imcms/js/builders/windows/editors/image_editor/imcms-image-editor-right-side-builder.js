@@ -11,7 +11,7 @@ define(
 
         texts = texts.editors.image;
 
-        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
+        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -59,6 +59,14 @@ define(
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
 
+        function buildActiveImageSizeInfo() {
+            return $imageSizeInfo = components.texts.infoText('<div>');
+        }
+
+        function buildActiveImagePathInfo() {
+            return $imageInfoPath = components.texts.infoText('<div>')
+        }
+
         module.exports = {
             updateImageData: ($newTag, newImageData) => {
                 $tag = $newTag;
@@ -71,6 +79,8 @@ define(
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
                 $fileFormat.selectValue(imageData.format);
+                $imageInfoPath.text(`${imcms.imagesPath}/${imageData.path}`);
+                $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.sizeImage}`);
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
@@ -80,21 +90,6 @@ define(
                 const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
                 imageData = opts.imageData;
-
-                function buildActiveImageInfo() {
-                    return new BEM({
-                        block: 'imcms-image-info',
-                        elements: {
-                            'title': components.texts.titleText('<div>', texts.activeTitle),
-                            'path': $('<div>', {
-                                text: `${imcms.imagesPath}/${imageData.path}`
-                            }),
-                            'common-info': $('<div>', {
-                                text: `${imageData.width} x ${imageData.height}`
-                            })
-                        }
-                    }).buildBlockStructure('<div>');
-                }
 
                 function buildActionImageBtnContainer() {
 
@@ -373,11 +368,20 @@ define(
                     ]);
                 }
 
+                function buildInfoSizePathContainer() {
+                    return new BEM({
+                        block: 'imcms-info-edit-image',
+                        elements: {
+                            'path-info': buildActiveImagePathInfo(),
+                            'size-info': buildActiveImageSizeInfo()
+                        }
+                    }).buildBlockStructure('<div>')
+                }
+
                 function buildEditableControls() {
                     const editableControlsBEM = new BEM({
                         block: "imcms-editable-controls-area",
                         elements: {
-                            'place-info': 'imcms-image-info',
                             "buttons": "imcms-buttons",
                             "text-box": "imcms-text-box",
                             "flags": "imcms-flags",
@@ -386,7 +390,6 @@ define(
                         }
                     });
 
-                    const $infoImage = buildActiveImageInfo();
                     const $actionImageBtnContainer = buildActionImageBtnContainer();
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
@@ -396,7 +399,6 @@ define(
                     const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
-                        {'place-info': $infoImage},
                         {"buttons": $actionImageBtnContainer},
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
@@ -609,10 +611,11 @@ define(
                     return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
                 }
 
+                const $info = buildInfoSizePathContainer();
                 const $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($editableControls, $footer);
+                return $("<div>").append($info, $editableControls, $footer);
             }
         }
     }
