@@ -11,6 +11,10 @@ const $imageLinkInfo = $('<a>', {
     id: 'data-link-image'
 });
 
+const $infoData = $('<div>', {
+    'class': 'common-info-image'
+});
+
 const $imageLinkContainerInfo = new BEM({
     block: 'image-editor-info',
     elements: {
@@ -28,11 +32,9 @@ module.exports = {
         const $rightSidePanel = rightSideBuilder.build(opts);
         const $leftSide = leftSideBuilder.build();
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
-        const $head = opts.imageWindowBuilder.buildHead(texts.title + "- " + texts.page + opts.$tag.attr('data-doc-id')
-            + ", " + texts.imageName + opts.$tag.attr('data-index') + " - "
-            + texts.teaser + "(" + opts.imageData.width + " x " + opts.imageData.height + ")");
-
-        $head.find('.imcms-title').append($imageLinkContainerInfo);
+        const $head = opts.imageWindowBuilder.buildHead();
+        //need for get data after build and data in the $infoData, in another way fix build this..
+        $head.find('.imcms-title').append($infoData).append($imageLinkContainerInfo);
 
         return new BEM({
             block: "imcms-image_editor",
@@ -45,6 +47,12 @@ module.exports = {
         }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
     },
     updateImageData: ($tag, imageData) => {
+
+        $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
+        ${texts.imageName}${$tag.attr('data-index')} - 
+        ${texts.teaser} (${imageData.width} x ${imageData.height})`
+        );
+
         if ($tag.attr('data-loop-index')) {
             const linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
                 + '&index=' + $tag.attr('data-index')
