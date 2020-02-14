@@ -261,6 +261,12 @@
     min-width: 60px;
 }
 
+.imcms-document-item__info--notShownTitle {
+    text-decoration: unset !important;
+    cursor: default !important;
+    color: red !important;
+}
+
 .imcms-document-item__info--date,
 .imcms-document-list-titles__title--date {
     min-width: 120px;
