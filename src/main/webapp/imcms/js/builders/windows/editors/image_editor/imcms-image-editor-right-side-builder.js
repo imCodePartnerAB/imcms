@@ -4,10 +4,10 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
-        'imcms-crop-coords-controllers'
+        'imcms-crop-coords-controllers', 'path'
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
+              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers, path) {
 
         texts = texts.editors.image;
 
@@ -94,6 +94,10 @@ define(
             return !!styles;
         }
 
+        function checkExistImageData(image) {
+            return image.path && image.width && image.height;
+        }
+
         module.exports = {
             updateImageData: ($newTag, newImageData) => {
                 $tag = $newTag;
@@ -106,8 +110,8 @@ define(
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
                 $fileFormat.selectValue(imageData.format);
-                if (imageData.path && imageData.height && imageData.width) {
-                    $imageInfoPath.text(`${imcms.imagesPath}/${imageData.path}`).show();
+                if (checkExistImageData(imageData)) {
+                    $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
                     $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.size}`).show();
                     $noImageInfo.hide();
                 } else {
