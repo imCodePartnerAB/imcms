@@ -201,6 +201,8 @@ define(
         function clearData() {
             clearComponents();
             events.trigger("enable text editor blur");
+            editSizeControls.getPreviewWidthControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getPreviewHeightControl().getInput().removeAttr('disabled').val('');
         }
 
         var imageWindowBuilder = new WindowBuilder({
