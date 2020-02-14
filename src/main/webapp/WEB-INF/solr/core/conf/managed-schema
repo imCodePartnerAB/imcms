@@ -73,6 +73,7 @@
 
              <!-- language code - i.e en, se -->
         <field name="language" type="text_general" indexed="true" stored="true" required="true" multiValued="true"/>
+        <field name="enabled_language" type="string" indexed="false" stored="true" multiValued="true"/>
 
         <!--
             Should be of type int.
@@ -99,6 +100,7 @@
         <field name="publication_start_datetime" type="date" indexed="true" stored="true"/>
         <field name="publication_end_datetime" type="date" indexed="true" stored="true"/>
         <field name="archived_datetime" type="date" indexed="true" stored="true"/>
+        <field name="disabled_language_show_mode" type="string" indexed="false" stored="true"/>
         <!-- publication status -->
         <field name="status" type="int" indexed="true" stored="true"/>
         <!-- file-doc field -->

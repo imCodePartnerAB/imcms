@@ -198,6 +198,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__META_ID, docId);
         indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, currentVersionDocNo);
         indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
+        indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode());
 
         for (CommonContent commonContent : doc.getCommonContents()) {
             String headline = commonContent.getHeadline();
@@ -211,6 +212,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD + "_" + langCode, headline);
             indexDoc.addField(DocumentIndex.FIELD__META_TEXT + "_" + langCode, menuText);
+
+            if (commonContent.isEnabled()) {
+                indexDoc.addField(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE, langCode);
+            }
         }
 
         indexDoc.addField(DocumentIndex.FIELD__DOC_TYPE_ID, doc.getType().ordinal());

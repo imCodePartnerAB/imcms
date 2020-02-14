@@ -15,6 +15,7 @@ public interface DocumentIndex {
     String FIELD__ID = "id";
     String FIELD__TIMESTAMP = "timestamp";
     String FIELD__LANGUAGE_CODE = "language";
+    String FIELD__ENABLED_LANGUAGE_CODE = "enabled_language";
     String FIELD__DOC_TYPE_ID = "doc_type_id";
     String FIELD__IMAGE_LINK_URL = "image_link_url";
     String FIELD__NONSTRIPPED_TEXT = "nonstripped_text";
@@ -41,6 +42,7 @@ public interface DocumentIndex {
     String FIELD__ROLE_ID = "role_id";
     String FIELD__STATUS = "status";
     String FIELD__URL = "url";
+    String FIELD__DISABLED_LANGUAGE_SHOW_MODE = "disabled_language_show_mode";
 
     String FIELD__PARENTS_COUNT = "parents_count";
     String FIELD__CHILDREN_COUNT = "children_count";
