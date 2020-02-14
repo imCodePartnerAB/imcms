@@ -27,6 +27,8 @@ public class DocumentStoredFieldsDTO {
 
     private Integer currentVersion;
 
+    private Boolean isShownTitle;
+
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date created;
 
@@ -49,6 +51,7 @@ public class DocumentStoredFieldsDTO {
         documentStatus = from.documentStatus();
         alias = from.alias();
         currentVersion = from.versionNo();
+        isShownTitle = from.isShownTitle();
         created = from.created();
         modified = from.modified();
         published = from.publicationStart();
