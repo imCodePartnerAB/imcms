@@ -27,6 +27,8 @@ public class MenuItemDTO implements Serializable {
 
     private DocumentStatus documentStatus;
 
+    private Boolean isShownTitle;
+
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
     private Date createdDate;
 

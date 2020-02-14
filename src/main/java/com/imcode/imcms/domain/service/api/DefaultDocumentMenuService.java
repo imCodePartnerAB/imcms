@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -14,6 +15,7 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -76,20 +79,19 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     public MenuItemDTO getMenuItemDTO(int docId, Language language) {
         final Meta metaDocument = metaRepository.findOne(docId);
 
-        final Version latestVersion = versionService.getLatestVersion(docId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
 
         final List<CommonContent> commonContentList = commonContentService
-                .getOrCreateCommonContents(docId, latestVersion.getNo());
+                .getOrCreateCommonContents(docId, workingVersion.getNo());
 
-        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, workingVersion, commonContentList);
 
-        final CommonContent commonContent = commonContentService.getOrCreate(docId, latestVersion.getNo(), language);
         final String documentDTOAlias = documentDTO.getAlias();
 
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(docId);
         menuItemDTO.setType(documentDTO.getType());
-        menuItemDTO.setTitle(commonContent.getHeadline());
+        menuItemDTO.setTitle(getHeadlineInCorrectLanguage(documentDTO));
         menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
         menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
@@ -100,8 +102,61 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
         menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
         menuItemDTO.setHasNewerVersion(versionService.hasNewerVersion(docId));
+        menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
 
         return menuItemDTO;
+    }
+
+    // TODO: Move this logic to some service if it will be used somewhere else
+    private String getHeadlineInCorrectLanguage(Document document) {
+        final List<CommonContent> enabledCommonContents = document.getCommonContents().stream()
+                .filter(CommonContent::isEnabled)
+                .collect(Collectors.toList());
+
+        if (enabledCommonContents.size() == 0) {
+            return "";
+        }
+
+        final Language currentLanguage = Imcms.getLanguage();
+
+        final Optional<String> headlineInCurrentLanguage = getEnabledHeadLine(enabledCommonContents, currentLanguage);
+
+        if (headlineInCurrentLanguage.isPresent()) {
+            return headlineInCurrentLanguage.get();
+        }
+
+        if (!isShownInDefaultLanguage(document)) {
+            return "";
+        }
+
+        final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+
+        return getEnabledHeadLine(enabledCommonContents, defaultLanguage).orElse("");
+    }
+
+    private Optional<String> getEnabledHeadLine(List<CommonContent> enabledCommonContents, Language language) {
+        return enabledCommonContents.stream()
+                .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
+                .map(commonContent -> Optional.ofNullable(commonContent.getHeadline()).orElse(""))
+                .findFirst();
+    }
+
+    private boolean isShownInDefaultLanguage(Document document) {
+        return document.getDisabledLanguageShowMode() == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+    }
+
+    private boolean getIsShownTitle(Document document) {
+        final Language currentLanguage = Imcms.getLanguage();
+        final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+
+        return isLanguageEnabled(document, currentLanguage)
+                || (isShownInDefaultLanguage(document) && isLanguageEnabled(document, defaultLanguage));
+    }
+
+    private boolean isLanguageEnabled(Document document, Language language) {
+        return document.getCommonContents().stream()
+                .filter(CommonContent::isEnabled)
+                .anyMatch(commonContent -> commonContent.getLanguage().equals(language));
     }
 
     @Override
