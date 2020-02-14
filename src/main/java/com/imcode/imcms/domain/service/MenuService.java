@@ -11,7 +11,8 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
 
     List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort);
 
-    List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO);//todo cover tests
+    // TODO: Cover by tests
+    List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode);
 
     /**
      * @param nested - false/true show nested in menu.

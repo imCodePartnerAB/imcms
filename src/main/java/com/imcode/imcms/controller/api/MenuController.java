@@ -7,13 +7,7 @@ import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,7 +27,7 @@ public class MenuController {
         return menuService.getMenuItems(
                 menu.getDocId(),
                 menu.getMenuIndex(),
-                Imcms.getUser().getLanguage(),
+                Imcms.getLanguage().getCode(),
                 menu.isNested(),
                 menu.getTypeSort()
         );
@@ -41,7 +35,7 @@ public class MenuController {
 
     @PutMapping("/sorting")
     public List<MenuItemDTO> getSortedMenuItems(@RequestBody MenuDTO menuDTO) {
-        return menuService.getSortedMenuItems(menuDTO);
+        return menuService.getSortedMenuItems(menuDTO, Imcms.getLanguage().getCode());
     }
 
     @PostMapping
