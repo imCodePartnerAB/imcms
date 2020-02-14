@@ -405,6 +405,7 @@ const texts = {
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
                 activeTitle: 'Aktiv bild:',
+                noSelectedImage: 'Ingen bild vald!',
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -1265,6 +1266,7 @@ const texts = {
                 presetCrop: "Preset crop format",
                 crop: "Crop",
                 activeTitle: 'Active image:',
+                noSelectedImage: 'No image selected!',
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",
