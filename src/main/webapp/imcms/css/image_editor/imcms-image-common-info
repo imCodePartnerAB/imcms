@@ -1,0 +1,7 @@
+.imcms-restricted-style {
+    background-color: #e2b40cb8;
+}
+
+.imcms-info-edit-image {
+    background-color: #6fbde2;
+}
