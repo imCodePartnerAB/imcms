@@ -1,9 +1,10 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Strings;
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
 import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.slf4j.Logger;
@@ -22,11 +23,13 @@ public class DocumentLanguageMapper {
 
     private final LanguageRepository languageRepository;
     private final SystemPropertyRepository systemRepository;
+    private final LanguageService languageService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public DocumentLanguageMapper(LanguageRepository languageRepository, SystemPropertyRepository systemRepository) {
+    public DocumentLanguageMapper(LanguageRepository languageRepository, SystemPropertyRepository systemRepository, LanguageService languageService) {
         this.languageRepository = languageRepository;
         this.systemRepository = systemRepository;
+        this.languageService = languageService;
     }
 
     public List<DocumentLanguage> getAll() {
@@ -63,31 +66,12 @@ public class DocumentLanguageMapper {
         return Objects.equals(language, getDefault());
     }
 
+    /**
+     * @deprecated use {@link LanguageService#getDefaultLanguage()}
+     */
+    @Deprecated
     public DocumentLanguage getDefault() {
-        SystemProperty property = systemRepository.findByName("DefaultLanguageId");
-
-        if (property == null) {
-            String message = "Configuration error. DefaultLanguageId property is not set.";
-            logger.error(message);
-            throw new IllegalStateException(message);
-        }
-
-        Integer languageId = Integer.parseInt(Strings.nullToEmpty(property.getValue()));
-
-        if (languageId == null) {
-            String message = "Configuration error. DefaultLanguageId property is not a valid id.";
-            logger.error(message);
-            throw new IllegalStateException(message);
-        }
-
-        LanguageJPA language = languageRepository.findOne(languageId);
-
-        if (language == null) {
-            String message = String.format("Configuration error. Default language (id: %d) can not be found.", languageId);
-            logger.error(message);
-            throw new IllegalStateException(message);
-        }
-
+        final Language language = languageService.getDefaultLanguage();
         return toApiObject(language);
     }
 
@@ -106,7 +90,7 @@ public class DocumentLanguageMapper {
         }
     }
 
-    public DocumentLanguage toApiObject(LanguageJPA jpaLanguage) {
+    public DocumentLanguage toApiObject(Language jpaLanguage) {
         return jpaLanguage == null
                 ? null
                 : DocumentLanguage.builder()
