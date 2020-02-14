@@ -387,7 +387,7 @@ define("imcms-document-editor-builder",
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                bySorting: "meta_headline_" + imcms.userLanguage,
+                bySorting: "meta_headline_" + imcms.language.code,
                 elementClass: "imcms-flex--flex-3",
             });
 
@@ -489,11 +489,6 @@ define("imcms-document-editor-builder",
                 frameItem = $frame.find(".imcms-document-item")
             ;
 
-            const frameItemDocId = frameItem.find(".imcms-document-item__info--id").text();
-            const requestDataId = {
-                docId: parseInt(frameItemDocId)
-            };
-
             $menuArea = get$menuItemsList();
             $frameLayout.addClass("imcms-frame-layout")
                 .css({
@@ -525,20 +520,11 @@ define("imcms-document-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            docRestApi.read(requestDataId).done(docById => {
-                let publishedDate = docById.published.date && docById.published.time !== null
-                    ? docById.published.date + ' ' + docById.published.time
-                    : '';
-
-                let modifiedDate = docById.modified.date && docById.modified.time !== null
-                    ? docById.modified.date + ' ' + docById.modified.time
-                    : '';
-                frameItem.attr("data-publishedDate", publishedDate);
-                frameItem.attr("data-modifiedDate", modifiedDate);
-            });
-
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
+            frameItem.attr("data-is-shown-title", !frameItem.find(".imcms-document-item__info--notShownTitle").length);
+            frameItem.attr("data-publishedDate", frameItem.find(".imcms-document-item__info--publishedDate").text());
+            frameItem.attr("data-modifiedDate", frameItem.find(".imcms-document-item__info--modifiedDate").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
@@ -822,6 +808,7 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
+            dataInput.attr("data-is-shown-title", frameItem.attr("data-is-shown-title"));
             dataInput.attr("data-frame-top", insertedParent.frameTopPos);
             dataInput.attr('data-current-version', frameItem.attr('data-current-version'))
         }
@@ -920,24 +907,20 @@ define("imcms-document-editor-builder",
         function buildDocItem(document, opts) {
 
             const $docItemId = components.texts.titleText("<a>", document.id, {
-                href: imcms.contextPath + "/" + document.id,
+                href: "/" + document.id,
                 class: "imcms-grid-coll-18",
             });
             $docItemId.modifiers = ["id"];
             addTooltip($docItemId, getIdTooltipText(document.id, document.created, document.createdBy), 'right');
 
-            const title = (document.commonContents)
-                ? document.commonContents
-                    .filter(commonContent => commonContent.language.code === imcms.userLanguage)
-                    .map(commonContent => commonContent.headline)[0]
-                : document.title;
-
+            const title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
             const $docItemTitle = components.texts.titleText("<a>", title, {
-                href: imcms.contextPath + "/" + document.id,
+                href: "/" + document.id,
                 class: "imcms-flex--flex-3",
             });
             $docItemTitle.modifiers = ["title"];
-            addTooltip($docItemTitle, title);
+            !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
+            title && addTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
                 class: "imcms-flex--flex-2",
@@ -948,7 +931,7 @@ define("imcms-document-editor-builder",
             const $docItemModified = components.texts.titleText("<div>", document.modified, {
                 class: "imcms-grid-coll-15",
             });
-            $docItemModified.modifiers = ["date"];
+            $docItemModified.modifiers = ["date", "modifiedDate"];
             if (document.modified) {
                 addTooltip($docItemModified, getModifiedDateTooltipText(document.modified, document.modifiedBy));
             }
@@ -956,7 +939,7 @@ define("imcms-document-editor-builder",
             const $docItemPublished = components.texts.titleText("<div>", document.published, {
                 class: "imcms-grid-coll-15",
             });
-            $docItemPublished.modifiers = ["date"];
+            $docItemPublished.modifiers = ["date", "publishedDate"];
             if (document.published) {
                 addTooltip($docItemPublished, getPublishedDateTooltipText(document.published, document.publishedBy));
             }

@@ -15,6 +15,7 @@ define("imcms-menu-editor-builder",
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
               docProfileSelectBuilder, typesSortRestAPI, overlays) {
 
+        const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
 
         let PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
@@ -463,6 +464,7 @@ define("imcms-menu-editor-builder",
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title"),
+                    isShownTitle: $dataInput.attr("data-is-shown-title") === "true",
                     documentStatus: $dataInput.attr("data-original-status"),
                     publishedDate: $dataInput.attr('data-publishedDate'),
                     modifiedDate: $dataInput.attr('data-modifiedDate'),
@@ -580,7 +582,7 @@ define("imcms-menu-editor-builder",
             };
 
             document.commonContents.forEach(commonContent => {
-                if (commonContent["language"]["code"] === imcms.userLanguage) {
+                if (commonContent["language"]["code"] === imcms.language.code) {
                     menuElementTree["title"] = commonContent["headline"];
                 }
             });
@@ -603,7 +605,7 @@ define("imcms-menu-editor-builder",
                 function changeTitle() {
                     let titleValue = "";
                     document.commonContents.forEach(commonContent => {
-                        if (commonContent.language.code === imcms.userLanguage) {
+                        if (commonContent.language.code === imcms.language.code) {
                             titleValue = commonContent.headline;
                         }
                     });
@@ -724,11 +726,16 @@ define("imcms-menu-editor-builder",
                 'right'
             );
 
-            const $titleText = components.texts.titleText('<div>', menuElementTree.title, {
+            const title = menuElementTree.isShownTitle
+                ? menuElementTree.title
+                : documentBuilderTexts.notShownInSelectedLang;
+            const $titleText = components.texts.titleText('<a>', title, {
+                href: "/" + menuElementTree.documentId,
                 class: 'imcms-flex--flex-1',
             });
             $titleText.modifiers = ['title'];
-            addTooltip($titleText, menuElementTree.title, 'right');
+            !menuElementTree.isShownTitle && $titleText.modifiers.push("notShownTitle");
+            title && addTooltip($titleText, title, 'right');
 
             const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
                 class: 'imcms-grid-coll-3',
