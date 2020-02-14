@@ -1,5 +1,3 @@
-const originImageHeightBlock = require('imcms-origin-image-height-block');
-const originImageWidthBlock = require('imcms-origin-image-width-block');
 const imageProportionsLocker = require('imcms-image-proportions-locker-button');
 
 define(
