@@ -275,7 +275,7 @@ class MappingConfig {
             dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
             dto.setArchiveImageId(image.getArchiveImageId());
             dto.setResize(Resize.getByOrdinal(image.getResize()));
-            dto.setSizeImage(sizeImage);
+            dto.setSize(sizeImage);
 
             return dto;
         };
