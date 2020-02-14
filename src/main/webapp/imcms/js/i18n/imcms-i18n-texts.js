@@ -436,6 +436,10 @@ const texts = {
                     removeCropping: "Ta bort beskärning",
                     rotationTitle: "Aktivera rotationsreglage"
                 },
+                styleInfo: {
+                    title: 'Begränsade stilar',
+                    info: 'Den använda bilden är begränsad till denna stil'
+                },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                 displaySize: "Visad storlek",
                 originSize: 'Original storlek',
@@ -1291,6 +1295,10 @@ const texts = {
                     applyChangeTitle: "Apply changes",
                     removeCropping: "Remove cropping",
                     rotationTitle: "Activate rotation controls"
+                },
+                styleInfo: {
+                    title: 'Restricted styles',
+                    info: 'The used image is restricted to this styles'
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
                 displaySize: "Display size",
