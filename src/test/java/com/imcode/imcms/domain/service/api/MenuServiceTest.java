@@ -35,10 +35,7 @@ import java.util.stream.IntStream;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
-import static imcode.server.ImcmsConstants.ENG_CODE;
-import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
-import static imcode.server.ImcmsConstants.SWE_CODE;
-import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
+import static imcode.server.ImcmsConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -470,6 +467,10 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
+
+        final Language currentLanguage = languageDataInitializer.createData().get(1);
+        Imcms.setLanguage(currentLanguage);
+
         final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT));
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();

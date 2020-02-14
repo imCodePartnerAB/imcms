@@ -62,6 +62,7 @@ class SearchDocumentServiceTest {
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
             docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
+            docFields.setIsShownTitle(false);
             expected.add(docFields);
         }
 
@@ -109,6 +110,7 @@ class SearchDocumentServiceTest {
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
             docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
+            docFields.setIsShownTitle(false);
             expected.add(docFields);
         }
 
