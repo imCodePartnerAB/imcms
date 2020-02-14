@@ -12,6 +12,7 @@ define(
         texts = texts.editors.image;
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
+        let $restrictedStyleWidth, $restrictedStyleHeight, $restrictedMaxWidth, $restrictedMaxHeight;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -60,11 +61,31 @@ define(
         };
 
         function buildActiveImageSizeInfo() {
-            return $imageSizeInfo = components.texts.infoText('<div>');
+            return $imageSizeInfo = $('<div>');
         }
 
         function buildActiveImagePathInfo() {
-            return $imageInfoPath = components.texts.infoText('<div>')
+            return $imageInfoPath = $('<div>')
+        }
+
+        function buildRestrictedWidthStyle(prefix, width) {
+            const widthText = width ? `${prefix}: ${width}` : '';
+            return $restrictedStyleWidth = $('<div>', {
+                'class': 'imcms-restricted-width',
+                text: widthText
+            });
+        }
+
+        function buildRestrictedHeightStyle(prefix, height) {
+            const heightText = height ? `${prefix}: ${height}` : '';
+            return $restrictedStyleHeight = $('<div>', {
+                'class': 'imcms-restricted-height',
+                text: heightText
+            });
+        }
+
+        function isStyleExist(styles) {
+            return !!styles;
         }
 
         module.exports = {
@@ -372,10 +393,37 @@ define(
                     return new BEM({
                         block: 'imcms-info-edit-image',
                         elements: {
+                            'title': components.texts.titleText('<div>', 'Active image'),
                             'path-info': buildActiveImagePathInfo(),
                             'size-info': buildActiveImageSizeInfo()
                         }
                     }).buildBlockStructure('<div>')
+                }
+
+                function buildRestrictedStyleInfoContainer(existStyle) {
+                    const styleInfoBEM = new BEM({
+                        block: 'imcms-restricted-style',
+                        elements: {
+                            'title': 'imcms-title',
+                            'width': 'imcms-restricted-width',
+                            'height': 'imcms-restricted-height',
+                            'info': 'imcms-info-msg'
+                        }
+                    });
+
+                    if (existStyle) {
+                        const $titleStyleInfo = components.texts.titleText("<div>", texts.styleInfo.title);
+                        const $info = components.texts.infoText("<div>", texts.styleInfo.info);
+
+                        return styleInfoBEM.buildBlock('<div>', [
+                            {'title': $titleStyleInfo},
+                            {'width': $restrictedStyleWidth},
+                            {'height': $restrictedStyleHeight},
+                            {'info': $info}
+                        ]);
+                    } else {
+                        return null;
+                    }
                 }
 
                 function buildEditableControls() {
@@ -611,11 +659,39 @@ define(
                     return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
                 }
 
-                const $info = buildInfoSizePathContainer();
+                const style = $tag.data('style');
+                const existsStyle = isStyleExist($tag.data('style'));
+                const resultStyleObj = {};
+                let isRestrictedWHStyles = false;
+                if (existsStyle) {
+                    style.split(';')
+                        .map(x => x.trim())
+                        .filter(x => !!x)
+                        .forEach(x => {
+                            const styleKeyAndValue = x.split(':').map(x => x.trim());
+                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                        });
+                }
+
+                if (resultStyleObj['max-width'] || resultStyleObj['max-height']) {
+                    buildRestrictedWidthStyle('max-width', resultStyleObj['max-width']);
+                    buildRestrictedHeightStyle('max-height', resultStyleObj['max-height']);
+                    isRestrictedWHStyles = true;
+                } else {
+                    if (resultStyleObj.width || resultStyleObj.height) {
+                        buildRestrictedWidthStyle('width', resultStyleObj.width);
+                        buildRestrictedHeightStyle('height', resultStyleObj.height);
+                        isRestrictedWHStyles = true;
+                    }
+                }
+
+
+                const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
+                const $infoImage = buildInfoSizePathContainer();
                 const $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($info, $editableControls, $footer);
+                return $("<div>").append($restrictStyleInfo, $infoImage, $editableControls, $footer);
             }
         }
     }
