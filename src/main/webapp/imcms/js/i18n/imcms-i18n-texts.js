@@ -261,6 +261,7 @@ const texts = {
                 owner: "Ägare",
                 category: "Kategori",
                 by: 'av',
+                notShownInSelectedLang: 'Inte visad på valt språk',
                 controls: {
                     edit: {
                         title: "Redigera"
@@ -1142,6 +1143,7 @@ const texts = {
                 owner: "Owner",
                 category: "Category",
                 by: 'by',
+                notShownInSelectedLang: 'Not shown in the selected language',
                 controls: {
                     edit: {
                         title: "Edit"
