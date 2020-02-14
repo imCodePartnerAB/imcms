@@ -13,9 +13,9 @@ define("imcms-loop-editor-builder",
         texts = texts.editors.loop;
 
         const modifiers = {
-            ID: ["col-1", "id"],
-            CONTENT: ["col-10", "content"],
-            CONTROLS: ["col-1", "control"]
+            ID: ["id"],
+            CONTENT: ["content"],
+            CONTROLS: ["control"]
         };
 
         let currentLoop;
@@ -121,13 +121,22 @@ define("imcms-loop-editor-builder",
         }
 
         function buildTitles() {
-            const $id = $("<div>", {text: texts.id});
+            const $id = $("<div>", {
+                text: texts.id,
+                class: "imcms-grid-coll-18",
+            });
             $id.modifiers = modifiers.ID;
 
-            const $content = $("<div>", {text: texts.content});
+            const $content = $("<div>", {
+                text: texts.content,
+                class: "imcms-flex--flex-1",
+            });
             $content.modifiers = modifiers.CONTENT;
 
-            const $isEnabled = $("<div>", {text: texts.isEnabled});
+            const $isEnabled = $("<div>", {
+                text: texts.isEnabled,
+                class: "imcms-grid-coll-1",
+            });
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
@@ -147,17 +156,22 @@ define("imcms-loop-editor-builder",
         }
 
         function buildItem(loopEntry) {
-            const $no = components.texts.titleText("<div>", loopEntry.index);
+            const $no = components.texts.titleText("<div>", loopEntry.index, {
+                class: "imcms-grid-coll-18",
+            });
             $no.modifiers = modifiers.ID;
 
             // todo: get content from the page!
-            const $content = components.texts.titleText("<div>", loopEntry.content);
+            const $content = components.texts.titleText("<div>", loopEntry.content, {
+                class: "imcms-flex--flex-1",
+            });
             $content.modifiers = modifiers.CONTENT;
 
-            const $isEnabled = components.checkboxes.imcmsCheckbox("<div>", {
+            const $isEnabled = $("<div>").append(components.checkboxes.imcmsCheckbox("<div>", {
                 name: "isEnabled" + loopEntry.no,
-                checked: loopEntry.enabled ? "checked" : undefined
-            });
+                checked: loopEntry.enabled ? "checked" : undefined,
+            }));
+            $isEnabled.addClass("imcms-grid-coll-1 imcms-flex--d-flex imcms-flex--justify-content-center");
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({

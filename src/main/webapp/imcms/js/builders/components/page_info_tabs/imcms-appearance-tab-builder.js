@@ -26,20 +26,21 @@ define("imcms-appearance-tab-builder",
         function buildDocumentAliasBlock() {
             const $aliasTitle = components.texts.titleText("<div>", texts.alias);
 
-            const $aliasPrefix = components.texts.titleText("<div>", "/");
-            $aliasPrefix.modifiers = ["mb-0"];
+            const $aliasPrefix = components.texts.titleText("<div>", "/", {
+                class: "imcms-flex--mb-0"
+            });
             $aliasPrefix.css('line-height', '46px');
 
             tabData.$documentAlias = components.texts.textBox("<div>", {
-                placeholder: texts.aliasPlaceholder
+                placeholder: texts.aliasPlaceholder,
+                class: "imcms-flex--w-50"
             });
-            tabData.$documentAlias.modifiers = ["w-50"];
 
             const $suggestAliasButton = components.buttons.positiveButton({
                 text: texts.makeSuggestion,
                 click: () => writeSuggestedAliasToTextInput(tabData.$documentAlias),
+                class: "imcms-flex--ml-auto"
             });
-            $suggestAliasButton.modifiers = ["ml-auto"];
 
             const $aliasRow = new BEM({
                 block: "imcms-field",
@@ -47,7 +48,7 @@ define("imcms-appearance-tab-builder",
                     "item": [$aliasPrefix, tabData.$documentAlias, $suggestAliasButton],
                 }
             }).buildBlockStructure('<div>', {
-                class: "imcms-field__item--row"
+                class: "imcms-flex--d-flex imcms-flex--p-0"
             });
 
             return pageInfoInnerStructureBEM.buildBlock("<div>", [
