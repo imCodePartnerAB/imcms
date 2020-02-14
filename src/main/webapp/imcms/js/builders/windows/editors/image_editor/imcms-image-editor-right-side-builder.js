@@ -4,15 +4,15 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
-        'imcms-crop-coords-controllers', 'imcms-editable-image'
+        'imcms-crop-coords-controllers'
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers, editableImage) {
+              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
 
         texts = texts.editors.image;
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
-        let $restrictedStyleWidth, $restrictedStyleHeight, $restrictedMaxWidth, $restrictedMaxHeight;
+        let $restrictedStyleWidth, $restrictedStyleHeight;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -68,6 +68,12 @@ define(
             return $imageInfoPath = $('<div>')
         }
 
+        let $noImageInfo;
+
+        function buildNoImageInfo() {
+            return $noImageInfo = $('<i>');
+        }
+
         function buildRestrictedWidthStyle(prefix, width) {
             const widthText = width ? `${prefix}: ${width}` : '';
             return $restrictedStyleWidth = $('<div>', {
@@ -100,8 +106,15 @@ define(
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
                 $fileFormat.selectValue(imageData.format);
-                $imageInfoPath.text(`${imcms.imagesPath}/${imageData.path}`);
-                $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.sizeImage}`);
+                if (imageData.path && imageData.height && imageData.width) {
+                    $imageInfoPath.text(`${imcms.imagesPath}/${imageData.path}`).show();
+                    $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.size}`).show();
+                    $noImageInfo.hide();
+                } else {
+                    $imageInfoPath.hide();
+                    $imageSizeInfo.hide();
+                    $noImageInfo.text(texts.noSelectedImage)
+                }
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
@@ -395,7 +408,8 @@ define(
                         elements: {
                             'title': components.texts.titleText('<div>', 'Active image'),
                             'path-info': buildActiveImagePathInfo(),
-                            'size-info': buildActiveImageSizeInfo()
+                            'size-info': buildActiveImageSizeInfo(),
+                            'no-image': buildNoImageInfo(),
                         }
                     }).buildBlockStructure('<div>')
                 }
