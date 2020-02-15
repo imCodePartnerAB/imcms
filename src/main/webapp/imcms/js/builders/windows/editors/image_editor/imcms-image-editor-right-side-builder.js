@@ -12,7 +12,7 @@ define(
         texts = texts.editors.image;
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
-        let $restrictedStyleWidth, $restrictedStyleHeight;
+        let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -111,13 +111,15 @@ define(
 
                 $fileFormat.selectValue(imageData.format);
                 if (checkExistImageData(imageData)) {
+                    $editableControls.removeAttr('style');
                     $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
                     $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.size}`).show();
                     $noImageInfo.hide();
                 } else {
+                    $editableControls.css('visibility', 'hidden');
                     $imageInfoPath.hide();
                     $imageSizeInfo.hide();
-                    $noImageInfo.text(texts.noSelectedImage)
+                    $noImageInfo.text(texts.noSelectedImage);
                 }
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
@@ -392,7 +394,8 @@ define(
 
                     const $showExifBtn = components.buttons.neutralButton({
                         text: texts.exif.button,
-                        click: showExif
+                        click: showExif,
+                        name: 'exifInfo'
                     });
 
                     return advancedModeBEM.buildBlock("<div>", [
@@ -706,7 +709,7 @@ define(
 
                 const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
                 const $infoImage = buildInfoSizePathContainer();
-                const $editableControls = buildEditableControls();
+                $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($restrictStyleInfo, $infoImage, $editableControls, $footer);
