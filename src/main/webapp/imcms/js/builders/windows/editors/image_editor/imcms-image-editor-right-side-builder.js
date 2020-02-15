@@ -451,15 +451,12 @@ define(
                     const editableControlsBEM = new BEM({
                         block: "imcms-editable-controls-area",
                         elements: {
-                            "buttons": "imcms-buttons",
                             "text-box": "imcms-text-box",
                             "flags": "imcms-flags",
                             "checkboxes": "imcms-checkboxes",
                             "advanced-mode": "imcms-advanced-mode"
                         }
                     });
-
-                    const $actionImageBtnContainer = buildActionImageBtnContainer();
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
@@ -468,7 +465,6 @@ define(
                     const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
-                        {"buttons": $actionImageBtnContainer},
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
                         {"flags": opts.imageDataContainers.$langFlags},
@@ -709,10 +705,12 @@ define(
 
                 const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
                 const $infoImage = buildInfoSizePathContainer();
+                const $actionImageBtnContainer = buildActionImageBtnContainer();
                 $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($restrictStyleInfo, $infoImage, $editableControls, $footer);
+                return $("<div>").append($restrictStyleInfo, $infoImage,
+                    $actionImageBtnContainer, $editableControls, $footer);
             }
         }
     }
