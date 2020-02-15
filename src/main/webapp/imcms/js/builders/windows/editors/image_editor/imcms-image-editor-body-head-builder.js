@@ -32,10 +32,13 @@ define(
         function toggleImgArea() {
             const $previewImageArea = previewImageArea.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
-            const $editableArea = editableImageArea.getEditableImageArea();
-
+            const $editableArea = editableImageArea.getEditableImageArea();//todo rename all modules on the origin instead edit
+            const $exifInfoButton = $('.imcms-image_editor__right-side').find(`[name='exifInfo']`);
             if ($(this).data("tab") === "prev") {
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
+                $exifInfoButton.css({
+                    'display': 'none'
+                });
 
                 $editableArea.css({
                     "z-index": "10",
@@ -50,7 +53,17 @@ define(
                 imageEditSizeControls.setWidth(imageResize.getWidth());
                 imageEditSizeControls.setHeight(imageResize.getHeight());
                 toggleImageAreaToolbarViewBuilder.build();
+                $exifInfoButton.show();
+                if (imageData.path !== '') {
+                    if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
+                        $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
+                    } else {
+                        $exifInfoButton.addClass('imcms-button--disabled').attr('disabled', '');
+                    }
 
+                } else {
+                    $exifInfoButton.hide();
+                }
                 $previewImageArea.css({
                     "z-index": "10",
                     "display": "none"
