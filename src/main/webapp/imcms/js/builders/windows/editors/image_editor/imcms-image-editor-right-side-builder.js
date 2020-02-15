@@ -95,7 +95,7 @@ define(
         }
 
         function checkExistImageData(image) {
-            return image.path && image.width && image.height;
+            return image.path !== '' && image.width > 0 && image.height > 0;
         }
 
         module.exports = {
@@ -371,6 +371,12 @@ define(
                     exifInfoWindowBuilder.buildWindow();
                 }
 
+                const $showExifBtn = components.buttons.neutralButton({
+                    text: texts.exif.button,
+                    click: showExif,
+                    name: 'exifInfo'
+                });
+
                 function buildAdvancedControls() {
                     const advancedModeBEM = new BEM({
                         block: "imcms-advanced-mode",
@@ -392,20 +398,13 @@ define(
                     const $cropCoordinatesContainer = buildCropCoordinatesContainer();
                     $fileFormat = buildFileFormatSelect();
 
-                    const $showExifBtn = components.buttons.neutralButton({
-                        text: texts.exif.button,
-                        click: showExif,
-                        name: 'exifInfo'
-                    });
-
                     return advancedModeBEM.buildBlock("<div>", [
                         {"title": $textAlignmentBtnsTitle},
                         {"buttons": $textAlignmentBtnsContainer},
                         {"space-around": $spaceAroundImageInputContainer},
                         {"title": $cropCoordinatesText},
                         {"crop-coordinates": $cropCoordinatesContainer},
-                        {"file-format": $fileFormat},
-                        {"button": $showExifBtn}
+                        {"file-format": $fileFormat}
                     ]);
                 }
 
@@ -710,7 +709,7 @@ define(
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($restrictStyleInfo, $infoImage,
-                    $actionImageBtnContainer, $editableControls, $footer);
+                    $actionImageBtnContainer, $showExifBtn, $editableControls, $footer);
             }
         }
     }
