@@ -107,7 +107,7 @@ define(
                         imageResize.setMaxHeight(maxHeight);
                     }
 
-                    let width = resultStyleObj.width;
+                    let width = parseInt(resultStyleObj.width);
 
                     if (width) {
                         imageData.width = width;
@@ -116,7 +116,7 @@ define(
                         editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
-                    let height = resultStyleObj.height;
+                    let height = parseInt(resultStyleObj.height);
 
                     if (height) {
                         imageData.height = height;
