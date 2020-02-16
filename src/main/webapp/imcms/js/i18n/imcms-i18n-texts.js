@@ -425,7 +425,7 @@ const texts = {
                 buttons: {
                     zoomIn: 'Zooma in',
                     zoomOut: 'Zooma ut',
-                    zoomReset: 'Återställ zoom till standardvärdet',
+                    reset: 'Återställ till originalvärde',
                     rotateLeft: 'Rotera vänster',
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
@@ -1286,7 +1286,7 @@ const texts = {
                 buttons: {
                     zoomIn: 'Zoom in',
                     zoomOut: 'Zoom out',
-                    zoomReset: 'Reset zoom to default value',
+                    reset: 'Reset to original value',
                     rotateLeft: 'Rotate left',
                     rotateRight: 'Rotate right',
                     revert: 'Reset to original',
