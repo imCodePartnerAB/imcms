@@ -50,8 +50,8 @@ define(
                     "display": "block"
                 });
             } else {
-                imageEditSizeControls.setWidth(imageResize.getWidth());
-                imageEditSizeControls.setHeight(imageResize.getHeight());
+                imageEditSizeControls.setWidth(imageResize.getWidth(), true);
+                imageEditSizeControls.setHeight(imageResize.getHeight(), true);
                 toggleImageAreaToolbarViewBuilder.build();
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
@@ -144,7 +144,7 @@ define(
             zoom(0);
         }
 
-        function revertImageChanges() {
+        function revertToPreviewImageChanges() {
             imageData.cropRegion = {
                 cropX1: 0,
                 cropX2: 0,
@@ -153,6 +153,17 @@ define(
             };
             imageRotate.rotateImage("NORTH");
             imageResize.resetToPreview(imageData);
+        }
+
+        function revertToOriginalImageChanges() {
+            imageData.cropRegion = {
+                cropX1: 0,
+                cropX2: 0,
+                cropY1: 0,
+                cropY2: 0,
+            };
+            imageRotate.rotateImage("NORTH");
+            imageResize.resetToOriginal(imageData);
         }
 
         let $switchViewControls;
@@ -308,9 +319,9 @@ define(
 
         function getZoomResetButton() {
             return $zoomResetButton || ($zoomResetButton = components.buttons.zoomResetButton({
-                title: texts.buttons.zoomReset,
+                title: texts.buttons.reset,
                 style: 'display: none;',
-                click: wrapWithNoOpIfNoImageYet(zoomFit),
+                click: wrapWithNoOpIfNoImageYet(revertToOriginalImageChanges),
             }))
         }
 
@@ -339,7 +350,7 @@ define(
         function getRevertButton() {
             return $revertButton || ($revertButton = components.buttons.revertButton({
                 title: texts.buttons.revert,
-                click: wrapWithNoOpIfNoImageYet(revertImageChanges),
+                click: wrapWithNoOpIfNoImageYet(revertToPreviewImageChanges),
             }))
         }
 
