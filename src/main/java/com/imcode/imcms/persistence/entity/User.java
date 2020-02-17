@@ -9,15 +9,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Email;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -64,8 +56,7 @@ public class User extends UserData implements Serializable {
     @Column(name = "county_council")
     private String province;
     @Email
-    @NotNull
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(columnDefinition = "int")
     private boolean active = true;
