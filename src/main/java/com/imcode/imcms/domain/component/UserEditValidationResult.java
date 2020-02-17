@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
-import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -21,13 +20,11 @@ class UserEditValidationResult extends UserValidationResult {
 
     @Override
     protected void validateEmail(UserFormData userData, UserService userService) {
-        final String email = StringUtils.defaultString(userData.getEmail());
+        final String email = userData.getEmail();
 
-        setEmptyEmail(StringUtils.isBlank(email));
-
-        if (isEmptyEmail()) return;
-
-        setEmailValid(Utility.isValidEmail(email));
+        if (email == null) {
+            return;
+        }
 
         final List<UserDTO> usersByEmail = userService.getUsersByEmail(email);
 

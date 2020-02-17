@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.domain.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,10 @@ class LocalUserEditorService extends LocalUserValidationAndSaving implements Use
 
     @Override
     public void editUser(UserFormData userData) throws UserValidationException {
+        if (StringUtils.isBlank(userData.getEmail())) {
+            userData.setEmail(null);
+        }
+
         super.saveIfValid(userData);
     }
 }

@@ -11,11 +11,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -118,7 +114,6 @@ class UserAdministrationController {
         if (!validationResult.isPasswordsEqual()) errorMessageKeys.add("error/passwords_did_not_match");
         if (validationResult.isPasswordTooWeak()) errorMessageKeys.add("error/password_too_weak");
         if (validationResult.isEmptyUserRoles()) errorMessageKeys.add("error/user_must_have_at_least_one_role");
-        if (validationResult.isEmptyEmail()) errorMessageKeys.add("error/email_is_missing");
         if (!validationResult.isEmailValid()) errorMessageKeys.add("error/email_is_invalid");
         if (validationResult.isEmailAlreadyTaken()) errorMessageKeys.add("error/email_is_taken");
         if (validationResult.isLoginAlreadyTaken())
