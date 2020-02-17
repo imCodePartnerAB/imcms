@@ -40,7 +40,7 @@ function activateUserAdminRoles() {
 function onSubmit(e) {
     const $form = $('#user-edit-form');
 
-    if (!$form.find('input[name=login]').val() || !$form.find('#email').val()) {
+    if (!$form.find('input[name=login]').val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
