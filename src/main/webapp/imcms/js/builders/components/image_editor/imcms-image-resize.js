@@ -134,19 +134,23 @@ module.exports = {
         if (minWidth && minHeight) {
             width = minWidth;
             height = minHeight;
+            preview.width = minWidth;
+            preview.height = minHeight;
 
         } else {
             width = original.width;
             height = original.height;
+            preview.width = original.width;
+            preview.height = original.height;
         }
 
         this.setCurrentPreviewSize(width, height);
-        this.updateSizing(imageData, true);
+        this.updateSizing(imageData, true, undefined, true);
     },
 
     resetToPreview(imageData) {
-        this.setHeightStrict(0, preview.height, false);
-        this.setWidthStrict(0, preview.width, false);
+        this.setHeightStrict(0, imageData.height, false);
+        this.setWidthStrict(0, imageData.width, false);
 
         let width, height;
 
@@ -155,8 +159,8 @@ module.exports = {
             height = minHeight;
 
         } else {
-            width = preview.width;
-            height = preview.height;
+            width = imageData.width;
+            height = imageData.height;
         }
 
         this.setCurrentPreviewSize(width, height);
@@ -315,7 +319,7 @@ module.exports = {
      * @param imageData
      * @param ignoreCropping
      */
-    updateSizing(imageData, ignoreCropping, isOriginal) {
+    updateSizing(imageData, ignoreCropping, isOriginal, resetToOrigin) {
         const originalProportionsK = isOriginal || isOriginal === undefined ? original.width / original.height : preview.width / preview.height;
 
         if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
@@ -356,8 +360,8 @@ module.exports = {
                 cropHeight = newHeight;
             }
 
-            this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal);
-            this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal);
+            this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal, resetToOrigin);
+            this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal, resetToOrigin);
 
             if (!ignoreCropping) {
                 cropRegion.cropX2 = cropWidth;
