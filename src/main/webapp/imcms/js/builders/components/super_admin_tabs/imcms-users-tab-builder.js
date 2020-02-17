@@ -135,7 +135,7 @@ define(
                                 text: user.login
                             }),
                             'email': $('<div>', {
-                                text: user.email
+                                text: user.email || ''
                             }),
                             'edit': $controlEdit,
                             'archive': $archiveBlock,
