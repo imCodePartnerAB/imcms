@@ -7,6 +7,9 @@ const components = require('imcms-components-builder');
 const texts = require('imcms-i18n-texts').editors.image;
 const $ = require('jquery');
 const imageResize = require('imcms-image-resize');
+const percentageBuild = require('imcms-image-percentage-proportion-build');
+
+let $heightControl, $widthControl, $hPreviewControl, $wPreviewControl;
 
 function getNewVal($input) {
     const newVal = +$input.val();
@@ -22,14 +25,15 @@ function getNewVal($input) {
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setHeightProportionally(newVal, false);
+    percentageBuild.buildPercentageFromEditControl($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setWidthProportionally(newVal, false);
+    percentageBuild.buildPercentageFromEditControl($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
 }
 
-let $heightControl, $widthControl, $hPreviewControl, $wPreviewControl;
 let widthLabelText = "W";
 let heightLabelText = "H";
 
