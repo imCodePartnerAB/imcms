@@ -402,5 +402,9 @@ module.exports = {
         original.height = null;
         preview.width = null;
         preview.height = null;
+        currentPrevSize.width = null;
+        currentPrevSize.height = null;
+        currentFinalPrevImg.width = null;
+        currentFinalPrevImg.height = null;
     },
 };

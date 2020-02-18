@@ -507,6 +507,8 @@ define(
 
             clearData() {
                 [
+                    imageEditSizeControls.getEditSizeControls(),
+                    imageEditSizeControls.getOriginSizeControls(),
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
                     imageProportionsLocker.getProportionsText(),
@@ -514,6 +516,7 @@ define(
                     getRemoveCroppingButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
+                    getPercentageRatio(),
                     getZoomPlusButton(),
                     getZoomMinusButton(),
                     getZoomResetButton(),
