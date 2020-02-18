@@ -163,6 +163,7 @@ define(
                 cropY2: 0,
             };
             imageRotate.rotateImage("NORTH");
+            zoomFit();
             imageResize.resetToPreview(imageData);
         }
 
@@ -174,6 +175,7 @@ define(
                 cropY2: 0,
             };
             imageRotate.rotateImage("NORTH");
+            zoomFit();
             imageResize.resetToOriginal(imageData);
         }
 
