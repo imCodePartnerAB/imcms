@@ -35,17 +35,8 @@ function trimToMaxMinHeight(newHeight) {
 function setWidth(newWidth, isOriginal) {
     if (isOriginal) {
         const $image = editableImage.getImage();
-        const oldWidth = $image.width();
-        const k = newWidth / oldWidth;
-
-        const newImageLeft = k * editableImage.getBackgroundPositionX();
-        const newImageBackgroundWidth = k * editableImage.getBackgroundWidth();
-
-        $image.width(newWidth);
-        editableImage.setBackgroundWidth(newImageBackgroundWidth);
-        editableImage.setBackgroundPositionX(newImageLeft);
-
-        $widthControl.val(newWidth);
+        $image.width(original.width);
+        $widthControl.val(original.width);
     } else {
         const $image = previewImage.getPreviewImage();
         const oldWidth = $image.width();
@@ -66,17 +57,8 @@ function setWidth(newWidth, isOriginal) {
 function setHeight(newHeight, isOriginal) {
     if (isOriginal) {
         const $image = editableImage.getImage();
-        const oldHeight = $image.height();
-        const k = newHeight / oldHeight;
-
-        const newImageTop = k * editableImage.getBackgroundPositionY();
-        const newImageBackgroundHeight = k * editableImage.getBackgroundHeight();
-
-        $image.height(newHeight);
-        editableImage.setBackgroundHeight(newImageBackgroundHeight);
-        editableImage.setBackgroundPositionY(newImageTop);
-
-        $heightControl.val(newHeight);
+        $image.height(original.height);
+        $heightControl.val(original.height);
     } else {
         const $image = previewImage.getPreviewImage();
         const oldHeight = $image.height();
@@ -251,19 +233,10 @@ module.exports = {
      */
     setWidthStrict(padding, newWidth, isOriginal, resetToOrigin) {
         if (isOriginal) {
-            editableImage.setBackgroundWidth(original.width);
-            editableImage.getImage().width(newWidth);
-
-            if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
-
+            editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            let backGroundWidth = resetToOrigin ? original.width : preview.width;
-            //todo fix this incredible shit!! check manipulation work with reset to origin/preview W/H
-            if (original.width === preview.width && !resetToOrigin) {
-                backGroundWidth = currentFinalPrevImg.width;
-            }
-            previewImage.setBackgroundWidth(backGroundWidth);
+            previewImage.setBackgroundWidth(original.width);
             previewImage.getPreviewImage().width(newWidth);
 
             if (padding >= 0) previewImage.setBackgroundPositionX(-padding);
@@ -281,18 +254,10 @@ module.exports = {
      */
     setHeightStrict(padding, newHeight, isOriginal, resetToOrigin) {
         if (isOriginal) {
-            editableImage.setBackgroundHeight(original.height);
-            editableImage.getImage().height(newHeight);
-
-            if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
-
+            editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            let backGroundHeight = resetToOrigin ? original.height : preview.height;
-            if (original.height === preview.height && !resetToOrigin) {
-                backGroundHeight = currentFinalPrevImg.height;
-            }
-            previewImage.setBackgroundHeight(backGroundHeight);
+            previewImage.setBackgroundHeight(original.height);
             previewImage.getPreviewImage().height(newHeight);
 
             if (padding >= 0) previewImage.setBackgroundPositionY(-padding);
