@@ -39,8 +39,8 @@ function clear() {
 }
 
 module.exports = {
-    setPreviewImageSource: (imageData, path, onLoad) => {
-        const src = `${imcms.contextPath}/${imcms.imagesPath}/${path}`;
+    setPreviewImageSource: (imageData, onLoad) => {
+        const src = `${imcms.contextPath}/${imcms.imagesPath}/${imageData.path}`;
 
         $previewImg.attr('data-src', src);
         $previewImg.css('background-image', `url('${src}')`);

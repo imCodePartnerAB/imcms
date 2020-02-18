@@ -76,12 +76,12 @@ define(
 
             prevImageArea.getPreviewImage().hide();
 
-            editableImage.setImageSource(imageData.path, () => {
+            editableImage.setImageSource(imageData, () => {
                 initSize(imageData, true);
                 percentImg.buildPercentageImage(imageData.width, imageData.height, $('.percentage-image-info'));
             });
 
-            prevImageArea.setPreviewImageSource(imageData, imageData.path, () => {
+            prevImageArea.setPreviewImageSource(imageData, () => {
                 const style = $tag.data('style');
                 const resultStyleObj = {};
 

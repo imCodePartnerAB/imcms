@@ -113,7 +113,7 @@ define(
                 if (checkExistImageData(imageData)) {
                     $editableControls.removeAttr('style');
                     $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
-                    $imageSizeInfo.text(`(${imageData.width} x ${imageData.height}) ${imageData.size}`).show();
+                    $imageSizeInfo.show();
                     $noImageInfo.hide();
                 } else {
                     $editableControls.css('visibility', 'hidden');

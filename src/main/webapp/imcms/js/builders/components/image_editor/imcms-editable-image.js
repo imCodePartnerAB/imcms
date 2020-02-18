@@ -13,8 +13,8 @@ function getImage() {
 }
 
 module.exports = {
-    setImageSource: (path, onLoad) => {
-        const src = `${imcms.contextPath}/${imcms.imagesPath}/${path}`;
+    setImageSource: (imageData, onLoad) => {
+        const src = `${imcms.contextPath}/${imcms.imagesPath}/${imageData.path}`;
 
         $image.attr('data-src', src);
         $image.removeAttr('style'); // not sure
@@ -28,6 +28,8 @@ module.exports = {
 
             const $heightWidthBlock = $('.imcms-image-toolbar__img-origin-size');
             $heightWidthBlock.show();
+            const $imageInfoSize = $('.imcms-info-edit-image__size-info');
+            $imageInfoSize.text(` (${this.width} x ${this.height}) ${imageData.size}`);
 
             require('imcms-image-resize').setOriginal(this.width, this.height);
 
