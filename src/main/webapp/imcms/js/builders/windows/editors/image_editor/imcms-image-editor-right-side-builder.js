@@ -119,7 +119,7 @@ define(
                     $editableControls.css('visibility', 'hidden');
                     $imageInfoPath.hide();
                     $imageSizeInfo.hide();
-                    $noImageInfo.text(texts.noSelectedImage);
+                    $noImageInfo.text(texts.noSelectedImage).show();
                 }
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
