@@ -50,8 +50,11 @@ module.exports = {
 
         $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
         ${texts.imageName}${$tag.attr('data-index')} - 
-        ${texts.teaser} (${imageData.width} x ${imageData.height})`
-        );
+        ${texts.teaser}`);
+
+        if (imageData && imageData.path !== '') {
+            $infoData.text($infoData.text() + `(Becomes ${imageData.width} x ${imageData.height})`)
+        }
 
         if ($tag.attr('data-loop-index')) {
             const linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')

@@ -205,6 +205,7 @@ define(
             events.trigger("enable text editor blur");
             editSizeControls.getPreviewWidthControl().getInput().removeAttr('disabled').val('');
             editSizeControls.getPreviewHeightControl().getInput().removeAttr('disabled').val('');
+            $('.percentage-image-info').text('');
         }
 
         var imageWindowBuilder = new WindowBuilder({

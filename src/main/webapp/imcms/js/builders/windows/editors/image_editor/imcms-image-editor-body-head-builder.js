@@ -63,9 +63,9 @@ define(
                 imageEditSizeControls.setWidth(width, true);
                 imageEditSizeControls.setHeight(height, true);
                 toggleImageAreaToolbarViewBuilder.build();
-                percentagePropBuild.buildPercentageImage(width, height, $percentageRatio);
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
+                    percentagePropBuild.buildPercentageImage(width, height, $percentageRatio);
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
                         $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
                     } else {
