@@ -5,10 +5,11 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area', 'imcms-image-percentage-proportion-build'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area',
+        'imcms-image-percentage-proportion-build', 'imcms-image-active-tab'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
-              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild) {
+              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild, checkActiveTab) {
 
         texts = texts.editors.image;
         let imageData;
@@ -179,6 +180,26 @@ define(
             imageResize.resetToOriginal(imageData);
         }
 
+        function buildFitImage() {
+            const $previewArea = previewImageArea.getPreviewImageArea();
+            const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
+            const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
+
+            if (checkActiveTab.currentActiveTab() === 'prev') {
+                setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
+            } else {
+                setStrictWidthHeightCurrentImage(true, clientPreviewAreaWidth, clientPreviewAreaHeight);
+            }
+        }
+
+        function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
+            if (imageData.width >= clientPreviewAreaWidth) {
+                imageResize.setWidthStrict(0, clientPreviewAreaWidth - 30, isOriginal, true);
+            } else if (imageData.height >= clientPreviewAreaHeight) {
+                imageResize.setHeightStrict(0, clientPreviewAreaHeight - 30, isOriginal, true);
+            }
+        }
+
         let $switchViewControls;
 
         function getSwitchViewControls() {
@@ -321,9 +342,7 @@ define(
         function getFitButton() {
             return $fitButton || ($fitButton = components.buttons.fitButton({
                 title: 'change that on bootstrap',
-                click: function () {
-
-                },
+                click: buildFitImage,
                 style: 'display: none;'
             }))
         }
