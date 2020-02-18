@@ -67,8 +67,8 @@
 }
 
 .percentage-image-info {
-    border: solid;
     padding: 5px 20px;
     box-sizing: border-box;
     margin-left: 30px;
+    border: solid #0b94d8;
 }
