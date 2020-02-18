@@ -5,10 +5,10 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area', 'imcms-image-percentage-proportion-build'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
-              ToolbarViewBuilder, cropper, editableImageArea) {
+              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild) {
 
         texts = texts.editors.image;
         let imageData;
@@ -36,6 +36,14 @@ define(
             const $exifInfoButton = $('.imcms-image_editor__right-side').find(`[name='exifInfo']`);
             if ($(this).data("tab") === "prev") {
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
+
+                const prevWidth = imageResize.getPreviewWidth();
+                const prevHeight = imageResize.getPreviewHeight();
+
+                if (prevWidth > 0 && prevHeight > 0) {
+                    percentagePropBuild.buildPercentageImage(prevWidth, prevHeight, $percentageRatio);
+                }
+
                 $exifInfoButton.css({
                     'display': 'none'
                 });
@@ -50,9 +58,12 @@ define(
                     "display": "block"
                 });
             } else {
-                imageEditSizeControls.setWidth(imageResize.getWidth(), true);
-                imageEditSizeControls.setHeight(imageResize.getHeight(), true);
+                const width = imageResize.getWidth();
+                const height = imageResize.getHeight();
+                imageEditSizeControls.setWidth(width, true);
+                imageEditSizeControls.setHeight(height, true);
                 toggleImageAreaToolbarViewBuilder.build();
+                percentagePropBuild.buildPercentageImage(width, height, $percentageRatio);
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
