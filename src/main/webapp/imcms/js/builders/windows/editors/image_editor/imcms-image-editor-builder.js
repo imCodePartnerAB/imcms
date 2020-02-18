@@ -8,10 +8,10 @@ define(
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
         'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
-        'imcms-preview-image-area'
+        'imcms-preview-image-area', 'imcms-image-percentage-proportion-build'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea) {
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, percentImg) {
 
         texts = texts.editors.image;
 
@@ -77,7 +77,8 @@ define(
             prevImageArea.getPreviewImage().hide();
 
             editableImage.setImageSource(imageData.path, () => {
-                initSize(imageData, true)
+                initSize(imageData, true);
+                percentImg.buildPercentageImage(imageData.width, imageData.height, $('.percentage-image-info'));
             });
 
             prevImageArea.setPreviewImageSource(imageData, imageData.path, () => {
@@ -127,6 +128,7 @@ define(
 
                     if (imageResize.isProportionsLockedByStyle()) {
                         imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
+                        imageResize.setFinalPreviewImageSize(imageData.width, imageData.height);
                     }
                 }
 
