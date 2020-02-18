@@ -3,15 +3,26 @@ define(
     ['jquery', 'imcms-image-resize'],
     function ($, imageResize) {
 
+        function getNewVal($input) {
+            const newVal = +$input.val();
+
+            if (isNaN(newVal) || newVal < 0) {
+                $input.val($input.val().replace(/[^0-9]/g, ''));
+                return;
+            }
+
+            return newVal
+        }
+
         function getPercentageImageFromEditControls($inputWidth, $inputHeight, $place) {
             const originalWidth = imageResize.getWidth();
             const originalHeight = imageResize.getHeight();
             const originalRatio = originalHeight * originalWidth;
 
-            const currentWidth = $inputWidth.getInput().val();
-            const currentHeight = $inputHeight.getInput().val();
+            const currentNewWidth = getNewVal($inputWidth.getInput());
+            const currentNewHeight = getNewVal($inputHeight.getInput());
 
-            $place.text(((currentWidth * currentHeight * 100) / originalRatio).toFixed(1) + "%");
+            $place.text(((currentNewWidth * currentNewHeight * 100) / originalRatio).toFixed(1) + "%");
         }
 
         function buildPercentageProportionImage(width, height, $place) {
@@ -34,7 +45,7 @@ define(
         }
 
         return {
-            getPercentageImageFromControl: ($inputWidth, $inputHeight, $place) =>
+            buildPercentageFromEditControl: ($inputWidth, $inputHeight, $place) =>
                 getPercentageImageFromEditControls($inputWidth, $inputHeight, $place),
 
             buildPercentageImage: (width, height, $place) => buildPercentageProportionImage(width, height, $place),
