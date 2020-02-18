@@ -108,29 +108,22 @@ function getCroppingImage() {
 }
 
 function onImageLoad() {
-    const $editableImg = previewImageArea.getPreviewImage();
-    const previewImage = imageResize.getPreview();
+    const $img = $(this);
     const shadowLayout = getShadowLayout();
 
     setTimeout(() => {
-        const width = $editableImg.width();
-        const height = $editableImg.height();
+        const width = $img.width();
+        const height = $img.height();
 
         shadowLayout.css({
-            width: previewImage.width,
-            height: previewImage.height,
+            width: width,
+            height: height,
         });
 
         $croppingWrap.css({
             width: width,
             height: height,
         });
-
-        $image.css({
-            width: previewImage.width,
-            height: previewImage.height,
-        })
-
     });
 }
 

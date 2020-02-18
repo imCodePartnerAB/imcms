@@ -117,12 +117,12 @@ function moveCropArea(top, left) {
     const angleTop = top - angleBorderSize;
     const angleLeft = left - angleBorderSize;
 
-    const angleRight = imageResize.getPreviewWidth()
+    const angleRight = imageResize.getOriginal().width
         - cropArea.getCroppingArea().getLeft()
         - cropArea.getCroppingArea().getCurrentWidth()
         - angleBorderSize;
 
-    const angleBottom = imageResize.getPreviewHeight()
+    const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
         - cropArea.getCroppingArea().getCurrentHeight()
         - angleBorderSize;
@@ -134,7 +134,7 @@ function moveCropArea(top, left) {
 }
 
 function isOversize(width, height) {
-    return (height > imageResize.getPreviewHeight()) || (width > imageResize.getPreviewWidth())
+    return (height > imageResize.getOriginal().height) || (width > imageResize.getOriginal().width)
 }
 
 function resizeCroppingTopLeft(deltaX, deltaY) {
@@ -178,12 +178,12 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
     const angleTop = newTop - angleBorderSize;
     const angleLeft = newLeft - angleBorderSize;
 
-    const angleRight = imageResize.getPreviewWidth()
+    const angleRight = imageResize.getOriginal().width
         - cropArea.getCroppingArea().getLeft()
         - newWidth
         - angleBorderSize;
 
-    const angleBottom = imageResize.getPreviewHeight()
+    const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
         - newHeight
         - angleBorderSize;
@@ -224,8 +224,8 @@ function resizeCroppingTopRight(deltaX, deltaY) {
 
     const allWidth = cropArea.getCroppingArea().getLeft() + newWidth;
 
-    if (allWidth > imageResize.getPreviewWidth()) {
-        const deltaW = allWidth - imageResize.getPreviewWidth();
+    if (allWidth > imageResize.getOriginal().width) {
+        const deltaW = allWidth - imageResize.getOriginal().width;
 
         cropArea.getCroppingArea().setLeft(cropArea.getCroppingArea().getLeft() - deltaW);
         cropArea.getCroppingImage().setLeft(cropArea.getCroppingImage().getLeft() + deltaW);
@@ -242,12 +242,12 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     cropArea.getCroppingArea().setTop(newTop);
 
     const angleTop = newTop - angleBorderSize;
-    const angleRight = imageResize.getPreviewWidth()
+    const angleRight = imageResize.getOriginal().width
         - cropArea.getCroppingArea().getLeft()
         - newWidth
         - angleBorderSize;
 
-    const angleBottom = imageResize.getPreviewHeight()
+    const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
         - newHeight
         - angleBorderSize;
@@ -287,8 +287,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
 
     const allHeight = cropArea.getCroppingArea().getTop() + newHeight;
 
-    if (allHeight > imageResize.getPreviewHeight()) {
-        const deltaH = allHeight - imageResize.getPreviewHeight();
+    if (allHeight > imageResize.getOriginal().height) {
+        const deltaH = allHeight - imageResize.getOriginal().height;
 
         cropArea.getCroppingArea().setTop(cropArea.getCroppingArea().getTop() - deltaH);
         cropArea.getCroppingImage().setTop(cropArea.getCroppingImage().getTop() + deltaH);
@@ -299,8 +299,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
 
     const allWidth = cropArea.getCroppingArea().getLeft() + newWidth;
 
-    if (allWidth > imageResize.getPreviewWidth()) {
-        const deltaW = allWidth - imageResize.getPreviewWidth();
+    if (allWidth > imageResize.getOriginal().width) {
+        const deltaW = allWidth - imageResize.getOriginal().width;
 
         cropArea.getCroppingArea().setLeft(cropArea.getCroppingArea().getLeft() - deltaW);
         cropArea.getCroppingImage().setLeft(cropArea.getCroppingImage().getLeft() + deltaW);
@@ -311,12 +311,12 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
 
     setElementWidthHeight(cropArea.getCroppingArea(), newWidth, newHeight);
 
-    const angleBottom = imageResize.getPreviewHeight()
+    const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
         - newHeight
         - angleBorderSize;
 
-    const angleRight = imageResize.getPreviewWidth()
+    const angleRight = imageResize.getOriginal().width
         - cropArea.getCroppingArea().getLeft()
         - newWidth
         - angleBorderSize;
@@ -359,8 +359,8 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
 
     const allHeight = cropArea.getCroppingArea().getTop() + newHeight;
 
-    if (allHeight > imageResize.getPreviewHeight()) {
-        const deltaH = allHeight - imageResize.getPreviewHeight();
+    if (allHeight > imageResize.getOriginal().height) {
+        const deltaH = allHeight - imageResize.getOriginal().height;
 
         cropArea.getCroppingArea().setTop(cropArea.getCroppingArea().getTop() - deltaH);
         cropArea.getCroppingImage().setTop(cropArea.getCroppingImage().getTop() + deltaH);
@@ -373,12 +373,12 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     cropArea.getCroppingImage().setLeft(-newLeft);
     cropArea.getCroppingArea().setLeft(newLeft);
 
-    const angleBottom = imageResize.getPreviewHeight()
+    const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
         - newHeight
         - angleBorderSize;
 
-    const angleRight = imageResize.getPreviewWidth()
+    const angleRight = imageResize.getOriginal().width
         - cropArea.getCroppingArea().getLeft()
         - newWidth
         - angleBorderSize;
@@ -405,7 +405,6 @@ function init(_imageData) {
     cropArea.getCroppingBlock().css("z-index", "50");
 
     const $image = previewImageArea.getPreviewImage();
-    const previewImage = imageResize.getPreview();
     const src = $image.attr('data-src');
 
     cropArea.getCroppingArea().css({
@@ -427,10 +426,11 @@ function init(_imageData) {
     imageCoords.top -= angleBorderSize;
     imageCoords.left -= angleBorderSize;
 
-    const previewImageWidth = imageResize.getPreviewWidth();
-    const previewImageHeight = imageResize.getPreviewHeight();
+    const original = imageResize.getOriginal();
+    const originImageWidth = original.width;
+    const originImageHeight = original.height;
 
-    if (!previewImageWidth || !previewImageHeight) return;
+    if (!originImageWidth || !originImageHeight) return;
 
     const $croppingArea = cropArea.getCroppingArea();
     let cropRegion = imageData.cropRegion && {...imageData.cropRegion};
@@ -438,14 +438,14 @@ function init(_imageData) {
     if (cropRegion) {
         if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
         if (cropRegion.cropY1 < 0) cropRegion.cropY1 = 0;
-        if (cropRegion.cropX2 <= 1) cropRegion.cropX2 = previewImageWidth;
-        if (cropRegion.cropY2 <= 1) cropRegion.cropY2 = previewImageHeight;
+        if (cropRegion.cropX2 <= 1) cropRegion.cropX2 = originImageWidth;
+        if (cropRegion.cropY2 <= 1) cropRegion.cropY2 = originImageHeight;
     } else {
         cropRegion = {
             cropX1: 0,
             cropY1: 0,
-            cropX2: previewImageWidth,
-            cropY2: previewImageHeight
+            cropX2: originImageWidth,
+            cropY2: originImageHeight
         };
     }
 
@@ -456,15 +456,15 @@ function init(_imageData) {
 
     removeCroppingListeners();
 
-    setElementWidthHeight(cropArea.getCroppingImage(), previewImage.width, previewImage.height);
+    setElementWidthHeight(cropArea.getCroppingImage(), originImageWidth, originImageHeight);
     setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
     setElementTopLeft($croppingArea, cropRegion.cropY1, cropRegion.cropX1);
     setElementTopLeft(cropArea.getCroppingImage(), -cropRegion.cropY1, -cropRegion.cropX1);
 
     const fixedTop = cropRegion.cropY1 - angleBorderSize;
     const fixedLeft = cropRegion.cropX1 - angleBorderSize;
-    const fixedRight = previewImageWidth - cropRegion.cropX2 - angleBorderSize;
-    const fixedBottom = previewImageHeight - cropRegion.cropY2 - angleBorderSize;
+    const fixedRight = originImageWidth - cropRegion.cropX2 - angleBorderSize;
+    const fixedBottom = originImageHeight - cropRegion.cropY2 - angleBorderSize;
 
     angles.showAll();
 
