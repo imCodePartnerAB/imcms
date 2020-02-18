@@ -259,7 +259,8 @@ module.exports = {
             $widthControl.val(newWidth);
         } else {
             let backGroundWidth = resetToOrigin ? original.width : preview.width;
-            if (original.width === preview.width && !resetToOrigin) {//todo fix this incredible shit!! check manipulation work with reset W/H
+            //todo fix this incredible shit!! check manipulation work with reset to origin/preview W/H
+            if (original.width === preview.width && !resetToOrigin) {
                 backGroundWidth = currentFinalPrevImg.width;
             }
             previewImage.setBackgroundWidth(backGroundWidth);
