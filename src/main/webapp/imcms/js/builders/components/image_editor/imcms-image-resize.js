@@ -6,12 +6,14 @@ const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
 const previewImage = require('imcms-preview-image-area');
+const $ = require('jquery');
 
 let saveProportions = true; // by default
 const original = {};
 const preview = {};
 const currentSize = {};
 const currentPrevSize = {};
+const currentFinalPrevImg = {};
 let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
@@ -164,18 +166,25 @@ module.exports = {
         }
 
         this.setCurrentPreviewSize(width, height);
+        this.setPreview(width, height);
         this.updateSizing(imageData, true, false);
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
         currentSize.height = height;
         proportionsCoefficient = currentSize.width / currentSize.height;
+        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
     },
     setCurrentPreviewSize(width, height) {
         currentPrevSize.width = width;
         currentPrevSize.height = height;
         proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
+        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
+    },
 
+    setFinalPreviewImageSize(width, height) {
+        currentFinalPrevImg.width = width;
+        currentFinalPrevImg.height = height;
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
@@ -249,7 +258,10 @@ module.exports = {
 
             $widthControl.val(newWidth);
         } else {
-            const backGroundWidth = resetToOrigin ? original.width : preview.width;
+            let backGroundWidth = resetToOrigin ? original.width : preview.width;
+            if (original.width === preview.width) {//todo fix this incredible shit!! check manipulation work with reset W/H
+                backGroundWidth = currentFinalPrevImg.width;
+            }
             previewImage.setBackgroundWidth(backGroundWidth);
             previewImage.getPreviewImage().width(newWidth);
 
@@ -275,7 +287,10 @@ module.exports = {
 
             $heightControl.val(newHeight);
         } else {
-            const backGroundHeight = resetToOrigin ? original.height : preview.height;
+            let backGroundHeight = resetToOrigin ? original.height : preview.height;
+            if (original.height === preview.height) {
+                backGroundHeight = currentFinalPrevImg.height;
+            }
             previewImage.setBackgroundHeight(backGroundHeight);
             previewImage.getPreviewImage().height(newHeight);
 
