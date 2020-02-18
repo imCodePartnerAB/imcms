@@ -400,12 +400,10 @@ define(
         let $percentageRatio;
 
         function getPercentageRatio() {
-            return $percentageRatio || ($percentageRatio = components.texts.textField("<div>", {
-                name: "percentage",
-                error: "Error",
-                disabled: 'disabled',
-                style: 'display: none;',
-            }))
+            return $percentageRatio || ($percentageRatio = $('<div>', {
+                'class': 'percentage-image-info',
+                title: 'bootstrap percentage',
+            }));
         }
 
         let $scaleAndRotateControls;
