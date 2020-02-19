@@ -157,7 +157,7 @@ define(
         }
 
         function revertToPreviewImageChanges() {
-            imageData = imageResize.getFinalPreviewImageData();
+            $.extend(imageData, imageResize.getFinalPreviewImageData());
             imageRotate.rotateImage("NORTH");
             zoomFit();
             imageResize.resetToPreview(imageData);
