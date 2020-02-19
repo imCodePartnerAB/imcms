@@ -55,6 +55,9 @@ public class MenuControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
+
+        final Language currentLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+        Imcms.setLanguage(currentLanguage);
     }
 
     @AfterEach

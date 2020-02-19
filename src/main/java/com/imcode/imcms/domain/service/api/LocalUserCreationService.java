@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,6 +22,10 @@ class LocalUserCreationService extends LocalUserValidationAndSaving implements U
 
     @Override
     public void createUser(UserFormData userData) throws UserValidationException {
+        if (StringUtils.isBlank(userData.getEmail())) {
+            userData.setEmail(null);
+        }
+
         super.saveIfValid(userData);
     }
 }

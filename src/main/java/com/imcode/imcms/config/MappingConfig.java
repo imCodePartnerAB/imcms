@@ -153,28 +153,18 @@ class MappingConfig {
                     return null;
                 }
 
-                final boolean isLanguageDisabled = enabledCommonContents.stream()
-                        .noneMatch(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()));
+                final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
+                        documentMenuService.getDisabledLanguageShowMode(docId)
+                );
 
-                final Language menuLanguage;
+                final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
 
-                if (isLanguageDisabled) {
-
-                    final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
-                            documentMenuService.getDisabledLanguageShowMode(docId)
-                    );
-
-                    if (isShowInDefaultLanguage) {
-                        menuLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
-
-                    } else {
-                        return null;
-                    }
-                } else {
-                    menuLanguage = language;
+                if (!isLanguageEnabled(enabledCommonContents, language) &&
+                        (!isShowInDefaultLanguage || !isLanguageEnabled(enabledCommonContents, defaultLanguage))) {
+                    return null;
                 }
 
-                final MenuItemDTO menuItemDTO = menuItemToDTO.apply(menuItem, menuLanguage);
+                final MenuItemDTO menuItemDTO = menuItemToDTO.apply(menuItem, language);
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
@@ -187,6 +177,11 @@ class MappingConfig {
                 return menuItemDTO;
             }
         };
+    }
+
+    private boolean isLanguageEnabled(List<CommonContent> commonContents, Language language) {
+        return commonContents.stream()
+                .anyMatch(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()));
     }
 
     @Bean

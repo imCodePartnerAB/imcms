@@ -2,15 +2,20 @@ package imcode.server.document.index;
 
 
 import com.imcode.imcms.domain.dto.DocumentStatus;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import imcode.server.Imcms;
 import org.apache.solr.common.SolrDocument;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static imcode.util.Utility.*;
+import static imcode.util.Utility.isDateInFuture;
+import static imcode.util.Utility.isDateInPast;
 
 /**
  * Document's fields stored in a Solr index.
@@ -32,8 +37,18 @@ public class DocumentStoredFields {
     }
 
     public String headline() {
-        final String language = Imcms.getUser().getLanguage();
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + language);
+        final String currentLanguage = Imcms.getLanguage().getCode();
+        final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+
+        final String languageForTitle = isLanguageEnabled(currentLanguage)
+                ? currentLanguage
+                : (isLanguageEnabled(defaultLanguage) && isShownInDefaultLanguage()) ? defaultLanguage : "";
+
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + languageForTitle);
+    }
+
+    private boolean isLanguageEnabled(String languageCode) {
+        return enabledLanguages().contains(languageCode);
     }
 
     public String alias() {
@@ -42,6 +57,18 @@ public class DocumentStoredFields {
 
     public List<String> languages() {
         return (List<String>) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
+    }
+
+    public List<String> enabledLanguages() {
+        final Collection<Object> enabledLanguages = solrDocument.getFieldValues(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE);
+
+        if (enabledLanguages == null) {
+            return Collections.emptyList();
+        }
+
+        return enabledLanguages.stream()
+                .map(obj -> (String) obj)
+                .collect(Collectors.toList());
     }
 
     public DocumentType documentType() {
@@ -54,16 +81,40 @@ public class DocumentStoredFields {
         return PublicationStatus.values()[statusOrdinal];
     }
 
+    public boolean isShownInDefaultLanguage() {
+        final String disableLanguageShowMode = (String) solrDocument.getFieldValue(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE);
+        return Meta.DisabledLanguageShowMode.valueOf(disableLanguageShowMode) == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+    }
+
+    public boolean isShownTitle() {
+        final String currentLanguage = Imcms.getLanguage().getCode();
+        final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+
+        return isLanguageEnabled(currentLanguage) || (isShownInDefaultLanguage() && isLanguageEnabled(defaultLanguage));
+    }
+
     public Date created() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
+    }
+
+    public String createdBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
     }
 
     public Date modified() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
     }
 
+    public String modifiedBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIER_NAME);
+    }
+
     public Date publicationStart() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
+    }
+
+    public String publicationStartBy() {
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLISHER_NAME);
     }
 
     public Date archived() {

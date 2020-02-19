@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,15 +37,15 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO) {
+    public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode) {
         return documentLoaderCachingProxy.getSortedMenuItems(
                 getKey(menuDTO.getMenuIndex(),
                         menuDTO.getDocId(),
-                        Imcms.getUser().getLanguage(),
+                        langCode,
                         menuDTO.isNested(),
                         menuDTO.getTypeSort(),
                         menuDTO.getMenuItems()),
-                () -> defaultMenuService.getSortedMenuItems(menuDTO)
+                () -> defaultMenuService.getSortedMenuItems(menuDTO, langCode)
         );
     }
 

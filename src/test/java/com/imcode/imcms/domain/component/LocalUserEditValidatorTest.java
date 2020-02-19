@@ -126,35 +126,6 @@ class LocalUserEditValidatorTest {
     }
 
     @Test
-    void validate_With_NullEmail_Expect_EmptyEmailIsTrue() {
-        final UserFormData userData = new UserFormData();
-        given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertTrue(validationResult.isEmptyEmail());
-    }
-
-    @Test
-    void validate_With_EmptyEmail_Expect_EmptyEmailIsTrue() {
-        final UserFormData userData = new UserFormData();
-        userData.setEmail("");
-        given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertTrue(validationResult.isEmptyEmail());
-    }
-
-    @Test
-    void validate_With_NotEmptyEmail_Expect_EmptyEmailIsFalse() {
-        final UserFormData userData = new UserFormData();
-        userData.setEmail("test@test.com");
-        given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertFalse(validationResult.isEmptyEmail());
-    }
-
-    @Test
     void validate_With_ValidEmail_Expect_EmailValidIsTrue() {
         final UserFormData userData = new UserFormData();
         userData.setEmail("test@test.com");

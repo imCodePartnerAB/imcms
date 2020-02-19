@@ -22,7 +22,6 @@ public abstract class UserValidationResult {
     private boolean password2TooLong;
     private boolean passwordsEqual;
     private boolean passwordTooWeak;
-    private boolean emptyEmail;
     private boolean emailValid = true;
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
@@ -47,7 +46,6 @@ public abstract class UserValidationResult {
                 && !password2TooShort
                 && !password2TooLong
                 && passwordsEqual
-                && !emptyEmail
                 && emailValid
                 && !emailAlreadyTaken
                 && !emptyUserRoles

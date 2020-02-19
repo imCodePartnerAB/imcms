@@ -8,10 +8,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -19,14 +16,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -52,12 +42,7 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
@@ -96,6 +81,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     private final DocumentLanguages documentLanguages;
     @Getter
+    private final LanguageService languageService;
+    @Getter
     private final DatabaseService databaseService;
     @Getter
     private final MailService mailService;
@@ -129,7 +116,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 LanguageMapper languageMapper,
                                 AccessService accessService,
                                 MenuService menuService,
-                                AuthenticationProvidersService authenticationProvidersService) {
+                                AuthenticationProvidersService authenticationProvidersService, LanguageService languageService) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -149,6 +136,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.accessService = accessService;
         this.menuService = menuService;
         this.authenticationProvidersService = authenticationProvidersService;
+        this.languageService = languageService;
     }
 
     @PostConstruct

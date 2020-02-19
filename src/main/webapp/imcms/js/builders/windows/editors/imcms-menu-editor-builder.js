@@ -8,12 +8,14 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api",
+        "imcms-overlays-builder"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder, typesSortRestAPI) {
+              docProfileSelectBuilder, typesSortRestAPI, overlays) {
 
+        const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
 
         let PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
@@ -146,9 +148,8 @@ define("imcms-menu-editor-builder",
         }
 
         function getMenuDocByObjId(obj) {
-            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
-            let menuDoc = null
-            ;
+            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            let menuDoc = null;
 
             menuDocs.each(function () {
                 if ($(this).attr("data-document-id") === obj) {
@@ -160,7 +161,7 @@ define("imcms-menu-editor-builder",
         }
 
         function getFirstItemInMenuArea() {
-            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
+            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
             return menuDocs.first();
         }
 
@@ -178,7 +179,7 @@ define("imcms-menu-editor-builder",
         }
 
         function disableHighlightingMenuDoc() {
-            $(".imcms-menu-items-tree").find(".imcms-menu-items").css({
+            $(".imcms-menu-items-list").find(".imcms-menu-items").css({
                 "border": "none"
             });
         }
@@ -190,14 +191,14 @@ define("imcms-menu-editor-builder",
                     'border': '1px dashed blue'
                 });
             } else {
-                $(".imcms-menu-items-tree").find('.imcms-menu-items--is-drop').css({
+                $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
                     'border': '1px dashed red'
                 });
             }
         }
 
         function removedPreviousItemFrame() {
-            const $menuTree = $(".imcms-menu-items-tree"),
+            const $menuTree = $(".imcms-menu-items-list"),
                 $frame = $(".imcms-menu-items--frame"),
                 $frameParent = $(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]");
             let frameCopies
@@ -228,7 +229,7 @@ define("imcms-menu-editor-builder",
 
             if ($menuItem.find(".children-triangle").length === 0) {
                 $menuItem.find(".imcms-controls").first().after(
-                    buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                    buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                 );
             }
         }
@@ -250,7 +251,7 @@ define("imcms-menu-editor-builder",
         function slideUpMenuDocIfItClose(menuDoc) {
             const showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
 
-            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+            if (!showHidBtn.hasClass("imcms-document-item__btn--open")) {
                 showHidBtn.trigger("click");
             }
         }
@@ -311,7 +312,7 @@ define("imcms-menu-editor-builder",
 
         function detectPasteArea($frame) {
             let allMenuDocObjArray = {};
-            const itemTree = $(".imcms-menu-items-tree"),
+            const itemTree = $(".imcms-menu-items-list"),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 frameTop = $frame.position().top
             ;
@@ -377,7 +378,7 @@ define("imcms-menu-editor-builder",
 
         function closeSubItems(elem) {
             const btnTriangle = elem.find(".children-triangle").first();
-            if (btnTriangle.hasClass("imcms-menu-item-btn--open")) {
+            if (btnTriangle.hasClass("imcms-document-item__btn--open")) {
                 btnTriangle.trigger("click");
             }
         }
@@ -418,7 +419,7 @@ define("imcms-menu-editor-builder",
                 top: $originItem.position().top,
                 left: $originItem.position().left
             };
-            $menuArea = $(".imcms-menu-items-tree");
+            $menuArea = $(".imcms-menu-items-list");
             menuAreaProp = {
                 top: $menuArea.position().top,
                 left: $menuArea.position().left,
@@ -426,13 +427,11 @@ define("imcms-menu-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
-
             $frame.css({
                 "background-color": "#e9e9f5",
                 "position": "absolute",
                 "z-index": 11001,
-                "width": widthValue,
+                "width": "40%",
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });
@@ -465,6 +464,7 @@ define("imcms-menu-editor-builder",
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title"),
+                    isShownTitle: $dataInput.attr("data-is-shown-title") === "true",
                     documentStatus: $dataInput.attr("data-original-status"),
                     publishedDate: $dataInput.attr('data-publishedDate'),
                     modifiedDate: $dataInput.attr('data-modifiedDate'),
@@ -488,7 +488,7 @@ define("imcms-menu-editor-builder",
                         const parent = $menuElement.parent();
                         if (parent.find(".children-triangle").length === 0) {
                             parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
-                                buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                                buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                             );
                         }
                     } else {
@@ -497,10 +497,10 @@ define("imcms-menu-editor-builder",
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
-                    $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
+                    $menuElementsContainer.find(".imcms-menu-items-list").append($menuElement);
                 }
             }
-            $menuElement.addClass("imcms-menu-items-tree__menu-items");
+            $menuElement.addClass("imcms-document-items-list__document-items");
             $menuElement.addClass("imcms-doc-item-copy");
             let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
             documentEditorBuilder.refreshDocumentInList(doc);
@@ -525,16 +525,8 @@ define("imcms-menu-editor-builder",
         function removeMenuItemFromEditor(currentMenuItem) {
             const submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
-                currentMenuItemWrap = parentMenuItem.parent();
-            const typeSort = document.getElementById("type-sort").value;
-            let currentMenuItemId;
-
-            if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
-                typeSort === MODIFIED_DATE_ASC || typeSort === MODIFIED_DATE_DESC) {
-                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__docId").text());
-            } else {
-                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
-            }
+                currentMenuItemWrap = parentMenuItem.parent(),
+                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-document-item__info--id").text());
 
             let submenuDocIds = [];
 
@@ -547,7 +539,7 @@ define("imcms-menu-editor-builder",
             parentMenuItem.remove();
 
             if (currentMenuItemWrap.children().length === 1) {
-                currentMenuItemWrap.find(".imcms-menu-item__btn").remove();
+                currentMenuItemWrap.find(".imcms-document-item__btn").remove();
             }
 
             refreshDocuments(submenuDocIds, currentMenuItemId);
@@ -564,16 +556,8 @@ define("imcms-menu-editor-builder",
         }
 
         function removeMenuItem() {
-            const typeSort = document.getElementById("type-sort").value;
             const currentMenuItem = $(this).closest(".imcms-menu-item");
-            let currentMenuItemName;
-            if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
-                typeSort === MODIFIED_DATE_ASC || typeSort === MODIFIED_DATE_DESC) {
-                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__docTitle").text();
-            } else {
-                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
-            }
-
+            const currentMenuItemName = currentMenuItem.find(".imcms-document-item__info--title").text();
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
             modal.buildModalWindow(question, answer => {
@@ -598,7 +582,7 @@ define("imcms-menu-editor-builder",
             };
 
             document.commonContents.forEach(commonContent => {
-                if (commonContent["language"]["code"] === imcms.userLanguage) {
+                if (commonContent["language"]["code"] === imcms.language.code) {
                     menuElementTree["title"] = commonContent["headline"];
                 }
             });
@@ -621,13 +605,13 @@ define("imcms-menu-editor-builder",
                 function changeTitle() {
                     let titleValue = "";
                     document.commonContents.forEach(commonContent => {
-                        if (commonContent.language.code === imcms.userLanguage) {
+                        if (commonContent.language.code === imcms.language.code) {
                             titleValue = commonContent.headline;
                         }
                     });
 
-                    const $info = $oldMenuItem.find(".imcms-menu-item__info").first();
-                    const $docTitle = $oldMenuItem.find(".imcms-menu-item__docTitle").first();
+                    const $info = $oldMenuItem.find(".imcms-document-item__info").first();
+                    const $docTitle = $oldMenuItem.find(".imcms-document-item__info--title").first();
                     $info.text(document.id + " - " + titleValue);
                     $info.attr("title", titleValue);
                     $docTitle.text(titleValue);
@@ -635,15 +619,17 @@ define("imcms-menu-editor-builder",
                 }
 
                 function changeStatus() {
-                    const $status = $oldMenuItem.find(".imcms-menu-item__status").first();
-                    $status.text(documentEditorBuilder.getDocumentStatusText(document.documentStatus));
+                    const $status = $oldMenuItem.find(".imcms-document-item__info--status").first();
+                    const statusTexts = documentEditorBuilder.getDocumentStatusTexts(document.documentStatus, document.published);
+                    $status.text(statusTexts.title);
+                    $status.attr('title', statusTexts.tooltip);
                 }
 
                 function toggleClass() {
-                    const menuItemClass = "imcms-menu-items__menu-item";
+                    const menuItemClass = "imcms-menu-items__document-item";
                     const $menuItem = $oldMenuItem.find("." + menuItemClass).first();
 
-                    $menuItem.removeClass((index, className) => (className.match(/\imcms-menu-items__menu-item--\S+/g) || []).join(' '));
+                    $menuItem.removeClass((index, className) => (className.match(/\imcms-menu-items__document-item--\S+/g) || []).join(' '));
 
                     $menuItem.addClass(
                         menuItemClass + "--" + document.documentStatus.replace(/_/g, "-").toLowerCase()
@@ -662,11 +648,13 @@ define("imcms-menu-editor-builder",
 
             const $controlRemove = components.controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
-            }).attr("title", texts.remove);
+            });
+            addTooltip($controlRemove, texts.remove);
 
             const $controlEdit = components.controls.edit(() => {
                 pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
-            }).attr("title", texts.edit);
+            });
+            addTooltip($controlEdit, texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
                 docCopyRestApi.copy(menuElementTree.documentId)
@@ -682,7 +670,8 @@ define("imcms-menu-editor-builder",
                         appendNewMenuItem(copiedDocument);
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
-            }).attr("title", texts.copy);
+            });
+            addTooltip($controlCopy, texts.copy);
 
             return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
@@ -700,7 +689,7 @@ define("imcms-menu-editor-builder",
                     $(this).slideToggle();
                     $(this).toggleClass("imcms-submenu-items--close");
                 });
-                $btn.toggleClass("imcms-menu-item-btn--open");
+                $btn.toggleClass("imcms-document-item__btn--open");
             }
         }
 
@@ -723,116 +712,101 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
-        function buildMenuItems(menuElementTree, typeSort) {
+        function buildMenuItem(menuElementTree, typeSort) {
 
-            const elements = [{controls: buildMoveControl(typeSort)}];
+            const $docId = components.texts.titleText('<a>', menuElementTree.documentId, {
+                href: '/' + menuElementTree.documentId,
+                target: '_blank',
+                class: 'imcms-grid-coll-1',
+            });
+            $docId.modifiers = ['id'];
+            addTooltip(
+                $docId,
+                documentEditorBuilder.getIdTooltipText(menuElementTree.documentId, menuElementTree.createdDate, menuElementTree.createdBy),
+                'right'
+            );
 
+            const title = menuElementTree.isShownTitle
+                ? menuElementTree.title
+                : documentBuilderTexts.notShownInSelectedLang;
+            const $titleText = components.texts.titleText('<a>', title, {
+                href: "/" + menuElementTree.documentId,
+                class: 'imcms-flex--flex-1',
+            });
+            $titleText.modifiers = ['title'];
+            !menuElementTree.isShownTitle && $titleText.modifiers.push("notShownTitle");
+            title && addTooltip($titleText, title, 'right');
+
+            const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
+                class: 'imcms-grid-coll-3',
+            });
+            $publishedDate.modifiers = ['date'];
+            addTooltip(
+                $publishedDate,
+                documentEditorBuilder.getPublishedDateTooltipText(menuElementTree.publishedDate, menuElementTree.publishedBy),
+            );
+
+            const $modifiedDate = components.texts.titleText('<div>', menuElementTree.modifiedDate, {
+                class: 'imcms-grid-coll-3',
+            });
+            addTooltip(
+                $modifiedDate,
+                documentEditorBuilder.getModifiedDateTooltipText(menuElementTree.modifiedDate, menuElementTree.modifiedBy),
+            );
+
+            const $star = menuElementTree.hasNewerVersion
+                ? components.controls.star()
+                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            addTooltip($currentVersion, documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip);
+            $currentVersion.modifiers = ['currentVersion'];
+
+            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, menuElementTree.publishedDate);
+            const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
+                class: 'imcms-grid-coll-13'
+            });
+            $documentStatus.modifiers = ['status'];
+            addTooltip($documentStatus, documentStatusTexts.tooltip);
+
+            const elements = [$docId, $titleText];
 
             if (menuElementTree.children.length) {
-                elements.push({btn: buildChildrenTriangle()});
-            }
-
-            const idTitleText = menuElementTree.documentId + " - " + menuElementTree.title;
-            const idText = menuElementTree.documentId;
-            const titleText = menuElementTree.title;
-
-            let publishedDate = '';
-            let modifiedDate = '';
-            let regexIsOnlyNumber = new RegExp('^[0-9]+$');
-
-            if (menuElementTree.publishedDate !== null && menuElementTree.publishedDate !== '') {
-                publishedDate = regexIsOnlyNumber.test(menuElementTree.publishedDate)
-                    ? new Date(parseInt(menuElementTree.publishedDate))
-                    : new Date(menuElementTree.publishedDate);
-            }
-            if (menuElementTree.modifiedDate !== null && menuElementTree.modifiedDate !== '') {
-                modifiedDate = regexIsOnlyNumber.test(menuElementTree.modifiedDate)
-                    ? new Date(parseInt(menuElementTree.modifiedDate))
-                    : new Date(menuElementTree.modifiedDate);
-            }
-
-            function getConvertedDate(date) {
-                return date === ''
-                    ? texts.publishedTimePrompt
-                    : date.getFullYear() +
-                    "-" + ("0" + (date.getMonth() + 1)).slice(-2) +
-                    "-" + ("0" + date.getDate()).slice(-2) +
-                    " " + date.getHours() + ":" + ("0" + date.getMinutes()).slice(-2);
+                elements.push(buildChildrenTriangle());
             }
 
             switch (typeSort) {
                 case PUBLISHED_DATE_ASC:
                 case PUBLISHED_DATE_DESC:
-                    elements.push({
-                        docId: components.texts.titleText('<a>', idText, {
-                            title: idText,
-                            href: '/' + idText,
-                            target: '_blank'
-                        })
-                    });
-                    elements.push({
-                        docTitle: components.texts.titleText('<div>', titleText, {
-                            title: titleText
-                        })
-                    });
-                    elements.push({
-                        published: components.texts.titleText('<div>', getConvertedDate(publishedDate), {
-                            title: texts.publishDate
-                        })
-                    });
+                    elements.push($publishedDate);
                     break;
                 case MODIFIED_DATE_ASC:
                 case MODIFIED_DATE_DESC:
-                    elements.push({
-                        docId: components.texts.titleText('<a>', idText, {
-                            title: idText,
-                            href: '/' + idText,
-                            target: '_blank'
-                        })
-                    });
-                    elements.push({
-                        docTitle: components.texts.titleText('<div>', titleText, {
-                            title: titleText
-                        })
-                    });
-                    elements.push({
-                        modified: components.texts.titleText('<div>', getConvertedDate(modifiedDate), {
-                            title: texts.modifiedDate
-                        })
-                    });
+                    elements.push($modifiedDate);
                     break;
-                default:
-                    elements.push({
-                        info: components.texts.titleText("<a>", idTitleText, {
-                            title: menuElementTree.title,
-                            href: '/' + menuElementTree.documentId,
-                            target: '_blank'
-                        })
-                    });
             }
 
-            const $blockVersion = menuElementTree.hasNewerVersion
-                ? components.controls.star()
-                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            elements.push({
-                hasNewerVersion: $('<div>').addClass('imcms-grid-coll-1').append($blockVersion)
-            });
+            elements.push($currentVersion, $documentStatus);
 
-
-            elements.push({
-                status: components.texts.titleText(
-                    "<div>",
-                    documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus)
-                )
-            });
-
-
-            elements.push({controls: buildMenuItemControls(menuElementTree)});
+            const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree)];
 
             return new BEM({
-                block: "imcms-menu-item",
-                elements: elements
-            }).buildBlockStructure("<div>");
+                block: "imcms-document-item",
+                elements: [
+                    {"info": elements},
+                    {"controls": controls}
+                ]
+            }).buildBlockStructure("<div>", {
+                class: "imcms-menu-item"
+            });
+        }
+
+        function addTooltip(element, text, placement = 'top') {
+            overlays.createOverlay({
+                element: element,
+                overlay: overlays.tooltip(text),
+                delay: {show: 400},
+                placement: placement,
+            });
         }
 
         function buildMenuItemTree(menuElementTree, level, typeSort) {
@@ -840,12 +814,13 @@ define("imcms-menu-editor-builder",
 
             const treeBlock = new BEM({
 
-                block: "imcms-menu-items",
+                block: "imcms-document-items",
                 elements: [{
-                    "menu-item": buildMenuItems(menuElementTree, typeSort),
+                    "document-item": buildMenuItem(menuElementTree, typeSort),
                     modifiers: [menuElementTree.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
+                class: "imcms-menu-items",
                 "data-menu-items-lvl": level,
                 "data-document-id": menuElementTree.documentId
             });
@@ -863,78 +838,85 @@ define("imcms-menu-editor-builder",
             function buildMenuElements(menuElements) {
                 const $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1, typeSort));
                 return new BEM({
-                    block: "imcms-menu-items-tree",
+                    block: "imcms-document-items-list",
                     elements: {
-                        "menu-items": $menuItems
+                        "document-items": $menuItems
                     }
-                }).buildBlockStructure("<div>");
+                }).buildBlockStructure("<div>", {
+                    class: "imcms-menu-items-list"
+                });
             }
 
             function buildMenuTitlesRow() {
-                const $idTitleColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-8",
-                    text: texts.id + " - " + texts.docTitle
-                });
-
                 const $idColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-15",
+                    class: "imcms-grid-coll-1",
                     text: texts.id
                 });
+                $idColumnHead.modifiers = ["id"];
 
                 const $titleColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-16",
+                    class: "imcms-flex--flex-1",
                     text: texts.docTitle
                 });
 
-                let $publishedDateHead = $("<div>", {
-                    "class": "imcms-grid-coll-13",
+                const $publishedDateHead = $("<div>", {
+                    class: "imcms-grid-coll-3",
                     text: texts.publishDate
                 });
+                $publishedDateHead.modifiers = ["date"];
 
-                let $modifiedDateHead = $("<div>", {
-                    "class": "imcms-grid-coll-14",
+                const $modifiedDateHead = $("<div>", {
+                    class: "imcms-grid-coll-3",
                     text: texts.modifiedDate
                 });
+                $modifiedDateHead.modifiers = ["date"];
 
-                let $statusColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-2",
-                    text: texts.status
-                });
-
-                let $versionColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-1",
+                const $versionColumnHead = $("<div>", {
+                    class: "imcms-grid-coll-1",
                     text: texts.version
                 });
-                let containerHeadTitle;
+                $versionColumnHead.modifiers = ["currentVersion"];
+
+                const $statusColumnHead = $("<div>", {
+                    class: "imcms-grid-coll-13",
+                    text: texts.status
+                });
+                $statusColumnHead.modifiers = ["status"];
+
+                const containerHeadTitle = [$idColumnHead, $titleColumnHead];
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
                     case PUBLISHED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedDateHead, $versionColumnHead, $statusColumnHead];
+                        containerHeadTitle.push($publishedDateHead);
                         break;
                     case MODIFIED_DATE_ASC:
                     case MODIFIED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedDateHead, $versionColumnHead, $statusColumnHead];
+                        containerHeadTitle.push($modifiedDateHead);
                         break;
-                    default:
-                        containerHeadTitle = [$idTitleColumnHead, $versionColumnHead, $statusColumnHead];
                 }
 
+                containerHeadTitle.push($versionColumnHead, $statusColumnHead);
+
                 return new BEM({
-                    block: "imcms-menu-list-titles",
+                    block: "imcms-document-list-titles",
                     elements: {
                         "title": containerHeadTitle
                     }
-                }).buildBlockStructure("<div>");
+                }).buildBlockStructure("<div>", {
+                    class: "imcms-menu-list-titles"
+                });
             }
 
             return new BEM({
-                block: "imcms-menu-list",
+                block: "imcms-document-list",
                 elements: {
                     "titles": buildMenuTitlesRow(),
                     "items": $menuItemsBlock = buildMenuElements(menuElementsTree)
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {
+                class: "imcms-menu-list"
+            });
         }
 
         function buildMenuItemNewButton() {

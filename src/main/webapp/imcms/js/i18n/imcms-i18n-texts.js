@@ -260,6 +260,8 @@ const texts = {
                 freeTextPlaceholder: "Skriv för att söka dokument",
                 owner: "Ägare",
                 category: "Kategori",
+                by: 'av',
+                notShownInSelectedLang: 'Inte visad på valt språk',
                 controls: {
                     edit: {
                         title: "Redigera"
@@ -279,13 +281,44 @@ const texts = {
                     status: "Status",
                     version: 'Ver'
                 },
+                id: {
+                    tooltip: {
+                        createdOn: 'Skapad'
+                    }
+                },
+                modified: {
+                    tooltip: {
+                        lastChangedOn: 'Dokumentet ändrades senast',
+                    }
+                },
+                published: {
+                    tooltip: {
+                        publishedOn: 'Dokumentet publicerades',
+                    }
+                },
+                version: {
+                    tooltip: {
+                        hasNewerVersion: 'Dokumentet har en opublicerad arbetsversion',
+                        noWorkingVersion: 'Dokumentet har ingen arbetsversion',
+                    },
+                },
                 status: {
-                    published: "Publicerad",
-                    publishedWaiting: "Godkänd, väntar",
-                    inProcess: "Nytt, under arbete",
-                    disapproved: "Ej godkänd",
-                    archived: "Arkiverat",
-                    passed: "Avslutad"
+                    title: {
+                        published: "Publicerad",
+                        publishedWaiting: "Godkänd, väntar",
+                        inProcess: "Nytt, u a",
+                        disapproved: "Ej godkänd",
+                        archived: "Arkiverat",
+                        passed: "Avslutad"
+                    },
+                    tooltip: {
+                        published: "Dokumentet är publicerat",
+                        publishedWaiting: "Godkänd, väntar",
+                        inProcess: "Dokumentet är nytt och under arbete",
+                        disapproved: "Ej godkänd",
+                        archived: "Arkiverat",
+                        passed: "Avslutad"
+                    },
                 },
                 error: {
                     searchFailed: 'Inga sökresultat',
@@ -1121,6 +1154,8 @@ const texts = {
                 freeTextPlaceholder: "Type to find document",
                 owner: "Owner",
                 category: "Category",
+                by: 'by',
+                notShownInSelectedLang: 'Not shown in the selected language',
                 controls: {
                     edit: {
                         title: "Edit"
@@ -1140,13 +1175,44 @@ const texts = {
                     status: "State",
                     version: 'Ver'
                 },
+                id: {
+                    tooltip: {
+                        createdOn: 'Created on'
+                    }
+                },
+                modified: {
+                    tooltip: {
+                        lastChangedOn: 'The document was last changed on',
+                    }
+                },
+                published: {
+                    tooltip: {
+                        publishedOn: 'The document was published on',
+                    }
+                },
+                version: {
+                    tooltip: {
+                        hasNewerVersion: 'The document has an unpublished working version',
+                        noWorkingVersion: 'The document has no working version',
+                    },
+                },
                 status: {
-                    published: "Approved, published",
-                    publishedWaiting: "Approved, waiting",
-                    inProcess: "New",
-                    disapproved: "Disapproved",
-                    archived: "Archived",
-                    passed: "Publication end"
+                    title: {
+                        published: "Approved, published",
+                        publishedWaiting: "Approved, waiting",
+                        inProcess: "New, u c",
+                        disapproved: "Disapproved",
+                        archived: "Archived",
+                        passed: "Publication end"
+                    },
+                    tooltip: {
+                        published: "The document is published",
+                        publishedWaiting: "Approved, waiting",
+                        inProcess: "The document is new and under construction",
+                        disapproved: "Disapproved",
+                        archived: "Archived",
+                        passed: "Publication end"
+                    },
                 },
                 error: {
                     searchFailed: 'No search result',

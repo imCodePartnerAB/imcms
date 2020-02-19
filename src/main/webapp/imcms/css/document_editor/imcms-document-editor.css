@@ -16,7 +16,7 @@
 
 .imcms-document-list__titles {
     display: flex;
-    padding: 0 27px 0 70px;
+    padding: 0 27px 0 35px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
 }
@@ -75,6 +75,22 @@
     width: 100%;
 }
 
+.imcms-document-items--frame {
+    background-color: #e9e9f5;
+    position: absolute;
+    z-index: 11001;
+    width: 40%;
+}
+
+.imcms-document-items--frame .imcms-document-item:hover .imcms-document-item__controls {
+    right: auto;
+    left: 0;
+}
+
+.imcms-document-items--frame .imcms-document-item:hover .imcms-document-item__controls:last-child {
+    display: none;
+}
+
 .imcms-document-items--is-drag {
     background: #858585;
     opacity: .5;
@@ -96,9 +112,9 @@
 }
 
 .imcms-document-item {
-    display: block;
+    display: flex;
     overflow: hidden;
-    padding-left: 70px;
+    padding-left: 35px;
     padding-right: 20px;
     position: relative;
     width: 100%;
@@ -111,8 +127,10 @@
     float: left;
     height: 45px;
     padding-left: 5px;
+    margin-right: 3px;
     text-overflow: ellipsis;
     overflow: inherit;
+    font-weight: normal;
 }
 
 .imcms-document-item__controls {
@@ -165,6 +183,10 @@
     padding-top: 12px;
     overflow: auto;
     width: 100%;
+}
+
+.imcms-document-item__info--id {
+    text-align: right;
 }
 
 .imcms-document-items__document-item--published-waiting,
@@ -232,6 +254,37 @@
     width: 100%;
     height: 5%;
     border-top: 1px solid #d3d8de;
+}
+
+.imcms-document-item__info--id,
+.imcms-document-list-titles__title--id {
+    min-width: 60px;
+}
+
+.imcms-document-item__info--notShownTitle {
+    text-decoration: unset !important;
+    cursor: default !important;
+    color: red !important;
+}
+
+.imcms-document-item__info--date,
+.imcms-document-list-titles__title--date {
+    min-width: 120px;
+}
+
+.imcms-document-item__info--currentVersion,
+.imcms-document-list-titles__title--currentVersion {
+    min-width: 50px;
+}
+
+.imcms-document-item__info--type,
+.imcms-document-list-titles__title--type {
+    min-width: 45px;
+}
+
+.imcms-document-item__info--status,
+.imcms-document-list-titles__title--status {
+    min-width: 140px;
 }
 
 .imcms-document-item__info--currentVersion {

@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
@@ -31,9 +32,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
@@ -65,6 +64,9 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
         int id = documentDataInitializer.createData().getId();
         meta = metaRepository.getOne(id);
+
+        final Language currentLanguage = languageDataInitializer.createData().get(0);
+        Imcms.setLanguage(currentLanguage);
     }
 
     @AfterEach

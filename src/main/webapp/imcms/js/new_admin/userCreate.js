@@ -44,8 +44,7 @@ function onSubmit(e) {
 
     if (!$form.find('input[name=login]').val()
         || !$pass1.val()
-        || !$pass2.val()
-        || !$form.find('#email').val()) {
+        || !$pass2.val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;

@@ -59,7 +59,6 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__PASSWORD_TOO_WEAK = new LocalizedMessage("error/password_too_weak");
     private static final LocalizedMessage ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE = new LocalizedMessage("error/user_must_have_at_least_one_role");
 
-    private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
     private static final long serialVersionUID = 8794785851493625993L;
@@ -149,9 +148,7 @@ public class UserEditorPage extends OkCancelPage {
         String email = editedUser.getEmailAddress();
         LocalizedMessage msg = null;
 
-        if (email.isEmpty()) {
-            msg = ERROR__EMAIL_IS_EMPTY;
-        } else if (!Utility.isValidEmail(email)) {
+        if (!Utility.isValidEmail(email)) {
             msg = ERROR__EMAIL_IS_INVALID;
         } else {
             UserDomainObject user = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByEmail(email);

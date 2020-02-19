@@ -21,11 +21,11 @@ class UserEditValidationResult extends UserValidationResult {
 
     @Override
     protected void validateEmail(UserFormData userData, UserService userService) {
-        final String email = StringUtils.defaultString(userData.getEmail());
+        final String email = userData.getEmail();
 
-        setEmptyEmail(StringUtils.isBlank(email));
-
-        if (isEmptyEmail()) return;
+        if (email == null) {
+            return;
+        }
 
         setEmailValid(Utility.isValidEmail(email));
 

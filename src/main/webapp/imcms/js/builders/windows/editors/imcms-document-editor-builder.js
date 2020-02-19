@@ -9,11 +9,11 @@ define("imcms-document-editor-builder",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
         "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
         "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api",
-        "imcms-modal-window-builder"
+        "imcms-modal-window-builder", "imcms-overlays-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, modal) {
+              docProfileSelectBuilder, docCopyRestApi, modal, overlays) {
 
         texts = texts.editors.document;
 
@@ -69,6 +69,17 @@ define("imcms-document-editor-builder",
         const sortDescClassName = "imcms-control--sort-desc";
         const sortAscClass = "." + sortAscClassName;
         const sortDescClass = "." + sortDescClassName;
+
+        const menuItemsListSelector = '.imcms-menu-items-list';
+        const menuItemsSelector = '.imcms-menu-items';
+
+        function get$menuItemsList() {
+            return $(menuItemsListSelector);
+        }
+
+        function get$menuItems() {
+            return $(menuItemsSelector);
+        }
 
         function buildErrorBlock() {
             errorMsg = components.texts.errorText("<div>", texts.error.searchFailed, {style: 'display: none;'});
@@ -297,7 +308,7 @@ define("imcms-document-editor-builder",
         }
 
         function highlightDefaultSorting() {
-            const $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
+            const $defaultSortingHeader = $(".imcms-document-editor-body .imcms-document-list-titles__title").first();
             highlightSorting($defaultSortingHeader);
         }
 
@@ -370,42 +381,54 @@ define("imcms-document-editor-builder",
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
                 bySorting: defaultSortPropertyValue,
-                modifiers: ["col-1"],
+                elementClass: "imcms-grid-coll-18",
+                modifiers: ["id"],
             });
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                bySorting: "meta_headline_" + imcms.userLanguage,
-                modifiers: ["col-3"],
+                bySorting: "meta_headline_" + imcms.language.code,
+                elementClass: "imcms-flex--flex-3",
             });
 
             const $aliasColumnHead = buildTitleRow({
                 text: texts.sort.alias,
                 bySorting: "alias",
-                modifiers: ["col-2"],
+                elementClass: "imcms-flex--flex-2",
             });
 
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
                 bySorting: "modified_datetime",
-                modifiers: ["col-6"],
+                elementClass: "imcms-grid-coll-15",
+                modifiers: ['date'],
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: "publication_start_datetime",
-                modifiers: ["col-6"],
+                elementClass: "imcms-grid-coll-15",
+                modifiers: ['date'],
             });
 
             const $versionColumnHead = buildTitleRow({
                 text: texts.sort.version,
                 bySorting: 'version_no',
-                modifiers: ['col-1'],
+                elementClass: 'imcms-grid-coll-18',
+                modifiers: ['currentVersion'],
             });
 
-            const $typeColumnHead = buildTitleRow({text: texts.sort.type, modifiers: ["col-1"]});
+            const $typeColumnHead = buildTitleRow({
+                text: texts.sort.type,
+                elementClass: "imcms-grid-coll-18",
+                modifiers: ['type'],
+            });
 
-            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-7"]});
+            const $statusColumnHead = buildTitleRow({
+                text: texts.sort.status,
+                elementClass: 'imcms-grid-coll-17',
+                modifiers: ['status'],
+            });
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -424,7 +447,7 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildTitleRow({text, bySorting, modifiers}) {
+        function buildTitleRow({text, bySorting, modifiers, elementClass}) {
             const $emptyIcon = $('<div>');
 
             const $sortIcon = bySorting
@@ -442,6 +465,7 @@ define("imcms-document-editor-builder",
                     "icon": $sortIcon,
                 }
             }).buildBlockStructure("<div>", {
+                class: elementClass,
                 click: function () {
                     if (bySorting) {
                         onClickSorting(bySorting, $(this))
@@ -465,12 +489,7 @@ define("imcms-document-editor-builder",
                 frameItem = $frame.find(".imcms-document-item")
             ;
 
-            const frameItemDocId = frameItem.find(".imcms-document-item__info--id").text();
-            const requestDataId = {
-                docId: parseInt(frameItemDocId)
-            };
-
-            $menuArea = $(".imcms-menu-items-tree");
+            $menuArea = get$menuItemsList();
             $frameLayout.addClass("imcms-frame-layout")
                 .css({
                     "display": "none",
@@ -501,33 +520,18 @@ define("imcms-document-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            docRestApi.read(requestDataId).done(docById => {
-                let publishedDate = docById.published.date && docById.published.time !== null
-                    ? docById.published.date + ' ' + docById.published.time
-                    : '';
-
-                let modifiedDate = docById.modified.date && docById.modified.time !== null
-                    ? docById.modified.date + ' ' + docById.modified.time
-                    : '';
-                frameItem.attr("data-publishedDate", publishedDate);
-                frameItem.attr("data-modifiedDate", modifiedDate);
-            });
-
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
+            frameItem.attr("data-is-shown-title", !frameItem.find(".imcms-document-item__info--notShownTitle").length);
+            frameItem.attr("data-publishedDate", frameItem.find(".imcms-document-item__info--publishedDate").text());
+            frameItem.attr("data-modifiedDate", frameItem.find(".imcms-document-item__info--modifiedDate").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
             frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").attr('value'));
 
-            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
-
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
-                "background-color": "#e9e9f5",
-                "position": "absolute",
-                "z-index": 11001,
-                "width": widthValue,
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });
@@ -581,8 +585,7 @@ define("imcms-document-editor-builder",
                         onConfirm
                     );
                 });
-
-                $controlCopy.prop('title', texts.controls.copy.title);
+                addTooltip($controlCopy, texts.controls.copy.title, 'left');
                 controls.push($controlCopy);
             }
 
@@ -590,7 +593,7 @@ define("imcms-document-editor-builder",
                 const $controlEdit = components.controls.edit(() => {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
-                $controlEdit.prop('title', texts.controls.edit.title);
+                addTooltip($controlEdit, texts.controls.edit.title, 'left');
                 controls.push($controlEdit);
             }
 
@@ -629,7 +632,7 @@ define("imcms-document-editor-builder",
 
         function checkByDocIdInMenuEditor(documentId) {
             let status = false;
-            $(".imcms-menu-items").each(function () {
+            get$menuItems().each(function () {
                 if (parseInt($(this).attr("data-document-id")) === documentId) {
                     status = true;
                 }
@@ -643,9 +646,8 @@ define("imcms-document-editor-builder",
         }
 
         function getMenuDocByObjId(obj) {
-            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
-            let menuDoc = null
-            ;
+            const menuDocs = get$menuItemsList().find(menuItemsSelector);
+            let menuDoc = null;
 
             menuDocs.each(function () {
                 if ($(this).attr("data-document-id") === obj) {
@@ -657,13 +659,13 @@ define("imcms-document-editor-builder",
         }
 
         function disableHighlightingMenuDoc() {
-            $(".imcms-menu-items-tree").find(".imcms-menu-items").css({
+            get$menuItemsList().find(menuItemsSelector).css({
                 "border": "none"
             });
         }
 
         function removedPreviousItemFrame() {
-            const $menuTree = $(".imcms-menu-items-tree"),
+            const $menuTree = get$menuItemsList(),
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item"),
                 $frameParent = $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]")
                     .parent("[data-menu-items-lvl]")
@@ -678,7 +680,7 @@ define("imcms-document-editor-builder",
         function slideUpMenuDocIfItClose(menuDoc) {
             const showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
 
-            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+            if (!showHidBtn.hasClass("imcms-document-item__btn--open")) {
                 showHidBtn.trigger("click");
             }
         }
@@ -720,7 +722,7 @@ define("imcms-document-editor-builder",
                         'border': '1px dashed blue'
                     });
                 } else {
-                    $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").css({
+                    get$menuItemsList().find(".imcms-doc-item-copy").css({
                         'border': '1px dashed red'
                     });
                 }
@@ -760,7 +762,7 @@ define("imcms-document-editor-builder",
 
         function getDocumentParent() {
             const allMenuDocObjArray = {},
-                itemTree = $(".imcms-menu-items-tree"),
+                itemTree = get$menuItemsList(),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 $frame = $(".imcms-document-items--frame"),
                 frameTop = $frame.offset().top
@@ -771,7 +773,7 @@ define("imcms-document-editor-builder",
 
             // get all menu doc coords
             menuDocs.each(function () {
-                allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
+                allMenuDocObjArray[$(this).closest(menuItemsSelector).attr("data-document-id")] = {
                     top: $(this).offset().top,
                     bottom: $(this).offset().top + $(this).outerHeight()
                 };
@@ -806,6 +808,7 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
+            dataInput.attr("data-is-shown-title", frameItem.attr("data-is-shown-title"));
             dataInput.attr("data-frame-top", insertedParent.frameTopPos);
             dataInput.attr('data-current-version', frameItem.attr('data-current-version'))
         }
@@ -833,7 +836,9 @@ define("imcms-document-editor-builder",
             }
 
             if (detectTargetArea(event)) {
-                if ($(".imcms-menu-items-tree").find("[data-document-id=" + frameItem.attr("data-id") + "]").length === 0) {
+                const $menuItemsList = get$menuItemsList();
+
+                if ($menuItemsList.find("[data-document-id=" + frameItem.attr("data-id") + "]").length === 0) {
                     insertedParent = getDocumentParent();
                     setDataInputParams(insertedParent, frameItem);
                 }
@@ -841,7 +846,7 @@ define("imcms-document-editor-builder",
                 $menuArea.css({
                     "border-color": "transparent"
                 });
-                $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").removeClass("imcms-doc-item-copy");
+                $menuItemsList.find(".imcms-doc-item-copy").removeClass("imcms-doc-item-copy");
                 disableHighlightingMenuDoc();
             }
 
@@ -851,58 +856,113 @@ define("imcms-document-editor-builder",
             isMouseDown = false;
         });
 
-        function getDocumentStatusText(documentStatus) {
+        function getDocumentStatusTexts(documentStatus, publishedDate) {
             return {
-                PUBLISHED: texts.status.published,
-                PUBLISHED_WAITING: texts.status.publishedWaiting,
-                IN_PROCESS: texts.status.inProcess,
-                DISAPPROVED: texts.status.disapproved,
-                ARCHIVED: texts.status.archived,
-                PASSED: texts.status.passed
-
+                PUBLISHED: {
+                    title: texts.status.title.published,
+                    tooltip: texts.status.tooltip.published + ' ' + publishedDate,
+                },
+                PUBLISHED_WAITING: {
+                    title: texts.status.title.publishedWaiting,
+                    tooltip: texts.status.tooltip.publishedWaiting,
+                },
+                IN_PROCESS: {
+                    title: texts.status.title.inProcess,
+                    tooltip: texts.status.tooltip.inProcess,
+                },
+                DISAPPROVED: {
+                    title: texts.status.title.disapproved,
+                    tooltip: texts.status.tooltip.disapproved,
+                },
+                ARCHIVED: {
+                    title: texts.status.archived,
+                    tooltip: texts.status.archived,
+                },
+                PASSED: {
+                    title: texts.status.passed,
+                    tooltip: texts.status.passed,
+                },
             }[documentStatus];
+        }
+
+        function getDocumentVersionTexts(hasNewerVersion) {
+            return hasNewerVersion
+            ? { tooltip: texts.version.tooltip.hasNewerVersion }
+            : { tooltip: texts.version.tooltip.noWorkingVersion }
+        }
+
+        function getIdTooltipText(id, date, user) {
+            return `${id}. ${texts.id.tooltip.createdOn} ${date} ${texts.by} ${user}`
+        }
+        
+        function getModifiedDateTooltipText(date, user) {
+            return `${texts.modified.tooltip.lastChangedOn} ${date} ${texts.by} ${user}`
+        }
+
+        function getPublishedDateTooltipText(date, user) {
+            return `${texts.published.tooltip.publishedOn} ${date} ${texts.by} ${user}`
         }
 
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
 
             const $docItemId = components.texts.titleText("<a>", document.id, {
-                href: imcms.contextPath + "/" + document.id,
+                href: "/" + document.id,
+                class: "imcms-grid-coll-18",
             });
-            $docItemId.modifiers = ["col-1", "id"];
+            $docItemId.modifiers = ["id"];
+            addTooltip($docItemId, getIdTooltipText(document.id, document.created, document.createdBy), 'right');
 
-            const title = (document.commonContents)
-                ? document.commonContents
-                    .filter(commonContent => commonContent.language.code === imcms.userLanguage)
-                    .map(commonContent => commonContent.headline)[0]
-                : document.title;
-
+            const title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
             const $docItemTitle = components.texts.titleText("<a>", title, {
-                href: imcms.contextPath + "/" + document.id,
-                title: title
+                href: "/" + document.id,
+                class: "imcms-flex--flex-3",
             });
-            $docItemTitle.modifiers = ["col-3", "title"];
+            $docItemTitle.modifiers = ["title"];
+            !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
+            title && addTooltip($docItemTitle, title);
 
-            const $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
-            $docItemAlias.modifiers = ["col-2", "alias"];
+            const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
+                class: "imcms-flex--flex-2",
+            });
+            $docItemAlias.modifiers = ["alias"];
+            document.alias && addTooltip($docItemAlias, "/" + document.alias);
 
-            const $docItemModified = components.texts.titleText("<div>", document.modified, {title: document.modified});
-            $docItemModified.modifiers = ["col-6", "modified"];
+            const $docItemModified = components.texts.titleText("<div>", document.modified, {
+                class: "imcms-grid-coll-15",
+            });
+            $docItemModified.modifiers = ["date", "modifiedDate"];
+            if (document.modified) {
+                addTooltip($docItemModified, getModifiedDateTooltipText(document.modified, document.modifiedBy));
+            }
 
-            const $docItemPublished = components.texts.titleText("<div>", document.published, {title: document.published});
-            $docItemPublished.modifiers = ["col-6", "published"];
+            const $docItemPublished = components.texts.titleText("<div>", document.published, {
+                class: "imcms-grid-coll-15",
+            });
+            $docItemPublished.modifiers = ["date", "publishedDate"];
+            if (document.published) {
+                addTooltip($docItemPublished, getPublishedDateTooltipText(document.published, document.publishedBy));
+            }
 
             const $star = document.currentVersion === WORKING_VERSION
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star);
-            $currentVersion.modifiers = ['col-1', 'currentVersion'];
 
-            const $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-1", "type"];
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
+            $currentVersion.modifiers = ['currentVersion'];
+            addTooltip($currentVersion, getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip);
 
-            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus), {title: getDocumentStatusText(document.documentStatus)});
-            $docStatus.modifiers = ["col-7", "status"];
+            const $docItemType = components.texts.titleText("<div>", document.type, {
+                class: "imcms-grid-coll-18",
+            });
+            $docItemType.modifiers = ["type"];
+
+            const docStatusTexts = getDocumentStatusTexts(document.documentStatus, document.published);
+            const $docStatus = components.texts.titleText("<div>", docStatusTexts.title, {
+                class: "imcms-grid-coll-17",
+            });
+            $docStatus.modifiers = ["status"];
+            addTooltip($docStatus, docStatusTexts.tooltip, 'left');
 
             const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];
@@ -944,6 +1004,15 @@ define("imcms-document-editor-builder",
                 block: "imcms-document-item",
                 elements: elements
             }).buildBlockStructure("<div>");
+        }
+
+        function addTooltip(element, text, placement = 'top') {
+            overlays.createOverlay({
+                element: element,
+                overlay: overlays.tooltip(text),
+                delay: {show: 400},
+                placement: placement,
+            });
         }
 
         function buildDocumentItemContainer(document, opts, isUsed) {
@@ -1143,15 +1212,19 @@ define("imcms-document-editor-builder",
         });
 
         return {
-            buildBody: buildBody,
-            loadDocumentEditorContent: loadDocumentEditorContent,
-            clearData: clearData,
-            buildDocument: buildDocument,
-            incrementDocumentNumber: incrementDocumentNumber,
-            addDocumentToList: addDocumentToList,
-            getDocumentStatusText: getDocumentStatusText,
-            refreshDocumentInList: refreshDocumentInList,
-            getDocumentById: getDocumentById,
+            buildBody,
+            loadDocumentEditorContent,
+            clearData,
+            buildDocument,
+            incrementDocumentNumber,
+            addDocumentToList,
+            getDocumentStatusTexts,
+            getDocumentVersionTexts,
+            getIdTooltipText,
+            getModifiedDateTooltipText,
+            getPublishedDateTooltipText,
+            refreshDocumentInList,
+            getDocumentById,
             build: function () {
                 documentWindowBuilder.buildWindow.apply(documentWindowBuilder, arguments);
             }

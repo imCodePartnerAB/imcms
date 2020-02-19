@@ -12,8 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LocalUserCreationValidatorTest {
@@ -212,32 +214,6 @@ class LocalUserCreationValidatorTest {
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         assertFalse(validationResult.isPasswordsEqual());
-    }
-
-    @Test
-    void validate_With_NullEmail_Expect_EmptyEmailIsTrue() {
-        final UserFormData userData = new UserFormData();
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertTrue(validationResult.isEmptyEmail());
-    }
-
-    @Test
-    void validate_With_EmptyEmail_Expect_EmptyEmailIsTrue() {
-        final UserFormData userData = new UserFormData();
-        userData.setEmail("");
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertTrue(validationResult.isEmptyEmail());
-    }
-
-    @Test
-    void validate_With_NotEmptyEmail_Expect_EmptyEmailIsFalse() {
-        final UserFormData userData = new UserFormData();
-        userData.setEmail("test@test.com");
-        final UserValidationResult validationResult = userValidator.validate(userData);
-
-        assertFalse(validationResult.isEmptyEmail());
     }
 
     @Test

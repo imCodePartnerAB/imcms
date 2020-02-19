@@ -6,9 +6,10 @@ define(
     'imcms-users-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'jquery', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms', 'imcms-modal-window-builder'
+        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms', 'imcms-modal-window-builder', 'imcms-overlays-builder'
     ],
-    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms, modal) {
+    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms, modal,
+              overlays) {
 
         texts = texts.superAdmin.users;
 
@@ -17,6 +18,15 @@ define(
         let $usersNameFilter;
         let $includeInactiveCheckbox;
         let $usersFilterSelect;
+
+        function addTooltip(element, text, placement = 'top') {
+            overlays.createOverlay({
+                element: element,
+                overlay: overlays.tooltip(text),
+                delay: {show: 400},
+                placement: placement,
+            });
+        }
 
         function buildSearchRow() {
 
@@ -99,6 +109,16 @@ define(
 
                     user.active || (infoRowAttributes['class'] = userArchivedClass);
 
+                    const $controlEdit = components.controls.edit(getOnEditUser(user));
+                    addTooltip($controlEdit, texts.tooltip.editUser);
+
+                    const $controlArchive = components.controls.archive(getOnArchiveUser(user));
+                    addTooltip($controlArchive, texts.tooltip.archiveUser);
+
+                    const $archiveBlock = user.active
+                        ? $controlArchive
+                        : $('<div>', {text: texts.searchResult.archived});
+
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
@@ -115,12 +135,10 @@ define(
                                 text: user.login
                             }),
                             'email': $('<div>', {
-                                text: user.email
+                                text: user.email || ''
                             }),
-                            'edit': components.controls.edit(getOnEditUser(user)).attr('title', texts.tooltip.editUser),
-                            'archive': user.active
-                                ? components.controls.archive(getOnArchiveUser(user)).attr('title', texts.tooltip.archiveUser)
-                                : $('<div>', {text: texts.searchResult.archived})
+                            'edit': $controlEdit,
+                            'archive': $archiveBlock,
                         }
                     }).buildBlockStructure('<div>', infoRowAttributes);
                 },
