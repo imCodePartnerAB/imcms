@@ -169,15 +169,26 @@ define(
         }
 
         function revertToOriginalImageChanges() {
-            imageData.cropRegion = {
-                cropX1: 0,
-                cropX2: 0,
-                cropY1: 0,
-                cropY2: 0,
-            };
-            imageRotate.rotateImage("NORTH");
-            zoomFit();
-            imageResize.resetToOriginal(imageData);
+            if (checkActiveTab.currentActiveTab() === 'prev') {
+                imageData.cropRegion = {
+                    cropX1: 0,
+                    cropX2: 0,
+                    cropY1: 0,
+                    cropY2: 0,
+                };
+                imageRotate.rotateImage("NORTH");
+                zoomFit();
+                imageResize.resetToOriginal(imageData);
+            } else {
+                imageData.cropRegion = {
+                    cropX1: 0,
+                    cropX2: 0,
+                    cropY1: 0,
+                    cropY2: 0,
+                };
+                imageRotate.rotateImage("NORTH");
+                zoomFit();
+            }
         }
 
         function buildFitImage() {
