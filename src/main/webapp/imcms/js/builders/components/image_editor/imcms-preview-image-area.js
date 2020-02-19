@@ -6,6 +6,7 @@ const $ = require('jquery');
 const BEM = require('imcms-bem-builder');
 const imcms = require('imcms');
 
+let savePrePreviewPosition = false;
 let $previewImageArea;
 let $previewImgContainer;
 let $previewImg;
@@ -59,11 +60,25 @@ module.exports = {
     },
 
     setBackgroundPositionX(newPositionX) {
-        $previewImg[0].style.backgroundPositionX = `${newPositionX}px`
+        if ($previewImg[0].style.backgroundPositionX.trim().length === 0) { //probably bad idea check on empty. Maybe use length?
+            savePrePreviewPosition = true;
+        }
+        $previewImg[0].style.backgroundPositionX = `${newPositionX}px`;
+        if (savePrePreviewPosition) {
+            require('imcms-image-resize').setFinalPreviewBackGroundPositionX(newPositionX);
+            savePrePreviewPosition = false;
+        }
     },
 
     setBackgroundPositionY(newPositionY) {
-        $previewImg[0].style.backgroundPositionY = `${newPositionY}px`
+        if ($previewImg[0].style.backgroundPositionY.trim().length === 0) {
+            savePrePreviewPosition = true;
+        }
+        $previewImg[0].style.backgroundPositionY = `${newPositionY}px`;
+        if (savePrePreviewPosition) {
+            require('imcms-image-resize').setFinalPreviewBackGroundPositionY(newPositionY);
+            savePrePreviewPosition = false;
+        }
     },
 
     setBacBackgroundSize(width, height) {

@@ -110,8 +110,8 @@ let $heightPreviewControl, $widthPreviewControl;
 
 module.exports = {
     resetToOriginal(imageData) {
-        this.setHeightStrict(0, original.height, false, true);
-        this.setWidthStrict(0, original.width, false, true);
+        this.setHeightStrict(0, original.height, false);
+        this.setWidthStrict(0, original.width, false);
 
         let width, height;
 
@@ -129,12 +129,12 @@ module.exports = {
         }
 
         this.setCurrentPreviewSize(width, height);
-        this.updateSizing(imageData, true, undefined, true);
+        this.updateSizing(imageData, true, false);
     },
 
     resetToPreview(imageData) {
-        this.setHeightStrict(0, imageData.height, false);
-        this.setWidthStrict(0, imageData.width, false);
+        this.setHeightStrict(currentFinalPrevImg.backgroundPositionY, imageData.height, false);
+        this.setWidthStrict(currentFinalPrevImg.backgroundPositionX, imageData.width, false);
 
         let width, height;
 
@@ -167,6 +167,12 @@ module.exports = {
     setFinalPreviewImageSize(width, height) {
         currentFinalPrevImg.width = width;
         currentFinalPrevImg.height = height;
+    },
+    setFinalPreviewBackGroundPositionX(positionX) {
+        currentFinalPrevImg.backgroundPositionX = positionX;
+    },
+    setFinalPreviewBackGroundPositionY(positionY) {
+        currentFinalPrevImg.backgroundPositionY = positionY;
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
@@ -229,9 +235,8 @@ module.exports = {
      * @param padding for cropped images
      * @param newWidth
      * @param isOriginal
-     * @param resetToOrigin setting background size style to original size, ignoring param isOriginal
      */
-    setWidthStrict(padding, newWidth, isOriginal, resetToOrigin) {
+    setWidthStrict(padding, newWidth, isOriginal) {
         if (isOriginal) {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
@@ -239,7 +244,9 @@ module.exports = {
             previewImage.setBackgroundWidth(original.width);
             previewImage.getPreviewImage().width(newWidth);
 
-            if (padding >= 0) previewImage.setBackgroundPositionX(-padding);
+            (padding >= 0)
+                ? previewImage.setBackgroundPositionX(-padding)
+                : previewImage.setBackgroundPositionX(padding);
 
             $widthPreviewControl.val(newWidth);
         }
@@ -250,9 +257,8 @@ module.exports = {
      * @param padding for cropped images
      * @param newHeight
      * @param isOriginal
-     * @param resetToOrigin setting background size style to original size, ignoring param isOriginal
      */
-    setHeightStrict(padding, newHeight, isOriginal, resetToOrigin) {
+    setHeightStrict(padding, newHeight, isOriginal) {
         if (isOriginal) {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
@@ -260,7 +266,9 @@ module.exports = {
             previewImage.setBackgroundHeight(original.height);
             previewImage.getPreviewImage().height(newHeight);
 
-            if (padding >= 0) previewImage.setBackgroundPositionY(-padding);
+            (padding >= 0)
+                ? previewImage.setBackgroundPositionY(-padding)
+                : previewImage.setBackgroundPositionY(padding);
 
             $heightPreviewControl.val(newHeight);
         }
@@ -300,16 +308,16 @@ module.exports = {
      * @param imageData
      * @param ignoreCropping
      */
-    updateSizing(imageData, ignoreCropping, isOriginal, resetToOrigin) {
-        const originalProportionsK = isOriginal || isOriginal === undefined ? original.width / original.height : preview.width / preview.height;
+    updateSizing(imageData, ignoreCropping, isOriginal) {
+        const originalProportionsK = isOriginal ? original.width / original.height : preview.width / preview.height;
 
         if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
             const width = minWidth;
             const height = minHeight;
             const restrictedProportionsK = minWidth / minHeight;
 
-            const dX = isOriginal || isOriginal === undefined ? width / original.width : width / preview.width;
-            const dY = isOriginal || isOriginal === undefined ? height / original.height : height / preview.height;
+            const dX = isOriginal ? width / original.width : width / preview.width;
+            const dY = isOriginal ? height / original.height : height / preview.height;
 
             let newWidth, newHeight, cropHeight, cropWidth;
 
@@ -341,8 +349,8 @@ module.exports = {
                 cropHeight = newHeight;
             }
 
-            this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal, resetToOrigin);
-            this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal, resetToOrigin);
+            this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal);
+            this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal);
 
             if (!ignoreCropping) {
                 cropRegion.cropX2 = cropWidth;
@@ -350,8 +358,8 @@ module.exports = {
             }
         }
 
-        const currentWidth = isOriginal || isOriginal === undefined ? currentSize.width : currentPrevSize.width;
-        const currentHeight = isOriginal || isOriginal === undefined ? currentSize.height : currentPrevSize.height;
+        const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
+        const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
 
         setHeightProportionally(currentHeight, isOriginal);
         setWidthProportionally(currentWidth, isOriginal);
@@ -372,5 +380,7 @@ module.exports = {
         currentPrevSize.height = null;
         currentFinalPrevImg.width = null;
         currentFinalPrevImg.height = null;
+        currentFinalPrevImg.backgroundPositionY = null;
+        currentFinalPrevImg.backgroundPositionX = null;
     },
 };
