@@ -14,6 +14,7 @@ const preview = {};
 const currentSize = {};
 const currentPrevSize = {};
 const currentFinalPrevImg = {};
+const finalImageStylesPosition = {};
 let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
@@ -133,8 +134,8 @@ module.exports = {
     },
 
     resetToPreview(imageData) {
-        this.setHeightStrict(currentFinalPrevImg.backgroundPositionY, imageData.height, false);
-        this.setWidthStrict(currentFinalPrevImg.backgroundPositionX, imageData.width, false);
+        this.setHeightStrict(finalImageStylesPosition.backgroundPositionY, imageData.height, false);
+        this.setWidthStrict(finalImageStylesPosition.backgroundPositionX, imageData.width, false);
 
         let width, height;
 
@@ -168,10 +169,10 @@ module.exports = {
     },
     getFinalPreviewImageData: () => currentFinalPrevImg,
     setFinalPreviewBackGroundPositionX(positionX) {
-        currentFinalPrevImg.backgroundPositionX = positionX;
+        finalImageStylesPosition.backgroundPositionX = positionX;
     },
     setFinalPreviewBackGroundPositionY(positionY) {
-        currentFinalPrevImg.backgroundPositionY = positionY;
+        finalImageStylesPosition.backgroundPositionY = positionY;
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
@@ -379,7 +380,7 @@ module.exports = {
         currentPrevSize.height = null;
         currentFinalPrevImg.width = null;
         currentFinalPrevImg.height = null;
-        currentFinalPrevImg.backgroundPositionY = null;
-        currentFinalPrevImg.backgroundPositionX = null;
+        finalImageStylesPosition.backgroundPositionY = null;
+        finalImageStylesPosition.backgroundPositionX = null;
     },
 };

@@ -130,7 +130,7 @@ define(
 
                     if (imageResize.isProportionsLockedByStyle()) {
                         imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
-                        imageResize.setFinalPreviewImageSize(imageData.width, imageData.height);
+                        imageResize.setFinalPreviewImageData(imageData);
                     }
                 }
 

@@ -53,7 +53,7 @@ module.exports = {
             $previewImg.css('background-size', `${this.width}px ${this.height}px`);
 
             require('imcms-image-resize').setPreview(imageData.width, imageData.height);
-            require('imcms-image-resize').setFinalPreviewImageSize(imageData.width, imageData.height);
+            require('imcms-image-resize').setFinalPreviewImageData(imageData);
 
             onLoad && onLoad.call();
         };

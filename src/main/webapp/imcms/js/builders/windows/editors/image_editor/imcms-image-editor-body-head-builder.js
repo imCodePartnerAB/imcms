@@ -157,12 +157,7 @@ define(
         }
 
         function revertToPreviewImageChanges() {
-            imageData.cropRegion = {
-                cropX1: 0,
-                cropX2: 0,
-                cropY1: 0,
-                cropY2: 0,
-            };
+            imageData = imageResize.getFinalPreviewImageData();
             imageRotate.rotateImage("NORTH");
             zoomFit();
             imageResize.resetToPreview(imageData);
