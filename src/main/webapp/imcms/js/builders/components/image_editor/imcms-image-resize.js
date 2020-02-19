@@ -163,11 +163,10 @@ module.exports = {
         proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
         require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
     },
-
-    setFinalPreviewImageSize(width, height) {
-        currentFinalPrevImg.width = width;
-        currentFinalPrevImg.height = height;
+    setFinalPreviewImageData(image) {
+        $.extend(currentFinalPrevImg, image);
     },
+    getFinalPreviewImageData: () => currentFinalPrevImg,
     setFinalPreviewBackGroundPositionX(positionX) {
         currentFinalPrevImg.backgroundPositionX = positionX;
     },
