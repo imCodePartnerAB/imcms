@@ -417,7 +417,7 @@ define(
                     return new BEM({
                         block: 'imcms-info-edit-image',
                         elements: {
-                            'title': components.texts.titleText('<div>', 'Active image'),
+                            'title': components.texts.titleText('<div>', texts.activeTitle),
                             'path-info': buildActiveImagePathInfo(),
                             'size-info': buildActiveImageSizeInfo(),
                             'no-image': buildNoImageInfo(),

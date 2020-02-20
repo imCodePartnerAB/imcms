@@ -47,14 +47,11 @@ module.exports = {
         }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
     },
     updateImageData: ($tag, imageData) => {
+        const labelText = $tag.find('.imcms-editor-area__text-label').text();
 
         $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
         ${texts.imageName}${$tag.attr('data-index')} - 
-        ${texts.teaser}`);
-
-        if (imageData && imageData.path !== '') {
-            $infoData.text($infoData.text() + `(Becomes ${imageData.width} x ${imageData.height})`)
-        }
+        ${texts.teaser} ${labelText}`);
 
         if ($tag.attr('data-loop-index')) {
             const linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
