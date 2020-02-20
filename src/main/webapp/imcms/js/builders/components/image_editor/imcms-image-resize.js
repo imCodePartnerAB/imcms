@@ -79,13 +79,17 @@ function setHeight(newHeight, isOriginal) {
 function setHeightProportionally(newHeight, isOriginal) {
     newHeight = trimToMaxMinHeight(newHeight);
     setHeight(newHeight, isOriginal);
-    updateWidthProportionally(newHeight, isOriginal);
+    if (saveProportions) {
+        updateWidthProportionally(newHeight, isOriginal);
+    }
 }
 
 function setWidthProportionally(newWidth, isOriginal) {
     newWidth = trimToMaxMinWidth(newWidth);
     setWidth(newWidth, isOriginal);
-    updateHeightProportionally(newWidth, isOriginal);
+    if (saveProportions) {
+        updateHeightProportionally(newWidth, isOriginal);
+    }
 }
 
 function updateWidthProportionally(newHeight, isOriginal) {
