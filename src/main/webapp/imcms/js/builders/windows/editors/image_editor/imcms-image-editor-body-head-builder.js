@@ -18,7 +18,9 @@ define(
             .hide(
                 getShowImageRotationControls(),
                 getRevertButton(),
-                getCroppingButton()
+                getCroppingButton(),
+                imageProportionsLocker.getProportionsButton(),
+                imageProportionsLocker.getProportionsText(),
             )
             .show(
                 getZoomPlusButton(),
@@ -416,8 +418,6 @@ define(
                 )
                 .show(
                     getCancelChangesButton(),
-                    imageProportionsLocker.getProportionsButton(),
-                    imageProportionsLocker.getProportionsText(),
                     getRemoveCroppingButton(),
                     getApplyChangesButton(),
                 )
