@@ -188,21 +188,27 @@ define(
 
         function buildFitImage() {
             const $previewArea = previewImageArea.getPreviewImageArea();
-            const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
-            const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
+            const $originalArea = editableImageArea.getEditableImageArea();
 
             if (checkActiveTab.currentActiveTab() === 'prev') {
+                const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
+                const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
                 setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
             } else {
-                setStrictWidthHeightCurrentImage(true, clientPreviewAreaWidth, clientPreviewAreaHeight);
+                const clientOriginAreaWidth = parseInt($originalArea[0].offsetWidth);
+                const clientOriginAreaHeight = parseInt($originalArea[0].offsetHeight);
+
+                setStrictWidthHeightCurrentImage(true, clientOriginAreaWidth, clientOriginAreaHeight);
             }
         }
 
         function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
             if (imageData.width >= clientPreviewAreaWidth) {
-                imageResize.setWidthStrict(0, clientPreviewAreaWidth - 30, isOriginal, true);
-            } else if (imageData.height >= clientPreviewAreaHeight) {
-                imageResize.setHeightStrict(0, clientPreviewAreaHeight - 30, isOriginal, true);
+                imageResize.setWidthProportionally(clientPreviewAreaWidth, isOriginal);
+
+            }
+            if (imageData.height >= clientPreviewAreaHeight) {
+                imageResize.setHeightProportionally(clientPreviewAreaHeight, isOriginal);
             }
         }
 
@@ -346,11 +352,14 @@ define(
         let $fitButton;
 
         function getFitButton() {
-            return $fitButton || ($fitButton = components.buttons.fitButton({
-                title: 'change that on bootstrap',
+            $fitButton || ($fitButton = components.buttons.fitButton({
+                'class': 'icon-image-fit',
+                title: 'fit',
                 click: buildFitImage,
                 style: 'display: none;'
-            }))
+            }));
+
+            return $fitButton;
         }
 
         let $zoomResetButton;
