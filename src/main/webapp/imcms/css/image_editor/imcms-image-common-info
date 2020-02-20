@@ -1,7 +1,14 @@
 .imcms-restricted-style {
     background-color: #e2b40cb8;
+    padding: 10px;
 }
 
 .imcms-info-edit-image {
     background-color: #6fbde2;
+    padding: 10px;
+}
+
+.image-exif-info {
+    text-align: -webkit-center;
+    text-align: -moz-center;
 }
