@@ -18,8 +18,9 @@ const $infoData = $('<div>', {
 const $imageLinkContainerInfo = new BEM({
     block: 'image-editor-info',
     elements: {
-        'icon-link': $('<div>', {
-            html: components.controls.permalink()
+        'icon-link': $('<a>', {
+            html: components.controls.permalink(),
+            target: '_blank'
         }),
         'data-link': $('<div>', {
             html: $imageLinkInfo
@@ -48,30 +49,26 @@ module.exports = {
     },
     updateImageData: ($tag, imageData) => {
         const labelText = $tag.find('.imcms-editor-area__text-label').text();
+        let linkData;
 
         $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
         ${texts.imageName}${$tag.attr('data-index')} - 
         ${texts.teaser} ${labelText}`);
 
         if ($tag.attr('data-loop-index')) {
-            const linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
+            linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
                 + '&index=' + $tag.attr('data-index')
                 + '&loop-index=' + $tag.attr('data-loop-index')
                 + '&loop-entry-index=' + $tag.attr('data-loop-entry-index');
-
-            $imageLinkInfo.text(linkData);
-
-            $imageLinkInfo.attr('href', linkData)
-
         } else {
-            const linkData = '/api/admin/image?meta-id='
+            linkData = '/api/admin/image?meta-id='
                 + $tag.attr('data-doc-id')
                 + '&index=' + $tag.attr('data-index');
-
-            $imageLinkInfo.text(linkData);
-
-            $imageLinkInfo.attr('href', linkData)
         }
+
+        $imageLinkInfo.text(linkData);
+        $imageLinkInfo.attr('href', linkData);
+        $('.imcms-image_editor').find('.image-editor-info__icon-link').attr('href', linkData);
         rightSideBuilder.updateImageData($tag, imageData);
     }
 };
