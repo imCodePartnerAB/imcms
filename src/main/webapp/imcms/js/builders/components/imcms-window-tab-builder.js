@@ -4,13 +4,32 @@
  */
 define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
+    const TAB_SELECTOR = '.imcms-tabs__tab';
+    const DISABLED_TAB_CLASS_NAME = 'imcms-tabs__tab--disabled';
+    const ID_ATTRIBUTE_NAME = 'data-window-id';
+
     const formsBEM = new BEM({
         block: 'imcms-form',
         elements: {'field': 'imcms-field'}
     });
 
+    function get$TabByIndex(tabIndex) {
+        return $(`${TAB_SELECTOR}[${ID_ATTRIBUTE_NAME}=${tabIndex}]`);
+    }
+
     function setDisplay(tabIndex, displayValue) {
-        $('.imcms-tabs__tab[data-window-id=' + tabIndex + ']').css('display', displayValue);
+        get$TabByIndex(tabIndex).css('display', displayValue);
+    }
+
+    function setEnabled(tabIndex, isEnabled) {
+        const $tab = get$TabByIndex(tabIndex);
+        isEnabled
+            ? $tab.removeClass(DISABLED_TAB_CLASS_NAME)
+            : $tab.addClass(DISABLED_TAB_CLASS_NAME);
+    }
+
+    function isEnabled(tabIndex) {
+        return get$TabByIndex(tabIndex).hasClass(DISABLED_TAB_CLASS_NAME);
     }
 
     const WindowTab = function (name) {
@@ -23,6 +42,12 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
         },
         hideTab: function () {
             setDisplay(this.tabIndex, 'none');
+        },
+        setEnabled: function (isEnabled) {
+            setEnabled(this.tabIndex, isEnabled);
+        },
+        isEnabled: function () {
+            return isEnabled(this.tabIndex);
         },
         /**
          * @returns {Array} array of tab $elements

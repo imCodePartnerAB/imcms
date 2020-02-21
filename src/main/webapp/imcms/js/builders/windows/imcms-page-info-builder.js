@@ -13,7 +13,9 @@ define("imcms-page-info-builder",
 
         texts = texts.pageInfo;
 
-        let panels$, documentDTO, $saveAndPublishBtn;
+        const TAB_INDEX_ATTRIBUTE = 'data-window-id';
+
+        let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn;
         let $title = $('<a>');
 
         function buildPageInfoHead() {
@@ -24,13 +26,7 @@ define("imcms-page-info-builder",
         }
 
         function buildPageInfoPanels(docId) {
-            return pageInfoTabs.tabBuilders.map((tabBuilder, index) => {
-                const $tab = tabBuilder.buildTab(index, docId);
-
-                (index === 0) ? $tab.slideDown() : $tab.slideUp();
-
-                return $tab;
-            });
+            return pageInfoTabs.tabBuilders.map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
         }
 
         function closePageInfo() {
@@ -98,10 +94,39 @@ define("imcms-page-info-builder",
             };
         }
 
+        function moveToNextTabOrEnableOthersAndReplaceButton($buttonForReplacing) {
+            return function () {
+                const currentTabIndex = parseInt(pageInfoTabs.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
+                const $nextTab = getNextTab(currentTabIndex);
+                const isEnabledNextTab = pageInfoTabs.isEnabledTabByIndex($nextTab.attr(TAB_INDEX_ATTRIBUTE));
+
+                if (isEnabledNextTab) {
+                    $nextTab.click();
+                } else {
+                    setEnabledExcessTabs(true);
+                    $(this).hide();
+                    $buttonForReplacing.show()
+                }
+            }
+        }
+
+        function getNextTab(currentTabIndex) {
+            const nextTabIndex = currentTabIndex + 1;
+            const $nextTab = pageInfoTabs.getTabByIndex(nextTabIndex);
+            return $nextTab.css('display') === 'none' ? getNextTab(nextTabIndex) : $nextTab;
+        }
+
         function buildPageInfoFooterButtons() {
-            const $saveBtn = components.buttons.positiveButton({
+            $saveBtn = components.buttons.positiveButton({
                 text: texts.buttons.ok,
-                click: ifValidDocInfo(confirmSaving)
+                click: ifValidDocInfo(confirmSaving),
+                style: 'display: none',
+            });
+
+            $nextBtn = components.buttons.positiveButton({
+                text: texts.buttons.next + ' \u2b95',
+                click: moveToNextTabOrEnableOthersAndReplaceButton($saveBtn),
+                style: 'display: none',
             });
 
             const $cancelBtn = components.buttons.negativeButton({
@@ -115,7 +140,7 @@ define("imcms-page-info-builder",
                 style: "display: none;"
             });
 
-            const buttons = [$cancelBtn, $saveBtn];
+            const buttons = [$cancelBtn, $saveBtn, $nextBtn];
 
             if (imcms.isAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);
@@ -180,8 +205,24 @@ define("imcms-page-info-builder",
                             tab.hideTab();
                         }
                     });
+
+                    if (!document.id && document.type !== docTypes.TEXT) {
+                        setEnabledExcessTabs(false);
+                    }
+
+                    document.id || document.type === docTypes.TEXT
+                        ? $saveBtn.show()
+                        : $nextBtn.show();
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed));
+        }
+
+        function setEnabledExcessTabs(isEnabled) {
+            const tabs = pageInfoTabs.tabBuilders;
+
+            tabs.slice(3, tabs.length).forEach(tab => {
+                tab.setEnabled(isEnabled);
+            });
         }
 
         function clearPageInfoData() {
@@ -195,8 +236,17 @@ define("imcms-page-info-builder",
 
         function loadData(docId, onDocumentSavedCallback, docType, parentDocId) {
             onDocumentSaved = onDocumentSavedCallback;
-            pageInfoTabs.$tabsContainer.find("[data-window-id=0]").click();
+            selectFirstTab(docType);
             loadPageInfoDataFromDocumentBy(docId, docType, parentDocId);
+        }
+
+        function selectFirstTab(docType) {
+            const firstTab = pageInfoTabs.tabBuilders.find(tab => tab.isDocumentTypeSupported(docType));
+            const indexOfFirstTab = firstTab ? firstTab.tabIndex : 0;
+            if (indexOfFirstTab === 0) {
+                pageInfoTabs.setActiveTab(indexOfFirstTab, false);
+            }
+            pageInfoTabs.setActiveTab(indexOfFirstTab, true);
         }
 
         const pageInfoWindowBuilder = new WindowBuilder({
