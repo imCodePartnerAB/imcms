@@ -9,6 +9,7 @@ const previewImage = require('imcms-preview-image-area');
 const $ = require('jquery');
 
 let saveProportions = true; // by default
+let resetToOriginal = false; // by default
 const original = {};
 const preview = {};
 const currentSize = {};
@@ -115,6 +116,7 @@ let $heightPreviewControl, $widthPreviewControl;
 
 module.exports = {
     resetToOriginal(imageData) {
+        this.enableResetToOriginalFlag();
         this.setHeightStrict(0, original.height, false);
         this.setWidthStrict(0, original.width, false);
 
@@ -135,6 +137,7 @@ module.exports = {
 
         this.setCurrentPreviewSize(width, height);
         this.updateSizing(imageData, true, false);
+        this.disabledResetToOriginalFlag();
     },
 
     resetToPreview(imageData) {
@@ -216,6 +219,10 @@ module.exports = {
         return minWidth && minHeight
     },
 
+    isAnyRestrictedStyleSize() {
+        return minWidth || minHeight
+    },
+
     isSaveProportionsEnabled: () => saveProportions,
 
     getProportionsCoefficient: () => proportionsCoefficient,
@@ -224,6 +231,14 @@ module.exports = {
 
     enableSaveProportions() {
         saveProportions = true;
+    },
+
+    enableResetToOriginalFlag() {
+        resetToOriginal = true;
+    },
+
+    disabledResetToOriginalFlag() {
+        resetToOriginal = false;
     },
 
     setHeight(newValue, isOriginal) {
@@ -240,12 +255,17 @@ module.exports = {
      * @param newWidth
      * @param isOriginal
      */
+
     setWidthStrict(padding, newWidth, isOriginal) {
         if (isOriginal) {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            previewImage.setBackgroundWidth(original.width);
+            if (this.isAnyRestrictedStyleSize() && !resetToOriginal) {
+                previewImage.setBackgroundWidth(newWidth);
+            } else {
+                previewImage.setBackgroundWidth(original.width);
+            }
             previewImage.getPreviewImage().width(newWidth);
 
             (padding >= 0)
@@ -267,7 +287,12 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            previewImage.setBackgroundHeight(original.height);
+            // previewImage.setBackgroundHeight(original.height);
+            if (this.isAnyRestrictedStyleSize() && !resetToOriginal) {
+                previewImage.setBackgroundHeight(newHeight);
+            } else {
+                previewImage.setBackgroundHeight(original.height);
+            }
             previewImage.getPreviewImage().height(newHeight);
 
             (padding >= 0)
@@ -386,5 +411,6 @@ module.exports = {
         currentFinalPrevImg.height = null;
         finalImageStylesPosition.backgroundPositionY = null;
         finalImageStylesPosition.backgroundPositionX = null;
+        resetToOriginal = false;
     },
 };
