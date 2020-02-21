@@ -205,11 +205,12 @@ define(
         }
 
         function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
-            if (imageData.width >= clientPreviewAreaWidth) {
+            const $image = isOriginal ? editableImage.getImage() : previewImageArea.getPreviewImage();
+            if ($image.width() >= clientPreviewAreaWidth) {
                 imageResize.setWidthProportionally(clientPreviewAreaWidth, isOriginal);
 
             }
-            if (imageData.height >= clientPreviewAreaHeight) {
+            if ($image.height() >= clientPreviewAreaHeight) {
                 imageResize.setHeightProportionally(clientPreviewAreaHeight, isOriginal);
             }
         }
