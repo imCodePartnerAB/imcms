@@ -402,7 +402,10 @@ function init(_imageData) {
 
     if (!_imageData || !_imageData.path) return;
 
-    cropArea.getCroppingBlock().css("z-index", "50");
+    cropArea.getCroppingBlock().css({
+        "z-index": 50,
+        'zoom': 0.6
+    });
 
     const $image = previewImageArea.getPreviewImage();
     const src = $image.attr('data-src');
