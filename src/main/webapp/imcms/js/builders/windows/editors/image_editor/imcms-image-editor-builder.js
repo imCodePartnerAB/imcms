@@ -8,10 +8,11 @@ define(
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
         'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
-        'imcms-preview-image-area', 'imcms-image-percentage-proportion-build'
+        'imcms-preview-image-area', 'imcms-image-percentage-proportion-build', 'imcms-bem-builder',
+        'imcms-components-builder'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, percentImg) {
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, percentImg, BEM, components) {
 
         texts = texts.editors.image;
 
@@ -66,6 +67,52 @@ define(
                 imageResize.setWidthStrict(0, image.width, isOriginalImage);
                 imageResize.setHeightStrict(0, image.height, isOriginalImage);
                 imageResize.updateSizing(imageData, true, isOriginalImage);
+            }
+
+            if (!isOriginalImage) {
+                const editPreviewWidth = editSizeControls.getPreviewWidthControl().getInput().val();
+                const editPreviewHeight = editSizeControls.getPreviewHeightControl().getInput().val();
+
+                const $wantedSizeContainer = new BEM({
+                    block: 'imcms-wanted-size',
+                    elements: {
+                        'title': $('<div>', {
+                            text: texts.wantedSize
+                        }),
+                        'width': components.texts.textField('<div>', {
+                            value: editPreviewWidth,
+                            readonly: "readonly",
+                            name: 'wanted-width'
+                        }),
+                        'height': components.texts.textField('<div>', {
+                            value: editPreviewHeight,
+                            readonly: "readonly",
+                            name: 'wanted-height'
+                        })
+                    }
+                }).buildBlockStructure('<div>');
+
+                const $displaySizeContainer = new BEM({
+                    block: 'imcms-display-size',
+                    elements: {
+                        'title': $('<div>', {
+                            text: texts.displaySize
+                        }),
+                        'width': components.texts.textField('<div>', {
+                            value: editPreviewWidth,
+                            readonly: "readonly",
+                            name: 'display-width'
+                        }),
+                        'height': components.texts.textField('<div>', {
+                            value: editPreviewHeight,
+                            readonly: "readonly",
+                            name: 'display-height'
+                        })
+                    }
+                }).buildBlockStructure('<div>');
+
+
+                $('.imcms-info-edit-image').append($wantedSizeContainer).append($displaySizeContainer);
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
