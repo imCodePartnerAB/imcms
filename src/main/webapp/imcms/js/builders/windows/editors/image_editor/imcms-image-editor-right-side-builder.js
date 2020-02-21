@@ -131,7 +131,7 @@ define(
                 $tag = opts.$tag;
                 imageData = opts.imageData;
 
-                function buildActionImageBtnContainer() {
+                function buildSelectImageBtnContainer() {
 
                     const $selectImageBtn = components.buttons.buttonWithIcon({
                         button: components.buttons.positiveButton({
@@ -371,11 +371,16 @@ define(
                     exifInfoWindowBuilder.buildWindow();
                 }
 
-                const $showExifBtn = components.buttons.neutralButton({
-                    text: texts.exif.button,
-                    click: showExif,
-                    name: 'exifInfo'
-                });
+                const $showExifBtn = new BEM({
+                    block: 'image-exif-info',
+                    elements: {
+                        'button': components.buttons.neutralButton({
+                            text: texts.exif.button,
+                            click: showExif,
+                            name: 'exifInfo'
+                        })
+                    }
+                }).buildBlockStructure('<div>');
 
                 function buildAdvancedControls() {
                     const advancedModeBEM = new BEM({
@@ -412,7 +417,7 @@ define(
                     return new BEM({
                         block: 'imcms-info-edit-image',
                         elements: {
-                            'title': components.texts.titleText('<div>', 'Active image'),
+                            'title': components.texts.titleText('<div>', texts.activeTitle),
                             'path-info': buildActiveImagePathInfo(),
                             'size-info': buildActiveImageSizeInfo(),
                             'no-image': buildNoImageInfo(),
@@ -704,12 +709,12 @@ define(
 
                 const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
                 const $infoImage = buildInfoSizePathContainer();
-                const $actionImageBtnContainer = buildActionImageBtnContainer();
+                const $selectImageBtnContainer = buildSelectImageBtnContainer().addClass('select-image-button');
                 $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($restrictStyleInfo, $infoImage,
-                    $actionImageBtnContainer, $showExifBtn, $editableControls, $footer);
+                    $selectImageBtnContainer, $showExifBtn, $editableControls, $footer);
             }
         }
     }

@@ -402,7 +402,10 @@ function init(_imageData) {
 
     if (!_imageData || !_imageData.path) return;
 
-    cropArea.getCroppingBlock().css("z-index", "50");
+    cropArea.getCroppingBlock().css({
+        "z-index": 50,
+        'zoom': 0.6
+    });
 
     const $image = previewImageArea.getPreviewImage();
     const src = $image.attr('data-src');
@@ -666,11 +669,13 @@ module.exports = {
         cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
+        imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
         imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
         imageResize.updateSizing(imageData, false, false);
+        imageResize.disabledResetToOriginalFlag(); //did default state
     },
     destroyImageCropper: destroy
 };

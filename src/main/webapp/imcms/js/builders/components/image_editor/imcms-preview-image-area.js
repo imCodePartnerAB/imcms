@@ -60,7 +60,7 @@ module.exports = {
     },
 
     setBackgroundPositionX(newPositionX) {
-        if ($previewImg[0].style.backgroundPositionX.trim().length === 0) { //probably bad idea check on empty. Maybe use length?
+        if ($previewImg[0].style.backgroundPositionX.trim().length === 0) {
             savePrePreviewPosition = true;
         }
         $previewImg[0].style.backgroundPositionX = `${newPositionX}px`;
@@ -114,5 +114,6 @@ module.exports = {
     },
     getPreviewImage: getPreviewImage,
     getPreviewImageArea: getPreviewImageArea,
+    getPreviewImageContainer: getPreviewImageContainer,
     clearData: clear,
 };

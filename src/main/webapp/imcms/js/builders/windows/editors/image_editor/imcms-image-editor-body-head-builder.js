@@ -18,7 +18,9 @@ define(
             .hide(
                 getShowImageRotationControls(),
                 getRevertButton(),
-                getCroppingButton()
+                getCroppingButton(),
+                imageProportionsLocker.getProportionsButton(),
+                imageProportionsLocker.getProportionsText(),
             )
             .show(
                 getZoomPlusButton(),
@@ -157,7 +159,7 @@ define(
         }
 
         function revertToPreviewImageChanges() {
-            imageData = imageResize.getFinalPreviewImageData();
+            $.extend(imageData, imageResize.getFinalPreviewImageData());
             imageRotate.rotateImage("NORTH");
             zoomFit();
             imageResize.resetToPreview(imageData);
@@ -188,21 +190,34 @@ define(
 
         function buildFitImage() {
             const $previewArea = previewImageArea.getPreviewImageArea();
-            const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
-            const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
+            const $previewContainer = previewImageArea.getPreviewImageContainer();
+            const $originalArea = editableImageArea.getEditableImageArea();
 
             if (checkActiveTab.currentActiveTab() === 'prev') {
+                const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
+                const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
+                $previewContainer.css({
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                    'display': 'flex'
+                });
                 setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
             } else {
-                setStrictWidthHeightCurrentImage(true, clientPreviewAreaWidth, clientPreviewAreaHeight);
+                const clientOriginAreaWidth = parseInt($originalArea[0].offsetWidth);
+                const clientOriginAreaHeight = parseInt($originalArea[0].offsetHeight);
+
+                setStrictWidthHeightCurrentImage(true, clientOriginAreaWidth, clientOriginAreaHeight);
             }
         }
 
         function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
-            if (imageData.width >= clientPreviewAreaWidth) {
-                imageResize.setWidthStrict(0, clientPreviewAreaWidth - 30, isOriginal, true);
-            } else if (imageData.height >= clientPreviewAreaHeight) {
-                imageResize.setHeightStrict(0, clientPreviewAreaHeight - 30, isOriginal, true);
+            const $image = isOriginal ? editableImage.getImage() : previewImageArea.getPreviewImage();
+            if ($image.width() >= clientPreviewAreaWidth) {
+                imageResize.setWidthProportionally(clientPreviewAreaWidth - 30, isOriginal);
+
+            }
+            if ($image.height() >= clientPreviewAreaHeight) {
+                imageResize.setHeightProportionally(clientPreviewAreaHeight - 30, isOriginal);
             }
         }
 
@@ -346,11 +361,14 @@ define(
         let $fitButton;
 
         function getFitButton() {
-            return $fitButton || ($fitButton = components.buttons.fitButton({
-                title: 'change that on bootstrap',
+            $fitButton || ($fitButton = components.buttons.fitButton({
+                'class': 'icon-image-fit',
+                title: 'fit',
                 click: buildFitImage,
                 style: 'display: none;'
-            }))
+            }));
+
+            return $fitButton;
         }
 
         let $zoomResetButton;
@@ -407,8 +425,6 @@ define(
                 )
                 .show(
                     getCancelChangesButton(),
-                    imageProportionsLocker.getProportionsButton(),
-                    imageProportionsLocker.getProportionsText(),
                     getRemoveCroppingButton(),
                     getApplyChangesButton(),
                 )

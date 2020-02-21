@@ -435,7 +435,7 @@ const texts = {
                 page: 'sida ',
                 imageName: 'bild ',
                 teaser: 'Teaser-bild',
-                proportion: "Lås proportioner",
+                proportion: "Aktivera proportioner",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
                 activeTitle: 'Aktiv bild:',
@@ -476,6 +476,7 @@ const texts = {
                     info: 'Den använda bilden är begränsad till denna stil'
                 },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
+                wantedSize: "Önskad storlek",
                 displaySize: "Visad storlek",
                 originSize: 'Original storlek',
                 height: "Höjd",
@@ -1330,7 +1331,7 @@ const texts = {
                 page: 'page ',
                 imageName: 'image ',
                 teaser: "Teaser image ",
-                proportion: "Proportions locked",
+                proportion: "Enable proportion",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
                 activeTitle: 'Active image:',
@@ -1371,6 +1372,7 @@ const texts = {
                     info: 'The used image is restricted to this styles'
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
+                wantedSize: "Wanted size",
                 displaySize: "Display size",
                 originSize: 'Original size',
                 height: "Height",

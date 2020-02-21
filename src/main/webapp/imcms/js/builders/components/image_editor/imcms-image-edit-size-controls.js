@@ -117,7 +117,7 @@ function getTitle() {
 }
 
 function getPrevTitle() {
-    return $titlePrev || ($titlePrev = components.texts.titleText("<div>", texts.displaySize))
+    return $titlePrev || ($titlePrev = components.texts.titleText("<div>", texts.wantedSize))
 }
 
 function buildOriginalSizeControls() {

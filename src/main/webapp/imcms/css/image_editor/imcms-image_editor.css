@@ -43,10 +43,11 @@
     position: relative;
     width: 26%;
     height: 88%;
-    height: -webkit-calc(100% - 106px);
-    height: -moz-calc(100% - 106px);
-    height: -o-calc(100% - 106px);
-    height: calc(100% - 106px);
+    height: -webkit-calc(100% - 110px);
+    height: -moz-calc(100% - 110px);
+    height: -o-calc(100% - 110px);
+    height: calc(100% - 110px);
+    overflow: auto;
 }
 
 .imcms-image_editor__footer {
@@ -100,8 +101,9 @@
 
 .image-editor-info {
     display: -webkit-inline-box;
+    display: ruby-base-container;
     text-transform: lowercase;
-    margin-left: 40%;
+    margin-left: 38%;
 }
 
 .imcms-image-info {
