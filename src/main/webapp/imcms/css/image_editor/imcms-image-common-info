@@ -12,3 +12,11 @@
     text-align: -webkit-center;
     text-align: -moz-center;
 }
+
+.imcms-wanted-size {
+    display: inline-flex;
+}
+
+.imcms-display-size {
+    display: inline-flex;
+}
