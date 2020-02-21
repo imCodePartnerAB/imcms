@@ -231,7 +231,8 @@ const texts = {
             buttons: {
                 ok: "ok",
                 cancel: "avbryt",
-                saveAndPublish: "spara och publicera den här versionen"
+                saveAndPublish: "spara och publicera den här versionen",
+                next: "nästa",
             },
             error: {
                 createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
@@ -1113,7 +1114,8 @@ const texts = {
             buttons: {
                 ok: "ok",
                 cancel: "cancel",
-                saveAndPublish: "save and publish this version"
+                saveAndPublish: "save and publish this version",
+                next: "next",
             },
             error: {
                 createDocumentFailed: 'Failed to save document. Try again',
