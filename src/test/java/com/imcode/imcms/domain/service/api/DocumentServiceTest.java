@@ -111,6 +111,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     private List<VersionedContentService> versionedContentServices;
     @Autowired
     private DocumentMapper documentMapper;
+    @Autowired
+    private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
     private Config config;
@@ -162,6 +164,9 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user); // means current user is admin now
+
+        final Language currentLanguage = languageDataInitializer.createData().get(0);
+        Imcms.setLanguage(currentLanguage);
     }
 
     @Test

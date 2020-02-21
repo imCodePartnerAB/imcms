@@ -77,6 +77,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(ENG_CODE_ISO_639_2);
         Imcms.setUser(user);
+
+        final Language currentLanguage = languageDataInitializer.createData().get(0);
+        Imcms.setLanguage(currentLanguage);
     }
 
     @AfterEach
