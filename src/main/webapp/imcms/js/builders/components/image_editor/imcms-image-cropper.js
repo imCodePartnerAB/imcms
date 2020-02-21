@@ -6,8 +6,8 @@ const angles = require('imcms-image-crop-angles');
 const Limit = require('imcms-numeric-limiter');
 const $ = require('jquery');
 const cropArea = require('imcms-cropping-area');
-const editableImage = require('imcms-editable-image');
 const imageResize = require('imcms-image-resize');
+const previewImageArea = require('imcms-preview-image-area');
 
 let $imageEditor, croppingAreaParams, angleBorderSize, imageCoords, imageData;
 
@@ -404,7 +404,7 @@ function init(_imageData) {
 
     cropArea.getCroppingBlock().css("z-index", "50");
 
-    const $image = editableImage.getImage();
+    const $image = previewImageArea.getPreviewImage();
     const src = $image.attr('data-src');
 
     cropArea.getCroppingArea().css({
@@ -666,11 +666,11 @@ module.exports = {
         cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
-        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth);
-        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
-        imageResize.setCurrentSize(croppedWidth, croppedHeight);
+        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
+        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
+        imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing(imageData, true);
+        imageResize.updateSizing(imageData, false, false);
     },
     destroyImageCropper: destroy
 };

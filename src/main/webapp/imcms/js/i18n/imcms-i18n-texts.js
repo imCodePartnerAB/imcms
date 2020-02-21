@@ -431,10 +431,15 @@ const texts = {
                 }
             },
             image: {
-                title: "Bild-redigerare",
+                title: "Redigera bild",
+                page: 'sida ',
+                imageName: 'bild ',
+                teaser: 'Teaser-bild',
                 proportion: "Lås proportioner",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
+                activeTitle: 'Aktiv bild:',
+                noSelectedImage: 'Ingen bild vald!',
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -454,7 +459,7 @@ const texts = {
                 buttons: {
                     zoomIn: 'Zooma in',
                     zoomOut: 'Zooma ut',
-                    zoomReset: 'Återställ zoom till standardvärdet',
+                    reset: 'Återställ till originalvärde',
                     rotateLeft: 'Rotera vänster',
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
@@ -466,8 +471,13 @@ const texts = {
                     removeCropping: "Ta bort beskärning",
                     rotationTitle: "Aktivera rotationsreglage"
                 },
+                styleInfo: {
+                    title: 'Begränsade stilar',
+                    info: 'Den använda bilden är begränsad till denna stil'
+                },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                 displaySize: "Visad storlek",
+                originSize: 'Original storlek',
                 height: "Höjd",
                 width: "Bredd",
                 preview: "Förhandsvisning",
@@ -492,6 +502,8 @@ const texts = {
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
                 removeAndClose: "Ta bort och stäng",
                 saveAndClose: "Spara och stäng",
+                restrictedStyle: 'Begränsad stil:',
+                infoStyle: 'Den använda bilden är begränsad till den här stilen.',
                 exif: {
                     button: "Visa exif info"
                 },
@@ -1314,10 +1326,15 @@ const texts = {
                 }
             },
             image: {
-                title: "Image Editor",
+                title: "Edit Image",
+                page: 'page ',
+                imageName: 'image ',
+                teaser: "Teaser image ",
                 proportion: "Proportions locked",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
+                activeTitle: 'Active image:',
+                noSelectedImage: 'No image selected!',
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",
@@ -1337,7 +1354,7 @@ const texts = {
                 buttons: {
                     zoomIn: 'Zoom in',
                     zoomOut: 'Zoom out',
-                    zoomReset: 'Reset zoom to default value',
+                    reset: 'Reset to original value',
                     rotateLeft: 'Rotate left',
                     rotateRight: 'Rotate right',
                     revert: 'Reset to original',
@@ -1349,8 +1366,13 @@ const texts = {
                     removeCropping: "Remove cropping",
                     rotationTitle: "Activate rotation controls"
                 },
+                styleInfo: {
+                    title: 'Restricted styles',
+                    info: 'The used image is restricted to this styles'
+                },
                 proportionsButtonTitle: "Keep image proportion On/Off",
                 displaySize: "Display size",
+                originSize: 'Original size',
                 height: "Height",
                 width: "Width",
                 preview: "Preview",
@@ -1375,6 +1397,8 @@ const texts = {
                 altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
                 removeAndClose: "Remove and close",
                 saveAndClose: "Save and close",
+                restrictedStyle: 'Restricted style:',
+                infoStyle: 'The used image is restricted to this style.',
                 exif: {
                     button: "Show exif info"
                 },

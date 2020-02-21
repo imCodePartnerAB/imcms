@@ -27,6 +27,7 @@ public class ImageDTO extends ImageData {
     private String alternateText;
     private String linkUrl;
     private List<String> exifInfo;
+    private String size;
 
     /**
      * Two-letter language code ISO-639-1
@@ -65,6 +66,7 @@ public class ImageDTO extends ImageData {
         this.target = "";
         this.type = -1;
         this.rotateAngle = 0;
+        this.size = "";
     }
 
     public ImageDTO(Integer index, Integer docId) {
@@ -92,6 +94,7 @@ public class ImageDTO extends ImageData {
         this.target = ofNullable(from.target).orElse("");
         this.type = from.type;
         this.rotateAngle = from.rotateAngle;
+        this.size = from.size;
     }
 
     /**

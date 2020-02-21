@@ -53,6 +53,7 @@ module.exports = {
     revert: getButtonBuilder('revert'),
     cropping: getButtonBuilder('crop'),
     openInNewWindow: getButtonBuilder('open-in-new-window'),
+    fit: getButtonBuilder('fit'),
     negativeButton: function (attributes) {
         return this.negative('<button>', attributes);
     },
@@ -63,10 +64,10 @@ module.exports = {
         return this.neutral('<button>', attributes);
     },
     warningButton: function (attributes) {
-        return this.warning("<button>",attributes);
+        return this.warning("<button>", attributes);
     },
     errorButton: function (attributes) {
-        return this.error("<button>",attributes);
+        return this.error("<button>", attributes);
     },
     saveButton: function (attributes) {
         return this.save('<button>', attributes);
@@ -130,6 +131,9 @@ module.exports = {
     },
     openInNewWindowButton: function (attributes) {
         return this.openInNewWindow('<button>', attributes);
+    },
+    fitButton: function (attributes) {
+        return this.fit('<button>', attributes);
     },
     buttonsContainer: (tag, elements, attributes) => buttonsBEM.buildBlock(tag, elements, attributes, 'button'),
     buttonWithIcon: buildButtonWithIcon,

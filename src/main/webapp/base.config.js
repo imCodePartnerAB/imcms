@@ -129,6 +129,8 @@ module.exports = {
                             'imcms-cropping-angle',
                             'imcms-crop-coords-controllers',
                             'imcms-image-proportions-locker-button',
+                            'imcms-image-active-tab',
+                            'imcms-image-percentage-proportion-build'
                         ],
                         page_info_tabs: [
                             'imcms-page-info-tabs-builder',

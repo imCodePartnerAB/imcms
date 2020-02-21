@@ -5,6 +5,8 @@
 const BEM = require('imcms-bem-builder');
 const $ = require('jquery');
 const events = require('imcms-events');
+const previewImageArea = require('imcms-preview-image-area');
+const imageResize = require('imcms-image-resize');
 
 let isImageProportionsInverted = false;
 
@@ -127,7 +129,7 @@ function onImageLoad() {
 
 function getImage() {
     return $image || ($image = setFunctionality($("<img>", {
-        "class": "imcms-editable-img",
+        "class": "imcms-preview-img",
         load: onImageLoad,
     })))
 }

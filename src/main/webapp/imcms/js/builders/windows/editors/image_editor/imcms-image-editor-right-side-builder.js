@@ -4,14 +4,15 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
-        'imcms-crop-coords-controllers'
+        'imcms-crop-coords-controllers', 'path'
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
+              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers, path) {
 
         texts = texts.editors.image;
 
-        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
+        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
+        let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -59,6 +60,44 @@ define(
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
 
+        function buildActiveImageSizeInfo() {
+            return $imageSizeInfo = $('<div>');
+        }
+
+        function buildActiveImagePathInfo() {
+            return $imageInfoPath = $('<div>')
+        }
+
+        let $noImageInfo;
+
+        function buildNoImageInfo() {
+            return $noImageInfo = $('<i>');
+        }
+
+        function buildRestrictedWidthStyle(prefix, width) {
+            const widthText = width ? `${prefix}: ${width}` : '';
+            return $restrictedStyleWidth = $('<div>', {
+                'class': 'imcms-restricted-width',
+                text: widthText
+            });
+        }
+
+        function buildRestrictedHeightStyle(prefix, height) {
+            const heightText = height ? `${prefix}: ${height}` : '';
+            return $restrictedStyleHeight = $('<div>', {
+                'class': 'imcms-restricted-height',
+                text: heightText
+            });
+        }
+
+        function isStyleExist(styles) {
+            return !!styles;
+        }
+
+        function checkExistImageData(image) {
+            return image.path !== '' && image.width > 0 && image.height > 0;
+        }
+
         module.exports = {
             updateImageData: ($newTag, newImageData) => {
                 $tag = $newTag;
@@ -71,6 +110,17 @@ define(
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
                 $fileFormat.selectValue(imageData.format);
+                if (checkExistImageData(imageData)) {
+                    $editableControls.removeAttr('style');
+                    $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
+                    $imageSizeInfo.show();
+                    $noImageInfo.hide();
+                } else {
+                    $editableControls.css('visibility', 'hidden');
+                    $imageInfoPath.hide();
+                    $imageSizeInfo.hide();
+                    $noImageInfo.text(texts.noSelectedImage).show();
+                }
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
@@ -321,6 +371,12 @@ define(
                     exifInfoWindowBuilder.buildWindow();
                 }
 
+                const $showExifBtn = components.buttons.neutralButton({
+                    text: texts.exif.button,
+                    click: showExif,
+                    name: 'exifInfo'
+                });
+
                 function buildAdvancedControls() {
                     const advancedModeBEM = new BEM({
                         block: "imcms-advanced-mode",
@@ -342,35 +398,64 @@ define(
                     const $cropCoordinatesContainer = buildCropCoordinatesContainer();
                     $fileFormat = buildFileFormatSelect();
 
-                    const $showExifBtn = components.buttons.neutralButton({
-                        text: texts.exif.button,
-                        click: showExif
-                    });
-
                     return advancedModeBEM.buildBlock("<div>", [
                         {"title": $textAlignmentBtnsTitle},
                         {"buttons": $textAlignmentBtnsContainer},
                         {"space-around": $spaceAroundImageInputContainer},
                         {"title": $cropCoordinatesText},
                         {"crop-coordinates": $cropCoordinatesContainer},
-                        {"file-format": $fileFormat},
-                        {"button": $showExifBtn}
+                        {"file-format": $fileFormat}
                     ]);
+                }
+
+                function buildInfoSizePathContainer() {
+                    return new BEM({
+                        block: 'imcms-info-edit-image',
+                        elements: {
+                            'title': components.texts.titleText('<div>', 'Active image'),
+                            'path-info': buildActiveImagePathInfo(),
+                            'size-info': buildActiveImageSizeInfo(),
+                            'no-image': buildNoImageInfo(),
+                        }
+                    }).buildBlockStructure('<div>')
+                }
+
+                function buildRestrictedStyleInfoContainer(existStyle) {
+                    const styleInfoBEM = new BEM({
+                        block: 'imcms-restricted-style',
+                        elements: {
+                            'title': 'imcms-title',
+                            'width': 'imcms-restricted-width',
+                            'height': 'imcms-restricted-height',
+                            'info': 'imcms-info-msg'
+                        }
+                    });
+
+                    if (existStyle) {
+                        const $titleStyleInfo = components.texts.titleText("<div>", texts.styleInfo.title);
+                        const $info = components.texts.infoText("<div>", texts.styleInfo.info);
+
+                        return styleInfoBEM.buildBlock('<div>', [
+                            {'title': $titleStyleInfo},
+                            {'width': $restrictedStyleWidth},
+                            {'height': $restrictedStyleHeight},
+                            {'info': $info}
+                        ]);
+                    } else {
+                        return null;
+                    }
                 }
 
                 function buildEditableControls() {
                     const editableControlsBEM = new BEM({
                         block: "imcms-editable-controls-area",
                         elements: {
-                            "buttons": "imcms-buttons",
                             "text-box": "imcms-text-box",
                             "flags": "imcms-flags",
                             "checkboxes": "imcms-checkboxes",
                             "advanced-mode": "imcms-advanced-mode"
                         }
                     });
-
-                    const $actionImageBtnContainer = buildActionImageBtnContainer();
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
@@ -379,7 +464,6 @@ define(
                     const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
-                        {"buttons": $actionImageBtnContainer},
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
                         {"flags": opts.imageDataContainers.$langFlags},
@@ -544,8 +628,8 @@ define(
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageData.width = imageResize.getWidth();
-                        imageData.height = imageResize.getHeight();
+                        imageData.width = imageResize.getPreviewWidth();
+                        imageData.height = imageResize.getPreviewHeight();
                         const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
@@ -591,10 +675,41 @@ define(
                     return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
                 }
 
-                const $editableControls = buildEditableControls();
+                const style = $tag.data('style');
+                const existsStyle = isStyleExist($tag.data('style'));
+                const resultStyleObj = {};
+                let isRestrictedWHStyles = false;
+                if (existsStyle) {
+                    style.split(';')
+                        .map(x => x.trim())
+                        .filter(x => !!x)
+                        .forEach(x => {
+                            const styleKeyAndValue = x.split(':').map(x => x.trim());
+                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                        });
+                }
+
+                if (resultStyleObj['max-width'] || resultStyleObj['max-height']) {
+                    buildRestrictedWidthStyle('max-width', resultStyleObj['max-width']);
+                    buildRestrictedHeightStyle('max-height', resultStyleObj['max-height']);
+                    isRestrictedWHStyles = true;
+                } else {
+                    if (resultStyleObj.width || resultStyleObj.height) {
+                        buildRestrictedWidthStyle('width', resultStyleObj.width);
+                        buildRestrictedHeightStyle('height', resultStyleObj.height);
+                        isRestrictedWHStyles = true;
+                    }
+                }
+
+
+                const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
+                const $infoImage = buildInfoSizePathContainer();
+                const $actionImageBtnContainer = buildActionImageBtnContainer();
+                $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($editableControls, $footer);
+                return $("<div>").append($restrictStyleInfo, $infoImage,
+                    $actionImageBtnContainer, $showExifBtn, $editableControls, $footer);
             }
         }
     }

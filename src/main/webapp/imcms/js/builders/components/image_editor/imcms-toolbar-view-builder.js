@@ -11,6 +11,8 @@ module.exports = class ToolbarViewBuilder {
     constructor() {
         this.toHide$ = $();
         this.toShow$ = $();
+        this.toPrevSizeHide$ = $();
+        this.toOriginSizeShow$ = $();
     }
 
     static getCurrentToolbarView() {
@@ -25,8 +27,17 @@ module.exports = class ToolbarViewBuilder {
 
     _onShow() {
         this.toHide$.slideUp('fast', () => {
-            this.toShow$.slideDown()
+            this.toShow$.slideDown();
+            this.toOriginSizeShow$.show();
+            this.toPrevSizeHide$.hide();
         });
+    }
+
+    showAll() {
+        this.toShow$.slideDown('fast');
+        this.toHide$.slideDown('fast');
+        this.toOriginSizeShow$.hide();
+        this.toPrevSizeHide$.show();
     }
 
     hide(...hideUs$) {
@@ -42,6 +53,17 @@ module.exports = class ToolbarViewBuilder {
         });
         return this;
     }
+
+    prevControlSizeHide(previewSize$) {
+        this.toPrevSizeHide$ = this.toPrevSizeHide$.add(previewSize$);
+        return this;
+    }
+
+    originControlSizeShow(originSize$) {
+        this.toOriginSizeShow$ = this.toOriginSizeShow$.add(originSize$);
+        return this;
+    }
+
 
     onCancel(callOnCancel) {
         this.callOnCancel = callOnCancel;
@@ -68,4 +90,10 @@ module.exports = class ToolbarViewBuilder {
         currentToolbarView = this;
         this._onShow();
     }
+
+    buildEditorElement() {
+        currentToolbarView = this;
+        this.showAll();
+    }
+
 };

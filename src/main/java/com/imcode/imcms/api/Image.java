@@ -112,7 +112,7 @@ public class Image {
         return internalImage.isEmpty();
     }
 
-    public long getSize() {
+    public String getSize() {
         return internalImage.getSize();
     }
 

@@ -9,6 +9,11 @@
     user-select: auto;
 }
 
+.common-info-image {
+    width: 50%;
+    display: contents;
+}
+
 .imcms-image_editor__image-characteristics {
     display: flex;
     border-bottom: 1px solid #d3d8de;
@@ -91,4 +96,22 @@
     .imcms-image_editor__image-characteristics {
         padding: 0 20px;
     }
+}
+
+.image-editor-info {
+    display: -webkit-inline-box;
+    text-transform: lowercase;
+    margin-left: 40%;
+}
+
+.imcms-image-info {
+    background-color: #2fcccf;
+}
+
+#data-link-image {
+    color: #fff2f9;
+}
+
+.imcms-control--permalink {
+    margin-top: 14px;
 }

@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.mapping.ImageCacheMapper;
@@ -30,15 +29,14 @@ class DefaultImageFileService implements ImageFileService {
 
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
     private final ImageService imageService;
-    private final CommonContentService commonContentService;
     private final ImageCacheMapper imageCacheMapper;
     @Value("${ImagePath}")
     private File imagesPath;
 
-    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO, ImageService imageService, CommonContentService commonContentService, ImageCacheMapper imageCacheMapper) {
+    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO,
+                            ImageService imageService, ImageCacheMapper imageCacheMapper) {
         this.fileToImageFileDTO = fileToImageFileDTO;
         this.imageService = imageService;
-        this.commonContentService = commonContentService;
         this.imageCacheMapper = imageCacheMapper;
     }
 

@@ -1,5 +1,3 @@
-const originImageHeightBlock = require('imcms-origin-image-height-block');
-const originImageWidthBlock = require('imcms-origin-image-width-block');
 const imageProportionsLocker = require('imcms-image-proportions-locker-button');
 
 define(
@@ -7,53 +5,85 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area',
+        'imcms-image-percentage-proportion-build', 'imcms-image-active-tab'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
-              ToolbarViewBuilder, cropper) {
+    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
+              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild, checkActiveTab) {
 
         texts = texts.editors.image;
+        let imageData;
 
         const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
             .hide(
                 getShowImageRotationControls(),
-                imageEditSizeControls.getEditSizeControls(),
                 getRevertButton(),
-                getCroppingButton(),
+                getCroppingButton()
             )
             .show(
                 getZoomPlusButton(),
                 getZoomMinusButton(),
+                getPercentageRatio(),
                 getZoomResetButton(),
-            );
+                getFitButton()
+            )
+            .originControlSizeShow(imageEditSizeControls.getOriginSizeControls())
+            .prevControlSizeHide(imageEditSizeControls.getEditSizeControls());
 
         function toggleImgArea() {
-
-            function initPreviewImageArea() {
-                const $previewImg = previewImage.getPreviewImage();
-                const $editableImg = editableImage.getImage();
-
-                $previewImg.attr('src', $editableImg.attr('src'));
-                $previewImg.attr('style', $editableImg.attr('style'));
-            }
-
-            const $previewImageArea = previewImage.getPreviewImageArea();
+            const $previewImageArea = previewImageArea.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
-
+            const $editableArea = editableImageArea.getEditableImageArea();//todo rename all modules on the origin instead edit
+            const $exifInfoButton = $('.imcms-image_editor__right-side').find(`[name='exifInfo']`);
             if ($(this).data("tab") === "prev") {
-                initPreviewImageArea();
-                toggleImageAreaToolbarViewBuilder.build();
+                toggleImageAreaToolbarViewBuilder.buildEditorElement();
+
+                const prevWidth = imageResize.getPreviewWidth();
+                const prevHeight = imageResize.getPreviewHeight();
+
+                if (prevWidth > 0 && prevHeight > 0) {
+                    percentagePropBuild.buildPercentageImage(prevWidth, prevHeight, $percentageRatio);
+                }
+
+                $exifInfoButton.css({
+                    'display': 'none'
+                });
+
+                $editableArea.css({
+                    "z-index": "10",
+                    'display': "none"
+                });
 
                 $previewImageArea.css({
                     "z-index": "50",
                     "display": "block"
                 });
             } else {
-                toggleImageAreaToolbarViewBuilder.cancelChanges();
+                const width = imageResize.getWidth();
+                const height = imageResize.getHeight();
+                imageEditSizeControls.setWidth(width, true);
+                imageEditSizeControls.setHeight(height, true);
+                toggleImageAreaToolbarViewBuilder.build();
+                $exifInfoButton.show();
+                if (imageData.path !== '') {
+                    percentagePropBuild.buildPercentageImage(width, height, $percentageRatio);
+                    if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
+                        $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
+                    } else {
+                        $exifInfoButton.addClass('imcms-button--disabled').attr('disabled', '');
+                    }
 
+                } else {
+                    $exifInfoButton.hide();
+                }
                 $previewImageArea.css({
                     "z-index": "10",
                     "display": "none"
+                });
+
+                $editableArea.css({
+                    "z-index": "50",
+                    'display': "block"
                 });
             }
 
@@ -89,41 +119,29 @@ define(
             });
         }
 
-        function buildHeightWidthBlock() {
-            const $heightBlock = new BEM({
-                block: "imcms-img-origin-size",
-                elements: {
-                    "height-title": components.texts.titleText("<span>", "H:"),
-                    "height-value": originImageHeightBlock.getContainer(),
-                }
-            }).buildBlockStructure("<div>");
-
-            const $widthBlock = new BEM({
-                block: "imcms-img-origin-size",
-                elements: {
-                    "width-title": components.texts.titleText("<span>", "W:"),
-                    "width-value": originImageWidthBlock.getContainer(),
-                }
-            }).buildBlockStructure("<div>");
-
-            return new BEM({
-                block: "imcms-title imcms-image-characteristic",
-                elements: {
-                    "origin-size": [$heightBlock, $widthBlock]
-                }
-            }).buildBlockStructure("<div>").hide();
-        }
-
         function zoom(delta) {
-            const $previewArea = previewImage.getPreviewImage();
+            if ($('.imcms-editable-img-control-tabs__tab--active').data('tab') === "prev") {
+                const $previewArea = previewImageArea.getPreviewImage();
 
-            if (!delta) {
-                $previewArea.css('zoom', 1);
-                return;
+                if (!delta) {
+                    $previewArea.css('zoom', 1);
+                    return;
+                }
+
+                const currentZoom = parseFloat($previewArea.css('zoom'));
+                $previewArea.css('zoom', currentZoom + delta);
+
+            } else {
+                const $originArea = editableImage.getImage();
+
+                if (!delta) {
+                    $originArea.css('zoom', 1);
+                    return;
+                }
+
+                const currentZoom = parseFloat($originArea.css('zoom'));
+                $originArea.css('zoom', currentZoom + delta);
             }
-
-            const currentZoom = parseFloat($previewArea.css('zoom'));
-            $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {
@@ -138,15 +156,54 @@ define(
             zoom(0);
         }
 
-        function revertImageChanges() {
-            imageData.cropRegion = {
-                cropX1: 0,
-                cropX2: 0,
-                cropY1: 0,
-                cropY2: 0,
-            };
+        function revertToPreviewImageChanges() {
+            imageData = imageResize.getFinalPreviewImageData();
             imageRotate.rotateImage("NORTH");
-            imageResize.resetToOriginal(imageData);
+            zoomFit();
+            imageResize.resetToPreview(imageData);
+        }
+
+        function revertToOriginalImageChanges() {
+            if (checkActiveTab.currentActiveTab() === 'prev') {
+                imageData.cropRegion = {
+                    cropX1: 0,
+                    cropX2: 0,
+                    cropY1: 0,
+                    cropY2: 0,
+                };
+                imageRotate.rotateImage("NORTH");
+                zoomFit();
+                imageResize.resetToOriginal(imageData);
+            } else {
+                imageData.cropRegion = {
+                    cropX1: 0,
+                    cropX2: 0,
+                    cropY1: 0,
+                    cropY2: 0,
+                };
+                imageRotate.rotateImage("NORTH");
+                zoomFit();
+            }
+        }
+
+        function buildFitImage() {
+            const $previewArea = previewImageArea.getPreviewImageArea();
+            const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
+            const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
+
+            if (checkActiveTab.currentActiveTab() === 'prev') {
+                setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
+            } else {
+                setStrictWidthHeightCurrentImage(true, clientPreviewAreaWidth, clientPreviewAreaHeight);
+            }
+        }
+
+        function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
+            if (imageData.width >= clientPreviewAreaWidth) {
+                imageResize.setWidthStrict(0, clientPreviewAreaWidth - 30, isOriginal, true);
+            } else if (imageData.height >= clientPreviewAreaHeight) {
+                imageResize.setHeightStrict(0, clientPreviewAreaHeight - 30, isOriginal, true);
+            }
         }
 
         let $switchViewControls;
@@ -156,9 +213,10 @@ define(
         }
 
         let $tabOriginal;
+        let $tabPreview;
 
         function buildSwitchViewControls() {
-            const $preview = components.texts.titleText("<div>", texts.preview, {
+            $tabPreview = components.texts.titleText("<div>", texts.preview, {
                 "data-tab": "prev",
                 click: toggleImgArea
             });
@@ -166,12 +224,12 @@ define(
                 "data-tab": "origin",
                 click: toggleImgArea
             });
-            $tabOriginal.modifiers = ["active"];
+            $tabPreview.modifiers = ["active"];
 
             return new BEM({
                 block: "imcms-editable-img-control-tabs",
                 elements: {
-                    "tab": [$preview, $tabOriginal]
+                    "tab": [$tabOriginal, $tabPreview]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -192,7 +250,7 @@ define(
 
         function onRotationActivated() {
             let previousRotateDegrees = parseInt(
-                editableImage.getImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
+                previewImageArea.getPreviewImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
             );
 
             new ToolbarViewBuilder()
@@ -216,7 +274,7 @@ define(
         function getCroppingProportionsInfo() {
             return components.texts.infoText(
                 '<div>',
-                `${imageResize.isProportionsLockedByStyle() ? texts.presetCrop : texts.crop}: ${imageResize.getWidth()} x ${imageResize.getHeight()}`,
+                `${imageResize.isProportionsLockedByStyle() ? texts.presetCrop : texts.crop}: ${imageResize.getPreviewWidth()} x ${imageResize.getPreviewHeight()}`,
                 {
                     'class': 'imcms-image-crop-proportions-info',
                     style: 'display: block;'
@@ -285,13 +343,23 @@ define(
             }))
         }
 
+        let $fitButton;
+
+        function getFitButton() {
+            return $fitButton || ($fitButton = components.buttons.fitButton({
+                title: 'change that on bootstrap',
+                click: buildFitImage,
+                style: 'display: none;'
+            }))
+        }
+
         let $zoomResetButton;
 
         function getZoomResetButton() {
             return $zoomResetButton || ($zoomResetButton = components.buttons.zoomResetButton({
-                title: texts.buttons.zoomReset,
+                title: texts.buttons.reset,
                 style: 'display: none;',
-                click: wrapWithNoOpIfNoImageYet(zoomFit),
+                click: wrapWithNoOpIfNoImageYet(revertToOriginalImageChanges),
             }))
         }
 
@@ -320,7 +388,7 @@ define(
         function getRevertButton() {
             return $revertButton || ($revertButton = components.buttons.revertButton({
                 title: texts.buttons.revert,
-                click: wrapWithNoOpIfNoImageYet(revertImageChanges),
+                click: wrapWithNoOpIfNoImageYet(revertToPreviewImageChanges),
             }))
         }
 
@@ -367,25 +435,40 @@ define(
             }))
         }
 
+        let $percentageRatio;
+
+        function getPercentageRatio() {
+            return $percentageRatio || ($percentageRatio = $('<div>', {
+                'class': 'percentage-image-info',
+                title: 'bootstrap percentage',
+            }));
+        }
+
         let $scaleAndRotateControls;
 
         function getScaleAndRotateControls() {
             return $scaleAndRotateControls || ($scaleAndRotateControls = new BEM({
                 block: "imcms-edit-image",
                 elements: {
+                    'size-place': [
+                        imageEditSizeControls.getEditSizeControls(),
+                        imageEditSizeControls.getOriginSizeControls(),
+                    ],
                     "button": [
                         imageProportionsLocker.getProportionsButton(),
                         imageProportionsLocker.getProportionsText(),
                         getRemoveCroppingButton(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
+                        getPercentageRatio(),
                         getZoomResetButton(),
+                        getFitButton(),
                         getShowImageRotationControls(),
                         getRotateLeftButton(),
                         getRotateRightButton(),
                         getCroppingButton(),
                         getRevertButton(),
-                    ]
+                    ],
                 }
             }).buildBlockStructure("<div>"))
         }
@@ -395,13 +478,11 @@ define(
             return new BEM({
                 block: "imcms-editable-img-controls",
                 elements: {
-                    "control-size": '',
                     'control-button': '',
                     "control-scale-n-rotate": '',
                     "control-view": '',
                 }
             }).buildBlock("<div>", [
-                {"control-size": imageEditSizeControls.getEditSizeControls()},
                 {'control-button': getCancelChangesButton()},
                 {"control-scale-n-rotate": getScaleAndRotateControls()},
                 {"control-button": getApplyChangesButton()},
@@ -410,10 +491,11 @@ define(
         }
 
         const $imgUrl = $("<a>");
-        let imageData;
 
         module.exports = {
             showOriginalImageArea: () => toggleImgArea.call($tabOriginal),
+
+            showPreviewImageArea: () => toggleImgArea.call($tabPreview),
 
             build: function ($rightSidePanel, _imageData) {
                 imageData = _imageData;
@@ -436,16 +518,12 @@ define(
                     }
                 });
 
-                const $heightWidthBlock = buildHeightWidthBlock();
-
                 return bodyHeadBEM.buildBlock("<div>", [
                     {
                         "toolbar": buildToolbar()
                     }, {
                         "button": $showHideRightPanelBtn,
                         modifiers: ["right-panel"]
-                    }, {
-                        "img-origin-size": $heightWidthBlock
                     }
                 ]);
             },
@@ -454,6 +532,8 @@ define(
 
             clearData() {
                 [
+                    imageEditSizeControls.getEditSizeControls(),
+                    imageEditSizeControls.getOriginSizeControls(),
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
                     imageProportionsLocker.getProportionsText(),
@@ -461,9 +541,11 @@ define(
                     getRemoveCroppingButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
+                    getPercentageRatio(),
                     getZoomPlusButton(),
                     getZoomMinusButton(),
                     getZoomResetButton(),
+                    getFitButton(),
 
                 ].forEach($elem => $elem.hide());
 
@@ -471,7 +553,7 @@ define(
 
                 getSwitchViewControls().show();
 
-                previewImage.clearData();
+                previewImageArea.clearData();
 
                 imageProportionsLocker.enableProportionsLock();
 

@@ -249,6 +249,16 @@ a[class^="imcms"].imcms-button--neutral:hover {
     height: 35px;
 }
 
+.imcms-button--fit {
+    background: #fff url("/imcms/images/image_editor/icon_fit.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
 .imcms-button--zoom-minus {
     background: #fff url("/imcms/images/image_editor/icon_zoom_minus.png") no-repeat center;
     border: 1px solid #d3d8de;

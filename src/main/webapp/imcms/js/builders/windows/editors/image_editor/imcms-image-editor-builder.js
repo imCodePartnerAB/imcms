@@ -7,10 +7,11 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts"
+        'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
+        'imcms-preview-image-area', 'imcms-image-percentage-proportion-build'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls, modal, texts) {
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, percentImg) {
 
         texts = texts.editors.image;
 
@@ -42,12 +43,45 @@ define(
             $imgUrl.attr("title", imageData.path);
         }
 
+        function initSize(imageData, isOriginalImage) {
+            const cropRegion = imageData.cropRegion;
+
+            if (cropRegion
+                && (cropRegion.cropX1 >= 0)
+                && (cropRegion.cropX2 >= 1)
+                && (cropRegion.cropY1 >= 0)
+                && (cropRegion.cropY2 >= 1)) {
+                const width = cropRegion.cropX2 - cropRegion.cropX1;
+                const height = cropRegion.cropY2 - cropRegion.cropY1;
+
+                imageResize.setCurrentSize(width, height);
+                imageResize.setWidthStrict(cropRegion.cropX1, width, isOriginalImage);
+                imageResize.setHeightStrict(cropRegion.cropY1, height, isOriginalImage);
+
+                imageResize.setWidth(imageData.width, isOriginalImage);
+                imageResize.setHeight(imageData.height, isOriginalImage);
+
+            } else {
+                const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
+                imageResize.setWidthStrict(0, image.width, isOriginalImage);
+                imageResize.setHeightStrict(0, image.height, isOriginalImage);
+                imageResize.updateSizing(imageData, true, isOriginalImage);
+            }
+
+            imageRotate.rotateImage(imageData.rotateDirection);
+        }
+
         function fillLeftSideData(imageData) {
             if (!imageData.path) return;
 
-            editableImage.getImage().hide();
+            prevImageArea.getPreviewImage().hide();
 
-            editableImage.setImageSource(imageData.path, () => {
+            editableImage.setImageSource(imageData, () => {
+                initSize(imageData, true);
+                percentImg.buildPercentageImage(imageData.width, imageData.height, $('.percentage-image-info'));
+            });
+
+            prevImageArea.setPreviewImageSource(imageData, () => {
                 const style = $tag.data('style');
                 const resultStyleObj = {};
 
@@ -65,6 +99,7 @@ define(
                     if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
                         imageData.width = Math.min(imageData.width, maxWidth);
                         imageResize.setMaxWidth(maxWidth);
+                        editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let maxHeight = resultStyleObj['max-height'];
@@ -72,57 +107,35 @@ define(
                     if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
                         imageData.height = Math.min(imageData.height, maxHeight);
                         imageResize.setMaxHeight(maxHeight);
+                        editSizeControls.getPreviewHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
-                    let width = resultStyleObj.width;
+                    let width = parseInt(resultStyleObj.width);
 
-                    if (width && !isNaN(width = parseInt(width, 10))) {
+                    if (width) {
                         imageData.width = width;
                         imageResize.setMaxWidth(width);
                         imageResize.setMinWidth(width);
-                        editSizeControls.getWidthControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
-                    let height = resultStyleObj.height;
+                    let height = parseInt(resultStyleObj.height);
 
-                    if (height && !isNaN(height = parseInt(height, 10))) {
+                    if (height) {
                         imageData.height = height;
                         imageResize.setMaxHeight(height);
                         imageResize.setMinHeight(height);
-                        editSizeControls.getHeightControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getPreviewHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
                     if (imageResize.isProportionsLockedByStyle()) {
-                        imageResize.setCurrentSize(imageData.width, imageData.height);
+                        imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
+                        imageResize.setFinalPreviewImageData(imageData);
                     }
                 }
 
-                const cropRegion = imageData.cropRegion;
-
-                if (cropRegion
-                    && (cropRegion.cropX1 >= 0)
-                    && (cropRegion.cropX2 >= 1)
-                    && (cropRegion.cropY1 >= 0)
-                    && (cropRegion.cropY2 >= 1)) {
-                    const width = cropRegion.cropX2 - cropRegion.cropX1;
-                    const height = cropRegion.cropY2 - cropRegion.cropY1;
-
-                    imageResize.setCurrentSize(width, height);
-                    imageResize.setWidthStrict(cropRegion.cropX1, width);
-                    imageResize.setHeightStrict(cropRegion.cropY1, height);
-
-                    imageResize.setWidth(imageData.width);
-                    imageResize.setHeight(imageData.height);
-
-                } else {
-                    const original = imageResize.getOriginal();
-                    imageResize.setWidthStrict(0, original.width);
-                    imageResize.setHeightStrict(0, original.height);
-                    imageResize.updateSizing(imageData);
-                }
-
-                imageRotate.rotateImage(imageData.rotateDirection);
-                editableImage.getImage().show();
+                initSize(imageData, false);
+                prevImageArea.getPreviewImage().show();
             });
         }
 
@@ -131,7 +144,7 @@ define(
 
             if (!image) return;
 
-            bodyHeadBuilder.showOriginalImageArea();
+            bodyHeadBuilder.showPreviewImageArea();
 
             imageData.cropRegion = image.cropRegion;
             imageData.align = image.align;
@@ -192,8 +205,9 @@ define(
         function clearData() {
             clearComponents();
             events.trigger("enable text editor blur");
-            editSizeControls.getWidthControl().getInput().removeAttr('disabled').val('');
-            editSizeControls.getHeightControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getPreviewWidthControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getPreviewHeightControl().getInput().removeAttr('disabled').val('');
+            $('.percentage-image-info').text('');
         }
 
         var imageWindowBuilder = new WindowBuilder({

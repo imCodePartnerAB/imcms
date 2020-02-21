@@ -5,10 +5,16 @@
 const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
+const previewImage = require('imcms-preview-image-area');
+const $ = require('jquery');
 
 let saveProportions = true; // by default
 const original = {};
+const preview = {};
 const currentSize = {};
+const currentPrevSize = {};
+const currentFinalPrevImg = {};
+const finalImageStylesPosition = {};
 let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
@@ -27,72 +33,109 @@ function trimToMaxMinHeight(newHeight) {
     return newHeight;
 }
 
-function setWidth(newWidth) {
-    const $image = editableImage.getImage();
-    const oldWidth = $image.width();
-    const k = newWidth / oldWidth;
+function setWidth(newWidth, isOriginal) {
+    if (isOriginal) {
+        const $image = editableImage.getImage();
+        $image.width(original.width);
+        $widthControl.val(original.width);
+    } else {
+        const $image = previewImage.getPreviewImage();
+        const oldWidth = $image.width();
+        const k = newWidth / oldWidth;
 
-    const newImageLeft = k * editableImage.getBackgroundPositionX();
-    const newImageBackgroundWidth = k * editableImage.getBackgroundWidth();
+        const newImageLeft = k * previewImage.getBackgroundPositionX();
+        const newImageBackgroundWidth = k * previewImage.getBackgroundWidth();
 
-    $image.width(newWidth);
-    editableImage.setBackgroundWidth(newImageBackgroundWidth);
-    editableImage.setBackgroundPositionX(newImageLeft);
+        $image.width(newWidth);
+        previewImage.setBackgroundWidth(newImageBackgroundWidth);
+        previewImage.setBackgroundPositionX(newImageLeft);
 
-    $widthControl.val(newWidth);
+        $widthPreviewControl.val(newWidth);
+    }
+
 }
 
-function setHeight(newHeight) {
-    const $image = editableImage.getImage();
-    const oldHeight = $image.height();
-    const k = newHeight / oldHeight;
+function setHeight(newHeight, isOriginal) {
+    if (isOriginal) {
+        const $image = editableImage.getImage();
+        $image.height(original.height);
+        $heightControl.val(original.height);
+    } else {
+        const $image = previewImage.getPreviewImage();
+        const oldHeight = $image.height();
+        const k = newHeight / oldHeight;
 
-    const newImageTop = k * editableImage.getBackgroundPositionY();
-    const newImageBackgroundHeight = k * editableImage.getBackgroundHeight();
+        const newImageTop = k * previewImage.getBackgroundPositionY();
+        const newImageBackgroundHeight = k * previewImage.getBackgroundHeight();
 
-    $image.height(newHeight);
-    editableImage.setBackgroundHeight(newImageBackgroundHeight);
-    editableImage.setBackgroundPositionY(newImageTop);
+        $image.height(newHeight);
+        previewImage.setBackgroundHeight(newImageBackgroundHeight);
+        previewImage.setBackgroundPositionY(newImageTop);
 
-    $heightControl.val(newHeight);
+        $heightPreviewControl.val(newHeight);
+    }
 }
 
-function setHeightProportionally(newHeight) {
+function setHeightProportionally(newHeight, isOriginal) {
     newHeight = trimToMaxMinHeight(newHeight);
-    setHeight(newHeight);
-    updateWidthProportionally(newHeight);
+    setHeight(newHeight, isOriginal);
+    updateWidthProportionally(newHeight, isOriginal);
 }
 
-function setWidthProportionally(newWidth) {
+function setWidthProportionally(newWidth, isOriginal) {
     newWidth = trimToMaxMinWidth(newWidth);
-    setWidth(newWidth);
-    updateHeightProportionally(newWidth);
+    setWidth(newWidth, isOriginal);
+    updateHeightProportionally(newWidth, isOriginal);
 }
 
-function updateWidthProportionally(newHeight) {
+function updateWidthProportionally(newHeight, isOriginal) {
     const proportionalWidth = ~~(newHeight * proportionsCoefficient);
     const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
     (fixedWidth === proportionalWidth)
-        ? setWidth(proportionalWidth)
-        : setWidthProportionally(proportionalWidth); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+        ? setWidth(proportionalWidth, isOriginal)
+        : setWidthProportionally(proportionalWidth, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
-function updateHeightProportionally(newWidth) {
+function updateHeightProportionally(newWidth, isOriginal) {
     const proportionalHeight = ~~(newWidth / proportionsCoefficient);
     const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
     (fixedHeight === proportionalHeight)
-        ? setHeight(proportionalHeight)
-        : setHeightProportionally(proportionalHeight); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+        ? setHeight(proportionalHeight, isOriginal)
+        : setHeightProportionally(proportionalHeight, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
 let $heightControl, $widthControl;
+let $heightPreviewControl, $widthPreviewControl;
 
 module.exports = {
     resetToOriginal(imageData) {
-        this.setHeightStrict(0, original.height);
-        this.setWidthStrict(0, original.width);
+        this.setHeightStrict(0, original.height, false);
+        this.setWidthStrict(0, original.width, false);
+
+        let width, height;
+
+        if (minWidth && minHeight) {
+            width = minWidth;
+            height = minHeight;
+            preview.width = minWidth;
+            preview.height = minHeight;
+
+        } else {
+            width = original.width;
+            height = original.height;
+            preview.width = original.width;
+            preview.height = original.height;
+        }
+
+        this.setCurrentPreviewSize(width, height);
+        this.updateSizing(imageData, true, false);
+    },
+
+    resetToPreview(imageData) {
+        this.setHeightStrict(finalImageStylesPosition.backgroundPositionY, imageData.height, false);
+        this.setWidthStrict(finalImageStylesPosition.backgroundPositionX, imageData.width, false);
 
         let width, height;
 
@@ -101,17 +144,35 @@ module.exports = {
             height = minHeight;
 
         } else {
-            width = original.width;
-            height = original.height;
+            width = imageData.width;
+            height = imageData.height;
         }
 
-        this.setCurrentSize(width, height);
-        this.updateSizing(imageData);
+        this.setCurrentPreviewSize(width, height);
+        this.setPreview(width, height);
+        this.updateSizing(imageData, true, false);
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
         currentSize.height = height;
         proportionsCoefficient = currentSize.width / currentSize.height;
+        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
+    },
+    setCurrentPreviewSize(width, height) {
+        currentPrevSize.width = width;
+        currentPrevSize.height = height;
+        proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
+        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
+    },
+    setFinalPreviewImageData(image) {
+        $.extend(currentFinalPrevImg, image);
+    },
+    getFinalPreviewImageData: () => currentFinalPrevImg,
+    setFinalPreviewBackGroundPositionX(positionX) {
+        finalImageStylesPosition.backgroundPositionX = positionX;
+    },
+    setFinalPreviewBackGroundPositionY(positionY) {
+        finalImageStylesPosition.backgroundPositionY = positionY;
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
@@ -123,12 +184,28 @@ module.exports = {
 
         this.setCurrentSize(originalWidth, originalHeight);
     },
+
+    getPreview: () => preview,
+    setPreview(previewWidth, previewHeight) {
+        preview.width = previewWidth;
+        preview.height = previewHeight;
+
+        this.setCurrentPreviewSize(previewWidth, previewHeight);
+    },
     setWidthControl($control) {
         $widthControl = $control
     },
 
     setHeightControl($control) {
         $heightControl = $control
+    },
+
+    setPreviewWidthControl($control) {
+        $widthPreviewControl = $control
+    },
+
+    setPreviewHeightControl($control) {
+        $heightPreviewControl = $control
     },
 
     isProportionsLockedByStyle() {
@@ -145,40 +222,56 @@ module.exports = {
         saveProportions = true;
     },
 
-    setHeight(newValue) {
-        setHeight(trimToMaxMinHeight(newValue));
+    setHeight(newValue, isOriginal) {
+        setHeight(trimToMaxMinHeight(newValue), isOriginal);
     },
 
-    setWidth(newValue) {
-        setWidth(trimToMaxMinWidth(newValue));
+    setWidth(newValue, isOriginal) {
+        setWidth(trimToMaxMinWidth(newValue), isOriginal);
     },
 
     /**
      * Setting without any proportions or min/max checking
      * @param padding for cropped images
      * @param newWidth
+     * @param isOriginal
      */
-    setWidthStrict(padding, newWidth) {
-        editableImage.setBackgroundWidth(original.width);
-        editableImage.getImage().width(newWidth);
+    setWidthStrict(padding, newWidth, isOriginal) {
+        if (isOriginal) {
+            editableImage.getImage().width(original.width);
+            $widthControl.val(newWidth);
+        } else {
+            previewImage.setBackgroundWidth(original.width);
+            previewImage.getPreviewImage().width(newWidth);
 
-        if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
+            (padding >= 0)
+                ? previewImage.setBackgroundPositionX(-padding)
+                : previewImage.setBackgroundPositionX(padding);
 
-        $widthControl.val(newWidth);
+            $widthPreviewControl.val(newWidth);
+        }
     },
 
     /**
      * Setting without any proportions or min/max checking
      * @param padding for cropped images
      * @param newHeight
+     * @param isOriginal
      */
-    setHeightStrict(padding, newHeight) {
-        editableImage.setBackgroundHeight(original.height);
-        editableImage.getImage().height(newHeight);
+    setHeightStrict(padding, newHeight, isOriginal) {
+        if (isOriginal) {
+            editableImage.getImage().height(original.height);
+            $heightControl.val(newHeight);
+        } else {
+            previewImage.setBackgroundHeight(original.height);
+            previewImage.getPreviewImage().height(newHeight);
 
-        if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
+            (padding >= 0)
+                ? previewImage.setBackgroundPositionY(-padding)
+                : previewImage.setBackgroundPositionY(padding);
 
-        $heightControl.val(newHeight);
+            $heightPreviewControl.val(newHeight);
+        }
     },
 
     setHeightProportionally: setHeightProportionally,
@@ -188,6 +281,10 @@ module.exports = {
     getWidth: () => editableImage.getImage().width(),
 
     getHeight: () => editableImage.getImage().height(),
+
+    getPreviewWidth: () => previewImage.getPreviewImage().width(),
+
+    getPreviewHeight: () => previewImage.getPreviewImage().height(),
 
     setMaxWidth(maxWidthValue) {
         maxWidth = maxWidthValue
@@ -207,17 +304,20 @@ module.exports = {
 
     /**
      * Can be used after setting strict w/h to update all proportions and min/max restrictions
+     * @param isOriginal value for original image or original tab data
+     * @param imageData
+     * @param ignoreCropping
      */
-    updateSizing(imageData, ignoreCropping) {
-        const originalProportionsK = original.width / original.height;
+    updateSizing(imageData, ignoreCropping, isOriginal) {
+        const originalProportionsK = isOriginal ? original.width / original.height : preview.width / preview.height;
 
         if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
             const width = minWidth;
             const height = minHeight;
             const restrictedProportionsK = minWidth / minHeight;
 
-            const dX = width / original.width;
-            const dY = height / original.height;
+            const dX = isOriginal ? width / original.width : width / preview.width;
+            const dY = isOriginal ? height / original.height : height / preview.height;
 
             let newWidth, newHeight, cropHeight, cropWidth;
 
@@ -228,26 +328,29 @@ module.exports = {
                 cropY2: 0,
             });
 
+            const widthCurrentObj = isOriginal ? original.width : preview.width;
+            const heightCurrentObj = isOriginal ? original.height : preview.height;
+
             if (dX > dY) {
                 const croppedWidth = Math.max(0, cropRegion.cropX2 - cropRegion.cropX1);
 
-                newWidth = Math.max(width, ignoreCropping ? croppedWidth : original.width);
-                newWidth = Math.min(newWidth, ignoreCropping ? croppedWidth : original.width);
+                newWidth = Math.max(width, ignoreCropping ? croppedWidth : widthCurrentObj);
+                newWidth = Math.min(newWidth, ignoreCropping ? croppedWidth : widthCurrentObj);
                 newHeight = ~~(newWidth / proportionsCoefficient);
                 cropHeight = ~~(newWidth / restrictedProportionsK);
                 cropWidth = newWidth;
             } else {
                 const croppedHeight = Math.max(0, cropRegion.cropY2 - cropRegion.cropY1);
 
-                newHeight = Math.max(height, ignoreCropping ? croppedHeight : original.height);
-                newHeight = Math.min(newHeight, ignoreCropping ? croppedHeight : original.height);
+                newHeight = Math.max(height, ignoreCropping ? croppedHeight : heightCurrentObj);
+                newHeight = Math.min(newHeight, ignoreCropping ? croppedHeight : heightCurrentObj);
                 newWidth = ~~(newHeight * proportionsCoefficient);
                 cropWidth = ~~(newHeight * restrictedProportionsK);
                 cropHeight = newHeight;
             }
 
-            this.setWidthStrict(cropRegion.cropX1, newWidth);
-            this.setHeightStrict(cropRegion.cropY1, newHeight);
+            this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal);
+            this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal);
 
             if (!ignoreCropping) {
                 cropRegion.cropX2 = cropWidth;
@@ -255,8 +358,11 @@ module.exports = {
             }
         }
 
-        setHeightProportionally(currentSize.height);
-        setWidthProportionally(currentSize.width);
+        const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
+        const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
+
+        setHeightProportionally(currentHeight, isOriginal);
+        setWidthProportionally(currentWidth, isOriginal);
     },
 
     clearData() {
@@ -268,5 +374,13 @@ module.exports = {
         proportionsCoefficient = 1;
         original.width = null;
         original.height = null;
+        preview.width = null;
+        preview.height = null;
+        currentPrevSize.width = null;
+        currentPrevSize.height = null;
+        currentFinalPrevImg.width = null;
+        currentFinalPrevImg.height = null;
+        finalImageStylesPosition.backgroundPositionY = null;
+        finalImageStylesPosition.backgroundPositionX = null;
     },
 };

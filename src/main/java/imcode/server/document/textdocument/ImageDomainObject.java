@@ -181,14 +181,14 @@ public class ImageDomainObject extends ImageDTO implements Cloneable {
         return source.getUrlPathRelativeToContextPath();
     }
 
-    public long getSize() {
+    public String getSize() {
         if (isEmpty()) {
-            return 0;
+            return "0";
         }
         try {
-            return source.getInputStreamSource().getSize();
+            return String.valueOf(source.getInputStreamSource().getSize());
         } catch (IOException e) {
-            return 0;
+            return "0";
         }
     }
 

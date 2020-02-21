@@ -1,16 +1,43 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.api.SourceFile;
-import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageHistoryDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.dto.TextHistoryDTO;
+import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -33,8 +60,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -191,12 +226,15 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath) {
+    public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath,
+                                                           @Value("${rootPath}") Path rootPath) {
+
         final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
         // Path.SEPARATOR slashes use in everywhere, for different OS
-
+        final Path currentImagesPath = Paths.get(rootPath.toString(), imagesPath);
         return image -> {
             final ImageDTO dto = new ImageDTO();
+            final String sizeImage = getFileSize(Paths.get(currentImagesPath.toString(), image.getUrl()).toFile());
 
             dto.setIndex(image.getIndex());
             dto.setName(image.getName());
@@ -232,6 +270,7 @@ class MappingConfig {
             dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
             dto.setArchiveImageId(image.getArchiveImageId());
             dto.setResize(Resize.getByOrdinal(image.getResize()));
+            dto.setSize(sizeImage);
 
             return dto;
         };

@@ -65,3 +65,10 @@
     padding-left: 15px;
     line-height: 65px;
 }
+
+.percentage-image-info {
+    padding: 5px 20px;
+    box-sizing: border-box;
+    margin-left: 30px;
+    border: solid #0b94d8;
+}
