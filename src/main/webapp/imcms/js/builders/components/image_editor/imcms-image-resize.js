@@ -129,10 +129,18 @@ module.exports = {
             preview.height = minHeight;
 
         } else {
-            width = original.width;
-            height = original.height;
-            preview.width = original.width;
-            preview.height = original.height;
+            if (this.isAnyRestrictedStyleSize()) {
+                width = minWidth ? minWidth : original.width;
+                height = minHeight ? minHeight : original.height;
+                preview.width = width;
+                preview.height = height;
+            } else {
+                width = original.width;
+                height = original.height;
+                preview.width = original.width;
+                preview.height = original.height;
+            }
+
         }
 
         this.setCurrentPreviewSize(width, height);
