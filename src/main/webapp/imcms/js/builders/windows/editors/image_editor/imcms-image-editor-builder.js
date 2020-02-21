@@ -111,8 +111,6 @@ define(
                     }
                 }).buildBlockStructure('<div>');
 
-
-                $('.imcms-info-edit-image').append($wantedSizeContainer).append($displaySizeContainer);
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
