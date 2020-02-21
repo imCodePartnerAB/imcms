@@ -287,7 +287,6 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            // previewImage.setBackgroundHeight(original.height);
             if (this.isAnyRestrictedStyleSize() && !resetToOriginal) {
                 previewImage.setBackgroundHeight(newHeight);
             } else {
