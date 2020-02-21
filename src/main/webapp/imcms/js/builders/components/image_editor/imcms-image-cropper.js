@@ -669,11 +669,13 @@ module.exports = {
         cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
+        imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
         imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
         imageResize.updateSizing(imageData, false, false);
+        imageResize.disabledResetToOriginalFlag(); //did default state
     },
     destroyImageCropper: destroy
 };
