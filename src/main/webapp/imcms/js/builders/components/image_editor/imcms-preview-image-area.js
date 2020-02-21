@@ -114,5 +114,6 @@ module.exports = {
     },
     getPreviewImage: getPreviewImage,
     getPreviewImageArea: getPreviewImageArea,
+    getPreviewImageContainer: getPreviewImageContainer,
     clearData: clear,
 };
