@@ -300,23 +300,33 @@ define(
         let $cancelChangesButton;
 
         function getCancelChangesButton() {
-            return $cancelChangesButton || ($cancelChangesButton = components.buttons.negativeButton({
+            if ($cancelChangesButton) {
+                return $cancelChangesButton;
+            }
+            $cancelChangesButton = components.buttons.negativeButton({
                 text: texts.buttons.cancelText,
-                title: texts.buttons.cancelTitle,
                 click: onCancel,
                 style: 'display: none;',
-            }));
+            });
+            components.overlays.defaultTooltip($cancelChangesButton, texts.buttons.cancelTitle);
+
+            return $cancelChangesButton;
         }
 
         let $applyChangesButton;
 
         function getApplyChangesButton() {
-            return $applyChangesButton || ($applyChangesButton = components.buttons.saveButton({
+            if ($applyChangesButton) {
+                return $applyChangesButton;
+            }
+            $applyChangesButton = components.buttons.saveButton({
                 text: texts.buttons.applyChangeText,
-                title: texts.buttons.applyChangeTitle,
                 click: onApply,
                 style: 'display: none;',
-            }));
+            });
+            components.overlays.defaultTooltip($applyChangesButton, texts.buttons.applyChangeTitle);
+
+            return $applyChangesButton;
         }
 
         let $removeCroppingButton;
@@ -332,41 +342,59 @@ define(
         let $showImageRotationControls;
 
         function getShowImageRotationControls() {
-            return $showImageRotationControls || ($showImageRotationControls = components.buttons.rotationButton({
-                title: texts.buttons.rotationTitle,
+            if ($showImageRotationControls) {
+                return $showImageRotationControls;
+            }
+            $showImageRotationControls = components.buttons.rotationButton({
                 click: onRotationActivated,
-            }));
+            });
+            components.overlays.defaultTooltip($showImageRotationControls, texts.buttons.rotationTitle);
+
+            return $showImageRotationControls;
         }
 
         let $zoomPlusButton;
 
         function getZoomPlusButton() {
-            return $zoomPlusButton || ($zoomPlusButton = components.buttons.zoomPlusButton({
-                title: texts.buttons.zoomIn,
+            if ($zoomPlusButton) {
+                return $zoomPlusButton;
+            }
+            $zoomPlusButton = components.buttons.zoomPlusButton({
                 click: wrapWithNoOpIfNoImageYet(zoomPlus),
                 style: 'display: none;',
-            }));
+            });
+            components.overlays.defaultTooltip($zoomPlusButton, texts.buttons.zoomIn);
+
+            return $zoomPlusButton;
         }
 
         let $zoomMinusButton;
 
         function getZoomMinusButton() {
-            return $zoomMinusButton || ($zoomMinusButton = components.buttons.zoomMinusButton({
-                title: texts.buttons.zoomOut,
+            if ($zoomMinusButton) {
+                return $zoomMinusButton;
+            }
+            $zoomMinusButton = components.buttons.zoomMinusButton({
                 click: wrapWithNoOpIfNoImageYet(zoomMinus),
                 style: 'display: none;',
-            }))
+            });
+            components.overlays.defaultTooltip($zoomMinusButton, texts.buttons.zoomOut);
+
+            return $zoomMinusButton;
         }
 
         let $fitButton;
 
         function getFitButton() {
-            $fitButton || ($fitButton = components.buttons.fitButton({
+            if ($fitButton) {
+                return $fitButton;
+            }
+            $fitButton = components.buttons.fitButton({
                 'class': 'icon-image-fit',
-                title: 'fit',
                 click: buildFitImage,
                 style: 'display: none;'
-            }));
+            });
+            components.overlays.defaultTooltip($fitButton, 'fit');
 
             return $fitButton;
         }
@@ -374,40 +402,60 @@ define(
         let $zoomResetButton;
 
         function getZoomResetButton() {
-            return $zoomResetButton || ($zoomResetButton = components.buttons.zoomResetButton({
-                title: texts.buttons.reset,
+            if ($zoomResetButton) {
+                return $zoomResetButton;
+            }
+            $zoomResetButton = components.buttons.zoomResetButton({
                 style: 'display: none;',
                 click: wrapWithNoOpIfNoImageYet(revertToOriginalImageChanges),
-            }))
+            });
+            components.overlays.defaultTooltip($zoomResetButton, texts.buttons.reset);
+
+            return $zoomResetButton;
         }
 
         let $rotateLeftButton;
 
         function getRotateLeftButton() {
-            return $rotateLeftButton || ($rotateLeftButton = components.buttons.rotateLeftButton({
-                title: texts.buttons.rotateLeft,
+            if ($rotateLeftButton) {
+                return $rotateLeftButton;
+            }
+            $rotateLeftButton = components.buttons.rotateLeftButton({
                 click: wrapWithNoOpIfNoImageYet(imageRotate.rotateLeft),
                 style: 'display: none;',
-            }))
+            });
+            components.overlays.defaultTooltip($rotateLeftButton, texts.buttons.rotateLeft);
+
+            return $rotateLeftButton;
         }
 
         let $rotateRightButton;
 
         function getRotateRightButton() {
-            return $rotateRightButton || ($rotateRightButton = components.buttons.rotateRightButton({
-                title: texts.buttons.rotateRight,
+            if ($rotateRightButton) {
+                return $rotateRightButton;
+            }
+            $rotateRightButton = components.buttons.rotateRightButton({
                 click: wrapWithNoOpIfNoImageYet(imageRotate.rotateRight),
                 style: 'display: none;',
-            }))
+            });
+            components.overlays.defaultTooltip($rotateRightButton, texts.buttons.rotateRight);
+
+            return $rotateRightButton;
         }
 
         let $revertButton;
 
         function getRevertButton() {
-            return $revertButton || ($revertButton = components.buttons.revertButton({
-                title: texts.buttons.revert,
+            if ($revertButton) {
+                return $revertButton;
+            }
+            $revertButton = components.buttons.revertButton({
                 click: wrapWithNoOpIfNoImageYet(revertToPreviewImageChanges),
-            }))
+            });
+            components.overlays.defaultTooltip($revertButton, texts.buttons.revert);
+
+            return $revertButton;
         }
 
         function showCroppingStuff() {
@@ -445,19 +493,29 @@ define(
         let $croppingButton;
 
         function getCroppingButton() {
-            return $croppingButton || ($croppingButton = components.buttons.croppingButton({
-                title: texts.buttons.cropping,
+            if ($croppingButton) {
+                return $croppingButton;
+            }
+            $croppingButton = components.buttons.croppingButton({
                 click: showCroppingStuff,
-            }))
+            });
+            components.overlays.defaultTooltip($croppingButton, texts.buttons.cropping);
+
+            return $croppingButton;
         }
 
         let $percentageRatio;
 
         function getPercentageRatio() {
-            return $percentageRatio || ($percentageRatio = $('<div>', {
+            if ($percentageRatio) {
+                return $percentageRatio;
+            }
+            $percentageRatio = $('<div>', {
                 'class': 'percentage-image-info',
-                title: 'bootstrap percentage',
-            }));
+            });
+            components.overlays.defaultTooltip($percentageRatio, 'bootstrap percentage');
+
+            return $percentageRatio;
         }
 
         let $scaleAndRotateControls;

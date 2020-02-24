@@ -4,9 +4,9 @@
  */
 define("imcms-flags-builder",
     [
-        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-i18n-texts", "imcms-overlays-builder",
     ],
-    function (bemBuilder, languagesRestApi, imcms, $, texts) {
+    function (bemBuilder, languagesRestApi, imcms, $, texts, overlays) {
 
         texts = texts.languageFlags;
 
@@ -52,9 +52,12 @@ define("imcms-flags-builder",
             }
 
             attributes = attributes || {};
-            attributes.title = language.name + "/" + language.nativeName;
 
-            return flagsBEM.buildElement("flag", tag, attributes, modifiers).click(onFlagClick);
+            const $flag = flagsBEM.buildElement("flag", tag, attributes, modifiers).click(onFlagClick);
+
+            overlays.defaultTooltip($flag, language.name + "/" + language.nativeName, {placement: 'bottom'});
+
+            return $flag;
         }
 
         function mapLanguagesToFlags(languages, flagBuilderDataProducer) {
