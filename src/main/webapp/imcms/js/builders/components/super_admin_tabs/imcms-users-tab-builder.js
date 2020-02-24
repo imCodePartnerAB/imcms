@@ -6,10 +6,9 @@ define(
     'imcms-users-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'jquery', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms', 'imcms-modal-window-builder', 'imcms-overlays-builder'
+        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms', 'imcms-modal-window-builder'
     ],
-    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms, modal,
-              overlays) {
+    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms, modal) {
 
         texts = texts.superAdmin.users;
 
@@ -18,15 +17,6 @@ define(
         let $usersNameFilter;
         let $includeInactiveCheckbox;
         let $usersFilterSelect;
-
-        function addTooltip(element, text, placement = 'top') {
-            overlays.createOverlay({
-                element: element,
-                overlay: overlays.tooltip(text),
-                delay: {show: 400},
-                placement: placement,
-            });
-        }
 
         function buildSearchRow() {
 
@@ -110,10 +100,10 @@ define(
                     user.active || (infoRowAttributes['class'] = userArchivedClass);
 
                     const $controlEdit = components.controls.edit(getOnEditUser(user));
-                    addTooltip($controlEdit, texts.tooltip.editUser);
+                    components.overlays.defaultTooltip($controlEdit, texts.tooltip.editUser);
 
                     const $controlArchive = components.controls.archive(getOnArchiveUser(user));
-                    addTooltip($controlArchive, texts.tooltip.archiveUser);
+                    components.overlays.defaultTooltip($controlArchive, texts.tooltip.archiveUser);
 
                     const $archiveBlock = user.active
                         ? $controlArchive
