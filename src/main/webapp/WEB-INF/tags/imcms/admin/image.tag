@@ -1,3 +1,5 @@
+<%@ tag import="org.apache.commons.text.StringEscapeUtils" %>
+
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -62,8 +64,10 @@
             <c:set var="classes" value=" class=\"${alignClass}${spaces}\""/>
         </c:if>
 
-        <c:set var="alt"
-               value="${empty image.alternateText ? ' alt=\" \"' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
+        <c:set var="alt" value="${empty image.alternateText
+            ? ' alt=\" \"'
+            : ' alt=\"'.concat(StringEscapeUtils.escapeHtml4(image.alternateText)).concat('\"')}"
+        />
 
         <c:choose>
             <c:when test="${empty image.linkUrl}">
