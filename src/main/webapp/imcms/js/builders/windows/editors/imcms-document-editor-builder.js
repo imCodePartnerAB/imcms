@@ -9,11 +9,11 @@ define("imcms-document-editor-builder",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
         "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
         "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api",
-        "imcms-modal-window-builder", "imcms-overlays-builder"
+        "imcms-modal-window-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, modal, overlays) {
+              docProfileSelectBuilder, docCopyRestApi, modal) {
 
         texts = texts.editors.document;
 
@@ -585,7 +585,7 @@ define("imcms-document-editor-builder",
                         onConfirm
                     );
                 });
-                addTooltip($controlCopy, texts.controls.copy.title, 'left');
+                components.overlays.defaultTooltip($controlCopy, texts.controls.copy.title, {placement: 'left'});
                 controls.push($controlCopy);
             }
 
@@ -593,7 +593,7 @@ define("imcms-document-editor-builder",
                 const $controlEdit = components.controls.edit(() => {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
-                addTooltip($controlEdit, texts.controls.edit.title, 'left');
+                components.overlays.defaultTooltip($controlEdit, texts.controls.edit.title, {placement: 'left'});
                 controls.push($controlEdit);
             }
 
@@ -911,7 +911,11 @@ define("imcms-document-editor-builder",
                 class: "imcms-grid-coll-18",
             });
             $docItemId.modifiers = ["id"];
-            addTooltip($docItemId, getIdTooltipText(document.id, document.created, document.createdBy), 'right');
+            components.overlays.defaultTooltip(
+                $docItemId,
+                getIdTooltipText(document.id, document.created, document.createdBy),
+                {placement: 'right'}
+            );
 
             const title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
             const $docItemTitle = components.texts.titleText("<a>", title, {
@@ -920,20 +924,23 @@ define("imcms-document-editor-builder",
             });
             $docItemTitle.modifiers = ["title"];
             !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
-            title && addTooltip($docItemTitle, title);
+            title && components.overlays.defaultTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
                 class: "imcms-flex--flex-2",
             });
             $docItemAlias.modifiers = ["alias"];
-            document.alias && addTooltip($docItemAlias, "/" + document.alias);
+            document.alias && components.overlays.defaultTooltip($docItemAlias, "/" + document.alias);
 
             const $docItemModified = components.texts.titleText("<div>", document.modified, {
                 class: "imcms-grid-coll-15",
             });
             $docItemModified.modifiers = ["date", "modifiedDate"];
             if (document.modified) {
-                addTooltip($docItemModified, getModifiedDateTooltipText(document.modified, document.modifiedBy));
+                components.overlays.defaultTooltip(
+                    $docItemModified,
+                    getModifiedDateTooltipText(document.modified, document.modifiedBy)
+                );
             }
 
             const $docItemPublished = components.texts.titleText("<div>", document.published, {
@@ -941,7 +948,10 @@ define("imcms-document-editor-builder",
             });
             $docItemPublished.modifiers = ["date", "publishedDate"];
             if (document.published) {
-                addTooltip($docItemPublished, getPublishedDateTooltipText(document.published, document.publishedBy));
+                components.overlays.defaultTooltip(
+                    $docItemPublished,
+                    getPublishedDateTooltipText(document.published, document.publishedBy)
+                );
             }
 
             const $star = document.currentVersion === WORKING_VERSION
@@ -950,7 +960,10 @@ define("imcms-document-editor-builder",
 
             const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
             $currentVersion.modifiers = ['currentVersion'];
-            addTooltip($currentVersion, getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip);
+            components.overlays.defaultTooltip(
+                $currentVersion,
+                getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip
+            );
 
             const $docItemType = components.texts.titleText("<div>", document.type, {
                 class: "imcms-grid-coll-18",
@@ -962,7 +975,7 @@ define("imcms-document-editor-builder",
                 class: "imcms-grid-coll-17",
             });
             $docStatus.modifiers = ["status"];
-            addTooltip($docStatus, docStatusTexts.tooltip, 'left');
+            components.overlays.defaultTooltip($docStatus, docStatusTexts.tooltip, {placement: 'left'});
 
             const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];
@@ -1004,15 +1017,6 @@ define("imcms-document-editor-builder",
                 block: "imcms-document-item",
                 elements: elements
             }).buildBlockStructure("<div>");
-        }
-
-        function addTooltip(element, text, placement = 'top') {
-            overlays.createOverlay({
-                element: element,
-                overlay: overlays.tooltip(text),
-                delay: {show: 400},
-                placement: placement,
-            });
         }
 
         function buildDocumentItemContainer(document, opts, isUsed) {

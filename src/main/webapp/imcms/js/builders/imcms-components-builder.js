@@ -15,4 +15,5 @@ module.exports = {
     keywords: require('imcms-keywords-builder'),
     dateTime: require('imcms-date-time-builder'),
     controls: require('imcms-controls-builder'),
+    overlays: require('imcms-overlays-builder'),
 };

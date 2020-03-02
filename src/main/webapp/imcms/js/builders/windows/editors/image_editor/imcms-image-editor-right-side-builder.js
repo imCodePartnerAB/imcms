@@ -271,21 +271,24 @@ define(
 
                     const $alignNoneBtn = buildAlignButton(["align-none", "align-active"], {
                         click: onAlignNoneClick,
-                        title: texts.align.none,
                         text: texts.none
                     });
+                    components.overlays.defaultTooltip($alignNoneBtn, texts.align.none);
+
                     const $alignCenterBtn = buildAlignButton(["align-center"], {
                         click: onAlignCenterClick,
-                        title: texts.align.center
                     });
+                    components.overlays.defaultTooltip($alignCenterBtn, texts.align.center);
+
                     const $alignLeftBtn = buildAlignButton(["align-left"], {
                         click: onAlignLeftClick,
-                        title: texts.align.left
                     });
+                    components.overlays.defaultTooltip($alignLeftBtn, texts.align.left);
+
                     const $alignRightBtn = buildAlignButton(["align-right"], {
                         click: onAlignRightClick,
-                        title: texts.align.right
                     });
+                    components.overlays.defaultTooltip($alignRightBtn, texts.align.right);
 
                     return $alignContainer = components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,

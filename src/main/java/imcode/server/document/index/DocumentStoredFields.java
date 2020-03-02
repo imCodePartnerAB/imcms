@@ -82,8 +82,13 @@ public class DocumentStoredFields {
     }
 
     public boolean isShownInDefaultLanguage() {
-        final String disableLanguageShowMode = (String) solrDocument.getFieldValue(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE);
-        return Meta.DisabledLanguageShowMode.valueOf(disableLanguageShowMode) == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+        final String disableLanguageShowModeName = (String) solrDocument.getFieldValue(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE);
+
+        final Meta.DisabledLanguageShowMode disabledLanguageShowMode = disableLanguageShowModeName == null
+                ? Meta.DisabledLanguageShowMode.DO_NOT_SHOW
+                : Meta.DisabledLanguageShowMode.valueOf(disableLanguageShowModeName);
+
+        return disabledLanguageShowMode == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
     }
 
     public boolean isShownTitle() {

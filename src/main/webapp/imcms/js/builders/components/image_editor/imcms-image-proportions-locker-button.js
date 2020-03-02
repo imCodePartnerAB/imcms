@@ -19,9 +19,11 @@ function getProportionsText() {
 let $proportionsBtn;
 
 function getProportionsButton() {
-    return $proportionsBtn || ($proportionsBtn = components.buttons.proportionsButton({
+    if ($proportionsBtn) {
+        return $proportionsBtn;
+    }
+    $proportionsBtn = components.buttons.proportionsButton({
         'data-state': 'active',
-        title: texts.proportionsButtonTitle,
         click: function () {
             if (imageResize.isProportionsLockedByStyle()) return;
 
@@ -35,7 +37,10 @@ function getProportionsButton() {
 
             if (saveProportions) imageCropper.refreshCropping();
         }
-    }))
+    });
+    components.overlays.defaultTooltip($proportionsBtn, texts.proportionsButtonTitle);
+
+    return $proportionsBtn;
 }
 
 module.exports = {
