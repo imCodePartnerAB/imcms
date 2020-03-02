@@ -231,6 +231,14 @@ module.exports = {
         return minWidth || minHeight
     },
 
+    isRestrictedWidthStyleSize() {
+        return minWidth;
+    },
+
+    isRestrictedHeightStyleSize() {
+        return minHeight;
+    },
+
     isSaveProportionsEnabled: () => saveProportions,
 
     getProportionsCoefficient: () => proportionsCoefficient,
@@ -269,7 +277,7 @@ module.exports = {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            if (this.isAnyRestrictedStyleSize() && !resetToOriginal) {
+            if (this.isRestrictedWidthStyleSize() && !resetToOriginal) {
                 previewImage.setBackgroundWidth(newWidth);
             } else {
                 previewImage.setBackgroundWidth(original.width);
@@ -295,7 +303,7 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            if (this.isAnyRestrictedStyleSize() && !resetToOriginal) {
+            if (this.isRestrictedHeightStyleSize() && !resetToOriginal) {
                 previewImage.setBackgroundHeight(newHeight);
             } else {
                 previewImage.setBackgroundHeight(original.height);
