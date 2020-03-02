@@ -29,7 +29,7 @@ module.exports = {
             const $heightWidthBlock = $('.imcms-image-toolbar__img-origin-size');
             $heightWidthBlock.show();
             const $imageInfoSize = $('.imcms-info-edit-image__size-info');
-            $imageInfoSize.text(` (${this.width} x ${this.height}) ${imageData.size}`);
+            $imageInfoSize.text(` (${this.width} x ${this.height}) ${imageData.sizeFormatted}`);
 
             require('imcms-image-resize').setOriginal(this.width, this.height);
 
