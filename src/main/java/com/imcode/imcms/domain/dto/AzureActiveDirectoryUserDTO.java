@@ -45,8 +45,8 @@ public class AzureActiveDirectoryUserDTO {
         final ExternalUser user = new ExternalUser(EXTERNAL_AUTHENTICATOR_AZURE_AD);
 
         user.setLoginName(id);
-        user.setFirstName(givenName);
-        user.setLastName(surname);
+        user.setFirstName(StringUtils.defaultString(givenName));
+        user.setLastName(StringUtils.defaultString(surname));
         user.setPassword("");
         user.setEmailAddress(StringUtils.defaultString(mail));
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
