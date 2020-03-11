@@ -404,7 +404,6 @@ function init(_imageData) {
 
     cropArea.getCroppingBlock().css({
         "z-index": 50,
-        'zoom': 0.6
     });
 
     const $image = previewImageArea.getPreviewImage();
