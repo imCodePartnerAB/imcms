@@ -14,8 +14,8 @@ const original = {};
 const preview = {};
 const currentSize = {};
 const currentPrevSize = {};
-const currentFinalPrevImg = {};
 const finalImageStylesPosition = {};
+let currentFinalPrevImg = {};
 let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
@@ -180,7 +180,7 @@ module.exports = {
         require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
     },
     setFinalPreviewImageData(image) {
-        $.extend(currentFinalPrevImg, image);
+        currentFinalPrevImg = JSON.parse(JSON.stringify(image));
     },
     getFinalPreviewImageData: () => currentFinalPrevImg,
     setFinalPreviewBackGroundPositionX(positionX) {

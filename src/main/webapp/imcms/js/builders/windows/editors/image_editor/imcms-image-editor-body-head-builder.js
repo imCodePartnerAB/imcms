@@ -159,7 +159,7 @@ define(
         }
 
         function revertToPreviewImageChanges() {
-            $.extend(imageData, imageResize.getFinalPreviewImageData());
+            imageData = JSON.parse(JSON.stringify(imageResize.getFinalPreviewImageData()));
             imageRotate.rotateImage("NORTH");
             zoomFit();
             imageResize.resetToPreview(imageData);
@@ -213,11 +213,11 @@ define(
         function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
             const $image = isOriginal ? editableImage.getImage() : previewImageArea.getPreviewImage();
             if ($image.width() >= clientPreviewAreaWidth) {
-                imageResize.setWidthProportionally(clientPreviewAreaWidth - 30, isOriginal);
+                imageResize.setWidthProportionally(clientPreviewAreaWidth - 20, isOriginal);
 
             }
             if ($image.height() >= clientPreviewAreaHeight) {
-                imageResize.setHeightProportionally(clientPreviewAreaHeight - 30, isOriginal);
+                imageResize.setHeightProportionally(clientPreviewAreaHeight - 20, isOriginal);
             }
         }
 

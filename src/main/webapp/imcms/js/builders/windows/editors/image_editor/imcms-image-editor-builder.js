@@ -191,11 +191,6 @@ define(
 
             bodyHeadBuilder.showPreviewImageArea();
 
-            imageData.cropRegion = image.cropRegion;
-            imageData.align = image.align;
-            imageData.rotateDirection = image.rotateDirection;
-            imageData.rotateAngle = image.rotateAngle;
-
             $.extend(imageData, image);
 
             if (imageData.inText) $tag.attr("data-index", imageData.index);
@@ -225,8 +220,6 @@ define(
                 delete opts.loopEntryIndex;
                 delete opts.loopIndex;
             }
-
-            $.extend(imageData, opts);
 
             if (opts.inText) {
                 imageDataContainers.$langFlags.hideLangFlagsAndCheckbox();
