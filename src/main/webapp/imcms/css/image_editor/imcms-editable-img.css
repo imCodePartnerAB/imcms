@@ -24,7 +24,6 @@
 
 .image-cropping-wrap {
     position: relative;
-    border: 35px solid gray;
 }
 
 .image-cropping-wrap__layout {
@@ -68,4 +67,11 @@
     -ms-user-select: none;
     user-select: none;
     z-index: 2;
+}
+
+.imcms-preview-img:not(.image-cropping-wrap__img),
+.image-cropping-wrap,
+.imcms-editable-img {
+    border: 15px solid transparent;
+    background: no-repeat center;
 }

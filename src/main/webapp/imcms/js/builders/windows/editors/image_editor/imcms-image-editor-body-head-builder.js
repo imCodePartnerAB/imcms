@@ -190,17 +190,12 @@ define(
 
         function buildFitImage() {
             const $previewArea = previewImageArea.getPreviewImageArea();
-            const $previewContainer = previewImageArea.getPreviewImageContainer();
             const $originalArea = editableImageArea.getEditableImageArea();
 
             if (checkActiveTab.currentActiveTab() === 'prev') {
                 const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
                 const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
-                $previewContainer.css({
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                    'display': 'flex'
-                });
+
                 setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
             } else {
                 const clientOriginAreaWidth = parseInt($originalArea[0].offsetWidth);
@@ -212,12 +207,13 @@ define(
 
         function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
             const $image = isOriginal ? editableImage.getImage() : previewImageArea.getPreviewImage();
-            if ($image.width() >= clientPreviewAreaWidth) {
-                imageResize.setWidthProportionally(clientPreviewAreaWidth - 20, isOriginal);
+            const imageBorderWidth = parseInt($image.css('border-width'));
 
+            if ($image.width() >= clientPreviewAreaWidth) {
+                imageResize.setWidthProportionally(clientPreviewAreaWidth - imageBorderWidth * 2, isOriginal);
             }
             if ($image.height() >= clientPreviewAreaHeight) {
-                imageResize.setHeightProportionally(clientPreviewAreaHeight - 20, isOriginal);
+                imageResize.setHeightProportionally(clientPreviewAreaHeight - imageBorderWidth * 2, isOriginal);
             }
         }
 
