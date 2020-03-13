@@ -505,6 +505,7 @@ const texts = {
                 saveAndClose: "Spara och stäng",
                 restrictedStyle: 'Begränsad stil:',
                 infoStyle: 'Den använda bilden är begränsad till den här stilen.',
+                zoomGrade: 'Zoomgrad',
                 exif: {
                     button: "Visa exif info"
                 },
@@ -1401,6 +1402,7 @@ const texts = {
                 saveAndClose: "Save and close",
                 restrictedStyle: 'Restricted style:',
                 infoStyle: 'The used image is restricted to this style.',
+                zoomGrade: 'Zoom grade',
                 exif: {
                     button: "Show exif info"
                 },
