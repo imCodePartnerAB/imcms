@@ -6,7 +6,6 @@ const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
 const previewImage = require('imcms-preview-image-area');
-const $ = require('jquery');
 
 let saveProportions = true; // by default
 let resetToOriginal = false; // by default
@@ -171,13 +170,11 @@ module.exports = {
         currentSize.width = width;
         currentSize.height = height;
         proportionsCoefficient = currentSize.width / currentSize.height;
-        require('imcms-image-percentage-proportion-build').countAndWriteImagePercentage(width, height, $('.percentage-image-info'));
     },
     setCurrentPreviewSize(width, height) {
         currentPrevSize.width = width;
         currentPrevSize.height = height;
         proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
-        require('imcms-image-percentage-proportion-build').countAndWriteImagePercentage(width, height, $('.percentage-image-info'));
     },
     setFinalPreviewImageData(image) {
         currentFinalPrevImg = JSON.parse(JSON.stringify(image));

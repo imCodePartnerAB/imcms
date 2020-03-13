@@ -8,11 +8,11 @@ define(
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
         'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
-        'imcms-preview-image-area', 'imcms-image-percentage-proportion-build', 'imcms-bem-builder',
+        'imcms-preview-image-area', 'imcms-bem-builder',
         'imcms-components-builder', 'imcms-image-zoom'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, percentImg, BEM, components,
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, BEM, components,
               imageZoom) {
 
         texts = texts.editors.image;
@@ -69,8 +69,6 @@ define(
                 imageResize.setWidthStrict(0, image.width, isOriginalImage);
                 imageResize.setHeightStrict(0, image.height, isOriginalImage);
                 imageResize.updateSizing(imageData, true, isOriginalImage);
-
-                imageZoom.fitImage();
             }
 
             if (!isOriginalImage) {
@@ -118,6 +116,7 @@ define(
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
+            imageZoom.fitImage();
         }
 
         function fillLeftSideData(imageData) {
@@ -127,7 +126,6 @@ define(
 
             editableImage.setImageSource(imageData, () => {
                 initSize(imageData, true);
-                percentImg.countAndWriteImagePercentage(imageData.width, imageData.height, $('.percentage-image-info'));
             });
 
             prevImageArea.setPreviewImageSource(imageData, () => {

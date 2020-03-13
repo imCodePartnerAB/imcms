@@ -6,10 +6,10 @@ define(
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
         'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area',
-        'imcms-image-percentage-proportion-build', 'imcms-image-active-tab', 'imcms-image-zoom'
+        'imcms-image-active-tab', 'imcms-image-zoom'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
-              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild, checkActiveTab, imageZoom) {
+              ToolbarViewBuilder, cropper, editableImageArea, checkActiveTab, imageZoom) {
 
         texts = texts.editors.image;
         let imageData;
@@ -37,15 +37,9 @@ define(
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
             const $editableArea = editableImageArea.getEditableImageArea();//todo rename all modules on the origin instead edit
             const $exifInfoButton = $('.imcms-image_editor__right-side').find(`[name='exifInfo']`);
+
             if ($(this).data("tab") === "prev") {
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
-
-                const prevWidth = imageResize.getPreviewWidth();
-                const prevHeight = imageResize.getPreviewHeight();
-
-                if (prevWidth > 0 && prevHeight > 0) {
-                    percentagePropBuild.countAndWriteImagePercentage(prevWidth, prevHeight, $percentageRatio);
-                }
 
                 $exifInfoButton.css({
                     'display': 'none'
@@ -68,7 +62,6 @@ define(
                 toggleImageAreaToolbarViewBuilder.build();
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
-                    percentagePropBuild.countAndWriteImagePercentage(width, height, $percentageRatio);
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
                         $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
                     } else {
@@ -91,6 +84,8 @@ define(
 
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
+
+            imageZoom.updateZoomGradeValue();
         }
 
         function showHidePanel(panelOpts) {
@@ -438,14 +433,9 @@ define(
 
         function getPercentageRatio() {
             if ($percentageRatio) {
-                $percentageRatio.text('100%');
                 return $percentageRatio;
             }
-            $percentageRatio = $('<div>', {
-                class: 'percentage-image-info imcms-input imcms-number-box imcms-number-box__input',
-                text: '100%',
-            });
-            components.overlays.defaultTooltip($percentageRatio, texts.zoomGrade);
+            $percentageRatio = imageZoom.buildZoomGradeField();
 
             return $percentageRatio;
         }
