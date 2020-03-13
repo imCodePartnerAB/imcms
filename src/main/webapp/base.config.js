@@ -130,7 +130,8 @@ module.exports = {
                             'imcms-crop-coords-controllers',
                             'imcms-image-proportions-locker-button',
                             'imcms-image-active-tab',
-                            'imcms-image-percentage-proportion-build'
+                            'imcms-image-percentage-proportion-build',
+                            'imcms-image-zoom',
                         ],
                         page_info_tabs: [
                             'imcms-page-info-tabs-builder',
