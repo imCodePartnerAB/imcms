@@ -1,7 +1,37 @@
 define(
     'imcms-image-zoom',
-    ['jquery', 'imcms-editable-image',  'imcms-editable-area', 'imcms-preview-image-area'],
-    function ($, editableImage,  editableImageArea, previewImageArea) {
+    [
+        'jquery', 'imcms-editable-image', 'imcms-editable-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
+        'imcms-components-builder',
+    ],
+    function ($, editableImage, editableImageArea, previewImageArea, i18nTexts,
+              components) {
+
+        const texts = i18nTexts.editors.image;
+
+        let $zoomGradeField;
+
+        function buildZoomGradeField() {
+            $zoomGradeField = $('<div>', {
+                class: 'percentage-image-info imcms-input imcms-number-box imcms-number-box__input',
+            });
+            components.overlays.defaultTooltip($zoomGradeField, texts.zoomGrade);
+
+            return $zoomGradeField;
+        }
+
+        function updateZoomGradeValue() {
+            const isPreview = isPreviewTab();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
+            const currentZoom = parseFloat($image.css('zoom'));
+
+            updateZoomGradeValueByCssProperty(currentZoom);
+        }
+
+        function updateZoomGradeValueByCssProperty(cssZoomProperty) {
+            const percentValue = Number((cssZoomProperty * 100).toFixed(1));
+            $zoomGradeField.text(`${percentValue}%`);
+        }
 
         function isPreviewTab() {
             return $('.imcms-editable-img-control-tabs__tab--active').data('tab') === 'prev';
@@ -27,33 +57,27 @@ define(
             const heightScale = imageHeight / $imageArea.height();
 
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
+            const newZoomValue = currentZoom * zoomScale;
 
-            $image.css('zoom', currentZoom * zoomScale);
+            $image.css('zoom', newZoomValue);
+            updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
         function zoom(scale) {
-            if (isPreviewTab()) {
-                const $previewArea = previewImageArea.getPreviewImage();
+            const isPreview = isPreviewTab();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
 
-                if (!scale) {
-                    $previewArea.css('zoom', 1);
-                    return;
-                }
-
-                const currentZoom = parseFloat($previewArea.css('zoom'));
-                $previewArea.css('zoom', currentZoom * scale);
-
-            } else {
-                const $originArea = editableImage.getImage();
-
-                if (!scale) {
-                    $originArea.css('zoom', 1);
-                    return;
-                }
-
-                const currentZoom = parseFloat($originArea.css('zoom'));
-                $originArea.css('zoom', currentZoom * scale);
+            if (!scale) {
+                $image.css('zoom', 1);
+                updateZoomGradeValueByCssProperty(1);
+                return;
             }
+
+            const currentZoom = parseFloat($image.css('zoom'));
+            const newZoomValue = currentZoom * scale;
+
+            $image.css('zoom', newZoomValue);
+            updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
         function zoomPlus() {
@@ -69,6 +93,8 @@ define(
         }
 
         return {
+            buildZoomGradeField,
+            updateZoomGradeValue,
             fitImage,
             zoom,
             zoomPlus,
