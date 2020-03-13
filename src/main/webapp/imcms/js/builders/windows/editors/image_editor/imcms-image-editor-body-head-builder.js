@@ -438,12 +438,14 @@ define(
 
         function getPercentageRatio() {
             if ($percentageRatio) {
+                $percentageRatio.text('100%');
                 return $percentageRatio;
             }
             $percentageRatio = $('<div>', {
-                'class': 'percentage-image-info',
+                class: 'percentage-image-info imcms-input imcms-number-box imcms-number-box__input',
+                text: '100%',
             });
-            components.overlays.defaultTooltip($percentageRatio, 'bootstrap percentage');
+            components.overlays.defaultTooltip($percentageRatio, texts.zoomGrade);
 
             return $percentageRatio;
         }
