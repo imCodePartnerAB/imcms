@@ -25,13 +25,13 @@ function getNewVal($input) {
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setHeightProportionally(newVal, false);
-    percentageBuild.buildPercentageFromEditControl($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
+    percentageBuild.countAndWriteImagePercentageFromEditControls($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setWidthProportionally(newVal, false);
-    percentageBuild.buildPercentageFromEditControl($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
+    percentageBuild.countAndWriteImagePercentageFromEditControls($wPreviewControl, $hPreviewControl, $('.percentage-image-info'));
 }
 
 let widthLabelText = "W";

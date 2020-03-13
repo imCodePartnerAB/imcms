@@ -171,13 +171,13 @@ module.exports = {
         currentSize.width = width;
         currentSize.height = height;
         proportionsCoefficient = currentSize.width / currentSize.height;
-        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
+        require('imcms-image-percentage-proportion-build').countAndWriteImagePercentage(width, height, $('.percentage-image-info'));
     },
     setCurrentPreviewSize(width, height) {
         currentPrevSize.width = width;
         currentPrevSize.height = height;
         proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
-        require('imcms-image-percentage-proportion-build').buildPercentageImage(width, height, $('.percentage-image-info'));
+        require('imcms-image-percentage-proportion-build').countAndWriteImagePercentage(width, height, $('.percentage-image-info'));
     },
     setFinalPreviewImageData(image) {
         currentFinalPrevImg = JSON.parse(JSON.stringify(image));

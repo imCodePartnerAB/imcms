@@ -14,7 +14,7 @@ define(
             return newVal
         }
 
-        function getPercentageImageFromEditControls($inputWidth, $inputHeight, $place) {
+        function countAndWriteImagePercentageFromEditControls($inputWidth, $inputHeight, $place) {
             const originalWidth = imageResize.getWidth();
             const originalHeight = imageResize.getHeight();
             const originalRatio = originalHeight * originalWidth;
@@ -25,7 +25,7 @@ define(
             $place.text(((currentNewWidth * currentNewHeight * 100) / originalRatio).toFixed(1) + "%");
         }
 
-        function buildPercentageProportionImage(width, height, $place) {
+        function countAndWriteImagePercentage(width, height, $place) {
             const originalWidth = imageResize.getWidth();
             const originalHeight = imageResize.getHeight();
             const originalRatio = originalHeight * originalWidth;
@@ -33,25 +33,9 @@ define(
             $place.text(((width * height * 100) / originalRatio).toFixed(1) + "%");
         }
 
-        function getPercentageProportionImage(image) {
-            const originalWidth = imageResize.getWidth();
-            const originalHeight = imageResize.getHeight();
-            const originalRatio = originalHeight * originalWidth;
-
-            const currentWidth = image.width;
-            const currentHeight = image.height;
-
-            return ((currentWidth * currentHeight * 100) / originalRatio).toFixed(1);
-        }
-
         return {
-            buildPercentageFromEditControl: ($inputWidth, $inputHeight, $place) =>
-                getPercentageImageFromEditControls($inputWidth, $inputHeight, $place),
-
-            buildPercentageImage: (width, height, $place) => buildPercentageProportionImage(width, height, $place),
-
-            getPercentageImageData: (width, height) => getPercentageProportionImage(width, height)
-
+            countAndWriteImagePercentageFromEditControls,
+            countAndWriteImagePercentage,
         };
     }
 );

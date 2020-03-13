@@ -6,10 +6,10 @@ define(
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
         'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area',
-        'imcms-image-percentage-proportion-build', 'imcms-image-active-tab'
+        'imcms-image-percentage-proportion-build', 'imcms-image-active-tab', 'imcms-image-zoom'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
-              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild, checkActiveTab) {
+              ToolbarViewBuilder, cropper, editableImageArea, percentagePropBuild, checkActiveTab, imageZoom) {
 
         texts = texts.editors.image;
         let imageData;
@@ -44,7 +44,7 @@ define(
                 const prevHeight = imageResize.getPreviewHeight();
 
                 if (prevWidth > 0 && prevHeight > 0) {
-                    percentagePropBuild.buildPercentageImage(prevWidth, prevHeight, $percentageRatio);
+                    percentagePropBuild.countAndWriteImagePercentage(prevWidth, prevHeight, $percentageRatio);
                 }
 
                 $exifInfoButton.css({
@@ -68,7 +68,7 @@ define(
                 toggleImageAreaToolbarViewBuilder.build();
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
-                    percentagePropBuild.buildPercentageImage(width, height, $percentageRatio);
+                    percentagePropBuild.countAndWriteImagePercentage(width, height, $percentageRatio);
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
                         $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
                     } else {
@@ -121,47 +121,10 @@ define(
             });
         }
 
-        function zoom(delta) {
-            if ($('.imcms-editable-img-control-tabs__tab--active').data('tab') === "prev") {
-                const $previewArea = previewImageArea.getPreviewImage();
-
-                if (!delta) {
-                    $previewArea.css('zoom', 1);
-                    return;
-                }
-
-                const currentZoom = parseFloat($previewArea.css('zoom'));
-                $previewArea.css('zoom', currentZoom + delta);
-
-            } else {
-                const $originArea = editableImage.getImage();
-
-                if (!delta) {
-                    $originArea.css('zoom', 1);
-                    return;
-                }
-
-                const currentZoom = parseFloat($originArea.css('zoom'));
-                $originArea.css('zoom', currentZoom + delta);
-            }
-        }
-
-        function zoomPlus() {
-            zoom(+0.5);
-        }
-
-        function zoomMinus() {
-            zoom(-0.5);
-        }
-
-        function zoomFit() {
-            zoom(0);
-        }
-
         function revertToPreviewImageChanges() {
             imageData = JSON.parse(JSON.stringify(imageResize.getFinalPreviewImageData()));
             imageRotate.rotateImage("NORTH");
-            zoomFit();
+            imageZoom.resetZoom();
             imageResize.resetToPreview(imageData);
         }
 
@@ -174,7 +137,7 @@ define(
                     cropY2: 0,
                 };
                 imageRotate.rotateImage("NORTH");
-                zoomFit();
+                imageZoom.resetZoom();
                 imageResize.resetToOriginal(imageData);
             } else {
                 imageData.cropRegion = {
@@ -184,36 +147,7 @@ define(
                     cropY2: 0,
                 };
                 imageRotate.rotateImage("NORTH");
-                zoomFit();
-            }
-        }
-
-        function buildFitImage() {
-            const $previewArea = previewImageArea.getPreviewImageArea();
-            const $originalArea = editableImageArea.getEditableImageArea();
-
-            if (checkActiveTab.currentActiveTab() === 'prev') {
-                const clientPreviewAreaWidth = parseInt($previewArea[0].offsetWidth);
-                const clientPreviewAreaHeight = parseInt($previewArea[0].offsetHeight);
-
-                setStrictWidthHeightCurrentImage(false, clientPreviewAreaWidth, clientPreviewAreaHeight);
-            } else {
-                const clientOriginAreaWidth = parseInt($originalArea[0].offsetWidth);
-                const clientOriginAreaHeight = parseInt($originalArea[0].offsetHeight);
-
-                setStrictWidthHeightCurrentImage(true, clientOriginAreaWidth, clientOriginAreaHeight);
-            }
-        }
-
-        function setStrictWidthHeightCurrentImage(isOriginal, clientPreviewAreaWidth, clientPreviewAreaHeight) {
-            const $image = isOriginal ? editableImage.getImage() : previewImageArea.getPreviewImage();
-            const imageBorderWidth = parseInt($image.css('border-width'));
-
-            if ($image.width() >= clientPreviewAreaWidth) {
-                imageResize.setWidthProportionally(clientPreviewAreaWidth - imageBorderWidth * 2, isOriginal);
-            }
-            if ($image.height() >= clientPreviewAreaHeight) {
-                imageResize.setHeightProportionally(clientPreviewAreaHeight - imageBorderWidth * 2, isOriginal);
+                imageZoom.resetZoom();
             }
         }
 
@@ -356,7 +290,7 @@ define(
                 return $zoomPlusButton;
             }
             $zoomPlusButton = components.buttons.zoomPlusButton({
-                click: wrapWithNoOpIfNoImageYet(zoomPlus),
+                click: wrapWithNoOpIfNoImageYet(imageZoom.zoomPlus),
                 style: 'display: none;',
             });
             components.overlays.defaultTooltip($zoomPlusButton, texts.buttons.zoomIn);
@@ -371,7 +305,7 @@ define(
                 return $zoomMinusButton;
             }
             $zoomMinusButton = components.buttons.zoomMinusButton({
-                click: wrapWithNoOpIfNoImageYet(zoomMinus),
+                click: wrapWithNoOpIfNoImageYet(imageZoom.zoomMinus),
                 style: 'display: none;',
             });
             components.overlays.defaultTooltip($zoomMinusButton, texts.buttons.zoomOut);
@@ -387,7 +321,7 @@ define(
             }
             $fitButton = components.buttons.fitButton({
                 'class': 'icon-image-fit',
-                click: buildFitImage,
+                click: imageZoom.fitImage,
                 style: 'display: none;'
             });
             components.overlays.defaultTooltip($fitButton, 'fit');
