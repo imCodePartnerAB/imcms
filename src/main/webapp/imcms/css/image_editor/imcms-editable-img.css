@@ -72,6 +72,6 @@
 .imcms-preview-img:not(.image-cropping-wrap__img),
 .image-cropping-wrap,
 .imcms-editable-img {
-    border: 15px solid transparent;
+    border: 15px solid #9b9b9b;
     background: no-repeat center;
 }
