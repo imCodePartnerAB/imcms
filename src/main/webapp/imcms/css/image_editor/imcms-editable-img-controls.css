@@ -67,10 +67,17 @@
 }
 
 .percentage-image-info {
-    padding: 5px 20px;
     box-sizing: border-box;
-    margin-left: 30px;
-    border: solid #0b94d8;
+    text-align: center;
+    width: 70px;
+    height: 2em;
+    line-height: 2em;
+    padding: 0;
+    margin-left: 15px;
+}
+
+.percentage-image-info:hover {
+    border-color: #d3d8de !important;
 }
 
 .select-image-button {
