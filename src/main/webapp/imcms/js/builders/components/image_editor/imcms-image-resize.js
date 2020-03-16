@@ -274,11 +274,7 @@ module.exports = {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            if (this.isRestrictedWidthStyleSize() && !resetToOriginal) {
-                previewImage.setBackgroundWidth(newWidth);
-            } else {
-                previewImage.setBackgroundWidth(original.width);
-            }
+            previewImage.setBackgroundWidth(newWidth);
             previewImage.getPreviewImage().width(newWidth);
 
             (padding >= 0)
@@ -300,11 +296,7 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            if (this.isRestrictedHeightStyleSize() && !resetToOriginal) {
-                previewImage.setBackgroundHeight(newHeight);
-            } else {
-                previewImage.setBackgroundHeight(original.height);
-            }
+            previewImage.setBackgroundHeight(newHeight);
             previewImage.getPreviewImage().height(newHeight);
 
             (padding >= 0)
