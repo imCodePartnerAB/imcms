@@ -3,7 +3,15 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DeleterByDocumentId;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.PropertyService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -14,6 +22,7 @@ import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
+import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -34,6 +43,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
+
+    private final static Logger LOGGER = Logger.getLogger(DefaultDocumentService.class);
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final MetaRepository metaRepository;
@@ -204,7 +215,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             String headline = commonContent.getHeadline();
             String menuText = commonContent.getMenuText();
 
+
             final String langCode = commonContent.getLanguage().getCode();
+            LOGGER.info(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
             indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
             //copied for search ignore case sensitivity
@@ -263,6 +276,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, roleId);
         }
 
+        LOGGER.info(String.format("Finished add index in doc %d", doc.getId()));
         return indexDoc;
     }
 

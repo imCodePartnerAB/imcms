@@ -13,6 +13,7 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
+import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class TextDocumentService implements DocumentService<TextDocumentDTO> {
+
+    private final static Logger LOGGER = Logger.getLogger(TextDocumentService.class);
+
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final TextDocumentTemplateService textDocumentTemplateService;
@@ -109,6 +113,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
 
         solrInputDocument.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplate());
+        LOGGER.info(String.format("Add field Template in Text-Doc id %d, with template %s", doc.getId(), doc.getTemplate().getTemplateName()));
 
         doc.getCommonContents()
                 .forEach(commonContentDTO -> {
@@ -122,6 +127,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
                                 .orElseGet(indexMe::getIndex);
 
                         solrInputDocument.addField(DocumentIndex.FIELD__TEXT, textValue);
+                        LOGGER.info(String.format("Add text content %s with id-doc %d and with text-index %d", textValue, doc.getId(), textIndex));
                         solrInputDocument.addField(DocumentIndex.FIELD__TEXT + textIndex, textValue);
                     });
 
@@ -130,6 +136,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
                     );
                 });
 
+        LOGGER.info(String.format("Finished add index in Textdoc %d", doc.getId()));
         return solrInputDocument;
     }
 

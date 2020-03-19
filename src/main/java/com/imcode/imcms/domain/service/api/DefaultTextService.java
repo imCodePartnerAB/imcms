@@ -2,7 +2,11 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.TextHistoryService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -11,6 +15,7 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +33,8 @@ import static com.imcode.imcms.model.Text.Type.HTML;
 @Service("textService")
 @Transactional
 class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRepository> implements TextService {
+
+    private final static Logger LOGGER = Logger.getLogger(DefaultTextService.class);
 
     private final LanguageService languageService;
     private final VersionService versionService;
@@ -75,6 +82,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
+        LOGGER.info(String.format("Get text id %d with content text %s", textJPA.getId(), textJPA.getText()));
         final String textContent = text.getText();
         final Text.Type type = text.getType();
         final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
@@ -95,6 +103,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
 
         final Text savedText = repository.save(newTextJPA);
+        LOGGER.info(String.format("Saved text in imcms_text_doc_texts  Text-id %d with content text %s", newTextJPA.getId(), newTextJPA.getText()));
 
         super.updateWorkingVersion(docId);
 
@@ -125,6 +134,8 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final Version version = versionReceiver.apply(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final TextJPA text = getText(index, version, language, loopEntryRef);
+
+        LOGGER.info(String.format("Get text content %s from index %d and version %d", text.getText(), index, version.getNo()));
 
         return Optional.ofNullable(text)
                 .map(TextDTO::new)
