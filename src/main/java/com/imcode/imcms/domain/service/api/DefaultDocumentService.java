@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DeleterByDocumentId;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -131,7 +132,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             return documentDTO;
         } catch (Exception e) {
             LOGGER.error(String.format("Not access get document with id %d", docId));
-            return null;
+            throw new DocumentNotExistException();
         }
     }
 
