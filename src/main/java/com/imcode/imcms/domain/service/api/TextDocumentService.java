@@ -108,12 +108,14 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     @Override
     public SolrInputDocument index(int docId) {
 
+        LOGGER.debug(String.format("Start index doc id %d", docId));
         final TextDocumentDTO doc = get(docId);
+        LOGGER.debug(String.format("Got doc id %d", docId));
 
         final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
 
         solrInputDocument.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplate());
-        LOGGER.info(String.format("Add field Template in Text-Doc id %d, with template %s", doc.getId(), doc.getTemplate().getTemplateName()));
+        LOGGER.debug(String.format("Add field Template in Text-Doc id %d, with template %s", doc.getId(), doc.getTemplate().getTemplateName()));
 
         doc.getCommonContents()
                 .forEach(commonContentDTO -> {

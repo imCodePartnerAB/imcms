@@ -117,17 +117,22 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, workingVersion.getNo()
-        );
-        final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), workingVersion, commonContents
-        );
+        try {
+            final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+            final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
+                    docId, workingVersion.getNo()
+            );
+            final DocumentDTO documentDTO = documentMapping.apply(
+                    metaRepository.findOne(docId), workingVersion, commonContents
+            );
 
-        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
+            documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
 
-        return documentDTO;
+            return documentDTO;
+        } catch (Exception e) {
+            LOGGER.error(String.format("Not access get document with id %d", docId));
+            return null;
+        }
     }
 
     @Override
@@ -217,7 +222,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
 
             final String langCode = commonContent.getLanguage().getCode();
-            LOGGER.info(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
+            LOGGER.debug(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
             indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
             //copied for search ignore case sensitivity
