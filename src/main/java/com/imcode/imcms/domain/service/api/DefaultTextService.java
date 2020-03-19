@@ -82,7 +82,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
-        LOGGER.info(String.format("Get text id %d with content text %s", textJPA.getId(), textJPA.getText()));
         final String textContent = text.getText();
         final Text.Type type = text.getType();
         final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
@@ -134,8 +133,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final Version version = versionReceiver.apply(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final TextJPA text = getText(index, version, language, loopEntryRef);
-
-        LOGGER.info(String.format("Get text content %s from index %d and version %d", text.getText(), index, version.getNo()));
 
         return Optional.ofNullable(text)
                 .map(TextDTO::new)
