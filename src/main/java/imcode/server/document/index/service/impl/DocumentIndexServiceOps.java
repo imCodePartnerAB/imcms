@@ -44,6 +44,7 @@ public class DocumentIndexServiceOps {
 
     private SolrInputDocument mkSolrInputDoc(int docId) {
         try {
+            logger.debug(String.format("Start SolrInputDocument id %d", docId));
             return documentIndexer.index(docId);
         } catch (Exception e) {
             logger.error(
