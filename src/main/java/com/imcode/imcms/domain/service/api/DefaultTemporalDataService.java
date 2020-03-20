@@ -81,27 +81,26 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public void invalidatePublicDocumentCache() {
         publicDocumentsCache.invalidateCache();
-        logger.info("Public-document-invalidate-cache-date: " + formatter.format(new Date()));
+        logger.error("Public-document-invalidate-cache-date: " + formatter.format(new Date()));
     }
 
     @Override
     public void invalidateStaticContentCache() {
         getCacheManager(null).getEhcache(STATIC_CACHE_NAME).removeAll();
-        logger.info("Static-content-invalidate-cache-date: " + formatter.format(new Date()));
+        logger.error("Static-content-invalidate-cache-date: " + formatter.format(new Date()));
     }
 
     @Override
     public void invalidateOtherContentCache() {
         getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
-        logger.info("Content-invalidate-cache-date: " + formatter.format(new Date()));
+        logger.error("Content-invalidate-cache-date: " + formatter.format(new Date()));
     }
 
     @Override
     public long rebuildDocumentIndexAndGetDocumentsAmount() {
         if (getAmountOfIndexedDocuments() == -1) {
-            logger.error("START RE-INDEX ON DOCUMENTS!");
             resolvingQueryIndex.rebuild();
-            logger.info("Last-date-reindex: " + formatter.format(new Date()));
+            logger.error("Last-date-reindex: " + formatter.format(new Date()));
         }
 
         return defaultDocumentService.countDocuments();
@@ -167,7 +166,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
                     logger.error(String.format("Not connect on the path URL %s !", path));
                 }
             }
-            logger.info("Last-date-recache: " + formatter.format(new Date()));
+            logger.error("Last-date-recache: " + formatter.format(new Date()));
             publicDocumentsCache.setAmountOfCachedDocuments(-1);
 
         }

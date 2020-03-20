@@ -25,7 +25,6 @@ public class DocumentIndexer {
     public SolrInputDocument index(int docId) {
 
         try {
-            logger.error(String.format("Start indexing for docId %d", docId));
             return documentService.index(docId);
 
         } catch (UnsupportedDocumentTypeException e) {
