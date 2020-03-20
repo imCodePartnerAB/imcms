@@ -99,6 +99,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public long rebuildDocumentIndexAndGetDocumentsAmount() {
         if (getAmountOfIndexedDocuments() == -1) {
+            logger.error("START RE-INDEX ON DOCUMENTS!");
             resolvingQueryIndex.rebuild();
             logger.info("Last-date-reindex: " + formatter.format(new Date()));
         }
