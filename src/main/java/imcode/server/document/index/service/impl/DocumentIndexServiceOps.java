@@ -44,7 +44,7 @@ public class DocumentIndexServiceOps {
 
     private SolrInputDocument mkSolrInputDoc(int docId) {
         try {
-            logger.debug(String.format("Start SolrInputDocument id %d", docId));
+            logger.error(String.format("Start SolrInputDocument id %d", docId));
             return documentIndexer.index(docId);
         } catch (Exception e) {
             logger.error(
@@ -69,7 +69,7 @@ public class DocumentIndexServiceOps {
             solrClient.add(solrInputDoc);
             solrClient.commit(false, false, true);
 
-            logger.info(String.format("Added solrInputDoc with docId %d into the index.", docId));
+            logger.error(String.format("Added solrInputDoc with docId %d into the index.", docId));
         }
     }
 

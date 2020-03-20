@@ -31,7 +31,7 @@ import java.util.Optional;
 @Transactional
 public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
-    private final static Logger LOGGER = Logger.getLogger(TextDocumentService.class);
+    private final Logger LOGGER = Logger.getLogger(TextDocumentService.class);
 
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
@@ -108,14 +108,14 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     @Override
     public SolrInputDocument index(int docId) {
 
-        LOGGER.debug(String.format("Start index doc id %d", docId));
+        LOGGER.error(String.format("Start index doc id %d", docId));
         final TextDocumentDTO doc = get(docId);
-        LOGGER.debug(String.format("Got doc id %d", docId));
+        LOGGER.error(String.format("Got doc id %d", docId));
 
         final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
 
         solrInputDocument.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplate());
-        LOGGER.debug(String.format("Add field Template in Text-Doc id %d, with template %s", doc.getId(), doc.getTemplate().getTemplateName()));
+        LOGGER.error(String.format("Add field Template in Text-Doc id %d, with template %s", doc.getId(), doc.getTemplate().getTemplateName()));
 
         doc.getCommonContents()
                 .forEach(commonContentDTO -> {
@@ -129,7 +129,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
                                 .orElseGet(indexMe::getIndex);
 
                         solrInputDocument.addField(DocumentIndex.FIELD__TEXT, textValue);
-                        LOGGER.info(String.format("Add text content %s with id-doc %d and with text-index %d", textValue, doc.getId(), textIndex));
+                        LOGGER.error(String.format("Add text content %s with id-doc %d and with text-index %d", textValue, doc.getId(), textIndex));
                         solrInputDocument.addField(DocumentIndex.FIELD__TEXT + textIndex, textValue);
                     });
 
@@ -138,7 +138,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
                     );
                 });
 
-        LOGGER.info(String.format("Finished add index in Textdoc %d", doc.getId()));
+        LOGGER.error(String.format("Finished add index in Textdoc %d", doc.getId()));
         return solrInputDocument;
     }
 

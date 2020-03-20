@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Transactional
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
-    private final static Logger LOGGER = Logger.getLogger(DefaultDocumentService.class);
+    private final Logger LOGGER = Logger.getLogger(DefaultDocumentService.class);
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final MetaRepository metaRepository;
@@ -129,7 +129,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
             documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
 
-            LOGGER.debug(String.format("Get document id %d", docId));
+            LOGGER.error(String.format("Get document id %d", docId));
             return documentDTO;
         } catch (Exception e) {
             LOGGER.error(String.format("Not access get document with id %d", docId));
@@ -199,14 +199,14 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     public SolrInputDocument index(int docId) {
 
-        LOGGER.info(String.format("Index doc id %d ", docId));
+        LOGGER.error(String.format("Index doc id %d ", docId));
         final DocumentDTO doc = get(docId);
         final Meta metaDoc = metaRepository.findOne(docId);
         final Integer currentVersionDocNo = versionService.hasNewerVersion(docId)
                 ? doc.getCurrentVersion().getId()
                 : metaDoc.getDefaultVersionNo();
 
-        LOGGER.info(String.format("Got meta-doc id %d, with version %d", docId, currentVersionDocNo));
+        LOGGER.error(String.format("Got meta-doc id %d, with version %d", docId, currentVersionDocNo));
 
         SolrInputDocument indexDoc = new SolrInputDocument();
 
@@ -227,7 +227,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
 
             final String langCode = commonContent.getLanguage().getCode();
-            LOGGER.debug(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
+            LOGGER.error(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
             indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
             //copied for search ignore case sensitivity
@@ -286,7 +286,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, roleId);
         }
 
-        LOGGER.info(String.format("Finished add index in doc %d", doc.getId()));
+        LOGGER.error(String.format("Finished add index in doc %d", doc.getId()));
         return indexDoc;
     }
 
