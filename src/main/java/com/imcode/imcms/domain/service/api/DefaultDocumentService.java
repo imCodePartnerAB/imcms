@@ -23,6 +23,7 @@ import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -199,14 +200,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     public SolrInputDocument index(int docId) {
 
-        LOGGER.error(String.format("Index doc id %d ", docId));
         final DocumentDTO doc = get(docId);
         final Meta metaDoc = metaRepository.findOne(docId);
         final Integer currentVersionDocNo = versionService.hasNewerVersion(docId)
                 ? doc.getCurrentVersion().getId()
                 : metaDoc.getDefaultVersionNo();
 
-        LOGGER.error(String.format("Got meta-doc id %d, with version %d", docId, currentVersionDocNo));
 
         SolrInputDocument indexDoc = new SolrInputDocument();
 
@@ -222,12 +221,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode());
 
         for (CommonContent commonContent : doc.getCommonContents()) {
-            String headline = commonContent.getHeadline();
+            String headline = StringUtils.defaultString(commonContent.getHeadline());
             String menuText = commonContent.getMenuText();
 
 
             final String langCode = commonContent.getLanguage().getCode();
-            LOGGER.error(String.format("Add in index Doc id %d, headline %s with language %s", doc.getId(), headline, langCode));
             indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
             indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
             //copied for search ignore case sensitivity
