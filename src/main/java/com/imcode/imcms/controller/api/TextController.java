@@ -28,7 +28,6 @@ public class TextController {
     }
 
     @PostMapping("/filter")
-    @CheckAccess(AccessType.TEXT)
     public TextDTO filter(@ModelAttribute TextDTO textDTO) {
         return new TextDTO(textService.filter(textDTO));
     }
