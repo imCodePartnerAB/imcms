@@ -81,7 +81,9 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final Version version = versionService.getDocumentWorkingVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
+        LOGGER.error(String.format("Try get text from imcms_text_doc_texts  Text-index %d with content text %s", text.getIndex(), text.getText()));
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
+        LOGGER.error(String.format("Got from imcms_text_doc_texts  Text-index %d with content text %s", text.getIndex(), text.getText()));
         final String textContent = text.getText();
         final Text.Type type = text.getType();
         final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
@@ -102,7 +104,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
 
         final Text savedText = repository.save(newTextJPA);
-        LOGGER.info(String.format("Saved text in imcms_text_doc_texts  Text-id %d with content text %s", newTextJPA.getId(), newTextJPA.getText()));
+        LOGGER.error(String.format("Saved text in imcms_text_doc_texts  Text-id %d with content text %s", newTextJPA.getId(), newTextJPA.getText()));
 
         super.updateWorkingVersion(docId);
 

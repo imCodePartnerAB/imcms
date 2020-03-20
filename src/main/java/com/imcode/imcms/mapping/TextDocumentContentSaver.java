@@ -38,6 +38,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,7 @@ import java.util.Optional;
 @Transactional
 public class TextDocumentContentSaver {
 
+    private final Logger logger = Logger.getLogger(TextDocumentContentSaver.class);
     private final MenuService menuService;
     private final VersionRepository versionRepository;
     private final TextRepository textRepository;
@@ -250,12 +252,15 @@ public class TextDocumentContentSaver {
     }
 
     private void saveText(TextJPA text, User user, SaveMode saveMode) {
+        logger.error(String.format("TextJpa exists %s", String.valueOf(text != null)));
         final Version version = text.getVersion();
         final LanguageJPA language = text.getLanguage();
         final Integer index = text.getIndex();
 
         if (saveMode == SaveMode.UPDATE) {
+
             final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
+            logger.error(String.format("In TextJpa exists LoopEntry %s", String.valueOf(loopEntryRef != null)));
             final Integer id = (loopEntryRef == null)
                     ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
                     : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
@@ -264,8 +269,9 @@ public class TextDocumentContentSaver {
         }
 
         createLoopEntryIfNotExists(version, text.getLoopEntryRef());
-
+        logger.error(String.format("Prepare to save text with index %d and content %s and id %d", text.getIndex(), text.getText(), text.getId()));
         textRepository.save(text);
+        logger.error(String.format("Text with index %d was saved with content %s and id %d", text.getIndex(), text.getText(), text.getId()));
         textHistoryRepository.save(new TextHistoryJPA(text, language, user));
     }
 
