@@ -252,7 +252,6 @@ public class TextDocumentContentSaver {
     }
 
     private void saveText(TextJPA text, User user, SaveMode saveMode) {
-        logger.error(String.format("TextJpa exists %s", String.valueOf(text != null)));
         final Version version = text.getVersion();
         final LanguageJPA language = text.getLanguage();
         final Integer index = text.getIndex();
@@ -260,7 +259,6 @@ public class TextDocumentContentSaver {
         if (saveMode == SaveMode.UPDATE) {
 
             final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
-            logger.error(String.format("In TextJpa exists LoopEntry %s", String.valueOf(loopEntryRef != null)));
             final Integer id = (loopEntryRef == null)
                     ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
                     : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
@@ -269,9 +267,9 @@ public class TextDocumentContentSaver {
         }
 
         createLoopEntryIfNotExists(version, text.getLoopEntryRef());
-        logger.error(String.format("Prepare to save text with index %d and content %s and id %d", text.getIndex(), text.getText(), text.getId()));
+        logger.error(String.format("Prepare to save text with index %d and content %s and version %d", text.getIndex(), text.getText(), version.getNo()));
         textRepository.save(text);
-        logger.error(String.format("Text with index %d was saved with content %s and id %d", text.getIndex(), text.getText(), text.getId()));
+        logger.error(String.format("Text with index %d was saved with content %s", text.getIndex(), text.getText()));
         textHistoryRepository.save(new TextHistoryJPA(text, language, user));
     }
 
