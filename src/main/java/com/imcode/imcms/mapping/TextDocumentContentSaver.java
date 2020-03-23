@@ -2,37 +2,12 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.mapping.container.Container;
-import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.LanguageContainer;
-import com.imcode.imcms.mapping.container.MenuContainer;
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
-import com.imcode.imcms.mapping.container.TextDocImagesContainer;
-import com.imcode.imcms.mapping.container.TextDocLoopContainer;
-import com.imcode.imcms.mapping.container.TextDocTextContainer;
-import com.imcode.imcms.mapping.container.TextDocTextsContainer;
-import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.LoopJPA;
-import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.persistence.repository.LoopRepository;
-import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
-import com.imcode.imcms.persistence.repository.TextHistoryRepository;
-import com.imcode.imcms.persistence.repository.TextRepository;
-import com.imcode.imcms.persistence.repository.UserRepository;
+import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.repository.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -267,15 +242,8 @@ public class TextDocumentContentSaver {
         }
 
         createLoopEntryIfNotExists(version, text.getLoopEntryRef());
-        logger.error(String.format("Prepare to save text with index %d and content %s and version %d", text.getIndex(), text.getText(), version.getNo()));
-        logger.error(String.format("TEXT INDEX %d and FIND CONTENT BY INDEX - %s", index,
-                textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index).getText()));
-        textRepository.save(text);
-        logger.error(String.format("TEXT INDEX %d and FIND CONTENT BY INDEX - %s AFTER SAVED!!!", index,
-                textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index).getText()));
-        logger.error(String.format("Text with index %d was saved with content %s", text.getIndex(), text.getText()));
-        textHistoryRepository.save(new TextHistoryJPA(text, language, user));
-        logger.error(String.format("Text HISTORY saved with content %s", text.getText()));
+//        textRepository.save(text);
+//        textHistoryRepository.save(new TextHistoryJPA(text, language, user));
     }
 
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {

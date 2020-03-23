@@ -135,10 +135,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final Version version = versionReceiver.apply(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final TextJPA text = getText(index, version, language, loopEntryRef);
-        if (null != text) LOGGER.error(String.format("Text from index %d, and Version %d and CONTENT from DB %s in Doc %d",
-                text.getIndex(), version.getNo(),text.getText(), docId));
-
-        if (null == text && index == 1) LOGGER.error(String.format("Text NULL with index %d and docId %d", index, docId));
 
         return Optional.ofNullable(text)
                 .map(TextDTO::new)
