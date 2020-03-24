@@ -6,9 +6,9 @@ define(
     'imcms-temporal-data-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-temporal-data-rest-api',
-        'imcms-components-builder', 'jquery'
+        'imcms-components-builder', 'jquery', 'imcms-modal-window-builder'
     ],
-    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $) {
+    function (SuperAdminTab, BEM, texts, temporalDataApi, components, $, modal) {
 
         texts = texts.superAdmin.temporalContent;
 
@@ -377,7 +377,12 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.initCaching,
-                    click: () => buildCacheRequest($button, $loading, $success, lastUpdate, timeLeft),
+                    click: () => {
+                        modal.buildModalWindow(texts.warning.buildCacheWarning, confirm => {
+                            if (!confirm) return;
+                            buildCacheRequest($button, $loading, $success, lastUpdate, timeLeft)
+                        });
+                    }
                 });
 
                 init($button, lastUpdate);
