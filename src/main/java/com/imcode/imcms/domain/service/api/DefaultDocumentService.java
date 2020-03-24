@@ -3,16 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DeleterByDocumentId;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.PropertyService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -119,23 +110,17 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        try {
-            final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-            final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                    docId, workingVersion.getNo()
-            );
-            final DocumentDTO documentDTO = documentMapping.apply(
-                    metaRepository.findOne(docId), workingVersion, commonContents
-            );
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
+                docId, workingVersion.getNo()
+        );
+        final DocumentDTO documentDTO = documentMapping.apply(
+                metaRepository.findOne(docId), workingVersion, commonContents
+        );
 
-            documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
+        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
 
-            LOGGER.error(String.format("Get document id %d", docId));
-            return documentDTO;
-        } catch (Exception e) {
-            LOGGER.error(String.format("Not access get document with id %d", docId));
-            throw new DocumentNotExistException();
-        }
+        return documentDTO;
     }
 
     @Override
@@ -284,7 +269,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, roleId);
         }
 
-        LOGGER.error(String.format("Finished add index in doc %d", doc.getId()));
         return indexDoc;
     }
 

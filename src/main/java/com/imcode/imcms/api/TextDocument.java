@@ -91,7 +91,6 @@ public class TextDocument extends Document {
         Text text = Imcms.getServices().getManagedBean(TextService.class)
                 .getText(getInternalTextDocument().getId(),
                         textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
-        LOGGER.info(String.format("Get text content %s in textDocument class, with index %d", text.getText(), text.getIndex()));
         TextDomainObject imcmsText = new TextDomainObject("");
         if (null == text.getText()) {
             getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
@@ -99,7 +98,6 @@ public class TextDocument extends Document {
             imcmsText.setText(text.getText());
             imcmsText.setType(text.getType().ordinal());
         }
-        LOGGER.info(String.format("Add text content %s in TextDomainObject with type %d", text.getText(), text.getType().ordinal()));
         return new TextField(imcmsText);
     }
 

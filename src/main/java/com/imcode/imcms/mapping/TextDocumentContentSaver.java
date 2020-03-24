@@ -243,9 +243,7 @@ public class TextDocumentContentSaver {
 
         createLoopEntryIfNotExists(version, text.getLoopEntryRef());
         textRepository.save(text);
-        logger.error(String.format("SAVED TEXT INDEX %d and text %s", index, text.getText()));
         textHistoryRepository.save(new TextHistoryJPA(text, language, user));
-        logger.error(String.format("SAVED History TEXT INDEX %d and text %s", index, text.getText()));
     }
 
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {
