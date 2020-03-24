@@ -879,6 +879,9 @@ const texts = {
                     deleteStaticCache: 'Töm statisk cache',
                     buildCacheDocument: 'Bygg up cache'
                 },
+                warning: {
+                    buildCacheWarning: 'Är du säker på att bygga cache?'
+                },
                 init: 'Verkställ',
                 initIndexing: 'Indexerar',
                 indexing: 'Indexering',
@@ -1775,6 +1778,9 @@ const texts = {
                     deleteOtherCache: 'Delete other web cache',
                     deleteStaticCache: 'Delete static web cache',
                     buildCacheDocument: 'Build cache'
+                },
+                warning: {
+                  buildCacheWarning: 'Are you sure to build cache ?'
                 },
                 init: 'Init',
                 initIndexing: 'Indexes',
