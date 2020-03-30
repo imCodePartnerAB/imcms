@@ -27,6 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,8 @@ import java.util.concurrent.TimeUnit;
 @EqualsAndHashCode(callSuper = true)
 public class AzureAuthenticationProvider extends AuthenticationProvider
         implements AuthenticationDataStorage {
+
+    private static final Logger log = Logger.getLogger(AzureAuthenticationProvider.class);
 
     public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     public static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
@@ -181,6 +184,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
         final URL url = new URL("https://graph.microsoft.com/v1.0/" + resourceName);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
+        log.error(String.format("Url - %s", url.toString()));
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         conn.setRequestProperty("Accept", "application/json");
@@ -320,6 +324,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
                 "groups", token.getAccessToken(), AzureActiveDirectoryGroupsHolderDTO.class
         ).getGroups();
 
+        if (!groups.isEmpty()) log.error(String.format("The first group - %s", groups.get(0)));
         return new ArrayList<>(groups);
     }
 
