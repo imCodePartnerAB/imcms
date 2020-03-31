@@ -1,10 +1,12 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.model.ExternalUser;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.log4j.Logger;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -15,8 +17,9 @@ import java.util.List;
  * In charge of {@link User} and {@link Role} operations, such as look up, creation, deletion and saving as well as sending out password reminder
  * emails.
  */
-public class UserService {
+public class UserService implements ExternalUserService {
 
+    private static final Logger log = Logger.getLogger(UserService.class);
     private static final SecureRandom RANDOM = new SecureRandom();
     private ContentManagementSystem contentManagementSystem;
 
@@ -280,5 +283,28 @@ public class UserService {
         mail.setToAddresses(new String[]{userDO.getEmailAddress()});
         MailService mailService = contentManagementSystem.getMailService();
         mailService.sendMail(mail);
+    }
+
+    @Override
+    public ExternalUser saveExternalUser(ExternalUser user) {
+
+        ImcmsAuthenticatorAndUserAndRoleMapper authAndUserAndRoleMapper = getMapper();
+
+        authAndUserAndRoleMapper.initUserRoles(user);
+
+        final User savedUser = getUser(user.getLoginName());
+
+        if (null != savedUser) {
+            user.setId(savedUser.getId());
+        }
+
+        try {
+            saveUser(new User(user.clone()));
+        } catch (SaveException e) {
+            e.printStackTrace();
+            log.error(String.format("User with id %d wasn't saved!", user.getId()));
+        }
+
+        return user;
     }
 }
