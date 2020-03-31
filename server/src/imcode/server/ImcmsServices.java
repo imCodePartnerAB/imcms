@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.services.AuthenticationProviderService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
@@ -110,4 +111,6 @@ public interface ImcmsServices {
     LocalizedMessageProvider getLocalizedMessageProvider();
 
     KerberosLoginService getKerberosLoginService();
+
+    AuthenticationProviderService getAuthenticationProviderService();
 }
