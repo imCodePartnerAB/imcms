@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.services.TwoFactorAuthService" %>
+<%@ page import="com.imcode.imcms.domain.services.core.TwoFactorAuthService" %>
+<%@ page import="com.imcode.imcms.model.AuthenticationProvider" %>
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 <%@ page import="imcode.server.AuthenticationMethodConfiguration" %>
@@ -7,11 +8,12 @@
 <%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page import="java.io.IOException" %>
-<%@ page import="java.io.PrintWriter" %>
 <%@ page import="static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME" %>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="static com.imcode.imcms.domain.services.core.TwoFactorAuthService.PROPERTY_NAME_2FA" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.PROPERTY_NAME_2FA" %>
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -30,9 +32,12 @@
         final boolean cgi = loginConfiguration.containsKey("cgi");
         final boolean is2FA = loginConfiguration.containsKey(PROPERTY_NAME_2FA);
         final boolean is2FAStep = null != session.getAttribute(REQUEST_PARAMETER__USERNAME);
+        final List<AuthenticationProvider> authenticationProviders = Imcms.getServices()
+                .getAuthenticationProviderService().getAuthenticationProviders();
 
         pageContext.setAttribute("is2FA", is2FA);
         pageContext.setAttribute("is2FAStep", is2FAStep);
+        pageContext.setAttribute("authProviders", authenticationProviders);
 
         final boolean loginPasswordFirst = loginPassword && cgi && loginConfiguration.get("loginPassword").getOrder() < loginConfiguration.get("cgi").getOrder();
         if (request.getParameter("activeLoginTab") != null) {
@@ -101,6 +106,13 @@
         <div id="imcms-login-container-tabs">
             <div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
             <div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
+            <c:if test="${not empty authProviders}">
+                <c:set var="provider" scope="session" value="${authProviders.get(0)}"/>
+                <div class="imcms-tab imcms-link-azure" id="imcms-azure-tab"
+                     onclick="top.location='<%= request.getContextPath() %>/api/external-identifiers/login/${provider.providerId}'"
+                     title="${provider.providerName}">Azure
+                </div>
+            </c:if>
             <div style="clear:both"></div>
         </div>
         <% } else if (is2FAStep && is2FA) {%>
