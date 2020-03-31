@@ -1,4 +1,4 @@
-package com.imcode.imcms.services;
+package com.imcode.imcms.domain.services.core;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -18,7 +18,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.imcode.imcms.servlet.VerifyUser.*;
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_ATTRIBUTE__ERROR;
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__PASSWORD;
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME;
 
 public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA = "2FA";
