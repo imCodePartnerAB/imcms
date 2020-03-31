@@ -13,8 +13,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.NDC;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
@@ -75,7 +85,17 @@ public class ImcmsSetupFilter implements Filter {
             }
 
             Utility.makeUserLoggedIn(request, user);
+        } else {
+
+            if (user.isImcmsExternal()) {
+                service.getAuthenticationProviderService()
+                        .getAuthenticationProvider(user.getExternalProviderId())
+                        .updateAuthData(request);
+            }
+
         }
+
+
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));

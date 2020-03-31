@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import com.imcode.imcms.domain.services.core.TwoFactorAuthService;
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.services.TwoFactorAuthService;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -24,7 +24,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.imcode.imcms.services.TwoFactorAuthService.*;
+import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.PROPERTY_NAME_2FA;
+import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.REQUEST_PARAMETER_2FA;
+import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.SESSION_2FA_ATTEMPTS_COUNT;
 
 public class VerifyUser extends HttpServlet {
 
