@@ -3,7 +3,11 @@ package com.imcode.imcms.model;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.dto.ExternalToLocalRoleLink;
 import imcode.server.user.RoleDomainObject;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ExternalToLocalRoleLinkModel extends ExternalToLocalRoleLink {
 
     private RoleDomainObject role;
