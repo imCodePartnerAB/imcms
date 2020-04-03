@@ -6,8 +6,7 @@
 <tr>
 	<td>#gui_heading( "<? templates/sv/AdminRoles_roles.htm/1 ?>" )</td>
 </tr>
-<tr>
-	<td>
+    <td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr valign="top">
 		<td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_roles.htm/2 ?> &nbsp;</td>
@@ -15,9 +14,13 @@
 		<select name="ROLE_ID" size="10">
 			#ROLES_MENU#
 		</select></td>
+
+        <td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;
+            #EXTERNAL_ROLES_MENU#
+        </td>
 	</tr>
-	</table></td>
-</tr>
+    </table>
+    </td>
 <tr>
 	<td>#gui_hr( "blue" )</td>
 </tr>
@@ -26,7 +29,9 @@
 	<input type="submit" class="imcmsFormBtnSmall" name="VIEW_ADD_NEW_ROLE" value="<? templates/sv/AdminRoles_roles.htm/2001 ?>">
 	<input type="submit" class="imcmsFormBtnSmall" name="VIEW_RENAME_ROLE" value="<? templates/sv/AdminRoles_roles.htm/2002 ?>">
 	<input type="submit" class="imcmsFormBtnSmall" name="VIEW_EDIT_ROLE" value="<? templates/sv/AdminRoles_roles.htm/2003 ?>">
-	<input type="submit" class="imcmsFormBtnSmall" name="VIEW_DELETE_ROLE" value="<? templates/sv/AdminRoles_roles.htm/2004 ?>"></td>
+        <input type="submit" class="imcmsFormBtnSmall" name="VIEW_DELETE_ROLE"
+               value="<? templates/sv/AdminRoles_roles.htm/2004 ?>">
+    </td>
 </tr>
 </table>
 </form>
