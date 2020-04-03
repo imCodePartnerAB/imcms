@@ -19,7 +19,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Html {
 
@@ -219,6 +225,24 @@ public class Html {
         } catch (IOException e) {
             throw new UnhandledException(e);
         }
+    }
+
+    public static String createSimpleUlList(List values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<ul>");
+
+        for (int i = 0; i < values.size(); i += 2) {
+            String value = values.get(i).toString();
+            String content = values.get(i + 1).toString();
+            stringBuilder.append("<li value=\"")
+                    .append(StringEscapeUtils.escapeHtml(value))
+                    .append("\">")
+                    .append(content)
+                    .append("</li>");
+        }
+        stringBuilder.append("</ul>");
+
+        return stringBuilder.toString();
     }
 
     public static String removeTags(String html) {
