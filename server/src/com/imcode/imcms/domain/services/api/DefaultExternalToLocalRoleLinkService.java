@@ -6,13 +6,16 @@ import com.imcode.imcms.domain.services.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.ExternalToLocalRoleLinkModel;
 import imcode.server.Imcms;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,7 +95,7 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
             preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
             preparedStatement.setString(1, externalRole.getProviderId());
             preparedStatement.setString(2, externalRole.getId());
-            resultSet = preparedStatement.executeQuery(sql);
+            resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 externalRoleLinkModels.add(new ExternalToLocalRoleLinkModel(resultSet.getInt(1),
@@ -107,6 +110,14 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
         } catch (SQLException s) {
             log.error(String.format("%s with provideId %s and Id %s", s.getMessage(),
                     externalRole.getProviderId(), externalRole.getId()));
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return externalRoleLinkModels;
@@ -115,46 +126,81 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
     private void delete(ExternalToLocalRoleLinkModel roleLinkModel) {
 
         final String sql = "DELETE FROM external_to_local_roles_links WHERE id=?";
-
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
+            preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, roleLinkModel.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException s) {
             log.error(String.format("%s delete not complete with id %d", s.getMessage(), roleLinkModel.getId()));
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    private void save(ExternalToLocalRoleLinkModel linkRole) {
-        String sql;
-        PreparedStatement preparedStatement;
+    private List<RoleDomainObject> findRolesByExternalRoleId(String id) {
+        String sql = "SELECT linked_local_role_id from external_to_local_roles_links WHERE external_role_id = ?";
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        List<RoleDomainObject> roles = new ArrayList<>();
         try {
-            if (Imcms.getServices()
-                    .getImcmsAuthenticatorAndUserAndRoleMapper()
-                    .getRoleById(linkRole.getLocalRoleId()) != null) {
+            preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
+            preparedStatement.setString(1, id);
+            resultSet = preparedStatement.executeQuery();
 
-                sql = "UPDATE external_to_local_roles_links " +
-                        "SET id =?, provider_id=?, external_role_id=?, linked_local_role_id=?";
-                preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
-                preparedStatement.setInt(1, linkRole.getId());
-                preparedStatement.setString(2, linkRole.getProviderId());
-                preparedStatement.setString(3, linkRole.getExternalRoleId());
-                preparedStatement.setInt(4, linkRole.getLocalRoleId());
+            while (resultSet.next()) {
+                roles.add(Imcms.getServices()
+                        .getImcmsAuthenticatorAndUserAndRoleMapper()
+                        .getRoleById(resultSet.getInt(1)));
+            }
+        } catch (SQLException s) {
+            log.error(String.format("%s dont not find roleId %s", s.getMessage(), id));
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-                preparedStatement.executeUpdate();
+        return roles;
+    }
 
-            } else {
-                sql = "INSERT INTO external_to_local_roles_links (provider_id, external_role_id, linked_local_role_id) values (?,?,?)";
-
+    private void save(ExternalToLocalRoleLinkModel linkRole) {
+        String sql = "INSERT INTO external_to_local_roles_links (provider_id, external_role_id, linked_local_role_id) values (?,?,?)";
+        PreparedStatement preparedStatement = null;
+        boolean externalHasCurrentRole = findRolesByExternalRoleId(linkRole.getExternalRoleId()).stream()
+                .map(RoleDomainObject::getId)
+                .map(RoleId::intValue)
+                .anyMatch(id -> linkRole.getLocalRoleId().equals(id));
+        try {
+            if (!externalHasCurrentRole) {
                 preparedStatement = Imcms.getApiDataSource().getConnection().prepareStatement(sql);
                 preparedStatement.setString(1, linkRole.getProviderId());
                 preparedStatement.setString(2, linkRole.getExternalRoleId());
                 preparedStatement.setInt(3, linkRole.getLocalRoleId());
 
                 preparedStatement.executeUpdate();
+
             }
         } catch (SQLException e) {
             log.error(String.format("%s save not completed with roleId %d", e.getMessage(), linkRole.getId()));
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
