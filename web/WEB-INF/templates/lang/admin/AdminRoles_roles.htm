@@ -1,6 +1,54 @@
 #gui_start_of_page( "<? templates/sv/AdminRoles_roles.htm/1 ?>" "AdminRoles" "CANCEL_ROLE_ADMIN" "RoleAdmin" "" )
 
+<script>
+    var expanded = false;
 
+    function showCheckboxes() {
+        var checkboxes = document.getElementById("checkboxes");
+        if (!expanded) {
+            checkboxes.style.display = "block";
+            expanded = true;
+        } else {
+            checkboxes.style.display = "none";
+            expanded = false;
+        }
+    }
+</script>
+<style>
+	.multiselect {
+		width: 100px;
+	}
+
+	.selectBox {
+		position: relative;
+	}
+
+	.selectBox select {
+		width: 100%;
+		font-weight: bold;
+	}
+
+	.overSelect {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
+
+	#checkboxes {
+		display: none;
+		border: 1px #dadada solid;
+	}
+
+	#checkboxes label {
+		display: block;
+	}
+
+	#checkboxes label:hover {
+		background-color: #1e90ff;
+	}
+</style>
 <form method="post" action="AdminRoles" name="UserInfo">
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
@@ -16,8 +64,25 @@
 		</select></td>
 
         <td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;
-            #EXTERNAL_ROLES_MENU#
+			<select name="AZURE_ROLE_ID" size="10">
+				#EXTERNAL_ROLES_MENU#
+			</select>
         </td>
+		<td>
+			<div class="multiselect">
+				<div class="selectBox" onclick="showCheckboxes()">
+					<select>
+						<option>Select an option</option>
+					</select>
+					<div class="overSelect"></div>
+				</div>
+				<div id="checkboxes">
+					#LINKED_ROLES#
+				</div>
+			</div>
+			<input type="submit" class="imcmsFormBtnSmall" name="SAVE_EXTERNAL_TO_LOCAL_ROLE"
+				   value="<? templates/sv/change_img.html/2007 ?>">
+		</td>
 	</tr>
     </table>
     </td>
