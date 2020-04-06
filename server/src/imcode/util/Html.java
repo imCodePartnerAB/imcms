@@ -200,6 +200,12 @@ public class Html {
                 + "\">";
     }
 
+    public static String checkBoxWrapLabel(String name, String id, String value) {
+        return "<label for=\"" + StringEscapeUtils.escapeHtml(id) + "\"><input type=\"checkbox\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
+                + StringEscapeUtils.escapeHtml(id)
+                + "\" id=\"" + StringEscapeUtils.escapeHtml(id) + "\">" + StringEscapeUtils.escapeHtml(value) + "</label>";
+    }
+
     public static String radio(String name, String value, boolean selected) {
         return
                 "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
@@ -243,6 +249,21 @@ public class Html {
         stringBuilder.append("</ul>");
 
         return stringBuilder.toString();
+    }
+
+    public static String createDropDownList(List values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        final String nameCheckBoxs = "role";
+
+        for (int i = 0; i < values.size(); i += 2) {
+            String id = values.get(i).toString();
+            String value = values.get(i + 1).toString();
+            stringBuilder.append(checkBoxWrapLabel(nameCheckBoxs, id, value));
+
+        }
+
+        return stringBuilder.toString();
+
     }
 
     public static String removeTags(String html) {
