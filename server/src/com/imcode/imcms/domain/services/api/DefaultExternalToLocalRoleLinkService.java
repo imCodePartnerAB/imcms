@@ -144,7 +144,7 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
         }
     }
 
-    private List<RoleDomainObject> findRolesByExternalRoleId(String id) {
+    public List<RoleDomainObject> findRolesByExternalRoleId(String id) {
         String sql = "SELECT linked_local_role_id from external_to_local_roles_links WHERE external_role_id = ?";
         PreparedStatement preparedStatement = null;
         ResultSet resultSet;
