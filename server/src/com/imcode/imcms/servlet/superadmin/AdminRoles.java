@@ -12,6 +12,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleAlreadyExistsException;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.RolePermissionDomainObject;
 import imcode.server.user.UserAndRoleRegistryException;
 import imcode.server.user.UserDomainObject;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,10 +144,28 @@ public class AdminRoles extends HttpServlet {
         String list = Html.createOptionList(azureNamesRoles, Arrays.asList(new String[]{""}));
         vm.put("EXTERNAL_ROLES_MENU", list);
 
-        String dropListRoles = Html.createDropDownList(rolesV);
+        String externalRoleId = req.getParameter("extRoleId");
+        String dropListRoles;
+
+        if (externalRoleId != null) {
+            final DefaultExternalToLocalRoleLinkService defaultExternalToLocalRoleLinkService = new DefaultExternalToLocalRoleLinkService();
+            final List<String> rolesIds = defaultExternalToLocalRoleLinkService.findRolesByExternalRoleId(externalRoleId)
+                    .stream()
+                    .map(RoleDomainObject::getId)
+                    .map(RoleId::toString)
+                    .collect(Collectors.toList());
+
+            dropListRoles = Html.createDropDownList(rolesV, rolesIds);
+            Utility.setDefaultHtmlContentType(res);
+            PrintWriter out = res.getWriter();
+
+            out.println(dropListRoles);
+            return;
+        } else {
+            dropListRoles = Html.createDropDownList(rolesV, Collections.EMPTY_LIST);
+        }
+
         vm.put("LINKED_ROLES", dropListRoles);
-
-
         sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
     } // End doGet
