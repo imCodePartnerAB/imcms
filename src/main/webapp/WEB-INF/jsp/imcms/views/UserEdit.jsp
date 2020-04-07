@@ -67,6 +67,23 @@ ${"-->"}
             </div>
             <div class="imcms-field">
                 <div class="imcms-text-box">
+                    <label for="password" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/10"/></label>
+                    <input id="password" type="password" name="password" class="imcms-input imcms-text-box__input"
+                           maxlength="50" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>"
+                           value="<c:out value='${editedUser.password}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="password2" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/1001"/></label>
+                    <input id="password2" type="password" name="password2" class="imcms-input imcms-text-box__input"
+                           maxlength="50" value="${editedUser.password}">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
                     <label for="first-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/14"/></label>
                     <input id="first-name" class="imcms-input imcms-text-box__input" type="text" name="firstName"
