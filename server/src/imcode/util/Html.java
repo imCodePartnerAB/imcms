@@ -200,10 +200,21 @@ public class Html {
                 + "\">";
     }
 
-    public static String checkBoxWrapLabel(String name, String id, String value) {
-        return "<label for=\"" + StringEscapeUtils.escapeHtml(id) + "\"><input type=\"checkbox\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
-                + StringEscapeUtils.escapeHtml(id)
-                + "\" id=\"" + StringEscapeUtils.escapeHtml(id) + "\">" + StringEscapeUtils.escapeHtml(value) + "</label>";
+    public static String checkBoxWrapLabel(String name, String id, String value, List<String> linkRolesIdsWithExternal) {
+        final StringBuffer htmlCheckBoxBuilder = new StringBuffer();
+        htmlCheckBoxBuilder.append("<label for=\"")
+                .append(StringEscapeUtils.escapeHtml(id))
+                .append("\"><input type=\"checkbox\" name=\"")
+                .append(StringEscapeUtils.escapeHtml(name))
+                .append("\" value=\"")
+                .append(StringEscapeUtils.escapeHtml(id))
+                .append("\" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
+        if (linkRolesIdsWithExternal.contains(id)) {
+            htmlCheckBoxBuilder.append(" checked");
+        }
+        htmlCheckBoxBuilder.append(">").append(StringEscapeUtils.escapeHtml(value)).append("</label>");
+
+        return htmlCheckBoxBuilder.toString();
     }
 
     public static String radio(String name, String value, boolean selected) {
@@ -251,19 +262,17 @@ public class Html {
         return stringBuilder.toString();
     }
 
-    public static String createDropDownList(List values) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static String createDropDownList(List values, List<String> linkRolesIdsWithExternal) {
+        StringBuffer stringBuilder = new StringBuffer();
         final String nameCheckBoxs = "role";
 
         for (int i = 0; i < values.size(); i += 2) {
             String id = values.get(i).toString();
             String value = values.get(i + 1).toString();
-            stringBuilder.append(checkBoxWrapLabel(nameCheckBoxs, id, value));
-
+            stringBuilder.append(checkBoxWrapLabel(nameCheckBoxs, id, value, linkRolesIdsWithExternal));
         }
 
         return stringBuilder.toString();
-
     }
 
     public static String removeTags(String html) {
