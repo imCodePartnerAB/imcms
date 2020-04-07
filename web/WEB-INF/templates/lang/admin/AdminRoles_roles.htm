@@ -13,6 +13,20 @@
             expanded = false;
         }
     }
+
+    function selectedValue() {
+        var selectBox = document.getElementById("selectAzureBox");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        var xHttp = new XMLHttpRequest();
+        xHttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById('checkboxes').innerHTML = "";
+                document.getElementById('checkboxes').innerHTML = this.responseText;
+            }
+        };
+        xHttp.open("GET", `/servlet/AdminRoles?extRoleId=${selectedValue}`, true);
+        xHttp.send();
+    }
 </script>
 <style>
 	.multiselect {
@@ -64,7 +78,7 @@
 		</select></td>
 
         <td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;
-			<select name="AZURE_ROLE_ID" size="10">
+            <select name="AZURE_ROLE_ID" size="10" id="selectAzureBox" onchange="selectedValue()">
 				#EXTERNAL_ROLES_MENU#
 			</select>
         </td>
