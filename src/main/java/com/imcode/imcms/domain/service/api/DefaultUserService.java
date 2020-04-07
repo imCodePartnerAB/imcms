@@ -186,7 +186,7 @@ class DefaultUserService implements UserService {
 
         if (userData.getId() != null) {
             final User existingUser = userRepository.findById(userData.getId());
-            user.setPassword(existingUser.getPassword());
+            if (StringUtils.isBlank(user.getPassword())) user.setPassword(existingUser.getPassword());
             user.setPasswordReset(existingUser.getPasswordReset());
             user.setSessionId(existingUser.getSessionId());
             user.setRememberCd(existingUser.getRememberCd());
