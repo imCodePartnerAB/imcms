@@ -29,13 +29,11 @@ public class ExternalToLocalRoleLinkComponent {
 
     public Set<ExternalToLocalRoleLinkModel> findByProviderIdAndExternalRoleId(ExternalRole externalRole) throws SQLException {
         final String sql = "SELECT * from external_to_local_roles_links WHERE provider_id =? AND external_role_id =?";
-//        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         Set<ExternalToLocalRoleLinkModel> externalRoleLinkModels = new HashSet<>();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
-//            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, externalRole.getProviderId());
             preparedStatement.setString(2, externalRole.getId());
             resultSet = preparedStatement.executeQuery();
@@ -66,9 +64,7 @@ public class ExternalToLocalRoleLinkComponent {
     public void delete(ExternalToLocalRoleLinkModel roleLinkModel) throws SQLException {
 
         final String sql = "DELETE FROM external_to_local_roles_links WHERE id=?";
-//        PreparedStatement preparedStatement = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-//            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, roleLinkModel.getId());
             preparedStatement.executeUpdate();
             connection.commit();
@@ -82,12 +78,10 @@ public class ExternalToLocalRoleLinkComponent {
 
     public List<RoleDomainObject> findRolesByExternalRoleId(String id) throws SQLException {
         String sql = "SELECT linked_local_role_id from external_to_local_roles_links WHERE external_role_id = ?";
-//        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         List<RoleDomainObject> roles = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
-//            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, id);
             resultSet = preparedStatement.executeQuery();
             connection.commit();
@@ -109,7 +103,6 @@ public class ExternalToLocalRoleLinkComponent {
 
     public void save(ExternalToLocalRoleLinkModel linkRole) throws SQLException {
         String sql = "INSERT INTO external_to_local_roles_links (provider_id, external_role_id, linked_local_role_id) values (?,?,?)";
-//        PreparedStatement preparedStatement = null;
         boolean externalHasCurrentRole = findRolesByExternalRoleId(linkRole.getExternalRoleId()).stream()
                 .map(RoleDomainObject::getId)
                 .map(RoleId::intValue)
@@ -118,7 +111,6 @@ public class ExternalToLocalRoleLinkComponent {
             connection.setAutoCommit(false);
 
             if (!externalHasCurrentRole) {
-//                preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setString(1, linkRole.getProviderId());
                 preparedStatement.setString(2, linkRole.getExternalRoleId());
                 preparedStatement.setInt(3, linkRole.getLocalRoleId());
