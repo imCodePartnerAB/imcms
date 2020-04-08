@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.services.api;
 
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.dto.ExternalToLocalRoleLink;
-import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.ExternalToLocalRoleLinkModel;
 import imcode.server.Imcms;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkService {
 
     private final static Logger log = Logger.getLogger(DefaultExternalToLocalRoleLinkService.class);
-    private final ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository;
+    private final ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent;
 
-    public DefaultExternalToLocalRoleLinkService(ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository) {
-        this.externalToLocalRoleLinkRepository = externalToLocalRoleLinkRepository;
+    public DefaultExternalToLocalRoleLinkService(ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent) {
+        this.externalToLocalRoleLinkComponent = externalToLocalRoleLinkComponent;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
 
         for (ExternalToLocalRoleLinkModel alreadyLinkedRole : alreadyLinkedRoles) {
             if (!linksSent.contains(removeId(alreadyLinkedRole))) {
-                externalToLocalRoleLinkRepository.delete(alreadyLinkedRole);
+                externalToLocalRoleLinkComponent.delete(alreadyLinkedRole);
             }
         }
 
@@ -53,7 +53,7 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
                 })
                 .forEach(linkRole -> {
                     try {
-                        externalToLocalRoleLinkRepository.save(linkRole);
+                        externalToLocalRoleLinkComponent.save(linkRole);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -96,6 +96,6 @@ public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRol
     }
 
     private Set<ExternalToLocalRoleLinkModel> getLinkedRoles(ExternalRole externalRole) throws SQLException {
-        return externalToLocalRoleLinkRepository.findByProviderIdAndExternalRoleId(externalRole);
+        return externalToLocalRoleLinkComponent.findByProviderIdAndExternalRoleId(externalRole);
     }
 }
