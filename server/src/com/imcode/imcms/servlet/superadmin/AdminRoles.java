@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
 import com.imcode.imcms.domain.dto.ExternalRole;
-import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -28,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -148,12 +148,18 @@ public class AdminRoles extends HttpServlet {
         String dropListRoles;
 
         if (externalRoleId != null) {
-            final DefaultExternalToLocalRoleLinkService defaultExternalToLocalRoleLinkService = new DefaultExternalToLocalRoleLinkService();
-            final List<String> rolesIds = defaultExternalToLocalRoleLinkService.findRolesByExternalRoleId(externalRoleId)
-                    .stream()
-                    .map(RoleDomainObject::getId)
-                    .map(RoleId::toString)
-                    .collect(Collectors.toList());
+            final List<String> rolesIds;
+            try {
+                rolesIds = Imcms.getServices().getExternalToLocalRoleLinkComponent()
+                        .findRolesByExternalRoleId(externalRoleId)
+                        .stream()
+                        .map(RoleDomainObject::getId)
+                        .map(RoleId::toString)
+                        .collect(Collectors.toList());
+            } catch (SQLException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
 
             dropListRoles = Html.createDropDownList(rolesV, rolesIds);
             Utility.setDefaultHtmlContentType(res);
@@ -367,8 +373,13 @@ public class AdminRoles extends HttpServlet {
                         .map(Integer::new)
                         .collect(Collectors.toSet());
 
-                DefaultExternalToLocalRoleLinkService defaultExternalToLocalRoleLinkService = new DefaultExternalToLocalRoleLinkService();
-                defaultExternalToLocalRoleLinkService.setLinkedRoles(new ExternalRole(identifierId, externalRoleId), localRoleIds);
+                try {
+                    Imcms.getServices()
+                            .getExternalToLocalRoleLinkService()
+                            .setLinkedRoles(new ExternalRole(identifierId, externalRoleId), localRoleIds);
+                } catch (SQLException e) {
+                    LOG.error(e.getMessage());
+                }
 
                 doGet(req, res);
 
