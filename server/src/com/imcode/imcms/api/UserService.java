@@ -1,9 +1,11 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.model.ExternalUser;
+import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
@@ -288,9 +290,12 @@ public class UserService implements ExternalUserService {
     @Override
     public ExternalUser saveExternalUser(ExternalUser user) {
 
-        ImcmsAuthenticatorAndUserAndRoleMapper authAndUserAndRoleMapper = getMapper();
-
-        authAndUserAndRoleMapper.initUserRoles(user);
+        user.setRoleIds((Imcms.getServices().getExternalToLocalRoleLinkService()
+                .toLinkedLocalRoles(user.getExternalRoles())
+                .stream()
+                .map(RoleDomainObject::getId)
+                .distinct()
+                .toArray(RoleId[]::new)));
 
         final User savedUser = getUser(user.getLoginName());
 
