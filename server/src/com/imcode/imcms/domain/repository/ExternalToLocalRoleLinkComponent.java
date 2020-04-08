@@ -17,13 +17,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ExternalToLocalRoleLinkRepository {
+public class ExternalToLocalRoleLinkComponent {
 
-    private final static Logger log = Logger.getLogger(ExternalToLocalRoleLinkRepository.class);
+    private final static Logger log = Logger.getLogger(ExternalToLocalRoleLinkComponent.class);
     private final Connection connection;
 
 
-    public ExternalToLocalRoleLinkRepository(DataSource dataSource) throws SQLException {
+    public ExternalToLocalRoleLinkComponent(DataSource dataSource) throws SQLException {
         this.connection = dataSource.getConnection();
     }
 
