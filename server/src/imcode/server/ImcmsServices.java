@@ -2,8 +2,9 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.AuthenticationProviderService;
+import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
@@ -115,5 +116,7 @@ public interface ImcmsServices {
 
     AuthenticationProviderService getAuthenticationProviderService();
 
-    ExternalToLocalRoleLinkRepository getExternalToLocalRoleLinkRepository();
+    ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent();
+
+    DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService();
 }

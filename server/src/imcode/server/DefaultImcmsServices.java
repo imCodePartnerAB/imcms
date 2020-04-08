@@ -7,7 +7,8 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
-import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
+import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
 import com.imcode.imcms.domain.services.core.ServerSettings;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -108,7 +109,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private ImcmsAuthenticationProviderService authenticationProviderService;
-    private ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository;
+    private ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent;
+    private DefaultExternalToLocalRoleLinkService externalToLocalRoleLinkService;
 
     /**
      * Contructs an DefaultImcmsServices object.
@@ -116,7 +118,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ImcmsAuthenticationProviderService authenticationProviderService,
-                                ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository) {
+                                ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
@@ -133,8 +135,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initImageCacheMapper();
         initTextDocParser();
         this.authenticationProviderService = authenticationProviderService;
-
-        this.externalToLocalRoleLinkRepository = externalToLocalRoleLinkRepository;
+        this.externalToLocalRoleLinkComponent = externalToLocalRoleLinkComponent;
+        this.externalToLocalRoleLinkService = new DefaultExternalToLocalRoleLinkService(externalToLocalRoleLinkComponent);
 
         kerberosLoginService = new KerberosLoginService(config);
     }
@@ -608,8 +610,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return authenticationProviderService;
     }
 
-    public ExternalToLocalRoleLinkRepository getExternalToLocalRoleLinkRepository() {
-        return externalToLocalRoleLinkRepository;
+    public ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent() {
+        return externalToLocalRoleLinkComponent;
+    }
+
+    public DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService() {
+        return externalToLocalRoleLinkService;
     }
 
     public SMTP getSMTP() {
