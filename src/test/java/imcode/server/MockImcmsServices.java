@@ -3,7 +3,9 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.AuthenticationProviderService;
+import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
@@ -44,6 +46,8 @@ public class MockImcmsServices implements ImcmsServices {
     private Config config = new Config();
     private KerberosLoginService kerberosLoginService;
     private AuthenticationProviderService authenticationProviderService;
+    private ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent;
+    private DefaultExternalToLocalRoleLinkService defaultExternalToLocalRoleLinkService;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -198,6 +202,16 @@ public class MockImcmsServices implements ImcmsServices {
 
     public AuthenticationProviderService getAuthenticationProviderService() {
         return authenticationProviderService;
+    }
+
+    @Override
+    public ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent() {
+        return externalToLocalRoleLinkComponent;
+    }
+
+    @Override
+    public DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService() {
+        return defaultExternalToLocalRoleLinkService;
     }
 
     public void setAuthenticationProviderService(AuthenticationProviderService authenticationProviderService) {
