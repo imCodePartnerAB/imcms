@@ -19,7 +19,7 @@
         var selectedValue = selectBox.options[selectBox.selectedIndex].value;
         var xHttp = new XMLHttpRequest();
         xHttp.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
+            if (this.status === 200) {
                 document.getElementById('checkboxes').innerHTML = "";
                 document.getElementById('checkboxes').innerHTML = this.responseText;
             }
