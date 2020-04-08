@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
 import com.imcode.imcms.domain.services.AuthenticationProviderService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -113,4 +114,6 @@ public interface ImcmsServices {
     KerberosLoginService getKerberosLoginService();
 
     AuthenticationProviderService getAuthenticationProviderService();
+
+    ExternalToLocalRoleLinkRepository getExternalToLocalRoleLinkRepository();
 }

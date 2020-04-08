@@ -8,6 +8,7 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ImcmsDatabaseCreator;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.domain.factory.AuthenticationProvidersFactory;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
 import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
 import com.imcode.imcms.domain.services.core.ServerSettings;
 import com.imcode.imcms.domain.services.core.ServerSettingsChecker;
@@ -92,7 +93,8 @@ public class Imcms {
         final CachingFileLoader fileLoader = new CachingFileLoader();
         DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(database, serverprops,
                 localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader),
-                new ImcmsAuthenticationProviderService(authenticationProvidersFactory));
+                new ImcmsAuthenticationProviderService(authenticationProvidersFactory),
+                new ExternalToLocalRoleLinkRepository(getApiDataSource()));
 
         defaultImcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
 

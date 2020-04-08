@@ -7,6 +7,7 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkRepository;
 import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
 import com.imcode.imcms.domain.services.core.ServerSettings;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -107,13 +108,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private ImcmsAuthenticationProviderService authenticationProviderService;
+    private ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository;
 
     /**
      * Contructs an DefaultImcmsServices object.
      */
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
-                                ImcmsAuthenticationProviderService authenticationProviderService) {
+                                ImcmsAuthenticationProviderService authenticationProviderService,
+                                ExternalToLocalRoleLinkRepository externalToLocalRoleLinkRepository) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
@@ -130,6 +133,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initImageCacheMapper();
         initTextDocParser();
         this.authenticationProviderService = authenticationProviderService;
+
+        this.externalToLocalRoleLinkRepository = externalToLocalRoleLinkRepository;
 
         kerberosLoginService = new KerberosLoginService(config);
     }
@@ -601,6 +606,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public ImcmsAuthenticationProviderService getAuthenticationProviderService() {
         return authenticationProviderService;
+    }
+
+    public ExternalToLocalRoleLinkRepository getExternalToLocalRoleLinkRepository() {
+        return externalToLocalRoleLinkRepository;
     }
 
     public SMTP getSMTP() {
