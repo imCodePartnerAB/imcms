@@ -1,5 +1,5 @@
 <%@ page
-	import="org.apache.oro.text.perl.Perl5Util, org.apache.commons.lang.StringUtils"
+	import="org.apache.commons.lang.StringUtils, org.apache.oro.text.perl.Perl5Util"
 	contentType="text/css"
 %><%!
 
@@ -236,6 +236,44 @@ if (isNS) { %>
 	cursor:default;
 	padding: <%= isGecko ? 1 : 0 %>px 2px; }<%
 } %>
+
+.multiselect {
+    width: 100px;
+}
+
+.selectBox {
+    position: relative;
+}
+
+.selectBox select {
+    width: 100%;
+    font-weight: bold;
+}
+
+.overSelect {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+#checkboxes {
+    display: none;
+    border: 1px #dadada solid;
+}
+
+#checkboxes label {
+    display: block;
+}
+
+#checkboxes label:hover {
+    background-color: #1e90ff;
+}
+
+#linkSaveRoles {
+    display: none;
+}
 
 <% /* Medium - Used as extra, to get higher buttons: class=" imcmsFormBtnSmall imcmsFormBtnMedium" */ %>
 

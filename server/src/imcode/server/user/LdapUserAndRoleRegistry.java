@@ -1,14 +1,10 @@
 package imcode.server.user;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.imcode.imcms.api.P;
 import com.imcode.net.ldap.LdapClient;
 import com.imcode.net.ldap.LdapClientException;
 import com.imcode.net.ldap.LdapConnection;
 import com.imcode.net.ldap.LdapConnectionPool;
-import imcode.server.user.ldap.MappedRoles;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.ExtendedProperties;
@@ -96,12 +92,11 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     private final String ldapUserObjectClass;
     private final String[] ldapAttributesAutoMappedToRoles;
     private LdapConnectionPool ldapConnectionPool;
-    private MappedRoles mappedRoles;
     private Properties userPropertyNameToLdapAttributeNameMap = new Properties();
     private String ldapUsername;
     private String ldapPassword;
 
-    public LdapUserAndRoleRegistry(Properties ldapConfig, MappedRoles mappedRoles) throws LdapClientException {
+    public LdapUserAndRoleRegistry(Properties ldapConfig) throws LdapClientException {
         this(ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
                 ldapConfig.getProperty("LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT),
                 ldapConfig.getProperty("LdapBindDn", ""),
@@ -110,7 +105,8 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                 ldapConfig.getProperty("LdapMaxConnections", "20"),
                 ldapConfig.getProperty("LdapConnectionExpirySeconds", "120"),
                 buildAttributesMappedToRoles(ldapConfig),
-                buildUserAttributes(ldapConfig), mappedRoles);
+                buildUserAttributes(ldapConfig)
+        );
     }
 
     /**
@@ -130,9 +126,8 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                                    String ldapMaxConnections,
                                    String ldapConnectionExpirySeconds,
                                    String[] ldapAttributesMappedToRoles,
-                                   Properties ldapUserAttributes,
-                                   MappedRoles mappedRoles
-    ) throws LdapClientException {
+                                   Properties ldapUserAttributes) throws LdapClientException {
+
         ldapAttributesAutoMappedToRoles = ldapAttributesMappedToRoles;
         initLdapUserAttributesMap(ldapUserAttributes);
 
@@ -144,8 +139,6 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         this.ldapReadTimeoutMillis = ldapReadTimeoutMillis;
         this.ldapMaxConnections = Integer.parseInt(ldapMaxConnections);
         this.ldapConnectionExpirySeconds = Integer.parseInt(ldapConnectionExpirySeconds);
-
-        this.mappedRoles = mappedRoles;
 
         createLdapConnection();
     }
@@ -193,18 +186,17 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     public String[] getAllRoleNames() {
-        Set<String> names = new HashSet<>(mappedRoles.roles());
-        names.add(DEFAULT_LDAP_ROLE);
-
-        return names.toArray(new String[]{});
+        return new String[]{DEFAULT_LDAP_ROLE};
     }
 
+    @SuppressWarnings("unchecked")
     private void initLdapUserAttributesMap(Properties ldapUserAttributes) throws LdapClientException {
         userPropertyNameToLdapAttributeNameMap.putAll(DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP);
         userPropertyNameToLdapAttributeNameMap.putAll(ldapUserAttributes);
-        Set badUserAttributes = new TreeSet(userPropertyNameToLdapAttributeNameMap.keySet());
+        Set<String> badUserAttributes = new TreeSet(userPropertyNameToLdapAttributeNameMap.keySet());
         String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames(UserDomainObject.class);
         badUserAttributes.removeAll(Arrays.asList(capitalizedSettableUserPropertyNames));
+
         if (!badUserAttributes.isEmpty()) {
             throw new LdapClientException("Unrecognized LdapUserAttributes: "
                     + StringUtils.join(badUserAttributes.iterator(), ", "));
@@ -269,55 +261,43 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
     public String[] getRoleNames(UserDomainObject user) {
         String loginName = user.getLoginName();
-
-        Map attributeMappedRoles = searchForUserAttributes(loginName, ldapAttributesAutoMappedToRoles);
-        Set<String> roles = new HashSet<String>(attributeMappedRoles.values());
-
-        Set<String> mappedRolesNames = getMappedRoleNames(loginName);
-        if (mappedRolesNames.size() == 0) {
-            LOG.debug(String.format("User %s does not have LDAP attributes mapped to roles.", loginName));
-        } else {
-            LOG.debug(String.format("User %s have %d LDAP roles mapped to attributes: %s.", loginName,
-                    mappedRolesNames.size(), Joiner.on(", ").join(mappedRolesNames)));
-        }
-
+        Map<String, String> attributeMappedRoles = searchForUserAttributes(loginName, ldapAttributesAutoMappedToRoles);
+        Set<String> roles = new HashSet<>(attributeMappedRoles.values());
         roles.add(DEFAULT_LDAP_ROLE);
-        roles.addAll(mappedRolesNames);
-
         return roles.toArray(new String[roles.size()]);
     }
 
     /**
      * @since 4.1.6
      */
-    private Set<String> getMappedRoleNames(String loginName) {
-        Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
-                loginName, mappedRoles.rolesToAttributes().attributesNames().toArray(new String[]{}));
-
-        List<P.P2<String, String>> attributeNameValuePairs = Lists.newLinkedList();
-
-        for (Map.Entry<String, Set<String>> mappedAttribute : mappedAttributes.entrySet()) {
-            String attributeName = mappedAttribute.getKey();
-            for (String attributeValue : mappedAttribute.getValue()) {
-                attributeNameValuePairs.add(P.of(attributeName, attributeValue));
-            }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Found %s LDAP roles mapped to attributes for user %s: %s.",
-                    attributeNameValuePairs.size(), loginName, Joiner.on(", ").join(attributeNameValuePairs)));
-        }
-
-        Set<String> usersAdGroups = getADUserGroups(loginName, mappedRoles.rolesToAdGroups().groups());
-        Set<String> rolesNamesMappedToAttributes = mappedRoles.rolesToAttributes().roles(attributeNameValuePairs);
-        Set<String> rolesNamesMappedToAdGroups = mappedRoles.rolesToAdGroups().roles(usersAdGroups);
-        ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
-
-        rolesNamesBuilder.addAll(rolesNamesMappedToAttributes);
-        rolesNamesBuilder.addAll(rolesNamesMappedToAdGroups);
-
-        return rolesNamesBuilder.build();
-    }
+//    private Set<String> getMappedRoleNames(String loginName) {
+//        Map<String, Set<String>> mappedAttributes = searchForUserMultiAttributes(
+//                loginName, mappedRoles.rolesToAttributes().attributesNames().toArray(new String[]{}));
+//
+//        List<P.P2<String, String>> attributeNameValuePairs = Lists.newLinkedList();
+//
+//        for (Map.Entry<String, Set<String>> mappedAttribute : mappedAttributes.entrySet()) {
+//            String attributeName = mappedAttribute.getKey();
+//            for (String attributeValue : mappedAttribute.getValue()) {
+//                attributeNameValuePairs.add(P.of(attributeName, attributeValue));
+//            }
+//        }
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug(String.format("Found %s LDAP roles mapped to attributes for user %s: %s.",
+//                    attributeNameValuePairs.size(), loginName, Joiner.on(", ").join(attributeNameValuePairs)));
+//        }
+//
+//        Set<String> usersAdGroups = getADUserGroups(loginName, mappedRoles.rolesToAdGroups().groups());
+//        Set<String> rolesNamesMappedToAttributes = mappedRoles.rolesToAttributes().roles(attributeNameValuePairs);
+//        Set<String> rolesNamesMappedToAdGroups = mappedRoles.rolesToAdGroups().roles(usersAdGroups);
+//        ImmutableSet.Builder<String> rolesNamesBuilder = ImmutableSet.builder();
+//
+//        rolesNamesBuilder.addAll(rolesNamesMappedToAttributes);
+//        rolesNamesBuilder.addAll(rolesNamesMappedToAdGroups);
+//
+//        return rolesNamesBuilder.build();
+//    }
 
     private Map<String, String> searchForUserAttributes(String loginName, String[] attributesToReturn) {
         Map<String, String> attributeMap = null;

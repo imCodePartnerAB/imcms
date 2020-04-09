@@ -7,8 +7,11 @@ import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ImcmsDatabaseCreator;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
-import com.imcode.imcms.services.ServerSettings;
-import com.imcode.imcms.services.ServerSettingsChecker;
+import com.imcode.imcms.domain.factory.AuthenticationProvidersFactory;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
+import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
+import com.imcode.imcms.domain.services.core.ServerSettings;
+import com.imcode.imcms.domain.services.core.ServerSettingsChecker;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -86,10 +89,12 @@ public class Imcms {
         DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(wantedDdl, new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
         sanityCheckDatabase(database, wantedDdl);
-
+        AuthenticationProvidersFactory authenticationProvidersFactory = new AuthenticationProvidersFactory(serverprops);
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        XMLConfig xmlConfig = new XMLConfig(new File(getPath(), "WEB-INF/conf/server.xml").getCanonicalPath());
-        DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(xmlConfig, database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        DefaultImcmsServices defaultImcmsServices = new DefaultImcmsServices(database, serverprops,
+                localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader),
+                new ImcmsAuthenticationProviderService(authenticationProvidersFactory),
+                new ExternalToLocalRoleLinkComponent(getApiDataSource()));
 
         defaultImcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
 

@@ -188,6 +188,10 @@
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
 
+        <filter token="aad.tenant.id" value="${aad.tenant.id}"/>
+        <filter token="aad.client.id" value="${aad.client.id}"/>
+        <filter token="aad.secret.key" value="${aad.secret.key}"/>
+
         <filter token="ldap-url" value="${ldap-url}"/>
         <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
         <filter token="ldap-password" value="${ldap-password}"/>

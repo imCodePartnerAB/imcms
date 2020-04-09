@@ -367,6 +367,16 @@
         <servlet-class>com.imcode.imcms.servlet.InternalError</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.RequestExternalIdentifierToLoginServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.RequestExternalIdentifierToLoginServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ProcessAuthResponseServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ProcessAuthResponseServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
@@ -650,6 +660,16 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
         <url-pattern>/servlet/InternalError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.RequestExternalIdentifierToLoginServlet</servlet-name>
+        <url-pattern>/api/external-identifiers/login/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ProcessAuthResponseServlet</servlet-name>
+        <url-pattern>/api/external-identifiers/logged-in/*</url-pattern>
     </servlet-mapping>
 
     <session-config>

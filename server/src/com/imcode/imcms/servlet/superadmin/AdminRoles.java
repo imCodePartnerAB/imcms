@@ -1,11 +1,20 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
+import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.NameTooLongException;
+import imcode.server.user.RoleAlreadyExistsException;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.RolePermissionDomainObject;
+import imcode.server.user.UserAndRoleRegistryException;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
@@ -18,7 +27,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AdminRoles extends HttpServlet {
 
@@ -32,6 +50,8 @@ public class AdminRoles extends HttpServlet {
     private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.html";
     private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.html";
     private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.html";
+    private final String identifierId = Imcms.getServerProperties().getProperty("ExternalAuthenticator");
+
 
     public static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg
     ) throws IOException {
@@ -108,6 +128,51 @@ public class AdminRoles extends HttpServlet {
         String opt = Html.createOptionList(rolesV, Arrays.asList(new String[]{""}));
         vm.put("ROLES_MENU", opt);
 
+        List<ExternalRole> externalRoles = imcref.getAuthenticationProviderService()
+                .getAuthenticationProvider(identifierId)
+                .getRoles();
+
+        final List<String> azureNamesRoles = new ArrayList<>();
+
+        for (ExternalRole azureNamesRolesParam : externalRoles) {
+            if (azureNamesRolesParam instanceof AzureActiveDirectoryGroupDTO) {
+                azureNamesRoles.add(azureNamesRolesParam.getId());
+                azureNamesRoles.add(((AzureActiveDirectoryGroupDTO) azureNamesRolesParam).getDisplayName());
+            }
+        }
+
+        String list = Html.createOptionList(azureNamesRoles, Arrays.asList(new String[]{""}));
+        vm.put("EXTERNAL_ROLES_MENU", list);
+
+        String externalRoleId = req.getParameter("extRoleId");
+        String dropListRoles;
+        boolean addOnClick = true;
+
+        if (externalRoleId != null) {
+            final List<String> rolesIds;
+            try {
+                rolesIds = Imcms.getServices().getExternalToLocalRoleLinkComponent()
+                        .findRolesByExternalRoleId(externalRoleId)
+                        .stream()
+                        .map(RoleDomainObject::getId)
+                        .map(RoleId::toString)
+                        .collect(Collectors.toList());
+            } catch (SQLException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+
+            dropListRoles = Html.createDropDownList(rolesV, rolesIds, addOnClick, "enableBtnSave");
+            Utility.setDefaultHtmlContentType(res);
+            PrintWriter out = res.getWriter();
+
+            out.println(dropListRoles);
+            return;
+        } else {
+            dropListRoles = Html.createDropDownList(rolesV, Collections.EMPTY_LIST, addOnClick, "enableBtnSave");
+        }
+
+        vm.put("LINKED_ROLES", dropListRoles);
         sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
     } // End doGet
@@ -303,6 +368,24 @@ public class AdminRoles extends HttpServlet {
                 doGet(req, res);
 
                 return;
+            } else if (req.getParameter("SAVE_EXTERNAL_TO_LOCAL_ROLE") != null) {
+                String externalRoleId = req.getParameter("AZURE_ROLE_ID");
+                Set<Integer> localRoleIds = Arrays.stream(req.getParameterValues("role"))
+                        .map(Integer::new)
+                        .collect(Collectors.toSet());
+
+                try {
+                    Imcms.getServices()
+                            .getExternalToLocalRoleLinkService()
+                            .setLinkedRoles(new ExternalRole(identifierId, externalRoleId), localRoleIds);
+                } catch (SQLException e) {
+                    LOG.error(e.getMessage());
+                }
+
+                doGet(req, res);
+
+                return;
+
             }
 
 
@@ -442,6 +525,10 @@ public class AdminRoles extends HttpServlet {
         }
 
     } // end HTTP POST
+
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
 
     private boolean roleExists(ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, String roleName) {
         return null != userAndRoleMapper.getRoleByName(roleName);

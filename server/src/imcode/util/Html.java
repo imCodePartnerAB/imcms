@@ -11,6 +11,7 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
+import lombok.NonNull;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.perl.Perl5Util;
@@ -19,7 +20,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Html {
 
@@ -194,6 +201,31 @@ public class Html {
                 + "\">";
     }
 
+    public static String checkBoxWrapLabel(String name, String id, String value,
+                                           List<String> linkRolesIdsWithExternal,
+                                           boolean isOnClick, @NonNull String nameFuncOnClick) {
+        final StringBuffer htmlCheckBoxBuilder = new StringBuffer();
+        htmlCheckBoxBuilder.append("<label for=\"")
+                .append(StringEscapeUtils.escapeHtml(id))
+                .append("\"><input type=\"checkbox\" name=\"")
+                .append(StringEscapeUtils.escapeHtml(name))
+                .append("\" value=\"")
+                .append(StringEscapeUtils.escapeHtml(id))
+                .append("\" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
+        if (isOnClick) {
+            htmlCheckBoxBuilder.append(" onclick=")
+                    .append("\"")
+                    .append(StringEscapeUtils.escapeHtml(nameFuncOnClick)).append("()")
+                    .append("\"");
+        }
+        if (linkRolesIdsWithExternal.contains(id)) {
+            htmlCheckBoxBuilder.append(" checked");
+        }
+        htmlCheckBoxBuilder.append(">").append(StringEscapeUtils.escapeHtml(value)).append("</label>");
+
+        return htmlCheckBoxBuilder.toString();
+    }
+
     public static String radio(String name, String value, boolean selected) {
         return
                 "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
@@ -219,6 +251,39 @@ public class Html {
         } catch (IOException e) {
             throw new UnhandledException(e);
         }
+    }
+
+    public static String createSimpleUlList(List values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<ul>");
+
+        for (int i = 0; i < values.size(); i += 2) {
+            String value = values.get(i).toString();
+            String content = values.get(i + 1).toString();
+            stringBuilder.append("<li value=\"")
+                    .append(StringEscapeUtils.escapeHtml(value))
+                    .append("\">")
+                    .append(content)
+                    .append("</li>");
+        }
+        stringBuilder.append("</ul>");
+
+        return stringBuilder.toString();
+    }
+
+    public static String createDropDownList(List values, List<String> linkRolesIdsWithExternal,
+                                            boolean isOnClick, @NonNull String nameFuncOnClick) {
+        StringBuffer stringBuffer = new StringBuffer();
+        final String nameCheckBoxes = "role";
+
+        for (int i = 0; i < values.size(); i += 2) {
+            String id = values.get(i).toString();
+            String value = values.get(i + 1).toString();
+            stringBuffer.append(checkBoxWrapLabel(nameCheckBoxes, id, value,
+                    linkRolesIdsWithExternal, isOnClick, nameFuncOnClick));
+        }
+
+        return stringBuffer.toString();
     }
 
     public static String removeTags(String html) {

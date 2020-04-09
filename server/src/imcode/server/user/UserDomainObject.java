@@ -7,9 +7,11 @@ import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.NotPredicate;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
@@ -22,45 +24,51 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public final class UserDomainObject implements Cloneable, Serializable {
-
+@Getter
+@Setter
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class UserDomainObject implements Cloneable, Serializable {
     public static final int DEFAULT_USER_ID = 2;
-    protected int id;
-    protected RoleIds userAdminRoleIds = new RoleIds();
-    RoleIds roleIds = createRolesSetWithUserRole();
-    private String loginName = "";
-    private String password;
-    private String firstName = "";
-    private String lastName = "";
-    private String title = "";
-    private String company = "";
-    private String address = "";
-    private String city = "";
-    private String zip = "";
-    private String country = "";
-    private String province = "";
-    private String emailAddress = "";
-    private boolean active = true;
-    private Date createDate;
+    private static final long serialVersionUID = -9176465092502055012L;
 
-    private String languageIso639_2;
+    protected volatile int id;
+    protected volatile RoleIds userAdminRoleIds = new RoleIds();
+    private volatile String loginName = "";
 
-    private TemplateGroupDomainObject templateGroup;
+    private volatile String password;
+    private volatile String firstName = "";
+    private volatile String lastName = "";
+    private volatile String title = "";
+    private volatile String company = "";
+    private volatile String address = "";
+    private volatile String city = "";
+    private volatile String zip = "";
+    private volatile String country = "";
+    private volatile String province = "";
+    private volatile String emailAddress = "";
+    private volatile boolean active = true;
+    private volatile Date createDate;
+    private volatile String languageIso639_2;
+    private volatile TemplateGroupDomainObject templateGroup;
+    private volatile boolean imcmsExternal;
+    private String externalProviderId = "";
+    private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();
+    private RoleIds roleIds = createRolesSetWithUserRole();
+    /**
+     * Http session id.
+     */
+    private volatile String sessionId;
+    private volatile boolean authenticatedByIp;
 
-    private boolean imcmsExternal;
-
-    private HashSet phoneNumbers = new HashSet();
+    private String rememberCd;
 
     private Map<String, String> properties = new HashMap<>();
 
     private Date lastLogin;
-    /**
-     * Http session id.
-     */
-    private String sessionId;
-    private String rememberCd;
-    private PasswordType passwordType = PasswordType.UNENCRYPTED;
-    private PasswordReset passwordReset = null;
+
+    private volatile PasswordType passwordType = PasswordType.UNENCRYPTED;
+
+    private volatile PasswordReset passwordReset = null;
     /**
      * FIXME - Kludge to get context path into template methods *
      */
@@ -79,7 +87,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
         return newRoleIds;
     }
 
-    public Object clone() {
+    @Override
+    public UserDomainObject clone() {
         try {
             UserDomainObject clone = (UserDomainObject) super.clone();
             clone.roleIds = (RoleIds) roleIds.clone();
@@ -90,38 +99,6 @@ public final class UserDomainObject implements Cloneable, Serializable {
             throw new UnhandledException(e);
         }
     }
-
-    /**
-     * get user-id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * set user-id
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * get login name (username)
-     */
-    public String getLoginName() {
-        return loginName;
-    }
-
-    /**
-     * set login name (username)
-     */
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
-
-    /**
-     * get full name
-     */
     public String getFullName() {
         return getFirstName() + " " + getLastName();
     }
@@ -274,11 +251,11 @@ public final class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setWorkPhone(String workphone) {
-        replacePhoneNumbersOfType(workphone, PhoneNumberType.WORK);
+    public void setWorkPhone(String workPhone) {
+        replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
 
-    private String getFirstPhoneNumberOfTypeAsString(PhoneNumberType phoneNumberType) {
+    public String getFirstPhoneNumberOfTypeAsString(PhoneNumberType phoneNumberType) {
         PhoneNumber firstPhoneNumberOfType = getFirstPhoneNumberOfType(phoneNumberType);
         String number = null;
         if (null != firstPhoneNumberOfType) {
@@ -323,8 +300,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setMobilePhone(String mobilephone) {
-        replacePhoneNumbersOfType(mobilephone, PhoneNumberType.MOBILE);
+    public void setMobilePhone(String mobilePhone) {
+        replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
 
     /**
@@ -341,8 +318,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setHomePhone(String homephone) {
-        replacePhoneNumbersOfType(homephone, PhoneNumberType.HOME);
+    public void setHomePhone(String homePhone) {
+        replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
     }
 
     /**
@@ -359,8 +336,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setFaxPhone(String faxphone) {
-        replacePhoneNumbersOfType(faxphone, PhoneNumberType.FAX);
+    public void setFaxPhone(String faxPhone) {
+        replacePhoneNumbersOfType(faxPhone, PhoneNumberType.FAX);
     }
 
     /**
@@ -377,8 +354,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setOtherPhone(String otherphone) {
-        replacePhoneNumbersOfType(otherphone, PhoneNumberType.OTHER);
+    public void setOtherPhone(String otherPhone) {
+        replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
 
     /**

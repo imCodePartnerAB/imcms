@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.services.ServerSettingsChecker;
+import com.imcode.imcms.domain.services.core.ServerSettingsChecker;
 import imcode.server.Imcms;
 import imcode.util.Prefs;
 import org.apache.commons.logging.LogFactory;

@@ -7,9 +7,9 @@
 <%@ page import="imcode.util.DateConstants" %>
 <%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils, java.text.SimpleDateFormat" %>
-<%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.REQUEST_PARAMETER_2FA" %>
-<%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.PROPERTY_NAME_2FA" %>
-<%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.*" %>
+<%@ page import="static com.imcode.imcms.domain.services.core.TwoFactorAuthService.REQUEST_PARAMETER_2FA" %>
+<%@ page import="static com.imcode.imcms.domain.services.core.TwoFactorAuthService.PROPERTY_NAME_2FA" %>
+<%@ page import="static com.imcode.imcms.domain.services.core.TwoFactorAuthService.*" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
     UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);

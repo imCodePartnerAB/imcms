@@ -3,22 +3,24 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
+import com.imcode.imcms.domain.services.AuthenticationProviderService;
+import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
-
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
+import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.kerberos.KerberosLoginService;
 import imcode.util.net.SMTP;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +45,9 @@ public class MockImcmsServices implements ImcmsServices {
     private ProcedureExecutor procedureExecutor;
     private Config config = new Config();
     private KerberosLoginService kerberosLoginService;
+    private AuthenticationProviderService authenticationProviderService;
+    private ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent;
+    private DefaultExternalToLocalRoleLinkService defaultExternalToLocalRoleLinkService;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -193,6 +198,24 @@ public class MockImcmsServices implements ImcmsServices {
     
     public KerberosLoginService getKerberosLoginService() {
         return kerberosLoginService;
+    }
+
+    public AuthenticationProviderService getAuthenticationProviderService() {
+        return authenticationProviderService;
+    }
+
+    @Override
+    public ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent() {
+        return externalToLocalRoleLinkComponent;
+    }
+
+    @Override
+    public DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService() {
+        return defaultExternalToLocalRoleLinkService;
+    }
+
+    public void setAuthenticationProviderService(AuthenticationProviderService authenticationProviderService) {
+        this.authenticationProviderService = authenticationProviderService;
     }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(

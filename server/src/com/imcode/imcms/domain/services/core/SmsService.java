@@ -1,4 +1,4 @@
-package com.imcode.imcms.services;
+package com.imcode.imcms.domain.services.core;
 
 import imcode.server.Imcms;
 import org.apache.commons.httpclient.HttpStatus;

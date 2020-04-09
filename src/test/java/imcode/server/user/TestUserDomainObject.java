@@ -16,7 +16,7 @@ public class TestUserDomainObject extends TestCase {
 
     public void testClone() {
         UserDomainObject clone = (UserDomainObject)user.clone() ;
-        assertNotSame( "Roles cloned", clone.roleIds, user.roleIds);
+        assertNotSame("Roles cloned", clone.getRoleIds(), user.getRoleIds());
         assertNotSame( "Useradmin roles cloned", clone.userAdminRoleIds, user.userAdminRoleIds);
     }
 

@@ -1,6 +1,5 @@
 package com.imcode.imcms.test.external;
 
-import imcode.server.XMLConfig;
 import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
@@ -52,8 +51,7 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
                 ldapUserObjectClass,
                 ldapBindDN, ldapPassword,
                 ldapReadTimeoutMillis, ldapMaxConnections, ldapConnectionExpirySeconds,
-                ldapAttributesMappedToRoles, new Properties(),
-                new XMLConfig("server.xml").getLdapMappedRoles());
+                ldapAttributesMappedToRoles, new Properties());
         ldapUserAndRoleRegistry.setUserPropertyLdapAttribute("LoginName", ldapAttributeLoginName) ;
         return ldapUserAndRoleRegistry;
     }

@@ -1,11 +1,15 @@
 package imcode.server.user;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoleDomainObject implements Serializable, Comparable {
 
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject(1, new LocalizedMessage("role_permission/password_by_email/description"));

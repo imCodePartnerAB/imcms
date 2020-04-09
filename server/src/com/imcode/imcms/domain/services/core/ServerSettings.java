@@ -1,4 +1,4 @@
-package com.imcode.imcms.services;
+package com.imcode.imcms.domain.services.core;
 
 import java.util.Arrays;
 import java.util.List;
