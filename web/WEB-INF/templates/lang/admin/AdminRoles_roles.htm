@@ -27,6 +27,16 @@
         xHttp.open("GET", `/servlet/AdminRoles?extRoleId=${selectedValue}`, true);
         xHttp.send();
     }
+
+    //don't change name function - this uses in the server!
+    function enableBtnSave() {
+        var selectBox = document.getElementById("selectAzureBox");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        var saveLinkRoleBtn = document.getElementById("linkSaveRoles");
+        if (null !== selectedValue) {
+            saveLinkRoleBtn.style.display = 'block';
+        }
+    }
 </script>
 <style>
 	.multiselect {
@@ -62,6 +72,10 @@
 	#checkboxes label:hover {
 		background-color: #1e90ff;
 	}
+
+    #linkSaveRoles {
+        display: none;
+    }
 </style>
 <form method="post" action="AdminRoles" name="UserInfo">
 <table border="0" cellspacing="0" cellpadding="2" width="400">
@@ -77,7 +91,8 @@
 			#ROLES_MENU#
 		</select></td>
 
-        <td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;
+        <td class="imcmsAdmText" nowrap>&nbsp;<? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;</td>
+        <td>
             <select name="AZURE_ROLE_ID" size="10" id="selectAzureBox" onchange="selectedValue()">
 				#EXTERNAL_ROLES_MENU#
 			</select>
@@ -86,7 +101,7 @@
 			<div class="multiselect">
 				<div class="selectBox" onclick="showCheckboxes()">
 					<select>
-						<option>Select an option</option>
+                        <option><? templates/sv/AdminRoles_select_roles.htm/1 ?></option>
 					</select>
 					<div class="overSelect"></div>
 				</div>
@@ -94,9 +109,9 @@
 					#LINKED_ROLES#
 				</div>
 			</div>
-			<input type="submit" class="imcmsFormBtnSmall" name="SAVE_EXTERNAL_TO_LOCAL_ROLE"
-				   value="<? templates/sv/change_img.html/2007 ?>">
 		</td>
+        <td><input type="submit" class="imcmsFormBtnSmall" id="linkSaveRoles" name="SAVE_EXTERNAL_TO_LOCAL_ROLE"
+                   value="<? templates/sv/change_img.html/2007 ?>"></td>
 	</tr>
     </table>
     </td>
