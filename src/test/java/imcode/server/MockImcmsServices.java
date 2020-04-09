@@ -204,6 +204,10 @@ public class MockImcmsServices implements ImcmsServices {
         return authenticationProviderService;
     }
 
+    public void setAuthenticationProviderService(AuthenticationProviderService authenticationProviderService) {
+        this.authenticationProviderService = authenticationProviderService;
+    }
+
     @Override
     public ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent() {
         return externalToLocalRoleLinkComponent;
@@ -212,10 +216,6 @@ public class MockImcmsServices implements ImcmsServices {
     @Override
     public DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService() {
         return defaultExternalToLocalRoleLinkService;
-    }
-
-    public void setAuthenticationProviderService(AuthenticationProviderService authenticationProviderService) {
-        this.authenticationProviderService = authenticationProviderService;
     }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
