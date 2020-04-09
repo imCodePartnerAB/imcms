@@ -110,7 +110,7 @@
                 <c:set var="provider" scope="session" value="${authProviders.get(0)}"/>
                 <div class="imcms-tab imcms-link-azure" id="imcms-azure-tab"
                      onclick="top.location='<%= request.getContextPath() %>/api/external-identifiers/login/${provider.providerId}'"
-                     title="${provider.providerName}">Azure
+                     title="${provider.providerName}">Azure login
                 </div>
             </c:if>
             <div style="clear:both"></div>
