@@ -18,14 +18,15 @@
         var selectBox = document.getElementById("selectAzureBox");
         var selectedValue = selectBox.options[selectBox.selectedIndex].value;
         var xHttp = new XMLHttpRequest();
+        xHttp.open("PUT", `/servlet/AdminRoles?extRoleId=${selectedValue}`, true);
+        xHttp.send();
+
         xHttp.onreadystatechange = function () {
             if (this.status === 200) {
                 document.getElementById('checkboxes').innerHTML = "";
                 document.getElementById('checkboxes').innerHTML = this.responseText;
             }
         };
-        xHttp.open("GET", `/servlet/AdminRoles?extRoleId=${selectedValue}`, true);
-        xHttp.send();
     }
 
     //don't change name function - this uses in the server!

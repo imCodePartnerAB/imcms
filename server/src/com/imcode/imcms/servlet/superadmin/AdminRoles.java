@@ -527,7 +527,7 @@ public class AdminRoles extends HttpServlet {
     } // end HTTP POST
 
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        doGet(req, resp);
     }
 
     private boolean roleExists(ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, String roleName) {
