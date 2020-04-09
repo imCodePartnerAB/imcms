@@ -11,6 +11,7 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
+import lombok.NonNull;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.perl.Perl5Util;
@@ -200,7 +201,9 @@ public class Html {
                 + "\">";
     }
 
-    public static String checkBoxWrapLabel(String name, String id, String value, List<String> linkRolesIdsWithExternal) {
+    public static String checkBoxWrapLabel(String name, String id, String value,
+                                           List<String> linkRolesIdsWithExternal,
+                                           boolean isOnClick, @NonNull String nameFuncOnClick) {
         final StringBuffer htmlCheckBoxBuilder = new StringBuffer();
         htmlCheckBoxBuilder.append("<label for=\"")
                 .append(StringEscapeUtils.escapeHtml(id))
@@ -209,6 +212,12 @@ public class Html {
                 .append("\" value=\"")
                 .append(StringEscapeUtils.escapeHtml(id))
                 .append("\" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
+        if (isOnClick) {
+            htmlCheckBoxBuilder.append(" onclick=")
+                    .append("\"")
+                    .append(StringEscapeUtils.escapeHtml(nameFuncOnClick)).append("()")
+                    .append("\"");
+        }
         if (linkRolesIdsWithExternal.contains(id)) {
             htmlCheckBoxBuilder.append(" checked");
         }
@@ -262,17 +271,19 @@ public class Html {
         return stringBuilder.toString();
     }
 
-    public static String createDropDownList(List values, List<String> linkRolesIdsWithExternal) {
-        StringBuffer stringBuilder = new StringBuffer();
-        final String nameCheckBoxs = "role";
+    public static String createDropDownList(List values, List<String> linkRolesIdsWithExternal,
+                                            boolean isOnClick, @NonNull String nameFuncOnClick) {
+        StringBuffer stringBuffer = new StringBuffer();
+        final String nameCheckBoxes = "role";
 
         for (int i = 0; i < values.size(); i += 2) {
             String id = values.get(i).toString();
             String value = values.get(i + 1).toString();
-            stringBuilder.append(checkBoxWrapLabel(nameCheckBoxs, id, value, linkRolesIdsWithExternal));
+            stringBuffer.append(checkBoxWrapLabel(nameCheckBoxes, id, value,
+                    linkRolesIdsWithExternal, isOnClick, nameFuncOnClick));
         }
 
-        return stringBuilder.toString();
+        return stringBuffer.toString();
     }
 
     public static String removeTags(String html) {

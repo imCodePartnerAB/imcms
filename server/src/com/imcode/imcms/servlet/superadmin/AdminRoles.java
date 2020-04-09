@@ -146,6 +146,7 @@ public class AdminRoles extends HttpServlet {
 
         String externalRoleId = req.getParameter("extRoleId");
         String dropListRoles;
+        boolean addOnClick = true;
 
         if (externalRoleId != null) {
             final List<String> rolesIds;
@@ -161,14 +162,14 @@ public class AdminRoles extends HttpServlet {
                 return;
             }
 
-            dropListRoles = Html.createDropDownList(rolesV, rolesIds);
+            dropListRoles = Html.createDropDownList(rolesV, rolesIds, addOnClick, "enableBtnSave");
             Utility.setDefaultHtmlContentType(res);
             PrintWriter out = res.getWriter();
 
             out.println(dropListRoles);
             return;
         } else {
-            dropListRoles = Html.createDropDownList(rolesV, Collections.EMPTY_LIST);
+            dropListRoles = Html.createDropDownList(rolesV, Collections.EMPTY_LIST, addOnClick, "enableBtnSave");
         }
 
         vm.put("LINKED_ROLES", dropListRoles);
