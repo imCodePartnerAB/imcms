@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.exception.LanguageNotAvailableException;
 import com.imcode.imcms.domain.service.LanguageService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,11 +23,22 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
     @Value("#{'${AvailableLanguages}'.split(';')}")
     private List<String> availableLanguages;
 
+    @Value("#{'${DefaultLanguage}'}")
+    private String defaultLang;
+
     @Autowired
     private LanguageService languageService;
 
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+
+    @BeforeEach
+    public void setUp() {
+        languageDataInitializer.cleanRepositories();
+    }
+
+    // 0 - en
+    // 1 - sv
 
     @Test
     public void getAvailableLngs_When_TwoLanguagesAvailable_Expected_CorrectResult() {
@@ -50,4 +62,12 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
         assertThrows(LanguageNotAvailableException.class, () -> languageService.findByCode("unknown"));
     }
 
+    @Test
+    public void getDefaultLang_When_LanguageSetEng_Expected_CorrectLang() {
+        final LanguageDTO expected = languageDataInitializer.createData().get(0);
+        final LanguageDTO result = new LanguageDTO(languageService.getDefaultLanguage());
+
+        assertEquals(expected.getCode(), result.getCode());
+        assertEquals(expected, result);
+    }
 }
