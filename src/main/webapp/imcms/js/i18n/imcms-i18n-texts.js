@@ -352,7 +352,10 @@ const texts = {
             },
             menu: {
                 newDoc: "Ny",
-                title: "Meny-redigerare ",
+                title: "Redigera meny ",
+                teaser: "Teaser-menyn ",
+                page: "sida ",
+                menuTitle: "meny ",
                 remove: "Ta bort ur menyn",
                 copy: "Kopiera",
                 edit: "Redigera Sid-info",
@@ -1253,6 +1256,9 @@ const texts = {
             menu: {
                 newDoc: "New",
                 title: "Menu Editor ",
+                teaser: "Teaser menu ",
+                page: "page ",
+                menuTitle: "menu ",
                 remove: "Remove",
                 copy: "Copy",
                 edit: "Edit",
