@@ -3,10 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.exception.LanguageNotAvailableException;
 import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.mapping.jpa.SystemProperty;
-import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.LanguageMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +24,9 @@ class DefaultLanguageService implements LanguageService {
     private String defaultLang;
 
     private final LanguageRepository languageRepository;
-    private final SystemPropertyRepository systemRepository;
 
-    DefaultLanguageService(LanguageRepository languageRepository, SystemPropertyRepository systemRepository) {
+    DefaultLanguageService(LanguageRepository languageRepository) {
         this.languageRepository = languageRepository;
-        this.systemRepository = systemRepository;
     }
 
     @Override
@@ -65,32 +60,6 @@ class DefaultLanguageService implements LanguageService {
 
     @Override
     public Language getDefaultLanguage() {
-        final LanguageJPA langByProperty = new LanguageJPA(findByCode(defaultLang));
-
-        if (langByProperty.getCode() == null) { // set default from db.
-            log.error("In getDefaultLanguage: default language from properties not exists in db: {}", defaultLang);
-
-            final SystemProperty property = systemRepository.findByName("DefaultLanguageId");
-
-            if (property == null) {
-                String message = "Configuration error. DefaultLanguageId property is not set.";
-                log.error(message);
-                throw new IllegalStateException(message);
-            }
-
-            final Integer languageId = Integer.parseInt(property.getValue());
-
-            final LanguageJPA langBySysProp = languageRepository.findOne(languageId);
-
-            if (langBySysProp == null) {
-                String message = String.format("Configuration error. Default language (id: %d) can not be found.", languageId);
-                log.error(message);
-                throw new IllegalStateException(message);
-            }
-
-            return langBySysProp;
-        }
-
-        return langByProperty;
+        return new LanguageDTO(findByCode(defaultLang));
     }
 }
