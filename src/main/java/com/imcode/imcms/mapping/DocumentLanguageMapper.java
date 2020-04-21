@@ -37,7 +37,7 @@ public class DocumentLanguageMapper {
     }
 
     public DocumentLanguage findByCode(String code) {
-        return toApiObject(languageRepository.findByCode(code));
+        return toApiObject(languageService.findByCode(code));
     }
 
     public void deleteByCode(String code) {

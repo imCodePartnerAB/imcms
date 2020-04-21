@@ -49,9 +49,9 @@ public class DocumentLanguages {
         if (languages.size() == 0) {
             LOG.warn("No document languages defined. Adding new (default) language.");
             DocumentLanguage language = DocumentLanguage.builder()
-                    .code("eng")
-                    .name("English")
-                    .nativeName("English")
+                    .code("swe")
+                    .name("Swedish")
+                    .nativeName("Svenska")
                     .build();
 
             languageMapper.save(language);
@@ -59,7 +59,7 @@ public class DocumentLanguages {
         } else {
             DocumentLanguage defaultLanguage = languageMapper.getDefault();
             if (defaultLanguage == null) {
-                defaultLanguage = Optional.ofNullable(languageMapper.findByCode("eng")).orElseGet(() -> languages.get(0));
+                defaultLanguage = Optional.ofNullable(languageMapper.findByCode("swe")).orElseGet(() -> languages.get(0));
 
                 LOG.warn("Default document language is not set. Setting it to " + defaultLanguage);
 
