@@ -330,7 +330,7 @@ war {
     def langProperties
     localizationLanguages.each { final lang ->
         langProperties = new Properties()
-        file("src/main/resources-conf/imcms${lang.key}.properties").withInputStream { langProperties.load(it) }
+        file("src/main/resources/imcms${lang.key}.properties").withInputStream { langProperties.load(it) }
 
         webInf {
             from rootFolderForTemplates
