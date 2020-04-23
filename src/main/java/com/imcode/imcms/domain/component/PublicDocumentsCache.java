@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -179,14 +180,16 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     private Set<String> getQueryStringParameterNames(HttpServletRequest request) {
-        Set<String> qsNames = new HashSet<>();
-        String queryString = request.getQueryString();
+        final Set<String> qsNames = new HashSet<>();
+        final String queryString = request.getQueryString();
+
         if (!StringUtils.isBlank(queryString)) {
-            final String[] nameValuePairs = queryString.split("&");
-            for (String nameValuePair : nameValuePairs) {
-                qsNames.add(nameValuePair.split("=")[0]);
-            }
+            Arrays.stream(queryString.split("&"))
+                    .forEach(nameValuePair ->
+                            qsNames.add(nameValuePair.split("=")[0])
+                    );
         }
+
         return qsNames;
     }
 }
