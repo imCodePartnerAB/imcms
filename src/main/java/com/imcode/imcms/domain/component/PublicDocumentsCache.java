@@ -4,17 +4,21 @@ import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -24,9 +28,9 @@ import java.util.stream.Collectors;
  * 06.09.18.
  */
 @Component
+@Slf4j
 public class PublicDocumentsCache implements DocumentsCache {
 
-    private static final Logger logger = Logger.getLogger(PublicDocumentsCache.class);
     private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
 
     private final List<String> languages;
@@ -45,15 +49,11 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public String calculateKey(HttpServletRequest request) {
-        final String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
-        final String docIdentifier = extractDocIdentifier(path);
-        //Needed to fetch correct page with specified request params
-        final String queryString = request.getQueryString();
-        final String documentIdString = StringUtils.isBlank(queryString)
-                ? docIdentifier
-                : docIdentifier + "?" + queryString;
-        final String langCode = Imcms.getLanguage().getCode();
-
+        String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
+        String docIdentifier = extractDocIdentifier(path);
+        String qsIdentifier = buildGetPostQueryStrings(request);
+        String documentIdString = docIdentifier + qsIdentifier;
+        String langCode = Imcms.getLanguage().getCode();
         return calculateKey(documentIdString, langCode);
     }
 
@@ -148,5 +148,45 @@ public class PublicDocumentsCache implements DocumentsCache {
     @Override
     public String getDisabledCacheValue() {
         return disabledCache;
+    }
+
+    private String buildGetPostQueryStrings(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        String queryString = request.getQueryString();
+        String Q_DIVIDER = StringUtils.isBlank(queryString) ? "?" : "&";
+        final Set<String> queryStringParameterNames = getQueryStringParameterNames(request);
+        sb.append(StringUtils.isBlank(queryString) ? "" : "?QS_GET&" + queryString);
+        final Enumeration<String> en = request.getParameterNames();
+        try {
+            int p = 0;
+            while (en.hasMoreElements()) {
+                String name = en.nextElement();
+                if (queryStringParameterNames.contains(name)) continue;// Ignore if in GET.
+                String[] values = request.getParameterValues(name);
+                if (null != values) {
+                    for (String value : values) {
+                        if (0 == p) sb.append(Q_DIVIDER).append("QS_POST&");
+                        else sb.append("&");
+                        sb.append(name).append("=").append(URLEncoder.encode(value, "UTF-8"));
+                        p++;
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+            log.error("In buildGetPostQueryStrings don't build query...");
+        }
+        return sb.toString();
+    }
+
+    private Set<String> getQueryStringParameterNames(HttpServletRequest request) {
+        Set<String> qsNames = new HashSet<>();
+        String queryString = request.getQueryString();
+        if (!StringUtils.isBlank(queryString)) {
+            final String[] nameValuePairs = queryString.split("&");
+            for (String nameValuePair : nameValuePairs) {
+                qsNames.add(nameValuePair.split("=")[0]);
+            }
+        }
+        return qsNames;
     }
 }
