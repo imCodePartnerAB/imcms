@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -102,6 +103,19 @@ public class PublicDocumentsCache implements DocumentsCache {
     @Override
     public void invalidateCache() {
         cache.removeAll();
+    }
+
+    @Override
+    public void invalidateDoc(HttpServletRequest request) {
+        if (cache == null) return;
+
+        String requestKey = calculateKey(request);
+        List<String> cacheKeys = new ArrayList<>(cache.getKeys());
+
+        cacheKeys.stream()
+                .filter(requestKey::contains)
+                .forEach(key -> cache.remove(key));
+
     }
 
     @Override

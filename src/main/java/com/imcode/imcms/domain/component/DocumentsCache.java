@@ -26,6 +26,8 @@ public interface DocumentsCache {
 
     void invalidateCache();
 
+    void invalidateDoc(HttpServletRequest request);
+
     boolean isDocumentAlreadyCached(String cacheKey);
 
     void setDisableCachesByProperty();
