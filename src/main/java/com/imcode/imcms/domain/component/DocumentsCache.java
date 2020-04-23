@@ -33,4 +33,6 @@ public interface DocumentsCache {
     long getAmountOfCachedDocuments();
 
     void setAmountOfCachedDocuments(Integer number);
+
+    String getDisabledCacheValue();
 }

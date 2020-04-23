@@ -35,8 +35,8 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     private Ehcache cache;
     //set on String because may has default value empty line - false
-    @Value("${cacheDisable}")
-    private String isDisableCache;
+    @Value("${disabledCache}")
+    private String disabledCache;
 
     @Autowired
     public PublicDocumentsCache(LanguageService languageService) {
@@ -127,7 +127,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public void setDisableCachesByProperty() {
-        if (Boolean.parseBoolean(isDisableCache)) {
+        if (Boolean.parseBoolean(disabledCache)) {
             Ehcache publicDocCache = this.cache.getCacheManager().getEhcache(PUBLIC_DOC_CACHE);
             if (null != publicDocCache) {
                 publicDocCache.removeAll();
@@ -143,5 +143,10 @@ public class PublicDocumentsCache implements DocumentsCache {
     @Override
     public void setAmountOfCachedDocuments(Integer number) {
         amountDocsInCaches.set(number);
+    }
+
+    @Override
+    public String getDisabledCacheValue() {
+        return disabledCache;
     }
 }
