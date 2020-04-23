@@ -52,7 +52,9 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                          HttpServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
 
-        if (Imcms.getUser().isDefaultUser()) {
+        final boolean enabledCache = !Boolean.parseBoolean(documentsCache.getDisabledCacheValue());
+
+        if (Imcms.getUser().isDefaultUser() && enabledCache) {
 
             final ImcmsServices services = Imcms.getServices();
 
@@ -107,7 +109,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                     }
                 }
             }
-            documentsCache.setDisableCachesByProperty();
         }
         chain.doFilter(request, response);
     }
