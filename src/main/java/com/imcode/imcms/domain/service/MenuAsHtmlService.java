@@ -1,10 +1,7 @@
 package com.imcode.imcms.domain.service;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service
 public interface MenuAsHtmlService {
 
     List<String> getMenuItemsAsHtmlByData(String dataClass);
