@@ -47,6 +47,7 @@ define(
 
         function initSize(imageData, isOriginalImage) {
             const cropRegion = imageData.cropRegion;
+            const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
 
             if (cropRegion
                 && (cropRegion.cropX1 >= 0)
@@ -64,8 +65,6 @@ define(
                 imageResize.setHeight(imageData.height, isOriginalImage);
 
             } else {
-                const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
-
                 imageResize.setWidthStrict(0, image.width, isOriginalImage);
                 imageResize.setHeightStrict(0, image.height, isOriginalImage);
                 imageResize.updateSizing(imageData, true, isOriginalImage);
