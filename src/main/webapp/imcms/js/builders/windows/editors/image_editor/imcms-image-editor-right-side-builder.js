@@ -385,6 +385,8 @@ define(
                     }
                 }).buildBlockStructure('<div>');
 
+                components.overlays.defaultTooltip($showExifBtn, texts.exif.title);
+
                 function buildAdvancedControls() {
                     const advancedModeBEM = new BEM({
                         block: "imcms-advanced-mode",
@@ -638,6 +640,7 @@ define(
                     if (continueSaving) {
                         imageData.width = imageResize.getPreviewWidth();
                         imageData.height = imageResize.getPreviewHeight();
+                        alert(imageData.cropRegion.cropX1);
                         const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
