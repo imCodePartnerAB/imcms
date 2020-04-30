@@ -555,6 +555,8 @@ define(
 
                 cropper.destroyImageCropper();
 
+                imageZoom.clearData();
+
             },
         }
     }

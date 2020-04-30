@@ -92,6 +92,10 @@ define(
             zoom(0);
         }
 
+        function clearData() {
+            $zoomGradeField.text('');
+        }
+
         return {
             buildZoomGradeField,
             updateZoomGradeValue,
@@ -100,6 +104,7 @@ define(
             zoomPlus,
             zoomMinus,
             resetZoom,
+            clearData
         }
     }
 );
