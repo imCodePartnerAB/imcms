@@ -510,7 +510,8 @@ const texts = {
                 infoStyle: 'Den använda bilden är begränsad till den här stilen.',
                 zoomGrade: 'Zoomgrad',
                 exif: {
-                    button: "Visa exif info"
+                    button: "Visa exif info",
+                    title: "Visa denna bild EXIF-information",
                 },
                 error: {
                     loadFailed: 'Det gick inte att ladda bilden. Försök igen',
@@ -1413,7 +1414,8 @@ const texts = {
                 infoStyle: 'The used image is restricted to this style.',
                 zoomGrade: 'Zoom grade',
                 exif: {
-                    button: "Show exif info"
+                    button: "Show exif info",
+                    title: "Show this image EXIF information",
                 },
                 error: {
                     loadFailed: 'Failed to load image. Try again',
