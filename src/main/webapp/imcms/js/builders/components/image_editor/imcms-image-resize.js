@@ -274,7 +274,7 @@ module.exports = {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            previewImage.setBackgroundWidth(newWidth);
+            previewImage.setBackgroundWidth(original.width);
             previewImage.getPreviewImage().width(newWidth);
 
             (padding >= 0)
@@ -296,7 +296,7 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            previewImage.setBackgroundHeight(newHeight);
+            previewImage.setBackgroundHeight(original.height);
             previewImage.getPreviewImage().height(newHeight);
 
             (padding >= 0)
