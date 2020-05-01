@@ -104,6 +104,8 @@
     display: ruby-base-container;
     text-transform: lowercase;
     margin-left: 38%;
+    position: absolute;
+    right: 10%;
 }
 
 .imcms-image-info {
