@@ -640,7 +640,6 @@ define(
                     if (continueSaving) {
                         imageData.width = imageResize.getPreviewWidth();
                         imageData.height = imageResize.getPreviewHeight();
-                        alert(imageData.cropRegion.cropX1);
                         const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
