@@ -101,7 +101,6 @@
 
 .image-editor-info {
     display: -webkit-inline-box;
-    display: ruby-base-container;
     text-transform: lowercase;
     margin-left: 38%;
     position: absolute;
