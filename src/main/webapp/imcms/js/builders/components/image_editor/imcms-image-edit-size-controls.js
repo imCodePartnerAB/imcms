@@ -31,14 +31,10 @@ function onValidWidthChange() {
     newVal && imageResize.setWidthProportionally(newVal, false);
 }
 
-let widthLabelText = "W";
-let heightLabelText = "H";
-
 function buildHeightControl() {
     $heightControl = components.texts.textNumber("<div>", {
         name: "height",
         placeholder: texts.height,
-        text: heightLabelText,
         error: "Error",
         onValidChange: onValidHeightChange
     });
@@ -56,7 +52,6 @@ function buildWidthControl() {
     $widthControl = components.texts.textNumber("<div>", {
         name: "width",
         placeholder: texts.width,
-        text: widthLabelText,
         error: "Error",
         onValidChange: onValidWidthChange
     });
@@ -75,7 +70,6 @@ function buildPreviewHeightControl() {
     $hPreviewControl = components.texts.textNumber("<div>", {
         name: "prev-height",
         placeholder: texts.height,
-        text: heightLabelText,
         error: "Error",
         onValidChange: onValidHeightChange
     });
@@ -93,7 +87,6 @@ function buildPreviewWidthControl() {
     $wPreviewControl = components.texts.textNumber("<div>", {
         name: "prev-width",
         placeholder: texts.width,
-        text: widthLabelText,
         error: "Error",
         onValidChange: onValidWidthChange
     });
@@ -124,6 +117,7 @@ function buildOriginalSizeControls() {
         elements: [
             {"title": getTitle()},
             {"number": getWidthControl()},
+            {'block-x': $("<div>", {text: 'X'})},
             {"number": getHeightControl()}
         ]
     }).buildBlockStructure("<div>", {style: 'display: none;'});
@@ -136,6 +130,7 @@ function buildPreviewSizeControls() {
         elements: [
             {"title": getPrevTitle()},
             {"number": getPreviewWidthControl()},
+            {'block-x': $("<div>", {text: 'X'})},
             {"number": getPreviewHeightControl()}
         ]
     }).buildBlockStructure("<div>", {style: 'display: none;'});
@@ -154,8 +149,8 @@ module.exports = {
     getPreviewWidthControl: getPreviewWidthControl,
 
     swapControls: (isInverted) => {
-        $widthControl.find('label').text((isInverted) ? heightLabelText : widthLabelText);
-        $heightControl.find('label').text((isInverted) ? widthLabelText : heightLabelText);
+        // $widthControl.find('label').text((isInverted) ? heightLabelText : widthLabelText);
+        // $heightControl.find('label').text((isInverted) ? widthLabelText : heightLabelText);
     },
     setHeight: (newHeight) => getHeightControl().getInput().val(newHeight),
 
