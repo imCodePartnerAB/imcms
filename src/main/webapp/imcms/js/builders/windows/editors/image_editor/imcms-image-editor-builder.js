@@ -77,9 +77,7 @@ define(
                 const $wantedSizeContainer = new BEM({
                     block: 'imcms-wanted-size',
                     elements: {
-                        'title': $('<div>', {
-                            text: texts.wantedSize
-                        }),
+                        'title': components.texts.titleText('<div>', texts.wantedSize),
                         'width': components.texts.textField('<div>', {
                             value: editPreviewWidth,
                             readonly: "readonly",
@@ -96,17 +94,15 @@ define(
                 const $displaySizeContainer = new BEM({
                     block: 'imcms-display-size',
                     elements: {
-                        'title': $('<div>', {
-                            text: texts.displaySize
-                        }),
-                        'width': components.texts.textField('<div>', {
-                            value: editPreviewWidth,
-                            readonly: "readonly",
+                        'title': components.texts.titleText('<div>', texts.displaySize),
+                        'width': components.texts.textNumber('<div>', {
+                            placeholder: editPreviewWidth,
+                            disabled: "disabled",
                             name: 'display-width'
                         }),
-                        'height': components.texts.textField('<div>', {
-                            value: editPreviewHeight,
-                            readonly: "readonly",
+                        'height': components.texts.textNumber('<div>', {
+                            placeholder: editPreviewHeight,
+                            disabled: "disabled",
                             name: 'display-height'
                         })
                     }
