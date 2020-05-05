@@ -84,6 +84,7 @@ define(
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
             const newZoomValue = currentZoom * zoomScale;
 
+            updateZoomGradeValueByCssProperty(newZoomValue);
             return relativeZoomVal = newZoomValue;
         }
 

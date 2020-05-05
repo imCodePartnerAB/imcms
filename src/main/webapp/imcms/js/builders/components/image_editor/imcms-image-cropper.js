@@ -8,6 +8,7 @@ const $ = require('jquery');
 const cropArea = require('imcms-cropping-area');
 const imageResize = require('imcms-image-resize');
 const previewImageArea = require('imcms-preview-image-area');
+const imageZoom = require('imcms-image-zoom');
 
 let $imageEditor, croppingAreaParams, angleBorderSize, imageCoords, imageData;
 
@@ -587,6 +588,8 @@ function destroy() {
 
     removeCroppingListeners();
     angles.hideAll();
+
+    imageZoom.updateZoomGradeValue();
 
     croppingAreaParams = null;
     imageCoords = null;
