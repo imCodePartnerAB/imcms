@@ -181,6 +181,7 @@ define(
                 }
 
                 initSize(imageData, false);
+                imageResize.disabledSelectedImageFlag();
                 prevImageArea.getPreviewImage().show();
             });
         }

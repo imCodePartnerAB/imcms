@@ -6,9 +6,9 @@ define(
     "imcms-content-manager-builder",
     [
         "imcms-bem-builder", "imcms-window-builder", "imcms-components-builder", "imcms-image-content-builder",
-        "jquery", "imcms-i18n-texts", "imcms-events", "imcms"
+        "jquery", "imcms-i18n-texts", "imcms-events", "imcms", 'imcms-image-resize'
     ],
-    function (BEM, WindowBuilder, components, imageContentBuilder, $, texts, events, imcms) {
+    function (BEM, WindowBuilder, components, imageContentBuilder, $, texts, events, imcms, imageResize) {
         let $foldersContainer;
         let $imagesContainer;
         let $saveAndCloseBtn;
@@ -153,6 +153,7 @@ define(
 
         function saveAndCloseWindow() {
             showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
+            imageResize.enableSelectedImageFlag();
             closeWindow();
         }
 
