@@ -479,9 +479,9 @@ const texts = {
                     info: 'Den använda bilden är begränsad till denna stil'
                 },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
-                wantedSize: "Önskad storlek",
+                wantedSize: "Önskad storlek (W x H)",
                 displaySize: "Visad storlek",
-                originSize: 'Original storlek',
+                originSize: 'Original storlek (W x H)',
                 height: "Höjd",
                 width: "Bredd",
                 preview: "Förhandsvisning",
@@ -1383,9 +1383,9 @@ const texts = {
                     info: 'The used image is restricted to this styles'
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
-                wantedSize: "Wanted size",
+                wantedSize: "Wanted size (W x H)",
                 displaySize: "Display size",
-                originSize: 'Original size',
+                originSize: 'Original size (W x H)',
                 height: "Height",
                 width: "Width",
                 preview: "Preview",
