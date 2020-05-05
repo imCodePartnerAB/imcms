@@ -63,6 +63,30 @@ define(
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
+        function getRelativeZoomValueByOriginalImg() {
+            let relativeZoomVal;
+            const $imageArea = editableImageArea.getEditableImageArea();
+            const $image = editableImage.getImage();
+
+            const currentZoom = parseFloat($image.css('zoom'));
+            const imageBorderWidth = parseInt($image.css('border-width'));
+
+            const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
+            const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
+
+            if (imageWidth < $imageArea.width() && imageHeight < $imageArea.height()) {
+                return relativeZoomVal = 1;
+            }
+
+            const widthScale = imageWidth / $imageArea.width();
+            const heightScale = imageHeight / $imageArea.height();
+
+            const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
+            const newZoomValue = currentZoom * zoomScale;
+
+            return relativeZoomVal = newZoomValue;
+        }
+
         function zoom(scale) {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
@@ -100,6 +124,7 @@ define(
             buildZoomGradeField,
             updateZoomGradeValue,
             fitImage,
+            getRelativeZoomValueByOriginalImg,
             zoom,
             zoomPlus,
             zoomMinus,
