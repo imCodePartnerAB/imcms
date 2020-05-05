@@ -7,6 +7,7 @@ const $ = require('jquery');
 const events = require('imcms-events');
 const previewImageArea = require('imcms-preview-image-area');
 const imageResize = require('imcms-image-resize');
+const imageZoom = require('imcms-image-zoom');
 
 let isImageProportionsInverted = false;
 
@@ -110,6 +111,7 @@ function getCroppingImage() {
 function onImageLoad() {
     const $img = $(this);
     const shadowLayout = getShadowLayout();
+    const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
 
     setTimeout(() => {
         const width = $img.width();
@@ -118,11 +120,13 @@ function onImageLoad() {
         shadowLayout.css({
             width: width,
             height: height,
+            zoom: zoomValue,
         });
 
         $croppingWrap.css({
             width: width,
             height: height,
+            zoom: zoomValue,
         });
     });
 }
