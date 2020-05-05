@@ -16,6 +16,7 @@ const currentPrevSize = {};
 const finalImageStylesPosition = {};
 let currentFinalPrevImg = {};
 let proportionsCoefficient;
+let selectedImgActive = false; // default value
 
 let maxWidth, maxHeight, minWidth, minHeight;
 
@@ -40,17 +41,25 @@ function setWidth(newWidth, isOriginal) {
         $widthControl.val(original.width);
     } else {
         const $image = previewImage.getPreviewImage();
-        const oldWidth = $image.width();
-        const k = newWidth / oldWidth;
+        if (selectedImgActive) {
+            $image.width(newWidth);
+            previewImage.setBackgroundWidth(editableImage.getBackgroundWidth());
+            previewImage.setBackgroundPositionX(0);
 
-        const newImageLeft = k * previewImage.getBackgroundPositionX();
-        const newImageBackgroundWidth = k * previewImage.getBackgroundWidth();
+            $widthPreviewControl.val(newWidth);
+        } else {
+            const oldWidth = $image.width();
+            const k = newWidth / oldWidth;
 
-        $image.width(newWidth);
-        previewImage.setBackgroundWidth(newImageBackgroundWidth);
-        previewImage.setBackgroundPositionX(newImageLeft);
+            const newImageLeft = k * previewImage.getBackgroundPositionX();
+            const newImageBackgroundWidth = k * previewImage.getBackgroundWidth();
 
-        $widthPreviewControl.val(newWidth);
+            $image.width(newWidth);
+            previewImage.setBackgroundWidth(newImageBackgroundWidth);
+            previewImage.setBackgroundPositionX(newImageLeft);
+
+            $widthPreviewControl.val(newWidth);
+        }
     }
 
 }
@@ -62,17 +71,25 @@ function setHeight(newHeight, isOriginal) {
         $heightControl.val(original.height);
     } else {
         const $image = previewImage.getPreviewImage();
-        const oldHeight = $image.height();
-        const k = newHeight / oldHeight;
+        if (selectedImgActive) {
+            $image.height(newHeight);
+            previewImage.setBackgroundHeight(editableImage.getBackgroundHeight());
+            previewImage.setBackgroundPositionY(0);
 
-        const newImageTop = k * previewImage.getBackgroundPositionY();
-        const newImageBackgroundHeight = k * previewImage.getBackgroundHeight();
+            $heightPreviewControl.val(newHeight);
+        } else {
+            const oldHeight = $image.height();
+            const k = newHeight / oldHeight;
 
-        $image.height(newHeight);
-        previewImage.setBackgroundHeight(newImageBackgroundHeight);
-        previewImage.setBackgroundPositionY(newImageTop);
+            const newImageTop = k * previewImage.getBackgroundPositionY();
+            const newImageBackgroundHeight = k * previewImage.getBackgroundHeight();
 
-        $heightPreviewControl.val(newHeight);
+            $image.height(newHeight);
+            previewImage.setBackgroundHeight(newImageBackgroundHeight);
+            previewImage.setBackgroundPositionY(newImageTop);
+
+            $heightPreviewControl.val(newHeight);
+        }
     }
 }
 
@@ -244,6 +261,14 @@ module.exports = {
 
     enableSaveProportions() {
         saveProportions = true;
+    },
+
+    enableSelectedImageFlag() {
+        selectedImgActive = true;
+    },
+
+    disabledSelectedImageFlag() {
+        selectedImgActive = false;
     },
 
     enableResetToOriginalFlag() {
