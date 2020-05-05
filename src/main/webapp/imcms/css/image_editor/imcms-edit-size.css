@@ -17,6 +17,12 @@
     float: left;
 }
 
+.imcms-edit-size__block-x,
+.imcms-original-size__block-x {
+    float: left;
+    margin: 5px;
+}
+
 .imcms-edit-size .imcms-number,
 .imcms-original-size .imcms-number {
     float: left;
