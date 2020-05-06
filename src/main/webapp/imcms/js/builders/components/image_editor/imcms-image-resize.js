@@ -17,6 +17,7 @@ const finalImageStylesPosition = {};
 let currentFinalPrevImg = {};
 let proportionsCoefficient;
 let selectedImgActive = false; // default value
+let existsCropRegion = true;
 
 let maxWidth, maxHeight, minWidth, minHeight;
 
@@ -303,7 +304,9 @@ module.exports = {
             editableImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
-            previewImage.setBackgroundWidth(original.width);
+            resetToOriginal && existsCropRegion
+                ? previewImage.setBackgroundWidth(original.width)
+                : previewImage.setBackgroundWidth(newWidth);
             previewImage.getPreviewImage().width(newWidth);
 
             (padding >= 0)
@@ -325,7 +328,9 @@ module.exports = {
             editableImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
-            previewImage.setBackgroundHeight(original.height);
+            resetToOriginal && existsCropRegion
+                ? previewImage.setBackgroundHeight(original.height)
+                : previewImage.setBackgroundHeight(newHeight);
             previewImage.getPreviewImage().height(newHeight);
 
             (padding >= 0)
@@ -427,6 +432,13 @@ module.exports = {
         setWidthProportionally(currentWidth, isOriginal);
     },
 
+    checkCropRegionExist(image) {
+        existsCropRegion = (image.cropRegion.cropX1 > 0
+            || image.cropRegion.cropX2 > 0
+            || image.cropRegion.cropY1 > 0
+            || image.cropRegion.cropY2 > 0);
+    },
+
     clearData() {
         maxWidth = null;
         maxHeight = null;
@@ -446,5 +458,6 @@ module.exports = {
         finalImageStylesPosition.backgroundPositionX = null;
         resetToOriginal = false;
         selectedImgActive = false;
+        existsCropRegion = true;
     },
 };

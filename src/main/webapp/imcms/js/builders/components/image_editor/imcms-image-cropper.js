@@ -672,6 +672,7 @@ module.exports = {
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
         imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
+        imageResize.checkCropRegionExist(imageData);
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
         imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
