@@ -43,7 +43,7 @@ function setWidth(newWidth, isOriginal) {
         const $image = previewImage.getPreviewImage();
         if (selectedImgActive) {
             $image.width(newWidth);
-            previewImage.setBackgroundWidth(editableImage.getBackgroundWidth());
+            previewImage.setBackgroundWidth(newWidth);
             previewImage.setBackgroundPositionX(0);
 
             $widthPreviewControl.val(newWidth);
@@ -73,7 +73,7 @@ function setHeight(newHeight, isOriginal) {
         const $image = previewImage.getPreviewImage();
         if (selectedImgActive) {
             $image.height(newHeight);
-            previewImage.setBackgroundHeight(editableImage.getBackgroundHeight());
+            previewImage.setBackgroundHeight(newHeight);
             previewImage.setBackgroundPositionY(0);
 
             $heightPreviewControl.val(newHeight);
@@ -269,6 +269,10 @@ module.exports = {
 
     disabledSelectedImageFlag() {
         selectedImgActive = false;
+    },
+
+    getSelectedImgFlagValue() {
+        return selectedImgActive;
     },
 
     enableResetToOriginalFlag() {
