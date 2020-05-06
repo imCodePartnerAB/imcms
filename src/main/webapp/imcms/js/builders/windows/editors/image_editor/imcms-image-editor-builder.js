@@ -53,7 +53,8 @@ define(
                 && (cropRegion.cropX1 >= 0)
                 && (cropRegion.cropX2 >= 1)
                 && (cropRegion.cropY1 >= 0)
-                && (cropRegion.cropY2 >= 1)) {
+                && (cropRegion.cropY2 >= 1)
+                && !imageResize.getSelectedImgFlagValue()) {
                 const width = cropRegion.cropX2 - cropRegion.cropX1;
                 const height = cropRegion.cropY2 - cropRegion.cropY1;
 
@@ -63,7 +64,6 @@ define(
 
                 imageResize.setWidth(imageData.width, isOriginalImage);
                 imageResize.setHeight(imageData.height, isOriginalImage);
-
             } else {
                 imageResize.setWidthStrict(0, image.width, isOriginalImage);
                 imageResize.setHeightStrict(0, image.height, isOriginalImage);
