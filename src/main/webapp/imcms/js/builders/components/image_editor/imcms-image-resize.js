@@ -445,5 +445,6 @@ module.exports = {
         finalImageStylesPosition.backgroundPositionY = null;
         finalImageStylesPosition.backgroundPositionX = null;
         resetToOriginal = false;
+        selectedImgActive = false;
     },
 };
