@@ -48,13 +48,23 @@ define(
         function initSize(imageData, isOriginalImage) {
             const cropRegion = imageData.cropRegion;
             const image = isOriginalImage ? imageResize.getOriginal() : imageResize.getPreview();
+            imageResize.enableResetToOriginalFlag();
+            //something strange happens when selected img from folder, cropRegion has crop coordinates..
+            if (imageResize.getSelectedImgFlagValue()) {
+                imageData.cropRegion = {
+                    cropX1: 0,
+                    cropX2: 0,
+                    cropY1: 0,
+                    cropY2: 0,
+                };
+            }
 
+            imageResize.checkCropRegionExist(imageData);
             if (cropRegion
                 && (cropRegion.cropX1 >= 0)
                 && (cropRegion.cropX2 >= 1)
                 && (cropRegion.cropY1 >= 0)
-                && (cropRegion.cropY2 >= 1)
-                && !imageResize.getSelectedImgFlagValue()) {
+                && (cropRegion.cropY2 >= 1)) {
                 const width = cropRegion.cropX2 - cropRegion.cropX1;
                 const height = cropRegion.cropY2 - cropRegion.cropY1;
 
@@ -111,6 +121,7 @@ define(
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
+            imageResize.disabledResetToOriginalFlag();
             imageZoom.fitImage();
         }
 
