@@ -166,8 +166,28 @@ module.exports = {
     },
 
     resetToPreview(imageData) {
-        this.setHeightStrict(finalImageStylesPosition.backgroundPositionY, imageData.height, false);
-        this.setWidthStrict(finalImageStylesPosition.backgroundPositionX, imageData.width, false);
+        this.enableResetToOriginalFlag()
+        this.checkCropRegionExist(imageData);
+        const cropRegion = imageData.cropRegion;
+
+        if (cropRegion
+            && (cropRegion.cropX1 >= 0)
+            && (cropRegion.cropX2 >= 1)
+            && (cropRegion.cropY1 >= 0)
+            && (cropRegion.cropY2 >= 1)) {
+            const width = cropRegion.cropX2 - cropRegion.cropX1;
+            const height = cropRegion.cropY2 - cropRegion.cropY1;
+
+            this.setCurrentSize(width, height);
+            this.setWidthStrict(cropRegion.cropX1, width, false);
+            this.setHeightStrict(cropRegion.cropY1, height, false);
+
+            this.setWidth(imageData.width, false);
+            this.setHeight(imageData.height, false);
+        } else {
+            this.setWidthStrict(0, imageData.width, false);
+            this.setHeightStrict(0, imageData.height, false);
+        }
 
         let width, height;
 
@@ -183,6 +203,7 @@ module.exports = {
         this.setCurrentPreviewSize(width, height);
         this.setPreview(width, height);
         this.updateSizing(imageData, true, false);
+        this.disabledResetToOriginalFlag();
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
