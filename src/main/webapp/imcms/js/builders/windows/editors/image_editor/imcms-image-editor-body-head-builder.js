@@ -29,8 +29,7 @@ define(
                 getZoomResetButton(),
                 getFitButton()
             )
-            .originControlSizeShow(imageEditSizeControls.getOriginSizeControls())
-            .prevControlSizeHide(imageEditSizeControls.getEditSizeControls());
+            .originControlSizeShow(imageEditSizeControls.getOriginSizeControls());
 
         function toggleImgArea() {
             const $previewImageArea = previewImageArea.getPreviewImageArea();
@@ -196,7 +195,6 @@ define(
             new ToolbarViewBuilder()
                 .hide(
                     getShowImageRotationControls(),
-                    imageEditSizeControls.getEditSizeControls(),
                     getRevertButton(),
                     getCroppingButton(),
                     getSwitchViewControls(),
@@ -391,7 +389,6 @@ define(
             new ToolbarViewBuilder()
                 .hide(
                     getShowImageRotationControls(),
-                    imageEditSizeControls.getEditSizeControls(),
                     getRevertButton(),
                     getCroppingButton(),
                     getSwitchViewControls(),
@@ -527,7 +524,7 @@ define(
 
             clearData() {
                 [
-                    imageEditSizeControls.getEditSizeControls(),
+                    imageEditSizeControls.getImageSizeControlBlock(),
                     imageEditSizeControls.getOriginSizeControls(),
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
