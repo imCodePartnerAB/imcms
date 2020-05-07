@@ -23,11 +23,13 @@ function getNewVal($input) {
 
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
+    $wantedHeightControl.val(newVal);
     newVal && imageResize.setHeightProportionally(newVal, false);
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
+    $wantedWidthControl.val(newVal);
     newVal && imageResize.setWidthProportionally(newVal, false);
 }
 
@@ -71,6 +73,7 @@ function buildPreviewHeightControl() {
         name: "prev-height",
         placeholder: texts.height,
         error: "Error",
+        disabled: 'disabled',
         onValidChange: onValidHeightChange
     });
 
@@ -88,6 +91,7 @@ function buildPreviewWidthControl() {
         name: "prev-width",
         placeholder: texts.width,
         error: "Error",
+        disabled: 'disabled',
         onValidChange: onValidWidthChange
     });
 
@@ -123,17 +127,46 @@ function buildOriginalSizeControls() {
     }).buildBlockStructure("<div>", {style: 'display: none;'});
 }
 
-function buildPreviewSizeControls() {
+let $wantedWidthControl;
+let $wantedHeightControl;
+
+function buildWantedSizeBlock() {
 
     return new BEM({
         block: "imcms-edit-size",
         elements: [
             {"title": getPrevTitle()},
-            {"number": getPreviewWidthControl()},
+            {"number": buildWantedWidthControl()},
             {'block-x': $("<div>", {text: 'X'})},
-            {"number": getPreviewHeightControl()}
+            {"number": buildWantedHeightControl()}
         ]
     }).buildBlockStructure("<div>");
+
+    function buildWantedWidthControl() {
+        $wantedWidthControl = components.texts.textNumber("<div>", {
+            name: "wanted-width",
+            placeholder: texts.width,
+            error: "Error",
+            onValidChange: onValidWidthChange
+        });
+
+        imageResize.setWantedWidthControl($wantedWidthControl.getInput());
+
+        return $wantedWidthControl;
+    }
+
+    function buildWantedHeightControl() {
+        $wantedHeightControl = components.texts.textNumber("<div>", {
+            name: "wanted-height",
+            placeholder: texts.width,
+            error: "Error",
+            onValidChange: onValidHeightChange
+        });
+
+        imageResize.setWantedHeightControl($wantedHeightControl.getInput());
+
+        return $wantedHeightControl;
+    }
 }
 
 let $titleDisplay;
@@ -147,25 +180,27 @@ function buildDisplaySizeBlock() {
         block: 'imcms-display-size',
         elements: {
             'title': getDisplayTitle(),
-            'width': components.texts.textNumber('<div>', {
-                placeholder: 0,
-                disabled: "disabled",
-                name: 'display-width'
-            }),
-            'height': components.texts.textNumber('<div>', {
-                placeholder: 0,
-                disabled: "disabled",
-                name: 'display-height'
-            })
+            'control': buildWidthHeightNumberBlock()
         }
     }).buildBlockStructure('<div>');
+
+    function buildWidthHeightNumberBlock() {
+        return new BEM({
+            block: 'size-numbers',
+            elements: [
+                {'number': buildPreviewWidthControl()},
+                {'block-x': $("<div>", {text: 'X'})},
+                {'number': buildPreviewHeightControl()}
+            ]
+        }).buildBlockStructure('<div>');
+    }
 }
 
 function buildImageSizeControlBlock() {
     return new BEM({
         block: 'imcms-image-size-control',
         elements: {
-            'wanted-size': buildPreviewSizeControls(),
+            'wanted-size': buildWantedSizeBlock(),
             'display-size': buildDisplaySizeBlock()
         }
     }).buildBlockStructure('<div>', {style: 'display: none;'});
@@ -174,7 +209,7 @@ function buildImageSizeControlBlock() {
 
 let $originalSizeControls;
 let $prevSizeControls;
-let $displaySize;
+let $imageSizeBlock;
 
 module.exports = {
     getWidthControl: getWidthControl,
@@ -199,7 +234,7 @@ module.exports = {
 
     getOriginSizeControls: () => $originalSizeControls || ($originalSizeControls = buildOriginalSizeControls()),
 
-    getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildPreviewSizeControls()),
+    getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildWantedSizeBlock()),
 
-    getImageSizeControlBlock: () => $displaySize || ($displaySize = buildImageSizeControlBlock()),
+    getImageSizeControlBlock: () => $imageSizeBlock || ($imageSizeBlock = buildImageSizeControlBlock()),
 };
