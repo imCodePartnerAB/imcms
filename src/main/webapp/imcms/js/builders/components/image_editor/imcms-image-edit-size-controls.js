@@ -73,11 +73,10 @@ function buildPreviewHeightControl() {
         name: "prev-height",
         placeholder: texts.height,
         error: "Error",
-        disabled: 'disabled',
         onValidChange: onValidHeightChange
     });
 
-    imageResize.setPreviewHeightControl($hPreviewControl.getInput());
+    imageResize.setPreviewHeightControl($hPreviewControl.getInput().attr('disabled', 'disabled'));
 
     return $hPreviewControl
 }
@@ -91,11 +90,10 @@ function buildPreviewWidthControl() {
         name: "prev-width",
         placeholder: texts.width,
         error: "Error",
-        disabled: 'disabled',
         onValidChange: onValidWidthChange
     });
 
-    imageResize.setPreviewWidthControl($wPreviewControl.getInput());
+    imageResize.setPreviewWidthControl($wPreviewControl.getInput().attr('disabled', 'disabled'));
 
     return $wPreviewControl
 }
