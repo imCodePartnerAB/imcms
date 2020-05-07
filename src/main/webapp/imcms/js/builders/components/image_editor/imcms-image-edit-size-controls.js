@@ -138,7 +138,7 @@ function getWantedHeightControl() {
 
 function buildWantedSizeBlock() {
 
-    return new BEM({
+    return $wantedSizeControls || ($wantedSizeControls = new BEM({
         block: "imcms-edit-size",
         elements: [
             {"title": getPrevTitle()},
@@ -146,7 +146,7 @@ function buildWantedSizeBlock() {
             {'block-x': $("<div>", {text: 'X'})},
             {"number": buildWantedHeightControl()}
         ]
-    }).buildBlockStructure("<div>");
+    }).buildBlockStructure("<div>"));
 }
 
 function buildWantedWidthControl() {
@@ -182,7 +182,7 @@ function getDisplayTitle() {
 }
 
 function buildDisplaySizeBlock() {
-    return new BEM({
+    return $displaySizePrevBlock || ($displaySizePrevBlock = new BEM({
         block: 'imcms-display-size',
         elements: [
             {'title': getDisplayTitle()},
@@ -190,7 +190,7 @@ function buildDisplaySizeBlock() {
             {'block-x': $("<div>", {text: 'X'})},
             {'number': buildPreviewHeightControl()}
         ]
-    }).buildBlockStructure('<div>');
+    }).buildBlockStructure('<div>'));
 }
 
 function buildImageSizeControlBlock() {
@@ -205,8 +205,9 @@ function buildImageSizeControlBlock() {
 }
 
 let $originalSizeControls;
-let $prevSizeControls;
+let $displaySizePrevBlock;
 let $imageSizeBlock;
+let $wantedSizeControls;
 
 module.exports = {
     getWidthControl: getWidthControl,
@@ -218,8 +219,8 @@ module.exports = {
     getPreviewWidthControl: getPreviewWidthControl,
 
     swapControls: (isInverted) => {
-        // $widthControl.find('label').text((isInverted) ? heightLabelText : widthLabelText);
-        // $heightControl.find('label').text((isInverted) ? widthLabelText : heightLabelText);
+        $wantedSizeControls.find('.imcms-title').text((isInverted) ? texts.revertWantedSize : texts.wantedSize);
+        $displaySizePrevBlock.find('.imcms-title').text((isInverted) ? texts.revertDisplaySize : texts.displaySize);
     },
     setHeight: (newHeight) => getHeightControl().getInput().val(newHeight),
 
@@ -231,7 +232,9 @@ module.exports = {
 
     getOriginSizeControls: () => $originalSizeControls || ($originalSizeControls = buildOriginalSizeControls()),
 
-    getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildWantedSizeBlock()),
+    getEditSizeControls: () => $wantedSizeControls || ($wantedSizeControls = buildWantedSizeBlock()),
+
+    getDisplaySizeBlock: () => $displaySizePrevBlock || ($displaySizePrevBlock = buildDisplaySizeBlock()),
 
     getImageSizeControlBlock: () => $imageSizeBlock || ($imageSizeBlock = buildImageSizeControlBlock()),
 
