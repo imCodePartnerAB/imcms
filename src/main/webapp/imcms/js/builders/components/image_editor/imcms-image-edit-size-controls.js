@@ -24,11 +24,13 @@ function getNewVal($input) {
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setHeightProportionally(newVal, false);
+    $wantedHeightControl.getInput().val(newVal);
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
     newVal && imageResize.setWidthProportionally(newVal, false);
+    $wantedWidthControl.getInput().val(newVal);
 }
 
 function buildHeightControl() {
