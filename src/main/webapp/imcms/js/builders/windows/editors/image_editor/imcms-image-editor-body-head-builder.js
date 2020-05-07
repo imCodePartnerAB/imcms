@@ -447,7 +447,6 @@ define(
                 block: "imcms-edit-image",
                 elements: {
                     'size-place': [
-                        imageEditSizeControls.getEditSizeControls(),
                         imageEditSizeControls.getOriginSizeControls(),
                     ],
                     "button": [
