@@ -220,6 +220,8 @@ define(
             events.trigger("enable text editor blur");
             editSizeControls.getPreviewWidthControl().getInput().removeAttr('disabled').val('');
             editSizeControls.getPreviewHeightControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getWidthControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getHeightControl().getInput().removeAttr('disabled').val('');
             $('.percentage-image-info').text('');
         }
 
