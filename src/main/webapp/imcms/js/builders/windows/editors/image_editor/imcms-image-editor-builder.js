@@ -118,7 +118,7 @@ define(
                     if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
                         imageData.width = Math.min(imageData.width, maxWidth);
                         imageResize.setMaxWidth(maxWidth);
-                        editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getWantedWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let maxHeight = resultStyleObj['max-height'];
@@ -126,7 +126,7 @@ define(
                     if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
                         imageData.height = Math.min(imageData.height, maxHeight);
                         imageResize.setMaxHeight(maxHeight);
-                        editSizeControls.getPreviewHeightControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getWantedHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let width = parseInt(resultStyleObj.width);
@@ -135,7 +135,7 @@ define(
                         imageData.width = width;
                         imageResize.setMaxWidth(width);
                         imageResize.setMinWidth(width);
-                        editSizeControls.getPreviewWidthControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getWantedWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let height = parseInt(resultStyleObj.height);
@@ -144,7 +144,7 @@ define(
                         imageData.height = height;
                         imageResize.setMaxHeight(height);
                         imageResize.setMinHeight(height);
-                        editSizeControls.getPreviewHeightControl().getInput().attr('disabled', 'disabled');
+                        editSizeControls.getWantedHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
                     if (imageResize.isProportionsLockedByStyle()) {
