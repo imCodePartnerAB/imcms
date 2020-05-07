@@ -23,13 +23,11 @@ function getNewVal($input) {
 
 function onValidHeightChange() {
     const newVal = getNewVal($(this));
-    $wantedHeightControl.val(newVal);
     newVal && imageResize.setHeightProportionally(newVal, false);
 }
 
 function onValidWidthChange() {
     const newVal = getNewVal($(this));
-    $wantedWidthControl.val(newVal);
     newVal && imageResize.setWidthProportionally(newVal, false);
 }
 
@@ -130,6 +128,14 @@ function buildOriginalSizeControls() {
 let $wantedWidthControl;
 let $wantedHeightControl;
 
+function getWantedWidthControl() {
+    return $wantedWidthControl ? $wantedWidthControl : buildWantedWidthControl();
+}
+
+function getWantedHeightControl() {
+    return $wantedHeightControl ? $wantedHeightControl : buildWantedHeightControl();
+}
+
 function buildWantedSizeBlock() {
 
     return new BEM({
@@ -141,32 +147,32 @@ function buildWantedSizeBlock() {
             {"number": buildWantedHeightControl()}
         ]
     }).buildBlockStructure("<div>");
+}
 
-    function buildWantedWidthControl() {
-        $wantedWidthControl = components.texts.textNumber("<div>", {
-            name: "wanted-width",
-            placeholder: texts.width,
-            error: "Error",
-            onValidChange: onValidWidthChange
-        });
+function buildWantedWidthControl() {
+    $wantedWidthControl = components.texts.textNumber("<div>", {
+        name: "wanted-width",
+        placeholder: texts.width,
+        error: "Error",
+        onValidChange: onValidWidthChange
+    });
 
-        imageResize.setWantedWidthControl($wantedWidthControl.getInput());
+    imageResize.setWantedWidthControl($wantedWidthControl.getInput());
 
-        return $wantedWidthControl;
-    }
+    return $wantedWidthControl;
+}
 
-    function buildWantedHeightControl() {
-        $wantedHeightControl = components.texts.textNumber("<div>", {
-            name: "wanted-height",
-            placeholder: texts.width,
-            error: "Error",
-            onValidChange: onValidHeightChange
-        });
+function buildWantedHeightControl() {
+    $wantedHeightControl = components.texts.textNumber("<div>", {
+        name: "wanted-height",
+        placeholder: texts.width,
+        error: "Error",
+        onValidChange: onValidHeightChange
+    });
 
-        imageResize.setWantedHeightControl($wantedHeightControl.getInput());
+    imageResize.setWantedHeightControl($wantedHeightControl.getInput());
 
-        return $wantedHeightControl;
-    }
+    return $wantedHeightControl;
 }
 
 let $titleDisplay;
@@ -237,4 +243,7 @@ module.exports = {
     getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildWantedSizeBlock()),
 
     getImageSizeControlBlock: () => $imageSizeBlock || ($imageSizeBlock = buildImageSizeControlBlock()),
+
+    getWantedHeightControl,
+    getWantedWidthControl,
 };
