@@ -48,6 +48,7 @@ function setWidth(newWidth, isOriginal) {
             previewImage.setBackgroundPositionX(0);
 
             $widthPreviewControl.val(newWidth);
+            $widthWantedControl.val(newWidth);
         } else {
             const oldWidth = $image.width();
             const k = newWidth / oldWidth;
@@ -60,6 +61,7 @@ function setWidth(newWidth, isOriginal) {
             previewImage.setBackgroundPositionX(newImageLeft);
 
             $widthPreviewControl.val(newWidth);
+            $widthWantedControl.val(newWidth);
         }
     }
 
@@ -78,6 +80,7 @@ function setHeight(newHeight, isOriginal) {
             previewImage.setBackgroundPositionY(0);
 
             $heightPreviewControl.val(newHeight);
+            $heightWantedControl.val(newHeight);
         } else {
             const oldHeight = $image.height();
             const k = newHeight / oldHeight;
@@ -90,6 +93,7 @@ function setHeight(newHeight, isOriginal) {
             previewImage.setBackgroundPositionY(newImageTop);
 
             $heightPreviewControl.val(newHeight);
+            $heightWantedControl.val(newHeight);
         }
     }
 }
@@ -130,6 +134,7 @@ function updateHeightProportionally(newWidth, isOriginal) {
 
 let $heightControl, $widthControl;
 let $heightPreviewControl, $widthPreviewControl;
+let $heightWantedControl, $widthWantedControl;
 
 module.exports = {
     resetToOriginal(imageData) {
@@ -259,6 +264,14 @@ module.exports = {
         $heightPreviewControl = $control
     },
 
+    setWantedWidthControl($control) {
+        $widthWantedControl = $control
+    },
+
+    setWantedHeightControl($control) {
+        $heightWantedControl = $control
+    },
+
     isProportionsLockedByStyle() {
         return minWidth && minHeight
     },
@@ -335,6 +348,7 @@ module.exports = {
                 : previewImage.setBackgroundPositionX(padding);
 
             $widthPreviewControl.val(newWidth);
+            $widthWantedControl.val(newWidth);
         }
     },
 
@@ -359,6 +373,7 @@ module.exports = {
                 : previewImage.setBackgroundPositionY(padding);
 
             $heightPreviewControl.val(newHeight);
+            $heightWantedControl.val(newHeight);
         }
     },
 
