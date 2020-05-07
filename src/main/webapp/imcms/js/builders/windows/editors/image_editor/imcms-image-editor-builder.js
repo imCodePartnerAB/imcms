@@ -81,43 +81,9 @@ define(
             }
 
             if (!isOriginalImage) {
-                const editPreviewWidth = editSizeControls.getPreviewWidthControl().getInput().val();
-                const editPreviewHeight = editSizeControls.getPreviewHeightControl().getInput().val();
-
-                const $wantedSizeContainer = new BEM({
-                    block: 'imcms-wanted-size',
-                    elements: {
-                        'title': components.texts.titleText('<div>', texts.wantedSize),
-                        'width': components.texts.textField('<div>', {
-                            value: editPreviewWidth,
-                            readonly: "readonly",
-                            name: 'wanted-width'
-                        }),
-                        'height': components.texts.textField('<div>', {
-                            value: editPreviewHeight,
-                            readonly: "readonly",
-                            name: 'wanted-height'
-                        })
-                    }
-                }).buildBlockStructure('<div>');
-
-                const $displaySizeContainer = new BEM({
-                    block: 'imcms-display-size',
-                    elements: {
-                        'title': components.texts.titleText('<div>', texts.displaySize),
-                        'width': components.texts.textNumber('<div>', {
-                            placeholder: editPreviewWidth,
-                            disabled: "disabled",
-                            name: 'display-width'
-                        }),
-                        'height': components.texts.textNumber('<div>', {
-                            placeholder: editPreviewHeight,
-                            disabled: "disabled",
-                            name: 'display-height'
-                        })
-                    }
-                }).buildBlockStructure('<div>');
-
+                $('.imcms-image_editor__right-side')
+                    .find('.imcms-info-edit-image')
+                    .append(editSizeControls.getImageSizeControlBlock().show());
             }
 
             imageRotate.rotateImage(imageData.rotateDirection);
