@@ -218,10 +218,10 @@ define(
         function clearData() {
             clearComponents();
             events.trigger("enable text editor blur");
-            editSizeControls.getPreviewWidthControl().getInput().removeAttr('disabled').val('');
-            editSizeControls.getPreviewHeightControl().getInput().removeAttr('disabled').val('');
-            editSizeControls.getWidthControl().getInput().removeAttr('disabled').val('');
-            editSizeControls.getHeightControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getPreviewWidthControl().getInput().val('');
+            editSizeControls.getPreviewHeightControl().getInput().val('');
+            editSizeControls.getWantedWidthControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getWantedHeightControl().getInput().removeAttr('disabled').val('');
             $('.percentage-image-info').text('');
         }
 
