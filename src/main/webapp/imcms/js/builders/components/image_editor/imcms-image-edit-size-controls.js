@@ -184,22 +184,13 @@ function getDisplayTitle() {
 function buildDisplaySizeBlock() {
     return new BEM({
         block: 'imcms-display-size',
-        elements: {
-            'title': getDisplayTitle(),
-            'control': buildWidthHeightNumberBlock()
-        }
+        elements: [
+            {'title': getDisplayTitle()},
+            {'number': buildPreviewWidthControl()},
+            {'block-x': $("<div>", {text: 'X'})},
+            {'number': buildPreviewHeightControl()}
+        ]
     }).buildBlockStructure('<div>');
-
-    function buildWidthHeightNumberBlock() {
-        return new BEM({
-            block: 'size-numbers',
-            elements: [
-                {'number': buildPreviewWidthControl()},
-                {'block-x': $("<div>", {text: 'X'})},
-                {'number': buildPreviewHeightControl()}
-            ]
-        }).buildBlockStructure('<div>');
-    }
 }
 
 function buildImageSizeControlBlock() {
