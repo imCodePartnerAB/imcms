@@ -39,6 +39,7 @@ define(
 
             if ($(this).data("tab") === "prev") {
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
+                imageEditSizeControls.getImageSizeControlBlock().show();
 
                 $exifInfoButton.css({
                     'display': 'none'
@@ -59,6 +60,7 @@ define(
                 imageEditSizeControls.setWidth(width, true);
                 imageEditSizeControls.setHeight(height, true);
                 toggleImageAreaToolbarViewBuilder.build();
+                imageEditSizeControls.getImageSizeControlBlock().hide();
                 $exifInfoButton.show();
                 if (imageData.path !== '') {
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
