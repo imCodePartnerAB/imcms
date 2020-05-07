@@ -133,11 +133,48 @@ function buildPreviewSizeControls() {
             {'block-x': $("<div>", {text: 'X'})},
             {"number": getPreviewHeightControl()}
         ]
-    }).buildBlockStructure("<div>", {style: 'display: none;'});
+    }).buildBlockStructure("<div>");
+}
+
+let $titleDisplay;
+
+function getDisplayTitle() {
+    return $titleDisplay || ($titleDisplay = components.texts.titleText('<div>', texts.displaySize));
+}
+
+function buildDisplaySizeBlock() {
+    return new BEM({
+        block: 'imcms-display-size',
+        elements: {
+            'title': getDisplayTitle(),
+            'width': components.texts.textNumber('<div>', {
+                placeholder: 0,
+                disabled: "disabled",
+                name: 'display-width'
+            }),
+            'height': components.texts.textNumber('<div>', {
+                placeholder: 0,
+                disabled: "disabled",
+                name: 'display-height'
+            })
+        }
+    }).buildBlockStructure('<div>');
+}
+
+function buildImageSizeControlBlock() {
+    return new BEM({
+        block: 'imcms-image-size-control',
+        elements: {
+            'wanted-size': buildPreviewSizeControls(),
+            'display-size': buildDisplaySizeBlock()
+        }
+    }).buildBlockStructure('<div>', {style: 'display: none;'});
+
 }
 
 let $originalSizeControls;
 let $prevSizeControls;
+let $displaySize;
 
 module.exports = {
     getWidthControl: getWidthControl,
@@ -163,4 +200,6 @@ module.exports = {
     getOriginSizeControls: () => $originalSizeControls || ($originalSizeControls = buildOriginalSizeControls()),
 
     getEditSizeControls: () => $prevSizeControls || ($prevSizeControls = buildPreviewSizeControls()),
+
+    getImageSizeControlBlock: () => $displaySize || ($displaySize = buildImageSizeControlBlock()),
 };
