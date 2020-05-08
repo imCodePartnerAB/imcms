@@ -1,5 +1,6 @@
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
+ * @partner Victor Pavlenko from Ubrainians for imCode
  * 27.03.18
  */
 const editableImage = require('imcms-editable-image');
