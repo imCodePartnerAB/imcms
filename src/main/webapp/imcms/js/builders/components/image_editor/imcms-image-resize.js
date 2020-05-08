@@ -2,8 +2,6 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-const originImageHeightBlock = require('imcms-origin-image-height-block');
-const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
 const previewImage = require('imcms-preview-image-area');
 
