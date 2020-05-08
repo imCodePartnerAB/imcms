@@ -12,10 +12,15 @@
 }
 
 .imcms-edit-size__title,
-.imcms-original-size__title,
 .imcms-display-size__title {
     display: block;
     width: 45%;
+    line-height: 28px;
+}
+
+.imcms-original-size__title {
+    display: block;
+    width: 100%;
     line-height: 28px;
 }
 
