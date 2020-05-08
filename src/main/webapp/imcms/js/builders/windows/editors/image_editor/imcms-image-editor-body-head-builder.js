@@ -55,8 +55,9 @@ define(
                     "display": "block"
                 });
             } else {
-                const width = imageResize.getWidth();
-                const height = imageResize.getHeight();
+                const original = imageResize.getOriginal();
+                const width = original.width;
+                const height = original.height;
                 imageEditSizeControls.setWidth(width, true);
                 imageEditSizeControls.setHeight(height, true);
                 toggleImageAreaToolbarViewBuilder.build();
