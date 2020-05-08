@@ -36,7 +36,7 @@ function getPreviewImageArea() {
 }
 
 function clear() {
-    getPreviewImage().removeAttr('style');
+    $previewImg.removeAttr('data-src').removeAttr('style');
 }
 
 module.exports = {
