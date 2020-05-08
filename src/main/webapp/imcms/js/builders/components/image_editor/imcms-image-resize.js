@@ -232,9 +232,6 @@ module.exports = {
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
-        originImageHeightBlock.setValue(originalHeight);
-        originImageWidthBlock.setValue(originalWidth);
-
         original.width = originalWidth;
         original.height = originalHeight;
 
