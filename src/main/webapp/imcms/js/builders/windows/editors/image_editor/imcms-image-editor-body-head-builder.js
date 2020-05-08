@@ -395,6 +395,10 @@ define(
                     getRevertButton(),
                     getCroppingButton(),
                     getSwitchViewControls(),
+                    getZoomMinusButton(),
+                    getZoomPlusButton(),
+                    getFitButton(),
+                    getZoomResetButton()
                 )
                 .show(
                     getCancelChangesButton(),
