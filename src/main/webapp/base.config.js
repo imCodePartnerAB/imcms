@@ -115,8 +115,8 @@ module.exports = {
                     components: {
                         image_editor: [
                             'imcms-preview-image-area',
-                            'imcms-editable-area',
-                            'imcms-editable-image',
+                            'imcms-originally-area',
+                            'imcms-originally-image',
                             'imcms-image-rotate',
                             'imcms-image-resize',
                             'imcms-image-edit-size-controls',

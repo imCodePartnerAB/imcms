@@ -1,10 +1,10 @@
 define(
     'imcms-image-zoom',
     [
-        'jquery', 'imcms-editable-image', 'imcms-editable-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
+        'jquery', 'imcms-originally-image', 'imcms-originally-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
         'imcms-components-builder',
     ],
-    function ($, editableImage, editableImageArea, previewImageArea, i18nTexts,
+    function ($, originalImage, originallyImageArea, previewImageArea, i18nTexts,
               components) {
 
         const texts = i18nTexts.editors.image;
@@ -22,7 +22,7 @@ define(
 
         function updateZoomGradeValue() {
             const isPreview = isPreviewTab();
-            const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
             const currentZoom = parseFloat($image.css('zoom'));
 
             updateZoomGradeValueByCssProperty(currentZoom);
@@ -40,8 +40,8 @@ define(
         function fitImage() {
             const isPreview = isPreviewTab();
 
-            const $imageArea = isPreview ? previewImageArea.getPreviewImageArea() : editableImageArea.getEditableImageArea();
-            const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
+            const $imageArea = isPreview ? previewImageArea.getPreviewImageArea() : originallyImageArea.getOriginalImageArea();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
             const currentZoom = parseFloat($image.css('zoom'));
             const imageBorderWidth = parseInt($image.css('border-width'));
@@ -65,8 +65,8 @@ define(
 
         function getRelativeZoomValueByOriginalImg() {
             let relativeZoomVal;
-            const $imageArea = editableImageArea.getEditableImageArea();
-            const $image = editableImage.getImage();
+            const $imageArea = originallyImageArea.getOriginalImageArea();
+            const $image = originalImage.getImage();
 
             const currentZoom = parseFloat($image.css('zoom'));
             const imageBorderWidth = parseInt($image.css('border-width'));
@@ -90,7 +90,7 @@ define(
 
         function zoom(scale) {
             const isPreview = isPreviewTab();
-            const $image = isPreview ? previewImageArea.getPreviewImage() : editableImage.getImage();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
             if (!scale) {
                 $image.css('zoom', 1);

@@ -3,7 +3,7 @@
  * @partner Victor Pavlenko from Ubrainians for imCode
  * 27.03.18
  */
-const editableImage = require('imcms-editable-image');
+const originalImage = require('imcms-originally-image');
 const previewImage = require('imcms-preview-image-area');
 
 let saveProportions = true; // by default
@@ -36,7 +36,7 @@ function trimToMaxMinHeight(newHeight) {
 
 function setWidth(newWidth, isOriginal) {
     if (isOriginal) {
-        const $image = editableImage.getImage();
+        const $image = originalImage.getImage();
         $image.width(original.width);
         $widthControl.val(original.width);
     } else {
@@ -68,7 +68,7 @@ function setWidth(newWidth, isOriginal) {
 
 function setHeight(newHeight, isOriginal) {
     if (isOriginal) {
-        const $image = editableImage.getImage();
+        const $image = originalImage.getImage();
         $image.height(original.height);
         $heightControl.val(original.height);
     } else {
@@ -331,7 +331,7 @@ module.exports = {
 
     setWidthStrict(padding, newWidth, isOriginal) {
         if (isOriginal) {
-            editableImage.getImage().width(original.width);
+            originalImage.getImage().width(original.width);
             $widthControl.val(newWidth);
         } else {
             resetToOriginal && existsCropRegion
@@ -356,7 +356,7 @@ module.exports = {
      */
     setHeightStrict(padding, newHeight, isOriginal) {
         if (isOriginal) {
-            editableImage.getImage().height(original.height);
+            originalImage.getImage().height(original.height);
             $heightControl.val(newHeight);
         } else {
             resetToOriginal && existsCropRegion
@@ -377,9 +377,9 @@ module.exports = {
 
     setWidthProportionally: setWidthProportionally,
 
-    getWidth: () => editableImage.getImage().width(),
+    getWidth: () => originalImage.getImage().width(),
 
-    getHeight: () => editableImage.getImage().height(),
+    getHeight: () => originalImage.getImage().height(),
 
     getPreviewWidth: () => previewImage.getPreviewImage().width(),
 

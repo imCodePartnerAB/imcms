@@ -6,12 +6,12 @@ define(
     "imcms-image-editor-builder",
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
-        "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
+        "imcms-image-editor-factory", 'imcms-originally-image', 'imcms-image-editor-body-head-builder',
         'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
         'imcms-preview-image-area', 'imcms-bem-builder',
         'imcms-components-builder', 'imcms-image-zoom'
     ],
-    function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
+    function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, originalImage,
               bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, BEM, components,
               imageZoom) {
 
@@ -96,7 +96,7 @@ define(
 
             prevImageArea.getPreviewImage().hide();
 
-            editableImage.setImageSource(imageData, () => {
+            originalImage.setImageSource(imageData, () => {
                 initSize(imageData, true);
             });
 
@@ -210,7 +210,7 @@ define(
 
         function clearComponents() {
             bodyHeadBuilder.clearData();
-            editableImage.clearData();
+            originalImage.clearData();
             imageResize.clearData();
             imageRotate.destroy();
         }

@@ -4,12 +4,12 @@ define(
     "imcms-image-editor-body-head-builder",
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
-        "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area',
+        "imcms-image-rotate", "imcms-image-resize", 'imcms-originally-image', 'imcms-preview-image-area',
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-originally-area',
         'imcms-image-active-tab', 'imcms-image-zoom'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImageArea,
-              ToolbarViewBuilder, cropper, editableImageArea, checkActiveTab, imageZoom) {
+    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, originalImage, previewImageArea,
+              ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom) {
 
         texts = texts.editors.image;
         let imageData;
@@ -34,7 +34,7 @@ define(
         function toggleImgArea() {
             const $previewImageArea = previewImageArea.getPreviewImageArea();
             const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
-            const $editableArea = editableImageArea.getEditableImageArea();//todo rename all modules on the origin instead edit
+            const $editableArea = originalImageArea.getOriginalImageArea();
             const $exifInfoButton = $('.imcms-image_editor__right-side').find(`[name='exifInfo']`);
 
             if ($(this).data("tab") === "prev") {

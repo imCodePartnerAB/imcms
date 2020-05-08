@@ -3,16 +3,16 @@
  * 11.09.18
  */
 const BEM = require('imcms-bem-builder');
-const editableImage = require('imcms-editable-image');
+const originallyImage = require('imcms-originally-image');
 
-let $editableImageArea;
+let $originalImageArea;
 
 module.exports = {
-    getEditableImageArea() {
-        return $editableImageArea || ($editableImageArea = new BEM({
+    getOriginalImageArea() {
+        return $originalImageArea || ($originalImageArea = new BEM({
             block: "imcms-editable-img-area",
             elements: {
-                "img": editableImage.getImage(),
+                "img": originallyImage.getImage(),
             }
         }).buildBlockStructure('<div>'));
     },
