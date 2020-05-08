@@ -83,19 +83,21 @@
 }
 
 .imcms-preview-img-area::-webkit-scrollbar-track,
-.imcms-editable-img-area::-webkit-scrollbar-track,
+.imcms-originally-img-area::-webkit-scrollbar-track,
 .image-cropping-block::-webkit-scrollbar-track {
     background-color: transparent;
 }
+
 .imcms-preview-img-area::-webkit-scrollbar,
-.imcms-editable-img-area::-webkit-scrollbar,
+.imcms-originally-img-area::-webkit-scrollbar,
 .image-cropping-block::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
     height: 6px;
 }
+
 .imcms-preview-img-area::-webkit-scrollbar-thumb,
-.imcms-editable-img-area::-webkit-scrollbar-thumb,
+.imcms-originally-img-area::-webkit-scrollbar-thumb,
 .image-cropping-block::-webkit-scrollbar-thumb {
     background-color: #6c7383;
 }

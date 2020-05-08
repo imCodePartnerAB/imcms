@@ -1,4 +1,4 @@
-.imcms-editable-img-area {
+.imcms-originally-img-area {
     background-color: #9b9b9b;
     display: block;
     overflow: auto;
@@ -15,7 +15,7 @@
     z-index: 10;
 }
 
-.imcms-editable-img {
+.imcms-originally-img {
     background: 0 0 no-repeat;
     display: block;
     position: relative;
@@ -71,7 +71,7 @@
 
 .imcms-preview-img:not(.image-cropping-wrap__img),
 .image-cropping-wrap,
-.imcms-editable-img {
+.imcms-originally-img {
     border: 15px solid #9b9b9b;
     background: no-repeat center;
 }

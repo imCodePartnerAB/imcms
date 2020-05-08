@@ -14,7 +14,7 @@ body {
     box-sizing: border-box;
 }
 
-.imcms-editable-img-area > img {
+.imcms-originally-img-area > img {
     max-width: none;
 }
 

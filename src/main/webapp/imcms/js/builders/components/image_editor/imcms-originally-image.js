@@ -9,7 +9,7 @@ const imcms = require('imcms');
 let $image;
 
 function getImage() {
-    return $image || ($image = $('<div>', {'class': 'imcms-editable-img'}))
+    return $image || ($image = $('<div>', {'class': 'imcms-originally-img'}))
 }
 
 module.exports = {

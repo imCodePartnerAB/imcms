@@ -10,7 +10,7 @@ let $originalImageArea;
 module.exports = {
     getOriginalImageArea() {
         return $originalImageArea || ($originalImageArea = new BEM({
-            block: "imcms-editable-img-area",
+            block: "imcms-originally-img-area",
             elements: {
                 "img": originallyImage.getImage(),
             }
