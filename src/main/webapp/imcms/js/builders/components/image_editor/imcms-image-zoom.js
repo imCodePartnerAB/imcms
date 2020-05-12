@@ -64,7 +64,6 @@ define(
         }
 
         function getRelativeZoomValueByOriginalImg() {
-            let relativeZoomVal;
             const $imageArea = originallyImageArea.getOriginalImageArea();
             const $image = originalImage.getImage();
 
@@ -75,7 +74,7 @@ define(
             const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
 
             if (imageWidth < $imageArea.width() && imageHeight < $imageArea.height()) {
-                return relativeZoomVal = 1;
+                return 1;
             }
 
             const widthScale = imageWidth / $imageArea.width();
@@ -85,7 +84,7 @@ define(
             const newZoomValue = currentZoom * zoomScale;
 
             updateZoomGradeValueByCssProperty(newZoomValue);
-            return relativeZoomVal = newZoomValue;
+            return newZoomValue;
         }
 
         function zoom(scale) {
