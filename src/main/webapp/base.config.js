@@ -93,6 +93,7 @@ module.exports = {
                         'imcms-window-keys-controller',
                         'date-format',
                         'imcms-jquery-tag-replacer',
+                        'check-browser'
                     ]
                 },
                 editor_initializer: {
