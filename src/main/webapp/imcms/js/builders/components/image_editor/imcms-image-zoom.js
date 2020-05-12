@@ -2,10 +2,10 @@ define(
     'imcms-image-zoom',
     [
         'jquery', 'imcms-originally-image', 'imcms-originally-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
-        'imcms-components-builder',
+        'imcms-components-builder', 'check-browser'
     ],
     function ($, originalImage, originallyImageArea, previewImageArea, i18nTexts,
-              components) {
+              components, checkerBrowser) {
 
         const texts = i18nTexts.editors.image;
 
@@ -91,17 +91,28 @@ define(
         function zoom(scale) {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
+            const isFireFox = checkerBrowser.isFirefox()
 
             if (!scale) {
-                $image.css('zoom', 1);
+                if (isFireFox) {
+                    $image.css('transform', `scale(1)`);
+                } else {
+                    $image.css('zoom', 1);
+                }
                 updateZoomGradeValueByCssProperty(1);
                 return;
             }
 
-            const currentZoom = parseFloat($image.css('zoom'));
+            let currentZoom;
+            if (isFireFox) {
+                const scaleTransform = $image[0].style.transform.replace(/[^\d\\.]*/g, '');
+                currentZoom = parseFloat(scaleTransform);
+            } else {
+                currentZoom = parseFloat($image.css('zoom'));
+            }
             const newZoomValue = currentZoom * scale;
 
-            $image.css('zoom', newZoomValue);
+            isFireFox ? $image.css('transform', `scale(${newZoomValue})`) : $image.css('zoom', newZoomValue);
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 

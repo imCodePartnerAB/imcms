@@ -5,8 +5,6 @@
 const BEM = require('imcms-bem-builder');
 const $ = require('jquery');
 const events = require('imcms-events');
-const previewImageArea = require('imcms-preview-image-area');
-const imageResize = require('imcms-image-resize');
 const imageZoom = require('imcms-image-zoom');
 
 let isImageProportionsInverted = false;
