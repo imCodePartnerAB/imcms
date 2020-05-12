@@ -39,11 +39,21 @@ define(
 
         function fitImage() {
             const isPreview = isPreviewTab();
-
+            const isFireFox = checkerBrowser.isFirefox();
             const $imageArea = isPreview ? previewImageArea.getPreviewImageArea() : originallyImageArea.getOriginalImageArea();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
-            const currentZoom = parseFloat($image.css('zoom'));
+            let currentZoom;
+            if (isFireFox) {
+                const scaleTransform = $image[0].style.transform.trim();
+                if (scaleTransform !== '') {
+                    currentZoom = parseFloat(scaleTransform.replace(/[^\d\\.]*/g, ''));
+                } else {
+                    currentZoom = parseFloat(1);
+                }
+            } else {
+                currentZoom = parseFloat($image.css('zoom'));
+            }
             const imageBorderWidth = parseInt($image.css('border-width'));
 
             const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
@@ -59,7 +69,10 @@ define(
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
             const newZoomValue = currentZoom * zoomScale;
 
-            $image.css('zoom', newZoomValue);
+            isFireFox
+                ? $image.css('transform', `scale(${newZoomValue}) translate(-2%, -2%)`)
+                : $image.css('zoom', newZoomValue);
+
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
