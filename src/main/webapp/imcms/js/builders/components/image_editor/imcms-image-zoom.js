@@ -20,10 +20,37 @@ define(
             return $zoomGradeField;
         }
 
+        function getCurrentZoomByBrowser($image, isFireFox) {
+            let currentZoomVal;
+
+            if (isFireFox) {
+                const scaleTransform = $image[0].style.transform.trim();
+                if (scaleTransform !== '') {
+                    currentZoomVal = parseFloat(scaleTransform.replace(/[^\d\\.]*/g, ''));
+                } else {
+                    currentZoomVal = parseFloat(1);
+                }
+            } else {
+                currentZoomVal = parseFloat($image.css('zoom'));
+            }
+            return currentZoomVal;
+        }
+
+        function getBorderWidthByBrowser($image, isFireFox) {
+            let border;
+            if (isFireFox) {
+                border = parseInt($image.css('border-bottom-width').replace(/[^\d\\.]*/g, ''));
+            } else {
+                border = parseInt($image.css('border-width'));
+            }
+
+            return border;
+        }
+
         function updateZoomGradeValue() {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
-            const currentZoom = parseFloat($image.css('zoom'));
+            const currentZoom = getCurrentZoomByBrowser($image, checkerBrowser.isFirefox());
 
             updateZoomGradeValueByCssProperty(currentZoom);
         }
@@ -43,18 +70,8 @@ define(
             const $imageArea = isPreview ? previewImageArea.getPreviewImageArea() : originallyImageArea.getOriginalImageArea();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
-            let currentZoom;
-            if (isFireFox) {
-                const scaleTransform = $image[0].style.transform.trim();
-                if (scaleTransform !== '') {
-                    currentZoom = parseFloat(scaleTransform.replace(/[^\d\\.]*/g, ''));
-                } else {
-                    currentZoom = parseFloat(1);
-                }
-            } else {
-                currentZoom = parseFloat($image.css('zoom'));
-            }
-            const imageBorderWidth = parseInt($image.css('border-width'));
+            let currentZoom = getCurrentZoomByBrowser($image, isFireFox);
+            const imageBorderWidth = getBorderWidthByBrowser($image, isFireFox);
 
             const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
             const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
@@ -79,9 +96,10 @@ define(
         function getRelativeZoomValueByOriginalImg() {
             const $imageArea = originallyImageArea.getOriginalImageArea();
             const $image = originalImage.getImage();
+            const isFirefox = checkerBrowser.isFirefox();
 
-            const currentZoom = parseFloat($image.css('zoom'));
-            const imageBorderWidth = parseInt($image.css('border-width'));
+            const currentZoom = getCurrentZoomByBrowser($image, isFirefox);
+            const imageBorderWidth = getBorderWidthByBrowser($image, isFirefox);
 
             const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
             const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
@@ -115,13 +133,7 @@ define(
                 return;
             }
 
-            let currentZoom;
-            if (isFireFox) {
-                const scaleTransform = $image[0].style.transform.replace(/[^\d\\.]*/g, '');
-                currentZoom = parseFloat(scaleTransform);
-            } else {
-                currentZoom = parseFloat($image.css('zoom'));
-            }
+            const currentZoom = getCurrentZoomByBrowser($image, isFireFox);
             const newZoomValue = currentZoom * scale;
 
             isFireFox ? $image.css('transform', `scale(${newZoomValue})`) : $image.css('zoom', newZoomValue);
