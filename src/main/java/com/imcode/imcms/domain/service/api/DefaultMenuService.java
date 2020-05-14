@@ -3,7 +3,12 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.SortNotSupportedException;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.IdDeleterMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -17,7 +22,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -325,8 +338,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 })
                 .collect(Collectors.toList());
     }
-    // TODO: 27.11.19 maybe need add new column hasNewerVersion jpa in future?
-
     private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
         items.stream()
                 .flatMap(MenuItemDTO::flattened)
