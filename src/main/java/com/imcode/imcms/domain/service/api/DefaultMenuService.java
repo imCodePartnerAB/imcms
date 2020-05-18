@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.MenuElementHtmlWrapper;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.SortNotSupportedException;
@@ -53,6 +54,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private static final String CLASS_ATTRIBUTE = "class";
     private static final String UL_TAG_CLOSE = "</ul>";
     private static final String UL_TAG_OPEN = "<ul>";
+    private static final String LINK_A_TAG = "a";
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
@@ -64,6 +66,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
     private final CommonContentService commonContentService;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
+    private final MenuElementHtmlWrapper menuElementHtmlWrapper;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -75,7 +78,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
                        CommonContentService commonContentService,
-                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
+                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
+                       MenuElementHtmlWrapper menuElementHtmlWrapper) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -87,6 +91,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
         this.commonContentService = commonContentService;
         this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
+        this.menuElementHtmlWrapper = menuElementHtmlWrapper;
         this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
     }
 
@@ -338,6 +343,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 })
                 .collect(Collectors.toList());
     }
+
     private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
         items.stream()
                 .flatMap(MenuItemDTO::flattened)
@@ -464,7 +470,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     DATA_TREEKEY_ATTRIBUTE, treeKey,
                     DATA_LEVEL_ATTRIBUTE, dataLevel,
                     DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
-                    parentMenuItem.getTitle()).concat("\n");
+                    parentMenuItem.getTitle());
 
 
             htmlContentItemElement = getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
@@ -520,17 +526,23 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return contentMenuItem;
     }
 
-    //fix wrapping elements, position...
     private String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
+        StringBuilder resultWrappedContent = new StringBuilder();
+        String allWrappedElement = "";
+        final String title = menuElementHtmlWrapper.getTitleFromSingleTag(content);//title
+        final String tagData = menuElementHtmlWrapper.getTagDataElement(content);//<li..>
         for (String wrap : wrappers) {
-            if (wrap.trim().equals("a")) {
-                content = String.format("<%s href=/%d>".concat(content).concat("</%s>"),
-                        wrap.trim(), itemDTO.getDocumentId(), wrap.trim());
-            } else {
-                content = String.format("<%s>".concat(content).concat("</%s>"),
+            if (!resultWrappedContent.toString().isEmpty()) {
+                allWrappedElement = String.format("<%s>".concat(resultWrappedContent.toString()).concat("</%s>"),
                         wrap.trim(), wrap.trim());
+                resultWrappedContent.replace(0, resultWrappedContent.toString().length(), allWrappedElement);
+            } else {
+                allWrappedElement = resultWrappedContent.append(String.format("<%s>".concat(title).concat("</%s>"),
+                        wrap.trim(), wrap.trim())).toString();
             }
         }
-        return content;
+
+        return String.format("%s <%s href=\"/%d\"> %s </%s> %s",
+                tagData, LINK_A_TAG, itemDTO.getDocumentId(), allWrappedElement, LINK_A_TAG, "</li>");
     }
 }
