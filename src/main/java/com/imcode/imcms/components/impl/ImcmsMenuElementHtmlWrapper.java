@@ -44,6 +44,22 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
 
     @Override
     public String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
-        return null;
+        final StringBuilder wrapContentBuilder = new StringBuilder();
+        String wrappedElement = "";
+        final String title = getTitleFromSingleTag(content);//title
+        final String tagData = getTagDataElement(content);//<li..>
+        for (String wrap : wrappers) {
+            if (!wrapContentBuilder.toString().isEmpty()) {
+                wrappedElement = String.format("<%s>".concat(wrapContentBuilder.toString()).concat("</%s>"),
+                        wrap.trim(), wrap.trim());
+                wrapContentBuilder.replace(0, wrapContentBuilder.toString().length(), wrappedElement);
+            } else {
+                wrappedElement = wrapContentBuilder.append(String.format("<%s>".concat(title).concat("</%s>"),
+                        wrap.trim(), wrap.trim())).toString();
+            }
+        }
+
+        return String.format("%s <%s href=\"/%d\"> %s </%s> %s",
+                tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG, "</li>");
     }
 }

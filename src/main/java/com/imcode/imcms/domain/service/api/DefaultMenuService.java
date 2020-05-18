@@ -39,22 +39,13 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.imcode.imcms.components.MenuElementHtmlWrapper.*;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 
 @Service
 @Transactional
 public class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
-
-    private static final String DATA_META_ID_ATTRIBUTE = "data-meta-id";
-    private static final String DATA_INDEX_ATTRIBUTE = "data-index";
-    private static final String DATA_TREEKEY_ATTRIBUTE = "data-treekey";
-    private static final String DATA_LEVEL_ATTRIBUTE = "data-level";
-    private static final String DATA_SUBLEVELS_ATTRIBUTE = "data-sublvls";
-    private static final String CLASS_ATTRIBUTE = "class";
-    private static final String UL_TAG_CLOSE = "</ul>";
-    private static final String UL_TAG_OPEN = "<ul>";
-    private static final String LINK_A_TAG = "a";
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
@@ -473,7 +464,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     parentMenuItem.getTitle());
 
 
-            htmlContentItemElement = getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
+            htmlContentItemElement = menuElementHtmlWrapper.getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
 
             content.append(htmlContentItemElement);
         }
@@ -497,7 +488,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                         DATA_SUBLEVELS_ATTRIBUTE, !childrenItems.get(i).getChildren().isEmpty(),
                         childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN);
 
-                htmlContentMenuItem = getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
+                htmlContentMenuItem = menuElementHtmlWrapper.getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
                 contentMenu.append(htmlContentMenuItem);
 
                 buildChildrenContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
@@ -521,28 +512,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
                 itemDTO.getDocumentId()).concat("\n");
 
-        contentMenuItem = getWrappedContent(contentMenuItem, wrappers, itemDTO);
+        contentMenuItem = menuElementHtmlWrapper.getWrappedContent(contentMenuItem, wrappers, itemDTO);
 
         return contentMenuItem;
-    }
-
-    private String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
-        StringBuilder resultWrappedContent = new StringBuilder();
-        String allWrappedElement = "";
-        final String title = menuElementHtmlWrapper.getTitleFromSingleTag(content);//title
-        final String tagData = menuElementHtmlWrapper.getTagDataElement(content);//<li..>
-        for (String wrap : wrappers) {
-            if (!resultWrappedContent.toString().isEmpty()) {
-                allWrappedElement = String.format("<%s>".concat(resultWrappedContent.toString()).concat("</%s>"),
-                        wrap.trim(), wrap.trim());
-                resultWrappedContent.replace(0, resultWrappedContent.toString().length(), allWrappedElement);
-            } else {
-                allWrappedElement = resultWrappedContent.append(String.format("<%s>".concat(title).concat("</%s>"),
-                        wrap.trim(), wrap.trim())).toString();
-            }
-        }
-
-        return String.format("%s <%s href=\"/%d\"> %s </%s> %s",
-                tagData, LINK_A_TAG, itemDTO.getDocumentId(), allWrappedElement, LINK_A_TAG, "</li>");
     }
 }
