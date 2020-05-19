@@ -486,12 +486,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                         DATA_TREEKEY_ATTRIBUTE, treeKey + "." + ((i + 1) * 10),
                         DATA_LEVEL_ATTRIBUTE, dataLvl,
                         DATA_SUBLEVELS_ATTRIBUTE, !childrenItems.get(i).getChildren().isEmpty(),
-                        childrenItems.get(i).getDocumentId()).concat("\n" + UL_TAG_OPEN);
+                        childrenItems.get(i).getDocumentId());
 
                 htmlContentMenuItem = menuElementHtmlWrapper.getWrappedContent(htmlContentMenuItem, wrappers, childrenItems.get(i));
                 contentMenu.append(htmlContentMenuItem);
 
-                buildChildrenContentMenuItem(contentMenu, childrenItems.get(i).getChildren(),
+                buildChildrenContentMenuItem(contentMenu.append(UL_TAG_OPEN), childrenItems.get(i).getChildren(),
                         treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers);
             } else {
                 contentMenuItems.append(getBuildContentMenuItem(childrenItems.get(i), dataLvl,
