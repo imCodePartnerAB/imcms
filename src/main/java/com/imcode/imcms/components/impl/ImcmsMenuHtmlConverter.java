@@ -50,9 +50,10 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             if (!menuItems.get(i).getChildren().isEmpty()) {
                 buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), menuItems.get(i).getChildren(),
                         dataTreeKey, 2, wrappers);
+                buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             }
         }
-        buildContentMenu.append(UL_TAG_CLOSE);
+        buildContentMenu.append(UL_TAG_CLOSE);//main ul tag closed
 
         return String.format(buildContentMenu.toString(), menuIndex, docId);
     }
@@ -65,6 +66,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
     private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, String attributes,
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         StringBuilder content = new StringBuilder();
+        final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
         if (attributes.contains("data")) {
             String htmlContentItemElement = String.format(
                     "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
@@ -72,13 +74,17 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
                     DATA_TREEKEY_ATTRIBUTE, treeKey,
                     DATA_LEVEL_ATTRIBUTE, dataLevel,
-                    DATA_SUBLEVELS_ATTRIBUTE, !parentMenuItem.getChildren().isEmpty(),
+                    DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
                     parentMenuItem.getTitle());
 
 
             htmlContentItemElement = menuElementHtmlWrapper.getWrappedContent(htmlContentItemElement, wrappers, parentMenuItem);
 
-            content.append(htmlContentItemElement);
+            if (hasChildren) {
+                content.append(htmlContentItemElement);
+            } else {
+                content.append(htmlContentItemElement).append(LI_TAG_CLOSE);
+            }
         }
 
         return content.toString();
@@ -110,7 +116,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                         treeKey + "." + ((i + 1) * 10), wrappers));
             }
         }
-        contentMenuItems.append(UL_TAG_CLOSE);
+        contentMenuItems.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
         contentMenu.append(contentMenuItems);
     }
 
