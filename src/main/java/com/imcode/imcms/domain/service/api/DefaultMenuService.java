@@ -184,7 +184,16 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex) {
-        return null;
+        String language = Imcms.getUser().getLanguage();
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+        menuItemsOf = getAndSetUpEmptyChildrenMenuItems(convertItemsToFlatList(menuItemsOf));
+
+        setHasNewerVersionsInItems(menuItemsOf);
+        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+
+        return menuHtmlConverter.convertToMenuHtml(
+                docId, menuIndex, startedMenuItems, false, null, null, null
+        );
     }
 
     @Override
