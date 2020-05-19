@@ -46,7 +46,7 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
     public String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
         final StringBuilder wrapContentBuilder = new StringBuilder();
         String wrappedElement = "";
-        final String title = getTitleFromSingleTag(content);//title
+        final String title = itemDTO.getTitle();
         final String tagData = getTagDataElement(content);//<li..>
         for (String wrap : wrappers) {
             if (!wrapContentBuilder.toString().isEmpty()) {
