@@ -13,6 +13,7 @@ public interface MenuElementHtmlWrapper {
     String DATA_SUBLEVELS_ATTRIBUTE = "data-sublvls";
     String CLASS_ATTRIBUTE = "class";
     String UL_TAG_CLOSE = "</ul>";
+    String LI_TAG_CLOSE = "</li>";
     String UL_TAG_OPEN = "<ul>";
     String LINK_A_TAG = "a";
 
