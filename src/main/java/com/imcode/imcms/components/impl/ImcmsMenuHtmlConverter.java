@@ -27,13 +27,40 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                                     boolean nested, String attributes, String treeKey, String wrap) {
 
         List<MenuItemDTO> menuItems;
-        boolean existDataAttribute = attributesHasData(attributes);
-        final String ulData = existDataAttribute
-                ? "<ul data-menu-index=\"%d\" data-doc-id=\"%d\">"
-                : UL_TAG_OPEN;
+        final StringBuilder buildContentMenu = new StringBuilder();
+        final List<String> listAttr = StringUtils.isBlank(attributes)
+                ? Collections.EMPTY_LIST
+                : Arrays.asList(attributes.split(","));
 
-        StringBuilder buildContentMenu = new StringBuilder();
-        buildContentMenu.append(ulData);
+        for (String attribute : listAttr) {
+            switch (attribute.trim()) {
+                case ATTRIBUTE_CLASS:
+                    if (buildContentMenu.toString().isEmpty()) {
+                        buildContentMenu.append(String.format("<ul class=\"%s %s %s %s--%d-%d\"",
+                                IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
+                                LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
+                                menuIndex, docId));
+                    } else {
+                        buildContentMenu.append(String.format(" class=\"%s %s %s %s--%d-%d\"",
+                                IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
+                                LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
+                                menuIndex, docId));
+                    }
+                    break;
+
+                case ATTRIBUTE_DATA:
+                    if (buildContentMenu.toString().isEmpty()) {
+                        buildContentMenu.append(String.format("<ul data-menu-index=\"%d\" data-doc-id=\"%d\"",
+                                menuIndex, docId));
+                    } else {
+                        buildContentMenu.append(String.format(" data-menu-index=\"%d\" data-doc-id=\"%d\"",
+                                menuIndex, docId));
+                    }
+                    break;
+            }
+        }
+        buildContentMenu.append(">");
+        boolean existDataAttribute = attributesHasData(attributes);
 
         if (nested) {
             menuItems = menuItemDTOS;
@@ -60,7 +87,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         }
         buildContentMenu.append(UL_TAG_CLOSE);//main ul tag closed
 
-        return String.format(buildContentMenu.toString(), menuIndex, docId);
+        return buildContentMenu.toString();
     }
 
     @Override
