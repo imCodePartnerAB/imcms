@@ -43,7 +43,12 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     break;
             }
         }
-        buildContentMenu.append(">");
+
+        if (buildContentMenu.toString().isEmpty()) {
+            buildContentMenu.append(UL_TAG_OPEN);
+        } else {
+            buildContentMenu.append(">");
+        }
         boolean existDataAttribute = attributesHasData(attributes);
 
         if (nested) {
@@ -61,7 +66,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             final MenuItemDTO currentParentItem = menuItems.get(i);
             String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
 
-            buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, attributes, dataTreeKey, 1, wrappers));
+            buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
             if (!currentParentItem.getChildren().isEmpty()) {
                 buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), currentParentItem.getChildren(),
@@ -83,27 +88,37 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return attributes.contains("data");
     }
 
-    private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, String attributes,
+    private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, List<String> attributes,
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         StringBuilder parentElementContent = new StringBuilder();
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
         String htmlContentItemElement;
-        if (attributesHasData(attributes)) {
-            htmlContentItemElement = String.format(
-                    "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
-                    DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
-                    DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
-                    DATA_TREEKEY_ATTRIBUTE, treeKey,
-                    DATA_LEVEL_ATTRIBUTE, dataLevel,
-                    DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
-                    parentMenuItem.getTitle());
 
-            final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
-            addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
-        } else {
+        if (attributes.isEmpty()) {
             htmlContentItemElement = String.format("<li>%s", parentMenuItem.getTitle());
             final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
             addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
+        }
+
+        for (String attribute : attributes) {
+            switch (attribute.trim()) {
+                case ATTRIBUTE_CLASS:
+                    htmlContentItemElement = "";
+                    break;
+                case ATTRIBUTE_DATA:
+                    htmlContentItemElement = String.format(
+                            "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
+                            DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
+                            DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
+                            DATA_TREEKEY_ATTRIBUTE, treeKey,
+                            DATA_LEVEL_ATTRIBUTE, dataLevel,
+                            DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
+                            parentMenuItem.getTitle());
+
+                    final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
+                    addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
+                    break;
+            }
         }
 
         return parentElementContent.toString();
@@ -188,15 +203,9 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private void addStartBuildUlByDataAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
         if (buildContentMenu.toString().isEmpty()) {
-            buildContentMenu.append(String.format("<ul class=\"%s %s %s %s--%d-%d\"",
-                    IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
-                    LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
-                    menuIndex, docId));
+            buildContentMenu.append(String.format("<ul data-menu-index=\"%d\" data-doc-id=\"%d\"", menuIndex, docId));
         } else {
-            buildContentMenu.append(String.format(" class=\"%s %s %s %s--%d-%d\"",
-                    IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
-                    LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
-                    menuIndex, docId));
+            buildContentMenu.append(String.format(" data-menu-index=\"%d\" data-doc-id=\"%d\"", menuIndex, docId));
         }
     }
 }
