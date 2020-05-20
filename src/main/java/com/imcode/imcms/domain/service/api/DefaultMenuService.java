@@ -163,7 +163,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
@@ -177,19 +177,19 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex) {
-        String language = Imcms.getUser().getLanguage();
+        final String language = Imcms.getUser().getLanguage();
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         menuItemsOf = getAndSetUpEmptyChildrenMenuItems(convertItemsToFlatList(menuItemsOf));
 
         setHasNewerVersionsInItems(menuItemsOf);
-        List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
                 docId, menuIndex, startedMenuItems, false, null, null, null
@@ -203,7 +203,16 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex) {
-        return null;
+        final String language = Imcms.getUser().getLanguage();
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
+        menuItemsOf = getAndSetUpEmptyChildrenMenuItems(convertItemsToFlatList(menuItemsOf));
+
+        setHasNewerVersionsInItems(menuItemsOf);
+        final List<MenuItemDTO> startedMenuItems = getStartedMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+
+        return menuHtmlConverter.convertToMenuHtml(
+                docId, menuIndex, startedMenuItems, false, null, null, null
+        );
     }
 
     @Override
