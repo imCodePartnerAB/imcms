@@ -97,12 +97,6 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
         String htmlContentItemElement;
 
-        if (attributes.isEmpty()) {
-            htmlContentItemElement = String.format("<li>%s", parentMenuItem.getTitle());
-            final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
-            addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
-        }
-
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
@@ -122,6 +116,12 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
                     break;
             }
+        }
+
+        if (attributes.isEmpty()) {
+            htmlContentItemElement = String.format("<li>%s", parentMenuItem.getTitle());
+            final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
+            addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
         }
 
         return parentElementContent.toString();
