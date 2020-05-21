@@ -13,6 +13,7 @@ public interface MenuElementHtmlWrapper {
     String DATA_SUBLEVELS_ATTRIBUTE = "data-sublvls";
     String ATTRIBUTE_CLASS = "class";
     String BRANCH = "branch";
+    String LEAF = "leaf";
     String IMCMS_MENU_CLASS = "imcms-menu";
     String IMCMS_MENU_BRANCH = "imcms-menu-" + BRANCH;
     String IMCMS_MENU_ITEM = "imcms-menu-item";
