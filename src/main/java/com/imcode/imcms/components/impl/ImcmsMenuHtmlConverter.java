@@ -2,6 +2,7 @@ package com.imcode.imcms.components.impl;
 
 import com.imcode.imcms.components.MenuElementHtmlWrapper;
 import com.imcode.imcms.components.MenuHtmlConverter;
+import com.imcode.imcms.components.patterns.ImcmsMenuHtmlPatterns;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,11 @@ import static com.imcode.imcms.components.MenuElementHtmlWrapper.*;
 class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private final MenuElementHtmlWrapper menuElementHtmlWrapper;
+    private final ImcmsMenuHtmlPatterns menuHtmlPatterns;
 
     ImcmsMenuHtmlConverter(MenuElementHtmlWrapper menuElementHtmlWrapper) {
         this.menuElementHtmlWrapper = menuElementHtmlWrapper;
+        this.menuHtmlPatterns = new ImcmsMenuHtmlPatterns();
     }
 
     @Override
