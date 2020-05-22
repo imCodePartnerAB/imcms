@@ -170,12 +170,12 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private void addStartBuildUlByClassAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
         if (buildContentMenu.toString().isEmpty()) {
-            buildContentMenu.append(String.format("<ul class=\"%s %s %s %s--%d-%d\"",
+            buildContentMenu.append(String.format(menuHtmlPatterns.getPatternStartUlClassAttr(),
                     IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
                     LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
                     menuIndex, docId));
         } else {
-            buildContentMenu.append(String.format(" class=\"%s %s %s %s--%d-%d\"",
+            buildContentMenu.append(String.format(menuHtmlPatterns.getPatternStartSimpleUlClassAttr(),
                     IMCMS_MENU_CLASS, IMCMS_MENU_BRANCH,
                     LVL_ELEMENT + 1, IMCMS_MENU_CLASS,
                     menuIndex, docId));
@@ -184,9 +184,9 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private void addStartBuildUlByDataAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
         if (buildContentMenu.toString().isEmpty()) {
-            buildContentMenu.append(String.format("<ul data-menu-index=\"%d\" data-doc-id=\"%d\"", menuIndex, docId));
+            buildContentMenu.append(String.format(menuHtmlPatterns.getPatternStartUlDataAttr(), menuIndex, docId));
         } else {
-            buildContentMenu.append(String.format(" data-menu-index=\"%d\" data-doc-id=\"%d\"", menuIndex, docId));
+            buildContentMenu.append(String.format(menuHtmlPatterns.getPatternWithoutTagUlDataAttr(), menuIndex, docId));
         }
     }
 
