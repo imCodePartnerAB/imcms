@@ -59,7 +59,9 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
             }
         }
 
-        return String.format("%s <%s href=\"/%d\"> %s </%s>",
+        return wrappers.isEmpty()
+                ? content.concat(title)
+                : String.format("%s <%s href=\"/%d\"> %s </%s>",
                 tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
     }
 }

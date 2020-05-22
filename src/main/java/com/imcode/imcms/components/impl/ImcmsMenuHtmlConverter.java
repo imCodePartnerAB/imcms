@@ -105,14 +105,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 ? String.format("<li>%s", parentMenuItem.getTitle())
                 : itemParentHtmlContent.concat(">");
 
-        return wrapElement(parentMenuItem, wrappers, htmlDataItem);
-    }
-
-    private String wrapElement(MenuItemDTO parentItem, List<String> wrappers, String htmlContentItemElement) {//todo improve wrapper if empty!
-        if (!wrappers.isEmpty()) {
-            return menuElementHtmlWrapper.getWrappedContent(htmlContentItemElement, wrappers, parentItem);
-        }
-        return htmlContentItemElement.concat(parentItem.getTitle());
+        return menuElementHtmlWrapper.getWrappedContent(htmlDataItem, wrappers, parentMenuItem);
     }
 
     private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
@@ -141,7 +134,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     : liItem.concat(">");
 
             if (hasChildren) {
-                contentMenu.append(wrapElement(currentMenuItem, wrappers, resultHtmlItem));
+                contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
                 buildChildrenContentMenuItem(contentMenu.append(UL_TAG_OPEN), currentMenuItem.getChildren(),
                         treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
             } else {
@@ -171,7 +164,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 ? String.format("<li>%s", itemDTO.getTitle())
                 : itemHtmlContent.concat(">");
 
-        return wrapElement(itemDTO, wrappers, resultItemHtml).concat(LI_TAG_CLOSE);
+        return menuElementHtmlWrapper.getWrappedContent(resultItemHtml, wrappers, itemDTO).concat(LI_TAG_CLOSE);
     }
 
     private String getBuiltUlHtml() {
