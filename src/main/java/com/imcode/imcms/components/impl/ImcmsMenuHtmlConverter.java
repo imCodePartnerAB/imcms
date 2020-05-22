@@ -47,7 +47,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             }
         }
 
-        if (attributes.isEmpty()) {
+        if (listAttr.isEmpty()) {
             buildContentMenu.append(UL_TAG_OPEN);
         } else {
             buildContentMenu.append(">");
