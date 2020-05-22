@@ -47,7 +47,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             }
         }
 
-        if (buildContentMenu.toString().isEmpty()) {
+        if (attributes.isEmpty()) {
             buildContentMenu.append(UL_TAG_OPEN);
         } else {
             buildContentMenu.append(">");
@@ -71,7 +71,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
             if (!currentParentItem.getChildren().isEmpty()) {
-                buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), currentParentItem.getChildren(),
+                buildChildrenContentMenuItem(buildContentMenu.append(getBuiltUlWithClassHtml(2, listAttr)), currentParentItem.getChildren(),
                         dataTreeKey, 2, wrappers, listAttr);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             }
@@ -143,7 +143,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
             if (hasChildren) {
                 contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
-                buildChildrenContentMenuItem(contentMenu.append(UL_TAG_OPEN), currentMenuItem.getChildren(),
+                buildChildrenContentMenuItem(contentMenu.append(getBuiltUlWithClassHtml(dataLvl + 1, attributes)), currentMenuItem.getChildren(),
                         treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
             } else {
                 contentMenu.append(getBuildContentAloneMenuItem(currentMenuItem, dataLvl,
@@ -168,8 +168,12 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return menuElementHtmlWrapper.getWrappedContent(resultItemHtml, wrappers, itemDTO).concat(LI_TAG_CLOSE);
     }
 
-    private String getBuiltUlHtml() {
-        return null;
+    private String getBuiltUlWithClassHtml(Integer lvl, List<String> attrs) {
+        if (attrs.contains(ATTRIBUTE_CLASS)) {
+            return String.format(menuHtmlPatterns.getPatternUlClassAttr(), IMCMS_MENU_BRANCH, LVL_ELEMENT + lvl);
+        } else {
+            return UL_TAG_OPEN;
+        }
     }
 
     private void addStartBuildUlByClassAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
