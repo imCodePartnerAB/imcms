@@ -52,7 +52,6 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         } else {
             buildContentMenu.append(">");
         }
-        boolean existDataAttribute = attributesHasData(attributes);
 
         if (nested) {
             menuItems = menuItemDTOS;
@@ -73,7 +72,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
             if (!currentParentItem.getChildren().isEmpty()) {
                 buildChildrenContentMenuItem(buildContentMenu.append(UL_TAG_OPEN), currentParentItem.getChildren(),
-                        dataTreeKey, 2, wrappers, existDataAttribute);
+                        dataTreeKey, 2, wrappers, listAttr);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             }
         }
@@ -87,107 +86,92 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return null;
     }
 
-    private boolean attributesHasData(String attributes) {
-        return attributes.contains("data");
-    }
-
     private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, List<String> attributes,
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
-        StringBuilder parentElementContent = new StringBuilder();
+        String itemParentHtmlContent = "";
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
-        String htmlContentItemElement;
-
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
-                    htmlContentItemElement = "";
+                    itemParentHtmlContent += addBuildLiByClassAttr(itemParentHtmlContent, dataLevel, hasChildren);
                     break;
                 case ATTRIBUTE_DATA:
-                    htmlContentItemElement = String.format(
-                            "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
-                            DATA_META_ID_ATTRIBUTE, parentMenuItem.getDocumentId(),
-                            DATA_INDEX_ATTRIBUTE, parentMenuItem.getDataIndex(),
-                            DATA_TREEKEY_ATTRIBUTE, treeKey,
-                            DATA_LEVEL_ATTRIBUTE, dataLevel,
-                            DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
-                            parentMenuItem.getTitle());
-
-                    final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
-                    addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
+                    itemParentHtmlContent += addBuildLiByDataAttr(itemParentHtmlContent, parentMenuItem, treeKey, hasChildren, dataLevel);
                     break;
             }
         }
 
-        if (attributes.isEmpty()) {
-            htmlContentItemElement = String.format("<li>%s", parentMenuItem.getTitle());
-            final String wrappedContent = wrapElement(parentMenuItem, wrappers, htmlContentItemElement);
-            addWrapElementToParentContentHtml(parentElementContent, hasChildren, wrappedContent);
-        }
+        final String htmlDataItem = attributes.isEmpty()
+                ? String.format("<li>%s", parentMenuItem.getTitle())
+                : itemParentHtmlContent.concat(">");
 
-        return parentElementContent.toString();
+        return wrapElement(parentMenuItem, wrappers, htmlDataItem);
     }
 
-    private String wrapElement(MenuItemDTO parentItem, List<String> wrappers, String htmlContentItemElement) {
+    private String wrapElement(MenuItemDTO parentItem, List<String> wrappers, String htmlContentItemElement) {//todo improve wrapper if empty!
         if (!wrappers.isEmpty()) {
             return menuElementHtmlWrapper.getWrappedContent(htmlContentItemElement, wrappers, parentItem);
         }
-        return htmlContentItemElement;
-    }
-
-    private void addWrapElementToParentContentHtml(StringBuilder parentElementContent,
-                                                   boolean hasChildren, String wrappedElement) {
-        if (hasChildren) {
-            parentElementContent.append(wrappedElement);
-        } else {
-            parentElementContent.append(wrappedElement).append(LI_TAG_CLOSE);
-        }
+        return htmlContentItemElement.concat(parentItem.getTitle());
     }
 
     private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
-                                              String treeKey, Integer dataLvl, List<String> wrappers, boolean existDataAttr) {
+                                              String treeKey, Integer dataLvl,
+                                              List<String> wrappers, List<String> attributes) {
 
         for (int i = 0; i < childrenItems.size(); i++) {
             final MenuItemDTO currentMenuItem = childrenItems.get(i);
-            if (!currentMenuItem.getChildren().isEmpty()) {
-                String htmlContentMenuItem = existDataAttr
-                        ? String.format(
-                        "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s",
-                        DATA_META_ID_ATTRIBUTE, currentMenuItem.getDocumentId(),
-                        DATA_INDEX_ATTRIBUTE, currentMenuItem.getDataIndex(),
-                        DATA_TREEKEY_ATTRIBUTE, treeKey + "." + ((i + 1) * 10),
-                        DATA_LEVEL_ATTRIBUTE, dataLvl,
-                        DATA_SUBLEVELS_ATTRIBUTE, !currentMenuItem.getChildren().isEmpty(),
-                        currentMenuItem.getTitle())
-                        : String.format("<li>%s", currentMenuItem.getTitle());
+            boolean hasChildren = !currentMenuItem.getChildren().isEmpty();
+            String liItem = "";
+            for (String attribute : attributes) {
+                switch (attribute.trim()) {
+                    case ATTRIBUTE_CLASS:
+                        liItem += addBuildLiByClassAttr(liItem, dataLvl, hasChildren);
+                        break;
+                    case ATTRIBUTE_DATA:
+                        liItem += addBuildLiByDataAttr(liItem,
+                                currentMenuItem, treeKey + "." + ((i + 1) * 10),
+                                hasChildren, dataLvl);
+                        break;
+                }
+            }
 
-                contentMenu.append(wrapElement(currentMenuItem, wrappers, htmlContentMenuItem));
+            final String resultHtmlItem = attributes.isEmpty()
+                    ? String.format("<li>%s", currentMenuItem.getTitle())
+                    : liItem.concat(">");
 
+            if (hasChildren) {
+                contentMenu.append(wrapElement(currentMenuItem, wrappers, resultHtmlItem));
                 buildChildrenContentMenuItem(contentMenu.append(UL_TAG_OPEN), currentMenuItem.getChildren(),
-                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, existDataAttr);
+                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
             } else {
-                contentMenu.append(getBuildContentMenuItem(currentMenuItem, dataLvl,
-                        treeKey + "." + ((i + 1) * 10), wrappers, existDataAttr));
+                contentMenu.append(getBuildContentAloneMenuItem(currentMenuItem, dataLvl,
+                        treeKey + "." + ((i + 1) * 10), wrappers, attributes));
             }
         }
         contentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
     }
 
-    private String getBuildContentMenuItem(MenuItemDTO itemDTO, Integer dataLvl,
-                                           String treeKey, List<String> wrappers, boolean existDataAttr) {
-        String contentMenuItem = existDataAttr
-                ? String.format(
-                "<li %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\">%s</li>",
-                DATA_META_ID_ATTRIBUTE, itemDTO.getDocumentId(),
-                DATA_INDEX_ATTRIBUTE, itemDTO.getDataIndex(),
-                DATA_TREEKEY_ATTRIBUTE, treeKey,
-                DATA_LEVEL_ATTRIBUTE, dataLvl,
-                DATA_SUBLEVELS_ATTRIBUTE, !itemDTO.getChildren().isEmpty(),
-                itemDTO.getTitle()).concat("\n")
-                : String.format("<li>%s</li>", itemDTO.getTitle()).concat("\n");
+    private String getBuildContentAloneMenuItem(MenuItemDTO itemDTO, Integer dataLvl,
+                                                String treeKey, List<String> wrappers, List<String> attributes) {
 
-        contentMenuItem = wrapElement(itemDTO, wrappers, contentMenuItem);
+        String itemHtmlContent = "";
+        for (String attribute : attributes) { //move to alone method
+            switch (attribute.trim()) {
+                case ATTRIBUTE_CLASS:
+                    itemHtmlContent += addBuildLiByClassAttr(itemHtmlContent, dataLvl, false);
+                    break;
+                case ATTRIBUTE_DATA:
+                    itemHtmlContent += addBuildLiByDataAttr(itemHtmlContent, itemDTO, treeKey, false, dataLvl);
+                    break;
+            }
+        }
 
-        return contentMenuItem;
+        final String resultItemHtml = attributes.isEmpty()
+                ? String.format("<li>%s", itemDTO.getTitle())
+                : itemHtmlContent.concat(">");
+
+        return wrapElement(itemDTO, wrappers, resultItemHtml).concat(LI_TAG_CLOSE);
     }
 
     private void addStartBuildUlByClassAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
@@ -210,5 +194,43 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         } else {
             buildContentMenu.append(String.format(" data-menu-index=\"%d\" data-doc-id=\"%d\"", menuIndex, docId));
         }
+    }
+
+    private String addBuildLiByDataAttr(String contentItem, MenuItemDTO menuItemDTO,
+                                        String treeKey, boolean hasChildren, Integer dataLevel) {
+
+        String buildContentItem = "";
+        if (contentItem.isEmpty()) {
+            buildContentItem = String.format(
+                    menuHtmlPatterns.getPatternLiDataAttr(),
+                    DATA_META_ID_ATTRIBUTE, menuItemDTO.getDocumentId(),
+                    DATA_INDEX_ATTRIBUTE, menuItemDTO.getDataIndex(),
+                    DATA_TREEKEY_ATTRIBUTE, treeKey,
+                    DATA_LEVEL_ATTRIBUTE, dataLevel,
+                    DATA_SUBLEVELS_ATTRIBUTE, hasChildren);
+        } else {
+            buildContentItem += (String.format(
+                    menuHtmlPatterns.getPatternSimpleLiDataAttr(),
+                    DATA_META_ID_ATTRIBUTE, menuItemDTO.getDocumentId(),
+                    DATA_INDEX_ATTRIBUTE, menuItemDTO.getDataIndex(),
+                    DATA_TREEKEY_ATTRIBUTE, treeKey,
+                    DATA_LEVEL_ATTRIBUTE, dataLevel,
+                    DATA_SUBLEVELS_ATTRIBUTE, hasChildren));
+        }
+        return buildContentItem;
+    }
+
+    private String addBuildLiByClassAttr(String contentItem, int subLvl, boolean hasChildren) {
+        final String className = hasChildren ? BRANCH : LEAF;
+        String buildContentItem = "";
+        if (contentItem.isEmpty()) {
+            buildContentItem = (String.format(menuHtmlPatterns.getPatternLiClassAttr(),
+                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className));
+        } else {
+            buildContentItem += (String.format(menuHtmlPatterns.getPatternSimpleClassAttr(),
+                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className));
+        }
+
+        return buildContentItem;
     }
 }
