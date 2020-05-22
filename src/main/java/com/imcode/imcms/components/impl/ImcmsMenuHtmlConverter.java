@@ -174,6 +174,10 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return wrapElement(itemDTO, wrappers, resultItemHtml).concat(LI_TAG_CLOSE);
     }
 
+    private String getBuiltUlHtml() {
+        return null;
+    }
+
     private void addStartBuildUlByClassAttr(StringBuilder buildContentMenu, int menuIndex, int docId) {
         if (buildContentMenu.toString().isEmpty()) {
             buildContentMenu.append(String.format("<ul class=\"%s %s %s %s--%d-%d\"",
