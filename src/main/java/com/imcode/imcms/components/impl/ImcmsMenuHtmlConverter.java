@@ -71,7 +71,8 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
             if (!currentParentItem.getChildren().isEmpty()) {
-                buildChildrenMenuItemHtml(buildContentMenu.append(getBuiltUlWithClassHtml(2, listAttr)), currentParentItem.getChildren(),
+                final String ulData = getBuiltUlWithClassHtml(2, listAttr);
+                buildChildrenMenuItemHtml(buildContentMenu.append(ulData), currentParentItem.getChildren(),
                         dataTreeKey, 2, wrappers, listAttr);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             }
@@ -135,7 +136,8 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
             if (hasChildren) {
                 contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
-                buildChildrenMenuItemHtml(contentMenu.append(getBuiltUlWithClassHtml(dataLvl + 1, attributes)), currentMenuItem.getChildren(),
+                final String ulData = getBuiltUlWithClassHtml(dataLvl + 1, attributes);
+                buildChildrenMenuItemHtml(contentMenu.append(ulData), currentMenuItem.getChildren(),
                         treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
             } else {
                 contentMenu.append(getBuildAloneMenuItemHtml(currentMenuItem, dataLvl,
