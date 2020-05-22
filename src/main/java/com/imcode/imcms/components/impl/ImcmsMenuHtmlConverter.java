@@ -90,16 +90,8 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         String itemParentHtmlContent = "";
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
-        for (String attribute : attributes) {
-            switch (attribute.trim()) {
-                case ATTRIBUTE_CLASS:
-                    itemParentHtmlContent += addBuildLiByClassAttr(itemParentHtmlContent, dataLevel, hasChildren);
-                    break;
-                case ATTRIBUTE_DATA:
-                    itemParentHtmlContent += addBuildLiByDataAttr(itemParentHtmlContent, parentMenuItem, treeKey, hasChildren, dataLevel);
-                    break;
-            }
-        }
+        itemParentHtmlContent = getLiItemHtmlWithAttributes(itemParentHtmlContent, parentMenuItem,
+                treeKey, hasChildren, dataLevel, attributes, null, true);
 
         final String htmlDataItem = attributes.isEmpty()
                 ? String.format("<li>%s", parentMenuItem.getTitle())
