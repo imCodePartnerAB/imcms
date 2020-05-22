@@ -71,7 +71,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
             if (!currentParentItem.getChildren().isEmpty()) {
-                buildChildrenContentMenuItem(buildContentMenu.append(getBuiltUlWithClassHtml(2, listAttr)), currentParentItem.getChildren(),
+                buildChildrenMenuItemHtml(buildContentMenu.append(getBuiltUlWithClassHtml(2, listAttr)), currentParentItem.getChildren(),
                         dataTreeKey, 2, wrappers, listAttr);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             }
@@ -108,19 +108,19 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
-                    liItem += addBuildLiByClassAttr(liItem, dataLvl, hasChildren);
+                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren);
                     break;
                 case ATTRIBUTE_DATA:
-                    liItem += addBuildLiByDataAttr(liItem, itemDTO, dataTreeKey, hasChildren, dataLvl);
+                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, dataTreeKey, hasChildren, dataLvl);
                     break;
             }
         }
         return liItem;
     }
 
-    private void buildChildrenContentMenuItem(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
-                                              String treeKey, Integer dataLvl,
-                                              List<String> wrappers, List<String> attributes) {
+    private void buildChildrenMenuItemHtml(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
+                                           String treeKey, Integer dataLvl,
+                                           List<String> wrappers, List<String> attributes) {
 
         for (int i = 0; i < childrenItems.size(); i++) {
             final MenuItemDTO currentMenuItem = childrenItems.get(i);
@@ -135,19 +135,19 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
             if (hasChildren) {
                 contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
-                buildChildrenContentMenuItem(contentMenu.append(getBuiltUlWithClassHtml(dataLvl + 1, attributes)), currentMenuItem.getChildren(),
+                buildChildrenMenuItemHtml(contentMenu.append(getBuiltUlWithClassHtml(dataLvl + 1, attributes)), currentMenuItem.getChildren(),
                         treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
             } else {
-                contentMenu.append(getBuildContentAloneMenuItem(currentMenuItem, dataLvl,
+                contentMenu.append(getBuildAloneMenuItemHtml(currentMenuItem, dataLvl,
                         treeKey, wrappers, attributes, i));
             }
         }
         contentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
     }
 
-    private String getBuildContentAloneMenuItem(MenuItemDTO itemDTO, Integer dataLvl,
-                                                String treeKey, List<String> wrappers,
-                                                List<String> attributes, Integer indexCount) {
+    private String getBuildAloneMenuItemHtml(MenuItemDTO itemDTO, Integer dataLvl,
+                                             String treeKey, List<String> wrappers,
+                                             List<String> attributes, Integer indexCount) {
 
         String itemHtmlContent = "";
         itemHtmlContent = getLiItemHtmlWithAttributes(
@@ -190,8 +190,8 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         }
     }
 
-    private String addBuildLiByDataAttr(String contentItem, MenuItemDTO menuItemDTO,
-                                        String treeKey, boolean hasChildren, Integer dataLevel) {
+    private String getBuiltLiByDataAttrHtml(String contentItem, MenuItemDTO menuItemDTO,
+                                            String treeKey, boolean hasChildren, Integer dataLevel) {
 
         String buildContentItem = "";
         if (contentItem.isEmpty()) {
@@ -214,7 +214,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return buildContentItem;
     }
 
-    private String addBuildLiByClassAttr(String contentItem, int subLvl, boolean hasChildren) {
+    private String getBuiltLiByClassAttrHtml(String contentItem, int subLvl, boolean hasChildren) {
         final String className = hasChildren ? BRANCH : LEAF;
         String buildContentItem = "";
         if (contentItem.isEmpty()) {
