@@ -82,11 +82,6 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return buildContentMenu.toString();
     }
 
-    @Override
-    public String convertToMenuHtml(int docId, int menuIndex) {
-        return null;
-    }
-
     private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, List<String> attributes,
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         String itemParentHtmlContent = "";

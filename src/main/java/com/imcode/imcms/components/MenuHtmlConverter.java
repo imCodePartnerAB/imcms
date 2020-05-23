@@ -8,6 +8,4 @@ public interface MenuHtmlConverter {
 
     String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
                              String attributes, String treeKey, String wrap);
-
-    String convertToMenuHtml(int docId, int menuIndex);
 }
