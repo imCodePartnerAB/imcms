@@ -19,6 +19,7 @@ public interface MenuElementHtmlWrapper {
     String IMCMS_MENU_ITEM = "imcms-menu-item";
     String LVL_ELEMENT = "lvl";
     String ATTRIBUTE_DATA = "data";
+    String ATTRIBUTE_WCAG = "wcag";
     String UL_TAG_CLOSE = "</ul>";
     String LI_TAG_CLOSE = "</li>";
     String LI_TAG_OPEN = "<li>";
@@ -31,5 +32,7 @@ public interface MenuElementHtmlWrapper {
 
     String getTagDataElement(String content);
 
-    String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO);
+    String getWrappedContent(String content, List<String> wrappers,
+                             MenuItemDTO itemDTO, List<String> attributes,
+                             boolean hasChildren, int docId);
 }
