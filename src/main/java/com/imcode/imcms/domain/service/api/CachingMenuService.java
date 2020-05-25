@@ -66,24 +66,25 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public String getVisibleMenuAsHtml(int docId, int menuIndex, String language, boolean nested, String attributes, String treeKey, String wrap) {
-        return defaultMenuService.getVisibleMenuAsHtml(
-                docId, menuIndex, language, nested, attributes, treeKey, wrap);
+    public String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
+                                       boolean nested, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, language, nested, attributes, treeKey, wrap);
     }
 
     @Override
-    public String getPublicMenuAsHtml(int docId, int menuIndex, String language, boolean nested, String attributes, String treeKey, String wrap) {
-        return null;
+    public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
+                                      boolean nested, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, nested, attributes, treeKey, wrap);
     }
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex) {
-        return null;
+        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex);
     }
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex) {
-        return null;
+        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex);
     }
 
     @Override
@@ -130,10 +131,5 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
                                                            final String typeSort,
                                                            final List<MenuItemDTO> menuItems) {
         return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort, menuItems);
-    }
-
-    @Override
-    public List<String> getMenuItemsAsHtmlByData(String dataClass) {
-        return null;
     }
 }
