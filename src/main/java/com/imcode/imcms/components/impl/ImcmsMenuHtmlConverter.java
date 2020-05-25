@@ -66,15 +66,18 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
         for (int i = 0; i < menuItems.size(); i++) {
             final MenuItemDTO currentParentItem = menuItems.get(i);
-            String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
+            final String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
+            final boolean hasChildren = !currentParentItem.getChildren().isEmpty();
 
             buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
-            if (!currentParentItem.getChildren().isEmpty()) {
+            if (hasChildren) {
                 final String ulData = getBuiltUlWithClassHtml(2, listAttr);
                 buildChildrenMenuItemHtml(buildContentMenu.append(ulData), currentParentItem.getChildren(),
                         dataTreeKey, 2, wrappers, listAttr);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
+            } else {
+                buildContentMenu.append(LI_TAG_CLOSE);//close current parent item
             }
         }
         buildContentMenu.append(UL_TAG_CLOSE);//main ul tag closed
@@ -90,7 +93,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 treeKey, hasChildren, dataLevel, attributes);
 
         final String htmlDataItem = attributes.isEmpty()
-                ? String.format("<li>%s", parentMenuItem.getTitle())
+                ? LI_TAG_OPEN
                 : itemParentHtmlContent.concat(">");
 
         return menuElementHtmlWrapper.getWrappedContent(htmlDataItem, wrappers, parentMenuItem);
@@ -126,7 +129,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                         liItem, currentMenuItem, dataTreeKey, hasChildren, dataLvl, attributes);
 
                 final String resultHtmlItem = attributes.isEmpty()
-                        ? String.format("<li>%s", currentMenuItem.getTitle())
+                        ? LI_TAG_OPEN
                         : liItem.concat(">");
 
 
@@ -151,7 +154,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 itemHtmlContent, itemDTO, treeKey, false, dataLvl, attributes);
 
         final String resultItemHtml = attributes.isEmpty()
-                ? String.format("<li>%s", itemDTO.getTitle())
+                ? LI_TAG_OPEN
                 : itemHtmlContent.concat(">");
 
         return menuElementHtmlWrapper.getWrappedContent(resultItemHtml, wrappers, itemDTO).concat(LI_TAG_CLOSE);
