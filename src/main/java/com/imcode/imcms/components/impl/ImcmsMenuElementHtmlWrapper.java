@@ -1,6 +1,7 @@
 package com.imcode.imcms.components.impl;
 
 import com.imcode.imcms.components.MenuElementHtmlWrapper;
+import com.imcode.imcms.components.patterns.ImcmsMenuHtmlPatterns;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
 
     private final Pattern patternTagData = Pattern.compile(TAG_DATA_REGEX);
     private final Pattern patternGetTitle = Pattern.compile(CONTENT_TITLE_REGEX);
+
+    private final ImcmsMenuHtmlPatterns menuHtmlPatterns = new ImcmsMenuHtmlPatterns();
 
     @Override
     public String getTitleFromSingleTag(String elementContent) {
@@ -43,7 +46,10 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
     }
 
     @Override
-    public String getWrappedContent(String tagData, List<String> wrappers, MenuItemDTO itemDTO) {
+    public String getWrappedContent(String tagData, List<String> wrappers,
+                                    MenuItemDTO itemDTO, List<String> attrs,
+                                    boolean hasChildren, int docId) {
+
         final StringBuilder wrapContentBuilder = new StringBuilder();
         String wrappedElement = "";
         final String title = itemDTO.getTitle();
@@ -60,7 +66,29 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
 
         return wrappers.isEmpty()
                 ? tagData.concat(title)
-                : String.format("%s <%s href=\"/%d\"> %s </%s>",
-                tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
+                : getBuiltContentData(hasChildren, attrs, wrappedElement, itemDTO, tagData, docId);
+    }
+
+    public String getBuiltContentData(boolean hasChildren,
+                                      List<String> attrs, String wrappedElement,
+                                      MenuItemDTO itemDTO, String tagData, int docId) {
+        String resultContentDataHtml;
+        final boolean attrWcagExists = attrs.contains(ATTRIBUTE_WCAG);
+
+        if (hasChildren && attrWcagExists && itemDTO.getDocumentId() == docId) {
+            resultContentDataHtml = String.format("%s " + menuHtmlPatterns.getATagLvlPageAttrPattern() + " %s </%s>",
+                    tagData, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
+
+        } else if (attrWcagExists && hasChildren) {
+            resultContentDataHtml = String.format("%s " + menuHtmlPatterns.getATagLvlAttributePattern() + " %s </%s>",
+                    tagData, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
+        } else if (attrWcagExists) {
+            resultContentDataHtml = String.format("%s " + menuHtmlPatterns.getATagPageAttributePattern() + " %s </%s>",
+                    tagData, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
+        } else {
+            resultContentDataHtml = String.format("%s <%s href=\"/%d\"> %s </%s>",
+                    tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
+        }
+        return resultContentDataHtml;
     }
 }
