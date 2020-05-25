@@ -43,11 +43,10 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
     }
 
     @Override
-    public String getWrappedContent(String content, List<String> wrappers, MenuItemDTO itemDTO) {
+    public String getWrappedContent(String tagData, List<String> wrappers, MenuItemDTO itemDTO) {
         final StringBuilder wrapContentBuilder = new StringBuilder();
         String wrappedElement = "";
         final String title = itemDTO.getTitle();
-        final String tagData = getTagDataElement(content);//<li..>
         for (String wrap : wrappers) {
             if (!wrapContentBuilder.toString().isEmpty()) {
                 wrappedElement = String.format("<%s>".concat(wrapContentBuilder.toString()).concat("</%s>"),
@@ -60,7 +59,7 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
         }
 
         return wrappers.isEmpty()
-                ? content.concat(title)
+                ? tagData.concat(title)
                 : String.format("%s <%s href=\"/%d\"> %s </%s>",
                 tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
     }
