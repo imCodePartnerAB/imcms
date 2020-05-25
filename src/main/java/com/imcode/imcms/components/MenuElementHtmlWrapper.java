@@ -21,6 +21,7 @@ public interface MenuElementHtmlWrapper {
     String ATTRIBUTE_DATA = "data";
     String UL_TAG_CLOSE = "</ul>";
     String LI_TAG_CLOSE = "</li>";
+    String LI_TAG_OPEN = "<li>";
     String UL_TAG_OPEN = "<ul>";
     String LINK_A_TAG = "a";
 
