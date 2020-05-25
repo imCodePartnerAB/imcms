@@ -15,4 +15,6 @@ public final class ImcmsMenuHtmlPatterns {
     private final String patternSimpleLiDataAttr = " %s=\"%d\" %s=\"%d\" %s=\"%s\" %s=\"%d\" %s=\"%s\"";
     private final String patternLiClassAttr = "<li class=\"%s %s %s\"";
     private final String patternSimpleClassAttr = " class=\"%s %s %s\"";
+    private final String aTagLvlAttributePattern = "<a aria-haspopup=\"true\" aria-expanded=\"true\">";
+    private final String aTagPageAttributePattern = "<a aria-current=\"page\">";
 }
