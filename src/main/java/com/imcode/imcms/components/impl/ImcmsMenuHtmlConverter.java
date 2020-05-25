@@ -33,7 +33,9 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         final StringBuilder buildContentMenu = new StringBuilder();
         final List<String> listAttr = StringUtils.isBlank(attributes)
                 ? Collections.EMPTY_LIST
-                : Arrays.asList(attributes.split(","));
+                : Arrays.stream(attributes.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
 
         for (String attribute : listAttr) {
             switch (attribute.trim()) {
@@ -69,12 +71,12 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             final String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
             final boolean hasChildren = !currentParentItem.getChildren().isEmpty();
 
-            buildContentMenu.append(getBuiltMainParentMenuItem(currentParentItem, listAttr, dataTreeKey, 1, wrappers));
+            buildContentMenu.append(getBuiltMainParentMenuItem(docId, currentParentItem, listAttr, dataTreeKey, 1, wrappers));
 
             if (hasChildren) {
                 final String ulData = getBuiltUlWithClassHtml(2, listAttr);
                 buildChildrenMenuItemHtml(buildContentMenu.append(ulData), currentParentItem.getChildren(),
-                        dataTreeKey, 2, wrappers, listAttr);
+                        dataTreeKey, 2, wrappers, listAttr, docId);
                 buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             } else {
                 buildContentMenu.append(LI_TAG_CLOSE);//close current parent item
@@ -85,31 +87,36 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return buildContentMenu.toString();
     }
 
-    private String getBuiltMainParentMenuItem(MenuItemDTO parentMenuItem, List<String> attributes,
+    private String getBuiltMainParentMenuItem(int docId, MenuItemDTO parentMenuItem, List<String> attributes,
                                               String treeKey, Integer dataLevel, List<String> wrappers) {
         String itemParentHtmlContent = "";
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
         itemParentHtmlContent = getLiItemHtmlWithAttributes(itemParentHtmlContent, parentMenuItem,
-                treeKey, hasChildren, dataLevel, attributes);
+                treeKey, hasChildren, dataLevel, attributes, docId);
 
         final String htmlDataItem = attributes.isEmpty()
                 ? LI_TAG_OPEN
                 : itemParentHtmlContent.concat(">");
 
-        return menuElementHtmlWrapper.getWrappedContent(htmlDataItem, wrappers, parentMenuItem);
+        return menuElementHtmlWrapper.getWrappedContent(htmlDataItem, wrappers, parentMenuItem, attributes, hasChildren, docId);
     }
 
     private String getLiItemHtmlWithAttributes(String liItem, MenuItemDTO itemDTO,
                                                String treeKey, boolean hasChildren,
-                                               Integer dataLvl, List<String> attributes) {
+                                               Integer dataLvl, List<String> attributes, int docId) {
+        final boolean attrWcagExists = attributes.contains(ATTRIBUTE_WCAG);
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
-                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren);
+                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren, attrWcagExists, docId, itemDTO);
                     break;
                 case ATTRIBUTE_DATA:
                     liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl);
                     break;
+                case ATTRIBUTE_WCAG:
+                    if (attributes.size() == 1) { //need check for this pattern! else way will add above;
+                        liItem = menuHtmlPatterns.getLiTagSelectedPagePattern();
+                    }
             }
         }
         return liItem;
@@ -117,7 +124,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private void buildChildrenMenuItemHtml(StringBuilder contentMenu, List<MenuItemDTO> childrenItems,
                                            String treeKey, Integer dataLvl,
-                                           List<String> wrappers, List<String> attributes) {
+                                           List<String> wrappers, List<String> attributes, int docId) {
 
         for (int i = 0; i < childrenItems.size(); i++) {
             final MenuItemDTO currentMenuItem = childrenItems.get(i);
@@ -126,20 +133,21 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             if (hasChildren) {
                 String liItem = "";
                 liItem = getLiItemHtmlWithAttributes(
-                        liItem, currentMenuItem, dataTreeKey, hasChildren, dataLvl, attributes);
+                        liItem, currentMenuItem, dataTreeKey, hasChildren, dataLvl, attributes, docId);
 
                 final String resultHtmlItem = attributes.isEmpty()
                         ? LI_TAG_OPEN
                         : liItem.concat(">");
 
 
-                contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
+                contentMenu.append(menuElementHtmlWrapper.getWrappedContent(
+                        resultHtmlItem, wrappers, currentMenuItem, attributes, hasChildren, docId));
                 final String ulData = getBuiltUlWithClassHtml(dataLvl + 1, attributes);
                 buildChildrenMenuItemHtml(contentMenu.append(ulData), currentMenuItem.getChildren(),
-                        dataTreeKey, dataLvl + 1, wrappers, attributes);
+                        dataTreeKey, dataLvl + 1, wrappers, attributes, docId);
             } else {
                 contentMenu.append(getBuildAloneMenuItemHtml(currentMenuItem, dataLvl,
-                        dataTreeKey, wrappers, attributes));
+                        dataTreeKey, wrappers, attributes, docId));
             }
         }
         contentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
@@ -147,17 +155,18 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private String getBuildAloneMenuItemHtml(MenuItemDTO itemDTO, Integer dataLvl,
                                              String treeKey, List<String> wrappers,
-                                             List<String> attributes) {
+                                             List<String> attributes, int docId) {
 
         String itemHtmlContent = "";
         itemHtmlContent = getLiItemHtmlWithAttributes(
-                itemHtmlContent, itemDTO, treeKey, false, dataLvl, attributes);
+                itemHtmlContent, itemDTO, treeKey, false, dataLvl, attributes, docId);
 
         final String resultItemHtml = attributes.isEmpty()
                 ? LI_TAG_OPEN
                 : itemHtmlContent.concat(">");
 
-        return menuElementHtmlWrapper.getWrappedContent(resultItemHtml, wrappers, itemDTO).concat(LI_TAG_CLOSE);
+        return menuElementHtmlWrapper.getWrappedContent(
+                resultItemHtml, wrappers, itemDTO, attributes, false, docId).concat(LI_TAG_CLOSE);
     }
 
     private String getBuiltUlWithClassHtml(Integer lvl, List<String> attrs) {
@@ -214,15 +223,18 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         return buildContentItem;
     }
 
-    private String getBuiltLiByClassAttrHtml(String contentItem, int subLvl, boolean hasChildren) {
+    private String getBuiltLiByClassAttrHtml(String contentItem, int subLvl,
+                                             boolean hasChildren, boolean attrWcagExists,
+                                             int docId, MenuItemDTO itemDTO) {
         final String className = hasChildren ? BRANCH : LEAF;
+        final String selectedPrefix = attrWcagExists ? itemDTO.getDocumentId() == docId ? "selected" : "" : "";
         String buildContentItem = "";
         if (contentItem.isEmpty()) {
             buildContentItem = (String.format(menuHtmlPatterns.getPatternLiClassAttr(),
-                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className));
+                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className, selectedPrefix));
         } else {
             buildContentItem += (String.format(menuHtmlPatterns.getPatternSimpleClassAttr(),
-                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className));
+                    IMCMS_MENU_ITEM, LVL_ELEMENT + subLvl, className, selectedPrefix));
         }
 
         return buildContentItem;
