@@ -87,7 +87,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         String itemParentHtmlContent = "";
         final boolean hasChildren = !parentMenuItem.getChildren().isEmpty();
         itemParentHtmlContent = getLiItemHtmlWithAttributes(itemParentHtmlContent, parentMenuItem,
-                treeKey, hasChildren, dataLevel, attributes, null, true);
+                treeKey, hasChildren, dataLevel, attributes);
 
         final String htmlDataItem = attributes.isEmpty()
                 ? String.format("<li>%s", parentMenuItem.getTitle())
@@ -98,16 +98,14 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private String getLiItemHtmlWithAttributes(String liItem, MenuItemDTO itemDTO,
                                                String treeKey, boolean hasChildren,
-                                               Integer dataLvl, List<String> attributes,
-                                               Integer indexCount, boolean useCurrentTreeKey) {
-        final String dataTreeKey = useCurrentTreeKey ? treeKey : treeKey + "." + ((indexCount + 1) * 10);
+                                               Integer dataLvl, List<String> attributes) {
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
                     liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren);
                     break;
                 case ATTRIBUTE_DATA:
-                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, dataTreeKey, hasChildren, dataLvl);
+                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl);
                     break;
             }
         }
@@ -120,23 +118,25 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
         for (int i = 0; i < childrenItems.size(); i++) {
             final MenuItemDTO currentMenuItem = childrenItems.get(i);
-            boolean hasChildren = !currentMenuItem.getChildren().isEmpty();
-            String liItem = "";
-            liItem = getLiItemHtmlWithAttributes(
-                    liItem, currentMenuItem, treeKey, hasChildren, dataLvl, attributes, i, true);
-
-            final String resultHtmlItem = attributes.isEmpty()
-                    ? String.format("<li>%s", currentMenuItem.getTitle())
-                    : liItem.concat(">");
-
+            final boolean hasChildren = !currentMenuItem.getChildren().isEmpty();
+            final String dataTreeKey = treeKey + "." + ((i + 1) * 10);
             if (hasChildren) {
+                String liItem = "";
+                liItem = getLiItemHtmlWithAttributes(
+                        liItem, currentMenuItem, dataTreeKey, hasChildren, dataLvl, attributes);
+
+                final String resultHtmlItem = attributes.isEmpty()
+                        ? String.format("<li>%s", currentMenuItem.getTitle())
+                        : liItem.concat(">");
+
+
                 contentMenu.append(menuElementHtmlWrapper.getWrappedContent(resultHtmlItem, wrappers, currentMenuItem));
                 final String ulData = getBuiltUlWithClassHtml(dataLvl + 1, attributes);
                 buildChildrenMenuItemHtml(contentMenu.append(ulData), currentMenuItem.getChildren(),
-                        treeKey + "." + ((i + 1) * 10), dataLvl + 1, wrappers, attributes);
+                        dataTreeKey, dataLvl + 1, wrappers, attributes);
             } else {
                 contentMenu.append(getBuildAloneMenuItemHtml(currentMenuItem, dataLvl,
-                        treeKey, wrappers, attributes, i));
+                        dataTreeKey, wrappers, attributes));
             }
         }
         contentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
@@ -144,11 +144,11 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private String getBuildAloneMenuItemHtml(MenuItemDTO itemDTO, Integer dataLvl,
                                              String treeKey, List<String> wrappers,
-                                             List<String> attributes, Integer indexCount) {
+                                             List<String> attributes) {
 
         String itemHtmlContent = "";
         itemHtmlContent = getLiItemHtmlWithAttributes(
-                itemHtmlContent, itemDTO, treeKey, false, dataLvl, attributes, indexCount, false);
+                itemHtmlContent, itemDTO, treeKey, false, dataLvl, attributes);
 
         final String resultItemHtml = attributes.isEmpty()
                 ? String.format("<li>%s", itemDTO.getTitle())
