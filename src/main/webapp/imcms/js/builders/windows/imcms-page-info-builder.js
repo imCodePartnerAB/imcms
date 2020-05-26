@@ -66,7 +66,7 @@ define("imcms-page-info-builder",
                     }
 
                     if (onDocumentSaved) {
-                        onDocumentSaved(savedDoc);
+                        onDocumentSaved(savedDoc, true);
                     }
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));
