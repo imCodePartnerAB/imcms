@@ -141,7 +141,7 @@ define("imcms-document-editor-builder",
                 e.preventDefault();
                 docTypeSelectBuilder.build(type => {
                     docProfileSelectBuilder.build(parentDocId => {
-                        pageInfoBuilder.build(null, addDocumentToList(parentDocId, true), type, parentDocId);
+                        pageInfoBuilder.build(null, addDocumentToList, type, parentDocId);
                     });
                 });
             }
