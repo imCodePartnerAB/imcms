@@ -550,12 +550,12 @@ define("imcms-document-editor-builder",
             moveFrame(event);
         });
 
-        function refreshDocumentInList(document) {
+        function refreshDocumentInList(document, savedFlag) {
             if ($documentsList === undefined || null === document) return;
             const $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
 
             if ($oldDocumentElement.length === 1) {
-                const $newDocumentElement = buildDocument(document, currentEditorOptions);
+                const $newDocumentElement = buildDocument(document, currentEditorOptions, savedFlag);
                 $oldDocumentElement.replaceWith($newDocumentElement);
             }
         }
@@ -790,8 +790,7 @@ define("imcms-document-editor-builder",
             if (typeSort !== TREE_SORT && insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
                 dataInput.attr("data-insert-place", "");
-            }
-            else {
+            } else {
                 if (insertedParent.parent !== null) {
                     dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
                     dataInput.attr("data-insert-place", insertedParent.status);
@@ -888,14 +887,14 @@ define("imcms-document-editor-builder",
 
         function getDocumentVersionTexts(hasNewerVersion) {
             return hasNewerVersion
-            ? { tooltip: texts.version.tooltip.hasNewerVersion }
-            : { tooltip: texts.version.tooltip.noWorkingVersion }
+                ? {tooltip: texts.version.tooltip.hasNewerVersion}
+                : {tooltip: texts.version.tooltip.noWorkingVersion}
         }
 
         function getIdTooltipText(id, date, user) {
             return `${id}. ${texts.id.tooltip.createdOn} ${date} ${texts.by} ${user}`
         }
-        
+
         function getModifiedDateTooltipText(date, user) {
             return `${texts.modified.tooltip.lastChangedOn} ${date} ${texts.by} ${user}`
         }
@@ -905,7 +904,7 @@ define("imcms-document-editor-builder",
         }
 
         /** @namespace document.documentStatus */
-        function buildDocItem(document, opts) {
+        function buildDocItem(document, opts, savedFlag) {
 
             const $docItemId = components.texts.titleText("<a>", document.id, {
                 href: "/" + document.id,
@@ -918,13 +917,25 @@ define("imcms-document-editor-builder",
                 {placement: 'right'}
             );
 
-            const title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
+            let title;
+            if (savedFlag) {
+                document.commonContents.filter(content => content.enabled)
+                    .forEach(content => {
+                        if (Imcms.userLanguage === content.language.code) {
+                            title = content.headline;
+                        } else {
+                            title = texts.notShownInSelectedLang;
+                        }
+                    });
+            } else {
+                title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
+            }
             const $docItemTitle = components.texts.titleText("<a>", title, {
                 href: "/" + document.id,
                 class: "imcms-flex--flex-3",
             });
             $docItemTitle.modifiers = ["title"];
-            !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
+            if (!savedFlag) !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
@@ -933,29 +944,52 @@ define("imcms-document-editor-builder",
             $docItemAlias.modifiers = ["alias"];
             document.alias && components.overlays.defaultTooltip($docItemAlias, "/" + document.alias);
 
-            const $docItemModified = components.texts.titleText("<div>", document.modified, {
+            let docModifiedDate;
+            let docModifiedBy;
+            if (savedFlag) {
+                docModifiedDate = (document.modified.date && document.modified.time)
+                    ? `${document.modified.date} ${document.modified.time}`
+                    : "";
+                docModifiedBy = document.modified.by;
+            } else {
+                docModifiedDate = document.modified;
+                docModifiedBy = document.modifiedBy;
+            }
+            const $docItemModified = components.texts.titleText("<div>", docModifiedDate, {
                 class: "imcms-grid-coll-15",
             });
             $docItemModified.modifiers = ["date", "modifiedDate"];
-            if (document.modified) {
+            if (docModifiedDate) {
                 components.overlays.defaultTooltip(
                     $docItemModified,
-                    getModifiedDateTooltipText(document.modified, document.modifiedBy)
+                    getModifiedDateTooltipText(docModifiedDate, docModifiedBy)
                 );
             }
 
-            const $docItemPublished = components.texts.titleText("<div>", document.published, {
+            let docPublishedDate;
+            let docPublishedBy;
+            if (savedFlag) {
+                docPublishedDate = (document.published.date && document.published.time)
+                    ? `${document.published.date} ${document.published.time}`
+                    : "";
+                docPublishedBy = document.published.by;
+            } else {
+                docPublishedDate = document.published;
+                docPublishedBy = document.publishedBy;
+            }
+            const $docItemPublished = components.texts.titleText("<div>", docPublishedDate, {
                 class: "imcms-grid-coll-15",
             });
             $docItemPublished.modifiers = ["date", "publishedDate"];
-            if (document.published) {
+            if (docPublishedDate) {
                 components.overlays.defaultTooltip(
                     $docItemPublished,
-                    getPublishedDateTooltipText(document.published, document.publishedBy)
+                    getPublishedDateTooltipText(docPublishedDate, docPublishedBy)
                 );
             }
 
-            const $star = document.currentVersion === WORKING_VERSION
+            const currentVersionDoc = savedFlag ? document.currentVersion.id : document.currentVersion;
+            const $star = currentVersionDoc === WORKING_VERSION
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
 
@@ -963,7 +997,7 @@ define("imcms-document-editor-builder",
             $currentVersion.modifiers = ['currentVersion'];
             components.overlays.defaultTooltip(
                 $currentVersion,
-                getDocumentVersionTexts(document.currentVersion === WORKING_VERSION).tooltip
+                getDocumentVersionTexts(currentVersionDoc === WORKING_VERSION).tooltip
             );
 
             const $docItemType = components.texts.titleText("<div>", document.type, {
@@ -971,7 +1005,7 @@ define("imcms-document-editor-builder",
             });
             $docItemType.modifiers = ["type"];
 
-            const docStatusTexts = getDocumentStatusTexts(document.documentStatus, document.published);
+            const docStatusTexts = getDocumentStatusTexts(document.documentStatus, docPublishedDate);
             const $docStatus = components.texts.titleText("<div>", docStatusTexts.title, {
                 class: "imcms-grid-coll-17",
             });
@@ -1020,11 +1054,11 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildDocumentItemContainer(document, opts, isUsed) {
+        function buildDocumentItemContainer(document, opts, isUsed, savedFlag) {
             return new BEM({
                 block: "imcms-document-items",
                 elements: [{
-                    "document-item": buildDocItem(document, opts),
+                    "document-item": buildDocItem(document, opts, savedFlag),
                     modifiers: [document.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
@@ -1040,8 +1074,8 @@ define("imcms-document-editor-builder",
             }
         });
 
-        function buildDocument(document, opts) {
-            const $documentItem = buildDocumentItemContainer(document, opts, checkByDocIdInMenuEditor(document.id));
+        function buildDocument(document, opts, savedFlag) {
+            const $documentItem = buildDocumentItemContainer(document, opts, checkByDocIdInMenuEditor(document.id), savedFlag);
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
