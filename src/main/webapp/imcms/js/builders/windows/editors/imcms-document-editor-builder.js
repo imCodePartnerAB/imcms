@@ -114,7 +114,7 @@ define("imcms-document-editor-builder",
                     incrementDocumentNumber(documentList.length);
                     $documentsList.empty();
                     documentList.forEach(document => {
-                        $documentsList.append(buildDocument(document, currentEditorOptions));
+                        $documentsList.append(buildDocument(document, currentEditorOptions, false));
                     });
                 })
                 .fail(() => {
@@ -126,8 +126,8 @@ define("imcms-document-editor-builder",
             searchQueryObj[field] = value;
         }
 
-        function addDocumentToList(document) {
-            const $document = buildDocument(document, currentEditorOptions);
+        function addDocumentToList(document, savedFlag) {
+            const $document = buildDocument(document, currentEditorOptions, savedFlag);
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
 
             incrementDocumentNumber(1);
@@ -141,7 +141,7 @@ define("imcms-document-editor-builder",
                 e.preventDefault();
                 docTypeSelectBuilder.build(type => {
                     docProfileSelectBuilder.build(parentDocId => {
-                        pageInfoBuilder.build(null, addDocumentToList, type, parentDocId);
+                        pageInfoBuilder.build(null, addDocumentToList(parentDocId, true), type, parentDocId);
                     });
                 });
             }
@@ -919,14 +919,15 @@ define("imcms-document-editor-builder",
 
             let title;
             if (savedFlag) {
-                document.commonContents.filter(content => content.enabled)
-                    .forEach(content => {
-                        if (Imcms.userLanguage === content.language.code) {
-                            title = content.headline;
-                        } else {
-                            title = texts.notShownInSelectedLang;
-                        }
-                    });
+                const content = document.commonContents.filter(content => content.enabled)
+                    .filter(enableContent => enableContent.language.code === Imcms.language.code)
+                    .shift();
+
+                if (content) {
+                    title = content.headline;
+                } else {
+                    title = texts.notShownInSelectedLang;
+                }
             } else {
                 title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
             }
@@ -947,10 +948,10 @@ define("imcms-document-editor-builder",
             let docModifiedDate;
             let docModifiedBy;
             if (savedFlag) {
-                docModifiedDate = (document.modified.date && document.modified.time)
-                    ? `${document.modified.date} ${document.modified.time}`
+                docModifiedDate = (document.created.date && document.created.time)
+                    ? `${document.created.date} ${document.created.time}`
                     : "";
-                docModifiedBy = document.modified.by;
+                docModifiedBy = document.created.by;
             } else {
                 docModifiedDate = document.modified;
                 docModifiedBy = document.modifiedBy;
@@ -1080,7 +1081,7 @@ define("imcms-document-editor-builder",
         }
 
         function buildDocumentList(documentList) {
-            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id)));
+            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id), false));
 
             return new BEM({
                 block: "imcms-document-items-list",
