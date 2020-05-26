@@ -923,11 +923,8 @@ define("imcms-document-editor-builder",
                     .filter(enableContent => enableContent.language.code === Imcms.language.code)
                     .shift();
 
-                if (content) {
-                    title = content.headline;
-                } else {
-                    title = texts.notShownInSelectedLang;
-                }
+                title = content ? content.headline : texts.notShownInSelectedLang;
+
             } else {
                 title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
             }
