@@ -11,8 +11,11 @@ public interface MenuElementHtmlWrapper {
     String DATA_TREEKEY_ATTRIBUTE = "data-treekey";
     String DATA_LEVEL_ATTRIBUTE = "data-level";
     String DATA_SUBLEVELS_ATTRIBUTE = "data-sublvls";
+    String DATA_ITEM_ACTIVE = "data-item-active";
+    String DATA_TYPE = "data-type";
     String ATTRIBUTE_CLASS = "class";
     String BRANCH = "branch";
+    String ITEM_ACTIVE = "item-active";
     String LEAF = "leaf";
     String IMCMS_MENU_CLASS = "imcms-menu";
     String IMCMS_MENU_BRANCH = "imcms-menu-" + BRANCH;
