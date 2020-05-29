@@ -46,6 +46,10 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 case ATTRIBUTE_DATA:
                     addStartBuildUlByDataAttr(buildContentMenu, menuIndex, docId);
                     break;
+
+                case ATTRIBUTE_WCAG:
+                    buildContentMenu.append("<ul");
+                    break;
             }
         }
 
@@ -104,17 +108,18 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
     private String getLiItemHtmlWithAttributes(String liItem, MenuItemDTO itemDTO,
                                                String treeKey, boolean hasChildren,
                                                Integer dataLvl, List<String> attributes, int docId) {
+        final boolean isCurrentPageActive = itemDTO.getDocumentId() == docId;
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
-                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren, docId, itemDTO);
+                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren, docId, itemDTO, isCurrentPageActive);
                     break;
                 case ATTRIBUTE_DATA:
-                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl, docId);
+                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl, docId, isCurrentPageActive);
                     break;
                 case ATTRIBUTE_WCAG:
                     if (attributes.size() == 1) { //need check for this pattern! else way will add above;
-                        liItem = menuHtmlPatterns.getLiTagSelectedPagePattern();
+                        liItem = isCurrentPageActive ? menuHtmlPatterns.getLiTagSelectedPagePattern() : "<li"; // run this , and check !!!
                     }
             }
         }
@@ -200,9 +205,8 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private String getBuiltLiByDataAttrHtml(String contentItem, MenuItemDTO menuItemDTO,
                                             String treeKey, boolean hasChildren,
-                                            Integer dataLevel, int docId) {
+                                            Integer dataLevel, int docId, boolean isCurrentPageActive) {
 
-        final boolean isItemActive = menuItemDTO.getDocumentId() == docId;
         final String type = hasChildren ? BRANCH : LEAF;
         String buildContentItem = "";
         if (contentItem.isEmpty()) {
@@ -214,7 +218,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     DATA_LEVEL_ATTRIBUTE, dataLevel,
                     DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
                     DATA_TYPE, type,
-                    DATA_ITEM_ACTIVE, isItemActive);
+                    DATA_ITEM_ACTIVE, isCurrentPageActive);
         } else {
             buildContentItem += (String.format(
                     menuHtmlPatterns.getPatternSimpleLiDataAttr(),
@@ -224,15 +228,15 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                     DATA_LEVEL_ATTRIBUTE, dataLevel,
                     DATA_SUBLEVELS_ATTRIBUTE, hasChildren,
                     DATA_TYPE, type,
-                    DATA_ITEM_ACTIVE, isItemActive));
+                    DATA_ITEM_ACTIVE, isCurrentPageActive));
         }
         return buildContentItem;
     }
 
     private String getBuiltLiByClassAttrHtml(String contentItem, int subLvl,
-                                             boolean hasChildren, int docId, MenuItemDTO itemDTO) {
+                                             boolean hasChildren, int docId, MenuItemDTO itemDTO, boolean isCurrentPageActive) {
         final String className = hasChildren ? BRANCH : LEAF;
-        final String prefixItemActive = itemDTO.getDocumentId() == docId ? ITEM_ACTIVE : "";
+        final String prefixItemActive = isCurrentPageActive ? ITEM_ACTIVE : "";
         String buildContentItem = "";
         if (contentItem.isEmpty()) {
             buildContentItem = (String.format(menuHtmlPatterns.getPatternLiClassAttr(),

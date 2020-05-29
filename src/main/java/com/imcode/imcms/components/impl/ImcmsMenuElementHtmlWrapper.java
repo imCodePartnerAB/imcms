@@ -82,9 +82,6 @@ class ImcmsMenuElementHtmlWrapper implements MenuElementHtmlWrapper {
         } else if (attrWcagExists && hasChildren) {
             resultContentDataHtml = String.format("%s " + menuHtmlPatterns.getATagLvlAttributePattern() + " %s </%s>",
                     tagData, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
-        } else if (attrWcagExists) {
-            resultContentDataHtml = String.format("%s " + menuHtmlPatterns.getATagPageAttributePattern() + " %s </%s>",
-                    tagData, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
         } else {
             resultContentDataHtml = String.format("%s <%s href=\"/%d\"> %s </%s>",
                     tagData, LINK_A_TAG, itemDTO.getDocumentId(), wrappedElement, LINK_A_TAG);
