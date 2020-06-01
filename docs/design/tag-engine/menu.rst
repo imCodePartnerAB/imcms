@@ -128,3 +128,28 @@ Second example: with use nested, disable nested in the menu and in each menuItem
 
 
 
+
+Third example: generate automatic html menu items
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. code-block:: jsp
+
+     <imcms:menu index='1' nested="true" wrap="span, b, i" attributes="wcag, data, class", treeKey="20"/>
+
+
+Available list of tag attributes:
+"""""""""""""""""""""""""""""""""
+
++--------------------+--------------+--------------------------------------------------+
+| Attribute          | Type         | Description                                      |
++====================+==============+==================================================+
+| wrap               | String       | wrapper for menu item html content               |
++--------------------+--------------+--------------------------------------------------+
+| attributes         | String       | list attributes in menu item html                |
++--------------------+--------------+--------------------------------------------------+
+| treeKey            | String       | identifier specific locations in the menu        |                                 |
++--------------------+--------------+--------------------------------------------------+
+| nested             | Boolean      | boolean value means disable nested in menu. So,  |
+|                    |              | show menuItem without nested,like just list links|
++--------------------+--------------+--------------------------------------------------+
+
