@@ -28,22 +28,45 @@
 
 <c:if test="${!isDocNew || editOptions.editMenu}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
+    <jsp:doBody var="tagContentBody"/>
+    <c:set var="isTagBodyEmpty" value="${empty tagContentBody}"/>
 
     <c:set var="isNested" value="${empty nested ? false : nested}"/>
 
-    <c:set var="menuItems" value="${
-    (isEditMode && editOptions.editMenu || isPreviewMode)
+    <c:choose>
+        <c:when test="${isTagBodyEmpty}">
+            <c:set var="menuItems" value="${
+         (isEditMode && editOptions.editMenu || isPreviewMode)
+         ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, isNested, attributes, treeKey, wrap)
+         : menuService.getPublicMenuAsHtml(targetDocId, index, language, isNested, attributes, treeKey, wrap)
+         }" scope="request"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="menuItems" value="${
+        (isEditMode && editOptions.editMenu || isPreviewMode)
          ? menuService.getVisibleMenuItems(targetDocId, index, language, isNested)
          : menuService.getPublicMenuItems(targetDocId, index, language, isNested)
-     }" scope="request"/>
+         }" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+
 
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
     <c:set var="menuContent">
         <c:if test="${not empty menuItems}">
-            ${pre}
-            <jsp:doBody/>
-            ${post}
+            <c:choose>
+                <c:when test="${not isTagBodyEmpty}">
+                    ${pre}
+                    <jsp:doBody/>
+                    ${post}
+                </c:when>
+                <c:otherwise>
+                    ${pre}
+                    ${menuItems}
+                    ${post}
+                </c:otherwise>
+            </c:choose>
         </c:if>
     </c:set>
     <c:remove var="menuItems"/>
