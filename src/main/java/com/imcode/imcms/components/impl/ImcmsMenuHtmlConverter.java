@@ -112,14 +112,14 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
         for (String attribute : attributes) {
             switch (attribute.trim()) {
                 case ATTRIBUTE_CLASS:
-                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren, docId, itemDTO, isCurrentPageActive);
+                    liItem += getBuiltLiByClassAttrHtml(liItem, dataLvl, hasChildren, isCurrentPageActive);
                     break;
                 case ATTRIBUTE_DATA:
-                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl, docId, isCurrentPageActive);
+                    liItem += getBuiltLiByDataAttrHtml(liItem, itemDTO, treeKey, hasChildren, dataLvl, isCurrentPageActive);
                     break;
                 case ATTRIBUTE_WCAG:
                     if (attributes.size() == 1) { //need check for this pattern! else way will add above;
-                        liItem = isCurrentPageActive ? menuHtmlPatterns.getLiTagSelectedPagePattern() : "<li"; // run this , and check !!!
+                        liItem = isCurrentPageActive ? menuHtmlPatterns.getLiTagSelectedPagePattern() : "<li";
                     }
             }
         }
@@ -205,7 +205,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     private String getBuiltLiByDataAttrHtml(String contentItem, MenuItemDTO menuItemDTO,
                                             String treeKey, boolean hasChildren,
-                                            Integer dataLevel, int docId, boolean isCurrentPageActive) {
+                                            Integer dataLevel, boolean isCurrentPageActive) {
 
         final String type = hasChildren ? BRANCH : LEAF;
         String buildContentItem = "";
@@ -234,7 +234,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
     }
 
     private String getBuiltLiByClassAttrHtml(String contentItem, int subLvl,
-                                             boolean hasChildren, int docId, MenuItemDTO itemDTO, boolean isCurrentPageActive) {
+                                             boolean hasChildren, boolean isCurrentPageActive) {
         final String className = hasChildren ? BRANCH : LEAF;
         final String prefixItemActive = isCurrentPageActive ? ITEM_ACTIVE : "";
         String buildContentItem = "";
