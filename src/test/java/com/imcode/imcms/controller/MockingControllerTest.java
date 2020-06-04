@@ -16,7 +16,8 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public abstract class MockingControllerTest {
@@ -39,7 +40,7 @@ public abstract class MockingControllerTest {
 
     @SneakyThrows
     protected MvcResultActions perform(MockHttpServletRequestBuilder requestBuilder, Object jsonContent) {
-        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(asJson(jsonContent));
+        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_VALUE).content(asJson(jsonContent));
         return perform(requestBuilder);
     }
 
@@ -86,7 +87,7 @@ public abstract class MockingControllerTest {
         @SneakyThrows
         public void andExpectAsJson(Object expected) {
             resultActions.andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(content().json(asJson(expected)));
         }
 
