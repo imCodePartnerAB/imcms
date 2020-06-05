@@ -126,8 +126,8 @@ define("imcms-document-editor-builder",
             searchQueryObj[field] = value;
         }
 
-        function addDocumentToList(document, savedFlag) {
-            const $document = buildDocument(document, currentEditorOptions, savedFlag);
+        function addDocumentToList(document) {
+            const $document = buildDocument(document, currentEditorOptions, true);
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
 
             incrementDocumentNumber(1);
@@ -933,7 +933,7 @@ define("imcms-document-editor-builder",
                 class: "imcms-flex--flex-3",
             });
             $docItemTitle.modifiers = ["title"];
-            if (!savedFlag) !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
+            !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
@@ -945,8 +945,8 @@ define("imcms-document-editor-builder",
             let docModifiedDate;
             let docModifiedBy;
             if (savedFlag) {
-                docModifiedDate = (document.created.date && document.created.time)
-                    ? `${document.created.date} ${document.created.time}`
+                docModifiedDate = (document.modified.date && document.modified.time)
+                    ? `${document.modified.date} ${document.modified.time}`
                     : "";
                 docModifiedBy = document.created.by;
             } else {
