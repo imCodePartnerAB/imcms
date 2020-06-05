@@ -529,7 +529,7 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
-            frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").attr('value'));
+            frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").children().attr('value'));
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
@@ -807,10 +807,10 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-original-status", frameItem.attr("data-original-status"));
             dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
-            dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
             dataInput.attr("data-is-shown-title", frameItem.attr("data-is-shown-title"));
             dataInput.attr("data-frame-top", insertedParent.frameTopPos);
             dataInput.attr('data-current-version', frameItem.attr('data-current-version'))
+            dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
         function toggleUserSelect(flag) {
@@ -987,11 +987,12 @@ define("imcms-document-editor-builder",
             }
 
             const currentVersionDoc = savedFlag ? document.currentVersion.id : document.currentVersion;
-            const $star = currentVersionDoc === WORKING_VERSION
-                ? components.controls.star()
-                : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
+            const $star = components.controls.star().attr('value', currentVersionDoc);
+            const $starByVersion = currentVersionDoc === WORKING_VERSION
+                ? $star
+                : $star.css({'filter': 'grayscale(100%) brightness(140%)'});
 
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-18');
+            const $currentVersion = $('<div>').append($starByVersion).addClass('imcms-grid-coll-18');
             $currentVersion.modifiers = ['currentVersion'];
             components.overlays.defaultTooltip(
                 $currentVersion,
