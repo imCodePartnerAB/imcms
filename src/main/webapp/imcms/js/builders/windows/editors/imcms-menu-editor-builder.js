@@ -577,12 +577,17 @@ define("imcms-menu-editor-builder",
                 type: document.type,
                 documentStatus: document.documentStatus,
                 hasNewerVersion: document.currentVersion,
-                children: []
+                children: [],
+                publishedDate: `${document.published.date} ${document.published.time}`,
+                modifiedDate: `${document.modified.date} ${document.modified.time}`,
             };
 
             document.commonContents.forEach(commonContent => {
                 if (commonContent["language"]["code"] === imcms.language.code) {
                     menuElementTree["title"] = commonContent["headline"];
+                }
+                if (commonContent.enabled && commonContent.language.code === imcms.language.code) {
+                    menuElementTree["isShownTitle"] = true;
                 }
             });
 
@@ -602,19 +607,24 @@ define("imcms-menu-editor-builder",
             if ($oldMenuItem.length === 1) {
 
                 function changeTitle() {
-                    let titleValue = "";
+                    const notShownTitleClass = "imcms-document-item__info--notShownTitle";
+                    let titleValue = documentBuilderTexts.notShownInSelectedLang;
+                    const $docTitle = $oldMenuItem.find(".imcms-document-item__info--title").first();
                     document.commonContents.forEach(commonContent => {
-                        if (commonContent.language.code === imcms.language.code) {
+                        if (commonContent.enabled && commonContent.language.code === imcms.language.code) {
                             titleValue = commonContent.headline;
                         }
                     });
-
-                    const $info = $oldMenuItem.find(".imcms-document-item__info").first();
-                    const $docTitle = $oldMenuItem.find(".imcms-document-item__info--title").first();
-                    $info.text(document.id + " - " + titleValue);
-                    $info.attr("title", titleValue);
-                    $docTitle.text(titleValue);
+                    document.isShownTitle = !isTitleSameNotShownText(titleValue);
+                    isTitleSameNotShownText(titleValue)
+                        ? $docTitle.addClass(notShownTitleClass)
+                        : $docTitle.removeClass(notShownTitleClass);
+                    $docTitle.text(titleValue)
                     $docTitle.attr("title", titleValue)
+                }
+
+                function isTitleSameNotShownText(titleValue) {
+                    return titleValue === documentBuilderTexts.notShownInSelectedLang;
                 }
 
                 function changeStatus() {
@@ -639,7 +649,7 @@ define("imcms-menu-editor-builder",
                 changeStatus();
                 toggleClass();
 
-                documentEditorBuilder.refreshDocumentInList(document);
+                documentEditorBuilder.refreshDocumentInList(document, true);
             }
         }
 
@@ -725,7 +735,7 @@ define("imcms-menu-editor-builder",
                 'right'
             );
 
-            const title = menuElementTree.isShownTitle
+            const title = menuElementTree.title
                 ? menuElementTree.title
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
@@ -733,7 +743,7 @@ define("imcms-menu-editor-builder",
                 class: 'imcms-flex--flex-1',
             });
             $titleText.modifiers = ['title'];
-            !menuElementTree.isShownTitle && $titleText.modifiers.push("notShownTitle");
+            !menuElementTree.title && $titleText.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
             const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
