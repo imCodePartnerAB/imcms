@@ -129,7 +129,7 @@ public class PublicDocumentsCache implements DocumentsCache {
             return null;
         } else {
             final Element element = cache.get(key);
-            return (PageInfo) element.getObjectValue();
+            return element != null ? (PageInfo) element.getObjectValue() : null;
         }
     }
 
