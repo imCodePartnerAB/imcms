@@ -40,7 +40,7 @@ public abstract class MockingControllerTest {
 
     @SneakyThrows
     protected MvcResultActions perform(MockHttpServletRequestBuilder requestBuilder, Object jsonContent) {
-        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_VALUE).content(asJson(jsonContent));
+        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(asJson(jsonContent));
         return perform(requestBuilder);
     }
 
@@ -87,7 +87,7 @@ public abstract class MockingControllerTest {
         @SneakyThrows
         public void andExpectAsJson(Object expected) {
             resultActions.andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(content().json(asJson(expected)));
         }
 

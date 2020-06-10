@@ -191,7 +191,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             assertTrue(imageFile.exists());
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFileDTO));
 
             final String response = getJsonResponse(requestBuilder);
@@ -212,7 +212,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertFalse(imageFile.exists());
 
         final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(imageFileDTO));
 
         assertThrows(FileNotFoundException.class, () -> getJsonResponse(requestBuilder));
@@ -245,7 +245,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             imageFileDTO.setPath(path);
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFileDTO));
 
             assertTrue(imageFile.exists());
@@ -300,11 +300,11 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             imageService.saveImage(imageDTOWorking);
 
             final MockHttpServletRequestBuilder requestLatestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageDTOLatest));
 
             final MockHttpServletRequestBuilder requestWorkingBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageDTOWorking));
 
             final String jsonResponseLatest = getJsonResponseWithExpectedStatus(requestLatestBuilder, METHOD_NOT_ALLOWED.value());
@@ -348,7 +348,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             assertTrue(imageFile.exists());
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFileDTO));
 
             final String response = getJsonResponse(requestBuilder);

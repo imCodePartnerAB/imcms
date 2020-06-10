@@ -204,7 +204,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(folder.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             final String jsonPutResponse = getJsonResponse(requestBuilderPut);
@@ -257,7 +257,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(nestedFolder.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageNestedFolderDTO));
 
             final String jsonPutResponse = getJsonResponse(requestBuilderPut);
@@ -286,7 +286,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertFalse(newFolder.exists());
 
         final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(imageFolderDTO));
 
         performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderPut);
@@ -329,7 +329,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(folder1.exists());
 
             final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO1));
 
             performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPut);
@@ -367,7 +367,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Imcms.setUser(user); // means current user is not admin now
 
             final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderPut);
@@ -394,7 +394,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(folder.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             final String response = getJsonResponse(requestBuilderDelete);
@@ -415,7 +415,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertFalse(folder.exists());
 
             final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderDelete);
@@ -447,7 +447,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
 
             final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderDelete);
@@ -480,7 +480,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testDirectory.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             performRequestBuilderExpectException(DirectoryNotEmptyException.class, requestBuilderDelete);
@@ -520,7 +520,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testSubdirectory.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             final String response = getJsonResponse(requestBuilderDelete);
@@ -555,7 +555,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testDirectory.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderGet = post(controllerPath() + "/can-delete")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             performRequestBuilderExpectException(DirectoryNotEmptyException.class, requestBuilderGet);
@@ -593,7 +593,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testSubdirectory.canRead());
 
             final MockHttpServletRequestBuilder requestBuilderDelete = post(controllerPath() + "/can-delete")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
             final String response = getJsonResponse(requestBuilderDelete);

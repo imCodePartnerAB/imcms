@@ -86,7 +86,7 @@ class DocumentControllerTest extends MockingControllerTest {
         given(documentService.save(saveMe)).willReturn(saveMe);
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(saveMe));
 
         perform(requestBuilder).andExpectAsJson(saveMe);
