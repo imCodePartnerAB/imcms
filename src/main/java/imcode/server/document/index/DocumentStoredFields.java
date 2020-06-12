@@ -6,6 +6,7 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import imcode.server.Imcms;
+import lombok.SneakyThrows;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
 import static imcode.util.Utility.isDateInFuture;
 import static imcode.util.Utility.isDateInPast;
 
@@ -93,24 +95,27 @@ public class DocumentStoredFields {
         return isLanguageEnabled(currentLanguage) || (isShownInDefaultLanguage() && isLanguageEnabled(defaultLanguage));
     }
 
-    public Date created() {
-        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
+    public String created() {
+        final Object fieldCreateDate = solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
+        return fieldCreateDate != null ? DATETIME_DOC_FORMAT.format(fieldCreateDate) : null;
     }
 
     public String createdBy() {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
     }
 
-    public Date modified() {
-        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
+    public String modified() {
+        final Object fieldModifiedDate = solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
+        return fieldModifiedDate != null ? DATETIME_DOC_FORMAT.format(fieldModifiedDate) : null;
     }
 
     public String modifiedBy() {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIER_NAME);
     }
 
-    public Date publicationStart() {
-        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
+    public String publicationStart() {
+        final Object fieldPublishStartDate = solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
+        return fieldPublishStartDate != null ? DATETIME_DOC_FORMAT.format(fieldPublishStartDate) : null;
     }
 
     public String publicationStartBy() {
@@ -125,6 +130,7 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
+    @SneakyThrows
     public DocumentStatus documentStatus() {
         final PublicationStatus publicationStatus = publicationStatus();
 
@@ -140,10 +146,10 @@ public class DocumentStoredFields {
         } else if (isDateInPast.test(publicationEndDt())) {
             return DocumentStatus.PASSED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(publicationStart())) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(DATETIME_DOC_FORMAT.parse(publicationStart()))) {
             return DocumentStatus.PUBLISHED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(publicationStart())) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(DATETIME_DOC_FORMAT.parse(publicationStart()))) {
             return DocumentStatus.PUBLISHED_WAITING;
 
         } else { // should never happen
