@@ -3,7 +3,15 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DeleterByDocumentId;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.PropertyService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -14,6 +22,7 @@ import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -129,6 +138,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final Integer id = saveMe.getId();
         final boolean isNew = (saveMe.getId() == null);
         final String newAlias = saveMe.getAlias();
+        final UserDomainObject currentUser = Imcms.getUser();
 
         if (!isNew) {
             final String oldAlias = metaRepository.findOne(id).getAlias();
@@ -138,7 +148,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             }
         }
 
-        final Integer docId = documentSaver.apply(saveMe).getId();
+        final Meta meta = documentSaver.apply(saveMe);
+        final Integer docId = meta.getId();
 
         if (isNew) {
             saveMe.setId(docId);
@@ -148,11 +159,24 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         commonContentService.save(docId, saveMe.getCommonContents());
 
+        saveMe.setModified(auditData(meta.getModifiedDatetime(), currentUser));
+        saveMe.setPublished(auditData(meta.getPublicationStartDatetime(), currentUser));
+
         if (!isNew && (!Imcms.isVersioningAllowed() || Meta.PublicationStatus.APPROVED == saveMe.getPublicationStatus())) {
             documentMapper.invalidateDocument(id);
         }
 
         return saveMe;
+    }
+
+    private AuditDTO auditData(Date date, UserDomainObject currentUser) {
+        final AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setDateTime(date);
+        if (currentUser != null) {
+            auditDTO.setId(currentUser.getId());
+            auditDTO.setBy(currentUser.getLogin());
+        }
+        return auditDTO;
     }
 
     @Override
