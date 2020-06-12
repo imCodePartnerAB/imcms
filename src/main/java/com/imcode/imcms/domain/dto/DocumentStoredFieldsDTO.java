@@ -1,12 +1,9 @@
 package com.imcode.imcms.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.index.DocumentStoredFields;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * Document's stored fields in solr indexes
@@ -29,14 +26,11 @@ public class DocumentStoredFieldsDTO {
 
     private Boolean isShownTitle;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date created;
+    private String created;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date modified;
+    private String modified;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date published;
+    private String published;
 
     private String createdBy;
 
