@@ -1078,8 +1078,8 @@ define("imcms-document-editor-builder",
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
-        function buildDocumentList(documentList) {
-            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id), false));
+        function buildDocumentList(documentList, savedFlag) {
+            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id), savedFlag));
 
             return new BEM({
                 block: "imcms-document-items-list",
