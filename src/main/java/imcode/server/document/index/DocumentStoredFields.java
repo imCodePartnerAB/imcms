@@ -133,6 +133,9 @@ public class DocumentStoredFields {
     @SneakyThrows
     public DocumentStatus documentStatus() {
         final PublicationStatus publicationStatus = publicationStatus();
+        final Date formatPublishDateStart = null != publicationStart()
+                ? DATETIME_DOC_FORMAT.parse(publicationStart())
+                : null;
 
         if (PublicationStatus.NEW.equals(publicationStatus)) {
             return DocumentStatus.IN_PROCESS;
@@ -146,10 +149,10 @@ public class DocumentStoredFields {
         } else if (isDateInPast.test(publicationEndDt())) {
             return DocumentStatus.PASSED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(DATETIME_DOC_FORMAT.parse(publicationStart()))) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(formatPublishDateStart)) {
             return DocumentStatus.PUBLISHED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(DATETIME_DOC_FORMAT.parse(publicationStart()))) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(formatPublishDateStart)) {
             return DocumentStatus.PUBLISHED_WAITING;
 
         } else { // should never happen
