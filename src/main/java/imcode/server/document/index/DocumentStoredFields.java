@@ -6,7 +6,6 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import imcode.server.Imcms;
-import lombok.SneakyThrows;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Collection;
@@ -95,27 +94,24 @@ public class DocumentStoredFields {
         return isLanguageEnabled(currentLanguage) || (isShownInDefaultLanguage() && isLanguageEnabled(defaultLanguage));
     }
 
-    public String created() {
-        final Object fieldCreateDate = solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
-        return fieldCreateDate != null ? DATETIME_DOC_FORMAT.format(fieldCreateDate) : null;
+    public Date created() {
+        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
     }
 
     public String createdBy() {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
     }
 
-    public String modified() {
-        final Object fieldModifiedDate = solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
-        return fieldModifiedDate != null ? DATETIME_DOC_FORMAT.format(fieldModifiedDate) : null;
+    public Date modified() {
+        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
     }
 
     public String modifiedBy() {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIER_NAME);
     }
 
-    public String publicationStart() {
-        final Object fieldPublishStartDate = solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
-        return fieldPublishStartDate != null ? DATETIME_DOC_FORMAT.format(fieldPublishStartDate) : null;
+    public Date publicationStart() {
+        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
     }
 
     public String publicationStartBy() {
@@ -149,10 +145,10 @@ public class DocumentStoredFields {
         } else if (isDateInPast.test(publicationEndDt())) {
             return DocumentStatus.PASSED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(formatPublishDateStart)) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(publicationStart())) {
             return DocumentStatus.PUBLISHED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(formatPublishDateStart)) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(publicationStart())) {
             return DocumentStatus.PUBLISHED_WAITING;
 
         } else { // should never happen
