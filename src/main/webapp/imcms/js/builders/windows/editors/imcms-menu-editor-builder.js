@@ -34,7 +34,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
+        let topPointMenu = 180; // top point menu for set item before item in the top position. Improve it if you can
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -781,9 +781,9 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
 
             const elements = [$docId, $titleText];
-
+            let childrenIcon = "";
             if (menuElementTree.children.length) {
-                elements.push(buildChildrenTriangle());
+                childrenIcon = (buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open"));
             }
 
             switch (typeSort) {
@@ -804,6 +804,7 @@ define("imcms-menu-editor-builder",
             return new BEM({
                 block: "imcms-document-item",
                 elements: [
+                    {"btn-icon": childrenIcon},
                     {"info": elements},
                     {"controls": controls}
                 ]
