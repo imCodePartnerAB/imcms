@@ -125,12 +125,8 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
-    @SneakyThrows
     public DocumentStatus documentStatus() {
         final PublicationStatus publicationStatus = publicationStatus();
-        final Date formatPublishDateStart = null != publicationStart()
-                ? DATETIME_DOC_FORMAT.parse(publicationStart())
-                : null;
 
         if (PublicationStatus.NEW.equals(publicationStatus)) {
             return DocumentStatus.IN_PROCESS;
