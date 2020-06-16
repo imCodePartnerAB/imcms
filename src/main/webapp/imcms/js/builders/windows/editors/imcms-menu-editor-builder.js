@@ -34,7 +34,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let topPointMenu = 180; // top point menu for set item before item in the top position. Improve it if you can
+        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -362,8 +362,8 @@ define("imcms-menu-editor-builder",
             if (Math.abs(mouseCoords.deltaPageX) > 7 || Math.abs(mouseCoords.deltaPageY) > 7) {
                 if (isMouseDown && detectTargetArea(event)) {
                     $frame.css({
-                        "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
-                        "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
+                        "top": mouseCoords.newPageY,
+                        "left": mouseCoords.newPageX
                     });
                     detectPasteArea($frame);
                 } else {
@@ -431,8 +431,8 @@ define("imcms-menu-editor-builder",
                 "position": "absolute",
                 "z-index": 11001,
                 "width": "40%",
-                "top": mouseCoords.top,
-                "left": mouseCoords.left
+                "top": event.clientY,
+                "left": event.clientX
             });
 
             $frame.addClass("imcms-menu-items--frame");
