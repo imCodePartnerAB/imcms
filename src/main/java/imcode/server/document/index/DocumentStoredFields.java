@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
 import static imcode.util.Utility.isDateInFuture;
 import static imcode.util.Utility.isDateInPast;
 
