@@ -11,7 +11,7 @@ import imcode.server.document.index.QueryParser;
 import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.util.Utility;
 import org.apache.commons.collections.SetUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
@@ -20,7 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class DocumentFinder extends WebComponent {
 
@@ -29,7 +34,7 @@ public class DocumentFinder extends WebComponent {
     private QueryParser queryParser = new DefaultQueryParser();
     private Set extraSearchResultColumns = SetUtils.orderedSet(new HashSet());
     private DocumentFinderPage page;
-    private Comparator documentComparator;
+    private Comparator<DocumentDomainObject> documentComparator;
     private boolean logged;
 
     public DocumentFinder() {
@@ -41,7 +46,7 @@ public class DocumentFinder extends WebComponent {
         page.setDocumentFinder(this);
     }
 
-    public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
+    public void selectDocument(DocumentDomainObject selectedDocument) {
         selectDocumentCommand.handle(selectedDocument.getId());
     }
 
@@ -52,17 +57,21 @@ public class DocumentFinder extends WebComponent {
     void forwardWithPage(HttpServletRequest request, HttpServletResponse response, DocumentFinderPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
-        final BooleanQuery booleanQuery = new BooleanQuery();
+        final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
         if (null != page.getQuery()) {
-            booleanQuery.add(page.getQuery(), true, false);
+            booleanQueryBuilder.add(page.getQuery(), Occur.MUST);
         }
         if (null != restrictingQuery) {
-            booleanQuery.add(restrictingQuery, true, false);
+            booleanQueryBuilder.add(restrictingQuery, Occur.MUST);
         }
-        if (booleanQuery.getClauses().length > 0) {
-            List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
+
+        final BooleanQuery booleanQuery = booleanQueryBuilder.build();
+
+        if (booleanQuery.iterator().hasNext()) {
+            List<DocumentDomainObject> documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
             if (null != documentComparator) {
-                Collections.sort(documentsFound, documentComparator);
+                documentsFound.sort(documentComparator);
             }
             page.setDocumentsFound(documentsFound);
         }
@@ -97,7 +106,7 @@ public class DocumentFinder extends WebComponent {
         return (SearchResultColumn[]) extraSearchResultColumns.toArray(new SearchResultColumn[extraSearchResultColumns.size()]);
     }
 
-    public void setDocumentComparator(Comparator documentComparator) {
+    public void setDocumentComparator(Comparator<DocumentDomainObject> documentComparator) {
         this.documentComparator = documentComparator;
     }
 

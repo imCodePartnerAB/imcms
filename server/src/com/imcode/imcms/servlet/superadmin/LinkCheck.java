@@ -36,14 +36,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Pattern;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class LinkCheck extends HttpServlet {
 
@@ -120,12 +116,12 @@ public class LinkCheck extends HttpServlet {
 
     private void addTextAndImageLinks(List<Link> links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request, IntRange range) {
-        BooleanQuery query = new BooleanQuery();
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http")), false, false);
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href")), false, false);
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__IMAGE_LINK_URL, "http")), false, false);
+        final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http")), Occur.SHOULD);
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href")), Occur.SHOULD);
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__IMAGE_LINK_URL, "http")), Occur.SHOULD);
 
-        List<DocumentDomainObject> textDocuments = reindexingIndex.search(new SimpleDocumentQuery(query), user);
+        List<DocumentDomainObject> textDocuments = reindexingIndex.search(new SimpleDocumentQuery(queryBuilder.build()), user);
 
         for (DocumentDomainObject textDocument1 : textDocuments) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject) textDocument1;

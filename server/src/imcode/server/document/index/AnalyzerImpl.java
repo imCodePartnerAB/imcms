@@ -1,42 +1,37 @@
 package imcode.server.document.index;
 
-import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.util.CharTokenizer;
 
-import java.io.Reader;
+public class AnalyzerImpl extends Analyzer {
 
-class AnalyzerImpl extends Analyzer {
-
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName) {
         Tokenizer tokenizer;
         if (DocumentIndex.FIELD__SECTION.equals(fieldName)
-                || DocumentIndex.FIELD__KEYWORD.equals(fieldName))
-        {
-            tokenizer = new NullTokenizer(reader);
+                || DocumentIndex.FIELD__KEYWORD.equals(fieldName)) {
+            tokenizer = new NullTokenizer();
         } else {
-            tokenizer = new LetterOrDigitTokenizer(reader);
+            tokenizer = new LetterOrDigitTokenizer();
         }
-        return new LowerCaseFilter(tokenizer);
+
+        return new TokenStreamComponents(tokenizer, new LowerCaseFilter(tokenizer));
     }
 
     private static class NullTokenizer extends CharTokenizer {
 
-        private NullTokenizer(Reader reader) {
-            super(reader);
-        }
-
-        protected boolean isTokenChar(char c) {
+        protected boolean isTokenChar(int c) {
             return true;
         }
     }
 
     private static class LetterOrDigitTokenizer extends CharTokenizer {
 
-        private LetterOrDigitTokenizer(Reader reader) {
-            super(reader);
-        }
-
-        protected boolean isTokenChar(char c) {
+        protected boolean isTokenChar(int c) {
             return Character.isLetterOrDigit(c) || '_' == c;
         }
+
     }
 }

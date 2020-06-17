@@ -10,20 +10,12 @@ import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
@@ -74,22 +66,24 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private void getTerms(Query query, Collection<String> terms) {
         if (query instanceof BooleanQuery) {
-            BooleanQuery booleanQuery = (BooleanQuery) query;
-            BooleanClause[] clauses = booleanQuery.getClauses();
+            final BooleanQuery booleanQuery = (BooleanQuery) query;
+
+            final List<BooleanClause> booleanClauses = new ArrayList<>();
+            booleanQuery.iterator().forEachRemaining(booleanClauses::add);
+            final BooleanClause[] clauses = booleanClauses.toArray(new BooleanClause[0]);
+
             for (BooleanClause clause : clauses) {
-                if (!clause.prohibited) {
-                    getTerms(clause.query, terms);
+                if (clause.getOccur() != Occur.MUST_NOT) {
+                    getTerms(clause.getQuery(), terms);
                 }
             }
         } else if (query instanceof TermQuery) {
-            TermQuery termQuery = (TermQuery) query;
+            final TermQuery termQuery = (TermQuery) query;
             addTerm(terms, termQuery.getTerm());
-        } else if (query instanceof MultiTermQuery) {
-            MultiTermQuery multiTermQuery = (MultiTermQuery) query;
-            addTerm(terms, multiTermQuery.getTerm());
-        } else if (query instanceof PrefixQuery) {
-            PrefixQuery prefixQuery = (PrefixQuery) query;
-            addTerm(terms, prefixQuery.getPrefix());
+        } else if (query instanceof PhraseQuery) {
+            final PhraseQuery phraseQuery = (PhraseQuery) query;
+            for (Term term : phraseQuery.getTerms())
+                addTerm(terms, term);
         }
     }
 

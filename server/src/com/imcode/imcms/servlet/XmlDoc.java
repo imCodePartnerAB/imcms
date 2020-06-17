@@ -12,6 +12,7 @@ import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.w3c.dom.Document;
 
@@ -53,7 +54,7 @@ public class XmlDoc extends HttpServlet {
                 DocumentIndex documentIndex = documentMapper.getDocumentIndex();
                 List documents = documentIndex.search(new SimpleDocumentQuery(query), currentUser);
                 documentsIterator = documents.iterator();
-            } catch (org.apache.lucene.queryParser.ParseException pe) {
+            } catch (ParseException pe) {
                 LOG.debug("Bad query: " + q, pe);
                 documentsIterator = new ArrayList().iterator();
             }

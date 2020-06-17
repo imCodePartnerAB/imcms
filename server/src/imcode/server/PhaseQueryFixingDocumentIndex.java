@@ -3,11 +3,7 @@ package imcode.server;
 import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexWrapper;
-import imcode.server.document.index.DocumentQuery;
-import imcode.server.document.index.IndexException;
-import imcode.server.document.index.SimpleDocumentQuery;
+import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -46,10 +42,20 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
     Query fixQuery(Query query) {
         if (query instanceof BooleanQuery) {
             BooleanQuery booleanQuery = (BooleanQuery) query;
-            BooleanClause[] clauses = booleanQuery.getClauses();
-            for (BooleanClause clause : clauses) {
-                clause.query = fixQuery(clause.query);
+
+            final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+            final List<BooleanClause> booleanClauses = booleanQuery.clauses();
+
+            for (final BooleanClause booleanClause : booleanClauses) {
+                final BooleanClause fixedBooleanClause = new BooleanClause(
+                        fixQuery(booleanClause.getQuery()), booleanClause.getOccur()
+                );
+
+                queryBuilder.add(fixedBooleanClause);
             }
+
+            return queryBuilder.build();
+
         } else if (query instanceof TermQuery) {
             TermQuery termQuery = (TermQuery) query;
             Term term = termQuery.getTerm();

@@ -20,13 +20,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.util.BytesRef;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
@@ -168,60 +171,58 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
     private Query createQuery(DocumentFinder documentFinder, UserDomainObject user) {
 
-        BooleanQuery newQuery = new BooleanQuery();
+        final BooleanQuery.Builder newQueryBuilder = new BooleanQuery.Builder();
         if (StringUtils.isNotBlank(queryString)) {
             try {
-                Query textQuery = documentFinder.parse(queryString);
-                newQuery.add(textQuery, true, false);
+                final Query textQuery = documentFinder.parse(queryString);
+                newQueryBuilder.add(textQuery, Occur.MUST);
             } catch (ParseException e) {
                 log.debug(e.getMessage() + " in search-string " + queryString, e);
             }
         }
 
         if (!sections.isEmpty()) {
-            BooleanQuery sectionQueries = new BooleanQuery();
-            for (Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
-                SectionDomainObject section = (SectionDomainObject) iterator.next();
-                sectionQueries.add(new TermQuery(new Term(DocumentIndex.FIELD__SECTION, section.getName().toLowerCase())), false, false);
+            final BooleanQuery.Builder sectionQueriesBuilder = new BooleanQuery.Builder();
+            for (Object sectionObject : sections) {
+                final SectionDomainObject section = (SectionDomainObject) sectionObject;
+                sectionQueriesBuilder.add(new TermQuery(new Term(DocumentIndex.FIELD__SECTION, section.getName().toLowerCase())), Occur.SHOULD);
             }
-            newQuery.add(sectionQueries, true, false);
+            newQueryBuilder.add(sectionQueriesBuilder.build(), Occur.MUST);
         }
 
         if (null != phases && phases.length > 0) {
-            BooleanQuery phaseQueries = new BooleanQuery();
-            for (int i = 0; i < phases.length; i++) {
-                String phase = phases[i];
-                Query phaseQuery = new TermQuery(new Term(DocumentIndex.FIELD__PHASE, phase));
-                phaseQueries.add(phaseQuery, false, false);
+            final BooleanQuery.Builder phaseQueriesBuilder = new BooleanQuery.Builder();
+            for (String phase : phases) {
+                final Query phaseQuery = new TermQuery(new Term(DocumentIndex.FIELD__PHASE, phase));
+                phaseQueriesBuilder.add(phaseQuery, Occur.SHOULD);
             }
-            newQuery.add(phaseQueries, true, false);
+            newQueryBuilder.add(phaseQueriesBuilder.build(), Occur.MUST);
         }
 
         if (null != documentTypeIds && documentTypeIds.length > 0) {
-            BooleanQuery documentTypeQueries = new BooleanQuery();
-            for (int i = 0; i < documentTypeIds.length; i++) {
-                int documentTypeId = documentTypeIds[i];
-                Query documentTypeQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, "" + documentTypeId));
-                documentTypeQueries.add(documentTypeQuery, false, false);
+            final BooleanQuery.Builder documentTypeQueriesBuilder = new BooleanQuery.Builder();
+            for (int documentTypeId : documentTypeIds) {
+                final Query documentTypeQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, "" + documentTypeId));
+                documentTypeQueriesBuilder.add(documentTypeQuery, Occur.SHOULD);
             }
-            newQuery.add(documentTypeQueries, true, false);
+            newQueryBuilder.add(documentTypeQueriesBuilder.build(), Occur.MUST);
         }
 
         if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals(userDocumentsRestriction)) {
-            Query createdByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, "" + user.getId()));
-            newQuery.add(createdByUserQuery, true, false);
+            final Query createdByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, "" + user.getId()));
+            newQueryBuilder.add(createdByUserQuery, Occur.MUST);
         }
 
         if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals(userDocumentsRestriction)) {
-            Query publishedByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId()));
-            newQuery.add(publishedByUserQuery, true, false);
+            final Query publishedByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId()));
+            newQueryBuilder.add(publishedByUserQuery, Occur.MUST);
         }
 
         if (null != startDate || null != endDate) {
-            Date luceneMinDate = new Date(0);
-            Date luceneMaxDate = new Date(1000L * 365 * 24 * 60 * 60 * 1000);
-            Date calculatedStartDate = null == startDate ? luceneMinDate : startDate;
-            Date calculatedEndDate = null == endDate ? luceneMaxDate : new Date(endDate.getTime() + DateUtils.MILLIS_IN_DAY);
+            final Date luceneMinDate = new Date(0);
+            final Date luceneMaxDate = new Date(1000L * 365 * 24 * 60 * 60 * 1000);
+            final Date calculatedStartDate = null == startDate ? luceneMinDate : startDate;
+            final Date calculatedEndDate = null == endDate ? luceneMaxDate : new Date(endDate.getTime() + DateUtils.MILLIS_IN_DAY);
 
             String dateField;
             if (DATE_TYPE__PUBLICATION_END.equals(dateTypeRestriction)) {
@@ -236,16 +237,20 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
                 dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
             }
 
-            Term lowerTerm = new Term(dateField, DateField.dateToString(calculatedStartDate));
-            Term upperTerm = new Term(dateField, DateField.dateToString(calculatedEndDate));
-            Query publicationStartedQuery = new RangeQuery(lowerTerm, upperTerm, true);
-            newQuery.add(publicationStartedQuery, true, false);
+            final TermRangeQuery publicationStartedQuery = new TermRangeQuery(
+                    dateField,
+                    new BytesRef(DateTools.dateToString(calculatedStartDate, DateTools.Resolution.MINUTE)),
+                    new BytesRef(DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE)),
+                    true, true);
+            newQueryBuilder.add(publicationStartedQuery, Occur.MUST);
         }
 
-        if (0 == newQuery.getClauses().length) {
+        final BooleanQuery booleanQuery = newQueryBuilder.build();
+        if (booleanQuery.clauses().isEmpty()) {
             return null;
         }
-        return newQuery;
+
+        return booleanQuery;
     }
 
     protected boolean wasCanceled(HttpServletRequest request) {

@@ -8,8 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.Directory;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
@@ -17,12 +16,7 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class RebuildingDirectoryIndex implements DocumentIndex {
@@ -44,30 +38,6 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         File indexDirectory = findLatestIndexDirectory(indexParentDirectory);
         long indexModifiedTime = 0;
         if (null != indexDirectory) {
-            Directory directory = null;
-            try {
-                log.info("Checking for directory lock.");
-                directory = FSDirectory.getDirectory(indexDirectory, false);
-                if (!IndexReader.isLocked(directory)) {
-                    log.info("Directory is not locked.");
-                } else {
-                    log.info("Directory is locked. Attempting to unlock");
-                    IndexReader.unlock(directory);
-                }
-            } catch (IOException e) {
-                log.fatal(String.format("An error occurred while unlocking directory. %s.", indexDirectory), e);
-                throw new IndexException(e);
-            } finally {
-                try {
-                    if (directory != null) {
-                        directory.close();
-                    }
-                } catch (IOException e) {
-                    log.fatal(String.format("An error occurred while unlocking directory. %s.", indexDirectory), e);
-                    throw new IndexException(e);
-                }
-            }
-
             indexModifiedTime = indexDirectory.lastModified();
             index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
         } else {
@@ -96,7 +66,8 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
             File indexDirectory = null;
             for (int i = 0; i < indexDirectories.length; i++) {
                 File directory = indexDirectories[i];
-                if (IndexReader.indexExists(directory)) {
+                final FSDirectory fsDirectory = FSDirectory.open(directory.toPath());
+                if (DirectoryReader.indexExists(fsDirectory)) {
                     if (null == indexDirectory) {
                         log.info("Found index in directory " + directory);
                         indexDirectory = directory;

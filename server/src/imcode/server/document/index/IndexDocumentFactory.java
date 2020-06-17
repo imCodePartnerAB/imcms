@@ -10,9 +10,7 @@ import imcode.server.document.SectionDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.DateField;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.*;
 import org.apache.tika.Tika;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
@@ -53,12 +51,12 @@ public class IndexDocumentFactory {
     }
 
     static Field unStoredKeyword(String fieldName, String fieldValue) {
-        return new Field(fieldName, fieldValue.toLowerCase(), false, true, false);
+        return new StringField(fieldName, fieldValue.toLowerCase(), Field.Store.NO);
     }
 
     private static Field unStoredKeyword(String fieldName, Date fieldValue) {
         Date truncatedDate = Utility.truncateDateToMinutePrecision(fieldValue);
-        return new Field(fieldName, DateField.dateToString(truncatedDate), false, true, false);
+        return new StringField(fieldName, DateTools.dateToString(truncatedDate, DateTools.Resolution.MINUTE),  Field.Store.NO);
     }
 
     public Document createIndexDocument(DocumentDomainObject document) {
@@ -66,10 +64,10 @@ public class IndexDocumentFactory {
         Document indexDocument = new Document();
 
         int documentId = document.getId();
-        indexDocument.add(Field.Keyword(DocumentIndex.FIELD__META_ID, "" + documentId));
-        indexDocument.add(Field.UnStored(DocumentIndex.FIELD__META_HEADLINE, document.getHeadline()));
+        indexDocument.add(new StringField(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES));
+        indexDocument.add(new TextField(DocumentIndex.FIELD__META_HEADLINE, document.getHeadline(), Field.Store.NO));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, document.getHeadline()));
-        indexDocument.add(Field.UnStored(DocumentIndex.FIELD__META_TEXT, document.getMenuText()));
+        indexDocument.add(new TextField(DocumentIndex.FIELD__META_TEXT, document.getMenuText(), Field.Store.NO));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId()));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()));
         if (null != document.getPublisherId()) {

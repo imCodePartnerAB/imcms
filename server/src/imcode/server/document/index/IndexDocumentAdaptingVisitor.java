@@ -9,8 +9,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.*;
+import org.apache.lucene.util.BytesRef;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 
@@ -41,15 +41,17 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         for (Map.Entry<Integer, TextDomainObject> textEntry : textDocument.getTexts().entrySet()) {
             Integer textIndex = textEntry.getKey();
             TextDomainObject text = textEntry.getValue();
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
+            indexDocument.add(new TextField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText(), Field.Store.NO));
             String htmlStrippedText = stripHtml(textDocument, text);
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
+            indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO));
+            indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.NO));
+
+            indexDocument.add(new SortedDocValuesField(DocumentIndex.FIELD__TEXT + textIndex, new BytesRef(htmlStrippedText)));
         }
 
         for (MenuDomainObject menu : textDocument.getMenus().values()) {
             for (MenuItemDomainObject menuItem : menu.getMenuItems()) {
-                indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, "" + menuItem.getDocumentId()));
+                indexDocument.add(new StringField(DocumentIndex.FIELD__CHILD_ID, "" + menuItem.getDocumentId(), Field.Store.YES));
             }
         }
 
@@ -147,7 +149,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         try {
             in = file.getInputStreamSource().getInputStream();
             String content = tikaAutodetect.parseToString(in);
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, content));
+            indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT, content, Field.Store.NO));
         } catch (Exception e) {
             log.error(String.format("File doc id: %d. Unable to index content of file-doc-file '%s'", fileDocument.getId(), file), e);
         } finally {

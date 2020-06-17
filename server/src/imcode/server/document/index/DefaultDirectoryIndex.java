@@ -7,32 +7,21 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
@@ -80,17 +69,23 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
                                                      Predicate<DocumentDomainObject> filterPredicate)
             throws IndexException {
 
-        try (ClosableIndexSearcher indexSearcher = new ClosableIndexSearcher(directory.toString())) {
+        try (IndexReaderCloseable indexReaderCloseable = new IndexReaderCloseable(directory)) {
 
-            final Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
+            final IndexReader indexReader = indexReaderCloseable.getReader();
+            final IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+            final Sort sort = query.getSort();
+            final TopDocs topDocs = sort == null
+                    ? indexSearcher.search(query.getQuery(), indexReader.numDocs())
+                    : indexSearcher.search(query.getQuery(), indexReader.numDocs(), sort);
+            final ScoreDoc[] hits = topDocs.scoreDocs;
 
             filterPredicate = Optional.ofNullable(filterPredicate)
                     .map(predicate -> predicate.and(searchingUser::canSearchFor))
                     .orElse(searchingUser::canSearchFor);
 
-            return getDocumentListForHits(hits, filterPredicate, startPosition, maxResults);
+            return getDocumentListForHits(hits, indexSearcher, filterPredicate, startPosition, maxResults);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IndexException(e);
         }
     }
@@ -113,23 +108,24 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public void removeDocument(DocumentDomainObject document) throws IndexException {
-        try (final IndexReaderCloseable indexReader = new IndexReaderCloseable(directory)) {
+        try (final IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.APPEND)) {
 
-            indexReader.delete(new Term("meta_id", "" + document.getId()));
+            indexWriter.deleteDocuments(new Term("meta_id", "" + document.getId()));
 
         } catch (Exception e) {
             throw new IndexException(e);
         }
     }
 
-    private SearchResult<DocumentDomainObject> getDocumentListForHits(Hits hits,
+    private SearchResult<DocumentDomainObject> getDocumentListForHits(ScoreDoc[] hits,
+                                                                      IndexSearcher searcher,
                                                                       Predicate<DocumentDomainObject> searchingPredicate,
                                                                       int startPosition,
                                                                       int maxResults) {
 
         int nextSkip = startPosition;
         final DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
-        List<Integer> documentIds = new DocumentIdHitsList(hits);
+        List<Integer> documentIds = new DocumentIdHitsList(hits, searcher);
 
         final int totalCount = documentIds.size();
 
@@ -166,13 +162,16 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void addDocument(DocumentDomainObject document) throws IOException {
-        try (ClosableIndexWriter indexWriter = createIndexWriter(false)) {
+        try (IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.APPEND)) {
             addDocumentToIndex(document, indexWriter);
         }
     }
 
-    private ClosableIndexWriter createIndexWriter(boolean createIndex) throws IOException {
-        return new ClosableIndexWriter(directory, new AnalyzerImpl(), createIndex);
+    private IndexWriterCloseable createIndexWriter(IndexWriterConfig.OpenMode openMode) throws IOException {
+        final IndexWriterConfig config = new IndexWriterConfig(new AnalyzerImpl());
+        config.setOpenMode(openMode);
+
+        return new IndexWriterCloseable(directory, config);
     }
 
     private void addDocumentToIndex(DocumentDomainObject document, IndexWriter indexWriter) throws IOException {
@@ -181,7 +180,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void indexDocuments() throws IOException {
-        try (ClosableIndexWriter indexWriter = createIndexWriter(true)) {
+        try (IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.CREATE)) {
             for (Map.Entry<String, DocumentRepository> nameToRepositoryEntry : nameToCustomDocRepository.entrySet()) {
                 final String repositoryName = nameToRepositoryEntry.getKey();
                 log.info("Indexing docs from " + repositoryName + " document repository started.");
@@ -194,7 +193,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private void indexDocuments(Set<DocumentDomainObject> docsForIndexing, IndexWriter indexWriter) throws IOException {
+    private void indexDocuments(Set<DocumentDomainObject> docsForIndexing, IndexWriter indexWriter) {
         final int docsSize = docsForIndexing.size();
         final IntervalSchedule indexingLogSchedule = new IntervalSchedule(INDEXING_LOG_PERIOD__MILLISECONDS);
         int i = 0;
@@ -221,7 +220,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
 
         logIndexingCompleted(docsSize, indexingLogSchedule.getStopWatch());
-        optimizeIndex(indexWriter);
     }
 
     private void logIndexingStarting(int documentCount) {
@@ -243,14 +241,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         String humanReadableTime = HumanReadable.getHumanReadableTimeSpan(time);
         long timePerDocument = time / (numberOfDocuments + 1); // to prevent division by zero
         log.info("Indexed " + numberOfDocuments + " documents in " + humanReadableTime + ". " + timePerDocument + "ms per document.");
-    }
-
-    private void optimizeIndex(IndexWriter indexWriter) throws IOException {
-        StopWatch optimizeStopWatch = new StopWatch();
-        optimizeStopWatch.start();
-        indexWriter.optimize();
-        optimizeStopWatch.stop();
-        log.debug("Optimized index in " + optimizeStopWatch.getTime() + "ms");
     }
 
     public boolean isInconsistent() {
@@ -299,16 +289,18 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     // which violates behavioral contract by returning a copy of backing (this) list elements instead of a view.
     private static class DocumentIdHitsList extends AbstractList<Integer> {
 
-        private final Hits hits;
+        private final ScoreDoc[] hits;
+        private final IndexSearcher indexSearcher;
 
-        DocumentIdHitsList(Hits hits) {
+        DocumentIdHitsList(ScoreDoc[] hits, IndexSearcher indexSearcher) {
             this.hits = hits;
+            this.indexSearcher = indexSearcher;
         }
 
         @Override
         public Integer get(int index) {
             try {
-                return Integer.valueOf(hits.doc(index).get(DocumentIndex.FIELD__META_ID));
+                return Integer.valueOf(indexSearcher.doc(hits[index].doc).get(DocumentIndex.FIELD__META_ID));
             } catch (IOException e) {
                 throw new IndexException(e);
             }
@@ -316,48 +308,34 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
         @Override
         public int size() {
-            return hits.length();
+            return hits.length;
         }
     }
 
     /**
      * Wrapper used just to make it automatically closeable
      */
-    private class ClosableIndexSearcher extends IndexSearcher implements AutoCloseable {
-        ClosableIndexSearcher(String path) throws IOException {
-            super(path);
+    private static class IndexWriterCloseable extends IndexWriter implements AutoCloseable {
+        IndexWriterCloseable(File file, IndexWriterConfig config) throws IOException {
+            super(FSDirectory.open(file.toPath()), config);
         }
     }
 
     /**
      * Wrapper used just to make it automatically closeable
      */
-    private class ClosableIndexWriter extends IndexWriter implements AutoCloseable {
-        ClosableIndexWriter(File file, Analyzer a, boolean create) throws IOException {
-            super(file, a, create);
-        }
-    }
-
-    /**
-     * Wrapper used just to make it automatically closeable
-     */
-    private class IndexReaderCloseable implements AutoCloseable {
+    @Getter
+    private static class IndexReaderCloseable implements AutoCloseable {
         IndexReader reader;
 
         IndexReaderCloseable(File path) throws IOException {
-            this.reader = IndexReader.open(path);
+            this.reader = DirectoryReader.open(FSDirectory.open(path.toPath()));
         }
 
         @Override
         public void close() throws Exception {
             if (reader != null) {
                 reader.close();
-            }
-        }
-
-        public void delete(Term term) throws IOException {
-            if (reader != null) {
-                reader.delete(term);
             }
         }
     }

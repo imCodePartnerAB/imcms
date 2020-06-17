@@ -23,12 +23,13 @@ import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.util.BytesRef;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,6 +41,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class GetExistingDoc extends HttpServlet {
 
@@ -136,24 +139,24 @@ public class GetExistingDoc extends HttpServlet {
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
             final DocumentIndex index = documentMapper.getDocumentIndex();
-            BooleanQuery query = new BooleanQuery();
+            final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
             String searchString = req.getParameter("searchstring");
             String searchPrep = req.getParameter("search_prep");
             try {
                 if ("or".equalsIgnoreCase(searchPrep)) {
-                    addStringToQuery(searchString, query);
+                    addStringToQuery(searchString, queryBuilder);
                 } else {
                     String[] searchStrings = searchString.split("\\s+");
                     for (String string : searchStrings) {
-                        addStringToQuery(string, query);
+                        addStringToQuery(string, queryBuilder);
                     }
                 }
-            } catch (org.apache.lucene.queryParser.ParseException pe) {
+            } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
                 LOG.debug("Bad query: " + searchString, pe);
             }
 
             String[] docTypes = req.getParameterValues("doc_type");
-            addDocTypesToQuery(docTypes, query);
+            addDocTypesToQuery(docTypes, queryBuilder);
 
             DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
             Date startDate = null;
@@ -169,7 +172,7 @@ public class GetExistingDoc extends HttpServlet {
             } catch (ParseException ignored) {
             }
 
-            addDateRangesToQuery(startDate, endDate, req, query);
+            addDateRangesToQuery(startDate, endDate, req, queryBuilder);
 
             String sortBy = req.getParameter("sortBy");
 
@@ -188,8 +191,8 @@ public class GetExistingDoc extends HttpServlet {
                 sortOrderV.add(((LocalizedMessage) SORT_ORDERS_ARRAY[i][1]).toLocalizedString(user));
             }
 
-            LOG.debug("Query: " + query);
-            List searchResultDocuments = index.search(new SimpleDocumentQuery(query), user);
+            LOG.debug("Query: " + queryBuilder);
+            List searchResultDocuments = index.search(new SimpleDocumentQuery(queryBuilder.build()), user);
 
             if (0 == searchResultDocuments.size()) {
                 if (StringUtils.isNumeric(searchString)) {
@@ -397,16 +400,16 @@ public class GetExistingDoc extends HttpServlet {
         out.write(htmlOut);
     }
 
-    private void addDocTypesToQuery(String[] docTypes, BooleanQuery query) {
-        BooleanQuery docTypesQuery = new BooleanQuery();
+    private void addDocTypesToQuery(String[] docTypes, BooleanQuery.Builder queryBuilder) {
+        final BooleanQuery.Builder docTypesQueryBuilder = new BooleanQuery.Builder();
         for (int i = 0; null != docTypes && i < docTypes.length; i++) {
             String docType = docTypes[i];
-            docTypesQuery.add(new TermQuery(new Term("doc_type_id", docType)), false, false);
+            docTypesQueryBuilder.add(new TermQuery(new Term("doc_type_id", docType)), Occur.SHOULD);
         }
-        query.add(docTypesQuery, true, false);
+        queryBuilder.add(docTypesQueryBuilder.build(), Occur.MUST);
     }
 
-    private void addDateRangesToQuery(Date startDate, Date endDate, HttpServletRequest req, BooleanQuery query) {
+    private void addDateRangesToQuery(Date startDate, Date endDate, HttpServletRequest req, BooleanQuery.Builder queryBuilder) {
         if (null != startDate || null != endDate) {
             String[] wantedDateFields = req.getParameterValues("include_doc");
             for (int i = 0; null != wantedDateFields && i < wantedDateFields.length; i++) {
@@ -419,29 +422,24 @@ public class GetExistingDoc extends HttpServlet {
                 } else {
                     continue;
                 }
-                Term startDateTerm = null != startDate
-                        ? new Term(wantedIndexDateField, DateField.dateToString(startDate)) : null;
-                Term endDateTerm = null != endDate
-                        ? new Term(wantedIndexDateField,
-                        DateField.dateToString(addOneDayToDate(endDate)))
-                        : null;
-                RangeQuery dateRangeQuery = new RangeQuery(startDateTerm, endDateTerm, true);
-                query.add(dateRangeQuery, true, false);
+
+                final BytesRef startDateRef = startDate == null ? null : new BytesRef(DateTools.dateToString(startDate, DateTools.Resolution.MINUTE));
+                final BytesRef endDateRef = endDate == null ? null : new BytesRef(DateTools.dateToString(endDate, DateTools.Resolution.MINUTE));
+
+                final TermRangeQuery dateRangeQuery = new TermRangeQuery(wantedIndexDateField,
+                        startDateRef,
+                        endDateRef,
+                        true, true);
+
+                queryBuilder.add(dateRangeQuery, Occur.MUST);
             }
         }
     }
 
-    private Date addOneDayToDate(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, 1);
-        return calendar.getTime();
-    }
-
-    private void addStringToQuery(String string, BooleanQuery query)
-            throws org.apache.lucene.queryParser.ParseException {
-        Query textQuery = new DefaultQueryParser().parse(string);
-        query.add(textQuery, true, false);
+    private void addStringToQuery(String string, BooleanQuery.Builder queryBuilder)
+            throws org.apache.lucene.queryparser.classic.ParseException {
+        final Query textQuery = new DefaultQueryParser().parse(string);
+        queryBuilder.add(textQuery, Occur.MUST);
     }
 
     private class DocumentDomainObjectComparator implements Comparator {

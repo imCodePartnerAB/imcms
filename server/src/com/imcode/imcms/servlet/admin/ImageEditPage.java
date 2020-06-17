@@ -33,7 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -48,6 +48,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -509,20 +511,21 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     private Query createImageFileDocumentsQuery() {
-        BooleanQuery imageMimeTypeQuery = new BooleanQuery();
+        final BooleanQuery.Builder imageMimeTypeQueryBuilder = new BooleanQuery.Builder();
 
         for (String imageMimeType : IMAGE_MIME_TYPES) {
-            imageMimeTypeQuery.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), false, false);
+            imageMimeTypeQueryBuilder.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), Occur.SHOULD);
         }
 
-        TermQuery fileDocumentQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""
+        final TermQuery fileDocumentQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""
                 + DocumentTypeDomainObject
                 .FILE_ID));
 
-        BooleanQuery booleanQuery = new BooleanQuery();
-        booleanQuery.add(fileDocumentQuery, true, false);
-        booleanQuery.add(imageMimeTypeQuery, true, false);
-        return booleanQuery;
+        final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+        booleanQueryBuilder.add(fileDocumentQuery, Occur.MUST);
+        booleanQueryBuilder.add(imageMimeTypeQueryBuilder.build(), Occur.MUST);
+
+        return booleanQueryBuilder.build();
     }
 
     public LocalizedMessage getHeading() {
@@ -589,19 +592,21 @@ public class ImageEditPage extends OkCancelPage {
 
     private static class HeadlineWildcardQueryParser implements QueryParser {
         public Query parse(String queryString) {
-            String[] queryStrings = StringUtils.split(queryString);
-            BooleanQuery wildcardsQuery = new BooleanQuery();
+            final String[] queryStrings = StringUtils.split(queryString);
+            final BooleanQuery.Builder wildcardsQueryBuilder = new BooleanQuery.Builder();
             for (String queryTerm : queryStrings) {
-                wildcardsQuery.add(new WildcardQuery(new Term(DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
-                        + "*")), true, false);
+                wildcardsQueryBuilder.add(new WildcardQuery(new Term(DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
+                        + "*")), Occur.MUST);
             }
-            BooleanQuery booleanQuery = new BooleanQuery();
-            booleanQuery.add(wildcardsQuery, false, false);
+
+            final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+            booleanQueryBuilder.add(wildcardsQueryBuilder.build(), Occur.SHOULD);
             try {
-                booleanQuery.add(new DefaultQueryParser().parse(queryString), false, false);
+                booleanQueryBuilder.add(new DefaultQueryParser().parse(queryString), Occur.SHOULD);
             } catch (ParseException e) {
             }
-            return booleanQuery;
+
+            return booleanQueryBuilder.build();
         }
     }
 
