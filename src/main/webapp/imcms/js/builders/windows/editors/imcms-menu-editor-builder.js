@@ -34,7 +34,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
+        let topPointMenu = 178; // top point menu for set item before item in the top position. Improve it if you can
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
