@@ -779,7 +779,6 @@ define("imcms-document-editor-builder",
                     bottom: $(this).offset().top + $(this).outerHeight()
                 };
             });
-            console.log(frameTop + ' top');
             return checkFramePositioning(allMenuDocObjArray, frameTop);
         }
 

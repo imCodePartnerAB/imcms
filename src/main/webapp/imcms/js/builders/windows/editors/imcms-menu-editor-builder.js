@@ -400,7 +400,7 @@ define("imcms-menu-editor-builder",
             $frameLayout.addClass("imcms-frame-layout")
                 .css({
                     "display": "none",
-                    "position": "fixed",
+                    "position": "absolute",
                     "top": 0,
                     "left": 0,
                     "width": "100%",
@@ -437,6 +437,7 @@ define("imcms-menu-editor-builder",
                 "left": event.clientX
             });
 
+            $frame.addClass("imcms-document-items-list__document-items");
             $frame.addClass("imcms-menu-items--frame");
 
             $frame.appendTo("body");
