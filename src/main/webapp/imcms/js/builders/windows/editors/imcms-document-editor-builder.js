@@ -19,7 +19,7 @@ define("imcms-document-editor-builder",
 
         let TREE_SORT = 'TREE_SORT';
         let WORKING_VERSION = 0;
-        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
+        let topPointMenu = 178; // top point menu for set item before item in the top position. Improve it if you can
 
         let isMouseDown = false,
             mouseCoords = {
@@ -779,7 +779,7 @@ define("imcms-document-editor-builder",
                     bottom: $(this).offset().top + $(this).outerHeight()
                 };
             });
-
+            console.log(frameTop + ' top');
             return checkFramePositioning(allMenuDocObjArray, frameTop);
         }
 

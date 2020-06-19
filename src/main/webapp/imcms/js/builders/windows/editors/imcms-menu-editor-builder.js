@@ -34,7 +34,9 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let topPointMenu = 178; // top point menu for set item before item in the top position. Improve it if you can
+        let topPointMenu = 178; // top point menu for set item before item in the top position.
+        // todo: maybe need use getFirstItemInMenuArea().offset().top - 4 or something like this? Same in doc-editor
+
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
