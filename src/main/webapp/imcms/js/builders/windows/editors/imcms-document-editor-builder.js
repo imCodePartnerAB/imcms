@@ -932,7 +932,7 @@ define("imcms-document-editor-builder",
                 class: "imcms-flex--flex-3",
             });
             $docItemTitle.modifiers = ["title"];
-            !document.isShownTitle && $docItemTitle.modifiers.push("notShownTitle");
+            (!document.isShownTitle && undefined !== document.isShownTitle) && $docItemTitle.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($docItemTitle, title);
 
             const $docItemAlias = components.texts.titleText("<div>", document.alias && ("/" + document.alias), {
@@ -947,7 +947,7 @@ define("imcms-document-editor-builder",
                 docModifiedDate = (document.modified.date && document.modified.time)
                     ? `${document.modified.date} ${document.modified.time}`
                     : "";
-                docModifiedBy = document.created.by;
+                docModifiedBy = document.modified.by;
             } else {
                 docModifiedDate = document.modified;
                 docModifiedBy = document.modifiedBy;
