@@ -272,6 +272,8 @@ define("imcms-menu-editor-builder",
             }
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
+            $origin.removeClass("imcms-document-items-list__document-items")
+                .addClass("imcms-document-items-list__document-items");
 
             if (frameTop < topPointMenu) { // top point in first item frame menu
                 menuDoc.before($origin);
