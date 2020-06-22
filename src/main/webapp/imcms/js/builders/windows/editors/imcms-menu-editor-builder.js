@@ -319,7 +319,7 @@ define("imcms-menu-editor-builder",
             ;
 
             // get all menu doc coords
-            allMenuDocObjArray = getMenuItemsParam(menuDocs, allMenuDocObjArray);
+            allMenuDocObjArray = getMenuItemsParam(menuDocs);
 
             let menuDoc = null,
                 placeStatus = null
