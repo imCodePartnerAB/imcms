@@ -21,6 +21,10 @@ public interface TemplateService {
 
     Optional<Template> get(String name);
 
+    Path getTemplateAdminPath(String templateName);
+
+    Path getPhysicalPathTemplateAdmin(String templateName);
+
     Path getPhysicalPath(String name);
 
     Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode);

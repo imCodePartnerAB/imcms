@@ -37,14 +37,16 @@ public class DefaultTemplateService implements TemplateService {
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
     private final TextDocumentTemplateService textDocumentTemplateService;
+    private final Path templateAdminPath;
 
     DefaultTemplateService(TemplateRepository templateRepository,
                            @Value("WEB-INF/templates/text") File templateDirectory,
-                           TextDocumentTemplateService textDocumentTemplateService) {
+                           TextDocumentTemplateService textDocumentTemplateService, @Value("${TemplatePath}") Path templateAdminPath) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
         this.textDocumentTemplateService = textDocumentTemplateService;
+        this.templateAdminPath = templateAdminPath.resolve("admin");
     }
 
     @Override
@@ -74,17 +76,18 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     @Override
+    public Path getTemplateAdminPath(String template) {
+        return templateAdminPath.resolve(template);
+    }
+
+    @Override
+    public Path getPhysicalPathTemplateAdmin(String templateName) {
+        return getPhysicalPathTemplateFromDirectory(templateAdminPath.toFile(), templateName);
+    }
+
+    @Override
     public Path getPhysicalPath(String name) {
-        for (String extension : templateExtensions) {
-            final String templateFileName = name + "." + extension;
-            final File templateFile = new File(templateDirectory, templateFileName);
-
-            if (templateFile.exists()) {
-                return templateFile.toPath();
-            }
-        }
-
-        return null;
+        return getPhysicalPathTemplateFromDirectory(templateDirectory, name);
     }
 
     @Override
@@ -183,6 +186,19 @@ public class DefaultTemplateService implements TemplateService {
         }
 
         return false;
+    }
+
+    private Path getPhysicalPathTemplateFromDirectory(File templateDirectory, String templateName) {
+        for (String extension : templateExtensions) {
+            final String templateFileName = templateName + "." + extension;
+            final File templateFile = new File(templateDirectory, templateFileName);
+
+            if (templateFile.exists()) {
+                return templateFile.toPath();
+            }
+        }
+
+        return null;
     }
 
     private String getPathWithoutExtension(String fileName) {
