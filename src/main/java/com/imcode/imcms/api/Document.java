@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.RestrictedPermission;
@@ -142,6 +144,9 @@ public class Document implements Serializable {
         internalDocument.addCategory(category);
     }
 
+    /**
+     * @deprecated - use better {@link com.imcode.imcms.domain.dto.DocumentDTO#setCategories(Set)}
+     */
     @Deprecated
     public void addCategory(com.imcode.imcms.api.Category category) {
         internalDocument.addCategory(category);
@@ -162,11 +167,17 @@ public class Document implements Serializable {
         return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser(), getId());
     }
 
+    /**
+     * @deprecated - use better {@link DocumentDTO#getRestrictedPermissions()}
+     */
     @Deprecated
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
         return new DocumentPermissionSet(hasEditTextOption(Meta.Permission.RESTRICTED_1));
     }
 
+    /**
+     * @deprecated - use better {@link DocumentDTO#getRestrictedPermissions()}
+     */
     @Deprecated
     public DocumentPermissionSet getPermissionSetRestrictedTwo() {
         return new DocumentPermissionSet(hasEditTextOption(Meta.Permission.RESTRICTED_2));
@@ -182,6 +193,9 @@ public class Document implements Serializable {
         return permissionOptional.orElse(new RestrictedPermissionJPA()).isEditText();
     }
 
+    /**
+     * @deprecated - use better {@link DocumentDTO#getRoleIdToPermission()}
+     */
     @Deprecated
     public Map<Role, DocumentPermissionSet> getRolesMappedToPermissions() {
         final Map<Role, DocumentPermissionSet> rolesMappedToPermissions = new HashMap<>();
@@ -202,6 +216,7 @@ public class Document implements Serializable {
 
     /**
      * @return An array of Categories, an empty if no one found.
+     * @deprecated - use better {@link CategoryService#getAll()}
      */
     @SuppressWarnings("unused")
     @Deprecated
@@ -325,6 +340,9 @@ public class Document implements Serializable {
 
     /**
      * @return an array of Categories, empty array if no one found.
+     * @deprecated - use better
+     *{@link com.imcode.imcms.domain.service.CategoryService#getCategoriesByCategoryType(Integer id)
+     * @param id - categoryType identifier}
      */
     @SuppressWarnings("unused")
     @Deprecated
