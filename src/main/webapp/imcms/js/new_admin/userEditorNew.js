@@ -51,6 +51,9 @@ function onSubmit(e) {
         return;
     }
 
+    const chooseLang = $('#languages-select-container').find('input[name=langCode]').val();
+    alert(texts.alertInfoLanguage + chooseLang + ')');
+
     $('[name=userPhoneNumber]').removeAttr('disabled');
 }
 
