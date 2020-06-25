@@ -530,6 +530,7 @@ const texts = {
             }
         },
         languageFlags: {
+            alertInfoLanguage: 'Språket kommer att gälla efter ny inloggning (lang:',
             error: {
                 loadFailed: 'Misslyckades med att ladda språk. Försök igen'
             }
@@ -1436,6 +1437,7 @@ const texts = {
             }
         },
         languageFlags: {
+            alertInfoLanguage: 'Language will effect after new login (lang: ',
             error: {
                 loadFailed: 'Failed to load languages. Try again'
             }
