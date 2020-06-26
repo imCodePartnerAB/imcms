@@ -45,13 +45,26 @@
     width: 100%;
 }
 
+.imcms-menu-editor-body__left-side .imcms-switch-block__button {
+    margin: 27px 0 10px;
+    padding-top: 23px;
+}
+
+.imcms-menu-editor-body__left-side .imcms-switch-block__active-info {
+    margin: 27px 5px 10px;
+    padding-top: 10px;
+}
+
 .imcms-menu-editor-head__new-button {
     margin-right: auto;
 }
 
-.imcms-menu-editor-head__type-sort-block {
+.imcms-menu-editor-head__type-sort-block,
+.imcms-menu-editor-head__switch-multi-delete {
     width: 30%;
     min-width: fit-content;
+    display: flex;
+    margin-right: auto;
 }
 
 .imcms-menu-editor-head {

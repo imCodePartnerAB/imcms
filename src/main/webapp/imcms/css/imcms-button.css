@@ -379,3 +379,11 @@ a[class^="imcms"].imcms-button--neutral:hover {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.imcms-button--switch-on {
+    background: url("/imcms/images/controls/button_on.png") no-repeat center;
+}
+
+.imcms-button--switch-off {
+    background: url("/imcms/images/controls/button_off.png") no-repeat center;
+}
