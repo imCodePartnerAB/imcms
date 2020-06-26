@@ -22,6 +22,9 @@ define("imcms-menu-editor-builder",
         let MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
         let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         let TREE_SORT = 'TREE_SORT';
+        const classButtonOn = "imcms-button--switch-on";
+        const classButtonOff = "imcms-button--switch-off";
+
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let $title = $('<a>');
         let localizeTypesSort = [
@@ -960,6 +963,32 @@ define("imcms-menu-editor-builder",
             return $newDocButtonContainer;
         }
 
+        function buildSwitchesOffOnButtons() {
+
+
+            function switchButtonAction() {
+                const $switchBlockButton = $('.imcms-switch-block__button');
+                const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
+                if ($switchBlockButton.hasClass(classButtonOn)) {
+                    $switchBlockButton.removeClass(classButtonOn).addClass(classButtonOff);
+                    $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
+                } else if ($switchBlockButton.hasClass(classButtonOff)) {
+                    $switchBlockButton.removeClass(classButtonOff).addClass(classButtonOn);
+                    $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
+                }
+            }
+
+            return new BEM({
+                block: 'imcms-switch-block',
+                elements: {
+                    'active-info': components.texts.infoText('<div>', texts.multiRemoveInfoOff),
+                    'button': components.buttons.switchOffButton({
+                        click: switchButtonAction
+                    })
+                }
+            }).buildBlockStructure('<div>');
+        }
+
         let mapTypesSort = new Map();
 
         function buildTypeSortingSelect(opts) {
@@ -1059,6 +1088,7 @@ define("imcms-menu-editor-builder",
                 block: 'imcms-menu-editor-head',
                 elements: {
                     'new-button': buildMenuItemNewButton(),
+                    'switch-multi-delete': buildSwitchesOffOnButtons(),
                     'type-sort-block': buildTypeSortingSelect(opts)
                 }
             }).buildBlockStructure('<div>')
