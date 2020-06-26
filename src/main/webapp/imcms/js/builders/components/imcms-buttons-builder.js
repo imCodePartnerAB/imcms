@@ -54,6 +54,14 @@ module.exports = {
     cropping: getButtonBuilder('crop'),
     openInNewWindow: getButtonBuilder('open-in-new-window'),
     fit: getButtonBuilder('fit'),
+    switch_on: getButtonBuilder('switch-on'),
+    switch_off: getButtonBuilder('switch-off'),
+    switchOnButton: function (attributes) {
+        return this.switch_on('<button>', attributes);
+    },
+    switchOffButton: function (attributes) {
+        return this.switch_off('<button>', attributes);
+    },
     negativeButton: function (attributes) {
         return this.negative('<button>', attributes);
     },
