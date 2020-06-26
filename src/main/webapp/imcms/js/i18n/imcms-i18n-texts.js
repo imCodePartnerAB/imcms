@@ -385,7 +385,9 @@ const texts = {
                     modifiedDateAsc: 'Ändrade (nya först)',
                     modifiedDateDesc: 'Ändrade (gamla först)',
 
-                }
+                },
+                multiRemoveInfoOn: 'Flera borttagna aktiverade ',
+                multiRemoveInfoOff: 'Flera borttagna inaktiverade ',
             },
             loop: {
                 title: "Redaktörslinga",
@@ -1292,7 +1294,9 @@ const texts = {
                     modifiedDateAsc: 'Changed (new first)',
                     modifiedDateDesc: 'Changed (old first)',
 
-                }
+                },
+                multiRemoveInfoOn: 'Multi-remove enabled ',
+                multiRemoveInfoOff: 'Multi-remove disabled ',
             },
             loop: {
                 title: "Loop Editor",
