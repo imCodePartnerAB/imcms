@@ -982,7 +982,10 @@ define("imcms-menu-editor-builder",
 
         function changeControls() {
             const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
-
+            const enabledMultiRemove = isMultiRemoveModeEnabled();
+            const controlsClass = enabledMultiRemove
+                ? 'imcms-document-item__multi-remove-controls'
+                : 'imcms-document-item__controls';
             menuDocs.each(function () {
                 const $item = $(this).first();
                 const menuItemId = $item.attr("data-document-id");
@@ -990,10 +993,12 @@ define("imcms-menu-editor-builder",
                 if ($item.find(".children-triangle").length === 0) {
                     $item.find(".imcms-controls")
                         .last()
-                        .replaceWith(buildMenuItemControls(menuItem, isMultiRemoveModeEnabled()));
+                        .replaceWith(buildMenuItemControls(menuItem, enabledMultiRemove)
+                            .addClass(controlsClass));
                 } else {
                     $item.find(".imcms-controls").slice(1, 2)
-                        .replaceWith(buildMenuItemControls(menuItem, isMultiRemoveModeEnabled()));
+                        .replaceWith(buildMenuItemControls(menuItem, enabledMultiRemove)
+                            .addClass(controlsClass));
                 }
             });
         }
@@ -1009,18 +1014,17 @@ define("imcms-menu-editor-builder",
         function buildSwitchesOffOnButtons() {
 
             function switchButtonAction() {
-                const $switchBlockButton = $('.imcms-switch-block__button');
+                const $switchButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
                 if (isMultiRemoveModeEnabled()) {
-                    $switchBlockButton.removeClass(classButtonOn).addClass(classButtonOff);
+                    $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
-
-                } else if ($switchBlockButton.hasClass(classButtonOff)) {
-                    $switchBlockButton.removeClass(classButtonOff).addClass(classButtonOn);
+                } else if ($switchButton.hasClass(classButtonOff)) {
+                    $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
-
-                    changeControls();
                 }
+
+                changeControls();
             }
 
             return new BEM({
@@ -1029,9 +1033,18 @@ define("imcms-menu-editor-builder",
                     'active-info': components.texts.infoText('<div>', texts.multiRemoveInfoOff),
                     'button': components.buttons.switchOffButton({
                         click: switchButtonAction
+                    }),
+                    'multi-remove': components.buttons.positiveButton({
+                        text: 'remove',
+                        click: removeEnabledMenuItems
                     })
                 }
             }).buildBlockStructure('<div>');
+        }
+
+
+        function removeEnabledMenuItems() {
+            alert('remove!');
         }
 
         let mapTypesSort = new Map();
