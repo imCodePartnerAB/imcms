@@ -54,5 +54,5 @@ module.exports = {
 
     permalink: onClick => buildControl('permalink', onClick),
 
-    buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
+    buildControlsBlock: (tag, controls, attributes) => controlsBEM.buildBlock(tag, controls, attributes || {}, "control")
 };
