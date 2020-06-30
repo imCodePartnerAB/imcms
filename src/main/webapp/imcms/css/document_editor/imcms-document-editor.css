@@ -142,6 +142,15 @@
     float: right;
 }
 
+.imcms-document-item__multi-remove-controls {
+    display: block;
+    padding: 14px 0;
+    position: absolute;
+    top: 0;
+    right: 15px;
+    float: right;
+}
+
 .imcms-document-item:hover {
     background: #d0e9f9;
 }

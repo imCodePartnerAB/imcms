@@ -117,6 +117,15 @@
     display: none;
 }
 
+.imcms-menu-items--frame .imcms-document-item .imcms-document-item__multi-remove-controls:last-child {
+    display: block;
+}
+
+.imcms-switch-block__multi-remove {
+    margin: 33px 10px 16px;
+    padding: 3px 12px;
+}
+
 @media screen and (max-width: 1500px) {
     .imcms-menu-editor *,
     .imcms-menu-editor *::placeholder {

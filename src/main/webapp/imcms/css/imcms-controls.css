@@ -17,12 +17,14 @@
     position: relative;
 }
 
-.imcms-menu-list .imcms-document-items__document-item > .imcms-document-item__controls {
+.imcms-menu-list .imcms-document-items__document-item > .imcms-document-item__controls,
+.imcms-menu-list .imcms-document-items__document-item > .imcms-document-item__multi-remove-controls {
     right: auto;
     left: 0;
 }
 
-.imcms-menu-list .imcms-document-item__controls:last-child {
+.imcms-menu-list .imcms-document-item__controls:last-child,
+.imcms-menu-list .imcms-document-item__multi-remove-controls:last-child {
     padding: 14px 5px;
     left: auto;
     right: 0;
