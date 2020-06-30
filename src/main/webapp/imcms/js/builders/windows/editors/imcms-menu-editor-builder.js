@@ -151,12 +151,12 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function getMenuDocByObjId(obj) {
+        function getMenuDocByObjId(objId) {
             const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
             let menuDoc = null;
 
             menuDocs.each(function () {
-                if ($(this).attr("data-document-id") === obj) {
+                if ($(this).attr("data-document-id") === objId) {
                     menuDoc = $(this)
                 }
             });
@@ -661,20 +661,37 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function buildMenuItemControls(menuElementTree) {
+        //mapping need for changes (remove) controls in items
+        function mapDocumentToMenuItem(document) {
+            return {
+                documentId: document.id,
+                type: document.type
+            }
+        }
 
-            const $controlRemove = components.controls.remove(function () {
-                removeMenuItem.call(this, menuElementTree.documentId);
-            });
+        function isMultiRemoveModeEnabled() {
+            return $('.imcms-switch-block__button').hasClass(classButtonOn);
+        }
+
+        function buildMenuItemControls(menuElementTree, enabledMultiRemoveMode) {
+            const menuItemId = menuElementTree.documentId;
+            const $multiRemoveControl = buildMultiRemoveCheckBox(menuItemId);
+            $multiRemoveControl.modifiers = ['multi-remove'];
+
+            const $controlRemove = enabledMultiRemoveMode
+                ? $multiRemoveControl
+                : components.controls.remove(function () {
+                    removeMenuItem.call(this, menuElementTree.documentId);
+                });
             components.overlays.defaultTooltip($controlRemove, texts.remove);
 
             const $controlEdit = components.controls.edit(() => {
-                pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
+                pageInfoBuilder.build(menuItemId, refreshMenuItem, menuElementTree.type);
             });
             components.overlays.defaultTooltip($controlEdit, texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
-                docCopyRestApi.copy(menuElementTree.documentId)
+                docCopyRestApi.copy(menuItemId)
                     .done(copiedDocument => {
 
                         documentEditorBuilder.incrementDocumentNumber(1);
@@ -807,7 +824,7 @@ define("imcms-menu-editor-builder",
 
             elements.push($currentVersion, $documentStatus);
 
-            const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree)];
+            const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree, isMultiRemoveModeEnabled())];
 
             return new BEM({
                 block: "imcms-document-item",
@@ -963,18 +980,46 @@ define("imcms-menu-editor-builder",
             return $newDocButtonContainer;
         }
 
-        function buildSwitchesOffOnButtons() {
+        function changeControls() {
+            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
 
+            menuDocs.each(function () {
+                const $item = $(this).first();
+                const menuItemId = $item.attr("data-document-id");
+                const menuItem = mapDocumentToMenuItem(documentEditorBuilder.getDocumentById(menuItemId));
+                if ($item.find(".children-triangle").length === 0) {
+                    $item.find(".imcms-controls")
+                        .last()
+                        .replaceWith(buildMenuItemControls(menuItem, isMultiRemoveModeEnabled()));
+                } else {
+                    $item.find(".imcms-controls").slice(1, 2)
+                        .replaceWith(buildMenuItemControls(menuItem, isMultiRemoveModeEnabled()));
+                }
+            });
+        }
+
+        function buildMultiRemoveCheckBox(menuItemId) {
+            return components.checkboxes.imcmsCheckbox('<div>', {
+                value: menuItemId,
+                checked: 'checked'
+            });
+        }
+
+
+        function buildSwitchesOffOnButtons() {
 
             function switchButtonAction() {
                 const $switchBlockButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
-                if ($switchBlockButton.hasClass(classButtonOn)) {
+                if (isMultiRemoveModeEnabled()) {
                     $switchBlockButton.removeClass(classButtonOn).addClass(classButtonOff);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
+
                 } else if ($switchBlockButton.hasClass(classButtonOff)) {
                     $switchBlockButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
+
+                    changeControls();
                 }
             }
 
