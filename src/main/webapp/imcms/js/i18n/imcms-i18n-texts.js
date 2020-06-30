@@ -388,6 +388,7 @@ const texts = {
                 },
                 multiRemoveInfoOn: 'Flera borttagna aktiverade ',
                 multiRemoveInfoOff: 'Flera borttagna inaktiverade ',
+                multiRemove: 'Remove',
             },
             loop: {
                 title: "Redaktörslinga",
@@ -1297,6 +1298,7 @@ const texts = {
                 },
                 multiRemoveInfoOn: 'Multi-remove enabled ',
                 multiRemoveInfoOff: 'Multi-remove disabled ',
+                multiRemove: 'Avlägsna',
             },
             loop: {
                 title: "Loop Editor",

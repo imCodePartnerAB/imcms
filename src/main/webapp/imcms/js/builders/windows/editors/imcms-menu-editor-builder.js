@@ -1035,7 +1035,7 @@ define("imcms-menu-editor-builder",
                         click: switchButtonAction
                     }),
                     'multi-remove': components.buttons.positiveButton({
-                        text: 'remove',
+                        text: texts.multiRemove,
                         click: removeEnabledMenuItems
                     })
                 }
