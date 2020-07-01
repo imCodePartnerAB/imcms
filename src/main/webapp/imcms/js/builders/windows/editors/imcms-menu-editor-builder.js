@@ -529,11 +529,16 @@ define("imcms-menu-editor-builder",
             return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
-        function removeMenuItemFromEditor(currentMenuItem) {
-            const submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
+        function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
+            const submenuItem = activeMultiRemove
+                ? currentMenuItem.find(".imcms-menu-items")
+                : currentMenuItem.parent().find(".imcms-menu-items"),
+
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                 currentMenuItemWrap = parentMenuItem.parent(),
-                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-document-item__info--id").text());
+                currentMenuItemId = activeMultiRemove
+                    ? parseInt(currentMenuItem.data('document-id'))
+                    : parseInt(currentMenuItem.find(".imcms-document-item__info--id").text());
 
             let submenuDocIds = [];
 
@@ -675,7 +680,7 @@ define("imcms-menu-editor-builder",
 
         function buildMenuItemControls(menuElementTree, enabledMultiRemoveMode) {
             const menuItemId = menuElementTree.documentId;
-            const $multiRemoveControl = buildMultiRemoveCheckBox(menuItemId);
+            const $multiRemoveControl = buildMultiRemoveCheckBox();
             $multiRemoveControl.modifiers = ['multi-remove'];
 
             const $controlRemove = enabledMultiRemoveMode
@@ -990,24 +995,35 @@ define("imcms-menu-editor-builder",
                 const $item = $(this).first();
                 const menuItemId = $item.attr("data-document-id");
                 const menuItem = mapDocumentToMenuItem(documentEditorBuilder.getDocumentById(menuItemId));
-                if ($item.find(".children-triangle").length === 0) {
-                    $item.find(".imcms-controls")
-                        .last()
+                if (itemHasChildrenTriangle($item)) {
+                    $item.find(".imcms-controls").slice(1, 2)
                         .replaceWith(buildMenuItemControls(menuItem, enabledMultiRemove)
                             .addClass(controlsClass));
                 } else {
-                    $item.find(".imcms-controls").slice(1, 2)
+                    $item.find(".imcms-controls")
+                        .last()
                         .replaceWith(buildMenuItemControls(menuItem, enabledMultiRemove)
                             .addClass(controlsClass));
                 }
             });
         }
 
-        function buildMultiRemoveCheckBox(menuItemId) {
+        function itemHasChildrenTriangle($menuItem) {
+            return $menuItem.find(".children-triangle").length !== 0;
+        }
+
+        function buildMultiRemoveCheckBox() {
             return components.checkboxes.imcmsCheckbox('<div>', {
-                value: menuItemId,
-                checked: 'checked'
+                value: true,
+                checked: 'checked',
+                change: changeValueCheckBox
             });
+        }
+
+        function changeValueCheckBox() {
+            const $this = $(this);
+            const newVal = $this.is(":checked");
+            $this.val(newVal);
         }
 
 
@@ -1044,7 +1060,31 @@ define("imcms-menu-editor-builder",
 
 
         function removeEnabledMenuItems() {
-            alert('remove!');
+            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+
+            menuDocs.each(function () {
+                const $item = $(this).first();
+
+                if (isActiveCheckBoxMultiRemoveInMenuItem($item, itemHasChildrenTriangle($item))) {
+                    removeMenuItemFromEditor($item, true);
+                }
+            });
+
+            function isActiveCheckBoxMultiRemoveInMenuItem($item, isHasChildren) {
+                let isCheckedItem;
+
+                if (isHasChildren) {
+                    isCheckedItem = $item.find(".imcms-controls")
+                        .slice(1, 2)
+                        .find('.imcms-controls__control--multi-remove')[0].firstChild.checked;
+                } else {
+                    isCheckedItem = $item.find(".imcms-controls")
+                        .last()
+                        .find('.imcms-controls__control--multi-remove')[0].firstChild.checked;
+                }
+
+                return isCheckedItem;
+            }
         }
 
         let mapTypesSort = new Map();
