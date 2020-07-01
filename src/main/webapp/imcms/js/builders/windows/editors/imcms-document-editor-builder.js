@@ -761,6 +761,11 @@ define("imcms-document-editor-builder",
             }
         }
 
+        function getFirstItemInMenuArea() {
+            const menuDocs = get$menuItemsList().find(menuItemsSelector);
+            return menuDocs.first();
+        }
+
         function getDocumentParent() {
             const allMenuDocObjArray = {},
                 itemTree = get$menuItemsList(),
