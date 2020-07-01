@@ -124,6 +124,7 @@
 .imcms-switch-block__multi-remove {
     margin: 33px 10px 16px;
     padding: 3px 12px;
+    display: none;
 }
 
 @media screen and (max-width: 1500px) {

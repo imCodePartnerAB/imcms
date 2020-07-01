@@ -1032,12 +1032,15 @@ define("imcms-menu-editor-builder",
             function switchButtonAction() {
                 const $switchButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
+                const $removeButton = $('.imcms-switch-block__multi-remove');
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
+                    $removeButton.css('display', 'none');
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
+                    $removeButton.css('display', 'block');
                 }
 
                 changeControls();
