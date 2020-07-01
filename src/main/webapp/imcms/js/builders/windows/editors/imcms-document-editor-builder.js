@@ -744,7 +744,9 @@ define("imcms-document-editor-builder",
             });
 
             if (frameTop < topPointMenu) {
+                menuDoc = getFirstItemInMenuArea();
                 placeStatus = false;
+                createMenuItemFrame(menuDoc, placeStatus, frameTop);
             }
 
             // highlightingMenuDoc
