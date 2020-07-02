@@ -341,7 +341,7 @@ public class Document implements Serializable {
     /**
      * @return an array of Categories, empty array if no one found.
      * @deprecated - use better
-     *{@link com.imcode.imcms.domain.service.CategoryService#getCategoriesByCategoryType(Integer id)
+     * {@link CategoryService#getCategoriesByCategoryType(Integer)}
      */
     @SuppressWarnings("unused")
     @Deprecated
