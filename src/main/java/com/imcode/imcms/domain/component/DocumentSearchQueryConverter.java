@@ -73,7 +73,7 @@ public class DocumentSearchQueryConverter {
 
     public SolrQuery convertToSolrQuery(String searchQuery) {
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
-        prepareSolrQueryPaging(null, solrQuery);
+        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery);
         prepareSolrIsSuperAdminQuery(Imcms.getUser(), solrQuery);
 
         return solrQuery;
@@ -81,7 +81,7 @@ public class DocumentSearchQueryConverter {
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
         PageRequestDTO page;
-        if (searchQuery != null) {
+        if (searchQuery.getTerm() != null) {
             page = searchQuery.getPage();
         } else {
             page = new PageRequestDTO(DEFAULT_MAX_SIZE);
