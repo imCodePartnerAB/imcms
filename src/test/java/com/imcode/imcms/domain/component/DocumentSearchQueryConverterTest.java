@@ -47,7 +47,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() {
-        searchQueryDTO = new SearchQueryDTO();
+        searchQueryDTO = new SearchQueryDTO("");
     }
 
     @Test

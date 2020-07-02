@@ -95,7 +95,7 @@ class DocumentIndexServiceOpsTest {
     @BeforeEach
     public void createSolrInputDocuments() throws IOException, SolrServerException {
 
-        searchQueryDTO = new SearchQueryDTO();
+        searchQueryDTO = new SearchQueryDTO("");
 
         if (!addedInitDocuments) {
             for (int i = 1; i <= documentSize; i++) {
