@@ -103,7 +103,6 @@ define("imcms-document-editor-builder",
 
             docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
-                    pushDocumentsInArray(documentList);
                     if (!documentList || (documentList.length === 0)) {
                         sendSearchDocRequest = false;
                         errorMsg.slideDown();
@@ -1154,11 +1153,12 @@ define("imcms-document-editor-builder",
         function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read()
                 .done(documentList => {
-                    incrementDocumentNumber(documentList.length);
-                    $editorBody = buildEditorBody(documentList, opts);
+                    pushDocumentsInArray(documentList);
+                    const newDocsList = documentList.slice(0, 100);
+                    incrementDocumentNumber(newDocsList.length);
+                    $editorBody = buildEditorBody(newDocsList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
-                    pushDocumentsInArray(documentList);
                 })
                 .fail(() => {
                     errorMsg.slideDown();
