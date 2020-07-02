@@ -22,4 +22,8 @@ public class SearchQueryDTO implements Serializable {
     private List<Integer> categoriesId;
 
     private PageRequestDTO page;
+
+    public SearchQueryDTO(String term) {
+        this.term = term;
+    }
 }
