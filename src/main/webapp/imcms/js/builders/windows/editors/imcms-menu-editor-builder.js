@@ -24,6 +24,7 @@ define("imcms-menu-editor-builder",
         let TREE_SORT = 'TREE_SORT';
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
+        const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let $title = $('<a>');
@@ -680,11 +681,11 @@ define("imcms-menu-editor-builder",
 
         function buildMenuItemControls(menuElementTree, enabledMultiRemoveMode) {
             const menuItemId = menuElementTree.documentId;
-            const $multiRemoveControl = buildMultiRemoveCheckBox();
-            $multiRemoveControl.modifiers = ['multi-remove'];
+            const $multiRemoveBoxControl = buildMultiRemoveCheckBox();
+            $multiRemoveBoxControl.modifiers = ['multi-remove'];
 
             const $controlRemove = enabledMultiRemoveMode
-                ? $multiRemoveControl
+                ? $multiRemoveBoxControl
                 : components.controls.remove(function () {
                     removeMenuItem.call(this, menuElementTree.documentId);
                 });
@@ -712,7 +713,11 @@ define("imcms-menu-editor-builder",
             });
             components.overlays.defaultTooltip($controlCopy, texts.copy);
 
-            return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
+            return enabledMultiRemoveMode
+                ? components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit], {
+                    'class': multiRemoveControlClass
+                })
+                : components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
 
         function showHideSubmenu() {
