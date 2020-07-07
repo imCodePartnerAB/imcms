@@ -1096,13 +1096,19 @@ define("imcms-menu-editor-builder",
         }
 
         let mapTypesSort = new Map();
+        let $numberingTypeSort;
 
         function buildTypeSortingSelect(opts) {
-            let typesSortSelect = components.selects.selectContainer('<div>', {
+            let $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
                 emptySelect: false,
                 text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
+            });
+
+            $numberingTypeSort = components.checkboxes.imcmsCheckbox('<div>', {
+                text: 'Numbering sort',
+                checked: 'checked'
             });
 
             let requestNested = {
@@ -1130,10 +1136,16 @@ define("imcms-menu-editor-builder",
                     'data-value': mapTypesSort.get(typeKey)
                 }));
 
-                components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort(opts));
+                components.selects.addOptionsToSelect(typesSortDataMapped, $typesSortSelect.getSelect(), buildOnSelectedTypeSort(opts));
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
-            return typesSortSelect;
+            return new BEM({
+                block: 'imcms-menu-sort',
+                elements: {
+                    'type-sort': $typesSortSelect,
+                    'type-sort-numbering': $numberingTypeSort
+                }
+            }).buildBlockStructure('<div>');
         }
 
         let prevType;
