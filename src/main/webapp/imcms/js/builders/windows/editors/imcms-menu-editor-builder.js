@@ -835,10 +835,14 @@ define("imcms-menu-editor-builder",
             elements.push($currentVersion, $documentStatus);
 
             const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree, isMultiRemoveModeEnabled())];
+            $numberingSortBox = components.texts.textBox('<div>', {
+                name: 'numbering-sort'
+            })
 
             return new BEM({
                 block: "imcms-document-item",
                 elements: [
+                    {'sort-control': $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide()},
                     {"btn-icon": childrenIcon},
                     {"info": elements},
                     {"controls": controls}
@@ -990,7 +994,7 @@ define("imcms-menu-editor-builder",
             return $newDocButtonContainer;
         }
 
-        function changeControls() {
+        function changeControlsByMultiRemove() {
             const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
             const enabledMultiRemove = isMultiRemoveModeEnabled();
             const controlsClass = enabledMultiRemove
@@ -1048,7 +1052,7 @@ define("imcms-menu-editor-builder",
                     $removeButton.css('display', 'block');
                 }
 
-                changeControls();
+                changeControlsByMultiRemove();
             }
 
             return new BEM({
@@ -1096,7 +1100,22 @@ define("imcms-menu-editor-builder",
         }
 
         let mapTypesSort = new Map();
-        let $numberingTypeSort;
+        let $numberingTypeSortFlag;
+        let $numberingSortBox;
+
+        function showHideNumberingSortFields() {
+            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+
+            menuDocs.each(function () {
+                const $item = $(this).first();
+                if ($numberingTypeSortFlag.isChecked()) {
+                    $item.find('.imcms-document-item__sort-control').show();
+                } else {
+                    $item.find('.imcms-document-item__sort-control').hide();
+                }
+
+            })
+        }
 
         function buildTypeSortingSelect(opts) {
             let $typesSortSelect = components.selects.selectContainer('<div>', {
@@ -1106,9 +1125,10 @@ define("imcms-menu-editor-builder",
                 onSelected: buildOnSelectedTypeSort
             });
 
-            $numberingTypeSort = components.checkboxes.imcmsCheckbox('<div>', {
+            $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
                 text: 'Numbering sort',
-                checked: 'checked'
+                checked: 'checked',
+                change: showHideNumberingSortFields
             });
 
             let requestNested = {
@@ -1143,7 +1163,7 @@ define("imcms-menu-editor-builder",
                 block: 'imcms-menu-sort',
                 elements: {
                     'type-sort': $typesSortSelect,
-                    'type-sort-numbering': $numberingTypeSort
+                    'type-sort-numbering': $numberingTypeSortFlag
                 }
             }).buildBlockStructure('<div>');
         }
@@ -1215,9 +1235,9 @@ define("imcms-menu-editor-builder",
         function fillEditorContent(menuElementsTree, opts) {
             const typeSort = opts.nested ? TREE_SORT : 'MANUAL';
             prevType = typeSort;
-            const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
-
             $menuElementsContainer.append(buildEditorContainer(opts));
+
+            const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
             $menuElementsContainer.append($menuElementsTree);
 
             $documentEditor = documentEditorBuilder.buildBody();
