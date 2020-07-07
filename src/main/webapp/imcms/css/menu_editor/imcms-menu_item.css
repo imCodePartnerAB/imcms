@@ -3,6 +3,18 @@
     padding-right: 88px !important;
 }
 
+.imcms-text-box__input[name=numbering-sort] {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: available;
+    height: 25px;
+}
+
+.imcms-document-item__sort-control {
+    display: none;
+    width: 15%;
+}
+
 .imcms-document-item__btn {
     background: url("/imcms/images/controls/icon_sub_close_dark.png") no-repeat center;
 }
@@ -10,11 +22,8 @@
 .imcms-document-item__btn {
     cursor: pointer;
     display: block;
-    position: absolute;
-    top: 20px;
-    left: 30px;
     width: 10px;
-    height: 10px;
+    margin-left: 5px;
 }
 
 .imcms-document-item__btn--open {
