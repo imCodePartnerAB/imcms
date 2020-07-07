@@ -289,7 +289,7 @@ define("imcms-menu-editor-builder",
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-                    menuDoc.after($origin);
+                    menuDoc.before($origin);
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                 }
             }
@@ -335,12 +335,12 @@ define("imcms-menu-editor-builder",
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = true;
+                    placeStatus = false;
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
                 if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
                     menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = false;
+                    placeStatus = true;
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
             });
@@ -501,7 +501,7 @@ define("imcms-menu-editor-builder",
                         }
                     } else {
                         $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
-                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
+                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").before($menuElement);
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));

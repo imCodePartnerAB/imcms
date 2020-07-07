@@ -731,13 +731,12 @@ define("imcms-document-editor-builder",
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = true;
-                    // todo copy-frame append
+                    placeStatus = false;
                     createMenuItemFrame(menuDoc, placeStatus, frameTop);
                 }
                 if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
                     menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = false;
+                    placeStatus = true;
                     createMenuItemFrame(menuDoc, placeStatus, frameTop);
                 }
             });
