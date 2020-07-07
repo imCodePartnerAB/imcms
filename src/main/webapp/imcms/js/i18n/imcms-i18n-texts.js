@@ -1215,12 +1215,12 @@ const texts = {
                 },
                 status: {
                     title: {
-                        published: "Approved, published",
-                        publishedWaiting: "Approved, waiting",
+                        published: "A, p",
+                        publishedWaiting: "A, w",
                         inProcess: "New, u c",
-                        disapproved: "Disapproved",
-                        archived: "Archived",
-                        passed: "Publication end"
+                        disapproved: "D",
+                        archived: "Arc",
+                        passed: "P end"
                     },
                     tooltip: {
                         published: "The document is published",
