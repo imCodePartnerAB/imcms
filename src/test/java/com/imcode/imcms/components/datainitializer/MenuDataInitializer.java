@@ -126,23 +126,23 @@ public class MenuDataInitializer extends TestDataCleaner {
     private void addNestedMenuItemsTo(Menu menu, boolean nested) {
         final List<MenuItem> menuItems = new ArrayList<>();
 
-        menuItems.add(createMenuItem(1, ""));
-        menuItems.add(createMenuItem(2, ""));
+        menuItems.add(createMenuItem(1, "1"));
+        menuItems.add(createMenuItem(2, "2"));
 
         if (nested) {
             final MenuItem menuItem0 = menuItems.get(0);
 
             final List<MenuItem> menuItems1 = Arrays.asList(
-                    createMenuItem(1, ""),
-                    createMenuItem(2, ""),
-                    createMenuItem(3, "")
+                    createMenuItem(1, "1.1"),
+                    createMenuItem(2, "1.2"),
+                    createMenuItem(3, "1.3")
             );
             menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
 
             final List<MenuItem> menuItems2 = Arrays.asList(
-                    createMenuItem(1, ""),
-                    createMenuItem(2, ""),
-                    createMenuItem(3, "")
+                    createMenuItem(1, "1.1.1"),
+                    createMenuItem(2, "1.1.2"),
+                    createMenuItem(3, "1.1.3")
             );
             new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
         }
