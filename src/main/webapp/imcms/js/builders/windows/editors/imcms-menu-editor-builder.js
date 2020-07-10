@@ -71,6 +71,7 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
+                sortNumber: $(this).first().find('.imcms-document-item__sort-control').children().val(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
