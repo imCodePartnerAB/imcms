@@ -19,6 +19,7 @@ import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -228,6 +229,77 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return savedMenu;
     }
 
+    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey) {
+        for (int i = 0; i < menuItemDTOs.size(); i++) {
+            final MenuItemDTO menuItemDTO = menuItemDTOs.get(i);
+            final boolean hasChildren = !menuItemDTO.getChildren().isEmpty();
+            final String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
+            if (StringUtils.isBlank(menuItemDTO.getSortNumber())) {
+                menuItemDTO.setSortNumber(dataTreeKey);
+            }
+            if (hasChildren) {
+                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey);
+            }
+        }
+    }
+
+
+    private List<MenuItemDTO> getSortedMenuItemsByNumbering(List<MenuItemDTO> menuItemDTOs) {
+        setSortNumbersInMenuItems(menuItemDTOs, null);
+        final List<MenuItemDTO> sortedMenuItems = convertItemsToFlatList(menuItemDTOs).stream()
+                .sorted(Comparator.comparing(MenuItemDTO::getSortNumber))
+                .collect(Collectors.toList());
+
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        sortedMenuItems.forEach(mainItemDTO -> {
+
+            final List<MenuItemDTO> children = sortedMenuItems.stream()
+                    .filter(item -> item.getSortNumber().matches(mainItemDTO.getSortNumber().concat(".\\d")))
+                    .collect(Collectors.toList());
+
+            if (!checkToContainsMenuItemInNewList(newMenuItems, children)) {
+                mainItemDTO.setChildren(children);
+            }
+            newMenuItems.add(mainItemDTO);
+        });
+
+        //need copied array for remove elements from first array and to get unique array menu items
+        final List<MenuItemDTO> newMenuItems2 = new ArrayList<>(newMenuItems);
+
+        return removeMenuItems(newMenuItems, newMenuItems2);
+    }
+
+    private boolean checkToContainsMenuItemInNewList(List<MenuItemDTO> newMenuItems, List<MenuItemDTO> children) {
+        final List<Integer> ids = newMenuItems.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .map(MenuItemDTO::getDocumentId)
+                .collect(Collectors.toList());
+
+        final List<Integer> childrenIds = children.stream()
+                .map(MenuItemDTO::getDocumentId)
+                .collect(Collectors.toList());
+        return ids.containsAll(childrenIds);
+    }
+
+    private List<MenuItemDTO> removeMenuItems(List<MenuItemDTO> newMenuItems, List<MenuItemDTO> newMenuItems2) {
+
+        for (int i = 0; i < newMenuItems.size(); i++) {
+            final MenuItemDTO currentMenuItemDTO = newMenuItems.get(i);
+            final boolean hasChildren = !currentMenuItemDTO.getChildren().isEmpty();
+
+            if (hasChildren) {
+                if (newMenuItems2.containsAll(currentMenuItemDTO.getChildren())) {
+                    newMenuItems2.removeAll(currentMenuItemDTO.getChildren());
+                }
+
+                removeMenuItems(currentMenuItemDTO.getChildren(), newMenuItems2);
+            }
+        }
+
+        return newMenuItems2;
+    }
+
     @Override
     @Transactional
     public void deleteByVersion(Version version) {
@@ -365,6 +437,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return menuItems.stream()
                 .flatMap(MenuItemDTO::flattened)
                 .distinct()
+                .peek(item -> item.setChildren(Collections.emptyList()))
                 .collect(Collectors.toList());
     }
 
