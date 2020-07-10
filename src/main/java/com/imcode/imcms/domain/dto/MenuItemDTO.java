@@ -50,6 +50,8 @@ public class MenuItemDTO implements Serializable {
 
     private Integer dataIndex;
 
+    private String sortNumber;
+
     private List<MenuItemDTO> children = new ArrayList<>();
 
     public Stream<MenuItemDTO> flattened() {

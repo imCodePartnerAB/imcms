@@ -46,6 +46,9 @@ public class MenuItem implements Serializable {
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 
+    @Column(name = "sort_number", nullable = false)
+    private String sortNumber;
+
     public Set<MenuItem> getChildren() {
         if (children == null) children = new LinkedHashSet<>();
         return children;
