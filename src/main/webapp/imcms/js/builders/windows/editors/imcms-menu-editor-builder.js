@@ -837,7 +837,8 @@ define("imcms-menu-editor-builder",
 
             const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree, isMultiRemoveModeEnabled())];
             $numberingSortBox = components.texts.textBox('<div>', {
-                name: 'numbering-sort'
+                name: 'numbering-sort',
+                value: menuElementTree.sortNumber
             })
 
             return new BEM({
