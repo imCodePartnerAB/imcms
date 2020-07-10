@@ -207,6 +207,7 @@ class MappingConfig {
             public MenuItem apply(MenuItemDTO menuItemDTO) {
                 final MenuItem menuItem = new MenuItem();
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
+                menuItem.setSortNumber(menuItemDTO.getSortNumber());
                 final Set<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
                 menuItem.setChildren(children);
                 return menuItem;
