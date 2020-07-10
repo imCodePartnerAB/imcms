@@ -116,6 +116,7 @@ public class MenuDataInitializer extends TestDataCleaner {
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(menuItem.getDocumentId());
         menuItemDTO.setTitle("Start page");
+        menuItemDTO.setSortNumber(menuItem.getSortNumber());
         menuItemDTO.setChildren(menuItem.getChildren().stream()
                 .map(this::mapMenuItems)
                 .collect(Collectors.toList()));
@@ -124,23 +125,24 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     private void addNestedMenuItemsTo(Menu menu, boolean nested) {
         final List<MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(createMenuItem(1));
-        menuItems.add(createMenuItem(2));
+
+        menuItems.add(createMenuItem(1, ""));
+        menuItems.add(createMenuItem(2, ""));
 
         if (nested) {
             final MenuItem menuItem0 = menuItems.get(0);
 
             final List<MenuItem> menuItems1 = Arrays.asList(
-                    createMenuItem(1),
-                    createMenuItem(2),
-                    createMenuItem(3)
+                    createMenuItem(1, ""),
+                    createMenuItem(2, ""),
+                    createMenuItem(3, "")
             );
             menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
 
             final List<MenuItem> menuItems2 = Arrays.asList(
-                    createMenuItem(1),
-                    createMenuItem(2),
-                    createMenuItem(3)
+                    createMenuItem(1, ""),
+                    createMenuItem(2, ""),
+                    createMenuItem(3, "")
             );
             new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
         }
@@ -150,13 +152,24 @@ public class MenuDataInitializer extends TestDataCleaner {
         menuRepository.saveAndFlush(menu);
     }
 
-    private MenuItem createMenuItem(int sortOrder) {
+    private MenuItem createMenuItem(int sortOrder, String sortNumber) {
         documentDataInitializer.cleanRepositories();
         final DocumentDTO initDoc = documentDataInitializer.createData();
         documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
         menuItem.setDocumentId(initDoc.getId());
+        menuItem.setSortNumber(sortNumber);
+        return menuItem;
+    }
+
+    public MenuItemDTO createMenuItemDTO(String sortNumber) {
+        documentDataInitializer.cleanRepositories();
+        final DocumentDTO initDoc = documentDataInitializer.createData();
+        documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
+        final MenuItemDTO menuItem = new MenuItemDTO();
+        menuItem.setDocumentId(initDoc.getId());
+        menuItem.setSortNumber(sortNumber);
         return menuItem;
     }
 }
