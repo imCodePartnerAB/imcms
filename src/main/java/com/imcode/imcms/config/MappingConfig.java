@@ -95,6 +95,7 @@ class MappingConfig {
             @Override
             public MenuItemDTO apply(MenuItem menuItem, Language language) {
                 final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem.getDocumentId(), language);
+                menuItemDTO.setSortNumber(menuItem.getSortNumber());
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
@@ -116,7 +117,7 @@ class MappingConfig {
                 final MenuItem newMenuItem = new MenuItem();
                 newMenuItem.setDocumentId(menuItem.getDocumentId());
                 newMenuItem.setSortOrder(menuItem.getSortOrder());
-
+                newMenuItem.setSortNumber(menuItem.getSortNumber());
                 final Set<MenuItem> newChildren = menuItem.getChildren()
                         .stream()
                         .map(this)
