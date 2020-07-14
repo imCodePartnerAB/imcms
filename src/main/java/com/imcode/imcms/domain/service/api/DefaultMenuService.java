@@ -288,7 +288,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             newSortedMenuItems.add(mainItemDTO);
         });
 
-        return getFirstMenuItemsOf(newSortedMenuItems);
+        return getFirstMenuItemsOf(newSortedMenuItems)
+                .stream()
+                .sorted(Comparator.comparing(firstItem -> Integer.parseInt(firstItem.getSortNumber())))
+                .collect(Collectors.toList());
     }
 
     private boolean isExistChildrenInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
