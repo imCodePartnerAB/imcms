@@ -45,7 +45,7 @@ public class Menu extends VersionedContent {
     @NotNull
     private boolean nested;
 
-    @Column(name = "type_sort")
+    @Column(name = "type_sort", nullable = false)
     private String typeSort;
 
     public Set<MenuItem> getMenuItems() {
