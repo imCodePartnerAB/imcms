@@ -242,23 +242,34 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return savedMenu;
     }
 
-    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey) {
+    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey, String typeSort, boolean isEmptyItemSortNumber) {
+        boolean flagIncrement = false;
         for (int i = 0; i < menuItemDTOs.size(); i++) {
             final MenuItemDTO menuItemDTO = menuItemDTOs.get(i);
+            isEmptyItemSortNumber = StringUtils.isBlank(menuItemDTO.getSortNumber());
             final boolean hasChildren = !menuItemDTO.getChildren().isEmpty();
-            final String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
-            if (StringUtils.isBlank(menuItemDTO.getSortNumber())) {
+            String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
+            if (!typeSort.equals(String.valueOf(TREE_SORT))
+                    && !StringUtils.isNumeric(menuItemDTO.getSortNumber())
+                    || flagIncrement) {
+
+                menuItemDTO.setSortNumber(dataTreeKey);
+                flagIncrement = true;
+            } else if (isEmptyItemSortNumber) {
                 menuItemDTO.setSortNumber(dataTreeKey);
             }
+
             if (hasChildren) {
-                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey);
+                dataTreeKey = isEmptyItemSortNumber ? dataTreeKey : menuItemDTO.getSortNumber();
+                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey, typeSort, isEmptyItemSortNumber);
             }
         }
     }
 
 
-    private List<MenuItemDTO> getSortedMenuItemsByNumbering(List<MenuItemDTO> menuItemDTOs) {
-        setSortNumbersInMenuItems(menuItemDTOs, null);
+    private List<MenuItemDTO> getNumberSortMenuItems(List<MenuItemDTO> menuItemDTOs, String typeSort) {
+        setSortNumbersInMenuItems(menuItemDTOs, null, typeSort, false);
+
         final List<MenuItemDTO> sortedFlatMenuItems = convertItemsToFlatList(menuItemDTOs).stream()
                 .sorted(Comparator.comparing(MenuItemDTO::getSortNumber))
                 .collect(Collectors.toList());
