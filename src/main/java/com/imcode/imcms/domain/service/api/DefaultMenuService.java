@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static com.imcode.imcms.sorted.TypeSort.MANUAL;
+import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Service
 @Transactional
@@ -86,15 +88,22 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
-        List<MenuItemDTO> menuItemsOf = getSortedMenuItemsByNumbering(
-                getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)
-        );
         if (typeSort == null) {
             if (nested) {
                 typeSort = String.valueOf(TypeSort.TREE_SORT);
             } else {
-                typeSort = String.valueOf(TypeSort.MANUAL);
+                typeSort = String.valueOf(MANUAL);
             }
+        }
+
+        List<MenuItemDTO> menuItemsOf;
+
+        if (typeSort.equals(String.valueOf(TREE_SORT))) {
+            menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
+        } else {
+            menuItemsOf = convertItemsToFlatList(
+                    getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)
+            );
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
@@ -108,10 +117,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode) {
-        List<MenuItemDTO> menuItems = getSortedMenuItemsByNumbering(menuDTO.getMenuItems());
 
         if (!menuDTO.isNested() && menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in flat menu!");
+        }
+
+        final String typeSort = menuDTO.getTypeSort();
+        List<MenuItemDTO> menuItems;
+        if (typeSort.equals(String.valueOf(TREE_SORT))) {
+            menuItems = getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort);
+        } else {
+            menuItems = getNumberSortMenuItems(convertItemsToFlatList(menuDTO.getMenuItems()), typeSort);
         }
 
         final Language language = languageService.findByCode(langCode);
@@ -123,14 +139,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsDTO);
 
-        return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
+        return getSortingMenuItemsByTypeSort(typeSort, menuItemsDTO);
     }
 
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
-        List<MenuItemDTO> menuItemsOf = getSortedMenuItemsByNumbering(
-                getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true)
-        );
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
@@ -142,9 +156,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
-        List<MenuItemDTO> menuItemsOf = getSortedMenuItemsByNumbering(
-                getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true)
-        );
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
 
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
@@ -218,9 +230,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), docId))
                 .orElseGet(() -> createMenu(menuDTO));
 
+        final String typeSort = menuDTO.getTypeSort();
         menu.setNested(menuDTO.isNested());
-        menu.setTypeSort(menuDTO.getTypeSort());
-        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getSortedMenuItemsByNumbering(menuDTO.getMenuItems())));
+        menu.setTypeSort(typeSort);
+        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
 
@@ -268,7 +281,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private boolean isExistChildrenInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
-        final List<Integer> menuItemsids = newSortedItems.stream()
+        final List<Integer> menuItemsIds = newSortedItems.stream()
                 .flatMap(MenuItemDTO::flattened)
                 .map(MenuItemDTO::getDocumentId)
                 .collect(Collectors.toList());
@@ -277,7 +290,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .map(MenuItemDTO::getDocumentId)
                 .collect(Collectors.toList());
 
-        return menuItemsids.containsAll(childrenIds);
+        return menuItemsIds.containsAll(childrenIds);
     }
 
     @Override
