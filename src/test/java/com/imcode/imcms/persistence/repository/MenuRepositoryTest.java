@@ -5,6 +5,7 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
@@ -32,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
+    private static final int COUNT_MENU_ITEMS = 3;
+
     @Autowired
     private MenuRepository menuRepository;
 
@@ -56,6 +59,9 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
+
+        final Language currentLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+        Imcms.setLanguage(currentLanguage);
     }
 
     @AfterEach
@@ -67,7 +73,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findOne_When_menuWithoutMenuItems_NestedOff_Expect_theSameMenuNoAndVersion() {
-        final MenuDTO menu = menuDataInitializer.createData(false, false, null);
+        final MenuDTO menu = menuDataInitializer.createData(false, false, null, 0);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -80,7 +86,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_NestedOff_menuWithoutMenuItems_Expect_notNullMenu() {
-        final MenuDTO menu = menuDataInitializer.createData(false, false, null);
+        final MenuDTO menu = menuDataInitializer.createData(false, false, null, 0);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -90,7 +96,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_NestedOn_Expect_correctItemsCapacity() {
-        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null, COUNT_MENU_ITEMS);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -98,14 +104,14 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
         final List<MenuItem> menuItems = new ArrayList<>(menuPersisted.getMenuItems());
         final Set<MenuItem> children = menuItems.get(0).getChildren();
 
-        assertEquals(2, menuItems.size());
+        assertEquals(3, menuItems.size());
         assertEquals(3, children.size());
         assertEquals(3, new ArrayList<>(children).get(0).getChildren().size());
     }
 
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_NestedOn_Expect_correctItemsOrder() {
-        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null, COUNT_MENU_ITEMS);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -114,6 +120,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
         assertEquals(1, menuItems.get(0).getSortOrder().intValue());
         assertEquals(2, menuItems.get(1).getSortOrder().intValue());
+        assertEquals(3, menuItems.get(2).getSortOrder().intValue());
 
         final List<MenuItem> children = new ArrayList<>(menuItems.get(0).getChildren());
         assertEquals(1, children.get(0).getSortOrder().intValue());
@@ -123,7 +130,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteMenuItems() {
-        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null, COUNT_MENU_ITEMS);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -146,7 +153,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
             versionDataInitializer.createData(versionIndex, docId);
 
             IntStream.range(1, 5).forEach((menuIndex) ->
-                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null)
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null, COUNT_MENU_ITEMS)
             );
         });
 
@@ -165,7 +172,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
             versionDataInitializer.createData(versionIndex, docId);
 
             IntStream.range(1, 5).forEach((menuIndex) ->
-                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null)
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null, COUNT_MENU_ITEMS)
             );
         });
 

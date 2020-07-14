@@ -61,7 +61,6 @@ import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
-import com.imcode.imcms.sorted.TypeSort;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -97,6 +96,7 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -638,6 +638,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final MenuDTO menuDTO = new MenuDTO();
         menuDTO.setDocId(createdDocId);
         menuDTO.setMenuIndex(testIndex);
+        menuDTO.setTypeSort(TREE_SORT + "");
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(createdDocId);
         menuDTO.setMenuItems(new ArrayList<>(Collections.singletonList(menuItemDTO)));
@@ -659,7 +660,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, false, String.valueOf(TypeSort.TREE_SORT));
+        menuDataInitializer.createData(false, index, workingVersion, false, String.valueOf(TREE_SORT), 2);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
@@ -730,7 +731,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, true, String.valueOf(TypeSort.TREE_SORT));
+        menuDataInitializer.createData(false, index, workingVersion, true, String.valueOf(TREE_SORT), 2);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
