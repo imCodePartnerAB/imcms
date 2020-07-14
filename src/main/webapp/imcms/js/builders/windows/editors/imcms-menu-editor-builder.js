@@ -71,7 +71,7 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
-                sortNumber: $(this).first().find('.imcms-document-item__sort-control').children().val(),
+                sortNumber: $(this).first().find('.imcms-document-item__sort-control').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
@@ -85,7 +85,8 @@ define("imcms-menu-editor-builder",
                 menuIndex: opts.menuIndex,
                 docId: opts.docId,
                 menuItems: menuItems,
-                nested: opts.nested
+                nested: opts.nested,
+                typeSort: document.getElementById('type-sort').value
             };
 
             menusRestApi.create(menuDTO)
