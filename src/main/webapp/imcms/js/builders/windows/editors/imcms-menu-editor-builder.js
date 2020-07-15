@@ -763,7 +763,7 @@ define("imcms-menu-editor-builder",
             const $docId = components.texts.titleText('<a>', menuElementTree.documentId, {
                 href: '/' + menuElementTree.documentId,
                 target: '_blank',
-                class: 'imcms-grid-coll-1',
+                class: 'imcms-grid-col-1',
             });
             $docId.modifiers = ['id'];
             components.overlays.defaultTooltip(
@@ -784,7 +784,7 @@ define("imcms-menu-editor-builder",
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
             const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
-                class: 'imcms-grid-coll-3',
+                class: 'imcms-grid-col-3',
             });
             $publishedDate.modifiers = ['date'];
             components.overlays.defaultTooltip(
@@ -793,7 +793,7 @@ define("imcms-menu-editor-builder",
             );
 
             const $modifiedDate = components.texts.titleText('<div>', menuElementTree.modifiedDate, {
-                class: 'imcms-grid-coll-3',
+                class: 'imcms-grid-col-3',
             });
             components.overlays.defaultTooltip(
                 $modifiedDate,
@@ -803,7 +803,7 @@ define("imcms-menu-editor-builder",
             const $star = menuElementTree.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-1');
             components.overlays.defaultTooltip(
                 $currentVersion,
                 documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip
@@ -812,7 +812,7 @@ define("imcms-menu-editor-builder",
 
             const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, menuElementTree.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
-                class: 'imcms-grid-coll-13'
+                class: 'imcms-grid-col-13'
             });
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
@@ -895,7 +895,7 @@ define("imcms-menu-editor-builder",
 
             function buildMenuTitlesRow() {
                 const $idColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-1",
+                    class: "imcms-grid-col-1",
                     text: texts.id
                 });
                 $idColumnHead.modifiers = ["id"];
@@ -906,25 +906,25 @@ define("imcms-menu-editor-builder",
                 });
 
                 const $publishedDateHead = $("<div>", {
-                    class: "imcms-grid-coll-3",
+                    class: "imcms-grid-col-3",
                     text: texts.publishDate
                 });
                 $publishedDateHead.modifiers = ["date"];
 
                 const $modifiedDateHead = $("<div>", {
-                    class: "imcms-grid-coll-3",
+                    class: "imcms-grid-col-3",
                     text: texts.modifiedDate
                 });
                 $modifiedDateHead.modifiers = ["date"];
 
                 const $versionColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-1",
+                    class: "imcms-grid-col-1",
                     text: texts.version
                 });
                 $versionColumnHead.modifiers = ["currentVersion"];
 
                 const $statusColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-13",
+                    class: "imcms-grid-col-13",
                     text: texts.status
                 });
                 $statusColumnHead.modifiers = ["status"];
