@@ -1127,6 +1127,11 @@ define("imcms-menu-editor-builder",
             $('.imcms-menu-list-titles').css('padding-left', `${sign}=${sortControlWidth}`);
         }
 
+        function toggleDragAndDrop() {
+            const $controlMoves = $('.imcms-control--move');
+            $numberingTypeSortFlag.isChecked() ? $controlMoves.hide() : $controlMoves.show();
+        }
+
         function buildTypeSortingSelect(opts) {
             let $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
@@ -1142,6 +1147,7 @@ define("imcms-menu-editor-builder",
                 change: () => {
                     toggleNumberingSortFields();
                     toggleMenuTitlesIndent();
+                    toggleDragAndDrop();
                 }
             });
 

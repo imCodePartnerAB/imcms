@@ -131,6 +131,10 @@
     display: none;
 }
 
+.imcms-menu-editor .imcms-control--move {
+    display: none;
+}
+
 @media screen and (max-width: 1500px) {
     .imcms-menu-editor *,
     .imcms-menu-editor *::placeholder {
