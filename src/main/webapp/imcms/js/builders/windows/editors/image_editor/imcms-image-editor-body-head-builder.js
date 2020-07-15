@@ -256,13 +256,42 @@ define(
         }
 
         let $removeCroppingButton;
+        let $revertToOriginalCropBtn;
 
         function getRemoveCroppingButton() {
-            return $removeCroppingButton || ($removeCroppingButton = components.buttons.negativeButton({
+            if ($removeCroppingButton) {
+                return $removeCroppingButton;
+            }
+            $removeCroppingButton = components.buttons.negativeButton({
                 text: texts.buttons.removeCropping,
                 style: 'display: none;',
                 click: () => cropper.initImageCropper(imageData),
-            }));
+            });
+            components.overlays.defaultTooltip($removeCroppingButton, texts.buttons.removeCroppingDescription);
+
+            return $removeCroppingButton;
+        }
+
+        function getRevertToOriginCropButton() {
+            if ($revertToOriginalCropBtn) {
+                return $revertToOriginalCropBtn;
+            }
+            $revertToOriginalCropBtn = components.buttons.negativeButton({
+                text: texts.buttons.revertCropping,
+                style: 'display: none;',
+                click: function () {
+                    imageData.cropRegion = {
+                        cropX1: 0,
+                        cropX2: 0,
+                        cropY1: 0,
+                        cropY2: 0,
+                    };
+                    cropper.initImageCropper(imageData)
+                },
+            });
+            components.overlays.defaultTooltip($revertToOriginalCropBtn, texts.buttons.revertCroppingDescription);
+
+            return $revertToOriginalCropBtn;
         }
 
         let $showImageRotationControls;
@@ -403,6 +432,7 @@ define(
                 .show(
                     getCancelChangesButton(),
                     getRemoveCroppingButton(),
+                    getRevertToOriginCropButton(),
                     getApplyChangesButton(),
                 )
                 .onCancel(() => {
@@ -457,6 +487,7 @@ define(
                         imageProportionsLocker.getProportionsButton(),
                         imageProportionsLocker.getProportionsText(),
                         getRemoveCroppingButton(),
+                        getRevertToOriginCropButton(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getPercentageRatio(),
@@ -538,6 +569,7 @@ define(
                     imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                     getRemoveCroppingButton(),
+                    getRevertToOriginCropButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
                     getPercentageRatio(),
