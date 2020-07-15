@@ -176,7 +176,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
@@ -190,7 +190,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
@@ -202,7 +202,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true));
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
 
         return menuHtmlConverter.convertToMenuHtml(
                 docId, menuIndex, startedMenuItems, false, null, null, null
@@ -216,7 +216,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true));
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getFlatMenuItemsWithIndex(menuItemsOf));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
 
         return menuHtmlConverter.convertToMenuHtml(
                 docId, menuIndex, startedMenuItems, false, null, null, null
@@ -288,9 +288,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             newSortedMenuItems.add(mainItemDTO);
         });
 
-        return getFirstMenuItemsOf(newSortedMenuItems)
-                .stream()
-                .sorted(Comparator.comparing(firstItem -> Integer.parseInt(firstItem.getSortNumber())))
+
+        return getMenuItemsWithIndex(newSortedMenuItems, false).stream()
+                .sorted(Comparator.comparing(firstItem -> {
+                    try {
+                        return Integer.parseInt(firstItem.getSortNumber());
+                    } catch (NumberFormatException n) {
+                        final Integer numberSort = Integer.parseInt(firstItem.getSortNumber().substring(0, 1));
+                        firstItem.setSortNumber(numberSort + "");
+                        return numberSort;
+                    }
+                }))
                 .collect(Collectors.toList());
     }
 
@@ -479,12 +487,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
     }
 
-    private List<MenuItemDTO> getFlatMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
-        List<MenuItemDTO> flatMenuItems = convertItemsToFlatList(menuItems);
+    private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems, boolean isFlat) {
+        final List<MenuItemDTO> resultMenuItems = isFlat
+                ? convertItemsToFlatList(menuItems)
+                : getFirstMenuItemsOf(menuItems);
 
-        return IntStream.range(0, flatMenuItems.size())
+        return IntStream.range(0, resultMenuItems.size())
                 .mapToObj(i -> {
-                    MenuItemDTO menuItemDTO = flatMenuItems.get(i);
+                    MenuItemDTO menuItemDTO = resultMenuItems.get(i);
                     menuItemDTO.setDataIndex(i);
                     return menuItemDTO;
                 }).collect(Collectors.toList());
