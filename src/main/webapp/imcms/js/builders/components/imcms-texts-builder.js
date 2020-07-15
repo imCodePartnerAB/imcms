@@ -128,7 +128,9 @@ function generateTextFromBEM(attributes, structureBEM, factory) {
         blockElements.unshift({"label": $label});
     }
 
-    const $resultTextBox = structureBEM.buildBlock("<div>", blockElements);
+    const $resultTextBox = structureBEM.buildBlock("<div>", blockElements, {
+        class: attributes.class,
+    });
 
     $resultTextBox.setValue = createSetValue($resultTextBox, $input);
     $resultTextBox.getValue = createGetValue($input);
