@@ -475,6 +475,9 @@ const texts = {
                     applyChangeText: "Tillämpa",
                     applyChangeTitle: "Applicera förändringar",
                     removeCropping: "Ta bort beskärning",
+                    removeCroppingDescription: "Återgå till tidigare beskärning",
+                    revertCropping: "Återgå till originalet",
+                    revertCroppingDescription: "Gå tillbaka till det ursprungliga beskärningsområdet",
                     rotationTitle: "Aktivera rotationsreglage"
                 },
                 styleInfo: {
@@ -1385,6 +1388,9 @@ const texts = {
                     applyChangeText: "Apply",
                     applyChangeTitle: "Apply changes",
                     removeCropping: "Remove cropping",
+                    removeCroppingDescription: "Revert to previous cropping",
+                    revertCropping: "Revert to original",
+                    revertCroppingDescription: "Revert to original cropping area",
                     rotationTitle: "Activate rotation controls"
                 },
                 styleInfo: {
