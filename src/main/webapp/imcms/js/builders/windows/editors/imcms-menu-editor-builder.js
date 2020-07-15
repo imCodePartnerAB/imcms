@@ -991,8 +991,9 @@ define("imcms-menu-editor-builder",
                 });
             }
 
-            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
-            $newDocButtonContainer.modifiers = ["grid-col-2"];
+            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}], {
+                class: 'imcms-flex--w-15'
+            });
 
             return $newDocButtonContainer;
         }
@@ -1070,7 +1071,7 @@ define("imcms-menu-editor-builder",
                         click: removeEnabledMenuItems
                     })
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', { class: 'imcms-flex--w-40' });
         }
 
 
@@ -1123,6 +1124,7 @@ define("imcms-menu-editor-builder",
         function buildTypeSortingSelect(opts) {
             let $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
+                class: 'imcms-flex--flex-1',
                 emptySelect: false,
                 text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
@@ -1168,7 +1170,9 @@ define("imcms-menu-editor-builder",
                     'type-sort': $typesSortSelect,
                     'type-sort-numbering': $numberingTypeSortFlag
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                class: 'imcms-flex--w-40',
+            });
         }
 
         let prevType;

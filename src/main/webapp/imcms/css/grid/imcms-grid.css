@@ -8,7 +8,6 @@
     clear: both;
 }
 
-.imcms-menu-editor-head__new-button--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-editor-head-tools__tool--grid-col-4,
@@ -36,7 +35,6 @@
     width: 8.33%;
 }
 
-.imcms-menu-editor-head__new-button--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-2,
 .imcms-grid-col-2 {
     width: 16.66%;

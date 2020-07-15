@@ -60,12 +60,12 @@
 }
 
 .imcms-menu-sort__type-sort-numbering {
-    margin: 33px 10px 16px;
+    margin-top: 40px;
+    margin-left: 10px;
 }
 
 .imcms-menu-editor-head__type-sort-block,
 .imcms-menu-editor-head__switch-multi-delete {
-    width: 30%;
     min-width: fit-content;
     display: flex;
     margin-right: auto;
@@ -126,7 +126,7 @@
 }
 
 .imcms-switch-block__multi-remove {
-    margin: 33px 10px 16px;
+    margin: 33px auto 16px;
     padding: 3px 12px;
     display: none;
 }
