@@ -235,7 +235,7 @@ define("imcms-menu-editor-builder",
             const $menuItem = menuDoc.find(".imcms-menu-item").first();
 
             if ($menuItem.find(".children-triangle").length === 0) {
-                $menuItem.find(".imcms-controls").first().after(
+                $menuItem.find(".imcms-document-item__info").first().before(
                     buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                 );
             }
@@ -497,7 +497,7 @@ define("imcms-menu-editor-builder",
 
                         const parent = $menuElement.parent();
                         if (parent.find(".children-triangle").length === 0) {
-                            parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
+                            parent.find(".imcms-menu-item").first().find(".imcms-document-item__info").first().before(
                                 buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                             );
                         }
@@ -838,9 +838,10 @@ define("imcms-menu-editor-builder",
 
             const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree, isMultiRemoveModeEnabled())];
             $numberingSortBox = components.texts.textBox('<div>', {
+                class: 'imcms-flex--m-auto',
                 name: 'numbering-sort',
                 value: menuElementTree.sortNumber
-            })
+            });
 
             return new BEM({
                 block: "imcms-document-item",
@@ -1107,18 +1108,23 @@ define("imcms-menu-editor-builder",
         let $numberingTypeSortFlag;
         let $numberingSortBox;
 
-        function showHideNumberingSortFields() {
+        function toggleNumberingSortFields() {
             const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
 
-            menuDocs.each(function () {
-                const $item = $(this).first();
-                if ($numberingTypeSortFlag.isChecked()) {
-                    $item.find('.imcms-document-item__sort-control').show();
-                } else {
-                    $item.find('.imcms-document-item__sort-control').hide();
-                }
+            const toggleCommand = $numberingTypeSortFlag.isChecked()
+                ? $element => $element.show()
+                : $element => $element.hide();
 
-            })
+            menuDocs.each(function() {
+                const $item = $(this).find('.imcms-document-item__sort-control');
+                toggleCommand($item);
+            });
+        }
+
+        function toggleMenuTitlesIndent() {
+            const sign = $numberingTypeSortFlag.isChecked() ? '+' : '-';
+            const sortControlWidth = $('.imcms-document-item__sort-control').outerWidth();
+            $('.imcms-menu-list-titles').css('padding-left', `${sign}=${sortControlWidth}`);
         }
 
         function buildTypeSortingSelect(opts) {
@@ -1133,7 +1139,10 @@ define("imcms-menu-editor-builder",
             $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
                 text: 'Numbering sort',
                 checked: 'checked',
-                change: showHideNumberingSortFields
+                change: () => {
+                    toggleNumberingSortFields();
+                    toggleMenuTitlesIndent();
+                }
             });
 
             let requestNested = {

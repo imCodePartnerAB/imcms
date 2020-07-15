@@ -6,6 +6,10 @@
     justify-content: center !important;
 }
 
+.imcms-flex--m-auto {
+    margin: auto !important;
+}
+
 .imcms-flex--ml-auto {
     margin-left: auto !important;
 }
