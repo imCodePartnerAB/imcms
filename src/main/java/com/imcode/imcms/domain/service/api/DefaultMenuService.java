@@ -453,32 +453,32 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             case MANUAL:
                 return convertItemsToFlatList(menuItems);
             case ALPHABETICAL_ASC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
                                 Comparator.nullsLast(String::compareToIgnoreCase)))
                         .collect(Collectors.toList());
             case ALPHABETICAL_DESC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
                                 Comparator.nullsLast(String::compareToIgnoreCase)).reversed())
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_ASC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
                                 Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_DESC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
                                 Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_ASC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
                                 Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_DESC:
-                return convertItemsToFlatList(menuItems).stream()
+                return menuItems.stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
                                 Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
