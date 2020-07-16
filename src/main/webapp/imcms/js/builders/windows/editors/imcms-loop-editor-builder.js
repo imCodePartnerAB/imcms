@@ -123,7 +123,7 @@ define("imcms-loop-editor-builder",
         function buildTitles() {
             const $id = $("<div>", {
                 text: texts.id,
-                class: "imcms-grid-coll-18",
+                class: "imcms-grid-col-18",
             });
             $id.modifiers = modifiers.ID;
 
@@ -135,7 +135,7 @@ define("imcms-loop-editor-builder",
 
             const $isEnabled = $("<div>", {
                 text: texts.isEnabled,
-                class: "imcms-grid-coll-1",
+                class: "imcms-grid-col-1",
             });
             $isEnabled.modifiers = modifiers.CONTROLS;
 
@@ -157,7 +157,7 @@ define("imcms-loop-editor-builder",
 
         function buildItem(loopEntry) {
             const $no = components.texts.titleText("<div>", loopEntry.index, {
-                class: "imcms-grid-coll-18",
+                class: "imcms-grid-col-18",
             });
             $no.modifiers = modifiers.ID;
 
@@ -171,7 +171,7 @@ define("imcms-loop-editor-builder",
                 name: "isEnabled" + loopEntry.no,
                 checked: loopEntry.enabled ? "checked" : undefined,
             }));
-            $isEnabled.addClass("imcms-grid-coll-1 imcms-flex--d-flex imcms-flex--justify-content-center");
+            $isEnabled.addClass("imcms-grid-col-1 imcms-flex--d-flex imcms-flex--justify-content-center");
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({

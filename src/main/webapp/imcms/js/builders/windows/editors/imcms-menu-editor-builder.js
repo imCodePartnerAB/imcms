@@ -71,7 +71,7 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
-                sortNumber: $(this).first().find('.imcms-document-item__sort-control').children().val().trim(),
+                sortNumber: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
@@ -235,7 +235,7 @@ define("imcms-menu-editor-builder",
             const $menuItem = menuDoc.find(".imcms-menu-item").first();
 
             if ($menuItem.find(".children-triangle").length === 0) {
-                $menuItem.find(".imcms-controls").first().after(
+                $menuItem.find(".imcms-document-item__info").first().before(
                     buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                 );
             }
@@ -487,26 +487,29 @@ define("imcms-menu-editor-builder",
             ;
 
             if ($dataInput.attr('data-frame-top') < topPointMenu) {
-                $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
+                $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
                 $menuElementsContainer.find("[data-menu-items-lvl=1]").first().before($menuElement);
             } else {
                 if ($dataInput.attr("data-parent-id") !== "") {
                     if ($dataInput.attr("data-insert-place") === "true") {
-                        $menuElement = buildMenuItemTree(menuElementsTree, level + 1, $dataInput.attr("data-type-sort"));
+                        $menuElement = buildMenuItemTree(menuElementsTree, {
+                            level: level +1,
+                            sortType: $dataInput.attr("data-type-sort"),
+                        });
                         $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                         const parent = $menuElement.parent();
                         if (parent.find(".children-triangle").length === 0) {
-                            parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
+                            parent.find(".imcms-menu-item").first().find(".imcms-document-item__info").first().before(
                                 buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
                             );
                         }
                     } else {
-                        $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
+                        $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
                         $menuElementsContainer.find("[data-document-id=" + parentId + "]").before($menuElement);
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
+                    $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
                     $menuElementsContainer.find(".imcms-menu-items-list").append($menuElement);
                 }
             }
@@ -611,8 +614,8 @@ define("imcms-menu-editor-builder",
         }
 
         function appendNewMenuItem(doc) {
-            const typeSort = document.getElementById("type-sort").value;
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(doc), 1, typeSort));
+            const sortType = document.getElementById("type-sort").value;
+            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(doc), { level: 1, sortType }));
             documentEditorBuilder.refreshDocumentInList(doc)
         }
 
@@ -758,72 +761,80 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
-        function buildMenuItem(menuElementTree, typeSort) {
+        function buildMenuItem(menuElement, { sortType, orderErr }) {
 
-            const $docId = components.texts.titleText('<a>', menuElementTree.documentId, {
-                href: '/' + menuElementTree.documentId,
+            const $numberingSortBox = components.texts.textBox('<div>', {
+                class: 'imcms-flex--m-auto',
+                value: menuElement.sortNumber
+            });
+            if (orderErr) {
+                $numberingSortBox.modifiers = ['err']
+            }
+
+            const $docId = components.texts.titleText('<a>', menuElement.documentId, {
+                href: '/' + menuElement.documentId,
                 target: '_blank',
-                class: 'imcms-grid-coll-1',
+                class: 'imcms-grid-col-1',
             });
             $docId.modifiers = ['id'];
             components.overlays.defaultTooltip(
                 $docId,
-                documentEditorBuilder.getIdTooltipText(menuElementTree.documentId, menuElementTree.createdDate, menuElementTree.createdBy),
+                documentEditorBuilder.getIdTooltipText(menuElement.documentId, menuElement.createdDate, menuElement.createdBy),
                 'right'
             );
 
-            const title = menuElementTree.title
-                ? menuElementTree.title
+            const title = menuElement.title
+                ? menuElement.title
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
-                href: "/" + menuElementTree.documentId,
+                href: "/" + menuElement.documentId,
                 class: 'imcms-flex--flex-1',
             });
             $titleText.modifiers = ['title'];
-            !menuElementTree.title && $titleText.modifiers.push("notShownTitle");
+            !menuElement.title && $titleText.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
-            const $publishedDate = components.texts.titleText('<div>', menuElementTree.publishedDate, {
-                class: 'imcms-grid-coll-3',
+            const $publishedDate = components.texts.titleText('<div>', menuElement.publishedDate, {
+                class: 'imcms-grid-col-3',
             });
             $publishedDate.modifiers = ['date'];
             components.overlays.defaultTooltip(
                 $publishedDate,
-                documentEditorBuilder.getPublishedDateTooltipText(menuElementTree.publishedDate, menuElementTree.publishedBy),
+                documentEditorBuilder.getPublishedDateTooltipText(menuElement.publishedDate, menuElement.publishedBy),
             );
 
-            const $modifiedDate = components.texts.titleText('<div>', menuElementTree.modifiedDate, {
-                class: 'imcms-grid-coll-3',
+            const $modifiedDate = components.texts.titleText('<div>', menuElement.modifiedDate, {
+                class: 'imcms-grid-col-3',
             });
             components.overlays.defaultTooltip(
                 $modifiedDate,
-                documentEditorBuilder.getModifiedDateTooltipText(menuElementTree.modifiedDate, menuElementTree.modifiedBy),
+                documentEditorBuilder.getModifiedDateTooltipText(menuElement.modifiedDate, menuElement.modifiedBy),
             );
 
-            const $star = menuElementTree.hasNewerVersion
+            const $star = menuElement.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-coll-1');
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-1');
             components.overlays.defaultTooltip(
                 $currentVersion,
-                documentEditorBuilder.getDocumentVersionTexts(menuElementTree.hasNewerVersion).tooltip
+                documentEditorBuilder.getDocumentVersionTexts(menuElement.hasNewerVersion).tooltip
             );
             $currentVersion.modifiers = ['currentVersion'];
 
-            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElementTree.documentStatus, menuElementTree.publishedDate);
+            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElement.documentStatus, menuElement.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
-                class: 'imcms-grid-coll-13'
+                class: 'imcms-grid-col-13'
             });
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
 
             const elements = [$docId, $titleText];
             let childrenIcon = "";
-            if (menuElementTree.children.length) {
+            if (menuElement.children.length) {
                 childrenIcon = (buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open"));
             }
 
-            switch (typeSort) {
+            switch (sortType) {
                 case PUBLISHED_DATE_ASC:
                 case PUBLISHED_DATE_DESC:
                     elements.push($publishedDate);
@@ -836,16 +847,12 @@ define("imcms-menu-editor-builder",
 
             elements.push($currentVersion, $documentStatus);
 
-            const controls = [buildMoveControl(typeSort), buildMenuItemControls(menuElementTree, isMultiRemoveModeEnabled())];
-            $numberingSortBox = components.texts.textBox('<div>', {
-                name: 'numbering-sort',
-                value: menuElementTree.sortNumber
-            })
+            const controls = [buildMoveControl(sortType), buildMenuItemControls(menuElement, isMultiRemoveModeEnabled())];
 
             return new BEM({
                 block: "imcms-document-item",
                 elements: [
-                    {'sort-control': $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide()},
+                    {'sort-order': [$numberingSortBox]},
                     {"btn-icon": childrenIcon},
                     {"info": elements},
                     {"controls": controls}
@@ -855,34 +862,48 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMenuItemTree(menuElementTree, level, typeSort) {
-            menuElementTree.children = menuElementTree.children || [];
+        function buildMenuItemTree(menuElement, { level, sortType, orderErr }) {
+            menuElement.children = menuElement.children || [];
 
             const treeBlock = new BEM({
-
                 block: "imcms-document-items",
                 elements: [{
-                    "document-item": buildMenuItem(menuElementTree, typeSort),
-                    modifiers: [menuElementTree.documentStatus.replace(/_/g, "-").toLowerCase()]
+                    "document-item": buildMenuItem(menuElement, { sortType, orderErr }),
+                    modifiers: [menuElement.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
                 class: "imcms-menu-items",
                 "data-menu-items-lvl": level,
-                "data-document-id": menuElementTree.documentId
+                "data-document-id": menuElement.documentId
             });
 
             ++level;
 
-            const $childElements = menuElementTree.children.map(childElement => buildMenuItemTree(childElement, level, typeSort).addClass("imcms-submenu-items--close"));
+            const $childElements = menuElement.children.map(childElement => {
+                const childOrderErr = existsElementsWithSameOrderNumbers(menuElement.children, childElement.sortNumber);
+                const $itemTree = buildMenuItemTree(childElement, { level, sortType, orderErr: childOrderErr });
+                $itemTree.addClass("imcms-submenu-items--close");
+                return $itemTree;
+            });
 
             return treeBlock.append($childElements);
         }
 
-        var $menuItemsBlock;
+        function existsElementsWithSameOrderNumbers(elements, elementsSortNumber) {
+            const sortNumbers = elements.map(element => element.sortNumber);
+            return sortNumbers.filter(num => num === elementsSortNumber).length > 1;
+        }
+
+        let $menuItemsBlock;
+        let $sortOrderColumnHead;
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
-                const $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1, typeSort));
+
+                const $menuItems = menuElements.map(menuElement => {
+                    const orderErr = existsElementsWithSameOrderNumbers(menuElements, menuElement.sortNumber);
+                    return buildMenuItemTree(menuElement, { level: 1, sortType: typeSort, orderErr });
+                });
                 return new BEM({
                     block: "imcms-document-items-list",
                     elements: {
@@ -894,8 +915,14 @@ define("imcms-menu-editor-builder",
             }
 
             function buildMenuTitlesRow() {
+                $sortOrderColumnHead = $("<div>", {
+                    class: "imcms-grid-col-1",
+                    text: texts.order,
+                });
+                $sortOrderColumnHead.modifiers = ["sort-order"];
+
                 const $idColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-1",
+                    class: "imcms-grid-col-1",
                     text: texts.id
                 });
                 $idColumnHead.modifiers = ["id"];
@@ -906,30 +933,30 @@ define("imcms-menu-editor-builder",
                 });
 
                 const $publishedDateHead = $("<div>", {
-                    class: "imcms-grid-coll-3",
+                    class: "imcms-grid-col-3",
                     text: texts.publishDate
                 });
                 $publishedDateHead.modifiers = ["date"];
 
                 const $modifiedDateHead = $("<div>", {
-                    class: "imcms-grid-coll-3",
+                    class: "imcms-grid-col-3",
                     text: texts.modifiedDate
                 });
                 $modifiedDateHead.modifiers = ["date"];
 
                 const $versionColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-1",
+                    class: "imcms-grid-col-1",
                     text: texts.version
                 });
                 $versionColumnHead.modifiers = ["currentVersion"];
 
                 const $statusColumnHead = $("<div>", {
-                    class: "imcms-grid-coll-13",
+                    class: "imcms-grid-col-13",
                     text: texts.status
                 });
                 $statusColumnHead.modifiers = ["status"];
 
-                const containerHeadTitle = [$idColumnHead, $titleColumnHead];
+                const containerHeadTitle = [$sortOrderColumnHead, $idColumnHead, $titleColumnHead];
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
@@ -991,8 +1018,9 @@ define("imcms-menu-editor-builder",
                 });
             }
 
-            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
-            $newDocButtonContainer.modifiers = ["grid-col-2"];
+            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}], {
+                class: 'imcms-flex--w-15'
+            });
 
             return $newDocButtonContainer;
         }
@@ -1070,7 +1098,7 @@ define("imcms-menu-editor-builder",
                         click: removeEnabledMenuItems
                     })
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', { class: 'imcms-flex--w-40' });
         }
 
 
@@ -1103,35 +1131,47 @@ define("imcms-menu-editor-builder",
         }
 
         let mapTypesSort = new Map();
-        let $numberingTypeSortFlag;
-        let $numberingSortBox;
 
-        function showHideNumberingSortFields() {
+        function toggleNumberingSortFields(isChecked) {
             const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
 
-            menuDocs.each(function () {
-                const $item = $(this).first();
-                if ($numberingTypeSortFlag.isChecked()) {
-                    $item.find('.imcms-document-item__sort-control').show();
-                } else {
-                    $item.find('.imcms-document-item__sort-control').hide();
-                }
+            const toggleCommand = isChecked
+                ? $element => $element.show()
+                : $element => $element.hide();
 
-            })
+            menuDocs.each(function() {
+                const $item = $(this).find('.imcms-document-item__sort-order');
+                toggleCommand($item);
+            });
+        }
+
+        function toggleMenuTitlesIndent(isChecked) {
+            isChecked ? $sortOrderColumnHead.show() :$sortOrderColumnHead.hide();
+        }
+
+        function toggleDragAndDrop(isChecked) {
+            const $controlMoves = $('.imcms-control--move');
+            isChecked ? $controlMoves.hide() : $controlMoves.show();
         }
 
         function buildTypeSortingSelect(opts) {
             let $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
+                class: 'imcms-flex--flex-1',
                 emptySelect: false,
                 text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
             });
 
-            $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
+            const $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
                 text: 'Numbering sort',
                 checked: 'checked',
-                change: showHideNumberingSortFields
+                change: () => {
+                    const isChecked = $numberingTypeSortFlag.isChecked();
+                    toggleNumberingSortFields(isChecked);
+                    toggleMenuTitlesIndent(isChecked);
+                    toggleDragAndDrop(isChecked);
+                }
             });
 
             let requestNested = {
@@ -1168,7 +1208,9 @@ define("imcms-menu-editor-builder",
                     'type-sort': $typesSortSelect,
                     'type-sort-numbering': $numberingTypeSortFlag
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                class: 'imcms-flex--w-40',
+            });
         }
 
         let prevType;

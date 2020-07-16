@@ -8,100 +8,98 @@
     clear: both;
 }
 
-.imcms-menu-editor-head__new-button--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-editor-head-tools__tool--grid-col-4,
-.imcms-grid-coll-1,
-.imcms-grid-coll-2,
-.imcms-grid-coll-3,
-.imcms-grid-coll-4,
-.imcms-grid-coll-5,
-.imcms-grid-coll-6,
-.imcms-grid-coll-7,
-.imcms-grid-coll-8,
-.imcms-grid-coll-9,
-.imcms-grid-coll-10,
-.imcms-grid-coll-12,
-.imcms-grid-coll-13,
-.imcms-grid-coll-14,
-.imcms-grid-coll-15,
-.imcms-grid-coll-16,
-.imcms-grid-coll-17,
-.imcms-grid-coll-18 {
+.imcms-grid-col-1,
+.imcms-grid-col-2,
+.imcms-grid-col-3,
+.imcms-grid-col-4,
+.imcms-grid-col-5,
+.imcms-grid-col-6,
+.imcms-grid-col-7,
+.imcms-grid-col-8,
+.imcms-grid-col-9,
+.imcms-grid-col-10,
+.imcms-grid-col-12,
+.imcms-grid-col-13,
+.imcms-grid-col-14,
+.imcms-grid-col-15,
+.imcms-grid-col-16,
+.imcms-grid-col-17,
+.imcms-grid-col-18 {
     float: left;
 }
 
-.imcms-grid-coll-1 {
+.imcms-grid-col-1 {
     width: 8.33%;
 }
 
-.imcms-menu-editor-head__new-button--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-2,
-.imcms-grid-coll-2 {
+.imcms-grid-col-2 {
     width: 16.66%;
 }
 
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-item__info--col-3,
-.imcms-grid-coll-3 {
+.imcms-grid-col-3 {
     width: 25%;
 }
 
 .imcms-document-editor-head-tools__tool--grid-col-4,
-.imcms-grid-coll-4 {
+.imcms-grid-col-4 {
     width: 33.33%;
 }
 
-.imcms-grid-coll-5 {
+.imcms-grid-col-5 {
     width: 31.66%;
 }
 
-.imcms-grid-coll-6 {
+.imcms-grid-col-6 {
     width: 50%;
 }
 
-.imcms-grid-coll-7 {
+.imcms-grid-col-7 {
     width: 58.33%;
 }
 
-.imcms-grid-coll-8 {
+.imcms-grid-col-8 {
     width: 66.66%;
 }
 
-.imcms-grid-coll-9 {
+.imcms-grid-col-9 {
     width: 75%;
 }
 
-.imcms-grid-coll-10 {
+.imcms-grid-col-10 {
     width: 83.33%;
 }
 
-.imcms-grid-coll-11 {
+.imcms-grid-col-11 {
     width: 91.66%;
 }
 
-.imcms-grid-coll-12 {
+.imcms-grid-col-12 {
     width: 100%;
 }
 
-.imcms-grid-coll-13 {
+.imcms-grid-col-13 {
     width: 13%;
 }
 
-.imcms-grid-coll-15 {
+.imcms-grid-col-15 {
     width: 10%;
 }
 
-.imcms-grid-coll-16 {
+.imcms-grid-col-16 {
     width: 35%;
 }
 
-.imcms-grid-coll-17 {
+.imcms-grid-col-17 {
     width: 14%;
 }
 
-.imcms-grid-coll-18 {
+.imcms-grid-col-18 {
     width: 5%;
 }

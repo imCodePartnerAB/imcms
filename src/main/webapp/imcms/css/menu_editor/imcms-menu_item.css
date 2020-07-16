@@ -1,33 +1,33 @@
-.imcms-menu-item {
-    padding-left: 35px !important;
-    padding-right: 88px !important;
+.imcms-menu-items .imcms-menu-item {
+    padding-left: 50px;
+    padding-right: 88px;
 }
 
-.imcms-text-box__input[name=numbering-sort] {
+.imcms-document-item__sort-order input {
     width: -webkit-fill-available;
     width: -moz-available;
     width: available;
     height: 25px;
 }
 
-.imcms-document-item__sort-control {
-    display: none;
-    width: 15%;
+.imcms-document-item__sort-order--err input {
+    border-color: #e8958c;
+    background-color: #ffd2cd;
 }
 
 .imcms-document-item__btn {
     background: url("/imcms/images/controls/icon_sub_close_dark.png") no-repeat center;
-}
-
-.imcms-document-item__btn {
     cursor: pointer;
     display: block;
     width: 10px;
-    margin-left: 5px;
+    height: 10px;
+    position: absolute;
+    top: calc(50% - 5px);
+    left: 35px;
 }
 
 .imcms-document-item__btn--open {
-    background: url("/imcms/images/controls/icon_sub_open_dark.png") no-repeat center;
+    background-image: url("/imcms/images/controls/icon_sub_open_dark.png");
 }
 
 .imcms-menu-items--is-drag {
