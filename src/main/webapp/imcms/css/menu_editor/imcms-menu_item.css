@@ -3,11 +3,16 @@
     padding-right: 88px;
 }
 
-.imcms-text-box__input[name=numbering-sort] {
+.imcms-document-item__sort-order input {
     width: -webkit-fill-available;
     width: -moz-available;
     width: available;
     height: 25px;
+}
+
+.imcms-document-item__sort-order--err input {
+    border-color: #e8958c;
+    background-color: #ffd2cd;
 }
 
 .imcms-document-item__btn {
