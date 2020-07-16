@@ -400,14 +400,14 @@ define("imcms-document-editor-builder",
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
                 bySorting: "modified_datetime",
-                elementClass: "imcms-grid-col-15",
+                elementClass: "imcms-grid-col-17",
                 modifiers: ['date'],
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: "publication_start_datetime",
-                elementClass: "imcms-grid-col-15",
+                elementClass: "imcms-grid-col-17",
                 modifiers: ['date'],
             });
 
@@ -426,7 +426,7 @@ define("imcms-document-editor-builder",
 
             const $statusColumnHead = buildTitleRow({
                 text: texts.sort.status,
-                elementClass: 'imcms-grid-col-17',
+                elementClass: 'imcms-grid-col-1',
                 modifiers: ['status'],
             });
 
@@ -958,7 +958,7 @@ define("imcms-document-editor-builder",
                 docModifiedBy = document.modifiedBy;
             }
             const $docItemModified = components.texts.titleText("<div>", docModifiedDate, {
-                class: "imcms-grid-col-15",
+                class: "imcms-grid-col-17",
             });
             $docItemModified.modifiers = ["date", "modifiedDate"];
             if (docModifiedDate) {
@@ -980,7 +980,7 @@ define("imcms-document-editor-builder",
                 docPublishedBy = document.publishedBy;
             }
             const $docItemPublished = components.texts.titleText("<div>", docPublishedDate, {
-                class: "imcms-grid-col-15",
+                class: "imcms-grid-col-17",
             });
             $docItemPublished.modifiers = ["date", "publishedDate"];
             if (docPublishedDate) {
@@ -1010,7 +1010,7 @@ define("imcms-document-editor-builder",
 
             const docStatusTexts = getDocumentStatusTexts(document.documentStatus, docPublishedDate);
             const $docStatus = components.texts.titleText("<div>", docStatusTexts.title, {
-                class: "imcms-grid-col-17",
+                class: "imcms-grid-col-1",
             });
             $docStatus.modifiers = ["status"];
             components.overlays.defaultTooltip($docStatus, docStatusTexts.tooltip, {placement: 'left'});

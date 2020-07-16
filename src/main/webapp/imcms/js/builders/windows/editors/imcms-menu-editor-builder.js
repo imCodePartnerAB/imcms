@@ -71,7 +71,7 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
-                sortNumber: $(this).first().find('.imcms-document-item__sort-control').children().val().trim(),
+                sortNumber: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
@@ -846,7 +846,7 @@ define("imcms-menu-editor-builder",
             return new BEM({
                 block: "imcms-document-item",
                 elements: [
-                    {'sort-control': $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide()},
+                    {'sort-order': $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide()},
                     {"btn-icon": childrenIcon},
                     {"info": elements},
                     {"controls": controls}
@@ -879,7 +879,8 @@ define("imcms-menu-editor-builder",
             return treeBlock.append($childElements);
         }
 
-        var $menuItemsBlock;
+        let $menuItemsBlock;
+        let $sortOrderColumnHead;
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
@@ -895,6 +896,12 @@ define("imcms-menu-editor-builder",
             }
 
             function buildMenuTitlesRow() {
+                $sortOrderColumnHead = $("<div>", {
+                    class: "imcms-grid-col-1",
+                    text: texts.order,
+                });
+                $sortOrderColumnHead.modifiers = ["sort-order"];
+
                 const $idColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
                     text: texts.id
@@ -930,7 +937,7 @@ define("imcms-menu-editor-builder",
                 });
                 $statusColumnHead.modifiers = ["status"];
 
-                const containerHeadTitle = [$idColumnHead, $titleColumnHead];
+                const containerHeadTitle = [$sortOrderColumnHead, $idColumnHead, $titleColumnHead];
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
@@ -1116,15 +1123,13 @@ define("imcms-menu-editor-builder",
                 : $element => $element.hide();
 
             menuDocs.each(function() {
-                const $item = $(this).find('.imcms-document-item__sort-control');
+                const $item = $(this).find('.imcms-document-item__sort-order');
                 toggleCommand($item);
             });
         }
 
         function toggleMenuTitlesIndent() {
-            const sign = $numberingTypeSortFlag.isChecked() ? '+' : '-';
-            const sortControlWidth = $('.imcms-document-item__sort-control').outerWidth();
-            $('.imcms-menu-list-titles').css('padding-left', `${sign}=${sortControlWidth}`);
+            $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() :$sortOrderColumnHead.hide();
         }
 
         function toggleDragAndDrop() {
