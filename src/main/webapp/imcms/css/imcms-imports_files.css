@@ -77,3 +77,5 @@
 @import url("imcms-select-document-profile.css");
 @import url("imcms-files_tab_page_info.css");
 @import url("imcms-text_history_window.css");
+
+@import url("../../node_modules/tippy.js/dist/tippy.css");
