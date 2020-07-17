@@ -291,14 +291,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         });
 
 
-        return getMenuItemsWithIndex(newSortedMenuItems, false).stream()
+        return newSortedMenuItems.stream()
                 .sorted(Comparator.comparing(firstItem -> {
                     try {
                         return Integer.parseInt(firstItem.getSortNumber());
                     } catch (NumberFormatException n) {
-                        final Integer numberSort = Integer.parseInt(firstItem.getSortNumber().substring(0, 1));
-                        firstItem.setSortNumber(numberSort + "");
-                        return numberSort;
+                        return 0;
                     }
                 }))
                 .collect(Collectors.toList());
