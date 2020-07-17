@@ -282,10 +282,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     .filter(item -> item.getSortNumber().matches(mainItemDTO.getSortNumber().concat(".\\d")))
                     .collect(Collectors.toList());
 
-            if (!isExistChildrenInNewList(newSortedMenuItems, children)) {  //if in list doesn't exist children we can add to list it
+            if (!existMenuItemsInNewList(newSortedMenuItems, children)) {  //if in list doesn't exist children we can add to list it
                 mainItemDTO.setChildren(children);
             }
-            newSortedMenuItems.add(mainItemDTO);
+            if (!existMenuItemInNewList(newSortedMenuItems, mainItemDTO)) {
+                newSortedMenuItems.add(mainItemDTO);
+            }
         });
 
 
@@ -302,7 +304,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .collect(Collectors.toList());
     }
 
-    private boolean isExistChildrenInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
+    private boolean existMenuItemsInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
         final List<Integer> menuItemsIds = newSortedItems.stream()
                 .flatMap(MenuItemDTO::flattened)
                 .map(MenuItemDTO::getDocumentId)
@@ -313,6 +315,15 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .collect(Collectors.toList());
 
         return menuItemsIds.containsAll(childrenIds);
+    }
+
+    private boolean existMenuItemInNewList(List<MenuItemDTO> newSortedItems, MenuItemDTO currentItem) {
+        final List<Integer> menuItemsIds = newSortedItems.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .map(MenuItemDTO::getDocumentId)
+                .collect(Collectors.toList());
+
+        return menuItemsIds.contains(currentItem.getDocumentId());
     }
 
     @Override
@@ -504,11 +515,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private List<MenuItemDTO> getFirstMenuItemsOf(List<MenuItemDTO> menuItems) {
         List<MenuItemDTO> currentMenuItems = new ArrayList<>();
         for (int i = 0; i < menuItems.size(); i++) {
-            if (menuItems.get(i).getChildren().isEmpty()) {
-                currentMenuItems.add(menuItems.get(i));
+            final MenuItemDTO currentItemDTO = menuItems.get(i);
+            if (currentItemDTO.getChildren().isEmpty()) {
+                currentMenuItems.add(currentItemDTO);
             } else {
-                currentMenuItems.add(menuItems.get(i));
-                long amountSkipElement = menuItems.get(i).getChildren().stream().flatMap(MenuItemDTO::flattened).count();
+                currentMenuItems.add(currentItemDTO);
+                long amountSkipElement = currentItemDTO.getChildren().stream().flatMap(MenuItemDTO::flattened).count();
                 i += amountSkipElement;
             }
         }
