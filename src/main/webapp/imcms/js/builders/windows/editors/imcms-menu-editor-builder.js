@@ -782,7 +782,7 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip(
                 $docId,
                 documentEditorBuilder.getIdTooltipText(menuElement.documentId, menuElement.createdDate, menuElement.createdBy),
-                'right'
+                { placement: 'right' },
             );
 
             const title = menuElement.title
