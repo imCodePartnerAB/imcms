@@ -750,15 +750,16 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMoveControl(typeSort) {
-            let $controlMove;
+            let $moveControl;
             if (typeSort === TREE_SORT) {
-                $controlMove = components.controls.move();
+                $moveControl = components.controls.move();
             } else {
-                $controlMove = components.controls.vertical_move();
+                $moveControl = components.controls.vertical_move();
             }
-            $controlMove.on("mousedown", dragMenuItem);
+            $moveControl.on("mousedown", dragMenuItem);
+            $numberingTypeSortFlag.isChecked() ? $moveControl.hide() : $moveControl.show();
 
-            return components.controls.buildControlsBlock("<div>", [$controlMove]);
+            return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
 
         function buildMenuItem(menuElement, { sortType, orderErr }) {
@@ -770,6 +771,7 @@ define("imcms-menu-editor-builder",
             if (orderErr) {
                 $numberingSortBox.modifiers = ['err']
             }
+            $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
                 href: '/' + menuElement.documentId,
@@ -780,7 +782,7 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip(
                 $docId,
                 documentEditorBuilder.getIdTooltipText(menuElement.documentId, menuElement.createdDate, menuElement.createdBy),
-                'right'
+                { placement: 'right' },
             );
 
             const title = menuElement.title
@@ -920,6 +922,7 @@ define("imcms-menu-editor-builder",
                     text: texts.order,
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
+                $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
 
                 const $idColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
@@ -1150,8 +1153,20 @@ define("imcms-menu-editor-builder",
         }
 
         function toggleDragAndDrop(isChecked) {
-            const $controlMoves = $('.imcms-control--move');
-            isChecked ? $controlMoves.hide() : $controlMoves.show();
+            const moveControls = [$('.imcms-control--move'), $('.imcms-control--vertical_move')];
+            const command = isChecked
+                ? $el => $el.hide()
+                : $el => $el.show();
+            moveControls.forEach(command);
+        }
+
+        let $numberingTypeSortFlag;
+
+        function onChangeNumberingSortFlag() {
+            const isChecked = $numberingTypeSortFlag.isChecked();
+            toggleNumberingSortFields(isChecked);
+            toggleMenuTitlesIndent(isChecked);
+            toggleDragAndDrop(isChecked);
         }
 
         function buildTypeSortingSelect(opts) {
@@ -1163,15 +1178,10 @@ define("imcms-menu-editor-builder",
                 onSelected: buildOnSelectedTypeSort
             });
 
-            const $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
+            $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
                 text: 'Numbering sort',
                 checked: 'checked',
-                change: () => {
-                    const isChecked = $numberingTypeSortFlag.isChecked();
-                    toggleNumberingSortFields(isChecked);
-                    toggleMenuTitlesIndent(isChecked);
-                    toggleDragAndDrop(isChecked);
-                }
+                change: onChangeNumberingSortFlag,
             });
 
             let requestNested = {
