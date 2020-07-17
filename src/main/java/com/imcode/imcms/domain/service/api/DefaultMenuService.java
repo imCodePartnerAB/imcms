@@ -176,7 +176,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
@@ -190,7 +190,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
     }
@@ -202,7 +202,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true));
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
                 docId, menuIndex, startedMenuItems, false, null, null, null
@@ -216,7 +216,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true));
 
         setHasNewerVersionsInItems(menuItemsOf);
-        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf, true));
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
                 docId, menuIndex, startedMenuItems, false, null, null, null
@@ -242,87 +242,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return savedMenu;
     }
 
-    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey, String typeSort, boolean isEmptyItemSortNumber) {
-        boolean flagIncrement = false;
-        for (int i = 0; i < menuItemDTOs.size(); i++) {
-            final MenuItemDTO menuItemDTO = menuItemDTOs.get(i);
-            isEmptyItemSortNumber = StringUtils.isBlank(menuItemDTO.getSortNumber());
-            final boolean hasChildren = !menuItemDTO.getChildren().isEmpty();
-            String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
-            if (!typeSort.equals(String.valueOf(TREE_SORT))
-                    && !StringUtils.isNumeric(menuItemDTO.getSortNumber())
-                    || flagIncrement) {
 
-                menuItemDTO.setSortNumber(dataTreeKey);
-                flagIncrement = true;
-            } else if (isEmptyItemSortNumber) {
-                menuItemDTO.setSortNumber(dataTreeKey);
-            }
-
-            if (hasChildren) {
-                dataTreeKey = isEmptyItemSortNumber ? dataTreeKey : menuItemDTO.getSortNumber();
-                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey, typeSort, isEmptyItemSortNumber);
-            }
-        }
-    }
-
-
-    private List<MenuItemDTO> getNumberSortMenuItems(List<MenuItemDTO> menuItemDTOs, String typeSort) {
-        setSortNumbersInMenuItems(menuItemDTOs, null, typeSort, false);
-
-        final List<MenuItemDTO> sortedFlatMenuItems = convertItemsToFlatList(menuItemDTOs).stream()
-                .sorted(Comparator.comparing(MenuItemDTO::getSortNumber))
-                .collect(Collectors.toList());
-
-        final List<MenuItemDTO> newSortedMenuItems = new ArrayList<>();
-
-        sortedFlatMenuItems.forEach(mainItemDTO -> {
-
-            final List<MenuItemDTO> children = sortedFlatMenuItems.stream()
-                    .filter(item -> item.getSortNumber().matches(mainItemDTO.getSortNumber().concat(".\\d")))
-                    .collect(Collectors.toList());
-
-            if (!existMenuItemsInNewList(newSortedMenuItems, children)) {  //if in list doesn't exist children we can add to list it
-                mainItemDTO.setChildren(children);
-            }
-            if (!existMenuItemInNewList(newSortedMenuItems, mainItemDTO)) {
-                newSortedMenuItems.add(mainItemDTO);
-            }
-        });
-
-
-        return newSortedMenuItems.stream()
-                .sorted(Comparator.comparing(firstItem -> {
-                    try {
-                        return Integer.parseInt(firstItem.getSortNumber());
-                    } catch (NumberFormatException n) {
-                        return 0;
-                    }
-                }))
-                .collect(Collectors.toList());
-    }
-
-    private boolean existMenuItemsInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
-        final List<Integer> menuItemsIds = newSortedItems.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
-
-        final List<Integer> childrenIds = children.stream()
-                .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
-
-        return menuItemsIds.containsAll(childrenIds);
-    }
-
-    private boolean existMenuItemInNewList(List<MenuItemDTO> newSortedItems, MenuItemDTO currentItem) {
-        final List<Integer> menuItemsIds = newSortedItems.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
-
-        return menuItemsIds.contains(currentItem.getDocumentId());
-    }
 
     @Override
     @Transactional
@@ -496,10 +416,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
     }
 
-    private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems, boolean isFlat) {
-        final List<MenuItemDTO> resultMenuItems = isFlat
-                ? convertItemsToFlatList(menuItems)
-                : getFirstMenuItemsOf(menuItems);
+    private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems) {
+        final List<MenuItemDTO> resultMenuItems = convertItemsToFlatList(menuItems);
 
         return IntStream.range(0, resultMenuItems.size())
                 .mapToObj(i -> {
@@ -523,5 +441,88 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
         return currentMenuItems;
+    }
+
+    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey, String typeSort, boolean isEmptyItemSortNumber) {
+        boolean flagIncrement = false;
+        for (int i = 0; i < menuItemDTOs.size(); i++) {
+            final MenuItemDTO menuItemDTO = menuItemDTOs.get(i);
+            isEmptyItemSortNumber = StringUtils.isBlank(menuItemDTO.getSortNumber());
+            final boolean hasChildren = !menuItemDTO.getChildren().isEmpty();
+            String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
+
+            if (isNotWholeNumberAndNotTreeSortType(typeSort, menuItemDTO, flagIncrement)) {
+                menuItemDTO.setSortNumber(dataTreeKey);
+                flagIncrement = true;
+            } else if (isEmptyItemSortNumber) {
+                menuItemDTO.setSortNumber(dataTreeKey);
+            }
+
+            if (hasChildren) {
+                dataTreeKey = isEmptyItemSortNumber ? dataTreeKey : menuItemDTO.getSortNumber();
+                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey, typeSort, isEmptyItemSortNumber);
+            }
+        }
+    }
+
+    private boolean isNotWholeNumberAndNotTreeSortType(String typeSort, MenuItemDTO menuItemDTO, boolean flagIncrement) {
+        return (!typeSort.equals(String.valueOf(TREE_SORT)) && !StringUtils.isNumeric(menuItemDTO.getSortNumber()))
+                || (flagIncrement);
+    }
+
+
+    private List<MenuItemDTO> getNumberSortMenuItems(List<MenuItemDTO> menuItemDTOs, String typeSort) {
+        setSortNumbersInMenuItems(menuItemDTOs, null, typeSort, false);
+
+        final List<MenuItemDTO> sortedFlatMenuItems = convertItemsToFlatList(menuItemDTOs).stream()
+                .sorted(Comparator.comparing(MenuItemDTO::getSortNumber))
+                .collect(Collectors.toList());
+
+        final List<MenuItemDTO> newSortedMenuItems = new ArrayList<>();
+
+        sortedFlatMenuItems.forEach(mainItemDTO -> {
+
+            final List<MenuItemDTO> children = sortedFlatMenuItems.stream()
+                    .filter(item -> item.getSortNumber().matches(mainItemDTO.getSortNumber().concat(".\\d")))
+                    .collect(Collectors.toList());
+
+            if (!existMenuItemsInNewList(newSortedMenuItems, children)) {  //if in list doesn't exist children we can add to list it
+                mainItemDTO.setChildren(children);
+            }
+            if (!existMenuItemInNewList(newSortedMenuItems, mainItemDTO)) {
+                newSortedMenuItems.add(mainItemDTO);
+            }
+        });
+
+        return newSortedMenuItems.stream()
+                .sorted(Comparator.comparing(firstItem -> {
+                    try {
+                        return Integer.parseInt(firstItem.getSortNumber());
+                    } catch (NumberFormatException n) {
+                        return 0;
+                    }
+                }))
+                .collect(Collectors.toList());
+    }
+
+    private boolean existMenuItemsInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
+        final List<Integer> menuItemsIds = getAllIds(newSortedItems);
+        final List<Integer> childrenIds = children.stream()
+                .map(MenuItemDTO::getDocumentId)
+                .collect(Collectors.toList());
+
+        return menuItemsIds.containsAll(childrenIds);
+    }
+
+    private boolean existMenuItemInNewList(List<MenuItemDTO> newSortedItems, MenuItemDTO currentItem) {
+        final List<Integer> menuItemsIds = getAllIds(newSortedItems);
+        return menuItemsIds.contains(currentItem.getDocumentId());
+    }
+
+    private List<Integer> getAllIds(List<MenuItemDTO> newSortedItems) {
+        return newSortedItems.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .map(MenuItemDTO::getDocumentId)
+                .collect(Collectors.toList());
     }
 }
