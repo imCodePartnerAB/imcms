@@ -899,7 +899,7 @@ define("imcms-menu-editor-builder",
         }
 
         function isCorrectSortNumber(sortNumber, level) {
-            return (sortNumber.match(/\./) || []).length === (level - 1);
+            return (sortNumber.match(/\./g) || []).length === (level - 1);
         }
 
         let $menuItemsBlock;
