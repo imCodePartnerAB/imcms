@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
@@ -141,7 +142,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(menuItemBefore.size(), menuItemAfter.size());
-//        assertEquals(menuItemBefore, menuItemAfter); //todo need dataIndex in jpa ?
+        assertEquals(menuItemBefore, menuItemAfter);
 
         final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
         final MenuItemDTO removed = menuItems.remove(0);
@@ -155,7 +156,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
 
     @Test
-    public void saveMenu_When_SortNumbersIsEmpty_Expect_NoDuplicatedDataAndCorrectSave() {
+    public void saveMenu_When_SomeChildrenHasSortNumbersIsEmpties_Expect_NoDuplicatedDataAndCorrectSave() {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
 
@@ -205,9 +206,238 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(newSize, menuItemAfter.size());
     }
 
+    @Test
+    public void saveMenu_When_SortNumbersIsEmptyTreeSort_Expect_NoDuplicatedDataAndCorrectSave() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO expectedMenuDTO = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(TREE_SORT), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+
+        final MenuItemDTO menuItem0 = newMenuItems.get(0);
+
+        final List<MenuItemDTO> children1 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO("")
+        );
+
+        menuItem0.setChildren(children1);
+
+        final List<MenuItemDTO> children2 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO("")
+        );
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+
+        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
+        menuItem0FirstChild.setChildren(children2);
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
+
+        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
+
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
+        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
+        assertEquals(expectedMenuItems.get(0).getSortNumber(), menuItemAfter.get(0).getSortNumber());
+        assertEquals(expectedMenuItems.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList()),
+
+                menuItemAfter.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList())
+        );
+    }
 
     @Test
-    public void saveMenu_When_FlatMenuANdSortNumbersIsEmpty_Expect_NoDuplicatedDataAndCorrectSave() {
+    public void saveMenu_When_SortNumbersIsEmptyManual_Expect_NoDuplicatedDataAndCorrectSave() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO expectedMenuDTO = menuDataInitializer.createData(true, false, String.valueOf(MANUAL), 5);
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(MANUAL), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
+
+        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
+
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
+        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
+        assertEquals(expectedMenuItems.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList()),
+
+                menuItemAfter.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList())
+        );
+
+    }
+
+    @Test
+    public void saveMenu_When_TreeSortAndHaveSameOrder_Expect_NoDuplicatedDataAndCorrectSave() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO menuDTO = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
+        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
+        menuItems.get(1).setSortNumber("1");
+        final MenuDTO expectedMenuDTO = menuService.saveFrom(menuDTO);
+        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
+
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(TREE_SORT), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+
+        final MenuItemDTO menuItem0 = newMenuItems.get(0);
+
+        final List<MenuItemDTO> children1 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO("1.1"),
+                menuDataInitializer.createMenuItemDTO("1.2"),
+                menuDataInitializer.createMenuItemDTO("1.3")
+        );
+
+        menuItem0.setChildren(children1);
+
+        final List<MenuItemDTO> children2 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO("1.1.1"),
+                menuDataInitializer.createMenuItemDTO("1.1.2"),
+                menuDataInitializer.createMenuItemDTO("1.1.3")
+        );
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
+
+        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
+        menuItem0FirstChild.setChildren(children2);
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
+
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
+        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
+        assertEquals(expectedMenuItems.stream()
+                        .flatMap(MenuItemDTO::flattened)
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList()),
+
+                menuItemAfter.stream()
+                        .flatMap(MenuItemDTO::flattened)
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Test
+    public void saveMenu_When_TreeSortAndSomeChildrenHasEmptySortNumber_Expect_NoDuplicatedDataAndCorrectSave() {
+
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO expectedMenuDTO = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(TREE_SORT), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
+
+        final MenuItemDTO menuItem0 = newMenuItems.get(0);
+
+        final List<MenuItemDTO> children1 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO("1.1"),
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO("1.3")
+        );
+
+        menuItem0.setChildren(children1);
+
+        final List<MenuItemDTO> children2 = Arrays.asList(
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO(""),
+                menuDataInitializer.createMenuItemDTO("")
+        );
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+
+        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
+        menuItem0FirstChild.setChildren(children2);
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
+
+        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
+
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
+        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
+        assertEquals(expectedMenuItems.get(0).getSortNumber(), menuItemAfter.get(0).getSortNumber());
+        assertEquals(expectedMenuItems.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList()),
+
+                menuItemAfter.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList())
+        );
+    }
+
+
+    @Test
+    public void saveMenu_When_ManualAndSameSortOrder_Expect_NoDuplicatedDataAndCorrectSave() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO menuDTO = menuDataInitializer.createData(true, true, String.valueOf(MANUAL), 5);
+        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
+        menuItems.get(4).setSortNumber("1");
+        final MenuDTO expectedMenuDTO = menuService.saveFrom(menuDTO);
+
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(MANUAL), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("4"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
+
+        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
+
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
+        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
+        assertEquals(expectedMenuItems.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList()),
+
+                menuItemAfter.stream()
+                        .map(MenuItemDTO::getSortNumber)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Test
+    public void saveMenu_When_FlatMenuAndSortNumbersIsNotEmpty_Expect_NoDuplicatedDataAndCorrectSave() {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
 
