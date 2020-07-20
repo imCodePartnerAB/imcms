@@ -762,13 +762,13 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
 
-        function buildMenuItem(menuElement, { sortType, orderErr }) {
+        function buildMenuItem(menuElement, { sortType, sortNumberErr }) {
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortNumber
             });
-            if (orderErr) {
+            if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
             }
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
@@ -864,13 +864,13 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMenuItemTree(menuElement, { level, sortType, orderErr }) {
+        function buildMenuItemTree(menuElement, { level, sortType, sortNumberErr }) {
             menuElement.children = menuElement.children || [];
 
             const treeBlock = new BEM({
                 block: "imcms-document-items",
                 elements: [{
-                    "document-item": buildMenuItem(menuElement, { sortType, orderErr }),
+                    "document-item": buildMenuItem(menuElement, { sortType, sortNumberErr }),
                     modifiers: [menuElement.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
@@ -882,8 +882,10 @@ define("imcms-menu-editor-builder",
             ++level;
 
             const $childElements = menuElement.children.map(childElement => {
-                const childOrderErr = existsElementsWithSameOrderNumbers(menuElement.children, childElement.sortNumber);
-                const $itemTree = buildMenuItemTree(childElement, { level, sortType, orderErr: childOrderErr });
+                const childSortNumberErr = existsElementsWithSameSortNumbers(menuElement.children, childElement.sortNumber)
+                    || !isCorrectSortNumber(childElement.sortNumber, level);
+
+                const $itemTree = buildMenuItemTree(childElement, { level, sortType, sortNumberErr: childSortNumberErr });
                 $itemTree.addClass("imcms-submenu-items--close");
                 return $itemTree;
             });
@@ -891,9 +893,13 @@ define("imcms-menu-editor-builder",
             return treeBlock.append($childElements);
         }
 
-        function existsElementsWithSameOrderNumbers(elements, elementsSortNumber) {
+        function existsElementsWithSameSortNumbers(elements, elementSortNumber) {
             const sortNumbers = elements.map(element => element.sortNumber);
-            return sortNumbers.filter(num => num === elementsSortNumber).length > 1;
+            return sortNumbers.filter(num => num === elementSortNumber).length > 1;
+        }
+
+        function isCorrectSortNumber(sortNumber, level) {
+            return (sortNumber.match(/\./) || []).length === (level - 1);
         }
 
         let $menuItemsBlock;
@@ -903,8 +909,10 @@ define("imcms-menu-editor-builder",
             function buildMenuElements(menuElements) {
 
                 const $menuItems = menuElements.map(menuElement => {
-                    const orderErr = existsElementsWithSameOrderNumbers(menuElements, menuElement.sortNumber);
-                    return buildMenuItemTree(menuElement, { level: 1, sortType: typeSort, orderErr });
+                    const sortNumberErr = existsElementsWithSameSortNumbers(menuElements, menuElement.sortNumber)
+                        || !isCorrectSortNumber(menuElement.sortNumber, 1);
+
+                    return buildMenuItemTree(menuElement, { level: 1, sortType: typeSort, sortNumberErr });
                 });
                 return new BEM({
                     block: "imcms-document-items-list",
