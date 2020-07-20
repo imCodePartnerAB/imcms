@@ -99,11 +99,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         List<MenuItemDTO> menuItemsOf;
 
         if (typeSort.equals(String.valueOf(TREE_SORT))) {
-            menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
+            menuItemsOf = getNumberSortMenuItems(getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
         } else {
-            menuItemsOf = convertItemsToFlatList(
-                    getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)
-            );
+            menuItemsOf = getNumberSortMenuItems(convertItemsToFlatList(
+                    getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)), typeSort);
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
