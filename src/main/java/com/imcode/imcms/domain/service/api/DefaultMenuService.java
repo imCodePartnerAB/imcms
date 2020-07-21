@@ -19,6 +19,7 @@ import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Service
 @Transactional
+@Slf4j
 public class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
 
@@ -98,6 +100,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         List<MenuItemDTO> menuItemsOf;
 
+        log.error("current type sort im get menu items - {}", typeSort);
+
         if (typeSort.equals(String.valueOf(TREE_SORT))) {
             menuItemsOf = getNumberSortMenuItems(getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
         } else {
@@ -144,6 +148,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+        log.error("current nested im get VISIBLE menu items - {}", nested);
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
@@ -156,7 +161,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
-
+        log.error("current nested im get PUBLIC menu items - {}", nested);
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
@@ -229,12 +234,18 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), docId))
                 .orElseGet(() -> createMenu(menuDTO));
 
+
         final String typeSort = menuDTO.getTypeSort();
+        log.error("current type sort in save mode - {}", typeSort);
+        log.error("current is nested menu in save mode - {}", menuDTO.isNested());
         menu.setNested(menuDTO.isNested());
         menu.setTypeSort(typeSort);
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+
+        log.error("saved MENU type sort in save mode - {}", savedMenu.getTypeSort());
+        log.error("saved MENU is nested menu in save mode - {}", savedMenu.isNested());
 
         super.updateWorkingVersion(docId);
 
