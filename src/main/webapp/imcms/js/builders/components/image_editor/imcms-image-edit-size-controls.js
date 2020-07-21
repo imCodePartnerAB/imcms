@@ -113,14 +113,20 @@ function getPrevTitle() {
 }
 
 function buildOriginalSizeControls() {
+    const $resolutionInputs = new BEM({
+        block: 'imcms-resolution-inputs',
+        elements: [
+            { 'number': getWidthControl() },
+            { 'block-x': $("<div>", {text: '×'}) },
+            { 'number': getHeightControl() }
+        ]
+    }).buildBlockStructure("<div>");
 
     return new BEM({
         block: "imcms-original-size",
         elements: [
             {"title": getTitle()},
-            {"number": getWidthControl()},
-            {'block-x': $("<div>", {text: 'X'})},
-            {"number": getHeightControl()}
+            { 'inputs': $resolutionInputs },
         ]
     }).buildBlockStructure("<div>", {style: 'display: none;'});
 }
@@ -137,14 +143,20 @@ function getWantedHeightControl() {
 }
 
 function buildWantedSizeBlock() {
+    const $resolutionInputs = new BEM({
+        block: 'imcms-resolution-inputs',
+        elements: [
+            { 'number': buildWantedWidthControl() },
+            { 'block-x': $("<div>", { text: '×' }) },
+            { 'number': buildWantedHeightControl() }
+        ]
+    }).buildBlockStructure("<div>");
 
     return $wantedSizeControls || ($wantedSizeControls = new BEM({
-        block: "imcms-edit-size",
+        block: 'imcms-edit-size',
         elements: [
-            {"title": getPrevTitle()},
-            {"number": buildWantedWidthControl()},
-            {'block-x': $("<div>", {text: 'X'})},
-            {"number": buildWantedHeightControl()}
+            { 'title': getPrevTitle() },
+            { 'inputs': $resolutionInputs },
         ]
     }).buildBlockStructure("<div>"));
 }
@@ -182,13 +194,20 @@ function getDisplayTitle() {
 }
 
 function buildDisplaySizeBlock() {
+    const $resolutionInputs = new BEM({
+        block: 'imcms-resolution-inputs',
+        elements: [
+            { 'number': buildPreviewWidthControl() },
+            { 'block-x': $("<div>", { text: '×' }) },
+            { 'number': buildPreviewHeightControl() },
+        ]
+    }).buildBlockStructure("<div>");
+
     return $displaySizePrevBlock || ($displaySizePrevBlock = new BEM({
         block: 'imcms-display-size',
         elements: [
-            {'title': getDisplayTitle()},
-            {'number': buildPreviewWidthControl()},
-            {'block-x': $("<div>", {text: 'X'})},
-            {'number': buildPreviewHeightControl()}
+            { 'title': getDisplayTitle() },
+            { 'inputs': $resolutionInputs },
         ]
     }).buildBlockStructure('<div>'));
 }

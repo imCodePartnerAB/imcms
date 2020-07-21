@@ -1,3 +1,8 @@
+.imcms-resolution-inputs {
+    display: flex;
+    align-items: center;
+}
+
 .imcms-original-size {
     display: inline-block;
     min-width: 300px;
@@ -24,72 +29,31 @@
     line-height: 28px;
 }
 
-.imcms-original-size__number {
-    float: left;
+.imcms-resolution-inputs__block-x {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 5px;
 }
 
-.imcms-edit-size__number,
-.imcms-display-size__number {
-    float: right;
-}
-
-.imcms-original-size__block-x {
-    float: left;
-    margin: 5px;
-}
-
-.imcms-edit-size__block-x,
-.imcms-display-size__block-x {
-    float: right;
-    margin: 5px;
-}
-
-.imcms-original-size .imcms-number {
-    float: left;
+.imcms-resolution-inputs__number {
+    display: flex;
     width: 100px;
 }
 
-.imcms-edit-size .imcms-number,
-.imcms-display-size .imcms-number {
-    float: right;
-    width: 100px;
-}
-
-.imcms-original-size__button {
-    float: left;
-    margin: 0 15px;
-    height: 30px;
-}
-
-.imcms-edit-size__button,
-.imcms-display-size__button {
-    float: right;
-    margin: 0 15px;
-    height: 30px;
-}
-
-.imcms-edit-size .imcms-edit-size__number,
-.imcms-original-size .imcms-original-size__number,
-.imcms-display-size .imcms-display-size__number {
+.imcms-resolution-inputs__number {
     width: auto;
 }
 
-.imcms-edit-size__number .imcms-number__label,
-.imcms-original-size__number .imcms-number__label,
-.imcms-display-size__number .imcms-number__label {
+.imcms-resolution-inputs__number .imcms-number__label {
     margin-right: 5px;
     margin-top: 0;
 }
 
-.imcms-edit-size__number .imcms-number-box,
-.imcms-original-size__number .imcms-number-box,
-.imcms-display-size__number .imcms-number-box {
+.imcms-resolution-inputs__number .imcms-number-box {
     display: inline-block;
 }
 
-.imcms-edit-size__number .imcms-number-box__input,
-.imcms-original-size__number .imcms-number-box__input,
-.imcms-display-size .imcms-number-box__input {
+.imcms-resolution-inputs__number .imcms-number-box__input {
     width: 80px;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -100,16 +64,12 @@
     width: 70px;
 }
 
-.imcms-edit-size__number .imcms-button--increment,
-.imcms-original-size__number .imcms-button--increment,
-.imcms-display-size__number .imcms-button--increment {
+.imcms-resolution-inputs__number .imcms-button--increment {
     height: 10px;
     margin-top: 4px;
 }
 
-.imcms-edit-size__number .imcms-button--decrement,
-.imcms-original-size__number .imcms-button--decrement,
-.imcms-display-size__number .imcms-button--decrement {
+.imcms-resolution-inputs__number .imcms-button--decrement {
     height: 10px;
     margin-bottom: 4px;
 }
