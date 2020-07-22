@@ -101,6 +101,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         List<MenuItemDTO> menuItemsOf;
 
         log.error("current type sort im get menu items - {}", typeSort);
+        log.error("current menu_index im get menu items - {}", menuIndex);
 
         if (typeSort.equals(String.valueOf(TREE_SORT))) {
             menuItemsOf = getNumberSortMenuItems(getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
@@ -149,6 +150,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         log.error("current nested im get VISIBLE menu items - {}", nested);
+        log.error("current MENU index im get VISIBLE menu items - {}", menuIndex);
+        log.error("current DOC_ID im get VISIBLE menu items - {}", docId);
+
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
@@ -162,6 +166,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         log.error("current nested im get PUBLIC menu items - {}", nested);
+        log.error("current MENU index im get PUBLIC menu items - {}", menuIndex);
+        log.error("current DOC_ID im get PUBLIC  menu items - {}", docId);
+
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
         }
@@ -240,12 +247,22 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         log.error("current is nested menu in save mode - {}", menuDTO.isNested());
         menu.setNested(menuDTO.isNested());
         menu.setTypeSort(typeSort);
+        boolean emptyChildren = menuDTO.getMenuItems().get(0).getChildren().isEmpty();
+        log.error("before save MENU is 1 sub children exists - {}", emptyChildren);
+        if (!emptyChildren) {
+            log.error("before save MENU is 2 sub children exists - {}", menuDTO.getMenuItems().get(0).getChildren().get(0).getChildren().isEmpty());
+        }
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
 
         log.error("saved MENU type sort in save mode - {}", savedMenu.getTypeSort());
         log.error("saved MENU is nested menu in save mode - {}", savedMenu.isNested());
+        boolean emptyChildAfterSaved = savedMenu.getMenuItems().get(0).getChildren().isEmpty();
+        log.error("saved MENU is 1 sub children exists - {}", emptyChildAfterSaved);
+        if (!emptyChildAfterSaved) {
+            log.error("saved MENU is 2 sub children exists - {}", savedMenu.getMenuItems().get(0).getChildren().get(0).getChildren().isEmpty());
+        }
 
         super.updateWorkingVersion(docId);
 
