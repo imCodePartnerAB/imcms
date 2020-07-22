@@ -2,10 +2,10 @@ define(
     'imcms-image-zoom',
     [
         'jquery', 'imcms-originally-image', 'imcms-originally-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
-        'imcms-components-builder', 'check-browser'
+        'imcms-components-builder'
     ],
     function ($, originalImage, originallyImageArea, previewImageArea, i18nTexts,
-              components, checkerBrowser) {
+              components) {
 
         const texts = i18nTexts.editors.image;
 
@@ -20,37 +20,20 @@ define(
             return $zoomGradeField;
         }
 
-        function getCurrentZoomByBrowser($image, isFireFox) {
-            let currentZoomVal;
-
-            if (isFireFox) {
-                const scaleTransform = $image[0].style.transform.trim();
-                if (scaleTransform !== '') {
-                    currentZoomVal = parseFloat(scaleTransform.replace(/[^\d\\.]*/g, ''));
-                } else {
-                    currentZoomVal = parseFloat(1);
-                }
-            } else {
-                currentZoomVal = parseFloat($image.css('zoom'));
-            }
-            return currentZoomVal;
+        function getCurrentZoom($image) {
+            const transformStyle = $image[0].style.transform;
+            const scale = parseFloat(transformStyle.substring(transformStyle.indexOf('scale(') + 6));
+            return scale || 1
         }
 
-        function getBorderWidthByBrowser($image, isFireFox) {
-            let border;
-            if (isFireFox) {
-                border = parseInt($image.css('border-bottom-width').replace(/[^\d\\.]*/g, ''));
-            } else {
-                border = parseInt($image.css('border-width'));
-            }
-
-            return border;
+        function getBorderWidth($image) {
+            return parseFloat($image.css('border-bottom-width'));
         }
 
         function updateZoomGradeValue() {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
-            const currentZoom = getCurrentZoomByBrowser($image, checkerBrowser.isFirefox());
+            const currentZoom = getCurrentZoom($image);
 
             updateZoomGradeValueByCssProperty(currentZoom);
         }
@@ -66,40 +49,55 @@ define(
 
         function fitImage() {
             const isPreview = isPreviewTab();
-            const isFireFox = checkerBrowser.isFirefox();
             const $imageArea = isPreview ? previewImageArea.getPreviewImageArea() : originallyImageArea.getOriginalImageArea();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
-            let currentZoom = getCurrentZoomByBrowser($image, isFireFox);
-            const imageBorderWidth = getBorderWidthByBrowser($image, isFireFox);
+            const currentZoom = getCurrentZoom($image);
+            const imageSize = getImageSize($image, currentZoom);
 
-            const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
-            const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
-
-            if (imageWidth < $imageArea.width() && imageHeight < $imageArea.height()) {
+            if (imageSize.width < $imageArea.width() && imageSize.height < $imageArea.height()) {
                 return;
             }
 
-            const widthScale = imageWidth / $imageArea.width();
-            const heightScale = imageHeight / $imageArea.height();
+            const widthScale = imageSize.width / $imageArea.width();
+            const heightScale = imageSize.height / $imageArea.height();
 
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
             const newZoomValue = currentZoom * zoomScale;
 
-            isFireFox
-                ? $image.css('transform', `scale(${newZoomValue}) translate(-2%, -2%)`)
-                : $image.css('zoom', newZoomValue);
+            $image.css('transform', getTransformString(newZoomValue, $image));
 
             updateZoomGradeValueByCssProperty(newZoomValue);
+        }
+
+        function getImageSize($image, currentZoom = 1) {
+            const imageBorderWidth = getBorderWidth($image);
+
+            const width = ($image.width() + imageBorderWidth * 2) * currentZoom;
+            const height = ($image.height() + imageBorderWidth * 2) * currentZoom;
+
+            return { width, height };
+        }
+
+        function getTransformString(zoomValue, $image) {
+            const imageSize = getImageSize($image);
+
+            const horizontalTranslation = calculateTranslation(zoomValue, imageSize.width);
+            const verticalTranslation = calculateTranslation(zoomValue, imageSize.height);
+
+            return `scale(${zoomValue}) translate(${horizontalTranslation}px, ${verticalTranslation}px)`
+        }
+
+        function calculateTranslation(zoomValue, length) {
+            return -length / 2 * (1 / zoomValue - 1);
         }
 
         function getRelativeZoomValueByOriginalImg() {
             const $imageArea = originallyImageArea.getOriginalImageArea();
             const $image = originalImage.getImage();
-            const isFirefox = checkerBrowser.isFirefox();
 
-            const currentZoom = getCurrentZoomByBrowser($image, isFirefox);
-            const imageBorderWidth = getBorderWidthByBrowser($image, isFirefox);
+            const currentZoom = getCurrentZoom($image);
+            const imageBorderWidth = getBorderWidth($image);
 
             const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
             const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
@@ -121,22 +119,17 @@ define(
         function zoom(scale) {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
-            const isFireFox = checkerBrowser.isFirefox()
 
             if (!scale) {
-                if (isFireFox) {
-                    $image.css('transform', `scale(1)`);
-                } else {
-                    $image.css('zoom', 1);
-                }
+                $image.css('transform', `scale(1)`);
                 updateZoomGradeValueByCssProperty(1);
                 return;
             }
 
-            const currentZoom = getCurrentZoomByBrowser($image, isFireFox);
+            const currentZoom = getCurrentZoom($image);
             const newZoomValue = currentZoom * scale;
 
-            isFireFox ? $image.css('transform', `scale(${newZoomValue})`) : $image.css('zoom', newZoomValue);
+            $image.css('transform', getTransformString(newZoomValue, $image));
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
@@ -165,7 +158,8 @@ define(
             zoomPlus,
             zoomMinus,
             resetZoom,
-            clearData
+            clearData,
+            getTransformString,
         }
     }
 );
