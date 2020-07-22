@@ -17,18 +17,19 @@ define("imcms-menu-editor-builder",
         const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
 
-        let PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
-        let PUBLISHED_DATE_DESC = 'PUBLISHED_DATE_DESC';
-        let MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
-        let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
-        let TREE_SORT = 'TREE_SORT';
+        const PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
+        const PUBLISHED_DATE_DESC = 'PUBLISHED_DATE_DESC';
+        const MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
+        const MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
+        const TREE_SORT = 'TREE_SORT';
+        const MANUAL = 'MANUAL';
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
-        let $title = $('<a>');
-        let localizeTypesSort = [
+        const $title = $('<a>');
+        const localizeTypesSort = [
             texts.typesSort.treeSort,
             texts.typesSort.manual,
             texts.typesSort.alphabeticalAsc,
@@ -38,7 +39,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let topPointMenu = 178; // top point menu for set item before item in the top position.
+        const topPointMenu = 178; // top point menu for set item before item in the top position.
         // todo: maybe need use getFirstItemInMenuArea().offset().top - 4 or something like this? Same in doc-editor
 
         // variables for drag
@@ -90,7 +91,7 @@ define("imcms-menu-editor-builder",
             };
 
             menusRestApi.create(menuDTO)
-                .done(item => {
+                .done(() => {
                     onMenuSaved();
                     menuWindowBuilder.closeWindow();
                 })
@@ -320,14 +321,13 @@ define("imcms-menu-editor-builder",
         }
 
         function detectPasteArea($frame) {
-            let allMenuDocObjArray = {};
             const itemTree = $(".imcms-menu-items-list"),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 frameTop = $frame.position().top
             ;
 
             // get all menu doc coords
-            allMenuDocObjArray = getMenuItemsParam(menuDocs);
+            const allMenuDocObjArray = getMenuItemsParam(menuDocs);
 
             let menuDoc = null,
                 placeStatus = null
@@ -657,7 +657,7 @@ define("imcms-menu-editor-builder",
                     const menuItemClass = "imcms-menu-items__document-item";
                     const $menuItem = $oldMenuItem.find("." + menuItemClass).first();
 
-                    $menuItem.removeClass((index, className) => (className.match(/\imcms-menu-items__document-item--\S+/g) || []).join(' '));
+                    $menuItem.removeClass((index, className) => (className.match(/imcms-menu-items__document-item--\S+/g) || []).join(' '));
 
                     $menuItem.addClass(
                         menuItemClass + "--" + document.documentStatus.replace(/_/g, "-").toLowerCase()
@@ -1029,11 +1029,9 @@ define("imcms-menu-editor-builder",
                 });
             }
 
-            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}], {
+            return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}], {
                 class: 'imcms-flex--w-15'
             });
-
-            return $newDocButtonContainer;
         }
 
         function changeControlsByMultiRemove() {
@@ -1253,7 +1251,7 @@ define("imcms-menu-editor-builder",
                     .map(mapToMenuItem)
                     .toArray();
 
-                let menuData = {
+                const menuData = {
                     docId: opts.docId,
                     menuIndex: opts.menuIndex,
                     menuItems: menuItems,
@@ -1278,12 +1276,24 @@ define("imcms-menu-editor-builder",
                             return;
                         }
 
-                        buildMenuItemsBySelectedType(menuData)
+                        buildMenuItemsBySelectedType(menuData);
+                        toggleSortingCheckboxViewAndTurnOffIfNeededBySortType(type);
                     });
                 } else {
-                    buildMenuItemsBySelectedType(menuData)
+                    buildMenuItemsBySelectedType(menuData);
+                    toggleSortingCheckboxViewAndTurnOffIfNeededBySortType(type);
                 }
             };
+        }
+
+        function toggleSortingCheckboxViewAndTurnOffIfNeededBySortType(sortType) {
+            if (sortType === TREE_SORT || sortType === MANUAL) {
+                $numberingTypeSortFlag.show()
+                !$numberingTypeSortFlag.isChecked() && $numberingTypeSortFlag.setChecked(true);
+            } else {
+                $numberingTypeSortFlag.hide();
+                $numberingTypeSortFlag.isChecked() && $numberingTypeSortFlag.setChecked(false);
+            }
         }
 
         let $editorHeadContainer;
@@ -1356,7 +1366,7 @@ define("imcms-menu-editor-builder",
             documentEditorBuilder.clearData();
         }
 
-        var menuWindowBuilder = new WindowBuilder({
+        const menuWindowBuilder = new WindowBuilder({
             factory: buildMenuEditor,
             loadDataStrategy: loadMenuEditorContent,
             clearDataStrategy: clearData,
@@ -1364,7 +1374,7 @@ define("imcms-menu-editor-builder",
             onEnterKeyPressed: saveAndClose
         });
 
-        var $tag;
+        let $tag;
 
         return {
             setTag: function ($editedTag) {
