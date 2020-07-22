@@ -115,16 +115,16 @@ function onImageLoad() {
         const width = $img.width();
         const height = $img.height();
 
-        shadowLayout.css({
-            width: width,
-            height: height,
-            zoom: zoomValue,
-        });
+        const transformStyle = imageZoom.getTransformString(zoomValue, $img);
 
+        shadowLayout.css({
+            width,
+            height,
+        });
         $croppingWrap.css({
-            width: width,
-            height: height,
-            zoom: zoomValue,
+            transform: transformStyle,
+            width,
+            height,
         });
     });
 }
