@@ -290,11 +290,13 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private Menu getMenu(int menuNo, int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        log.error("Version in getMenu {} ", workingVersion.getNo());
         return repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
     }
 
     private Menu createMenu(MenuDTO menuDTO) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(menuDTO.getDocId());
+        log.error("Version in createMenu {} ", workingVersion.getNo());
         return createMenu(menuDTO, workingVersion);
     }
 
@@ -318,6 +320,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 : versionService::getLatestVersion;
 
         final Version version = versionService.getVersion(docId, versionReceiver);
+        log.error("Version in getMenuItemsOf {} ", version.getNo());
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
