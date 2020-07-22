@@ -100,9 +100,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         List<MenuItemDTO> menuItemsOf;
 
-        log.error("current type sort im get menu items - {}", typeSort);
-        log.error("current menu_index im get menu items - {}", menuIndex);
-
         if (typeSort.equals(String.valueOf(TREE_SORT))) {
             menuItemsOf = getNumberSortMenuItems(getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
         } else {
@@ -119,6 +116,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 log.error("get MenuItems is 2 sub children empty - {}", menuItemsOf.get(0).getChildren().get(0).getChildren().isEmpty());
             }
         }
+
+        menuItemsOf.stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item get menu items {}", item.getSortNumber()));
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
@@ -251,8 +250,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
 
         final String typeSort = menuDTO.getTypeSort();
-        log.error("current type sort in save mode - {}", typeSort);
-        log.error("current is nested menu in save mode - {}", menuDTO.isNested());
         menu.setNested(menuDTO.isNested());
         menu.setTypeSort(typeSort);
         boolean emptyChildren = menuDTO.getMenuItems().get(0).getChildren().isEmpty();
@@ -271,6 +268,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         if (!emptyChildAfterSaved) {
             log.error("saved MENU is 2 sub children empty - {}", savedMenu.getMenuItems().get(0).getChildren().get(0).getChildren().isEmpty());
         }
+
+        savedMenu.getMenuItems().stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item after saved {}", item.getSortNumber()));
 
         super.updateWorkingVersion(docId);
 
@@ -529,13 +528,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         });
 
-        if (!newSortedMenuItems.isEmpty()) {
-            boolean emptyChildAfterSaved = newSortedMenuItems.get(0).getChildren().isEmpty();
-            log.error("Numbering sort is 1 sub children empty - {}", emptyChildAfterSaved);
-            if (!emptyChildAfterSaved) {
-                log.error("Numbering sort is 2 sub children empty - {}", newSortedMenuItems.get(0).getChildren().get(0).getChildren().isEmpty());
-            }
-        }
+        newSortedMenuItems.stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("SORTING NUMBER number item {}", item.getSortNumber()));
 
         return newSortedMenuItems.stream()
                 .sorted(Comparator.comparing(firstItem -> {
