@@ -109,14 +109,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsOf);
 
-        if (!menuItemsOf.isEmpty()) {
-            boolean emptyChildren = menuItemsOf.get(0).getChildren().isEmpty();
-            log.error("get MenuItems is 1 sub children empty - {}", emptyChildren);
-            if (!emptyChildren) {
-                log.error("get MenuItems is 2 sub children empty - {}", menuItemsOf.get(0).getChildren().get(0).getChildren().isEmpty());
-            }
-        }
-
         menuItemsOf.stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item get menu items {}", item.getSortNumber()));
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -252,22 +244,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final String typeSort = menuDTO.getTypeSort();
         menu.setNested(menuDTO.isNested());
         menu.setTypeSort(typeSort);
-        boolean emptyChildren = menuDTO.getMenuItems().get(0).getChildren().isEmpty();
-        log.error("before save MENU is 1 sub children empty - {}", emptyChildren);
-        if (!emptyChildren) {
-            log.error("before save MENU is 2 sub children empty - {}", menuDTO.getMenuItems().get(0).getChildren().get(0).getChildren().isEmpty());
-        }
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
-
-        log.error("saved MENU type sort in save mode - {}", savedMenu.getTypeSort());
-        log.error("saved MENU is nested menu in save mode - {}", savedMenu.isNested());
-        boolean emptyChildAfterSaved = savedMenu.getMenuItems().get(0).getChildren().isEmpty();
-        log.error("saved MENU is 1 sub children empty - {}", emptyChildAfterSaved);
-        if (!emptyChildAfterSaved) {
-            log.error("saved MENU is 2 sub children empty - {}", savedMenu.getMenuItems().get(0).getChildren().get(0).getChildren().isEmpty());
-        }
 
         savedMenu.getMenuItems().stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item after saved {}", item.getSortNumber()));
 
@@ -342,6 +321,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
+
+        if (menu != null)
+            menu.getMenuItems().stream().flatMap(MenuItem::flattened).forEach(item -> log.error("Sort number getMenuItemsOf {}", item.getSortNumber()));
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
                 ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
