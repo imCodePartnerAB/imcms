@@ -1161,7 +1161,11 @@ define("imcms-menu-editor-builder",
         }
 
         function toggleDragAndDrop(isChecked) {
-            const moveControls = [$('.imcms-control--move'), $('.imcms-control--vertical_move')];
+            const $menuItem = $('.imcms-menu-item');
+            const moveControls = [
+                $menuItem.find('.imcms-control--move'),
+                $menuItem.find('.imcms-control--vertical_move'),
+            ];
             const command = isChecked
                 ? $el => $el.hide()
                 : $el => $el.show();
