@@ -112,10 +112,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsOf);
 
-        boolean emptyChildren = menuItemsOf.get(0).getChildren().isEmpty();
-        log.error("get MenuItems is 1 sub children empty - {}", emptyChildren);
-        if (!emptyChildren) {
-            log.error("get MenuItems is 2 sub children empty - {}", menuItemsOf.get(0).getChildren().get(0).getChildren().isEmpty());
+        if (!menuItemsOf.isEmpty()) {
+            boolean emptyChildren = menuItemsOf.get(0).getChildren().isEmpty();
+            log.error("get MenuItems is 1 sub children empty - {}", emptyChildren);
+            if (!emptyChildren) {
+                log.error("get MenuItems is 2 sub children empty - {}", menuItemsOf.get(0).getChildren().get(0).getChildren().isEmpty());
+            }
         }
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -527,10 +529,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         });
 
-        boolean emptyChildAfterSaved = newSortedMenuItems.get(0).getChildren().isEmpty();
-        log.error("Numbering sort is 1 sub children empty - {}", emptyChildAfterSaved);
-        if (!emptyChildAfterSaved) {
-            log.error("Numbering sort is 2 sub children empty - {}", newSortedMenuItems.get(0).getChildren().get(0).getChildren().isEmpty());
+        if (!newSortedMenuItems.isEmpty()) {
+            boolean emptyChildAfterSaved = newSortedMenuItems.get(0).getChildren().isEmpty();
+            log.error("Numbering sort is 1 sub children empty - {}", emptyChildAfterSaved);
+            if (!emptyChildAfterSaved) {
+                log.error("Numbering sort is 2 sub children empty - {}", newSortedMenuItems.get(0).getChildren().get(0).getChildren().isEmpty());
+            }
         }
 
         return newSortedMenuItems.stream()
