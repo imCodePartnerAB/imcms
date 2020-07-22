@@ -86,7 +86,7 @@ define("imcms-menu-editor-builder",
                 docId: opts.docId,
                 menuItems: menuItems,
                 nested: opts.nested,
-                typeSort: document.getElementById('type-sort').value
+                typeSort: document.getElementById('type-sort').value.trim()
             };
 
             menusRestApi.create(menuDTO)
