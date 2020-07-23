@@ -23,6 +23,7 @@ define("imcms-menu-editor-builder",
         const MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         const TREE_SORT = 'TREE_SORT';
         const MANUAL = 'MANUAL';
+        const SORT_NUMBER_REPLACEMENT = '000';
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
@@ -899,7 +900,7 @@ define("imcms-menu-editor-builder",
         }
 
         function isCorrectSortNumber(sortNumber, level) {
-            return (sortNumber.match(/\./g) || []).length === (level - 1);
+            return sortNumber && sortNumber.match(/^\d+(\.\d+)*$/) && (sortNumber.match(/\./g) || []).length === (level - 1);
         }
 
         let $menuItemsBlock;
@@ -907,9 +908,10 @@ define("imcms-menu-editor-builder",
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
+                const fixedMenuElements = removeSortNumberReplacement(menuElements);
 
-                const $menuItems = menuElements.map(menuElement => {
-                    const sortNumberErr = existsElementsWithSameSortNumbers(menuElements, menuElement.sortNumber)
+                const $menuItems = fixedMenuElements.map(menuElement => {
+                    const sortNumberErr = existsElementsWithSameSortNumbers(fixedMenuElements, menuElement.sortNumber)
                         || !isCorrectSortNumber(menuElement.sortNumber, 1);
 
                     return buildMenuItemTree(menuElement, { level: 1, sortType: typeSort, sortNumberErr });
@@ -924,10 +926,18 @@ define("imcms-menu-editor-builder",
                 });
             }
 
+            function removeSortNumberReplacement(menuItems) {
+                return menuItems.map(item => ({
+                    ...item,
+                    sortNumber: item.sortNumber.replace(SORT_NUMBER_REPLACEMENT, ''),
+                }))
+            }
+
             function buildMenuTitlesRow() {
                 $sortOrderColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
                     text: texts.order,
+                    click: reorderMenuListBySortNumber,
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
@@ -989,6 +999,22 @@ define("imcms-menu-editor-builder",
                     }
                 }).buildBlockStructure("<div>", {
                     class: "imcms-menu-list-titles"
+                });
+            }
+
+            function reorderMenuListBySortNumber() {
+                addReplacementOnEmptySortNumberFields();
+                const currentSortValue = $typesSortSelect.getSelect().getSelectedValue();
+                $typesSortSelect.find(`[data-value=${currentSortValue}]`).click();
+            }
+
+            function addReplacementOnEmptySortNumberFields() {
+                $('.imcms-document-item__sort-order').children().each(function() {
+                    const $input = $(this);
+                    if (!$input.val()) {
+                        $input.css('color', 'transparent');
+                        $input.val(SORT_NUMBER_REPLACEMENT);
+                    }
                 });
             }
 
@@ -1179,8 +1205,10 @@ define("imcms-menu-editor-builder",
             toggleDragAndDrop(isChecked);
         }
 
+        let $typesSortSelect;
+
         function buildTypeSortingSelect(opts) {
-            let $typesSortSelect = components.selects.selectContainer('<div>', {
+            $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
                 class: 'imcms-flex--flex-1',
                 emptySelect: false,
@@ -1194,7 +1222,7 @@ define("imcms-menu-editor-builder",
                 change: onChangeNumberingSortFlag,
             });
 
-            let requestNested = {
+            const requestNested = {
                 nested: opts.nested
             };
 
@@ -1267,7 +1295,7 @@ define("imcms-menu-editor-builder",
                     }
                 }
 
-                if (menuData.nested === true && prevType === TREE_SORT) {
+                if (menuData.nested === true && prevType === TREE_SORT && type !== TREE_SORT) {
                     modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
                         if (!confirmed) {
                             let prevKeySelected = getKeyByValue(mapTypesSort, prevType);
