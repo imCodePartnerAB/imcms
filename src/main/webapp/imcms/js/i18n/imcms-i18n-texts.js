@@ -351,7 +351,6 @@ const texts = {
                 }
             },
             menu: {
-                newDoc: "Ny",
                 title: "Redigera meny ",
                 teaser: "Teaser-menyn ",
                 page: "sida ",
@@ -368,7 +367,6 @@ const texts = {
                 status: "Status",
                 version: 'Ver',
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
-                titleTypeSort: "Sortera på",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 saveAndClose: "Spara och stäng",
                 error: {
@@ -1265,7 +1263,6 @@ const texts = {
                 }
             },
             menu: {
-                newDoc: "New",
                 title: "Menu Editor ",
                 teaser: "Teaser menu ",
                 page: "page ",
@@ -1283,7 +1280,6 @@ const texts = {
                 version: 'Ver',
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
-                titleTypeSort: "Sort on",
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 error: {
                     createFailed: 'Failed to save menu. Try again',
