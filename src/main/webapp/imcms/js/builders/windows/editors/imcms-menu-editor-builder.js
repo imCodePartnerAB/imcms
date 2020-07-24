@@ -1036,7 +1036,7 @@ define("imcms-menu-editor-builder",
 
             function buildNewDocButton() {
                 return components.buttons.negativeButton({
-                    text: texts.newDoc,
+                    text: '+',
                     click: onNewDocButtonClick
                 });
             }
@@ -1056,7 +1056,7 @@ define("imcms-menu-editor-builder",
             }
 
             return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}], {
-                class: 'imcms-flex--w-15'
+                class: 'imcms-flex--flex-1'
             });
         }
 
@@ -1133,7 +1133,7 @@ define("imcms-menu-editor-builder",
                         click: removeEnabledMenuItems
                     })
                 }
-            }).buildBlockStructure('<div>', { class: 'imcms-flex--w-40' });
+            }).buildBlockStructure('<div>');
         }
 
 
@@ -1210,9 +1210,8 @@ define("imcms-menu-editor-builder",
         function buildTypeSortingSelect(opts) {
             $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
-                class: 'imcms-flex--flex-1',
+                class: 'imcms-flex--w-40',
                 emptySelect: false,
-                text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
             });
 
@@ -1257,7 +1256,7 @@ define("imcms-menu-editor-builder",
                     'type-sort-numbering': $numberingTypeSortFlag
                 }
             }).buildBlockStructure('<div>', {
-                class: 'imcms-flex--w-40',
+                class: 'imcms-flex--flex-1',
             });
         }
 
@@ -1324,17 +1323,33 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        let $editorHeadContainer;
-
-        function buildEditorContainer(opts) {
-            return $editorHeadContainer = new BEM({
-                block: 'imcms-menu-editor-head',
+        function buildHeadFirstLine() {
+            return new BEM({
+                block: 'imcms-menu-head-row',
                 elements: {
                     'new-button': buildMenuItemNewButton(),
-                    'switch-multi-delete': buildSwitchesOffOnButtons(),
-                    'type-sort-block': buildTypeSortingSelect(opts)
                 }
-            }).buildBlockStructure('<div>')
+            }).buildBlockStructure('<div>');
+        }
+
+        function buildHeadSecondLine(opts) {
+            return new BEM({
+                block: 'imcms-menu-head-row',
+                elements: {
+                    'type-sort-block': buildTypeSortingSelect(opts),
+                    'switch-multi-delete': buildSwitchesOffOnButtons(),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function buildEditorContainer(opts) {
+            return new BEM({
+                block: 'imcms-menu-editor-head',
+                elements: {
+                    'first-line': buildHeadFirstLine(),
+                    'second-line': buildHeadSecondLine(opts),
+                }
+            }).buildBlockStructure('<div>');
         }
 
         function fillEditorContent(menuElementsTree, opts) {
