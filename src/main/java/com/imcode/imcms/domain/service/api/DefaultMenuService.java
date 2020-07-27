@@ -109,8 +109,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsOf);
 
-        menuItemsOf.stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item get menu items {}", item.getSortNumber()));
-
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
         }
@@ -148,9 +146,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
-        log.error("current nested im get VISIBLE menu items - {}", nested);
-        log.error("current MENU index im get VISIBLE menu items - {}", menuIndex);
-        log.error("current DOC_ID im get VISIBLE menu items - {}", docId);
 
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
@@ -164,9 +159,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
-        log.error("current nested im get PUBLIC menu items - {}", nested);
-        log.error("current MENU index im get PUBLIC menu items - {}", menuIndex);
-        log.error("current DOC_ID im get PUBLIC  menu items - {}", docId);
 
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
@@ -248,8 +240,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
 
-        savedMenu.getMenuItems().stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("Sort number item after saved {}", item.getSortNumber()));
-
         super.updateWorkingVersion(docId);
 
         return savedMenu;
@@ -290,13 +280,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private Menu getMenu(int menuNo, int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-        log.error("Version in getMenu {} ", workingVersion.getNo());
         return repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
     }
 
     private Menu createMenu(MenuDTO menuDTO) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(menuDTO.getDocId());
-        log.error("Version in createMenu {} ", workingVersion.getNo());
         return createMenu(menuDTO, workingVersion);
     }
 
@@ -320,13 +308,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 : versionService::getLatestVersion;
 
         final Version version = versionService.getVersion(docId, versionReceiver);
-        log.error("Version in getMenuItemsOf {} ", version.getNo());
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
-
-        if (menu != null)
-            menu.getMenuItems().stream().flatMap(MenuItem::flattened).forEach(item -> log.error("Sort number getMenuItemsOf {}", item.getSortNumber()));
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
                 ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
@@ -512,8 +496,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 newSortedMenuItems.add(mainItemDTO);
             }
         });
-
-        newSortedMenuItems.stream().flatMap(MenuItemDTO::flattened).forEach(item -> log.error("SORTING NUMBER number item {}", item.getSortNumber()));
 
         return newSortedMenuItems.stream()
                 .sorted(Comparator.comparing(firstItem -> {
