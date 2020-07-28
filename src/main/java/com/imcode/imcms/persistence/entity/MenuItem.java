@@ -37,7 +37,7 @@ public class MenuItem implements Serializable {
     @Column(name = "document_id", nullable = false)
     private Integer documentId;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
