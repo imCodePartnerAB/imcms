@@ -347,6 +347,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
                 .filter(isMenuItemAccessibleForLang(language, versionReceiver))
                 .peek(menuItemDTO -> {
+                    log.error("Method getMenuItemsOf,in menuItem docId {}, children is empty: {}",
+                            menuItemDTO.getDocumentId(), menuItemDTO.getChildren().isEmpty());
                     if (status == MenuItemsStatus.ALL) return;
 
                     final List<MenuItemDTO> children = menuItemDTO.getChildren()
