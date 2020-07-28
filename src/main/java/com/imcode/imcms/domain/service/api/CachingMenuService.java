@@ -52,7 +52,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
-                getKey(menuIndex, docId, language, nested, null),
+                getKey(menuIndex, docId, language, nested),
                 () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -60,7 +60,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language, nested, null),
+                getKey(menuIndex, docId, language, nested),
                 () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -114,6 +114,13 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     public Menu removeId(Menu menu, Version version) {
         documentLoaderCachingProxy.invalidateMenuItemsCacheBy(menu);
         return defaultMenuService.removeId(menu, version);
+    }
+
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean nested) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested);
     }
 
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
