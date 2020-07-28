@@ -13,6 +13,7 @@ import imcode.server.Config;
 import imcode.server.document.DocumentDomainObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
@@ -27,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
+@Slf4j
 public class DocumentLoaderCachingProxy {
 
     private final DocumentVersionMapper versionMapper;
@@ -214,6 +216,11 @@ public class DocumentLoaderCachingProxy {
     public List<MenuItemDTO> getMenuItems(final MenuCacheKey menuCacheKey,
                                           final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
 
+        menuDtoSupplier.get().stream()
+                .flatMap(MenuItemDTO::flattened)
+                .forEach(item ->
+                        log.error("Method getMenuItems FROM DocumentLoaderCachingProxy, " +
+                                "docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
         return allMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
@@ -227,6 +234,11 @@ public class DocumentLoaderCachingProxy {
     public List<MenuItemDTO> getVisibleMenuItems(final MenuCacheKey menuCacheKey,
                                                  final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
 
+        menuDtoSupplier.get().stream()
+                .flatMap(MenuItemDTO::flattened)
+                .forEach(item ->
+                        log.error("Method getVisibleMenuItems FROM DocumentLoaderCachingProxy, " +
+                                "docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
         return visibleMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
@@ -298,6 +310,13 @@ public class DocumentLoaderCachingProxy {
             this.language = language;
             this.nested = nested;
             this.typeSort = typeSort;
+        }
+
+        public MenuCacheKey(int menuIndex, int docId, String language, boolean nested) {
+            this.menuIndex = menuIndex;
+            this.docId = docId;
+            this.language = language;
+            this.nested = nested;
         }
     }
 }
