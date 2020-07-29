@@ -30,7 +30,6 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
-        documentLoaderCachingProxy.invalidateMenuItemsCacheBy(docId, menuIndex);
         return documentLoaderCachingProxy.getMenuItems(
                 getKey(menuIndex, docId, language, nested, typeSort),
                 () -> defaultMenuService.getMenuItems(docId, menuIndex, language, nested, typeSort)
@@ -52,7 +51,6 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
-        documentLoaderCachingProxy.invalidateMenuItemsCacheBy(docId, menuIndex);
         return documentLoaderCachingProxy.getVisibleMenuItems(
                 getKey(menuIndex, docId, language, nested),
                 () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
