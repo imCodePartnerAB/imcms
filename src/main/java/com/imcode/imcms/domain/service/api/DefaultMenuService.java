@@ -263,9 +263,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         super.updateWorkingVersion(docId);
 
-        getMenu(savedMenu.getMenuIndex(), savedMenu.getDocId()).getMenuItems()
+        getMenuItemsOf(savedMenu.getMenuIndex(), savedMenu.getDocId(), MenuItemsStatus.ALL, Imcms.getLanguage().getCode(), true)
                 .stream()
-                .flatMap(MenuItem::flattened)
+                .flatMap(MenuItemDTO::flattened)
                 .forEach(item -> log.error("Method save (AFTER updateWorkingVersion), docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
 
         return savedMenu;
