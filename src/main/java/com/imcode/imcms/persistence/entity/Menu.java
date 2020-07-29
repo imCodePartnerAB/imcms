@@ -40,7 +40,6 @@ public class Menu extends VersionedContent {
     @JoinColumn(name = "menu_id")
     @Where(clause = "menu_id is not null")
     @OrderBy("sortOrder")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<MenuItem> menuItems;
 
     @NotNull

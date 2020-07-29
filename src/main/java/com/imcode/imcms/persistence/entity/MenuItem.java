@@ -40,7 +40,6 @@ public class MenuItem implements Serializable {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<MenuItem> children;
 
     @Column(name = "sort_order", nullable = false)
