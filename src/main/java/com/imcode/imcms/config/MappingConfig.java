@@ -47,6 +47,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -81,12 +82,12 @@ import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
-import static ucar.httpservices.HTTPAuthStore.log;
 
 /**
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
  */
 @Configuration
+@Slf4j
 class MappingConfig {
 
     @Bean
@@ -144,6 +145,7 @@ class MappingConfig {
             public MenuItemDTO apply(final MenuItem menuItem, final Language language) {
 
                 final Integer docId = menuItem.getDocumentId();
+                log.error("Mapping menuItem to DTO, itemId - {} and children is empty - {}", docId, menuItem.getChildren().isEmpty());
                 final Version latestVersion = versionService.getLatestVersion(docId);
                 final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
                         .stream()

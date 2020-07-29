@@ -264,6 +264,10 @@ public class DocumentLoaderCachingProxy {
         menuCaches.forEach(cache -> clearCache(cache, menuDTO.getDocId(), menuDTO.getMenuIndex()));
     }
 
+    public void invalidateMenuItemsCacheBy(final Integer docId, final Integer menuIndex) {
+        menuCaches.forEach(cache -> clearCache(cache, docId, menuIndex));
+    }
+
     private void clearCache(final Ehcache cache, final int docId, final int menuIndex) {
         clearCache(cache, key -> key.getDocId() == docId && key.getMenuIndex() == menuIndex);
     }
