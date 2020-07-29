@@ -151,7 +151,7 @@ class DBConfig {
         properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto"));
         properties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
         properties.put("hibernate.cache.use_second_level_cache", "true");
-        properties.put("hibernate.cache.use_query_cache", "true");
+        properties.put("hibernate.cache.use_query_cache", "false");
 
         return properties;
     }
