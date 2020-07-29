@@ -264,7 +264,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         super.updateWorkingVersion(docId);
 
         Menu menu1 = getMenu(savedMenu.getMenuIndex(), docId);
-        log.error("In method save, (AFTER updateWorkingVersion) working version menu is : {}", menu1.getNo());
+        log.error("In method save, (AFTER updateWorkingVersion) working version menu is : {}", menu1.getVersion().getNo());
         menu1.getMenuItems()
                 .stream()
                 .flatMap(MenuItem::flattened)
