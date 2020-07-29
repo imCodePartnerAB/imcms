@@ -263,9 +263,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         super.updateWorkingVersion(docId);
 
-        Menu menu1 = getMenu(savedMenu.getMenuIndex(), docId);
-        log.error("In method save, (AFTER updateWorkingVersion) working version menu is : {}", menu1.getVersion().getNo());
-        menu1.getMenuItems()
+        getMenu(savedMenu.getMenuIndex(), savedMenu.getDocId()).getMenuItems()
                 .stream()
                 .flatMap(MenuItem::flattened)
                 .forEach(item -> log.error("Method save (AFTER updateWorkingVersion), docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
@@ -336,7 +334,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 : versionService::getLatestVersion;
 
         final Version version = versionService.getVersion(docId, versionReceiver);
-        log.error("In method getMenuItemsOf, Version menu is : {}", version.getNo());
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
