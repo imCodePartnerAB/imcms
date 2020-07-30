@@ -145,7 +145,6 @@ class MappingConfig {
             public MenuItemDTO apply(final MenuItem menuItem, final Language language) {
 
                 final Integer docId = menuItem.getDocumentId();
-                log.error("Mapping menuItem to DTO, itemId - {} and children is empty - {}", docId, menuItem.getChildren().isEmpty());
                 final Version latestVersion = versionService.getLatestVersion(docId);
                 final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
                         .stream()
