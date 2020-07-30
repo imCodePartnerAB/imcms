@@ -45,6 +45,7 @@ import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Service
 @Slf4j
+@Transactional
 public class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
 
@@ -237,7 +238,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    @Transactional
     public MenuDTO saveFrom(MenuDTO menuDTO) {
 
         final Integer docId = menuDTO.getDocId();
