@@ -65,12 +65,9 @@ define("imcms-menu-editor-builder",
             reloadElement($tag.find(".imcms-editor-content"));
         }
 
-        function onMenuSaved(menu) {
+        function onMenuSaved() {
             events.trigger("imcms-version-modified");
-            $menuElementsContainer.find('.imcms-menu-list').remove();
-            const $menuElementsTree = buildMenuEditorContent(menu.menuItems, menu.typeSort);
-            $menuElementsContainer.append($menuElementsTree);
-            // reloadMenuOnPage();
+            reloadMenuOnPage();
         }
 
         function mapToMenuItem() {
@@ -96,8 +93,8 @@ define("imcms-menu-editor-builder",
 
             menusRestApi.create(menuDTO)
                 .done(menu => {
-                    onMenuSaved(menu);
-                    // menuWindowBuilder.closeWindow();
+                    onMenuSaved();
+                    menuWindowBuilder.closeWindow();
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
 
