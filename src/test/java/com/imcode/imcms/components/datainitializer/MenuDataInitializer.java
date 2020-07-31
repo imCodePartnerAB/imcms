@@ -75,7 +75,9 @@ public class MenuDataInitializer extends TestDataCleaner {
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version,
                               boolean nested, String typeSort, int count) {
         val menu = createDataEntity(withMenuItems, menuIndex, version, nested, typeSort, count);
-        return menuToMenuDTO.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+        final MenuDTO menuDTO = menuToMenuDTO.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+        menuDTO.setTypeSort(typeSort);
+        return menuDTO;
     }
 
     public Version getVersion() {
@@ -107,14 +109,10 @@ public class MenuDataInitializer extends TestDataCleaner {
         menu.setVersion(version);
         menu.setNo(menuIndex);
         menu.setNested(nested);
-        menu.setTypeSort(getTypeSort(typeSort, nested));
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {
-            addMenuItemsTo(savedMenu, nested, count, menu.getTypeSort());
-
-//        } else {
-//            savedMenu.setMenuItems(null);
+            addMenuItemsTo(savedMenu, nested, count, getTypeSort(typeSort, nested));
         }
 
         return savedMenu;
@@ -136,7 +134,6 @@ public class MenuDataInitializer extends TestDataCleaner {
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(menuItem.getDocumentId());
         menuItemDTO.setTitle("Start page");
-        menuItemDTO.setSortNumber(menuItem.getSortNumber());
         menuItemDTO.setChildren(menuItem.getChildren().stream()
                 .map(this::mapMenuItems)
                 .collect(Collectors.toList()));
@@ -148,23 +145,23 @@ public class MenuDataInitializer extends TestDataCleaner {
 
         for (int i = 0; i < count; i++) {
             final int sort = i + 1;
-            menuItems.add(createMenuItem(sort, String.valueOf(sort)));
+            menuItems.add(createMenuItem(sort));
         }
 
         if (nested && typeSort.equals(String.valueOf(TREE_SORT))) {
             final MenuItem menuItem0 = menuItems.get(0);
 
             final List<MenuItem> menuItems1 = Arrays.asList(
-                    createMenuItem(1, "1.1"),
-                    createMenuItem(2, "1.2"),
-                    createMenuItem(3, "1.3")
+                    createMenuItem(1),
+                    createMenuItem(2),
+                    createMenuItem(3)
             );
             menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
 
             final List<MenuItem> menuItems2 = Arrays.asList(
-                    createMenuItem(1, "1.1.1"),
-                    createMenuItem(2, "1.1.2"),
-                    createMenuItem(3, "1.1.3")
+                    createMenuItem(1),
+                    createMenuItem(2),
+                    createMenuItem(3)
             );
             new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
         }
@@ -174,14 +171,13 @@ public class MenuDataInitializer extends TestDataCleaner {
         menuRepository.saveAndFlush(menu);
     }
 
-    private MenuItem createMenuItem(int sortOrder, String sortNumber) {
+    private MenuItem createMenuItem(int sortOrder) {
         documentDataInitializer.cleanRepositories();
         final DocumentDTO initDoc = documentDataInitializer.createData();
         documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
         menuItem.setDocumentId(initDoc.getId());
-        menuItem.setSortNumber(sortNumber);
         return menuItem;
     }
 
