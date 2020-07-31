@@ -98,14 +98,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
 
-        List<MenuItemDTO> menuItemsOf;
-
-        if (typeSort.equals(String.valueOf(TREE_SORT))) {
-            menuItemsOf = getNumberSortMenuItems(getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
-        } else {
-            menuItemsOf = getNumberSortMenuItems(convertItemsToFlatList(
-                    getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)), typeSort);
-        }
+        final List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -123,13 +116,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             throw new SortNotSupportedException("Current sorting don't support in flat menu!");
         }
 
-        final String typeSort = menuDTO.getTypeSort();
-        List<MenuItemDTO> menuItems;
-        if (typeSort.equals(String.valueOf(TREE_SORT))) {
-            menuItems = getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort);
-        } else {
-            menuItems = getNumberSortMenuItems(convertItemsToFlatList(menuDTO.getMenuItems()), typeSort);
-        }
+        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
 
         final Language language = languageService.findByCode(langCode);
         //double map because from client to fetch itemsDTO which have only doc id and no more info..
@@ -140,7 +127,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsDTO);
 
-        return getSortingMenuItemsByTypeSort(typeSort, menuItemsDTO);
+        return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
     }
 
     @Override
@@ -159,10 +146,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
-
-        menuItemsOf.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item -> log.error("Method getPublicMenuItems, docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
 
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
@@ -236,14 +219,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), docId))
                 .orElseGet(() -> createMenu(menuDTO));
 
-
-        final String typeSort = menuDTO.getTypeSort();
         menu.setNested(menuDTO.isNested());
-        menu.setTypeSort(typeSort);
-        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
-
+        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+        savedMenu.setTypeSort(menuDTO.getTypeSort());
 
         super.updateWorkingVersion(docId);
 
@@ -271,7 +251,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menu.setNo(jpa.getNo());
         menu.setVersion(newVersion);
         menu.setNested(jpa.isNested());
-        menu.setTypeSort(jpa.getTypeSort());
 
         final Set<MenuItem> newMenuItems = jpa.getMenuItems()
                 .stream()
@@ -390,32 +369,32 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             case MANUAL:
                 return convertItemsToFlatList(menuItems);
             case ALPHABETICAL_ASC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
                                 Comparator.nullsLast(String::compareToIgnoreCase)))
                         .collect(Collectors.toList());
             case ALPHABETICAL_DESC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
                                 Comparator.nullsLast(String::compareToIgnoreCase)).reversed())
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_ASC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
                                 Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_DESC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
                                 Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_ASC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
                                 Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_DESC:
-                return menuItems.stream()
+                return convertItemsToFlatList(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
                                 Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
