@@ -107,10 +107,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false)), typeSort);
         }
 
-        menuItemsOf.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item -> log.error("Method getMenuItems, docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
-
         setHasNewerVersionsInItems(menuItemsOf);
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -150,10 +146,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
-
-        menuItemsOf.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item -> log.error("Method getVisibleMenuItems, docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
 
         if (!nested) {
             menuItemsOf = convertItemsToFlatList(menuItemsOf);
@@ -251,22 +243,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(getNumberSortMenuItems(menuDTO.getMenuItems(), typeSort)));
 
 
-        menu.getMenuItems().stream()
-                .flatMap(MenuItem::flattened)
-                .forEach(item -> log.error("Method save (BEFORE SAVE), docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
-
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
 
-        savedMenu.getMenuItems().stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item -> log.error("Method save (AFTER SAVE), docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
-
         super.updateWorkingVersion(docId);
-
-        getMenuItemsOf(savedMenu.getMenuIndex(), savedMenu.getDocId(), MenuItemsStatus.ALL, Imcms.getLanguage().getCode(), true)
-                .stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item -> log.error("Method save (AFTER updateWorkingVersion), docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
 
         return savedMenu;
     }
@@ -352,8 +331,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
                 .filter(isMenuItemAccessibleForLang(language, versionReceiver))
                 .peek(menuItemDTO -> {
-                    log.error("Method getMenuItemsOf,in menuItem docId {}, children is empty: {}",
-                            menuItemDTO.getDocumentId(), menuItemDTO.getChildren().isEmpty());
                     if (status == MenuItemsStatus.ALL) return;
 
                     final List<MenuItemDTO> children = menuItemDTO.getChildren()
