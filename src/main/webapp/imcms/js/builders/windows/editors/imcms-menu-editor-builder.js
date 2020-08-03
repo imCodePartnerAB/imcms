@@ -763,12 +763,33 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
 
-        function buildMenuItem(menuElement, { sortType, sortNumberErr }) {
+        function reorderMenuListBySortNumber() {
+            // addReplacementOnEmptySortNumberFields();
+            const currentSortValue = $typesSortSelect.getSelect().getSelectedValue();
+            $typesSortSelect.find(`[data-value=${currentSortValue}]`).click();
+        }
+
+        function addReplacementOnEmptySortNumberFields() {
+            $('.imcms-document-item__sort-order').children().each(function () {
+                const $input = $(this);
+                if (!$input.val()) {
+                    $input.css('color', 'transparent');
+                    $input.val(SORT_NUMBER_REPLACEMENT);
+                }
+            });
+        }
+
+        function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortNumber
             });
+
+            $numberingSortBox.$input
+                .blur(events => {
+                    reorderMenuListBySortNumber();
+                });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
             }
@@ -999,22 +1020,6 @@ define("imcms-menu-editor-builder",
                     }
                 }).buildBlockStructure("<div>", {
                     class: "imcms-menu-list-titles"
-                });
-            }
-
-            function reorderMenuListBySortNumber() {
-                addReplacementOnEmptySortNumberFields();
-                const currentSortValue = $typesSortSelect.getSelect().getSelectedValue();
-                $typesSortSelect.find(`[data-value=${currentSortValue}]`).click();
-            }
-
-            function addReplacementOnEmptySortNumberFields() {
-                $('.imcms-document-item__sort-order').children().each(function() {
-                    const $input = $(this);
-                    if (!$input.val()) {
-                        $input.css('color', 'transparent');
-                        $input.val(SORT_NUMBER_REPLACEMENT);
-                    }
                 });
             }
 
