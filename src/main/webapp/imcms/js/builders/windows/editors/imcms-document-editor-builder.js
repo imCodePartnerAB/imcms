@@ -858,9 +858,8 @@ define("imcms-document-editor-builder",
 
             $frame.remove();
             isMouseDown = false;
-            const $typesSortSelect = $('.imcms-menu-sort__type-sort');
-            const currentTypeSort = document.getElementById("type-sort").value;
-            $typesSortSelect.find(`[data-value=${currentTypeSort}]`).click();
+            const $sortOrder = $('.imcms-document-list-titles__title--sort-order');
+            $sortOrder.click();
         });
 
         function getDocumentStatusTexts(documentStatus, publishedDate) {
