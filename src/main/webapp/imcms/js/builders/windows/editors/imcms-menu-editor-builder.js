@@ -17,6 +17,8 @@ define("imcms-menu-editor-builder",
         const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
 
+        const WORKING_VERSION = 0;
+
         const PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
         const PUBLISHED_DATE_DESC = 'PUBLISHED_DATE_DESC';
         const MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
@@ -76,6 +78,29 @@ define("imcms-menu-editor-builder",
                 sortNumber: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
+        }
+
+        function mapToMenuItemWithAllFields(menuItem) {
+            const docId = menuItem.documentId;
+            const document = documentEditorBuilder.getDocumentById(docId);
+            return {
+                documentId: docId,
+                type: document.type,
+                modifiedDate: document.modified,
+                publishedDate: document.published,
+                title: document.title,
+                hasNewerVersion: document.currentVersion === WORKING_VERSION,
+                sortNumber: menuItem.sortNumber,
+                documentStatus: document.documentStatus,
+                isShownTitle: document.isShownTitle,
+                children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+            }
+        }
+
+        function getAllMenuItems() {
+            return $menuElementsContainer.find("[data-menu-items-lvl=1]")
+                .map(mapToMenuItem)
+                .toArray();
         }
 
         function saveMenuElements(opts) {
@@ -904,8 +929,7 @@ define("imcms-menu-editor-builder",
             ++level;
 
             const $childElements = menuElement.children.map(childElement => {
-                const childSortNumberErr = existsElementsWithSameSortNumbers(menuElement.children, childElement.sortNumber)
-                    || !isCorrectSortNumber(childElement.sortNumber, level);
+                const childSortNumberErr = !isCorrectSortNumber(childElement.sortNumber, level);
 
                 const $itemTree = buildMenuItemTree(childElement, { level, sortType, sortNumberErr: childSortNumberErr });
                 $itemTree.addClass("imcms-submenu-items--close");
@@ -913,11 +937,6 @@ define("imcms-menu-editor-builder",
             });
 
             return treeBlock.append($childElements);
-        }
-
-        function existsElementsWithSameSortNumbers(elements, elementSortNumber) {
-            const sortNumbers = elements.map(element => element.sortNumber);
-            return sortNumbers.filter(num => num === elementSortNumber).length > 1;
         }
 
         function isCorrectSortNumber(sortNumber, level) {
@@ -929,13 +948,11 @@ define("imcms-menu-editor-builder",
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
-                const fixedMenuElements = removeSortNumberReplacement(menuElements);
+                setSortNumbersInMenuItems(menuElements, null);
+                const $menuItems = menuElements.map(menuElement => {
+                    const sortNumberErr = !isCorrectSortNumber(menuElement.sortNumber, 1);
 
-                const $menuItems = fixedMenuElements.map(menuElement => {
-                    const sortNumberErr = existsElementsWithSameSortNumbers(fixedMenuElements, menuElement.sortNumber)
-                        || !isCorrectSortNumber(menuElement.sortNumber, 1);
-
-                    return buildMenuItemTree(menuElement, { level: 1, sortType: typeSort, sortNumberErr });
+                    return buildMenuItemTree(menuElement, {level: 1, sortType: typeSort, sortNumberErr});
                 });
                 return new BEM({
                     block: "imcms-document-items-list",
@@ -945,13 +962,6 @@ define("imcms-menu-editor-builder",
                 }).buildBlockStructure("<div>", {
                     class: "imcms-menu-items-list"
                 });
-            }
-
-            function removeSortNumberReplacement(menuItems) {
-                return menuItems.map(item => ({
-                    ...item,
-                    sortNumber: item.sortNumber.replace(SORT_NUMBER_REPLACEMENT, ''),
-                }))
             }
 
             function buildMenuTitlesRow() {
