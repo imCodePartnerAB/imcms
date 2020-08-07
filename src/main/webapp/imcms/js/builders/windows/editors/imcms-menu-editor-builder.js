@@ -829,10 +829,36 @@ define("imcms-menu-editor-builder",
                 id: menuElement.sortNumber,
             });
 
-            $numberingSortBox.$input
-                .blur(events => {
-                    reorderMenuListBySortNumber();
-                });
+            $numberingSortBox.$input.blur(events => {
+                const currentValue = $(events.target).val();
+                const currentIndex = $(events.target).attr('id');
+                const parsedIndex = parseIndex(currentIndex);
+                const parsedValue = parseIndex(currentValue);
+                const currentTypeSort = document.getElementById('type-sort').value.trim();
+                const items = getAllMenuItems();
+                if (currentValue === currentIndex) return;
+                let placementElement;
+                try {
+                    placementElement = findPlaceMenuElement(items, currentValue);
+                } catch (e) {
+                    console.error(e)
+                    return;
+                }
+
+                if (parsedIndex.every((value, index) => value === parsedValue[index])) return;
+
+                const foundElement = parsedIndex.reduce((acc, value, i) => {
+                    if (parsedIndex.length - 1 === i) {
+                        return Array.isArray(acc) ? acc : acc.children;
+                    } else {
+                        return Array.isArray(acc) ? acc[value] : acc.children[value];
+                    }
+                }, items);
+                const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
+                placementElement.push(splicedElem);
+
+                reorderMenuListBySortNumber(currentTypeSort, items);
+            });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
             }
@@ -927,6 +953,53 @@ define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>", {
                 class: "imcms-menu-item"
             });
+        }
+
+        function setSortNumbersInMenuItems(menuElements, treeKey) {
+            for (let i = 0; i < menuElements.length; i++) {
+                const currentMenuItem = menuElements[i];
+                const hasChildren = currentMenuItem.children.length;
+                let dataTreeKey = treeKey ? treeKey + "." + (i + 1) : (i + 1) + '';
+                const isEmptySortNumber = currentMenuItem.sortNumber;
+
+                currentMenuItem.sortNumber = dataTreeKey;
+
+                if (hasChildren) {
+                    dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortNumber;
+                    setSortNumbersInMenuItems(menuElements[i].children, dataTreeKey);
+                }
+            }
+        }
+
+        function swapSameItemSortNumber(menuItems) {
+            let duplicate;
+            menuItems.forEach((item, index, array) => {
+                if (item.children.length) {
+                    swapSameItemSortNumber(item.children);
+                }
+                duplicate = array.map(item => item.sortNumber).indexOf(item.sortNumber) !== index ? item : duplicate
+            });
+
+            const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
+
+            if (foundSameItemIndex !== -1) {
+                const sameItem = menuItems[foundSameItemIndex];
+                menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
+                menuItems[foundSameItemIndex - 1] = sameItem;
+            }
+        }
+
+        function getFlattenMenuItems(menuElements, flatMenuItems) {
+            flatMenuItems = (flatMenuItems.length) ? flatMenuItems : [];
+            for (let i = 0; i < menuElements.length; i++) {
+                const currentMenuItem = menuElements[i];
+                const hasChildren = currentMenuItem.children.length;
+                flatMenuItems.push(currentMenuItem);
+                if (hasChildren) {
+                    getFlattenMenuItems(currentMenuItem.children, flatMenuItems)
+                }
+            }
+            return flatMenuItems;
         }
 
         function buildMenuItemTree(menuElement, {level, sortType, sortNumberErr}) {
