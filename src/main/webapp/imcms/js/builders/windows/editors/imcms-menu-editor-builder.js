@@ -791,7 +791,12 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
 
-        function reorderMenuListBySortNumber(typeSort, menuItems) {
+        function clickReOrderMenuItemsBySortNumbers() {
+            reorderMenuListBySortNumber(getAllMenuItems());
+        }
+
+        function reorderMenuListBySortNumber(menuItems) {
+            const currentTypeSort = document.getElementById('type-sort').value.trim();
             const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
                 return menuItem1.sortNumber - menuItem2.sortNumber;
             });
@@ -801,7 +806,7 @@ define("imcms-menu-editor-builder",
             const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
             $menuElementsContainer.find('.imcms-menu-list').remove();
-            const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, typeSort);
+            const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
             $menuElementsContainer.append($menuItemsSortedList);
         }
 
@@ -837,7 +842,6 @@ define("imcms-menu-editor-builder",
                 const currentIndex = $(events.target).attr('id');
                 const parsedIndex = parseIndex(currentIndex);
                 const parsedValue = parseIndex(currentValue);
-                const currentTypeSort = document.getElementById('type-sort').value.trim();
                 const items = getAllMenuItems();
                 if (currentValue === currentIndex) return;
                 let placementElement;
@@ -860,7 +864,7 @@ define("imcms-menu-editor-builder",
                 const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
                 placementElement.push(splicedElem);
 
-                reorderMenuListBySortNumber(currentTypeSort, items);
+                reorderMenuListBySortNumber(items);
             });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
@@ -1062,7 +1066,7 @@ define("imcms-menu-editor-builder",
                 $sortOrderColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
                     text: texts.order,
-                    click: reorderMenuListBySortNumber,
+                    click: clickReOrderMenuItemsBySortNumbers,
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
