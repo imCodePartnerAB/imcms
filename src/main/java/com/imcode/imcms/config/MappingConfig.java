@@ -110,19 +110,6 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<List<MenuItemDTO>, MenuItemDTO, MenuItemDTO> toMenuItemsDTOWithSortNumber() {
-        return (withNumberItems, menuItemDTO) -> {
-            withNumberItems.forEach(itemWithSortNumber -> {
-                if (itemWithSortNumber.getDocumentId().equals(menuItemDTO.getDocumentId())) {
-                    menuItemDTO.setSortNumber(itemWithSortNumber.getSortNumber());
-                }
-            });
-
-            return menuItemDTO;
-        };
-    }
-
-    @Bean
     public UnaryOperator<MenuItem> toMenuItemsWithoutId() {
         return new UnaryOperator<MenuItem>() {
             @Override

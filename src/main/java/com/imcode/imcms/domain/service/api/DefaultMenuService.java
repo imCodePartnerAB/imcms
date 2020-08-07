@@ -20,7 +20,6 @@ import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +59,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final CommonContentService commonContentService;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
     private final MenuHtmlConverter menuHtmlConverter;
-    private final BiFunction<List<MenuItemDTO>, MenuItemDTO, MenuItemDTO> toMenuItemsDTOWithSortNumber;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -73,8 +71,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
                        CommonContentService commonContentService,
                        Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
-                       MenuHtmlConverter menuHtmlConverter,
-                       BiFunction<List<MenuItemDTO>, MenuItemDTO, MenuItemDTO> toMenuItemsDTOWithSortNumber) {
+                       MenuHtmlConverter menuHtmlConverter) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -87,7 +84,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         this.commonContentService = commonContentService;
         this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuHtmlConverter = menuHtmlConverter;
-        this.toMenuItemsDTOWithSortNumber = toMenuItemsDTOWithSortNumber;
         this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
     }
 
@@ -95,18 +91,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
         if (typeSort == null) {
             if (nested) {
-                typeSort = String.valueOf(TypeSort.TREE_SORT);
+                typeSort = String.valueOf(TREE_SORT);
             } else {
                 typeSort = String.valueOf(MANUAL);
             }
         }
 
-        final List<MenuItemDTO> menuItemsOf = getNumberSortMenuItems(
-                getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false), typeSort);
+        final List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
 
         setHasNewerVersionsInItems(menuItemsOf);
 
-        if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
+        if (!nested && typeSort.equals(String.valueOf(TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
         }
 
@@ -118,7 +113,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         final String typeSort = menuDTO.getTypeSort();
 
-        if (!menuDTO.isNested() && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
+        if (!menuDTO.isNested() && typeSort.equals(String.valueOf(TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in flat menu!");
         }
 
@@ -129,12 +124,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final List<MenuItemDTO> menuItemsDTO = menuItems.stream()
                 .map(menuItemDtoToMenuItem)
                 .map(menuItem -> menuItemToDTO.apply(menuItem, language))
-                .map(menuItemDTO -> toMenuItemsDTOWithSortNumber.apply(menuItems, menuItemDTO))
                 .collect(Collectors.toList());
 
         setHasNewerVersionsInItems(menuItemsDTO);
 
-        return getSortingMenuItemsByTypeSort(typeSort, getNumberSortMenuItems(menuItemsDTO, typeSort));
+        return getSortingMenuItemsByTypeSort(typeSort, menuItemsDTO);
     }
 
     @Override
@@ -237,7 +231,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         return savedMenu;
     }
-
 
 
     @Override
@@ -436,88 +429,5 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
         return currentMenuItems;
-    }
-
-    private void setSortNumbersInMenuItems(List<MenuItemDTO> menuItemDTOs, String treeKey, String typeSort, boolean isEmptyItemSortNumber) {
-        boolean flagIncrement = false;
-        for (int i = 0; i < menuItemDTOs.size(); i++) {
-            final MenuItemDTO menuItemDTO = menuItemDTOs.get(i);
-            isEmptyItemSortNumber = StringUtils.isBlank(menuItemDTO.getSortNumber());
-            final boolean hasChildren = !menuItemDTO.getChildren().isEmpty();
-            String dataTreeKey = StringUtils.isBlank(treeKey) ? (i + 1) + "" : treeKey + "." + (i + 1);
-
-            if (isNotWholeNumberAndNotTreeSortType(typeSort, menuItemDTO, flagIncrement)) {
-                menuItemDTO.setSortNumber(dataTreeKey);
-                flagIncrement = true;
-            } else if (isEmptyItemSortNumber) {
-                menuItemDTO.setSortNumber(dataTreeKey);
-            }
-
-            if (hasChildren) {
-                dataTreeKey = isEmptyItemSortNumber ? dataTreeKey : menuItemDTO.getSortNumber();
-                setSortNumbersInMenuItems(menuItemDTO.getChildren(), dataTreeKey, typeSort, isEmptyItemSortNumber);
-            }
-        }
-    }
-
-    private boolean isNotWholeNumberAndNotTreeSortType(String typeSort, MenuItemDTO menuItemDTO, boolean flagIncrement) {
-        return (!typeSort.equals(String.valueOf(TREE_SORT)) && !StringUtils.isNumeric(menuItemDTO.getSortNumber()))
-                || (flagIncrement);
-    }
-
-
-    private List<MenuItemDTO> getNumberSortMenuItems(List<MenuItemDTO> menuItemDTOs, String typeSort) {
-        setSortNumbersInMenuItems(menuItemDTOs, null, typeSort, false);
-
-        final List<MenuItemDTO> sortedFlatMenuItems = convertItemsToFlatList(menuItemDTOs).stream()
-                .sorted(Comparator.comparing(MenuItemDTO::getSortNumber))
-                .collect(Collectors.toList());
-
-        final List<MenuItemDTO> newSortedMenuItems = new ArrayList<>();
-
-        sortedFlatMenuItems.forEach(mainItemDTO -> {
-
-            final List<MenuItemDTO> children = sortedFlatMenuItems.stream()
-                    .filter(item -> item.getSortNumber().matches(mainItemDTO.getSortNumber().concat(".\\d")))
-                    .collect(Collectors.toList());
-
-            if (!existMenuItemsInNewList(newSortedMenuItems, children)) {  //if in list doesn't exist children we can add to list it
-                mainItemDTO.setChildren(children);
-            }
-            if (!existMenuItemInNewList(newSortedMenuItems, mainItemDTO)) {
-                newSortedMenuItems.add(mainItemDTO);
-            }
-        });
-
-        return newSortedMenuItems.stream()
-                .sorted(Comparator.comparing(firstItem -> {
-                    try {
-                        return Integer.parseInt(firstItem.getSortNumber());
-                    } catch (NumberFormatException n) {
-                        return 0;
-                    }
-                }))
-                .collect(Collectors.toList());
-    }
-
-    private boolean existMenuItemsInNewList(List<MenuItemDTO> newSortedItems, List<MenuItemDTO> children) {
-        final List<Integer> menuItemsIds = getAllIds(newSortedItems);
-        final List<Integer> childrenIds = children.stream()
-                .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
-
-        return menuItemsIds.containsAll(childrenIds);
-    }
-
-    private boolean existMenuItemInNewList(List<MenuItemDTO> newSortedItems, MenuItemDTO currentItem) {
-        final List<Integer> menuItemsIds = getAllIds(newSortedItems);
-        return menuItemsIds.contains(currentItem.getDocumentId());
-    }
-
-    private List<Integer> getAllIds(List<MenuItemDTO> newSortedItems) {
-        return newSortedItems.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
     }
 }
