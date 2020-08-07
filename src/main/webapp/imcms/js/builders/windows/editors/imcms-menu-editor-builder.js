@@ -512,14 +512,17 @@ define("imcms-menu-editor-builder",
             let $menuElement
             ;
 
-            if ($dataInput.attr('data-frame-top') < topPointMenu) {
-                $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
+            if ($dataInput.attr('data-frame-top') < topPointMenu || $dataInput.attr("data-type-sort") === TREE_SORT) {
+                $menuElement = buildMenuItemTree(menuElementsTree, {
+                    level: 1,
+                    sortType: $dataInput.attr("data-type-sort")
+                });
                 $menuElementsContainer.find("[data-menu-items-lvl=1]").first().before($menuElement);
             } else {
                 if ($dataInput.attr("data-parent-id") !== "") {
                     if ($dataInput.attr("data-insert-place") === "true") {
                         $menuElement = buildMenuItemTree(menuElementsTree, {
-                            level: level +1,
+                            level: level + 1,
                             sortType: $dataInput.attr("data-type-sort"),
                         });
                         $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
