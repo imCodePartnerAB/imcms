@@ -788,27 +788,45 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
 
-        function reorderMenuListBySortNumber() {
-            // addReplacementOnEmptySortNumberFields();
-            const currentSortValue = $typesSortSelect.getSelect().getSelectedValue();
-            $typesSortSelect.find(`[data-value=${currentSortValue}]`).click();
+        function reorderMenuListBySortNumber(typeSort, menuItems) {
+            const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
+                return menuItem1.sortNumber - menuItem2.sortNumber;
+            });
+
+            swapSameItemSortNumber(sortedMenuItems);
+
+            const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
+
+            $menuElementsContainer.find('.imcms-menu-list').remove();
+            const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, typeSort);
+            $menuElementsContainer.append($menuItemsSortedList);
         }
 
-        function addReplacementOnEmptySortNumberFields() {
-            $('.imcms-document-item__sort-order').children().each(function () {
-                const $input = $(this);
-                if (!$input.val()) {
-                    $input.css('color', 'transparent');
-                    $input.val(SORT_NUMBER_REPLACEMENT);
+        function findPlaceMenuElement(menuItems, index) {
+            const indexArray = parseIndex(index);
+            const placementElement = indexArray.reduce((acc, value, i) => {
+                if (indexArray.length - 1 === i) {
+                    return acc;
                 }
-            });
+                if (acc[value]) {
+                    return acc[value].children;
+                }
+                throw new Error('fuck')
+            }, menuItems);
+
+            return placementElement;
+        }
+
+        function parseIndex(index) {
+            return index.split('.').map(n => parseInt(n) - 1);
         }
 
         function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
-                value: menuElement.sortNumber
+                value: menuElement.sortNumber,
+                id: menuElement.sortNumber,
             });
 
             $numberingSortBox.$input
@@ -911,13 +929,13 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMenuItemTree(menuElement, { level, sortType, sortNumberErr }) {
+        function buildMenuItemTree(menuElement, {level, sortType, sortNumberErr}) {
             menuElement.children = menuElement.children || [];
 
             const treeBlock = new BEM({
                 block: "imcms-document-items",
                 elements: [{
-                    "document-item": buildMenuItem(menuElement, { sortType, sortNumberErr }),
+                    "document-item": buildMenuItem(menuElement, {sortType, sortNumberErr}),
                     modifiers: [menuElement.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
