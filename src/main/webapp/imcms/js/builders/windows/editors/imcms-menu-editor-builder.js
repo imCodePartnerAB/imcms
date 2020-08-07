@@ -795,13 +795,14 @@ define("imcms-menu-editor-builder",
             reorderMenuListBySortNumber(getAllMenuItems());
         }
 
-        function reorderMenuListBySortNumber(menuItems) {
+        function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
                 return menuItem1.sortNumber - menuItem2.sortNumber;
             });
 
-            swapSameItemSortNumber(sortedMenuItems);
+
+            swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
 
             const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
@@ -819,7 +820,7 @@ define("imcms-menu-editor-builder",
                 if (acc[value]) {
                     return acc[value].children;
                 }
-                throw new Error('fuck')
+                throw new Error('Not correct data sort number!')
             }, menuItems);
 
             return placementElement;
@@ -827,6 +828,13 @@ define("imcms-menu-editor-builder",
 
         function parseIndex(index) {
             return index.split('.').map(n => parseInt(n) - 1);
+        }
+
+        function isCheckOldValueMoreThanCurrentValue(oldVal, currentVal) {
+            const arrayOldVal = oldVal.split('.').map(n => parseInt(n));
+            const arrayCurrentVal = currentVal.split('.').map(n => parseInt(n));
+
+            return arrayOldVal.some((oldVal, index) => oldVal > arrayCurrentVal[index])
         }
 
         function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
@@ -848,7 +856,7 @@ define("imcms-menu-editor-builder",
                 try {
                     placementElement = findPlaceMenuElement(items, currentValue);
                 } catch (e) {
-                    console.error(e)
+                    console.error(e);
                     return;
                 }
 
@@ -864,7 +872,7 @@ define("imcms-menu-editor-builder",
                 const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
                 placementElement.push(splicedElem);
 
-                reorderMenuListBySortNumber(items);
+                reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue));
             });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
@@ -978,11 +986,11 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function swapSameItemSortNumber(menuItems) {
+        function swapSameItemSortNumber(menuItems, oldValMoreCurrent) {
             let duplicate;
             menuItems.forEach((item, index, array) => {
                 if (item.children.length) {
-                    swapSameItemSortNumber(item.children);
+                    swapSameItemSortNumber(item.children, oldValMoreCurrent);
                 }
                 duplicate = array.map(item => item.sortNumber).indexOf(item.sortNumber) !== index ? item : duplicate
             });
@@ -990,9 +998,11 @@ define("imcms-menu-editor-builder",
             const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
 
             if (foundSameItemIndex !== -1) {
-                const sameItem = menuItems[foundSameItemIndex];
-                menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
-                menuItems[foundSameItemIndex - 1] = sameItem;
+                if (oldValMoreCurrent) {
+                    const sameItem = menuItems[foundSameItemIndex];
+                    menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
+                    menuItems[foundSameItemIndex - 1] = sameItem;
+                }
             }
         }
 
