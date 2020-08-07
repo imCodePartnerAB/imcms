@@ -819,7 +819,7 @@ define("imcms-menu-editor-builder",
                 if (acc[value]) {
                     return acc[value].children;
                 }
-                throw new Error('fuck')
+                throw new Error('Not correct sort number!')
             }, menuItems);
 
             return placementElement;
