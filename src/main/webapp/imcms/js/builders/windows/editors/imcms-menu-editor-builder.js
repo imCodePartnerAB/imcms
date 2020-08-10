@@ -829,7 +829,7 @@ define("imcms-menu-editor-builder",
 
                 setTimeout(function () {
                     $changedItem.removeClass('imcms-border-light');
-                }, 3000);
+                }, 5000);
             }
 
 
