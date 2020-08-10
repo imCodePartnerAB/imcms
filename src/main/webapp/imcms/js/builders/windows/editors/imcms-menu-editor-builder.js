@@ -791,14 +791,15 @@ define("imcms-menu-editor-builder",
             reorderMenuListBySortNumber(getAllMenuItems());
         }
 
-        function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent) {
+        function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent, menuItemId) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
                 if (menuItem2.children.length) {
                     menuItem2.children.sort(function (menuItemChildren1, menuItemChildren2) {
                         return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
                     })
-                } if (menuItem1.children.length) {
+                }
+                if (menuItem1.children.length) {
                     menuItem1.children.sort(function (menuItemChildren1, menuItemChildren2) {
                         return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
                     })
@@ -806,6 +807,13 @@ define("imcms-menu-editor-builder",
                 return menuItem1.sortNumber - menuItem2.sortNumber;
             });
 
+            function sortingChildrenBySortNUmber(menuItems) {
+                if (menuItems.length) {
+                    menuItems.sort(function (menuItem1, menuItem2) {
+                        return menuItem1.sortNumber - menuItem2.sortNumber;
+                    });
+                }
+            }
 
             swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
 
@@ -814,6 +822,17 @@ define("imcms-menu-editor-builder",
             $menuElementsContainer.find('.imcms-menu-list').remove();
             const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
             $menuElementsContainer.append($menuItemsSortedList);
+
+            const $changedItem = getMenuDocByObjId(menuItemId);
+            if ($changedItem) {
+                $changedItem.addClass('imcms-border-light');
+
+                setTimeout(function () {
+                    $changedItem.removeClass('imcms-border-light');
+                }, 3000);
+            }
+
+
         }
 
         function findPlaceMenuElement(menuItems, index) {
@@ -858,19 +877,18 @@ define("imcms-menu-editor-builder",
                 const parsedIndex = parseIndex(currentIndex);
                 const parsedValue = parseIndex(currentValue);
                 const items = getAllMenuItems();
-                const $menuItem = getMenuDocByObjId(documentId);
 
                 if (currentValue === currentIndex) return;
-                if($menuItem.hasClass('imcms-menu-incorrect-data-light')) {
-                    $menuItem.removeClass('imcms-menu-incorrect-data-light');
-                }
+                // if($changedMenuItem.hasClass('imcms-menu-incorrect-data-light')) {
+                //     $changedMenuItem.removeClass('imcms-menu-incorrect-data-light');
+                // }
                 let placementElement;
                 try {
                     placementElement = findPlaceMenuElement(items, currentValue);
                     // items.filter(item => isCorrectSortNumber(item.sortNumber, 1));
                 } catch (e) {
                     console.error(e);
-                    $menuItem.addClass('imcms-menu-incorrect-data-light');
+                    // $changedMenuItem.addClass('imcms-menu-incorrect-data-light');
                     return;
                 }
 
@@ -886,14 +904,7 @@ define("imcms-menu-editor-builder",
                 const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
                 placementElement.push(splicedElem);
 
-                $menuItem.addClass('imcms-menu-item-light');
-
-                setTimeout(function() {
-                    $menuItem.removeClass('imcms-menu-item-light');
-                    }, 5000);
-
-
-                reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue));
+                reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId);
             });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']

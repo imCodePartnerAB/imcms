@@ -19,8 +19,21 @@
     background-color: #ff2523;
 }
 
-.imcms-menu-item-light {
-    background-color: #ffc223;
+.imcms-border-light {
+    width: max-content;
+    background: linear-gradient(90deg, #070500 50%, transparent 50%), linear-gradient(90deg, #070500 50%, transparent 50%), linear-gradient(0deg, #070500 50%, transparent 50%), linear-gradient(0deg, #070500 50%, transparent 50%);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size: 10px 2px, 10px 2px, 2px 10px, 2px 10px;
+    animation: border-dance 25s infinite linear;
+}
+
+@keyframes border-dance {
+    0% {
+        background-position: 0 0, 100% 100%, 0 100%, 100% 0;
+    }
+    100% {
+        background-position: 100% 0, 0 100%, 0 0, 100% 100%;
+    }
 }
 
 .imcms-document-item__btn {
