@@ -1376,7 +1376,7 @@ define("imcms-menu-editor-builder",
             });
 
             $numberingTypeSortFlag = components.checkboxes.imcmsCheckbox('<div>', {
-                text: 'Numbering sort',
+                text: texts.sortNumberTitle,
                 checked: 'checked',
                 change: onChangeNumberingSortFlag,
             });
@@ -1513,7 +1513,7 @@ define("imcms-menu-editor-builder",
         }
 
         function fillEditorContent(menuElementsTree, opts) {
-            const typeSort = opts.nested ? TREE_SORT : 'MANUAL';
+            const typeSort = opts.nested ? TREE_SORT : MANUAL;
             prevType = typeSort;
             $menuElementsContainer.append(buildEditorContainer(opts));
 

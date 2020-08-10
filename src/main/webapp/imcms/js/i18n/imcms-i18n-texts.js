@@ -369,6 +369,7 @@ const texts = {
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 saveAndClose: "Spara och stäng",
+                sortNumberTitle: 'Sortera efter siffror',
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
@@ -1283,6 +1284,7 @@ const texts = {
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
+                sortNumberTitle: 'Sort by numbers',
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
