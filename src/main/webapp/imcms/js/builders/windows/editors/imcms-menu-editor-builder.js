@@ -863,6 +863,15 @@ define("imcms-menu-editor-builder",
 
         function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
 
+            function removeAndAddClassForInCorrectData($input, isAdd) {
+                if ($input.hasClass('imcms-menu-incorrect-data-light')) {
+                    $input.removeClass('imcms-menu-incorrect-data-light');
+                }
+                if (isAdd) {
+                    $input.addClass('imcms-menu-incorrect-data-light');
+                }
+            }
+
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortNumber,
@@ -878,21 +887,21 @@ define("imcms-menu-editor-builder",
                 const parsedValue = parseIndex(currentValue);
                 const items = getAllMenuItems();
 
+                removeAndAddClassForInCorrectData($(events.target));
                 if (currentValue === currentIndex) return;
-                // if($changedMenuItem.hasClass('imcms-menu-incorrect-data-light')) {
-                //     $changedMenuItem.removeClass('imcms-menu-incorrect-data-light');
-                // }
                 let placementElement;
                 try {
                     placementElement = findPlaceMenuElement(items, currentValue);
-                    // items.filter(item => isCorrectSortNumber(item.sortNumber, 1));
                 } catch (e) {
                     console.error(e);
-                    // $changedMenuItem.addClass('imcms-menu-incorrect-data-light');
+                    removeAndAddClassForInCorrectData($(events.target), true);
                     return;
                 }
 
-                if (parsedIndex.every((value, index) => value === parsedValue[index])) return;
+                if (parsedIndex.every((value, index) => value === parsedValue[index])) {
+                    removeAndAddClassForInCorrectData($(events.target), true);
+                    return;
+                }
 
                 const foundElement = parsedIndex.reduce((acc, value, i) => {
                     if (parsedIndex.length - 1 === i) {
