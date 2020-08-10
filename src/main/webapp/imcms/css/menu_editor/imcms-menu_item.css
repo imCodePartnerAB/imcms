@@ -10,11 +10,6 @@
     height: 25px;
 }
 
-.imcms-document-item__sort-order--err input {
-    border-color: #e8958c;
-    background-color: #ffd2cd;
-}
-
 .imcms-menu-incorrect-data-light {
     background-color: #e8958c;
     border-color: #e8958c;

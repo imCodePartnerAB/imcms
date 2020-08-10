@@ -25,7 +25,6 @@ define("imcms-menu-editor-builder",
         const MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         const TREE_SORT = 'TREE_SORT';
         const MANUAL = 'MANUAL';
-        const SORT_NUMBER_REPLACEMENT = '000';
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
@@ -841,7 +840,7 @@ define("imcms-menu-editor-builder",
                 if (acc[value]) {
                     return acc[value].children;
                 }
-                throw new Error('Not correct data sort number!')
+                throw new Error(texts.error.invalidSortNumber);
             }, menuItems);
 
             return placementElement;
@@ -862,7 +861,7 @@ define("imcms-menu-editor-builder",
             return arrayOldVal.some((oldVal, index) => oldVal > arrayCurrentVal[index])
         }
 
-        function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
+        function buildMenuItem(menuElement, {sortType}) {
 
             function removeAndAddClassForInCorrectData($input, isAdd) {
                 if ($input.hasClass('imcms-menu-incorrect-data-light')) {
@@ -870,6 +869,7 @@ define("imcms-menu-editor-builder",
                 }
                 if (isAdd) {
                     $input.addClass('imcms-menu-incorrect-data-light');
+                    alert(texts.error.invalidPosition);
                 }
             }
 
@@ -916,9 +916,7 @@ define("imcms-menu-editor-builder",
 
                 reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId);
             });
-            if (sortNumberErr) {
-                $numberingSortBox.modifiers = ['err']
-            }
+
             sortType === TREE_SORT ? $numberingTypeSortFlag.hide() : $numberingTypeSortFlag.show();
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
@@ -1062,13 +1060,13 @@ define("imcms-menu-editor-builder",
             return flatMenuItems;
         }
 
-        function buildMenuItemTree(menuElement, {level, sortType, sortNumberErr}) {
+        function buildMenuItemTree(menuElement, {level, sortType}) {
             menuElement.children = menuElement.children || [];
 
             const treeBlock = new BEM({
                 block: "imcms-document-items",
                 elements: [{
-                    "document-item": buildMenuItem(menuElement, {sortType, sortNumberErr}),
+                    "document-item": buildMenuItem(menuElement, {sortType}),
                     modifiers: [menuElement.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
@@ -1080,9 +1078,7 @@ define("imcms-menu-editor-builder",
             ++level;
 
             const $childElements = menuElement.children.map(childElement => {
-                const childSortNumberErr = !isCorrectSortNumber(childElement.sortNumber, level);
-
-                const $itemTree = buildMenuItemTree(childElement, { level, sortType, sortNumberErr: childSortNumberErr });
+                const $itemTree = buildMenuItemTree(childElement, {level, sortType});
                 $itemTree.addClass("imcms-submenu-items--close");
                 return $itemTree;
             });
@@ -1101,9 +1097,7 @@ define("imcms-menu-editor-builder",
             function buildMenuElements(menuElements) {
                 setSortNumbersInMenuItems(menuElements, null);
                 const $menuItems = menuElements.map(menuElement => {
-                    const sortNumberErr = !isCorrectSortNumber(menuElement.sortNumber, 1);
-
-                    return buildMenuItemTree(menuElement, {level: 1, sortType: typeSort, sortNumberErr});
+                    return buildMenuItemTree(menuElement, {level: 1, sortType: typeSort});
                 });
                 return new BEM({
                     block: "imcms-document-items-list",
