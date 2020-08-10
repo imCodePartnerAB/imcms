@@ -1502,8 +1502,10 @@ define("imcms-menu-editor-builder",
             }).buildBlockStructure('<div>');
         }
 
+        let $editorHeadContainer;
+
         function buildEditorContainer(opts) {
-            return new BEM({
+            return $editorHeadContainer = new BEM({
                 block: 'imcms-menu-editor-head',
                 elements: {
                     'first-line': buildHeadFirstLine(),
