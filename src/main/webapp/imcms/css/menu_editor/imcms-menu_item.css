@@ -15,6 +15,14 @@
     background-color: #ffd2cd;
 }
 
+.imcms-menu-incorrect-data-light {
+    background-color: #ff2523;
+}
+
+.imcms-menu-item-light {
+    background-color: #ffc223;
+}
+
 .imcms-document-item__btn {
     background: url("/imcms/images/controls/icon_sub_close_dark.png") no-repeat center;
     cursor: pointer;

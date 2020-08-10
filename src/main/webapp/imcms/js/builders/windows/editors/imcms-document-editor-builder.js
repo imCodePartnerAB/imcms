@@ -715,17 +715,11 @@ define("imcms-document-editor-builder",
             let isTree = TREE_SORT === document.getElementById('type-sort').value;
 
             // false -> under parent; true -> in parent; null -> under all
-            function highlightMenuDoc(param, elem, isTree) {
+            function highlightMenuDoc() {
                 disableHighlightingMenuDoc();
-                if (param && isTree) {
-                    elem.css({
-                        'border': '1px dashed blue'
-                    });
-                } else {
                     get$menuItemsList().find(".imcms-doc-item-copy").css({
                         'border': '1px dashed red'
                     });
-                }
             }
 
             $.each(allMenuDocObjArray, (obj, param) => {
@@ -749,7 +743,7 @@ define("imcms-document-editor-builder",
 
             // highlightingMenuDoc
             if (placeStatus !== null) {
-                highlightMenuDoc(placeStatus, menuDoc, isTree);
+                highlightMenuDoc();
             } else {
                 disableHighlightingMenuDoc();
             }

@@ -218,17 +218,11 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function highlightMenuDoc(param, elem, isTree) {
+        function highlightMenuDoc() {
             disableHighlightingMenuDoc();
-            if (param && isTree) {
-                elem.css({
-                    'border': '1px dashed blue'
-                });
-            } else {
                 $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
                     'border': '1px dashed red'
                 });
-            }
         }
 
         function removedPreviousItemFrame() {
@@ -381,7 +375,7 @@ define("imcms-menu-editor-builder",
 
             // highlightingMenuDoc
             if (placeStatus !== null) {
-                highlightMenuDoc(placeStatus, menuDoc, isTree);
+                highlightMenuDoc();
             } else {
                 disableHighlightingMenuDoc();
             }
@@ -512,7 +506,9 @@ define("imcms-menu-editor-builder",
             let $menuElement
             ;
 
-            if ($dataInput.attr('data-frame-top') < topPointMenu || $dataInput.attr("data-type-sort") === TREE_SORT) {
+            if ($dataInput.attr('data-frame-top') < topPointMenu
+                || $dataInput.attr("data-type-sort") === TREE_SORT
+                || $dataInput.attr("data-type-sort") === MANUAL) {
                 $menuElement = buildMenuItemTree(menuElementsTree, {
                     level: 1,
                     sortType: $dataInput.attr("data-type-sort")
@@ -795,13 +791,23 @@ define("imcms-menu-editor-builder",
             reorderMenuListBySortNumber(getAllMenuItems());
         }
 
-        function reorderMenuListBySortNumber(menuItems) {
+        function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
+                if (menuItem2.children.length) {
+                    menuItem2.children.sort(function (menuItemChildren1, menuItemChildren2) {
+                        return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
+                    })
+                } if (menuItem1.children.length) {
+                    menuItem1.children.sort(function (menuItemChildren1, menuItemChildren2) {
+                        return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
+                    })
+                }
                 return menuItem1.sortNumber - menuItem2.sortNumber;
             });
 
-            swapSameItemSortNumber(sortedMenuItems);
+
+            swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
 
             const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
@@ -819,7 +825,7 @@ define("imcms-menu-editor-builder",
                 if (acc[value]) {
                     return acc[value].children;
                 }
-                throw new Error('Not correct sort number!')
+                throw new Error('Not correct data sort number!')
             }, menuItems);
 
             return placementElement;
@@ -829,26 +835,42 @@ define("imcms-menu-editor-builder",
             return index.split('.').map(n => parseInt(n) - 1);
         }
 
+        function isCheckOldValueMoreThanCurrentValue(oldVal, currentVal) {
+            const arrayOldVal = oldVal.split('.').map(n => parseInt(n));
+            const arrayCurrentVal = currentVal.split('.').map(n => parseInt(n));
+
+            return arrayOldVal.some((oldVal, index) => oldVal > arrayCurrentVal[index])
+        }
+
         function buildMenuItem(menuElement, {sortType, sortNumberErr}) {
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortNumber,
                 id: menuElement.sortNumber,
+                name: menuElement.documentId
             });
 
             $numberingSortBox.$input.blur(events => {
                 const currentValue = $(events.target).val();
                 const currentIndex = $(events.target).attr('id');
+                const documentId = $(events.target).attr('name');
                 const parsedIndex = parseIndex(currentIndex);
                 const parsedValue = parseIndex(currentValue);
                 const items = getAllMenuItems();
+                const $menuItem = getMenuDocByObjId(documentId);
+
                 if (currentValue === currentIndex) return;
+                if($menuItem.hasClass('imcms-menu-incorrect-data-light')) {
+                    $menuItem.removeClass('imcms-menu-incorrect-data-light');
+                }
                 let placementElement;
                 try {
                     placementElement = findPlaceMenuElement(items, currentValue);
+                    // items.filter(item => isCorrectSortNumber(item.sortNumber, 1));
                 } catch (e) {
-                    console.error(e)
+                    console.error(e);
+                    $menuItem.addClass('imcms-menu-incorrect-data-light');
                     return;
                 }
 
@@ -864,11 +886,19 @@ define("imcms-menu-editor-builder",
                 const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
                 placementElement.push(splicedElem);
 
-                reorderMenuListBySortNumber(items);
+                $menuItem.addClass('imcms-menu-item-light');
+
+                setTimeout(function() {
+                    $menuItem.removeClass('imcms-menu-item-light');
+                    }, 5000);
+
+
+                reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue));
             });
             if (sortNumberErr) {
                 $numberingSortBox.modifiers = ['err']
             }
+            sortType === TREE_SORT ? $numberingTypeSortFlag.hide() : $numberingTypeSortFlag.show();
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
@@ -978,11 +1008,11 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function swapSameItemSortNumber(menuItems) {
+        function swapSameItemSortNumber(menuItems, oldValMoreCurrent) {
             let duplicate;
             menuItems.forEach((item, index, array) => {
                 if (item.children.length) {
-                    swapSameItemSortNumber(item.children);
+                    swapSameItemSortNumber(item.children, oldValMoreCurrent);
                 }
                 duplicate = array.map(item => item.sortNumber).indexOf(item.sortNumber) !== index ? item : duplicate
             });
@@ -990,9 +1020,11 @@ define("imcms-menu-editor-builder",
             const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
 
             if (foundSameItemIndex !== -1) {
-                const sameItem = menuItems[foundSameItemIndex];
-                menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
-                menuItems[foundSameItemIndex - 1] = sameItem;
+                if (oldValMoreCurrent) {
+                    const sameItem = menuItems[foundSameItemIndex];
+                    menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
+                    menuItems[foundSameItemIndex - 1] = sameItem;
+                }
             }
         }
 
