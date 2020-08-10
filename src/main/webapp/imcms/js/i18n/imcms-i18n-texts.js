@@ -372,7 +372,9 @@ const texts = {
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
-                    loadFailed: 'Misslyckades att ladda. Försök igen'
+                    loadFailed: 'Misslyckades att ladda. Försök igen',
+                    invalidSortNumber: 'Ogiltigt data sorteringsnummer!',
+                    invalidPosition: 'Ogiltig position!',
                 },
                 typesSort: {
                     treeSort: 'Trädsortering',
@@ -1284,7 +1286,9 @@ const texts = {
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
-                    loadFailed: 'Failed to load. Try again'
+                    loadFailed: 'Failed to load. Try again',
+                    invalidSortNumber: 'Invalid data sort number!',
+                    invalidPosition: 'Invalid position!',
                 },
                 typesSort: {
                     treeSort: 'Tree sort',
