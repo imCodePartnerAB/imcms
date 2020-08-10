@@ -917,7 +917,7 @@ define("imcms-menu-editor-builder",
                 reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId);
             });
 
-            sortType === TREE_SORT ? $numberingTypeSortFlag.hide() : $numberingTypeSortFlag.show();
+            sortType === MANUAL ? $numberingTypeSortFlag.show() : $numberingTypeSortFlag.hide();
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
