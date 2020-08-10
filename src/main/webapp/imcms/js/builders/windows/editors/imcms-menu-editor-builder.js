@@ -791,29 +791,26 @@ define("imcms-menu-editor-builder",
             reorderMenuListBySortNumber(getAllMenuItems());
         }
 
+        function getDeepSortedItemsBySortNumber(menuItems) {
+            return menuItems
+                .map((item, index, arr) => {
+                    if (item.children.length) {
+                        getDeepSortedItemsBySortNumber(item.children);
+                    } else {
+                        arr.sort(function (menuItem1, menuItem2) {
+                            const parsedValItem1 = parseValue(menuItem1.sortNumber);
+                            const parsedValItem2 = parseValue(menuItem2.sortNumber);
+
+                            return parsedValItem1[parsedValItem1.length - 1] - parsedValItem2[parsedValItem2.length - 1];
+                        })
+                    }
+                    return item;
+                });
+        }
+
         function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent, menuItemId) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
-            const sortedMenuItems = menuItems.sort(function (menuItem1, menuItem2) {
-                if (menuItem2.children.length) {
-                    menuItem2.children.sort(function (menuItemChildren1, menuItemChildren2) {
-                        return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
-                    })
-                }
-                if (menuItem1.children.length) {
-                    menuItem1.children.sort(function (menuItemChildren1, menuItemChildren2) {
-                        return menuItemChildren1.sortNumber - menuItemChildren2.sortNumber;
-                    })
-                }
-                return menuItem1.sortNumber - menuItem2.sortNumber;
-            });
-
-            function sortingChildrenBySortNUmber(menuItems) {
-                if (menuItems.length) {
-                    menuItems.sort(function (menuItem1, menuItem2) {
-                        return menuItem1.sortNumber - menuItem2.sortNumber;
-                    });
-                }
-            }
+            const sortedMenuItems = getDeepSortedItemsBySortNumber(menuItems);
 
             swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
 
@@ -852,6 +849,10 @@ define("imcms-menu-editor-builder",
 
         function parseIndex(index) {
             return index.split('.').map(n => parseInt(n) - 1);
+        }
+
+        function parseValue(value) {
+            return value.split('.').map(n => parseInt(n));
         }
 
         function isCheckOldValueMoreThanCurrentValue(oldVal, currentVal) {
