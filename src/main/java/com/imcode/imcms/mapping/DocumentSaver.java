@@ -32,6 +32,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +50,7 @@ import java.util.stream.Stream;
  */
 @Service
 @SuppressWarnings("unused")
+@Slf4j
 public class DocumentSaver {
 
     private final DocRepository docRepository;
@@ -178,6 +180,7 @@ public class DocumentSaver {
         Meta jpaMeta = toJpaObject(doc.getMeta());
         jpaMeta.setModifierId(user.getId());
 
+        log.error("updateDocument: meta_id - {}, modifierId - {}", jpaMeta.getId(), jpaMeta.getModifierId());
         metaRepository.saveAndFlush(jpaMeta);
 
         commonContents.forEach((language, dcc) -> {
@@ -197,12 +200,14 @@ public class DocumentSaver {
 
                 ormDcc.setDocId(doc.getId());
                 ormDcc.setLanguage(ormLanguage);
+                log.error("updateDocument: doc language - {}, doc_id - {}", ormLanguage, doc.getId());
                 commonContentRepository.save(ormDcc);
             }
         });
 
         doc.accept(documentSavingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
+        log.error("updateDocument: doc version_no - {}, doc_id - {}, user_id - {}", doc.getVersionRef().getNo(), doc.getVersionRef().getDocId(), user.getId());
         docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
     }
 
@@ -293,7 +298,9 @@ public class DocumentSaver {
 
         Meta jpaMeta = toJpaObject(metaDO);
         jpaMeta.setModifierId(user.getId());
+        log.error("saveNewDocument: jpaId - {}, jpaModifierId - {}", jpaMeta.getId(), jpaMeta.getModifierId());
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
+        log.error("saveNewDocument: new docId - {}", newDocId);
 
         dccMap.forEach((language, dcc) -> {
             LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
@@ -311,6 +318,7 @@ public class DocumentSaver {
         doc.setId(newDocId);
 
         doc.accept(documentCreatingVisitor);
+        log.error("saveNewDocument: doc accept completed!");
 
         if (doc instanceof TextDocumentDomainObject
                 && saveOpts.contains(DefaultDocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
@@ -334,6 +342,7 @@ public class DocumentSaver {
             );
         }
 
+        log.error("saveNewDocument: process return docId - {}", newDocId);
         return newDocId;
     }
 
