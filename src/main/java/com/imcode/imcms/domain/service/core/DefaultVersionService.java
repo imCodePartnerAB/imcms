@@ -66,20 +66,12 @@ public class DefaultVersionService implements VersionService {
         final Version latestVersion = versionRepository.findLatest(docId);
         final int no = (latestVersion == null) ? 0 : latestVersion.getNo() + 1;
         final Date now = new Date();
-        final Version version = new Version();
-
-        version.setDocId(docId);
-        version.setNo(no);
-        version.setCreatedDt(now);
-        version.setCreatedBy(creator);
-        version.setModifiedDt(now);
-        version.setModifiedBy(creator);
 
         log.error("createVersion: prepare to save version");
-        log.error("createVersion: docId {}, version no - {}", version.getDocId(), version.getNo());
-        versionRepository.saveAndFlush(version);
+        log.error("createVersion user id - {}", creator.getId());
+        Version version = versionRepository.save(new Version(docId, no, creator, now, creator, now));
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
-
+        versionRepository.flush();
         return version;
     }
 
