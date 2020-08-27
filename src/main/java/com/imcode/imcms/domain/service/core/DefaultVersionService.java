@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 
 @Service
 @Transactional
+@Slf4j
 public class DefaultVersionService implements VersionService {
 
     private final VersionRepository versionRepository;
@@ -73,7 +75,9 @@ public class DefaultVersionService implements VersionService {
         version.setModifiedDt(now);
         version.setModifiedBy(creator);
 
+        log.error("createVersion: prepare to save version");
         versionRepository.saveAndFlush(version);
+        log.error("createVersion: saved version and return this version no - {}", version.getNo());
 
         return version;
     }
