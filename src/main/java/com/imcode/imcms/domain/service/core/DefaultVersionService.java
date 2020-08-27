@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,14 +27,17 @@ public class DefaultVersionService implements VersionService {
     private final VersionRepository versionRepository;
     private final UserService userService;
     private final boolean isVersioningAllowed;
+    private final MetaRepository metaRepository;
 
     DefaultVersionService(VersionRepository versionRepository,
                           UserService userService,
-                          @Value("${document.versioning:true}") boolean isVersioningAllowed) {
+                          @Value("${document.versioning:true}") boolean isVersioningAllowed,
+                          MetaRepository metaRepository) {
 
         this.versionRepository = versionRepository;
         this.userService = userService;
         this.isVersioningAllowed = isVersioningAllowed;
+        this.metaRepository = metaRepository;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class DefaultVersionService implements VersionService {
         final Date now = new Date();
 
         log.error("createVersion: prepare to save version");
-        log.error("createVersion user id - {}", creator.getId());
+        log.error("createVersion user id - {}, meta doc id - {}", creator.getId(), metaRepository.findOne(docId).getId());
         Version version = versionRepository.save(new Version(docId, no, creator, now, creator, now));
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
         versionRepository.flush();
