@@ -304,9 +304,7 @@ public class DocumentSaver {
 
         dccMap.forEach((language, dcc) -> {
             LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
-            log.error("saveNewDocument: jpaLand code - {}", jpaLanguage.getCode());
             commonContentService.getOrCreate(newDocId, DocumentVersion.WORKING_VERSION_NO, jpaLanguage);
-            log.error("saveNewDocument: created common content!");
         });
 
         docRepository.insertPropertyIfNotExists(
@@ -314,7 +312,7 @@ public class DocumentSaver {
                 DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
                 String.valueOf(newDocId)
         );
-        log.error("saveNewDocument: insert properties doc - completed!");
+        log.error("saveNewDocument: find by doc id META - {}", metaRepository.findOne(newDocId).getId());
 
         Version version = versionService.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());

@@ -76,6 +76,7 @@ public class DefaultVersionService implements VersionService {
         version.setModifiedBy(creator);
 
         log.error("createVersion: prepare to save version");
+        log.error("createVersion: docId {}, version no - {}", version.getDocId(), version.getNo());
         versionRepository.saveAndFlush(version);
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
 
