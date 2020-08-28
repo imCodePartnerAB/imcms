@@ -6,16 +6,20 @@ import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -27,17 +31,17 @@ public class DefaultVersionService implements VersionService {
     private final VersionRepository versionRepository;
     private final UserService userService;
     private final boolean isVersioningAllowed;
-    private final MetaRepository metaRepository;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     DefaultVersionService(VersionRepository versionRepository,
                           UserService userService,
                           @Value("${document.versioning:true}") boolean isVersioningAllowed,
-                          MetaRepository metaRepository) {
+                          @Qualifier("dataSource") DataSource dataSource) {
 
         this.versionRepository = versionRepository;
         this.userService = userService;
         this.isVersioningAllowed = isVersioningAllowed;
-        this.metaRepository = metaRepository;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("imcms_doc_versions");
     }
 
     @Override
@@ -70,13 +74,33 @@ public class DefaultVersionService implements VersionService {
         final Version latestVersion = versionRepository.findLatest(docId);
         final int no = (latestVersion == null) ? 0 : latestVersion.getNo() + 1;
         final Date now = new Date();
+        Version version = new Version();
+
+        version.setDocId(docId);
+        version.setNo(no);
+        version.setCreatedBy(creator);
+        version.setCreatedDt(now);
+        version.setModifiedBy(creator);
+        version.setModifiedDt(now);
 
         log.error("createVersion: prepare to save version");
-        log.error("createVersion user id - {}, meta doc id - {}", creator.getId(), metaRepository.findOne(docId).getId());
-        Version version = versionRepository.save(new Version(docId, no, creator, now, creator, now));
+//        Version version = versionRepository.saveAndFlush(new Version(docId, no, creator, now, creator, now));
+        createVersion(version);
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
-        versionRepository.flush();
+
         return version;
+    }
+
+    private void createVersion(Version version) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("doc_id", version.getDocId());
+        parameters.put("no", version.getNo());
+        parameters.put("created_by", version.getCreatedBy().getId());
+        parameters.put("created_dt", version.getCreatedDt());
+        parameters.put("modified_by", version.getModifiedBy().getId());
+        parameters.put("modified_dt", version.getModifiedDt());
+
+        simpleJdbcInsert.execute(parameters);
     }
 
     @Override

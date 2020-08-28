@@ -6,13 +6,14 @@ import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +46,8 @@ public class VersionServiceTest extends WebAppSpringTestConfig {
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
-    private MetaRepository metaRepository;
+    @Qualifier("dataSource")
+    private DataSource dataSource;
 
     private Version workingVersion;
     private List<Version> versions;
@@ -111,7 +113,7 @@ public class VersionServiceTest extends WebAppSpringTestConfig {
     public void getLatestVersion_When_VersioningIsNotAllowed_Expect_WorkingVersionIsReturned() {
         final DefaultVersionService defaultVersionService = new DefaultVersionService(
                 versionRepository, userService, false,
-                metaRepository);
+                dataSource);
 
         final Version latestVersion = defaultVersionService.getLatestVersion(docId);
 
@@ -123,7 +125,7 @@ public class VersionServiceTest extends WebAppSpringTestConfig {
     public void findByDocId_When_VersioningIsNotAllowed_Expect_OnlyWorkingVersionIsReturned() {
         final DefaultVersionService defaultVersionService = new DefaultVersionService(
                 versionRepository, userService, false,
-                metaRepository);
+                dataSource);
 
         final List<Version> byDocId = defaultVersionService.findByDocId(docId);
 
@@ -136,7 +138,7 @@ public class VersionServiceTest extends WebAppSpringTestConfig {
     public void hasNewerVersion_When_VersioningIsNotAllowed_Expect_FalseIsReturned() {
         final DefaultVersionService defaultVersionService = new DefaultVersionService(
                 versionRepository, userService, false,
-                metaRepository);
+                dataSource);
 
         assertFalse(defaultVersionService.hasNewerVersion(docId));
     }
@@ -145,7 +147,7 @@ public class VersionServiceTest extends WebAppSpringTestConfig {
     public void findDefault_When_VersioningIsNotAllowed_Expect_WorkingVersionIsReturned() {
         final DefaultVersionService defaultVersionService = new DefaultVersionService(
                 versionRepository, userService, false,
-                metaRepository);
+                dataSource);
 
         final Version defaultVersion = defaultVersionService.findDefault(docId);
 
