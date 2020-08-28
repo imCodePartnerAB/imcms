@@ -8,47 +8,41 @@ import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 @Service
-@Transactional
 @Slf4j
 public class DefaultVersionService implements VersionService {
 
     private final VersionRepository versionRepository;
     private final UserService userService;
     private final boolean isVersioningAllowed;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     DefaultVersionService(VersionRepository versionRepository,
                           UserService userService,
-                          @Value("${document.versioning:true}") boolean isVersioningAllowed,
-                          @Qualifier("dataSource") DataSource dataSource) {
+                          @Value("${document.versioning:true}") boolean isVersioningAllowed) {
 
         this.versionRepository = versionRepository;
         this.userService = userService;
         this.isVersioningAllowed = isVersioningAllowed;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("imcms_doc_versions");
     }
 
+    @Transactional
     @Override
     public Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
         return getVersion(docId, versionRepository::findWorking);
     }
 
+    @Transactional
     @Override
     public Version getLatestVersion(int docId) throws DocumentNotExistException {
         Function<Integer, Version> versionFunction = isVersioningAllowed
@@ -58,23 +52,26 @@ public class DefaultVersionService implements VersionService {
         return getVersion(docId, versionFunction);
     }
 
+    @Transactional
     @Override
     public Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
+    @Transactional
     @Override
     public Version create(int docId) {
         return create(docId, Imcms.getUser().getId());
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public Version create(int docId, int userId) {
         final User creator = userService.getUser(userId);
         final Version latestVersion = versionRepository.findLatest(docId);
         final int no = (latestVersion == null) ? 0 : latestVersion.getNo() + 1;
         final Date now = new Date();
-        Version version = new Version();
+        final Version version = new Version();
 
         version.setDocId(docId);
         version.setNo(no);
@@ -84,30 +81,19 @@ public class DefaultVersionService implements VersionService {
         version.setModifiedDt(now);
 
         log.error("createVersion: prepare to save version");
-//        Version version = versionRepository.saveAndFlush(new Version(docId, no, creator, now, creator, now));
-        createVersion(version);
+        versionRepository.saveAndFlush(version);
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
 
-        return findByDocIdAndNo(version.getDocId(), version.getNo());
+        return version;
     }
 
-    private void createVersion(Version version) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("doc_id", version.getDocId());
-        parameters.put("no", version.getNo());
-        parameters.put("created_by", version.getCreatedBy().getId());
-        parameters.put("created_dt", version.getCreatedDt());
-        parameters.put("modified_by", version.getModifiedBy().getId());
-        parameters.put("modified_dt", version.getModifiedDt());
-
-        simpleJdbcInsert.execute(parameters);
-    }
-
+    @Transactional
     @Override
     public Version findByDocIdAndNo(int docId, int no) {
         return versionRepository.findByDocIdAndNo(docId, no);
     }
 
+    @Transactional
     @Override
     public List<Version> findByDocId(int docId) {
         return isVersioningAllowed
@@ -115,6 +101,7 @@ public class DefaultVersionService implements VersionService {
                 : Collections.singletonList(versionRepository.findWorking(docId));
     }
 
+    @Transactional
     @Override
     public Version findDefault(int docId) {
         return isVersioningAllowed
@@ -122,6 +109,7 @@ public class DefaultVersionService implements VersionService {
                 : versionRepository.findWorking(docId);
     }
 
+    @Transactional
     @Override
     public Version findWorking(int docId) {
         return versionRepository.findWorking(docId);
@@ -133,6 +121,7 @@ public class DefaultVersionService implements VersionService {
         versionRepository.deleteByDocId(docId);
     }
 
+    @Transactional
     @Override
     public boolean hasNewerVersion(int docId) {
         if (!isVersioningAllowed) {
@@ -146,6 +135,7 @@ public class DefaultVersionService implements VersionService {
                 || latestVersion.getCreatedDt().before(workingVersion.getModifiedDt());
     }
 
+    @Transactional
     @Override
     public void updateWorkingVersion(int docId) {
         final Version workingVersion = getDocumentWorkingVersion(docId);

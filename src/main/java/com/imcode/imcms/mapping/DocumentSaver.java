@@ -314,6 +314,7 @@ public class DocumentSaver {
         );
         log.error("saveNewDocument: find by doc id META - {}", metaRepository.findOne(newDocId).getId());
 
+
         Version version = versionService.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
