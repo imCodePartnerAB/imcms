@@ -88,7 +88,7 @@ public class DefaultVersionService implements VersionService {
         createVersion(version);
         log.error("createVersion: saved version and return this version no - {}", version.getNo());
 
-        return version;
+        return findByDocIdAndNo(version.getDocId(), version.getNo());
     }
 
     private void createVersion(Version version) {
