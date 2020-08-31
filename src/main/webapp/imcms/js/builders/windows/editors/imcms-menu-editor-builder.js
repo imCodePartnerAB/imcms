@@ -117,8 +117,11 @@ define("imcms-menu-editor-builder",
 
             menusRestApi.create(menuDTO)
                 .done(menu => {
-                    onMenuSaved();
+
                     menuWindowBuilder.closeWindow();
+                    setTimeout(function () {
+                        onMenuSaved();
+                    }, 2000)
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
 
