@@ -10,7 +10,6 @@ import imcode.server.Imcms;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -21,6 +20,7 @@ import java.util.function.Function;
 
 @Service
 @Slf4j
+@Transactional
 public class DefaultVersionService implements VersionService {
 
     private final VersionRepository versionRepository;
@@ -36,13 +36,12 @@ public class DefaultVersionService implements VersionService {
         this.isVersioningAllowed = isVersioningAllowed;
     }
 
-    @Transactional
     @Override
     public Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
         return getVersion(docId, versionRepository::findWorking);
     }
 
-    @Transactional
+
     @Override
     public Version getLatestVersion(int docId) throws DocumentNotExistException {
         Function<Integer, Version> versionFunction = isVersioningAllowed
@@ -52,19 +51,16 @@ public class DefaultVersionService implements VersionService {
         return getVersion(docId, versionFunction);
     }
 
-    @Transactional
     @Override
     public Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
-    @Transactional
     @Override
     public Version create(int docId) {
         return create(docId, Imcms.getUser().getId());
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public Version create(int docId, int userId) {
         final User creator = userService.getUser(userId);
@@ -87,13 +83,12 @@ public class DefaultVersionService implements VersionService {
         return version;
     }
 
-    @Transactional
+
     @Override
     public Version findByDocIdAndNo(int docId, int no) {
         return versionRepository.findByDocIdAndNo(docId, no);
     }
 
-    @Transactional
     @Override
     public List<Version> findByDocId(int docId) {
         return isVersioningAllowed
@@ -101,7 +96,6 @@ public class DefaultVersionService implements VersionService {
                 : Collections.singletonList(versionRepository.findWorking(docId));
     }
 
-    @Transactional
     @Override
     public Version findDefault(int docId) {
         return isVersioningAllowed
@@ -109,7 +103,6 @@ public class DefaultVersionService implements VersionService {
                 : versionRepository.findWorking(docId);
     }
 
-    @Transactional
     @Override
     public Version findWorking(int docId) {
         return versionRepository.findWorking(docId);
@@ -121,7 +114,6 @@ public class DefaultVersionService implements VersionService {
         versionRepository.deleteByDocId(docId);
     }
 
-    @Transactional
     @Override
     public boolean hasNewerVersion(int docId) {
         if (!isVersioningAllowed) {
@@ -135,7 +127,6 @@ public class DefaultVersionService implements VersionService {
                 || latestVersion.getCreatedDt().before(workingVersion.getModifiedDt());
     }
 
-    @Transactional
     @Override
     public void updateWorkingVersion(int docId) {
         final Version workingVersion = getDocumentWorkingVersion(docId);
