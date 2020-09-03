@@ -2,8 +2,9 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-const previewImage = require('imcms-preview-image-area');
-const sizeControls = require('imcms-image-edit-size-controls');
+import previewImage from 'imcms-preview-image-area';
+import sizeControls from 'imcms-image-edit-size-controls';
+import {removeCssFunctionsFromString} from 'css-utils';
 
 const angleNorth = {
     name: "NORTH",
@@ -49,26 +50,31 @@ const anglesByDegrees = {
     270: angleWest,
 };
 
-function getRotateCss(angle) {
+function getRotateCssTransformString(angle) {
     const degrees = angle.degrees;
     let transform = "rotate(" + degrees + "deg)";
 
     switch (degrees) {
         case 90:
-            transform += " translateY(-100%)";
+            transform += " translate(0%, -100%)";
             break;
         case 180:
             transform += " translate(-100%, -100%)";
             break;
         case 270:
-            transform += " translateX(-100%)";
+            transform += " translate(-100%, 0%)";
             break;
     }
 
-    return {
-        "transform": transform,
-        "transform-origin": "top left"
-    };
+    return transform;
+}
+
+function getUpdatedTransformString(angle, $image) {
+    const rotateCss = getRotateCssTransformString(currentAngle);
+    const transformString = $image[0].style.transform;
+    const cleanTransformString = removeCssFunctionsFromString(transformString, ['rotate', 'translate']);
+
+    return `${cleanTransformString} ${rotateCss}`;
 }
 
 function rotate(newAngle) {
@@ -77,27 +83,19 @@ function rotate(newAngle) {
 
     currentAngle = newAngle || angleNorth;
 
-    const style = getRotateCss(currentAngle);
-    previewImage.getPreviewImage().css(style);
+    const $image = previewImage.getPreviewImage();
+
+    $image.css('transform', getUpdatedTransformString(currentAngle, $image));
 
     sizeControls.swapControls(currentAngle.proportionsInverted);
 }
 
-module.exports = {
-    rotateLeft: () => {
-        rotate(currentAngle.prev);
-    },
-    rotateRight: () => {
-        rotate(currentAngle.next);
-    },
-    rotateImageByDegrees: (degrees) => rotate(anglesByDegrees[degrees]),
-    rotateImage: direction => {
-        rotate(anglesByDirection[direction]);
-    },
-    isProportionsInverted: () => currentAngle.proportionsInverted,
-    getCurrentAngle: () => currentAngle,
-    getCurrentRotateCss: () => getRotateCss(currentAngle || angleNorth),
-    destroy: () => {
-        currentAngle = angleNorth;
-    }
-};
+export const rotateLeft = () => rotate(currentAngle.prev);
+export const rotateRight = () => rotate(currentAngle.next);
+export const rotateImageByDegrees = (degrees) => rotate(anglesByDegrees[degrees]);
+export const rotateImage = direction => rotate(anglesByDirection[direction]);
+export const isProportionsInverted = () => currentAngle.proportionsInverted;
+export const getCurrentAngle = () => currentAngle;
+export const destroy = () => {
+    currentAngle = angleNorth;
+}

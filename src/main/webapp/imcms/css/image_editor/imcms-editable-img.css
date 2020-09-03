@@ -74,4 +74,5 @@
 .imcms-originally-img {
     border: 15px solid #9b9b9b;
     background: no-repeat center;
+    transform-origin: top left;
 }

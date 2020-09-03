@@ -115,7 +115,7 @@ function onImageLoad() {
         const width = $img.width();
         const height = $img.height();
 
-        const transformStyle = imageZoom.getTransformString(zoomValue, $img);
+        const transformStyle = imageZoom.getUpdatedTransformString(zoomValue, $img);
 
         shadowLayout.css({
             width,
