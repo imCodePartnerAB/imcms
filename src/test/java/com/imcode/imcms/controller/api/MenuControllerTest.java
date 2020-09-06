@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 import static imcode.server.ImcmsConstants.SWE_CODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -112,7 +113,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParamSortTree_Expect_CorrectException() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TypeSort.TREE_SORT), COUNT_MENU_ITEMS);
+        final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
@@ -122,14 +123,14 @@ public class MenuControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()))
-                .param("typeSort", String.valueOf(TypeSort.TREE_SORT));
+                .param("typeSort", String.valueOf(TREE_SORT));
 
         performRequestBuilderExpectException(SortNotSupportedException.class, requestBuilder);
     }
 
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndTrueNestedParamSortTree_Expect_CorrectEntities() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true, true, String.valueOf(TypeSort.TREE_SORT), COUNT_MENU_ITEMS);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
@@ -140,7 +141,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("nested", String.valueOf(menu.isNested()))
-                .param("typeSort", String.valueOf(TypeSort.TREE_SORT));
+                .param("typeSort", String.valueOf(TREE_SORT));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
     }
@@ -345,7 +346,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWNotNestedParamSortTree_Expect_CorrectEception() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TypeSort.TREE_SORT), COUNT_MENU_ITEMS);
+        final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
         final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
         DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
@@ -359,7 +360,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("nested", String.valueOf(menu.isNested()))
-                .param("typeSort", String.valueOf(TypeSort.TREE_SORT));
+                .param("typeSort", String.valueOf(TREE_SORT));
 
         performRequestBuilderExpectException(SortNotSupportedException.class, requestBuilder);
     }
@@ -367,7 +368,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueNestedParamSortTree_Expect_EmptyResult() throws Exception {
 
-        final MenuDTO menu = menuDataInitializer.createData(true, true, String.valueOf(TypeSort.TREE_SORT), COUNT_MENU_ITEMS);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
         final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
         DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
