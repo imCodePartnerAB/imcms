@@ -2,10 +2,10 @@ define(
     'imcms-image-zoom',
     [
         'jquery', 'imcms-originally-image', 'imcms-originally-area', 'imcms-preview-image-area', 'imcms-i18n-texts',
-        'imcms-components-builder'
+        'imcms-components-builder', 'css-utils', 'imcms-image-rotate'
     ],
     function ($, originalImage, originallyImageArea, previewImageArea, i18nTexts,
-              components) {
+              components, cssUtils, imageRotate) {
 
         const texts = i18nTexts.editors.image;
 
@@ -59,13 +59,13 @@ define(
                 return;
             }
 
-            const widthScale = imageSize.width / $imageArea.width();
-            const heightScale = imageSize.height / $imageArea.height();
+            const heightScale = imageSize.width / $imageArea.width();
+            const widthScale = imageSize.height / $imageArea.height();
 
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
             const newZoomValue = currentZoom * zoomScale;
 
-            $image.css('transform', getTransformString(newZoomValue, $image));
+            $image.css('transform', getUpdatedTransformString(newZoomValue, $image));
 
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
@@ -76,20 +76,21 @@ define(
             const width = ($image.width() + imageBorderWidth * 2) * currentZoom;
             const height = ($image.height() + imageBorderWidth * 2) * currentZoom;
 
-            return { width, height };
+            return imageRotate.getCurrentAngle().proportionsInverted
+                ? { width: height, height: width }
+                : { width, height };
         }
 
-        function getTransformString(zoomValue, $image) {
-            const imageSize = getImageSize($image);
+        function getUpdatedTransformString(zoomValue, $image) {
+            const transformString = $image[0].style.transform;
+            const cleanTransform = cssUtils.removeCssFunctionsFromString(transformString, ['scale']);
+            const newScaleCssFunction = getScaleCssFunction(zoomValue);
 
-            const horizontalTranslation = calculateTranslation(zoomValue, imageSize.width);
-            const verticalTranslation = calculateTranslation(zoomValue, imageSize.height);
-
-            return `scale(${zoomValue}) translate(${horizontalTranslation}px, ${verticalTranslation}px)`
+            return `${newScaleCssFunction} ${cleanTransform}`;
         }
 
-        function calculateTranslation(zoomValue, length) {
-            return -length / 2 * (1 / zoomValue - 1);
+        function getScaleCssFunction(zoomValue) {
+            return `scale(${zoomValue})`;
         }
 
         function getRelativeZoomValueByOriginalImg() {
@@ -119,17 +120,9 @@ define(
         function zoom(scale) {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
+            const newZoomValue = scale ? getCurrentZoom($image) * scale : 1;
 
-            if (!scale) {
-                $image.css('transform', `scale(1)`);
-                updateZoomGradeValueByCssProperty(1);
-                return;
-            }
-
-            const currentZoom = getCurrentZoom($image);
-            const newZoomValue = currentZoom * scale;
-
-            $image.css('transform', getTransformString(newZoomValue, $image));
+            $image.css('transform', getUpdatedTransformString(newZoomValue, $image));
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
@@ -159,7 +152,7 @@ define(
             zoomMinus,
             resetZoom,
             clearData,
-            getTransformString,
+            getUpdatedTransformString
         }
     }
 );
