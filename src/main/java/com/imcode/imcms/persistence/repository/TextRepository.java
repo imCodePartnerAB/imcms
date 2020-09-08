@@ -40,6 +40,9 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer>, Version
     @Query("SELECT t FROM TextJPA t WHERE t.version = ?1")
     List<TextJPA> findByVersion(Version version);
 
+    @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.text = ?2")
+    List<TextJPA> findByIndexAndText(Integer index, String text);
+
     @Modifying
     @Query("DELETE FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2")
     int deleteByVersionAndLanguage(Version version, LanguageJPA language);

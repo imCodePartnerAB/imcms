@@ -2,11 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.TextHistoryService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -19,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -68,6 +65,11 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     @Override
     public Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
+    }
+
+    @Override
+    public List<TextJPA> getText(Integer index, String key) {
+        return repository.findByIndexAndText(index, key);
     }
 
     @Override
