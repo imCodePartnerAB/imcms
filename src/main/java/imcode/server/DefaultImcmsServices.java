@@ -12,12 +12,7 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
@@ -111,6 +106,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final MailService mailService;
     @Getter
     private final TemplateService templateService;
+    @Getter
+    private final TextService textService;
     private final Properties properties;
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
@@ -148,7 +145,9 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 AuthenticationProvidersService authenticationProvidersService,
                                 LanguageService languageService,
                                 DocumentService<TextDocumentDTO> textDocumentService,
-                                DocumentService<FileDocumentDTO> fileDocumentService, DocumentService<UrlDocumentDTO> urlDocumentService) {
+                                DocumentService<FileDocumentDTO> fileDocumentService,
+                                DocumentService<UrlDocumentDTO> urlDocumentService,
+                                TextService textService) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -163,6 +162,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.procedureExecutor = procedureExecutor;
         this.documentMapper = documentMapper;
         this.languageMapper = languageMapper;
+        this.textService = textService;
 
         this.kerberosLoginService = new KerberosLoginService(config);
         this.accessService = accessService;
