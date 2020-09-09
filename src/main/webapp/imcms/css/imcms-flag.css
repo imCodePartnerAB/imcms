@@ -32,6 +32,12 @@
     background-size: 29px 17px;
 }
 
+.imcms-flag--se {
+    background: url("/imcms/images/icon_flag_sme.png") no-repeat left top;
+    background-size: 29px 17px;
+}
+
+
 .imcms-flag--active {
     opacity: 1;
 }
