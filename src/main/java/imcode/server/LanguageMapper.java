@@ -93,7 +93,7 @@ public class LanguageMapper {
             {"sco", ""}, {"scr/hrv", "hr"}, {"sel", ""}, {"sem", ""}, {"sga", ""}, {"sgn", ""},
             {"shn", ""}, {"sid", ""}, {"sin", "si"}, {"sio", ""}, {"sit", ""}, {"sla", ""},
             {"slo/slk", "sk"}, {"slv", "sl"}, {"sma", ""}, {"sme", "se"}, {"smi", ""}, {"smj", ""},
-            {"smn", ""}, {"smo", "sm"}, {"sms", ""}, {"sna", "sn"}, {"snd", "sd"}, {"snk", ""},
+            {"smn", ""}, {"smo", "sm"}, {"sme", "se"}, {"sms", ""}, {"sna", "sn"}, {"snd", "sd"}, {"snk", ""},
             {"sog", ""}, {"som", "so"}, {"son", ""}, {"sot", "st"}, {"spa", "es"}, {"alb/sqi", "sq"},
             {"srd", "sc"}, {"scc/srp", "sr"}, {"srr", ""}, {"ssa", ""}, {"ssw", "ss"}, {"suk", ""},
             {"sun", "su"}, {"sus", ""}, {"sux", ""}, {"swa", "sw"}, {"swe", "sv"}, {"syr", ""},
@@ -163,10 +163,7 @@ public class LanguageMapper {
      * @throws IllegalArgumentException If an unsupported language is requested.
      */
     public static String convert639_1to639_2(String language) throws LanguageNotSupportedException {
-        if ("se".equalsIgnoreCase(language)) {
-            // FIXME: Nasty workaround for our "se" which should be "sv". Hides Northern Sami language (sme).
-            return iso639_1to639_2map.get("sv");
-        }
+
         String iso6392 = iso639_1to639_2map.get(language.toLowerCase());
         if (null == iso6392) {
             throw new LanguageNotSupportedException("Language '" + language + "' not supported.");
