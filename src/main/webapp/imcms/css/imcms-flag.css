@@ -43,6 +43,11 @@
     background-size: 29px 17px;
 }
 
+.imcms-flag--bs {
+    background: url("/imcms/images/lang_flags/icon_flag_ba.png") no-repeat left top;
+    background-size: 29px 17px;
+}
+
 .imcms-flag--active {
     opacity: 1;
 }
