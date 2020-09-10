@@ -23,20 +23,25 @@
 }
 
 .imcms-flag--en {
-    background: url("/imcms/images/icon_flag_en_active.png") no-repeat left top;
+    background: url("/imcms/images/lang_flags/icon_flag_en_active.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
 .imcms-flag--sv {
-    background: url("/imcms/images/icon_flag_sw_active.png") no-repeat left top;
+    background: url("/imcms/images/lang_flags/icon_flag_sw_active.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
 .imcms-flag--se {
-    background: url("/imcms/images/icon_flag_sme.png") no-repeat left top;
+    background: url("/imcms/images/lang_flags/icon_flag_sme.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
+
+.imcms-flag--be {
+    background: url("/imcms/images/lang_flags/icon_flag_be.png") no-repeat left top;
+    background-size: 29px 17px;
+}
 
 .imcms-flag--active {
     opacity: 1;
