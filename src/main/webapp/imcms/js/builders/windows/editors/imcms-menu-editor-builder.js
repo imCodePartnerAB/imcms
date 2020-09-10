@@ -505,9 +505,10 @@ define("imcms-menu-editor-builder",
             let $menuElement
             ;
 
-            if ($dataInput.attr('data-frame-top') < topPointMenu
+            if (($dataInput.attr('data-frame-top') < topPointMenu
                 || $dataInput.attr("data-type-sort") === TREE_SORT
-                || $dataInput.attr("data-type-sort") === MANUAL) {
+                || $dataInput.attr("data-type-sort") === MANUAL)
+                && getAllMenuItems().length !== 0) {
                 $menuElement = buildMenuItemTree(menuElementsTree, {
                     level: 1,
                     sortType: $dataInput.attr("data-type-sort")
