@@ -19,7 +19,7 @@ public class LanguageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void testFindAll() {
-        assertEquals(2, languageRepository.findAll().size());
+        assertEquals(39, languageRepository.findAll().size());
     }
 
     @Test

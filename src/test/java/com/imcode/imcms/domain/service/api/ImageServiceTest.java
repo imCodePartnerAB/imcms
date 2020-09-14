@@ -521,7 +521,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
             imageRepository.save(image);
         });
 
-        assertEquals(languageRepository.findAll().size(), imageRepository.findAll().size());
+        assertEquals(languageService.getAvailableLanguages().size(), imageRepository.findAll().size());
         imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
 
         final ImageJPA newImage = imageRepository.findAll().get(0);
@@ -549,7 +549,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         final List<ImageJPA> images = imageRepository.findAll();
 
-        assertEquals(languageRepository.findAll().size(), images.size());
+        assertEquals(languageService.getAvailableLanguages().size(), images.size());
 
         imageService.deleteImage(imageJPAToImageDTO.apply(images.get(0)));
 
@@ -573,7 +573,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         final List<ImageJPA> images = imageRepository.findAll();
 
-        assertEquals(languageRepository.findAll().size(), images.size());
+        assertEquals(languageService.getAvailableLanguages().size(), images.size());
 
         final ImageJPA image = images.get(0);
         image.setAllLanguages(false);

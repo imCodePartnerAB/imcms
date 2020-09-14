@@ -32,7 +32,13 @@ public class LanguageDataInitializer extends TestDataCleaner {
         return Arrays.asList(englishLanguage, swedishLanguage);
     }
 
-    public List<LanguageDTO> createData(List<String> availableLanguagesCodes) {
+    public List<LanguageDTO> createData(List<String> langs) {
+        return langs.stream()
+                .map(lang -> new LanguageDTO(languageRepository.findByCode(lang)))
+                .collect(Collectors.toList());
+    }
+
+    public List<LanguageDTO> createAvailableData(List<String> availableLanguagesCodes) {
         return availableLanguagesCodes.stream()
                 .map(code -> {
                     LanguageDTO language = new LanguageDTO(languageRepository.findByCode(code));

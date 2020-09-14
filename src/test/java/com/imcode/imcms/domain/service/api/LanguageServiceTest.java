@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.LANGUAGES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,8 +48,8 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getAll_Expected_CorrectResultAndSize() {
-        assertEquals(languageDataInitializer.createData(), languageService.getAll());
-        assertEquals(languageDataInitializer.createData().size(), languageService.getAll().size());
+        assertEquals(languageDataInitializer.createData(LANGUAGES), languageService.getAll());
+        assertEquals(languageDataInitializer.createData(LANGUAGES).size(), languageService.getAll().size());
     }
 
     @Test

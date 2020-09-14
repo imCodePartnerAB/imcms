@@ -7,6 +7,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -58,6 +59,9 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Autowired
     private LanguageRepository languageRepository;
+
+    @Autowired
+    private LanguageService languageService;
 
     @Override
     protected String controllerPath() {
@@ -293,7 +297,7 @@ public class ImageControllerTest extends AbstractControllerTest {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        languageRepository.findAll()
+        languageService.getAvailableLanguages()
                 .forEach(language -> {
                     final ImageJPA image = imageDataInitializer
                             .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
@@ -304,7 +308,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final List<ImageJPA> images = imageRepository.findAll();
 
-        assertEquals(languageRepository.findAll().size(), images.size());
+        assertEquals(languageService.getAvailableLanguages().size(), images.size());
 
         final ImageDTO imageDTO = imageJPAToImageDTO.apply(images.get(0));
 
@@ -321,7 +325,7 @@ public class ImageControllerTest extends AbstractControllerTest {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        languageRepository.findAll()
+        languageService.getAvailableLanguages()
                 .forEach(language -> {
                     final ImageJPA image = imageDataInitializer
                             .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
@@ -332,7 +336,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final List<ImageJPA> images = imageRepository.findAll();
 
-        assertEquals(languageRepository.findAll().size(), images.size());
+        assertEquals(languageService.getAvailableLanguages().size(), images.size());
 
         final ImageJPA image = images.get(0);
         image.setAllLanguages(false);
@@ -394,7 +398,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
 
-        languageRepository.findAll().forEach(language -> {
+        languageService.getAvailableLanguages().forEach(language -> {
             final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRef);
 
@@ -428,7 +432,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(expected);
         performRequestBuilderExpectedOk(requestBuilder);
 
-        languageRepository.findAll()
+        languageService.getAvailableLanguages()
                 .forEach(language -> {
                     final ImageDTO actual = imageService
                             .getImage(testDocId, TEST_IMAGE_INDEX, language.getCode(), loopEntryRef);

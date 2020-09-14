@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.LANGUAGES;
+
 @Transactional
 public class LanguageControllerTest extends AbstractControllerTest {
 
@@ -27,7 +29,7 @@ public class LanguageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll_Expected_CorrectResult() throws Exception {
-        final String languagesJSON = asJson(languageDataInitializer.createData());
+        final String languagesJSON = asJson(languageDataInitializer.createData(LANGUAGES));
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, languagesJSON);
