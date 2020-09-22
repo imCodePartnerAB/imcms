@@ -57,6 +57,7 @@ define(
                     cropY1: 0,
                     cropY2: 0,
                 };
+                imageData.rotateDirection = 'NORTH';
             }
 
             imageResize.checkCropRegionExist(imageData);
