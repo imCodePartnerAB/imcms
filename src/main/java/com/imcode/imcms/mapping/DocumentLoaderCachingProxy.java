@@ -90,7 +90,7 @@ public class DocumentLoaderCachingProxy {
         CacheConfiguration cc = new CacheConfiguration();
 
         cc.setMaxEntriesLocalHeap(size);
-        cc.persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP));
+        cc.persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.DISTRIBUTED));
         cc.setEternal(true);
         cc.setName(DocumentLoaderCachingProxy.class.getCanonicalName() + "." + name);
 
