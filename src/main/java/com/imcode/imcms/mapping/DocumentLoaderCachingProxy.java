@@ -215,12 +215,6 @@ public class DocumentLoaderCachingProxy {
 
     public List<MenuItemDTO> getMenuItems(final MenuCacheKey menuCacheKey,
                                           final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
-
-        menuDtoSupplier.get().stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item ->
-                        log.error("Method getMenuItems FROM DocumentLoaderCachingProxy, " +
-                                "docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
         return allMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
@@ -233,12 +227,6 @@ public class DocumentLoaderCachingProxy {
 
     public List<MenuItemDTO> getVisibleMenuItems(final MenuCacheKey menuCacheKey,
                                                  final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
-
-        menuDtoSupplier.get().stream()
-                .flatMap(MenuItemDTO::flattened)
-                .forEach(item ->
-                        log.error("Method getVisibleMenuItems FROM DocumentLoaderCachingProxy, " +
-                                "docId {} and sort-number {}", item.getDocumentId(), item.getSortNumber()));
         return visibleMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
