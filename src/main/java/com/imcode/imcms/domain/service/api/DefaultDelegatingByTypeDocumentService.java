@@ -1,14 +1,17 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import imcode.server.Imcms;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +26,19 @@ import java.util.Optional;
 public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocumentService {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
+    private final DocumentService<TextDocumentDTO> textDocumentService;
+    private final DocumentService<FileDocumentDTO> fileDocumentService;
+    private final DocumentService<UrlDocumentDTO> urlDocumentService;
     private final MetaRepository metaRepository;
 
-    DefaultDelegatingByTypeDocumentService(DocumentService<DocumentDTO> defaultDocumentService,
+    DefaultDelegatingByTypeDocumentService(DocumentService<DocumentDTO> defaultDocumentService, DocumentService<TextDocumentDTO> textDocumentService,
+                                           DocumentService<FileDocumentDTO> fileDocumentService,
+                                           DocumentService<UrlDocumentDTO> urlDocumentService,
                                            MetaRepository metaRepository) {
         this.defaultDocumentService = defaultDocumentService;
+        this.textDocumentService = textDocumentService;
+        this.fileDocumentService = fileDocumentService;
+        this.urlDocumentService = urlDocumentService;
         this.metaRepository = metaRepository;
     }
 
@@ -84,6 +95,18 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     }
 
     private DocumentService<? extends Document> getCorrespondingDocumentService(DocumentType type) {
-        return Imcms.getServices().getDocumentServiceByType(type);
+        switch (type) {
+            case TEXT:
+                return textDocumentService;
+
+            case FILE:
+                return fileDocumentService;
+
+            case URL:
+                return urlDocumentService;
+
+            default:
+                throw new UnsupportedDocumentTypeException(type);
+        }
     }
 }
