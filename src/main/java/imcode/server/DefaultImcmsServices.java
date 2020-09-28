@@ -22,14 +22,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -55,12 +48,7 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
@@ -125,6 +113,38 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final DocumentService<FileDocumentDTO> fileDocumentService;
     @Getter
     private final DocumentService<UrlDocumentDTO> urlDocumentService;
+
+    @Getter
+    @Autowired
+    private DelegatingByTypeDocumentService documentService;
+
+    @Getter
+    @Autowired
+    private CommonContentService commonContentService;
+
+    @Getter
+    @Autowired
+    private DocumentUrlService documentUrlService;
+
+    @Getter
+    @Autowired
+    private ImageService imageService;
+
+    @Getter
+    @Autowired
+    private LoopService loopService;
+
+    @Getter
+    @Autowired
+    private TextDocumentTemplateService textDocumentTemplateService;
+
+    @Getter
+    @Autowired
+    private UserService userService;
+
+    @Getter
+    @Autowired
+    private VersionService versionService;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,

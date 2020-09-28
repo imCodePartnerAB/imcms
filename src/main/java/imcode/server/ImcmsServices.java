@@ -5,12 +5,7 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
@@ -110,4 +105,20 @@ public interface ImcmsServices {
     AuthenticationProvidersService getAuthenticationProvidersService();
 
     DocumentService<? extends Document> getDocumentServiceByType(Meta.DocumentType documentType);
+
+    DelegatingByTypeDocumentService getDocumentService();
+
+    CommonContentService getCommonContentService();
+
+    DocumentUrlService getDocumentUrlService();
+
+    ImageService getImageService();
+
+    LoopService getLoopService();
+
+    TextDocumentTemplateService getTextDocumentTemplateService();
+
+    UserService getUserService();
+
+    VersionService getVersionService();
 }

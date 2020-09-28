@@ -6,12 +6,8 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.api.DefaultDelegatingByTypeDocumentService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
@@ -209,6 +205,50 @@ public class MockImcmsServices implements ImcmsServices {
 
     @Override
     public DocumentService<? extends Document> getDocumentServiceByType(Meta.DocumentType documentType) {
+        return null;
+    }
+
+    @Override
+    public DelegatingByTypeDocumentService getDocumentService() {
+        return null;
+    }
+
+    @Override
+    public CommonContentService getCommonContentService() {
+        return null;
+    }
+
+    @Override
+    public DocumentUrlService getDocumentUrlService() {
+        return null;
+    }
+
+    @Override
+    public ImageService getImageService() {
+        return null;
+    }
+
+    @Override
+    public LoopService getLoopService() {
+        return null;
+    }
+
+    @Override
+    public TextDocumentTemplateService getTextDocumentTemplateService() {
+        return null;
+    }
+
+    @Override
+    public UserService getUserService() {
+        return null;
+    }
+
+    @Override
+    public VersionService getVersionService() {
+        return null;
+    }
+
+    public DefaultDelegatingByTypeDocumentService getDelegatingByTypeDocService() {
         return null;
     }
 
