@@ -1,0 +1,8 @@
+Core
+====
+
+
+.. toctree::
+    :titlesonly:
+
+   getManagerBean
