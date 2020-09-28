@@ -1,16 +1,9 @@
-languageService
+LanguageService
 ===============
 
 In this article:
-    - `Introduction`_
     - `Use API`_
     - `Description using DTOs objects`_
-
-
-
-Introduction
-------------
-
 
 Use API
 -------
@@ -22,13 +15,13 @@ How to init LanguageService and uses API look at the code below.
 
    LanguageService languageService = Imcms.getServices().getLanguageService();
 
-   Language language = languageService.findByCode(String code);
+   Language language = languageService.findByCode(String code); //find language by code language from db
 
-   List<Language> langs = languageService.getAll();
+   List<Language> langs = languageService.getAll(); //get all languages
 
-   List<Language> langs = languageService.getAvailableLanguages();
+   List<Language> langs = languageService.getAvailableLanguages(); // get all available which set into server.properties
 
-   Language langDefault = languageService.getDefaultLanguage();
+   Language langDefault = languageService.getDefaultLanguage(); // get default language imcms
 
 
 Block parameters:
