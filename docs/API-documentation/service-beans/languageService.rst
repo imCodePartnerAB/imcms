@@ -33,13 +33,6 @@ Block parameters:
 | code                | String       | Language code                                    |
 +---------------------+--------------+--------------------------------------------------+
 
-Description using DTOs objects
-------------------------------
-
-On the client side has to work only with DTOs objects. Imcms has support easy mapping simple current type object to DTO.
-How to map objects to DTOs loo at the code example below.
-WARNIGN: (Sometimes jsp files don't support API stream lambda expression, will be sure that use Java 8+)
-
 
 
 
