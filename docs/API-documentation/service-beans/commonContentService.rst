@@ -9,6 +9,10 @@ In this article:
 Introduction
 ------------
 
+Each documents page have common content with enable/disable languages, which store itself data about document.
+We can easy get all info about it , just use ``CommonContentService``.
+Look at the code below how use API.
+
 Use API
 -------
   .. code-block:: jsp

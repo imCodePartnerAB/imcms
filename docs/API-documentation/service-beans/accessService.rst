@@ -16,7 +16,8 @@ Init AccessService - ``Imcms.getServices().getAccessService()``;
 Use API
 -------
 
-  .. code-block:: jsp
+.. code-block:: jsp
+
   AccessService accessService = Imcms.getServices().getAccessService();
 
   boolean hasUserEditAccess = accessService.hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType);

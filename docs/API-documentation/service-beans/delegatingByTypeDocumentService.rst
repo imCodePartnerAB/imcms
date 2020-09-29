@@ -17,26 +17,28 @@ Imcms provides list API which wrote below.
 
 Use API
 -------
+
 For what in order to get instance ``DelegatingByTypeDocumentService`` need to use Imcms.getServices().getDocumentService();
 
-  .. code-block:: jsp
-    long - Imcms.getServices().getDocumentService().countDocuments(); //get counts documents from db;
+.. code-block:: jsp
 
-    Document - Imcms.getServices().getDocumentService().get(int docId);
+     Imcms.getServices().getDocumentService().countDocuments(); //get counts documents from db;
 
-    Document - Imcms.getServices().getDocumentService().createNewDocument(DocumentType type, Integer parentDocId);
+     Imcms.getServices().getDocumentService().get(int docId);
 
-    Document - Imcms.getServices().getDocumentService().save(Document saveMe);
+     Imcms.getServices().getDocumentService().createNewDocument(DocumentType type, Integer parentDocId);
 
-    boolean - Imcms.getServices().getDocumentService().publishDocument(int docId, int userId);
+     Imcms.getServices().getDocumentService().save(Document saveMe);
 
-    SolrInputDocument - Imcms.getServices().getDocumentService().index(int docId);
+     Imcms.getServices().getDocumentService().publishDocument(int docId, int userId);
 
-    Document - Imcms.getServices().getDocumentService().copy(int docId);
+     Imcms.getServices().getDocumentService().index(int docId);
 
-    void - Imcms.getServices().getDocumentService().deleteByDocId(Integer docIdToDelete);
+     Imcms.getServices().getDocumentService().copy(int docId);
 
-    String - Imcms.getServices().getDocumentService().getUniqueAlias(String alias);
+     Imcms.getServices().getDocumentService().deleteByDocId(Integer docIdToDelete);
+
+     Imcms.getServices().getDocumentService().getUniqueAlias(String alias);
 
 Description parameters
 ----------------------
@@ -56,7 +58,8 @@ Therefore, we can easily return any type of data that need - just inject call me
 
 Example
 """""""
- .. code-block:: jsp
+.. code-block:: jsp
+
   TextDocumentDTO documentDTO = new TextDocumentDTO(Imcms.getServices().getDocumentService().createNewDocument(Meta.DocumentType.TEXT, 1001));
 
 
