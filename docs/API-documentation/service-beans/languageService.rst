@@ -3,7 +3,6 @@ LanguageService
 
 In this article:
     - `Use API`_
-    - `Description using DTOs objects`_
 
 Use API
 -------
