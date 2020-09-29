@@ -5,7 +5,7 @@ Service-beans
     :titlesonly:
 
    languageService
-   mailService
+   MailService
    templateService
    menuService
    accessService
