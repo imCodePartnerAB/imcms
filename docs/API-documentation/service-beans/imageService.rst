@@ -3,12 +3,10 @@ ImageService
 
 
 In this article:
-    - `Introduction`_
     - `Use API`_
+    - `Description ImageDTO`_
+    - `Description fields imageDTO`_
 
-
-Introduction
-------------
 
 Use API
 -------
@@ -35,6 +33,32 @@ Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.ge
 
     Imcms.getServices().getImageService().deleteImage(ImageDTO imageDTO);
 
+
+Description ImageDTO
+--------------------
+
+Imcms support a few variables to create imageDTO -
+
+ImageDTO image = new ImageDTO(Integer index, Integer docId, LoopEntryRef loopEntryRef, String langCode);
+
+ImageDTO image = new ImageDTO(Integer index, Integer docId);
+
+Description fields imageDTO
+---------------------------
+
+``setIndex(Integer)`` - ``no`` index image
+``setDocId(Integer)`` - identified document where location image
+``setInText(boolean)`` - location image into text-aria.
+``setAllLanguage(boolean)`` - support all language image;
+``setAlternateText(String)`` - alternative text for image;
+``setSizeFormatted(String)`` - current size image (GB, Mb and etc)
+``setLoopEntryRef(LoopEntryRefDTO)`` - location into loop-area. (Check about loopEntryRef in `here <https://imcms.readthedocs.io/en/latest/API-documentation/service-beans/loopService/>`_.)
+``setFormat(Format)`` - set current format image;
+``setCropRegion(ImageCropRegionDTO)`` - x1,x2,y1,y2 crop region for image;
+``setSource(ImageSource)``
+``setSpaceAround(SpaceAroundDTO)``
+``setResize(Resize)``
+``setRotateDirection(RotateDirection)``
 
 
 

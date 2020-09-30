@@ -4,6 +4,7 @@ AccessService
 In this article:
     - `Introduction`_
     - `Use API`_
+    - `Description AccessType`_
 
 
 Introduction
@@ -27,3 +28,14 @@ Use API
   //Get all permission for user on the current document ``documentId``
 
 
+
+Description AccessType
+----------------------
+
+``AccessType`` has values like:
+  * IMAGE - access only for images
+  * TEXT - access only for texts
+  * MENU - access only for menu
+  * LOOP - access only for loop
+  * DOC_INFO - access only for doc_info
+  * ALL - access only for all content

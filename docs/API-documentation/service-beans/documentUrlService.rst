@@ -3,6 +3,7 @@ DocumentUrlService
 
 In this article:
     - `Use API`_
+    - `Description about DocumentUrl`_
 
 
 
@@ -21,6 +22,25 @@ Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.ge
 
   Imcms.getServices().getDocumentUrlService().removeId(DocumentUrlJPA documentURL, Version version);
 
+
+Description about DocumentUrl
+-----------------------------
+
+How to create DocumentUrl -
+
+.. code-block:: jsp
+
+    DocumentUrlDTO.createDefault(); //will create default document url with empty fields.
+
+    DocumentUrlDTO documentUrlDTO = new DocumentUrlDTO();
+
+        documentUrlDTO.setUrlFrameName("");
+        documentUrlDTO.setUrlTarget("");
+        documentUrlDTO.setUrl("");
+        documentUrlDTO.setUrlText("");
+        documentUrlDTO.setUrlLanguagePrefix("");
+
+If need to create ``DocumentUrlJPA`` , so need to inject data to constructor current type - new DocumentUrlJPA(DocumentUrlDTO);
 
 
 
