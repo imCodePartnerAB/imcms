@@ -18,26 +18,26 @@ Init or get instance VersionService over global Imcms.getServices ``Imcms.getSer
 
 .. code-block:: jsp
 
-Version getDocumentWorkingVersion(int docId);
+    Version getDocumentWorkingVersion(int docId);
 
-Version getLatestVersion(int docId);
+    Version getLatestVersion(int docId);
 
-Version getVersion(int docId, Function<Integer, Version> versionReceiver);
+    Version getVersion(int docId, Function<Integer, Version> versionReceiver);
 
-Version create(int docId);
+    Version create(int docId);
 
-Version create(int docId, int userId);
+    Version create(int docId, int userId);
 
-Version findByDocIdAndNo(int docId, int no);
+    Version findByDocIdAndNo(int docId, int no);
 
-List<Version> findByDocId(int docId);
+    List<Version> findByDocId(int docId);
 
-Version findDefault(int docId);
+    Version findDefault(int docId);
 
-Version findWorking(int docId);
+    Version findWorking(int docId);
 
-deleteByDocId(Integer docId);
+    deleteByDocId(Integer docId);
 
-boolean hasNewerVersion(int docId);
+    boolean hasNewerVersion(int docId);
 
-void updateWorkingVersion(int docId);
+    void updateWorkingVersion(int docId);

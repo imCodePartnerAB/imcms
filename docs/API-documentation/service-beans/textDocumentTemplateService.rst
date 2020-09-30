@@ -18,11 +18,11 @@ Init or get instance TextDocumentTemplateService over global Imcms.getServices `
 
 .. code-block:: jsp
 
-TextDocumentTemplate save(TextDocumentTemplate saveMe);
+    TextDocumentTemplate save(TextDocumentTemplate saveMe);
 
-Optional<TextDocumentTemplate> get(int docId);
+    Optional<TextDocumentTemplate> get(int docId);
 
-List<TextDocumentTemplateDTO> getByTemplateName(String templateName);
+    List<TextDocumentTemplateDTO> getByTemplateName(String templateName);
 
 
 

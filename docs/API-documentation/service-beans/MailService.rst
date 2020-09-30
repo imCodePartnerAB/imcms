@@ -17,7 +17,7 @@ Init or get instance LoopService over global Imcms.getServices ``Imcms.getServic
 
 .. code-block:: jsp
 
-Imcms.getServices().getMailService().sendMail(Mail mail);
+    Imcms.getServices().getMailService().sendMail(Mail mail);
 
 
 

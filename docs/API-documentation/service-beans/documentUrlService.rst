@@ -2,13 +2,9 @@ DocumentUrlService
 ------------------
 
 In this article:
-    - `Introduction`_
     - `Use API`_
 
 
-
-Introduction
-------------
 
 Use API
 -------

@@ -17,23 +17,23 @@ Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.ge
 
 .. code-block:: jsp
 
-Imcms.getServices().getImageService().getImage(ImageDTO dataHolder);
+    Imcms.getServices().getImageService().getImage(ImageDTO dataHolder);
 
-Imcms.getServices().getImageService().getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
+    Imcms.getServices().getImageService().getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
-Imcms.getServices().getImageService().getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
+    Imcms.getServices().getImageService().getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
-Imcms.getServices().getImageService().getUsedImagesInWorkingAndLatestVersions(String imageURL);
+    Imcms.getServices().getImageService().getUsedImagesInWorkingAndLatestVersions(String imageURL);
 
-Imcms.getServices().getImageService().getImagesAllVersionAndLanguages(int docId, Language language);
+    Imcms.getServices().getImageService().getImagesAllVersionAndLanguages(int docId, Language language);
 
-Imcms.getServices().getImageService().saveImage(ImageDTO imageDTO);
+    Imcms.getServices().getImageService().saveImage(ImageDTO imageDTO);
 
-Imcms.getServices().getImageService().deleteByDocId(Integer docIdToDelete);
+    Imcms.getServices().getImageService().deleteByDocId(Integer docIdToDelete);
 
-Imcms.getServices().getImageService().getPublicImageLinks(int docId, Language language);
+    Imcms.getServices().getImageService().getPublicImageLinks(int docId, Language language);
 
-Imcms.getServices().getImageService().deleteImage(ImageDTO imageDTO);
+    Imcms.getServices().getImageService().deleteImage(ImageDTO imageDTO);
 
 
 
