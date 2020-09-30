@@ -32,6 +32,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
+
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class TextDocument extends Document {
 
@@ -88,9 +90,16 @@ public class TextDocument extends Document {
     }
 
     public TextField getTextField(int textFieldIndexInDocument) {
-        Text text = Imcms.getServices().getManagedBean(TextService.class)
-                .getText(getInternalTextDocument().getId(),
-                        textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        TextService textService = Imcms.getServices().getManagedBean(TextService.class);
+        Text text;
+        if (getInternalTextDocument().getVersionNo() == WORKING_VERSION_INDEX) {
+            text = textService.getText(getInternalTextDocument().getId(),
+                    textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        } else {
+            text = textService.getPublicText(getInternalTextDocument().getId(),
+                    textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        }
+
         TextDomainObject imcmsText = new TextDomainObject("");
         if (null == text.getText()) {
             getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
