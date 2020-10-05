@@ -1087,12 +1087,14 @@ define("imcms-menu-editor-builder",
             return treeBlock.append($childElements);
         }
 
-        function isCorrectSortNumber(sortNumber, level) {
-            return sortNumber && sortNumber.match(/^\d+(\.\d+)*$/) && (sortNumber.match(/\./g) || []).length === (level - 1);
-        }
-
+        let $menuTitlesBlock;
         let $menuItemsBlock;
         let $sortOrderColumnHead;
+
+        const $removeButton = components.buttons.positiveButton({
+            text: texts.multiRemove,
+            click: removeEnabledMenuItems
+        });
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
@@ -1172,7 +1174,8 @@ define("imcms-menu-editor-builder",
                 return new BEM({
                     block: "imcms-document-list-titles",
                     elements: {
-                        "title": containerHeadTitle
+                        "title": containerHeadTitle,
+                        "multi-remove": $removeButton,
                     }
                 }).buildBlockStructure("<div>", {
                     class: "imcms-menu-list-titles"
@@ -1182,7 +1185,7 @@ define("imcms-menu-editor-builder",
             return new BEM({
                 block: "imcms-document-list",
                 elements: {
-                    "titles": buildMenuTitlesRow(),
+                    "titles": $menuTitlesBlock = buildMenuTitlesRow(),
                     "items": $menuItemsBlock = buildMenuElements(menuElementsTree)
                 }
             }).buildBlockStructure("<div>", {
@@ -1268,15 +1271,18 @@ define("imcms-menu-editor-builder",
             function switchButtonAction() {
                 const $switchButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
-                const $removeButton = $('.imcms-switch-block__multi-remove');
+                const rightPaddingNoneClassName = 'imcms-flex--pr-0';
+
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $removeButton.css('display', 'none');
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
+                    $removeButton.css('display', 'none');
+                    $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
                     $removeButton.css('display', 'block');
+                    $menuTitlesBlock.addClass(rightPaddingNoneClassName);
                 }
 
                 changeControlsByMultiRemove();
@@ -1289,10 +1295,6 @@ define("imcms-menu-editor-builder",
                     'button': components.buttons.switchOffButton({
                         click: switchButtonAction
                     }),
-                    'multi-remove': components.buttons.positiveButton({
-                        text: texts.multiRemove,
-                        click: removeEnabledMenuItems
-                    })
                 }
             }).buildBlockStructure('<div>');
         }

@@ -18,6 +18,19 @@
     padding: 0 !important;
 }
 
+.imcms-flex--px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.imcms-flex--pr-0 {
+    padding-right: 0 !important;
+}
+
+.imcms-flex--pl-0 {
+    padding-left: 0 !important;
+}
+
 .imcms-flex--m-0 {
     margin: 0 !important;
 }
