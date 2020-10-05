@@ -61,6 +61,28 @@ How to init languageService see to languageService-documentation
 
    commonContentService.getOrCreate(int docId, int versionNo, Language language);
 
+Checking what languages the document is active in, example:
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Using lambda and stream API java8+
+
+.. code-block:: jsp
+
+   List<Language> listEnableLang = Imcms.getServices().getCommonContentService().getOrCreateCommonContents(int docId, int versionNo)
+   					.stream()
+   					.filter(CommonContent::isEnabled)
+   					.map(CommonContent::getLanguage)
+   					.collect(Collectors.toList());
+
+
+Using simple code without stream API:
+
+   List<CommonContent> contents = Imcms.getServices().getCommonContentService().getOrCreateCommonContents(int docId, int versionNo);
+   			List<Language> languages = new ArrayList<>();
+   			for (CommonContent commonContent: contents) {
+   				if (commonContent.isEnabled()) {
+   					languages.add(commonContent.getLanguage());
+   				}
+   			}
 
 
 
