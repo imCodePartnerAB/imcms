@@ -52,7 +52,7 @@ Description fields imageDTO
 ``setAllLanguage(boolean)`` - support all language image;
 ``setAlternateText(String)`` - alternative text for image;
 ``setSizeFormatted(String)`` - current size image (GB, Mb and etc)
-``setLoopEntryRef(LoopEntryRefDTO)`` - location into loop-area. (Check about loopEntryRef in `here <https://imcms.readthedocs.io/en/latest/API-documentation/service-beans/loopService/>`_.)
+``setLoopEntryRef(LoopEntryRefDTO)`` - location into loop-area. (Check about loopEntryRef in :doc:`LoopService</API-documentation/service-beans/loopService>`.)
 ``setFormat(Format)`` - set current format image;
 ``setCropRegion(ImageCropRegionDTO)`` - x1,x2,y1,y2 crop region for image;
 ``setSource(ImageSource)``

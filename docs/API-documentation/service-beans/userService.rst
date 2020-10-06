@@ -1,19 +1,6 @@
 UserService
 ===========
 
-
-In this article:
-    - `Introduction`_
-    - `Use API`_
-
-
-
-Introduction
-------------
-
-Use API
--------
-
 Init or get instance UserService over global Imcms.getServices ``Imcms.getServices().getUserService();``
 
 .. code-block:: jsp

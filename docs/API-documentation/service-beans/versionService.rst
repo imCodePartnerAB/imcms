@@ -1,19 +1,6 @@
 VersionService
 ==============
 
-
-In this article:
-    - `Introduction`_
-    - `Use API`_
-
-
-
-Introduction
-------------
-
-Use API
--------
-
 Init or get instance VersionService over global Imcms.getServices ``Imcms.getServices().getVersionService();``
 
 .. code-block:: jsp
@@ -41,3 +28,6 @@ Init or get instance VersionService over global Imcms.getServices ``Imcms.getSer
     boolean hasNewerVersion(int docId);
 
     void updateWorkingVersion(int docId);
+
+
+About function interface you can read `here <https://www.baeldung.com/java-8-functional-interfaces/>`_.

@@ -27,7 +27,7 @@ Use API
 
     <T extends CommonContent> void save(int docId, Collection<T> saveUs);
 
-    Set<CommonContent> getByVersion(Version version); //``see documentation versionService how to get Version``
+    Set<CommonContent> getByVersion(Version version);
 
     deleteByDocId(Integer docId);
 

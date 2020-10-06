@@ -1,15 +1,6 @@
 DocumentUrlService
 ------------------
 
-In this article:
-    - `Use API`_
-    - `Description about DocumentUrl`_
-
-
-
-Use API
--------
-
 Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.getServices().getDocumentUrlService();``
 
 .. code-block:: jsp

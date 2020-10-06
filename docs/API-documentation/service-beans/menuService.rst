@@ -1,19 +1,6 @@
 MenuService
 ===========
 
-
-In this article:
-    - `Introduction`_
-    - `Use API`_
-
-
-
-Introduction
-------------
-
-Use API
--------
-
 Init or get instance MenuService over global Imcms.getServices ``Imcms.getServices().getMenuService();``
 
 .. code-block:: jsp

@@ -2,12 +2,8 @@ LoopService
 ===========
 
 In this article:
-    - `Introduction`_
     - `Use API`_
-
-
-Introduction
-------------
+    - `Description about LoopEntry objects`_
 
 
 Use API
@@ -32,4 +28,11 @@ Init or get instance LoopService over global Imcms.getServices ``Imcms.getServic
     Imcms.getServices().getLoopService().removeId(LoopJPA dto, Version version);
 
     Imcms.getServices().getLoopService().createVersionedContent(Version workingVersion, Version newVersion);
+
+Description about LoopEntry objects
+-----------------------------------
+
+Loop -
+
+LoopEntryRef -
 

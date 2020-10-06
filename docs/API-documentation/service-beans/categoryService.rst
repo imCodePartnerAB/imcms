@@ -13,7 +13,7 @@ Introduction
 Imcms has single interface support and different manipulation with categories for documents.
 We can easy, create/update/delete/get all categories over this bean CategoryService.
 Of course you can use old version category service with oldest API objects - you have to use CategoryMapper,
-more information about it `here <https://imcms.readthedocs.io/en/latest/API-documentation/service-beans/categoryMapper/>`
+more information about it :doc:`CategoryMapper</API-documentation/service-beans/categoryMapper>`
 That be init new bean CategoryService and work with methods need to look at the code below:
 
 Use API
