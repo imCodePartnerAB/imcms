@@ -18,6 +18,8 @@ Service-beans
    textDocumentTemplateService
    userService
    versionService
+   categoryMapper
+   categoryService
 
 
 
