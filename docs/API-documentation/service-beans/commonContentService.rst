@@ -34,14 +34,14 @@ Use API
 Block parameters:
 """""""""""""""""
 +----------------------+--------------+--------------------------------------------------+
-| Attribute            | Type         | Description                                      |
+| Parameters           | Type         | Description                                      |
 +======================+==============+==================================================+
 | versionNo            | Integer      | number version document                          |
 +----------------------+--------------+--------------------------------------------------+
 | docId                | Integer      | Identify the linked document                     |
 |                      |              |                                                  |
 +----------------------+--------------+--------------------------------------------------+
-| Collection<T> saveUs | Collection<T>| List common contents which need to save          |
+| saveUs               | Collection<T>| List common contents which need to save          |
 +----------------------+--------------+--------------------------------------------------+
 
 
