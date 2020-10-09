@@ -1,5 +1,5 @@
 DocumentUrlService
-------------------
+==================
 
 Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.getServices().getDocumentUrlService();``
 
