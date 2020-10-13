@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.components.Validator;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
@@ -173,9 +174,10 @@ public class MainConfig {
                                                                  DocumentLoader documentLoader,
                                                                  DocumentLanguages languages,
                                                                  PropertyService propertyService,
+                                                                 DocumentsCache documentsCache,
                                                                  Config config) {
 
-        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, propertyService, config);
+        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, propertyService, documentsCache, config);
     }
 
     @Bean

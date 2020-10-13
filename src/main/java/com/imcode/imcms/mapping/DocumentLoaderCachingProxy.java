@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.PropertyService;
@@ -35,6 +36,7 @@ public class DocumentLoaderCachingProxy {
     private final DocumentLoader loader;
     private final DocumentLanguages documentLanguages;
     private final PropertyService propertyService;
+    private final DocumentsCache documentsCache;
     private final int size;
     private final CacheWrapper<Integer, DocumentMeta> metas;
     private final CacheWrapper<Integer, DocumentVersionInfo> versionInfos;
@@ -54,11 +56,12 @@ public class DocumentLoaderCachingProxy {
                                       DocumentLoader loader,
                                       DocumentLanguages documentLanguages,
                                       PropertyService propertyService,
-                                      Config config) {
+                                      DocumentsCache documentsCache, Config config) {
         this.versionMapper = versionMapper;
         this.loader = loader;
         this.documentLanguages = documentLanguages;
         this.propertyService = propertyService;
+        this.documentsCache = documentsCache;
         this.size = config.getDocumentCacheMaxSize();
 
         metas = CacheWrapper.of(cacheConfiguration("metas"));
@@ -207,10 +210,13 @@ public class DocumentLoaderCachingProxy {
             invalidateMenuItemsCacheBy(docId);
         });
 
-        Optional.ofNullable(idsToAliases.get(docId)).ifPresent(alias -> {
+        Optional<String> aliasCurrentDoc = Optional.ofNullable(idsToAliases.get(docId));
+        aliasCurrentDoc.ifPresent(alias -> {
             idsToAliases.remove(docId);
             aliasesToIds.remove(alias);
         });
+
+        documentsCache.invalidateDoc(docId, aliasCurrentDoc.orElse(null));
     }
 
     public List<MenuItemDTO> getMenuItems(final MenuCacheKey menuCacheKey,
