@@ -2,7 +2,12 @@ ImageFolderService
 ==================
 
 
-ImageFolderDTO getImageFolder();
+
+Use API
+-------
+.. code-block:: java
+
+    ImageFolderDTO getImageFolder();
 
     boolean createImageFolder(ImageFolderDTO folderToCreate);
 
@@ -15,3 +20,21 @@ ImageFolderDTO getImageFolder();
     ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);
 
     List<ImageFolderItemUsageDTO> checkFolder(ImageFolderDTO folderToCheck);
+
+Description about fields ImageFolderDTO
+"""""""""""""""""""""""""""""""""""""""
+
+     String name;
+     String path;
+     List<ImageFileDTO> files;
+     List<ImageFolderDTO> folders;
+
+ see also :doc:`ImageFileService</API-documentation/service-beans/imageFileService>`
+
+Description about fields ImageFolderItemUsageDTO
+""""""""""""""""""""""""""""""""""""""""""""""""
+
+     String filePath;
+     String imageName;
+     List<ImageFileUsageDTO> usages;
+

@@ -11,7 +11,7 @@ In this article:
 Use API
 -------
 
-Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.getServices().getImageService();``
+Init or get instance ImageService over global Imcms.getServices ``Imcms.getServices().getImageService();``
 
 .. code-block:: jsp
 

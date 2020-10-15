@@ -23,7 +23,7 @@ Init ManagerBean
 ----------------
 .. code-block:: jsp
 
-    <T> T currentServiceBean = Imcms.getService().getManagedBean(Class<T> requiredType);
+    <T> T currentServiceBean = Imcms.getServices().getManagedBean(Class<T> requiredType);
 
 
 Block parameters:
