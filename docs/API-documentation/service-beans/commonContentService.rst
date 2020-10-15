@@ -76,6 +76,8 @@ Using lambda and stream API java8+
 
 Using simple code without stream API:
 
+.. code-block:: jsp
+
    List<CommonContent> contents = Imcms.getServices().getCommonContentService().getOrCreateCommonContents(int docId, int versionNo);
    			List<Language> languages = new ArrayList<>();
    			for (CommonContent commonContent: contents) {

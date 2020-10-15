@@ -5,4 +5,4 @@ Core
 .. toctree::
     :titlesonly:
 
-   getManagerBean
+   managerBean

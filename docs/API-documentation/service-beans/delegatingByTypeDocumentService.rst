@@ -80,7 +80,8 @@ Example
 """""""
 .. code-block:: jsp
 
-  TextDocumentDTO documentDTO = new TextDocumentDTO(Imcms.getServices().getDocumentService().createNewDocument(Meta.DocumentType.TEXT, 1001));
+  DocumentService docService = Imcms.getServices().getDocumentService();
+  TextDocumentDTO documentDTO = new TextDocumentDTO(docService.createNewDocument(Meta.DocumentType.TEXT, 1001));
 
 The most important setters/getters for Document
 -----------------------------------------------
