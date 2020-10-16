@@ -2,7 +2,7 @@ SearchDocumentService
 =====================
 
 
-In order to init SearchDocumentService bean need to use - Imcms.getServices().getManagedBean(SearchDocumentService.class)
+In order to init SearchDocumentService bean need to use - ``Imcms.getServices().getManagedBean(SearchDocumentService.class)``
 
 Use API
 -------

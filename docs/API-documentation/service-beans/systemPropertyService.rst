@@ -1,7 +1,7 @@
 SystemPropertyService
 =====================
 
-In order to init SystemPropertyService bean need to use - Imcms.getServices().getManagedBean(SystemPropertyService.class)
+In order to init SystemPropertyService bean need to use - ``Imcms.getServices().getManagedBean(SystemPropertyService.class)``
 
 Use API
 -------

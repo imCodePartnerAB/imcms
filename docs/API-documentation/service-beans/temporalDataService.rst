@@ -1,7 +1,7 @@
 TemporalDataService
 ===================
 
-In order to init TemporalDataService bean need to use - Imcms.getServices().getManagedBean(TemporalDataService.class)
+In order to init TemporalDataService bean need to use - ``Imcms.getServices().getManagedBean(TemporalDataService.class)``
 
 .. note::
    See also :doc:`DocumentCache</API-documentation/core/documentCache>`

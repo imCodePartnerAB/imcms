@@ -1,7 +1,7 @@
 PhoneService
 ============
 
-In order to init PhoneService bean need to use - Imcms.getServices().getManagedBean(PhoneService.class)
+In order to init PhoneService bean need to use - ``Imcms.getServices().getManagedBean(PhoneService.class)``
 
 
 Use API

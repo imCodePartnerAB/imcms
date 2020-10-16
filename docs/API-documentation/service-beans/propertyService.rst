@@ -2,7 +2,7 @@ PropertyService
 ===============
 
 
-In order to init PropertyService bean need to use - Imcms.getServices().getManagedBean(PropertyService.class)
+In order to init PropertyService bean need to use - ``Imcms.getServices().getManagedBean(PropertyService.class)``
 
 .. code-block:: jsp
 

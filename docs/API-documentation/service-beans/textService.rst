@@ -1,6 +1,12 @@
 TextService
 ===========
 
+In order to init TextService bean need to use - ``Imcms.getServices().getManagedBean(TextService.class)``
+
+Use API
+-------
+
+.. code-block:: jsp
 
     Text getText(Text textRequestData);
 

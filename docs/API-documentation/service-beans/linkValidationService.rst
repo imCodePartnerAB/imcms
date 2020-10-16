@@ -5,7 +5,8 @@ LinkValidationService
 Introduction
 ------------
 Imcms allows easy a certain validate all links on text documents. You can also find list links which broken on text
-documents. 
+documents.
+Init LinkValidationService service bean -  ``Imcms.getServices().getManagedBean(LinkValidationService.class);``
 
 .. code-block:: java
 

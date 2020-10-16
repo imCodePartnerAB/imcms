@@ -2,7 +2,7 @@ RoleService
 ===========
 
 
-In order to init RoleService bean need to use - Imcms.getServices().getManagedBean(RoleService.class)
+In order to init RoleService bean need to use - ``Imcms.getServices().getManagedBean(RoleService.class)``
 
 Use API
 -------
