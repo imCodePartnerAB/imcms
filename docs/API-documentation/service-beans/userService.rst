@@ -5,28 +5,28 @@ Init or get instance UserService over global Imcms.getServices ``Imcms.getServic
 
 .. code-block:: jsp
 
-    Imcms.getServices().getUserService().getUser(int id);
+    User getUser(int id) throws UserNotExistsException;
 
-    Imcms.getServices().getUserService().getUser(String login);
+    UserDTO getUser(String login) throws UserNotExistsException;
 
-    Imcms.getServices().getUserService().updateUser(UserDTO updateData);
+    void updateUser(UserDTO updateMe);
 
-    Imcms.getServices().getUserService().getAdminUsers();
+    List<UserDTO> getAdminUsers();
 
-    Imcms.getServices().getUserService().getAllActiveUsers();
+    List<UserDTO> getAllActiveUsers();
 
-    Imcms.getServices().getUserService().getUsersByEmail(String email);
+    List<User> findAll(boolean includeExternal, boolean includeInactive);
 
-    Imcms.getServices().getUserService().getUserData(int userId);
+    List<User> findByNamePrefix(String prefix, boolean includeInactive);
 
-    Imcms.getServices().getUserService().saveUser(UserFormData userData);
+    List<UserDTO> getUsersByEmail(String email);
 
-    Imcms.getServices().getUserService().searchUsers(String searchTerm, Set<Integer> withRoles, boolean includeInactive)
+    void saveUser(UserFormData userData);
 
-    Imcms.getServices().getUserService().findAll(boolean includeExternal, boolean includeInactive)
+    List<UserDTO> searchUsers(String searchTerm, Set<Integer> withRoles, boolean includeInactive);
 
-    Imcms.getServices().getUserService().findByNamePrefix(String prefix, boolean includeInactive)
+    ExternalUser saveExternalUser(ExternalUser user);
 
-    Imcms.getServices().getUserService().saveExternalUser(ExternalUser user)
+
 
 

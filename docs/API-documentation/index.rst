@@ -9,7 +9,6 @@ Init ImcmsService - Imcms.getServices();
 
    service-beans/index
    core/index
-   models/index
 
 
 

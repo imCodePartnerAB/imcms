@@ -1,7 +1,14 @@
 SystemPropertyService
 =====================
 
-   List<SystemProperty> findAll();
+In order to init SystemPropertyService bean need to use - Imcms.getServices().getManagedBean(SystemPropertyService.class)
+
+Use API
+-------
+
+.. code-block:: jsp
+
+    List<SystemProperty> findAll();
 
     SystemProperty findByName(String name);
 
@@ -10,3 +17,14 @@ SystemPropertyService
     void deleteById(Integer id);
 
     SystemProperty findById(Integer id);
+
+
+    SystemPropertyService systemPropertyService = Imcms.getServices().getManagedBean(SystemPropertyService.class);
+
+    SystemProperty systemPropertyName = systemPropertyService.findByName("systemPropertyName");
+
+    systemPropertyName.setValue("false");
+
+    systemPropertyService.update(systemPropertyName);
+
+    List<SystemProperty> allProps = systemPropertyService.findAll();

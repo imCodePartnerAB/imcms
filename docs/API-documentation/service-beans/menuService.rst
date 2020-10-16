@@ -5,33 +5,66 @@ Init or get instance MenuService over global Imcms.getServices ``Imcms.getServic
 
 .. code-block:: jsp
 
-    Imcms.getServices().getMenuService().getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort)
+    List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort)
 
-    Imcms.getServices().getMenuService().getSortedMenuItems(MenuDTO menuDTO, String langCode)
+    List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode)
 
-    Imcms.getServices().getMenuService().getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested)
+    List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested)
 
-    Imcms.getServices().getMenuService().getPublicMenuItems(int docId, int menuIndex, String language, boolean nested)
+    List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested)
 
-    Imcms.getServices().getMenuService().getVisibleMenuAsHtml(int docId, int menuIndex, String language,
+    String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
                                        boolean nested, String attributes, String treeKey, String wrap)
 
-    Imcms.getServices().getMenuService().getPublicMenuAsHtml(int docId, int menuIndex, String language,
+    String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       boolean nested, String attributes, String treeKey, String wrap)
 
-    Imcms.getServices().getMenuService().getVisibleMenuAsHtml(int docId, int menuIndex)
+    String getVisibleMenuAsHtml(int docId, int menuIndex)
 
-    Imcms.getServices().getMenuService().getPublicMenuAsHtml(int docId, int menuIndex)
+    String getPublicMenuAsHtml(int docId, int menuIndex)
 
-    Imcms.getServices().getMenuService().saveFrom(MenuDTO menuDTO)
+    MenuDTO saveFrom(MenuDTO menuDTO)
 
-    Imcms.getServices().getMenuService().deleteByVersion(Version version)
+    void deleteByVersion(Version version)
 
-    Imcms.getServices().getMenuService().deleteByDocId(Integer docIdToDelete)
+    void deleteByDocId(Integer docIdToDelete)
 
-    Imcms.getServices().getMenuService().removeId(Menu jpa, Version newVersion)
+    Menu removeId(Menu jpa, Version newVersion)
 
-    Imcms.getServices().getMenuService().getAll();
+    List<Menu> getAll();
+
+Block parameters:
+"""""""""""""""""
++----------------------+--------------+--------------------------------------------------+
+| Parameters           | Type         | Description                                      |
++======================+==============+==================================================+
+| menuIndex            | int          | index ``no``                                     |
++----------------------+--------------+--------------------------------------------------+
+| docId                | int          | Identify the linked document                     |
+|                      |              |                                                  |
++----------------------+--------------+--------------------------------------------------+
+| nested               | boolean      | show nested in menu area                         |
++----------------------+--------------+--------------------------------------------------+
+| attributes           | String       |                                                  |
++----------------------+--------------+--------------------------------------------------+
+| treeKey              | String       | number key for start menu item                   |
++----------------------+--------------+--------------------------------------------------+
+| wrap                 | String       |  list wrap tags for each menu item               |
++----------------------+--------------+--------------------------------------------------+
+
+
+Fields MenuDTO
+""""""""""""""
+
+     Integer menuIndex;
+
+     Integer docId;
+
+     List<MenuItemDTO> menuItems;
+
+     boolean nested; - possible display menu items like nested
+
+     String typeSort; - sort type need to for client side
 
 
 

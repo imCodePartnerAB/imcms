@@ -6,3 +6,4 @@ Core
     :titlesonly:
 
    managerBean
+   documentCache

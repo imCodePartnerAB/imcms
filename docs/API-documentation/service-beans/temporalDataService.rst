@@ -1,7 +1,18 @@
 TemporalDataService
 ===================
 
- void invalidatePublicDocumentCache();
+In order to init TemporalDataService bean need to use - Imcms.getServices().getManagedBean(TemporalDataService.class)
+
+.. note::
+   See also :doc:`DocumentCache</API-documentation/core/documentCache>`
+
+
+Use API
+-------
+
+.. code-block:: jsp
+
+    void invalidatePublicDocumentCache();
 
     void invalidateStaticContentCache();
 

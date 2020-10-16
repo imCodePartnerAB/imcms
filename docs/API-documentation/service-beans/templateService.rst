@@ -31,5 +31,3 @@ Init or get instance TemplateService over global Imcms.getServices ``Imcms.getSe
     ``replaceTemplateFile`` provide replace all documents which uses old template on newTemplate!
     If template exists only one in db, it will throw exception, because we can not delete existing last template!
 
-.. seealso::
-    How to map simple object to JPA/DTO, and how to correct use DTOs classes

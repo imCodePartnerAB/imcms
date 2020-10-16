@@ -4,6 +4,9 @@ TextDocumentTemplateService
 
 Init or get instance TextDocumentTemplateService over global Imcms.getServices ``Imcms.getServices().getTextDocumentTemplateService();``
 
+Use API
+-------
+
 .. code-block:: jsp
 
     TextDocumentTemplate save(TextDocumentTemplate saveMe);
@@ -11,6 +14,13 @@ Init or get instance TextDocumentTemplateService over global Imcms.getServices `
     Optional<TextDocumentTemplate> get(int docId);
 
     List<TextDocumentTemplateDTO> getByTemplateName(String templateName);
+
+    TextDocumentTemplateService textDocumentTemplateService = Imcms.getServices().getTextDocumentTemplateService();
+
+    Optional<TextDocumentTemplate> textDocumentTemplateOptional = textDocumentTemplateService.get(1001);
+    TextDocumentTemplate textDocumentTemplate = textDocumentTemplateOptional.orElse(new TextDocumentTemplateDTO());
+    textDocumentTemplate.setTemplateName("newTemplate");
+    textDocumentTemplateService.save(textDocumentTemplate);
 
 
 

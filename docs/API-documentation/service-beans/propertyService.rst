@@ -2,7 +2,11 @@ PropertyService
 ===============
 
 
-   Property getByDocIdAndName(int docId, String name);
+In order to init PropertyService bean need to use - Imcms.getServices().getManagedBean(PropertyService.class)
+
+.. code-block:: jsp
+
+    Property getByDocIdAndName(int docId, String name);
 
     Integer getDocIdByAlias(String alias);
 
@@ -11,3 +15,5 @@ PropertyService
     List<Property> findByDocId(int docId);
 
     Boolean existsByAlias(String alias);
+
+

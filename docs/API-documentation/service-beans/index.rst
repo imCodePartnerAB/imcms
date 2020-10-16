@@ -4,28 +4,44 @@ Service-beans
 .. toctree::
     :titlesonly:
 
-   languageService
-   MailService
-   templateService
-   menuService
-   accessService
-   authenticationProvidersService
-   delegatingByTypeDocumentService
-   commonContentService
-   documentUrlService
-   imageService
-   loopService
-   textDocumentTemplateService
-   userService
-   versionService
-   categoryMapper
-   categoryService
-
-
-
-
-
-
+    accessService
+    categoryMapper  
+    categoryService
+    categoryTypeService
+    commonContentService
+    delegatingByTypeDocumentService
+    documentMenuService
+    documentRolesService
+    documentUrlService
+    documentValidatingService
+    fileService
+    imageFileService
+    imageFolderService
+    imageHistoryService
+    imageService
+    ipAccessRuleService
+    languageService
+    linkValidationService
+    loopService
+    MailService
+    menuService
+    phoneService
+    propertyService
+    roleService
+    searchDocumentService
+    systemPropertyService
+    templateGroupService
+    templateService
+    temporalDataService
+    textDocumentTemplateService
+    textHistoryService
+    textService
+    userAdminRolesService
+    userCreationService
+    userEditorService
+    userRolesService
+    userService
+    versionService
 
 
 
