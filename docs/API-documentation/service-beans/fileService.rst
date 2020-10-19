@@ -48,10 +48,10 @@ About parameter Path need to read documentation about nio2 `here <https://www.ba
 Fields in SourceFile
 --------------------
 
-     String fileName;
-     String physicalPath;
-     String fullPath;
-     FileType fileType; -  DIRECTORY, FILE
-     byte[] contents;
-     String size;
+#.     String fileName;
+#.     String physicalPath;
+#.     String fullPath;
+#.     FileType fileType; -  DIRECTORY, FILE
+#.     byte[] contents;
+#.     String size;
 

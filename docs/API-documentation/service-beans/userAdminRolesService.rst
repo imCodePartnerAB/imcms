@@ -20,6 +20,10 @@ Example usages
 """"""""""""""
 
 .. code-block:: jsp
+
     Role role = roleService.getById(idRole);
 
     List<User> getUsersByAdminRole(Role role);
+
+.. note::
+  Check how to use service bean :doc:`RoleService</API-documentation/service-beans/roleService>`

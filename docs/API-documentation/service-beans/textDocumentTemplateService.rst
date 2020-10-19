@@ -15,6 +15,11 @@ Use API
 
     List<TextDocumentTemplateDTO> getByTemplateName(String templateName);
 
+Example usages
+""""""""""""""
+
+.. code-block:: jsp
+
     TextDocumentTemplateService textDocumentTemplateService = Imcms.getServices().getTextDocumentTemplateService();
 
     Optional<TextDocumentTemplate> textDocumentTemplateOptional = textDocumentTemplateService.get(1001);

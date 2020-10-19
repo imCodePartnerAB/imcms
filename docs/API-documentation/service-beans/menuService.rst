@@ -56,15 +56,11 @@ Block parameters:
 Fields MenuDTO
 """"""""""""""
 
-     Integer menuIndex;
-
-     Integer docId;
-
-     List<MenuItemDTO> menuItems;
-
-     boolean nested; - possible display menu items like nested
-
-     String typeSort; - sort type need to for client side
+#. Integer menuIndex;
+#. Integer docId;
+#. List<MenuItemDTO> menuItems;
+#. boolean nested; - possible display menu items like nested
+#. String typeSort; - sort type need to for client side
 
 
 

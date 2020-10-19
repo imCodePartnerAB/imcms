@@ -7,6 +7,7 @@ Use API
 -------
 
 .. code-block:: jsp
+
     CategoryTypeService categoryTypeService = Imcms.getServices().getManagedBean(CategoryTypeService.class);
 
     Optional<CategoryType> get(int id);

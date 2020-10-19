@@ -18,6 +18,7 @@ Description how to use SearchQueryDTO
 """""""""""""""""""""""""""""""""""""
 
 .. code-block:: jsp
+
     final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
     final String headlineValue = "Headline_Testing_Value_Remove_Added";
     searchQueryDTO.setTerm(headlineValue);

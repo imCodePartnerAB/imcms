@@ -46,19 +46,19 @@ ImageDTO image = new ImageDTO(Integer index, Integer docId);
 Description fields imageDTO
 ---------------------------
 
-``setIndex(Integer)`` - ``no`` index image
-``setDocId(Integer)`` - identified document where location image
-``setInText(boolean)`` - location image into text-aria.
-``setAllLanguage(boolean)`` - support all language image;
-``setAlternateText(String)`` - alternative text for image;
-``setSizeFormatted(String)`` - current size image (GB, Mb and etc)
-``setLoopEntryRef(LoopEntryRefDTO)`` - location into loop-area. (Check about loopEntryRef in :doc:`LoopService</API-documentation/service-beans/loopService>`.)
-``setFormat(Format)`` - set current format image;
-``setCropRegion(ImageCropRegionDTO)`` - x1,x2,y1,y2 crop region for image;
-``setSource(ImageSource)``
-``setSpaceAround(SpaceAroundDTO)``
-``setResize(Resize)``
-``setRotateDirection(RotateDirection)``
+#. ``setIndex(Integer)`` - ``no`` index image
+#. ``setDocId(Integer)`` - identified document where location image
+#. ``setInText(boolean)`` - location image into text-aria.
+#. ``setAllLanguage(boolean)`` - support all language image;
+#. ``setAlternateText(String)`` - alternative text for image;
+#. ``setSizeFormatted(String)`` - current size image (GB, Mb and etc)
+#. ``setLoopEntryRef(LoopEntryRefDTO)`` - location into loop-area. (Check about loopEntryRef in :doc:`LoopService</API-documentation/service-beans/loopService>`.)
+#. ``setFormat(Format)`` - set current format image;
+#. ``setCropRegion(ImageCropRegionDTO)`` - x1,x2,y1,y2 crop region for image;
+#. ``setSource(ImageSource)``
+#. ``setSpaceAround(SpaceAroundDTO)``
+#. ``setResize(Resize)``
+#. ``setRotateDirection(RotateDirection)``
 
 
 

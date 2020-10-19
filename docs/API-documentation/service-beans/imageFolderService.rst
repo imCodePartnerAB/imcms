@@ -24,17 +24,17 @@ Use API
 Description about fields ImageFolderDTO
 """""""""""""""""""""""""""""""""""""""
 
-     String name;
-     String path;
-     List<ImageFileDTO> files;
-     List<ImageFolderDTO> folders;
+#. String name;
+#. String path;
+#. List<ImageFileDTO> files;
+#. List<ImageFolderDTO> folders;
 
  see also :doc:`ImageFileService</API-documentation/service-beans/imageFileService>`
 
 Description about fields ImageFolderItemUsageDTO
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-     String filePath;
-     String imageName;
-     List<ImageFileUsageDTO> usages;
+#. String filePath;
+#. String imageName;
+#. List<ImageFileUsageDTO> usages;
 

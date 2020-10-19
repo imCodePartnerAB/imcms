@@ -16,19 +16,15 @@ Use API
 
 Fields Phone 
 """"""""""""
-Integer phoneId;
-
-String number;
-
-User user;
-
-PhoneTypeDTO phoneType;
+#. Integer phoneId;
+#. String number;
+#. User user;
+#. PhoneTypeDTO phoneType;
 
 Fields PhoneTypeDTO
 """""""""""""""""""
-Integer id;
-
-String name;
+#. Integer id;
+#. String name;
 
 ``PhoneTypes``
 #. OTHER(0, "Other"),

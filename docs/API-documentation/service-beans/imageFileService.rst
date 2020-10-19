@@ -17,6 +17,7 @@ Description how convert file to MockMultipartFile
 """""""""""""""""""""""""""""""""""""""""""""""""
 
 .. code-block:: java
+
     String name = "testFile";
     String originalName = "img-test.jpg";
     String contentType = null;
@@ -27,21 +28,21 @@ Description how convert file to MockMultipartFile
 Description fields in ImageFileDTO
 """"""""""""""""""""""""""""""""""
 
-     String name;
-     String path;
-     Format format;
-     String uploaded; - lastModifiedDate
-     String resolution;
-     String size;
-     Integer width;
-     Integer height
+#. String name;
+#. String path;
+#. Format format;
+#. String uploaded; - lastModifiedDate
+#. String resolution;
+#. String size;
+#. Integer width;
+#. Integer height
 
 Description fields ImageFileUsageDTO
 """"""""""""""""""""""""""""""""""""
 
-     Integer docId;
-     Integer version;
-     Integer elementIndex;
-     String comment;
+#. Integer docId;
+#. Integer version;
+#. Integer elementIndex;
+#. String comment;
 
 

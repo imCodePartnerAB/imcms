@@ -18,7 +18,7 @@ Use API
 Description about fields ImageHistoryDTO
 """"""""""""""""""""""""""""""""""""""""
 
-     User modifiedBy;
-     LocalDateTime modifiedAt; - created date
+  - **User modifiedBy**
+  - **LocalDateTime modifiedAt** - created date
 
 And ImageHistoryDTO has parent ImageDTO read about image :doc:`ImageService</API-documentation/service-beans/imageService>` 

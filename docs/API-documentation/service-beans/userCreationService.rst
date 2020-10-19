@@ -13,6 +13,7 @@ Use API
 Example usages
 """"""""""""""
 .. code-block:: jsp
+
     UserService userService = Imcms.getServices().getUserService();
 
     UserFormData userData = userService.getUserData(int userId);

@@ -19,6 +19,11 @@ Use API
     SystemProperty findById(Integer id);
 
 
+Example usages
+""""""""""""""
+
+.. code-block:: jsp
+
     SystemPropertyService systemPropertyService = Imcms.getServices().getManagedBean(SystemPropertyService.class);
 
     SystemProperty systemPropertyName = systemPropertyService.findByName("systemPropertyName");

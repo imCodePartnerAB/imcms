@@ -15,21 +15,21 @@ Init LinkValidationService service bean -  ``Imcms.getServices().getManagedBean(
 
 Description about fields ValidationLink
 """""""""""""""""""""""""""""""""""""""
-     boolean pageFound; 
-     boolean hostFound;
-     boolean hostReachable;
-     String url;
-     EditLink editLink;
-     DocumentStoredFieldsDTO documentData;
-     LinkType linkType; -  TEXT,IMAGE,URL
+#.     boolean pageFound;
+#.     boolean hostFound;
+#.     boolean hostReachable;
+#.     String url;
+#.     EditLink editLink;
+#.     DocumentStoredFieldsDTO documentData;
+#.     LinkType linkType; -  TEXT,IMAGE,URL
 
 
 Description about fields EditLink
 """""""""""""""""""""""""""""""""
-     Integer metaId;
-     String title;
-     Integer index;
-     LoopEntryRef loopEntryRef;
+#.     Integer metaId;
+#.     String title;
+#.     Integer index;
+#.     LoopEntryRef loopEntryRef;
 
 .. note::
    See also description DocumentStoredFieldsDTO :doc:`SearchDocumentService</API-documentation/service-beans/searchDocumentService>`

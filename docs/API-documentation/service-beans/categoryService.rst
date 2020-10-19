@@ -20,6 +20,7 @@ Use API
 -------
 
 .. code-block:: jsp
+
     CategoryService categoryService = Imcms.getServices().getManagedBean(CategoryService.class);
 
     List<Category> getAll();

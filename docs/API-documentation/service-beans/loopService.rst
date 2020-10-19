@@ -3,7 +3,7 @@ LoopService
 
 In this article:
     - `Use API`_
-    - `Description about LoopEntry objects`_
+    - `Example usages loopService API`_
 
 
 Use API
@@ -29,10 +29,24 @@ Init or get instance LoopService over global Imcms.getServices ``Imcms.getServic
 
     Imcms.getServices().getLoopService().createVersionedContent(Version workingVersion, Version newVersion);
 
-Description about LoopEntry objects
------------------------------------
+Example usages loopService API
+------------------------------
 
-Loop -
+.. code-block:: jsp
 
-LoopEntryRef -
+   LoopService loopService = Imcms.getServices().getLoopService();
+   int loopIndex = 1;
+   int docId = 1001;
+
+   Loop loop = loopService.getLoop(loopIndex, docId);
+
+Example map JPA to DTO and versa
+""""""""""""""""""""""""""""""""
+
+In order to map JPA to DTO and versa classes, you have to use super constructor -
+.. code-block:: jsp
+
+   - new LoopJPA(loop);
+   - new LoopDTO(loop);
+
 

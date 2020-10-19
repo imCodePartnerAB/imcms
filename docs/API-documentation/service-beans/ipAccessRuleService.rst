@@ -36,12 +36,12 @@ In order to init IpAccessRuleService need to use - ``Imcms.getServices().getMana
 Description about fields IpAccessRule
 """""""""""""""""""""""""""""""""""""
 
-     Integer id;
-     boolean isEnabled;
-     boolean isRestricted;
-     String ipRange;
-     Integer roleId;
-     Integer userId;
+#. Integer id;
+#. boolean isEnabled;
+#. boolean isRestricted;
+#. String ipRange;
+#. Integer roleId;
+#. Integer userId;
 
 
 

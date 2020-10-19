@@ -12,6 +12,7 @@ Use API
 -------
 
 .. code-block:: jsp
+
     DocumentMenuService docMenuService = Imcms.getService().getManagedBean(DocumentMenuService.class);
 
     boolean hasUserAccessToDoc(int docId, UserDomainObject user);

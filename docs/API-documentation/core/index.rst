@@ -5,5 +5,7 @@ Core
 .. toctree::
     :titlesonly:
 
-   managerBean
-   documentCache
+    managerBean
+    documentCache
+    imcmsLanguages
+    imcmsUserLanguage
