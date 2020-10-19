@@ -1,7 +1,7 @@
 ImageFolderService
 ==================
 
-
+In order to init ImageFolderService need to use -  ``Imcms.getServices().getManagedBean(ImageFolderService.class)``
 
 Use API
 -------

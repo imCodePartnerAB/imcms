@@ -8,6 +8,9 @@ In this article:
     - `Description fields imageDTO`_
 
 
+.. warning::
+This init instance over Imcms.getServices().getImageService() working from 10 version
+
 Use API
 -------
 

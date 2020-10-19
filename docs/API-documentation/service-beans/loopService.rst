@@ -6,6 +6,9 @@ In this article:
     - `Example usages loopService API`_
 
 
+.. warning::
+This init instance over Imcms.getServices().getLoopService() working from 10 version
+
 Use API
 -------
 

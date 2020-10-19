@@ -5,6 +5,8 @@ In this article:
     - `Introduction`_
     - `Use API`_
 
+.. warning::
+This init instance over Imcms.getServices().getCommonContentService() working from 10 version
 
 Introduction
 ------------

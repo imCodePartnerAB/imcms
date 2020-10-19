@@ -9,6 +9,8 @@ In this article:
     - `The most important setters/getters for Document`_
 
 
+.. warning::
+This init instance over Imcms.getServices().getDocumentService() working from 10 version
 
 Introduction
 ------------

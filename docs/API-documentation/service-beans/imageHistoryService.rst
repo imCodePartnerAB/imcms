@@ -2,7 +2,7 @@ ImageHistoryService
 ===================
 
 
-Imcms.getServices().getManagedBean(ImageHistoryService.class)
+In order to init ImageHistoryService need to use - Imcms.getServices().getManagedBean(ImageHistoryService.class)
 
 Use API
 -------

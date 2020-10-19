@@ -3,6 +3,9 @@ VersionService
 
 Init or get instance VersionService over global Imcms.getServices ``Imcms.getServices().getVersionService();``
 
+.. warning::
+This init instance over Imcms.getServices().getVersionService() working from 10 version
+
 .. code-block:: jsp
 
     Version getDocumentWorkingVersion(int docId);

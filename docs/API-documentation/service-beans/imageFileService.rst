@@ -2,6 +2,8 @@ ImageFileService
 ================
 
 
+In order to init ImageFileService need to use -  ``Imcms.getServices().getManagedBean(ImageFileService.class)``
+
 Use API
 -------
 .. code-block:: java

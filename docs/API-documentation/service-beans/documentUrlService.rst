@@ -1,6 +1,10 @@
 DocumentUrlService
 ==================
 
+
+.. warning::
+This init instance over Imcms.getServices().getDocumentUrlService() working from 10 version
+
 Init or get instance DocumentUrlService over global Imcms.getServices ``Imcms.getServices().getDocumentUrlService();``
 
 .. code-block:: jsp

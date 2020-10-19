@@ -4,6 +4,9 @@ TextDocumentTemplateService
 
 Init or get instance TextDocumentTemplateService over global Imcms.getServices ``Imcms.getServices().getTextDocumentTemplateService();``
 
+.. warning::
+This init instance over Imcms.getServices().getTextDocumentTemplateService() working from 10 version
+
 Use API
 -------
 
