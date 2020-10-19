@@ -3,8 +3,7 @@ UserService
 
 Init or get instance UserService over global Imcms.getServices ``Imcms.getServices().getUserService();``
 
-.. warning::
-This init instance over Imcms.getServices().getUserService() working from 10 version
+.. warning:: This init instance over Imcms.getServices().getUserService() working from 10 version
 
 .. code-block:: jsp
 

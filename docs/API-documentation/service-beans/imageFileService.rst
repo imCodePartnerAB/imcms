@@ -6,7 +6,7 @@ In order to init ImageFileService need to use -  ``Imcms.getServices().getManage
 
 Use API
 -------
-.. code-block:: java
+.. code-block:: jsp
 
     List<ImageFileDTO> saveNewImageFiles(String folder, List<MultipartFile> files) throws IOException;
 
@@ -18,7 +18,7 @@ Use API
 Description how convert file to MockMultipartFile
 """""""""""""""""""""""""""""""""""""""""""""""""
 
-.. code-block:: java
+.. code-block:: jsp
 
     String name = "testFile";
     String originalName = "img-test.jpg";
