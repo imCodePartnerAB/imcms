@@ -144,14 +144,14 @@ class DBConfig {
 
     private Map<String, String> createHibernateJpaProperties() {
         final HashMap<String, String> properties = new HashMap<>();
-        properties.put("hibernate.dialect", imcmsProperties.getProperty("dialect","org.hibernate.dialect.MySQL5InnoDBDialect"));
-        properties.put("hibernate.format_sql", imcmsProperties.getProperty("format_sql","true"));
-        properties.put("hibernate.use_sql_comments", imcmsProperties.getProperty("use_sql_comments","true"));
-        properties.put("hibernate.show_sql", imcmsProperties.getProperty("show_sql", "false"));
-        properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto", "validate"));
-        properties.put("hibernate.cache.region.factory_class", imcmsProperties.getProperty("hibernate_cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory"));
-        properties.put("hibernate.cache.use_second_level_cache", imcmsProperties.getProperty("hibernate_use_second_level_cache","true"));
-        properties.put("hibernate.cache.use_query_cache",imcmsProperties.getProperty("hibernate.cache.use_query_cache","true"));
+        properties.put("hibernate.dialect", StringUtils.defaultIfBlank(imcmsProperties.getProperty("dialect"), "org.hibernate.dialect.MySQL5InnoDBDialect"));
+        properties.put("hibernate.format_sql", StringUtils.defaultIfBlank(imcmsProperties.getProperty("format_sql"), "true"));
+        properties.put("hibernate.use_sql_comments", StringUtils.defaultIfBlank(imcmsProperties.getProperty("use_sql_comments"), "true"));
+        properties.put("hibernate.show_sql", StringUtils.defaultIfBlank(imcmsProperties.getProperty("show_sql"), "false"));
+        properties.put("hibernate.hbm2ddl.auto", StringUtils.defaultIfBlank(imcmsProperties.getProperty("hbm2ddl.auto"), "validate"));
+        properties.put("hibernate.cache.region.factory_class", StringUtils.defaultIfBlank(imcmsProperties.getProperty("hibernate_cache.region.factory_class"), "org.hibernate.cache.ehcache.EhCacheRegionFactory"));
+        properties.put("hibernate.cache.use_second_level_cache", StringUtils.defaultIfBlank(imcmsProperties.getProperty("hibernate_use_second_level_cache"), "true"));
+        properties.put("hibernate.cache.use_query_cache", StringUtils.defaultIfBlank(imcmsProperties.getProperty("hibernate.cache.use_query_cache"), "true"));
 
         return properties;
     }
