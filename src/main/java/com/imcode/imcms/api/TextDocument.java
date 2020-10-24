@@ -13,16 +13,11 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -325,7 +320,6 @@ public class TextDocument extends Document {
             menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentTypeId()]);
             menuItemDTO.setDocumentStatus(DocumentStatus.IN_PROCESS);
             menuItemDTO.setLink("/" + (documentToAdd.getAlias() == null ? docId : documentToAdd.getAlias()));
-            menuItemDTO.setChildren(Collections.emptyList());
 
             internalTextDocument.getMenu(this.menuIndex).getMenuItems().add(menuItemDTO);
         }

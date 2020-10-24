@@ -5,10 +5,7 @@ import com.imcode.imcms.persistence.entity.Meta;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Data
 public class MenuItemDTO implements Serializable {
@@ -50,14 +47,6 @@ public class MenuItemDTO implements Serializable {
 
     private Integer dataIndex;
 
-    private String sortNumber;
-
-    private List<MenuItemDTO> children = new ArrayList<>();
-
-    public Stream<MenuItemDTO> flattened() {
-        return Stream.concat(
-                Stream.of(this),
-                children.stream().flatMap(MenuItemDTO::flattened));
-    }
+    private String sortOrder;
 
 }

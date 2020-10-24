@@ -338,7 +338,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
         List<Menu> menus = defaultMenuService.getAll();
         for (Menu menu : menus) {
             final int foundUsages = (int) menu.getMenuItems().stream()
-                    .flatMap(MenuItem::flattened)
                     .map(MenuItem::getDocumentId)
                     .filter(id -> docId == id).distinct().count();
             if (foundUsages > 0) {
