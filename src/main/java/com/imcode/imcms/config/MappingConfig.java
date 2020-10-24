@@ -1,43 +1,16 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.api.SourceFile;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
-import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import com.imcode.imcms.domain.dto.ImageHistoryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.TextHistoryDTO;
-import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -62,21 +35,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -92,40 +57,17 @@ class MappingConfig {
 
     @Bean
     public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
-        return new BiFunction<MenuItem, Language, MenuItemDTO>() {
-            @Override
-            public MenuItemDTO apply(MenuItem menuItem, Language language) {
-                final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem.getDocumentId(), language);
-
-                final List<MenuItemDTO> children = menuItem.getChildren()
-                        .stream()
-                        .map(menuItemChild -> this.apply(menuItemChild, language))
-                        .collect(Collectors.toList());
-
-                menuItemDTO.setChildren(children);
-
-                return menuItemDTO;
-            }
-        };
+        return documentMenuService::getMenuItemDTO;
     }
 
     @Bean
     public UnaryOperator<MenuItem> toMenuItemsWithoutId() {
-        return new UnaryOperator<MenuItem>() {
-            @Override
-            public MenuItem apply(MenuItem menuItem) {
-                final MenuItem newMenuItem = new MenuItem();
-                newMenuItem.setDocumentId(menuItem.getDocumentId());
-                newMenuItem.setSortOrder(menuItem.getSortOrder());
-                final Set<MenuItem> newChildren = menuItem.getChildren()
-                        .stream()
-                        .map(this)
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+        return menuItem -> {
+            final MenuItem newMenuItem = new MenuItem();
+            newMenuItem.setDocumentId(menuItem.getDocumentId());
+            newMenuItem.setSortOrder(menuItem.getSortOrder());
 
-                newMenuItem.setChildren(newChildren);
-
-                return newMenuItem;
-            }
+            return newMenuItem;
         };
     }
 
@@ -137,45 +79,31 @@ class MappingConfig {
             VersionService versionService,
             DocumentMenuService documentMenuService
     ) {
-        return new BiFunction<MenuItem, Language, MenuItemDTO>() {
+        return (menuItem, language) -> {
 
-            @Override
-            public MenuItemDTO apply(final MenuItem menuItem, final Language language) {
+            final Integer docId = menuItem.getDocumentId();
+            final Version latestVersion = versionService.getLatestVersion(docId);
+            final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
+                    .stream()
+                    .filter(CommonContent::isEnabled)
+                    .collect(Collectors.toList());
 
-                final Integer docId = menuItem.getDocumentId();
-                final Version latestVersion = versionService.getLatestVersion(docId);
-                final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
-                        .stream()
-                        .filter(CommonContent::isEnabled)
-                        .collect(Collectors.toList());
-
-                if (enabledCommonContents.size() == 0) {
-                    return null;
-                }
-
-                final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
-                        documentMenuService.getDisabledLanguageShowMode(docId)
-                );
-
-                final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
-
-                if (!isLanguageEnabled(enabledCommonContents, language) &&
-                        (!isShowInDefaultLanguage || !isLanguageEnabled(enabledCommonContents, defaultLanguage))) {
-                    return null;
-                }
-
-                final MenuItemDTO menuItemDTO = menuItemToDTO.apply(menuItem, language);
-
-                final List<MenuItemDTO> children = menuItem.getChildren()
-                        .stream()
-                        .map(menuItem1 -> this.apply(menuItem1, language))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-
-                menuItemDTO.setChildren(children);
-
-                return menuItemDTO;
+            if (enabledCommonContents.size() == 0) {
+                return null;
             }
+
+            final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
+                    documentMenuService.getDisabledLanguageShowMode(docId)
+            );
+
+            final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+
+            if (!isLanguageEnabled(enabledCommonContents, language) &&
+                    (!isShowInDefaultLanguage || !isLanguageEnabled(enabledCommonContents, defaultLanguage))) {
+                return null;
+            }
+
+            return menuItemToDTO.apply(menuItem, language);
         };
     }
 
@@ -206,8 +134,8 @@ class MappingConfig {
             public MenuItem apply(MenuItemDTO menuItemDTO) {
                 final MenuItem menuItem = new MenuItem();
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
-                final Set<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
-                menuItem.setChildren(children);
+                menuItem.setSortOrder(menuItemDTO.getSortOrder());
+                menuItemDtoListToMenuItemList(this);
                 return menuItem;
             }
         };
@@ -215,12 +143,7 @@ class MappingConfig {
 
     @Bean
     public Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList(Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
-        return menuItemDtoList -> IntStream.range(0, menuItemDtoList.size())
-                .mapToObj(i -> {
-                    final MenuItem menuItem = menuItemDtoToMenuItem.apply(menuItemDtoList.get(i));
-                    menuItem.setSortOrder(i + 1);
-                    return menuItem;
-                })
+        return menuItemDtoList -> menuItemDtoList.stream().map(menuItemDtoToMenuItem)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
