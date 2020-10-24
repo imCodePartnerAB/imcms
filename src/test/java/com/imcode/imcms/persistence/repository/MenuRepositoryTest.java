@@ -22,13 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class MenuRepositoryTest extends WebAppSpringTestConfig {
@@ -102,11 +98,8 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
         final List<MenuItem> menuItems = new ArrayList<>(menuPersisted.getMenuItems());
-        final Set<MenuItem> children = menuItems.get(0).getChildren();
 
         assertEquals(3, menuItems.size());
-        assertEquals(3, children.size());
-        assertEquals(3, new ArrayList<>(children).get(0).getChildren().size());
     }
 
     @Test
@@ -118,14 +111,9 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
         final List<MenuItem> menuItems = new ArrayList<>(menuPersisted.getMenuItems());
 
-        assertEquals(1, menuItems.get(0).getSortOrder().intValue());
-        assertEquals(2, menuItems.get(1).getSortOrder().intValue());
-        assertEquals(3, menuItems.get(2).getSortOrder().intValue());
-
-        final List<MenuItem> children = new ArrayList<>(menuItems.get(0).getChildren());
-        assertEquals(1, children.get(0).getSortOrder().intValue());
-        assertEquals(2, children.get(1).getSortOrder().intValue());
-        assertEquals(3, children.get(2).getSortOrder().intValue());
+        assertEquals("1", menuItems.get(0).getSortOrder());
+        assertEquals("2", menuItems.get(1).getSortOrder());
+        assertEquals("3", menuItems.get(2).getSortOrder());
     }
 
     @Test

@@ -10,20 +10,15 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import static com.imcode.imcms.sorted.TypeSort.MANUAL;
-import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Component
 public class MenuDataInitializer extends TestDataCleaner {
@@ -74,7 +69,7 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version,
                               boolean nested, String typeSort, int count) {
-        val menu = createDataEntity(withMenuItems, menuIndex, version, nested, typeSort, count);
+        val menu = createDataEntity(withMenuItems, menuIndex, version, nested, count);
         final MenuDTO menuDTO = menuToMenuDTO.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
         menuDTO.setTypeSort(typeSort);
         return menuDTO;
@@ -98,13 +93,13 @@ public class MenuDataInitializer extends TestDataCleaner {
         super.cleanRepositories();
     }
 
-    public Menu createDataEntity(boolean withMenuItems, boolean nested, String typeSort, int count) {
+    public Menu createDataEntity(boolean withMenuItems, boolean nested, int count) {
         version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
-        return createDataEntity(withMenuItems, MENU_INDEX, version, nested, typeSort, count);
+        return createDataEntity(withMenuItems, MENU_INDEX, version, nested, count);
     }
 
     private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version,
-                                  boolean nested, String typeSort, int count) {
+                                  boolean nested, int count) {
         final Menu menu = new Menu();
         menu.setVersion(version);
         menu.setNo(menuIndex);
@@ -112,58 +107,25 @@ public class MenuDataInitializer extends TestDataCleaner {
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {
-            addMenuItemsTo(savedMenu, nested, count, getTypeSort(typeSort, nested));
+            addMenuItemsTo(savedMenu,  count);
         }
 
         return savedMenu;
-    }
-
-    private String getTypeSort(String typeSort, boolean nested) {
-        if (typeSort == null) {
-            if (nested) {
-                typeSort = String.valueOf(TypeSort.TREE_SORT);
-            } else {
-                typeSort = String.valueOf(MANUAL);
-            }
-        }
-
-        return typeSort;
     }
 
     private MenuItemDTO mapMenuItems(MenuItem menuItem) {
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(menuItem.getDocumentId());
         menuItemDTO.setTitle("Start page");
-        menuItemDTO.setChildren(menuItem.getChildren().stream()
-                .map(this::mapMenuItems)
-                .collect(Collectors.toList()));
         return menuItemDTO;
     }
 
-    private void addMenuItemsTo(Menu menu, boolean nested, int count, String typeSort) {
+    private void addMenuItemsTo(Menu menu, int count) {
         final List<MenuItem> menuItems = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            final int sort = i + 1;
+            final String sort = String.valueOf(i + 1);
             menuItems.add(createMenuItem(sort));
-        }
-
-        if (nested && typeSort.equals(String.valueOf(TREE_SORT))) {
-            final MenuItem menuItem0 = menuItems.get(0);
-
-            final List<MenuItem> menuItems1 = Arrays.asList(
-                    createMenuItem(1),
-                    createMenuItem(2),
-                    createMenuItem(3)
-            );
-            menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
-
-            final List<MenuItem> menuItems2 = Arrays.asList(
-                    createMenuItem(1),
-                    createMenuItem(2),
-                    createMenuItem(3)
-            );
-            new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
         }
 
         menu.setMenuItems(new LinkedHashSet<>(menuItems));
@@ -171,7 +133,7 @@ public class MenuDataInitializer extends TestDataCleaner {
         menuRepository.saveAndFlush(menu);
     }
 
-    private MenuItem createMenuItem(int sortOrder) {
+    private MenuItem createMenuItem(String sortOrder) {
         documentDataInitializer.cleanRepositories();
         final DocumentDTO initDoc = documentDataInitializer.createData();
         documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
@@ -181,13 +143,13 @@ public class MenuDataInitializer extends TestDataCleaner {
         return menuItem;
     }
 
-    public MenuItemDTO createMenuItemDTO(String sortNumber) {
+    public MenuItemDTO createMenuItemDTO(String sortOrder) {
         documentDataInitializer.cleanRepositories();
         final DocumentDTO initDoc = documentDataInitializer.createData();
         documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
         final MenuItemDTO menuItem = new MenuItemDTO();
         menuItem.setDocumentId(initDoc.getId());
-        menuItem.setSortNumber(sortNumber);
+        menuItem.setSortOrder(sortOrder);
         return menuItem;
     }
 }

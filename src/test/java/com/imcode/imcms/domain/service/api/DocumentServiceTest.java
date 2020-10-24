@@ -641,6 +641,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         menuDTO.setTypeSort(TREE_SORT + "");
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(createdDocId);
+        menuItemDTO.setSortOrder("1");
         menuDTO.setMenuItems(new ArrayList<>(Collections.singletonList(menuItemDTO)));
 
         menuService.saveFrom(menuDTO);
