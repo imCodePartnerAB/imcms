@@ -74,7 +74,7 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
-                sortNumber: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
+                sortOrder: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
@@ -89,7 +89,7 @@ define("imcms-menu-editor-builder",
                 publishedDate: document.published,
                 title: document.title,
                 hasNewerVersion: document.currentVersion === WORKING_VERSION,
-                sortNumber: menuItem.sortNumber,
+                sortOrder: menuItem.sortOrder,
                 documentStatus: document.documentStatus,
                 isShownTitle: document.isShownTitle,
                 children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
@@ -798,8 +798,8 @@ define("imcms-menu-editor-builder",
                         getDeepSortedItemsBySortNumber(item.children);
                     } else {
                         arr.sort(function (menuItem1, menuItem2) {
-                            const parsedValItem1 = parseValue(menuItem1.sortNumber);
-                            const parsedValItem2 = parseValue(menuItem2.sortNumber);
+                            const parsedValItem1 = parseValue(menuItem1.sortOrder);
+                            const parsedValItem2 = parseValue(menuItem2.sortOrder);
 
                             return parsedValItem1[parsedValItem1.length - 1] - parsedValItem2[parsedValItem2.length - 1];
                         })
@@ -876,8 +876,8 @@ define("imcms-menu-editor-builder",
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
-                value: menuElement.sortNumber,
-                id: menuElement.sortNumber,
+                value: menuElement.sortOrder,
+                id: menuElement.sortOrder,
                 name: menuElement.documentId
             });
 
@@ -1017,12 +1017,12 @@ define("imcms-menu-editor-builder",
                 const currentMenuItem = menuElements[i];
                 const hasChildren = currentMenuItem.children.length;
                 let dataTreeKey = treeKey ? treeKey + "." + (i + 1) : (i + 1) + '';
-                const isEmptySortNumber = currentMenuItem.sortNumber;
+                const isEmptySortNumber = currentMenuItem.sortOrder;
 
-                currentMenuItem.sortNumber = dataTreeKey;
+                currentMenuItem.sortOrder = dataTreeKey;
 
                 if (hasChildren) {
-                    dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortNumber;
+                    dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortOrder;
                     setSortNumbersInMenuItems(menuElements[i].children, dataTreeKey);
                 }
             }
@@ -1034,7 +1034,7 @@ define("imcms-menu-editor-builder",
                 if (item.children.length) {
                     swapSameItemSortNumber(item.children, oldValMoreCurrent);
                 }
-                duplicate = array.map(item => item.sortNumber).indexOf(item.sortNumber) !== index ? item : duplicate
+                duplicate = array.map(item => item.sortOrder).indexOf(item.sortOrder) !== index ? item : duplicate
             });
 
             const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
