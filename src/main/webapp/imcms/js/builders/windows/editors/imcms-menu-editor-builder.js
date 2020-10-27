@@ -547,6 +547,7 @@ define("imcms-menu-editor-builder",
 
         function buildFooter(opts) {
             const $saveAndClose = components.buttons.saveButton({
+                    id: 'saveAndCloseMenuArea',
                     text: texts.saveAndClose,
                     click: () => {
                         saveAndClose(opts)
@@ -878,10 +879,12 @@ define("imcms-menu-editor-builder",
             function removeAndAddClassForInCorrectData($input, isAdd) {
                 if ($input.hasClass('imcms-menu-incorrect-data-light')) {
                     $input.removeClass('imcms-menu-incorrect-data-light');
+                    document.getElementById('saveAndCloseMenuArea').removeAttribute('disabled');
                 }
                 if (isAdd) {
                     $input.addClass('imcms-menu-incorrect-data-light');
                     alert(texts.error.invalidPosition);
+                    document.getElementById('saveAndCloseMenuArea').setAttribute('disabled', 'disabled')
                 }
             }
 
