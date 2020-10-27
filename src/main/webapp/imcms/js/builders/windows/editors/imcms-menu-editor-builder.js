@@ -28,6 +28,7 @@ define("imcms-menu-editor-builder",
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
+        const rightPaddingNoneClassName = 'imcms-flex--pr-0';
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         const $title = $('<a>');
@@ -560,6 +561,15 @@ define("imcms-menu-editor-builder",
             return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
+
+        function controlPaddingClassForTitlesHEAD() {
+            if (isMultiRemoveModeEnabled() && !$menuTitlesBlock.hasClass(rightPaddingNoneClassName) ) {
+                $menuTitlesBlock.addClass(rightPaddingNoneClassName);
+            } else {
+                $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
+            }
+        }
+
         function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
             const submenuItem = activeMultiRemove
                 ? currentMenuItem.find(".imcms-menu-items")
@@ -818,6 +828,7 @@ define("imcms-menu-editor-builder",
 
             $menuElementsContainer.find('.imcms-menu-list').remove();
             const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
+            controlPaddingClassForTitlesHEAD();
             $menuElementsContainer.append($menuItemsSortedList);
 
             const $changedItem = getMenuDocByObjId(menuItemId);
@@ -1091,10 +1102,7 @@ define("imcms-menu-editor-builder",
         let $menuItemsBlock;
         let $sortOrderColumnHead;
 
-        const $removeButton = components.buttons.positiveButton({
-            text: texts.multiRemove,
-            click: removeEnabledMenuItems
-        });
+        let $removeButton;
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
@@ -1120,6 +1128,12 @@ define("imcms-menu-editor-builder",
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
+                $removeButton = components.buttons.positiveButton({
+                    text: texts.multiRemove,
+                    click: removeEnabledMenuItems
+                });
+
+                isMultiRemoveModeEnabled() ? $removeButton.css('display', 'block') : $removeButton.css('display', 'none');
 
                 const $idColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
@@ -1271,7 +1285,6 @@ define("imcms-menu-editor-builder",
             function switchButtonAction() {
                 const $switchButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
-                const rightPaddingNoneClassName = 'imcms-flex--pr-0';
 
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
@@ -1430,6 +1443,7 @@ define("imcms-menu-editor-builder",
                 prevType = menuData.typeSort;
                 $menuElementsContainer.find('.imcms-menu-list').remove();
                 let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
+                controlPaddingClassForTitlesHEAD();
                 $menuElementsContainer.append($menuItemsSortedList);
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
