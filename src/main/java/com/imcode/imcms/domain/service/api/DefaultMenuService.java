@@ -206,6 +206,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 menuDTO.getMenuItems()
                         .stream()
                         .flatMap(MenuItemDTO::flattened)
+                        .peek(menuItemDTO -> log.error("menu item docId - {}, sortOrder - {}", menuItemDTO.getDocumentId(), menuItemDTO.getSortOrder()))
                         .collect(Collectors.toList()))
         );
 
