@@ -620,7 +620,7 @@ define("imcms-menu-editor-builder",
                 }
 
                 removeMenuItemFromEditor(currentMenuItem);
-
+                reorderMenuListBySortNumber(getAllMenuItems());
             });
         }
 
@@ -1342,6 +1342,8 @@ define("imcms-menu-editor-builder",
 
                 return isCheckedItem;
             }
+
+            reorderMenuListBySortNumber(getAllMenuItems());
         }
 
         let mapTypesSort = new Map();
@@ -1444,11 +1446,15 @@ define("imcms-menu-editor-builder",
         function buildMenuItemsBySelectedType(menuData) {
             menusRestApi.getSortedItems(menuData).done(menuItems => {
                 prevType = menuData.typeSort;
-                $menuElementsContainer.find('.imcms-menu-list').remove();
-                let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
                 controlPaddingClassForTitlesHEAD();
-                $menuElementsContainer.append($menuItemsSortedList);
+                rebuildAllMenuItemsInMenuContainer(menuItems, menuData.typeSort);
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        }
+
+        function rebuildAllMenuItemsInMenuContainer(menuItems, typeSort) {
+            $menuElementsContainer.find('.imcms-menu-list').remove();
+            let $menuItemsSortedList = buildMenuEditorContent(menuItems, typeSort);
+            $menuElementsContainer.append($menuItemsSortedList);
         }
 
         function buildOnSelectedTypeSort(opts) {
