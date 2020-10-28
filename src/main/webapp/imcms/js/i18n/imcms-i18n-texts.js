@@ -376,6 +376,8 @@ const texts = {
                     loadFailed: 'Misslyckades att ladda. Försök igen',
                     invalidSortNumber: 'Ogiltigt data sorteringsnummer!',
                     invalidPosition: 'Ogiltig position!',
+                    fixInvalidPosition: 'Menyområdet har en ogiltig position! Snälla fixa det!'
+
                 },
                 typesSort: {
                     treeSort: 'Trädsortering',
@@ -1291,6 +1293,7 @@ const texts = {
                     loadFailed: 'Failed to load. Try again',
                     invalidSortNumber: 'Invalid data sort number!',
                     invalidPosition: 'Invalid position!',
+                    fixInvalidPosition: 'Menu area has invalid position item! Please fix it !'
                 },
                 typesSort: {
                     treeSort: 'Tree sort',
