@@ -10,6 +10,10 @@
     height: 25px;
 }
 
+.imcms-button--disabled-click {
+    cursor: not-allowed;
+}
+
 .imcms-menu-incorrect-data-light {
     background-color: #e8958c;
     border-color: #e8958c;
