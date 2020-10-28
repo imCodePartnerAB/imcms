@@ -126,7 +126,11 @@ define("imcms-menu-editor-builder",
         }
 
         function saveAndClose(opts) {
-            saveMenuElements(opts);
+            if (document.getElementById('saveAndCloseMenuArea').classList.contains('imcms-button--disabled-click')) {
+                alert(texts.error.fixInvalidPosition);
+            } else {
+                saveMenuElements(opts);
+            }
         }
 
         function buildHead(opts) {
@@ -879,12 +883,12 @@ define("imcms-menu-editor-builder",
             function removeAndAddClassForInCorrectData($input, isAdd) {
                 if ($input.hasClass('imcms-menu-incorrect-data-light')) {
                     $input.removeClass('imcms-menu-incorrect-data-light');
-                    document.getElementById('saveAndCloseMenuArea').removeAttribute('disabled');
+                    document.getElementById('saveAndCloseMenuArea').classList.remove('imcms-button--disabled-click');
                 }
                 if (isAdd) {
                     $input.addClass('imcms-menu-incorrect-data-light');
                     alert(texts.error.invalidPosition);
-                    document.getElementById('saveAndCloseMenuArea').setAttribute('disabled', 'disabled')
+                    document.getElementById('saveAndCloseMenuArea').classList.add('imcms-button--disabled-click')
                 }
             }
 
