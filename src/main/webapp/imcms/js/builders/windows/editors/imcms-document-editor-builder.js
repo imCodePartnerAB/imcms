@@ -128,7 +128,7 @@ define("imcms-document-editor-builder",
         function addDocumentToList(document) {
             const $document = buildDocument(document, currentEditorOptions, true);
             $documentsList.prepend($document);
-
+            docs.push(document);
             incrementDocumentNumber(1);
         }
 
