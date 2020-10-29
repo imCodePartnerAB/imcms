@@ -81,20 +81,53 @@ define("imcms-menu-editor-builder",
         }
 
         function mapToMenuItemWithAllFields(menuItem) {
+
+            function isDocumentItem(document) {
+                return document.commonContents !== undefined && document.currentVersion.id !== undefined;
+            }
+
             const docId = menuItem.documentId;
             const document = documentEditorBuilder.getDocumentById(docId);
-            return {
-                documentId: docId,
-                type: document.type,
-                modifiedDate: document.modified,
-                publishedDate: document.published,
-                title: document.title,
-                hasNewerVersion: document.currentVersion === WORKING_VERSION,
-                sortOrder: menuItem.sortOrder,
-                documentStatus: document.documentStatus,
-                isShownTitle: document.isShownTitle,
-                children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+            let menuElement;
+
+            if (isDocumentItem(document)) {
+                menuElement = {
+                    documentId: docId,
+                    type: document.type,
+                    modifiedDate: document.modified,
+                    publishedDate: document.published,
+                    hasNewerVersion: document.currentVersion.id === WORKING_VERSION,
+                    sortOrder: menuItem.sortOrder,
+                    documentStatus: document.documentStatus,
+                    children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+                };
+
+
+                document.commonContents.forEach(commonContent => {
+                    if (commonContent["language"]["code"] === imcms.language.code) {
+                        menuElement["title"] = commonContent["headline"];
+                    }
+                    if (commonContent.enabled && commonContent.language.code === imcms.language.code) {
+                        menuElement["isShownTitle"] = true;
+                    }
+                });
+
+            } else{
+                menuElement = {
+                    documentId: docId,
+                    type: document.type,
+                    modifiedDate: document.modified,
+                    publishedDate: document.published,
+                    title: document.title,
+                    hasNewerVersion: document.currentVersion === WORKING_VERSION,
+                    sortOrder: menuItem.sortOrder,
+                    documentStatus: document.documentStatus,
+                    isShownTitle: document.isShownTitle,
+                    children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+                };
             }
+
+                return menuElement;
         }
 
         function getAllMenuItems() {
@@ -655,8 +688,11 @@ define("imcms-menu-editor-builder",
 
         function appendNewMenuItem(doc) {
             const sortType = document.getElementById("type-sort").value;
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(doc), { level: 1, sortType }));
-            documentEditorBuilder.refreshDocumentInList(doc)
+
+            getFirstItemInMenuArea().before(buildMenuItemTree(getMenuElementTree(doc), { level: 1, sortType }));
+
+            documentEditorBuilder.addDocumentToList(doc);
+            reorderMenuListBySortNumber(getAllMenuItems());
         }
 
         function refreshMenuItem(document) {
@@ -745,12 +781,10 @@ define("imcms-menu-editor-builder",
                 docCopyRestApi.copy(menuItemId)
                     .done(copiedDocument => {
 
-                        documentEditorBuilder.incrementDocumentNumber(1);
+                        // const $documentItemContainer = documentEditorBuilder
+                        //     .buildDocument(copiedDocument, {moveEnable: true}, true);
 
-                        const $documentItemContainer = documentEditorBuilder
-                            .buildDocument(copiedDocument, {moveEnable: true});
-
-                        $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
+                        // $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
 
                         appendNewMenuItem(copiedDocument);
                     })
@@ -1228,7 +1262,6 @@ define("imcms-menu-editor-builder",
 
             function onDocumentSaved(document) {
                 appendNewMenuItem(document);
-                documentEditorBuilder.addDocumentToList(document);
             }
 
             function onNewDocButtonClick(e) {
