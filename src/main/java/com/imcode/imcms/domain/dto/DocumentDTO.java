@@ -114,7 +114,7 @@ public class DocumentDTO extends Document implements Cloneable {
             final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();
 
             cloneDocumentDTO.setId(null);
-            cloneDocumentDTO.setAlias(cloneDocumentDTO.getAlias() + " copy-kopia");
+            cloneDocumentDTO.setAlias(cloneDocumentDTO.getAlias());
             cloneDocumentDTO.setPublicationStatus(Meta.PublicationStatus.NEW);
 
             final AuditDTO version = Value.with(
