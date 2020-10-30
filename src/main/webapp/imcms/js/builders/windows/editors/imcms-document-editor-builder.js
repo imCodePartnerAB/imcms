@@ -1163,7 +1163,12 @@ define("imcms-document-editor-builder",
         let docs = [];
 
         function pushDocumentsInArray(documentList) {
-            documentList.forEach(document => docs.push(document));
+            const allDocIds = docs.map(doc => doc.documentId);
+            documentList.forEach(document => {
+                if (!allDocIds.includes(document.documentId)) {
+                    docs.push(document);
+                }
+            });
             return docs;
         }
 
