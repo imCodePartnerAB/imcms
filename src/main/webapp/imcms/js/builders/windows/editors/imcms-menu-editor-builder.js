@@ -80,11 +80,11 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function mapToMenuItemWithAllFields(menuItem) {
+        function isDocumentItem(document) {
+            return document.commonContents !== undefined && document.currentVersion.id !== undefined;
+        }
 
-            function isDocumentItem(document) {
-                return document.commonContents !== undefined && document.currentVersion.id !== undefined;
-            }
+        function mapToMenuItemWithAllFields(menuItem) {
 
             const docId = menuItem.documentId;
             const document = documentEditorBuilder.getDocumentById(docId);
@@ -639,11 +639,11 @@ define("imcms-menu-editor-builder",
         function refreshDocuments(submenuDocIds, currentMenuItemId) {
             submenuDocIds.forEach(id => {
                 let document = documentEditorBuilder.getDocumentById(id);
-                documentEditorBuilder.refreshDocumentInList(document);
+                documentEditorBuilder.refreshDocumentInList(document, isDocumentItem(document));
             });
 
             let parentDoc = documentEditorBuilder.getDocumentById(currentMenuItemId);
-            documentEditorBuilder.refreshDocumentInList(parentDoc);
+            documentEditorBuilder.refreshDocumentInList(parentDoc, isDocumentItem(parentDoc));
         }
 
         function removeMenuItem() {
@@ -859,11 +859,11 @@ define("imcms-menu-editor-builder",
 
         function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent, menuItemId) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
-            const sortedMenuItems = getDeepSortedItemsBySortNumber(menuItems);
+            getDeepSortedItemsBySortNumber(menuItems);
 
-            swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
+            swapSameItemSortNumber(menuItems, isOldValMoreCurrent);
 
-            const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
+            const mappedMenuItems = menuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
             $menuElementsContainer.find('.imcms-menu-list').remove();
             const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
