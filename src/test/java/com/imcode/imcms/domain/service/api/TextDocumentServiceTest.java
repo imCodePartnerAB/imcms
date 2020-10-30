@@ -151,7 +151,7 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
 
         // special things
         assertNull(childDoc.getId());
-        assertEquals(childDoc.getAlias(), "");
+//        assertEquals(childDoc.getAlias(), "");
         assertEquals(childDoc.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(childDoc.getPublicationEnd(), new AuditDTO());
         assertEquals(childDoc.getPublished(), new AuditDTO());
