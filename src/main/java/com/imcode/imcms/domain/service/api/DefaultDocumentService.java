@@ -302,7 +302,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         documentDTO.getCommonContents()
                 .forEach(commonContentDTO ->
-                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+                        commonContentDTO.setHeadline(commonContentDTO.getHeadline() + " (Copy/Kopia)"));
 
         final DocumentDTO clonedDocumentDTO = documentDTO.clone();
 
