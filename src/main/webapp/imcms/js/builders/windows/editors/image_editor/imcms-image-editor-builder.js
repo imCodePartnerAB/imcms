@@ -152,6 +152,10 @@ define(
                         imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
                         imageResize.setFinalPreviewImageData(imageData);
                     }
+
+                    if (maxWidth || maxHeight || height || width) {
+                        editSizeControls.getDisplaySizeBlock().css('display', 'flex');
+                    }
                 }
 
                 initSize(imageData, false);
