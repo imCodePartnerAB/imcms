@@ -33,7 +33,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
@@ -261,7 +263,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         menuItem.setSortOrder("1");
         menuItem.setDocumentId(docId);
 
-        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem, language);
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
 
         assertThat(menuItemDTO.getDocumentId(), is(docId));
         assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
