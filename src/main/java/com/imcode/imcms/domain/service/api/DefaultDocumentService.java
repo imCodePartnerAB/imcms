@@ -3,17 +3,23 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DeleterByDocumentId;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -62,6 +68,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final PropertyService propertyService;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
+    private final MenuService menuService;
+    private final Function<Menu, MenuDTO> menuToMenuDTO;
+    private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
 
     private DeleterByDocumentId[] docContentServices = {};
 
@@ -77,7 +86,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            DocumentsCache documentsCache,
                            DocumentMapper documentMapper,
                            PropertyService propertyService,
-                           @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices) {
+                           @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices,
+                           MenuService menuService, Function<Menu, MenuDTO> menuToMenuDTO,
+                           Function<ImageJPA, ImageDTO> imageJPAToImageDTO) {
 
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.metaRepository = metaRepository;
@@ -92,6 +103,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.documentMapper = documentMapper;
         this.propertyService = propertyService;
         this.versionedContentServices = versionedContentServices;
+        this.menuService = menuService;
+        this.menuToMenuDTO = menuToMenuDTO;
+        this.imageJPAToImageDTO = imageJPAToImageDTO;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
 
@@ -306,7 +320,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         final DocumentDTO clonedDocumentDTO = documentDTO.clone();
 
-        return save(clonedDocumentDTO);
+        final DocumentDTO savedDoc = save(clonedDocumentDTO);
+
+        savingContentsFromMainToCopiedDocument(docId, savedDoc);
+
+        return savedDoc;
     }
 
     @Override
@@ -345,4 +363,67 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
     }
 
+
+    private void savingContentsFromMainToCopiedDocument(Integer mainCoppingDocId, DocumentDTO copiedDoc) {
+
+        final Integer copiedDocId = copiedDoc.getId();
+
+        savingMenuFromMainToCopied(mainCoppingDocId, copiedDocId);
+
+        savingImagesFromMainToCopied(mainCoppingDocId, copiedDocId);
+
+        savingTextsFromMainToCopied(mainCoppingDocId, copiedDocId);
+
+        savingLoopFromMainToCopied(mainCoppingDocId, copiedDocId);
+
+    }
+
+    private void savingMenuFromMainToCopied(Integer mainCoppingDocId, Integer copiedDocId) {
+        menuService.getByDocId(mainCoppingDocId)
+                .stream()
+                .map(menuToMenuDTO)
+                .forEach(menuDTO -> {
+                    menuDTO.setDocId(copiedDocId);
+                    menuService.saveFrom(menuDTO);
+                });
+    }
+
+    private void savingImagesFromMainToCopied(Integer mainCoppingDocId, Integer copiedDocId) {
+        imageService.getByDocId(mainCoppingDocId)
+                .stream()
+                .map(imageJPAToImageDTO)
+                .forEach(imageDTO -> {
+                    imageDTO.setDocId(copiedDocId);
+                    imageService.saveImage(imageDTO);
+                });
+    }
+
+    private void savingTextsFromMainToCopied(Integer mainCoppingDocId, Integer copiedDocId) {
+        textService.getByDocId(mainCoppingDocId)
+                .stream()
+                .map(textJPA -> {
+                    try {
+                        return textJPA.clone();
+                    } catch (CloneNotSupportedException e) {
+                        LOGGER.error("CloneNotSupportedException in copping texts from main document id !" + mainCoppingDocId);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(textJPA -> {
+                    textJPA.setId(null);
+                    textJPA.setVersion(versionService.create(copiedDocId));
+                    textService.save(textJPA);
+                });
+    }
+
+    private void savingLoopFromMainToCopied(Integer mainCoppingDocId, Integer copiedDocId) {
+        loopService.getByVersion(versionService.getLatestVersion(mainCoppingDocId))
+                .stream()
+                .map(LoopDTO::new)
+                .forEach(loopDTO -> {
+                    loopDTO.setDocId(copiedDocId);
+                    loopService.saveLoop(loopDTO);
+                });
+    }
 }
