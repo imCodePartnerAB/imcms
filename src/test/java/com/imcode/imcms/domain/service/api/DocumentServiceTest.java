@@ -170,6 +170,12 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private Config config;
 
+    @Autowired
+    private Function<Menu, MenuDTO> menuToMenuDTO;
+
+    @Autowired
+    private Function<ImageJPA, ImageDTO> imageJPAImageDTO;
+
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
 
@@ -197,8 +203,10 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 new MockDocumentIndex(),
                 documentsCache,
                 documentMapper,
-                propertyService, versionedContentServices
-        );
+                propertyService, versionedContentServices,
+                menuService,
+                menuToMenuDTO,
+                imageJPAImageDTO);
         ((DefaultDocumentService) documentService).init();
     }
 
