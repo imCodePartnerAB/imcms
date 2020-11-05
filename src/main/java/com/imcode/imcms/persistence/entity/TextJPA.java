@@ -97,6 +97,15 @@ public class TextJPA extends Text {
     }
 
     @Override
+    public TextJPA clone() throws CloneNotSupportedException {
+        TextJPA cloneText = (TextJPA) super.clone();
+
+        cloneText.setId(null);
+
+        return cloneText;
+    }
+
+    @Override
     public HtmlFilteringPolicy getHtmlFilteringPolicy() {
         return Optional.ofNullable(htmlFilteringPolicy).orElse(HtmlFilteringPolicy.RESTRICTED);
     }
