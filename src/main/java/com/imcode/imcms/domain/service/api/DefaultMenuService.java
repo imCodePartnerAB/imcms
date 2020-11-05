@@ -4,7 +4,12 @@ import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.SortNotSupportedException;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.IdDeleterMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -18,7 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,10 +51,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
     private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
-    private final BiFunction<Menu, Language, MenuDTO> menuSaver;
+    private final Function<Menu, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private final LanguageService languageService;
-    private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
+    private final Function<MenuItem, MenuItemDTO> menuItemToDTO;
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
     private final CommonContentService commonContentService;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
@@ -51,10 +63,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
-                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
+                       Function<MenuItem, MenuItemDTO> menuItemToDTO,
                        Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
-                       BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
+                       Function<Menu, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
                        CommonContentService commonContentService,
@@ -72,7 +84,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         this.commonContentService = commonContentService;
         this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuHtmlConverter = menuHtmlConverter;
-        this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
+        this.menuSaver = menu -> menuToMenuDTO.apply(menuRepository.save(menu));
     }
 
     @Override
@@ -113,7 +125,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         //double map because from client to fetch itemsDTO which have only doc id and no more info..
         final List<MenuItemDTO> menuItemsDTO = getSortedMenuItemsBySortOrder(menuItems.stream()
                 .map(menuItemDtoToMenuItem)
-                .map(menuItem -> menuItemToDTO.apply(menuItem, language))
+                .map(menuItem -> menuItemToDTO.apply(menuItem))
                 .collect(Collectors.toList()));
 
         setHasNewerVersionsInItems(menuItemsDTO);
@@ -210,9 +222,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                         .collect(Collectors.toList()))
         );
 
-        final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+        final MenuDTO savedMenu = menuSaver.apply(menu);
         savedMenu.setTypeSort(typeSort);
-        savedMenu.setMenuItems(savedMenu.getMenuItems());
+//        savedMenu.setMenuItems(savedMenu.getMenuItems());
 
         super.updateWorkingVersion(docId);
 
@@ -272,6 +284,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return repository.findAll();
     }
 
+    @Override
+    public List<Menu> getByDocId(Integer docId) {
+        boolean isNewVersion = versionService.hasNewerVersion(docId);
+
+        final Version version = isNewVersion
+                ? versionService.getDocumentWorkingVersion(docId)
+                : versionService.getLatestVersion(docId);
+
+        return repository.findByVersion(version);
+    }
+
     private List<MenuItemDTO> getMenuItemsOf(
             int menuIndex, int docId, MenuItemsStatus status, String langCode, boolean isVisible
     ) {
@@ -286,7 +309,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
                 ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
-                : menuItem -> menuItemToDTO.apply(menuItem, language);
+                : menuItemToDTO;
 
         return getSortedMenuItemsBySortOrder(Optional.ofNullable(menu)
                 .map(Menu::getMenuItems)
