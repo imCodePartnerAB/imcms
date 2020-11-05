@@ -1,16 +1,43 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.api.SourceFile;
-import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageHistoryDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.dto.TextHistoryDTO;
+import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -35,8 +62,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -56,7 +89,7 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
+    public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
         return documentMenuService::getMenuItemDTO;
     }
 
@@ -74,7 +107,7 @@ class MappingConfig {
     @Bean
     public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang(
             CommonContentService commonContentService,
-            BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
+            Function<MenuItem, MenuItemDTO> menuItemToDTO,
             LanguageService languageService,
             VersionService versionService,
             DocumentMenuService documentMenuService
@@ -103,7 +136,7 @@ class MappingConfig {
                 return null;
             }
 
-            return menuItemToDTO.apply(menuItem, language);
+            return menuItemToDTO.apply(menuItem);
         };
     }
 
@@ -113,15 +146,15 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<Menu, Language, MenuDTO> menuToMenuDTO(BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO) {
-        return (menu, language) -> {
+    public Function<Menu, MenuDTO> menuToMenuDTO(Function<MenuItem, MenuItemDTO> menuItemToDTO) {
+        return menu -> {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
             menuDTO.setNested(menu.isNested());
             menuDTO.setMenuItems(menu.getMenuItems()
                     .stream()
-                    .map(menuItem -> menuItemToDTO.apply(menuItem, language)).collect(Collectors.toList()));
+                    .map(menuItemToDTO).collect(Collectors.toList()));
 
             return menuDTO;
         };
