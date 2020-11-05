@@ -23,7 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,7 +81,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     @Override
-    public MenuItemDTO getMenuItemDTO(MenuItem menuItem, Language language) {
+    public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
         final Integer docId = menuItem.getDocumentId();
         final Meta metaDocument = metaRepository.findOne(docId);
 

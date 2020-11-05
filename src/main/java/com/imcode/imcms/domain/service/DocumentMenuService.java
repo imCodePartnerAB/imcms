@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.user.UserDomainObject;
@@ -13,5 +12,5 @@ public interface DocumentMenuService {
 
     Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId);
 
-    MenuItemDTO getMenuItemDTO(MenuItem menuItem, Language language);
+    MenuItemDTO getMenuItemDTO(MenuItem menuItem);
 }
