@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,7 +39,10 @@ import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static com.imcode.imcms.sorted.TypeSort.MANUAL;
 import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.ENG_CODE;
+import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
+import static imcode.server.ImcmsConstants.SWE_CODE;
+import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -50,6 +54,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private Function<Menu, MenuDTO> menuToMenuDTO;
 
     @Autowired
     private LanguageRepository languageRepository;
@@ -123,6 +130,34 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getPublicMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList() {
         getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(false);
+    }
+
+    @Test
+    public void getMenus_Expected_EqualsResult() {
+        final MenuDTO newMenu = getCreatedNewMenu();
+        List<MenuDTO> resultMenus = menuService.getByDocId(newMenu.getDocId())
+                .stream()
+                .map(menuToMenuDTO)
+                .collect(Collectors.toList());
+
+        assertFalse(resultMenus.isEmpty());
+        assertEquals(1, resultMenus.size());
+    }
+
+    @Test
+    public void getMenus_WhenMenuNotExist_Expected_EmptyResultResult() {
+        final MenuDTO newMenu = getCreatedNewMenu();
+        final Integer menuId = newMenu.getDocId();
+
+        final Integer newDocId = documentDataInitializer.createData().getId();
+
+        assertNotEquals(menuId, newDocId);
+        List<MenuDTO> resultMenus = menuService.getByDocId(newDocId)
+                .stream()
+                .map(menuToMenuDTO)
+                .collect(Collectors.toList());
+
+        assertTrue(resultMenus.isEmpty());
     }
 
 
@@ -406,7 +441,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void createVersionedContent() {
         final boolean withMenuItems = true;
-        final Menu workingVersionMenu = menuDataInitializer.createDataEntity(withMenuItems, true,  3);
+        final Menu workingVersionMenu = menuDataInitializer.createDataEntity(withMenuItems, true, 3);
 
         final Version workingVersion = versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO);
         final Version latestVersionDoc = versionService.getLatestVersion(DOC_ID);
@@ -847,6 +882,19 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
+    }
+
+    private MenuDTO getCreatedNewMenu() {
+        final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 3);
+        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        documentService.save(documentDTO);
+
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
+        return menuService.saveFrom(menu);
     }
 
 

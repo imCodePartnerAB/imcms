@@ -6,6 +6,7 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
@@ -92,6 +93,9 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private LanguageService languageService;
 
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
     @BeforeEach
     public void setUp() {
         imageRepository.deleteAll();
@@ -140,6 +144,67 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         final ImageDTO resultImage = imageService.getImage(imageDTO);
 
         assertEquals(imageDTO, resultImage);
+    }
+
+    @Test
+    public void getImages_When_ImageNotInLoopEntryRef_Expected_EqualResult() {
+        final Integer createdDocId = documentDataInitializer.createData().getId();
+
+        loopDataInitializer.createData(LoopDTO.empty(createdDocId, 1));
+
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, createdDocId, VERSION_INDEX, null);
+
+        final List<ImageJPA> resultImages = imageService.getByDocId(createdDocId);
+
+        assertFalse(resultImages.isEmpty());
+        assertEquals(1, resultImages.size());
+
+        assertEquals(image, resultImages.get(0));
+    }
+
+    @Test
+    public void getImages_When_DocumentHasNotImages_Expected_EmptyResult() {
+        final Integer createdDocId = documentDataInitializer.createData().getId();
+
+        loopDataInitializer.createData(LoopDTO.empty(createdDocId, 1));
+
+        imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+
+        final List<ImageJPA> resultImages = imageService.getByDocId(createdDocId);
+
+        assertTrue(resultImages.isEmpty());
+    }
+
+
+    @Test
+    public void getImages_When_ImageInLoopEntryRef_Expected_EqualResult() {
+
+        final Integer createdDocId = documentDataInitializer.createData().getId();
+
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, createdDocId, VERSION_INDEX, loopEntryRef);
+
+        final List<ImageJPA> resultImages = imageService.getByDocId(createdDocId);
+
+        assertFalse(resultImages.isEmpty());
+        assertEquals(1, resultImages.size());
+
+        assertEquals(image, resultImages.get(0));
+
+    }
+
+    @Test
+    public void getImages_When_LoopEntryRefNotExist_Expected_EqualResult() {
+        final Integer createdDocId = documentDataInitializer.createData().getId();
+
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, createdDocId, VERSION_INDEX, null);
+
+        final List<ImageJPA> resultImages = imageService.getByDocId(createdDocId);
+
+        assertFalse(resultImages.isEmpty());
+        assertEquals(1, resultImages.size());
+
+        assertEquals(image, resultImages.get(0));
     }
 
     @Test
