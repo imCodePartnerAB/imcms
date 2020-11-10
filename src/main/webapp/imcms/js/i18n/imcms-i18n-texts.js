@@ -269,7 +269,8 @@ const texts = {
                     },
                     copy: {
                         title: "Kopiera",
-                        confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id "
+                        confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
+                        action: 'Kopiering'
                     }
                 },
                 sort: {
@@ -1186,7 +1187,8 @@ const texts = {
                     },
                     copy: {
                         title: "Copy",
-                        confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id "
+                        confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",
+                        action: 'Copying'
                     }
                 },
                 sort: {
