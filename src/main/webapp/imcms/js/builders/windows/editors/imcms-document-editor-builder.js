@@ -152,6 +152,16 @@ define("imcms-document-editor-builder",
                 });
             }
 
+            function buildLoadCopyAnimation() {
+                return new BEM({
+                    block: 'animation-copying',
+                    elements: {
+                        'text': $('<div>').text(texts.controls.copy.action).addClass('imcms-label'),
+                        'load': $('<div>').addClass('loading-animation')
+                    }
+                }).buildBlockStructure("<div>");
+            }
+
             function buildSearchDocField() {
 
                 $textField = components.texts.textField("<div>", {
@@ -258,6 +268,9 @@ define("imcms-document-editor-builder",
             const $categoriesFilter = toolBEM.buildBlock("<div>", [{"select": buildCategoriesFilterSelect()}]);
             $categoriesFilter.modifiers = ["grid-col-3"];
 
+            const $loadingAnimation = toolBEM.buildBlock('<div>', [{'load': buildLoadCopyAnimation()}]);
+            $loadingAnimation.modifiers = ['grid-col-1'];
+
             return new BEM({
                 block: "imcms-document-editor-head-tools",
                 elements: {
@@ -265,7 +278,8 @@ define("imcms-document-editor-builder",
                         $newDocButtonContainer,
                         $searchContainer,
                         $usersFilter,
-                        $categoriesFilter
+                        $categoriesFilter,
+                        $loadingAnimation
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -572,9 +586,12 @@ define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 function onConfirm() {
+                    const $animationBlock = $('.imcms-document-editor-head-tool__load');
+                    $animationBlock.css('display', 'inline-table');
                     docCopyRestApi.copy(document.id)
                         .done(copiedDocument => {
                             addDocumentToList(copiedDocument);
+                            $animationBlock.css('display', 'none');
                         })
                         .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
                 }

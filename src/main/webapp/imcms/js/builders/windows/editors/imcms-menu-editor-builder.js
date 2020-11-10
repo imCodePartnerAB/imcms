@@ -778,6 +778,9 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip($controlEdit, texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
+                const $animationBlock = $('.imcms-document-editor-head-tool__load');
+                $animationBlock.css('display', 'inline-table');
+
                 docCopyRestApi.copy(menuItemId)
                     .done(copiedDocument => {
 
@@ -787,6 +790,7 @@ define("imcms-menu-editor-builder",
                         // $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
 
                         appendNewMenuItem(copiedDocument);
+                        $animationBlock.css('display', 'none');
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
             });
