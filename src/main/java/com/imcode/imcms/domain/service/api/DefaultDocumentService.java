@@ -412,7 +412,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                 .filter(Objects::nonNull)
                 .forEach(textJPA -> {
                     textJPA.setId(null);
-                    textJPA.setVersion(versionService.create(copiedDocId));
+                    textJPA.setVersion(versionService.getLatestVersion(copiedDocId));
                     textService.save(textJPA);
                 });
     }
