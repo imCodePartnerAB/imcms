@@ -50,7 +50,7 @@ public class MenuItemDTO implements Serializable {
 
     private Integer dataIndex;
 
-    private String sortNumber;
+    private String sortOrder;
 
     private List<MenuItemDTO> children = new ArrayList<>();
 

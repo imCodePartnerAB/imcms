@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @NoArgsConstructor
-public abstract class Text implements Documentable, Serializable {
+public abstract class Text implements Documentable, Cloneable, Serializable {
 
     private static final long serialVersionUID = 9160535816003555084L;
 

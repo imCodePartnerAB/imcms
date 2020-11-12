@@ -22,7 +22,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +30,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class TextDocument extends Document {
@@ -88,9 +89,16 @@ public class TextDocument extends Document {
     }
 
     public TextField getTextField(int textFieldIndexInDocument) {
-        Text text = Imcms.getServices().getManagedBean(TextService.class)
-                .getText(getInternalTextDocument().getId(),
-                        textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        TextService textService = Imcms.getServices().getManagedBean(TextService.class);
+        Text text;
+        if (getInternalTextDocument().getVersionNo() == WORKING_VERSION_INDEX) {
+            text = textService.getText(getInternalTextDocument().getId(),
+                    textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        } else {
+            text = textService.getPublicText(getInternalTextDocument().getId(),
+                    textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        }
+
         TextDomainObject imcmsText = new TextDomainObject("");
         if (null == text.getText()) {
             getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
@@ -316,7 +324,6 @@ public class TextDocument extends Document {
             menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentTypeId()]);
             menuItemDTO.setDocumentStatus(DocumentStatus.IN_PROCESS);
             menuItemDTO.setLink("/" + (documentToAdd.getAlias() == null ? docId : documentToAdd.getAlias()));
-            menuItemDTO.setChildren(Collections.emptyList());
 
             internalTextDocument.getMenu(this.menuIndex).getMenuItems().add(menuItemDTO);
         }

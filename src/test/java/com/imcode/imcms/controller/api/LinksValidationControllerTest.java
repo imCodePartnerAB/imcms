@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
+import com.imcode.imcms.components.datainitializer.TextDataInitializer;
 import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
@@ -15,13 +16,10 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.api.DefaultLinkValidationService;
-import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -35,8 +33,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.imcode.imcms.model.Text.Type.TEXT;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @Transactional
@@ -54,8 +53,6 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
     @Autowired
     private VersionService versionService;
     @Autowired
-    private TextRepository textRepository;
-    @Autowired
     private ImageDataInitializer imageDataInitializer;
     @Autowired
     private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
@@ -71,6 +68,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
     private LoopDataInitializer loopDataInitializer;
     @Autowired
     private DefaultLinkValidationService defaultLinkValidationService;
+    @Autowired
+    private TextDataInitializer textDataInitializer;
 
 
     @Override
@@ -102,7 +101,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final Version latestVersionDoc = versionService.create(docId, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
-        createText(index, languageJPA, latestVersionDoc, TEXTS);
+        textDataInitializer.createText(index, languageJPA, latestVersionDoc, TEXTS);
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> validationLinks = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
         assertNotNull(validationLinks);
@@ -123,7 +122,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final Version latestVersionDoc = versionService.create(docId, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
-        createText(index, languageJPA, latestVersionDoc, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, latestVersionDoc, TEXT_URL);
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> validationLinks = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
         assertNotNull(validationLinks);
@@ -198,8 +197,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
-        createText(index, languageJPA, versionDoc1, TEXT_URL);
-        createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
+        textDataInitializer.createText(index, languageJPA, versionDoc1, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = true;
         List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc2Id, displayOnlyBrokenLinks);
@@ -281,7 +280,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         imageService.saveImage(imageDTO);
 
-        createText(index, languageJPA, versionDoc, TEXTS, loopEntryRef);
+        textDataInitializer.createText(index, languageJPA, versionDoc, TEXTS, loopEntryRef);
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -314,7 +313,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         imageService.saveImage(imageDTO);
 
-        createText(index, languageJPA, versionDoc, TEXT_URL, loopEntryRef);
+        textDataInitializer.createText(index, languageJPA, versionDoc, TEXT_URL, loopEntryRef);
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -343,9 +342,9 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final Version versionDoc3 = versionService.create(doc3Id, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
-        createText(index, languageJPA, versionDoc1, TEXT_URL);
-        createText(index, languageJPA, versionDoc2, TEXT_URL);
-        createText(index, languageJPA, versionDoc3, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, versionDoc1, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, versionDoc2, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, versionDoc3, TEXT_URL);
 
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc3Id, displayOnlyBrokenLinks);
@@ -373,8 +372,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
-        createText(index, languageJPA, versionDoc1, TEXT_URL);
-        createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
+        textDataInitializer.createText(index, languageJPA, versionDoc1, TEXT_URL);
+        textDataInitializer.createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc2Id, doc1Id, displayOnlyBrokenLinks);
@@ -389,30 +388,5 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(links));
     }
-
-
-    private void createText(int index, LanguageJPA language, Version version, String testText) {
-        final TextJPA text = new TextJPA();
-        text.setIndex(index);
-        text.setLanguage(language);
-        text.setText(testText);
-        text.setType(TEXT);
-        text.setVersion(version);
-
-        textRepository.saveAndFlush(text);
-    }
-
-    private void createText(int index, LanguageJPA language, Version version, String testText, LoopEntryRef loopEntryRef) {
-        final TextJPA text = new TextJPA();
-        text.setIndex(index);
-        text.setLanguage(language);
-        text.setText(testText);
-        text.setType(TEXT);
-        text.setVersion(version);
-        text.setLoopEntryRef(loopEntryRef);
-
-        textRepository.saveAndFlush(text);
-    }
-
 
 }

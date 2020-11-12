@@ -57,6 +57,7 @@ define(
                     cropY1: 0,
                     cropY2: 0,
                 };
+                imageData.rotateDirection = 'NORTH';
             }
 
             imageResize.checkCropRegionExist(imageData);
@@ -150,6 +151,10 @@ define(
                     if (imageResize.isProportionsLockedByStyle()) {
                         imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
                         imageResize.setFinalPreviewImageData(imageData);
+                    }
+
+                    if (maxWidth || maxHeight || height || width) {
+                        editSizeControls.getDisplaySizeBlock().css('display', 'flex');
                     }
                 }
 

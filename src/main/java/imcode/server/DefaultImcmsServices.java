@@ -8,15 +8,22 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
-import com.imcode.imcms.domain.dto.FileDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.UrlDocumentDTO;
-import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.AuthenticationProvidersService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
@@ -119,12 +126,38 @@ public class DefaultImcmsServices implements ImcmsServices {
     private KeyStore keyStore;
     @Getter
     private SystemData systemData;
+
     @Getter
-    private final DocumentService<TextDocumentDTO> textDocumentService;
+    @Autowired
+    private DelegatingByTypeDocumentService documentService;
+
     @Getter
-    private final DocumentService<FileDocumentDTO> fileDocumentService;
+    @Autowired
+    private CommonContentService commonContentService;
+
     @Getter
-    private final DocumentService<UrlDocumentDTO> urlDocumentService;
+    @Autowired
+    private DocumentUrlService documentUrlService;
+
+    @Getter
+    @Autowired
+    private ImageService imageService;
+
+    @Getter
+    @Autowired
+    private LoopService loopService;
+
+    @Getter
+    @Autowired
+    private TextDocumentTemplateService textDocumentTemplateService;
+
+    @Getter
+    @Autowired
+    private UserService userService;
+
+    @Getter
+    @Autowired
+    private VersionService versionService;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
@@ -144,9 +177,6 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 MenuService menuService,
                                 AuthenticationProvidersService authenticationProvidersService,
                                 LanguageService languageService,
-                                DocumentService<TextDocumentDTO> textDocumentService,
-                                DocumentService<FileDocumentDTO> fileDocumentService,
-                                DocumentService<UrlDocumentDTO> urlDocumentService,
                                 TextService textService) {
 
         this.database = database;
@@ -169,9 +199,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.menuService = menuService;
         this.authenticationProvidersService = authenticationProvidersService;
         this.languageService = languageService;
-        this.textDocumentService = textDocumentService;
-        this.fileDocumentService = fileDocumentService;
-        this.urlDocumentService = urlDocumentService;
     }
 
     @PostConstruct
@@ -334,23 +361,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
-    }
-
-    @Override
-    public DocumentService<? extends Document> getDocumentServiceByType(Meta.DocumentType documentType) {
-        switch (documentType) {
-            case TEXT:
-                return textDocumentService;
-
-            case FILE:
-                return fileDocumentService;
-
-            case URL:
-                return urlDocumentService;
-
-            default:
-                throw new UnsupportedDocumentTypeException(documentType);
-        }
     }
 
     @SuppressWarnings("unchecked")

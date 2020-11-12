@@ -112,6 +112,18 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     }
 
     @Override
+    public List<ImageJPA> getByDocId(Integer docId) {
+        boolean isNewVersion = versionService.hasNewerVersion(docId);
+
+        final Version version = isNewVersion
+                ? versionService.getDocumentWorkingVersion(docId)
+                : versionService.getLatestVersion(docId);
+
+
+        return repository.findByVersion(version);
+    }
+
+    @Override
     public Set<ImageJPA> getImagesAllVersionAndLanguages(int docId, Language language) {
         final Version version = versionService.getLatestVersion(docId);
         return repository.findByVersionAndLanguage(version, new LanguageJPA(language));

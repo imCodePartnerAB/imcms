@@ -269,7 +269,8 @@ const texts = {
                     },
                     copy: {
                         title: "Kopiera",
-                        confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id "
+                        confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
+                        action: 'Kopiering'
                     }
                 },
                 sort: {
@@ -376,6 +377,8 @@ const texts = {
                     loadFailed: 'Misslyckades att ladda. Försök igen',
                     invalidSortNumber: 'Ogiltigt data sorteringsnummer!',
                     invalidPosition: 'Ogiltig position!',
+                    fixInvalidPosition: 'Menyområdet har en ogiltig position! Snälla fixa det!'
+
                 },
                 typesSort: {
                     treeSort: 'Trädsortering',
@@ -495,6 +498,7 @@ const texts = {
                 height: "Höjd",
                 width: "Bredd",
                 preview: "Förhandsvisning",
+                edit: 'Redigera',
                 original: "Original",
                 selectImage: "Välj bild",
                 suggestAltText: 'Ge ett förslag',
@@ -1184,7 +1188,8 @@ const texts = {
                     },
                     copy: {
                         title: "Copy",
-                        confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id "
+                        confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",
+                        action: 'Copying'
                     }
                 },
                 sort: {
@@ -1291,6 +1296,7 @@ const texts = {
                     loadFailed: 'Failed to load. Try again',
                     invalidSortNumber: 'Invalid data sort number!',
                     invalidPosition: 'Invalid position!',
+                    fixInvalidPosition: 'Menu area has invalid position item! Please fix it !'
                 },
                 typesSort: {
                     treeSort: 'Tree sort',
@@ -1410,6 +1416,7 @@ const texts = {
                 height: "Height",
                 width: "Width",
                 preview: "Preview",
+                edit: "Edit",
                 original: "Original",
                 selectImage: "Select Image",
                 suggestAltText: 'Make a suggestion',

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
@@ -34,7 +35,9 @@ public class LanguageDataInitializer extends TestDataCleaner {
 
     public List<LanguageDTO> createData(List<String> langs) {
         return langs.stream()
-                .map(lang -> new LanguageDTO(languageRepository.findByCode(lang)))
+                .map(lang -> languageRepository.findByCode(lang))
+                .filter(Objects::nonNull)
+                .map(LanguageDTO::new)
                 .collect(Collectors.toList());
     }
 

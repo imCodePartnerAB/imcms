@@ -25,6 +25,14 @@
     width: 100%;
 }
 
+.imcms-document-editor-head-tool__load {
+    display: none;
+}
+
+.animation-copying__text {
+    margin-bottom: 5px;
+}
+
 .imcms-document-editor-head-tool__select .imcms-drop-down-list {
     display: block;
 }

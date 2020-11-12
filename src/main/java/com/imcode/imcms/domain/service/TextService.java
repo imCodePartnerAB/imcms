@@ -10,6 +10,8 @@ import java.util.Set;
 
 public interface TextService extends DeleterByDocumentId, VersionedContentService {
 
+    List<TextJPA> getByDocId(Integer docId);
+
     Text getText(Text textRequestData);
 
     Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);

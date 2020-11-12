@@ -8,14 +8,19 @@ import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
@@ -208,7 +213,46 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     @Override
-    public DocumentService<? extends Document> getDocumentServiceByType(Meta.DocumentType documentType) {
+    public DelegatingByTypeDocumentService getDocumentService() {
+        return null;
+    }
+
+    @Override
+    public CommonContentService getCommonContentService() {
+        return null;
+    }
+
+    @Override
+    public DocumentUrlService getDocumentUrlService() {
+        return null;
+    }
+
+    @Override
+    public ImageService getImageService() {
+        return null;
+    }
+
+    @Override
+    public LoopService getLoopService() {
+        return null;
+    }
+
+    @Override
+    public TextDocumentTemplateService getTextDocumentTemplateService() {
+        return null;
+    }
+
+    @Override
+    public UserService getUserService() {
+        return null;
+    }
+
+    @Override
+    public VersionService getVersionService() {
+        return null;
+    }
+
+    public DelegatingByTypeDocumentService getDelegatingByTypeDocService() {
         return null;
     }
 

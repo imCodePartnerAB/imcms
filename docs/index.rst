@@ -17,6 +17,7 @@ ImCMS Documentation
     getting-started/index
     tutorial/index
     design/index
+    API-documentation/index
     content-management/index
     advanced-configuration/index
     image-archive/index

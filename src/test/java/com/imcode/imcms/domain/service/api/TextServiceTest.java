@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.TextDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
@@ -31,7 +33,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.model.Text.Type.*;
+import static com.imcode.imcms.model.Text.Type.HTML;
+import static com.imcode.imcms.model.Text.Type.TEXT;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -63,6 +66,12 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     private Version latestVersion;
     private List<LanguageJPA> languages;
 
+    @Autowired
+    private TextDataInitializer textDataInitializer;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
     @BeforeAll
     public static void setUser() {
         final UserDomainObject user = new UserDomainObject(1);
@@ -72,9 +81,9 @@ public class TextServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() {
-        textRepository.deleteAll();
-        textRepository.flush();
+        textDataInitializer.cleanRepositories();
         textHistoryRepository.deleteAll();
+        documentDataInitializer.cleanRepositories();
 
         workingVersion = versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
         latestVersion = versionDataInitializer.createData(LATEST_VERSION_NO, DOC_ID);
@@ -110,6 +119,60 @@ public class TextServiceTest extends WebAppSpringTestConfig {
             final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
+    }
+
+
+    @Test
+    public void getTexts_When_TextInLoop_Expected_EqualResult() {
+        final Integer idNewDoc = documentDataInitializer.createData().getId();
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, idNewDoc);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        final LanguageJPA enLang = languages.get(0);
+        final String testText = "someTextTest";
+
+        textDataInitializer.createText(1, enLang, workVersion, testText, loopEntryRef);
+
+        List<TextJPA> resultTexts = textService.getByDocId(idNewDoc);
+
+        assertFalse(resultTexts.isEmpty());
+
+        assertEquals(1, resultTexts.size());
+        assertEquals(textService.getText(1, testText), resultTexts);
+
+    }
+
+    @Test
+    public void getTexts_When_TextNotInLoop_Expected_EqualResult() {
+
+        final Integer idNewDoc = documentDataInitializer.createData().getId();
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, idNewDoc);
+        final LanguageJPA enLang = languages.get(0);
+        final String testText = "someTextTest";
+
+        textDataInitializer.createText(1, enLang, workVersion, testText, null);
+
+        List<TextJPA> resultTexts = textService.getByDocId(idNewDoc);
+
+        assertFalse(resultTexts.isEmpty());
+
+        assertEquals(1, resultTexts.size());
+        assertEquals(textService.getText(1, testText), resultTexts);
+    }
+
+
+    @Test
+    public void getTexts_When_TextsNotExist_Expected_EmptyResult() {
+        final Integer idNewDoc = documentDataInitializer.createData().getId();
+
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, 1001);
+        final LanguageJPA enLang = languages.get(0);
+        final String testText = "someTextTest";
+
+        textDataInitializer.createText(1, enLang, workVersion, testText, null);
+
+        List<TextJPA> resultTexts = textService.getByDocId(idNewDoc);
+
+        assertTrue(resultTexts.isEmpty());
     }
 
     @Test

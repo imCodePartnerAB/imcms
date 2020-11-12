@@ -125,12 +125,11 @@
     display: block;
 }
 
-.imcms-switch-block__multi-remove {
-    position: absolute;
-    margin-top: 40px;
-    margin-left: 150px;
-    padding: 3px 12px;
+.imcms-document-list-titles__multi-remove {
     display: none;
+    width: 78px;
+    margin: 0 5px;
+    padding: 0;
 }
 
 .imcms-menu-item .imcms-control--move {

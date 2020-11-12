@@ -28,6 +28,7 @@ define("imcms-menu-editor-builder",
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
+        const rightPaddingNoneClassName = 'imcms-flex--pr-0';
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         const $title = $('<a>');
@@ -74,26 +75,59 @@ define("imcms-menu-editor-builder",
         function mapToMenuItem() {
             return {
                 documentId: $(this).data("documentId"),
-                sortNumber: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
+                sortOrder: $(this).first().find('.imcms-document-item__sort-order').children().val().trim(),
                 children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
             }
         }
 
+        function isDocumentItem(document) {
+            return document.commonContents !== undefined && document.currentVersion.id !== undefined;
+        }
+
         function mapToMenuItemWithAllFields(menuItem) {
+
             const docId = menuItem.documentId;
             const document = documentEditorBuilder.getDocumentById(docId);
-            return {
-                documentId: docId,
-                type: document.type,
-                modifiedDate: document.modified,
-                publishedDate: document.published,
-                title: document.title,
-                hasNewerVersion: document.currentVersion === WORKING_VERSION,
-                sortNumber: menuItem.sortNumber,
-                documentStatus: document.documentStatus,
-                isShownTitle: document.isShownTitle,
-                children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+            let menuElement;
+
+            if (isDocumentItem(document)) {
+                menuElement = {
+                    documentId: docId,
+                    type: document.type,
+                    modifiedDate: document.modified,
+                    publishedDate: document.published,
+                    hasNewerVersion: document.currentVersion.id === WORKING_VERSION,
+                    sortOrder: menuItem.sortOrder,
+                    documentStatus: document.documentStatus,
+                    children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+                };
+
+
+                document.commonContents.forEach(commonContent => {
+                    if (commonContent["language"]["code"] === imcms.language.code) {
+                        menuElement["title"] = commonContent["headline"];
+                    }
+                    if (commonContent.enabled && commonContent.language.code === imcms.language.code) {
+                        menuElement["isShownTitle"] = true;
+                    }
+                });
+
+            } else {
+                menuElement = {
+                    documentId: docId,
+                    type: document.type,
+                    modifiedDate: document.modified,
+                    publishedDate: document.published,
+                    title: document.title,
+                    hasNewerVersion: document.currentVersion === WORKING_VERSION,
+                    sortOrder: menuItem.sortOrder,
+                    documentStatus: document.documentStatus,
+                    isShownTitle: document.isShownTitle,
+                    children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
+                };
             }
+
+            return menuElement;
         }
 
         function getAllMenuItems() {
@@ -125,7 +159,11 @@ define("imcms-menu-editor-builder",
         }
 
         function saveAndClose(opts) {
-            saveMenuElements(opts);
+            if (document.getElementById('saveAndCloseMenuArea').classList.contains('imcms-button--disabled-click')) {
+                alert(texts.error.fixInvalidPosition);
+            } else {
+                saveMenuElements(opts);
+            }
         }
 
         function buildHead(opts) {
@@ -546,6 +584,7 @@ define("imcms-menu-editor-builder",
 
         function buildFooter(opts) {
             const $saveAndClose = components.buttons.saveButton({
+                    id: 'saveAndCloseMenuArea',
                     text: texts.saveAndClose,
                     click: () => {
                         saveAndClose(opts)
@@ -558,6 +597,15 @@ define("imcms-menu-editor-builder",
                 });
 
             return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
+        }
+
+
+        function controlPaddingClassForTitlesHEAD() {
+            if (isMultiRemoveModeEnabled() && !$menuTitlesBlock.hasClass(rightPaddingNoneClassName)) {
+                $menuTitlesBlock.addClass(rightPaddingNoneClassName);
+            } else {
+                $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
+            }
         }
 
         function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
@@ -591,11 +639,11 @@ define("imcms-menu-editor-builder",
         function refreshDocuments(submenuDocIds, currentMenuItemId) {
             submenuDocIds.forEach(id => {
                 let document = documentEditorBuilder.getDocumentById(id);
-                documentEditorBuilder.refreshDocumentInList(document);
+                documentEditorBuilder.refreshDocumentInList(document, isDocumentItem(document));
             });
 
             let parentDoc = documentEditorBuilder.getDocumentById(currentMenuItemId);
-            documentEditorBuilder.refreshDocumentInList(parentDoc);
+            documentEditorBuilder.refreshDocumentInList(parentDoc, isDocumentItem(parentDoc));
         }
 
         function removeMenuItem() {
@@ -609,7 +657,7 @@ define("imcms-menu-editor-builder",
                 }
 
                 removeMenuItemFromEditor(currentMenuItem);
-
+                reorderMenuListBySortNumber(getAllMenuItems());
             });
         }
 
@@ -640,8 +688,11 @@ define("imcms-menu-editor-builder",
 
         function appendNewMenuItem(doc) {
             const sortType = document.getElementById("type-sort").value;
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(doc), { level: 1, sortType }));
-            documentEditorBuilder.refreshDocumentInList(doc)
+
+            getFirstItemInMenuArea().before(buildMenuItemTree(getMenuElementTree(doc), {level: 1, sortType}));
+
+            documentEditorBuilder.addDocumentToList(doc);
+            reorderMenuListBySortNumber(getAllMenuItems());
         }
 
         function refreshMenuItem(document) {
@@ -727,17 +778,19 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip($controlEdit, texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
+                const $animationBlock = $('.imcms-document-editor-head-tool__load');
+                $animationBlock.css('display', 'inline-table');
+
                 docCopyRestApi.copy(menuItemId)
                     .done(copiedDocument => {
 
-                        documentEditorBuilder.incrementDocumentNumber(1);
+                        // const $documentItemContainer = documentEditorBuilder
+                        //     .buildDocument(copiedDocument, {moveEnable: true}, true);
 
-                        const $documentItemContainer = documentEditorBuilder
-                            .buildDocument(copiedDocument, {moveEnable: true});
-
-                        $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
+                        // $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
 
                         appendNewMenuItem(copiedDocument);
+                        $animationBlock.css('display', 'none');
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
             });
@@ -798,8 +851,8 @@ define("imcms-menu-editor-builder",
                         getDeepSortedItemsBySortNumber(item.children);
                     } else {
                         arr.sort(function (menuItem1, menuItem2) {
-                            const parsedValItem1 = parseValue(menuItem1.sortNumber);
-                            const parsedValItem2 = parseValue(menuItem2.sortNumber);
+                            const parsedValItem1 = parseValue(menuItem1.sortOrder);
+                            const parsedValItem2 = parseValue(menuItem2.sortOrder);
 
                             return parsedValItem1[parsedValItem1.length - 1] - parsedValItem2[parsedValItem2.length - 1];
                         })
@@ -810,14 +863,15 @@ define("imcms-menu-editor-builder",
 
         function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent, menuItemId) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
-            const sortedMenuItems = getDeepSortedItemsBySortNumber(menuItems);
+            getDeepSortedItemsBySortNumber(menuItems);
 
-            swapSameItemSortNumber(sortedMenuItems, isOldValMoreCurrent);
+            swapSameItemSortNumber(menuItems, isOldValMoreCurrent);
 
-            const mappedMenuItems = sortedMenuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
+            const mappedMenuItems = menuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
             $menuElementsContainer.find('.imcms-menu-list').remove();
             const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
+            controlPaddingClassForTitlesHEAD();
             $menuElementsContainer.append($menuItemsSortedList);
 
             const $changedItem = getMenuDocByObjId(menuItemId);
@@ -867,17 +921,19 @@ define("imcms-menu-editor-builder",
             function removeAndAddClassForInCorrectData($input, isAdd) {
                 if ($input.hasClass('imcms-menu-incorrect-data-light')) {
                     $input.removeClass('imcms-menu-incorrect-data-light');
+                    document.getElementById('saveAndCloseMenuArea').classList.remove('imcms-button--disabled-click');
                 }
                 if (isAdd) {
                     $input.addClass('imcms-menu-incorrect-data-light');
                     alert(texts.error.invalidPosition);
+                    document.getElementById('saveAndCloseMenuArea').classList.add('imcms-button--disabled-click')
                 }
             }
 
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
-                value: menuElement.sortNumber,
-                id: menuElement.sortNumber,
+                value: menuElement.sortOrder,
+                id: menuElement.sortOrder,
                 name: menuElement.documentId
             });
 
@@ -1017,12 +1073,12 @@ define("imcms-menu-editor-builder",
                 const currentMenuItem = menuElements[i];
                 const hasChildren = currentMenuItem.children.length;
                 let dataTreeKey = treeKey ? treeKey + "." + (i + 1) : (i + 1) + '';
-                const isEmptySortNumber = currentMenuItem.sortNumber;
+                const isEmptySortNumber = currentMenuItem.sortOrder;
 
-                currentMenuItem.sortNumber = dataTreeKey;
+                currentMenuItem.sortOrder = dataTreeKey;
 
                 if (hasChildren) {
-                    dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortNumber;
+                    dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortOrder;
                     setSortNumbersInMenuItems(menuElements[i].children, dataTreeKey);
                 }
             }
@@ -1034,7 +1090,7 @@ define("imcms-menu-editor-builder",
                 if (item.children.length) {
                     swapSameItemSortNumber(item.children, oldValMoreCurrent);
                 }
-                duplicate = array.map(item => item.sortNumber).indexOf(item.sortNumber) !== index ? item : duplicate
+                duplicate = array.map(item => item.sortOrder).indexOf(item.sortOrder) !== index ? item : duplicate
             });
 
             const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
@@ -1087,12 +1143,11 @@ define("imcms-menu-editor-builder",
             return treeBlock.append($childElements);
         }
 
-        function isCorrectSortNumber(sortNumber, level) {
-            return sortNumber && sortNumber.match(/^\d+(\.\d+)*$/) && (sortNumber.match(/\./g) || []).length === (level - 1);
-        }
-
+        let $menuTitlesBlock;
         let $menuItemsBlock;
         let $sortOrderColumnHead;
+
+        let $removeButton;
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
@@ -1118,6 +1173,12 @@ define("imcms-menu-editor-builder",
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
+                $removeButton = components.buttons.positiveButton({
+                    text: texts.multiRemove,
+                    click: removeEnabledMenuItems
+                });
+
+                isMultiRemoveModeEnabled() ? $removeButton.css('display', 'block') : $removeButton.css('display', 'none');
 
                 const $idColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
@@ -1172,7 +1233,8 @@ define("imcms-menu-editor-builder",
                 return new BEM({
                     block: "imcms-document-list-titles",
                     elements: {
-                        "title": containerHeadTitle
+                        "title": containerHeadTitle,
+                        "multi-remove": $removeButton,
                     }
                 }).buildBlockStructure("<div>", {
                     class: "imcms-menu-list-titles"
@@ -1182,7 +1244,7 @@ define("imcms-menu-editor-builder",
             return new BEM({
                 block: "imcms-document-list",
                 elements: {
-                    "titles": buildMenuTitlesRow(),
+                    "titles": $menuTitlesBlock = buildMenuTitlesRow(),
                     "items": $menuItemsBlock = buildMenuElements(menuElementsTree)
                 }
             }).buildBlockStructure("<div>", {
@@ -1204,7 +1266,6 @@ define("imcms-menu-editor-builder",
 
             function onDocumentSaved(document) {
                 appendNewMenuItem(document);
-                documentEditorBuilder.addDocumentToList(document);
             }
 
             function onNewDocButtonClick(e) {
@@ -1268,15 +1329,17 @@ define("imcms-menu-editor-builder",
             function switchButtonAction() {
                 const $switchButton = $('.imcms-switch-block__button');
                 const $switchActiveInfoBlock = $('.imcms-switch-block__active-info');
-                const $removeButton = $('.imcms-switch-block__multi-remove');
+
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $removeButton.css('display', 'none');
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOff);
+                    $removeButton.css('display', 'none');
+                    $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.multiRemoveInfoOn);
                     $removeButton.css('display', 'block');
+                    $menuTitlesBlock.addClass(rightPaddingNoneClassName);
                 }
 
                 changeControlsByMultiRemove();
@@ -1289,10 +1352,6 @@ define("imcms-menu-editor-builder",
                     'button': components.buttons.switchOffButton({
                         click: switchButtonAction
                     }),
-                    'multi-remove': components.buttons.positiveButton({
-                        text: texts.multiRemove,
-                        click: removeEnabledMenuItems
-                    })
                 }
             }).buildBlockStructure('<div>');
         }
@@ -1324,6 +1383,8 @@ define("imcms-menu-editor-builder",
 
                 return isCheckedItem;
             }
+
+            reorderMenuListBySortNumber(getAllMenuItems());
         }
 
         let mapTypesSort = new Map();
@@ -1426,10 +1487,15 @@ define("imcms-menu-editor-builder",
         function buildMenuItemsBySelectedType(menuData) {
             menusRestApi.getSortedItems(menuData).done(menuItems => {
                 prevType = menuData.typeSort;
-                $menuElementsContainer.find('.imcms-menu-list').remove();
-                let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
-                $menuElementsContainer.append($menuItemsSortedList);
+                controlPaddingClassForTitlesHEAD();
+                rebuildAllMenuItemsInMenuContainer(menuItems, menuData.typeSort);
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        }
+
+        function rebuildAllMenuItemsInMenuContainer(menuItems, typeSort) {
+            $menuElementsContainer.find('.imcms-menu-list').remove();
+            let $menuItemsSortedList = buildMenuEditorContent(menuItems, typeSort);
+            $menuElementsContainer.append($menuItemsSortedList);
         }
 
         function buildOnSelectedTypeSort(opts) {

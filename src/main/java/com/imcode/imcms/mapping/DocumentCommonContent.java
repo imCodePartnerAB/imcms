@@ -28,7 +28,7 @@ public final class DocumentCommonContent implements Serializable {
     private final Integer versionNo;
 
     public DocumentCommonContent() {
-        this("", "", false, 0);
+        this("", "", true, 0);
     }
 
     public DocumentCommonContent(String headline, String menuText, boolean enabled,
@@ -91,7 +91,7 @@ public final class DocumentCommonContent implements Serializable {
     public static class Builder {
         private String headline;
         private String menuText;
-        private boolean enabled = false;
+        private boolean enabled = true;
         private Integer versionNo;
 
         public Builder() {

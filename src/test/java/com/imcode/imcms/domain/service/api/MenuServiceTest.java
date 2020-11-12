@@ -30,8 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -54,6 +54,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private Function<Menu, MenuDTO> menuToMenuDTO;
 
     @Autowired
     private LanguageRepository languageRepository;
@@ -129,6 +132,34 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(false);
     }
 
+    @Test
+    public void getMenus_Expected_EqualsResult() {
+        final MenuDTO newMenu = getCreatedNewMenu();
+        List<MenuDTO> resultMenus = menuService.getByDocId(newMenu.getDocId())
+                .stream()
+                .map(menuToMenuDTO)
+                .collect(Collectors.toList());
+
+        assertFalse(resultMenus.isEmpty());
+        assertEquals(1, resultMenus.size());
+    }
+
+    @Test
+    public void getMenus_WhenMenuNotExist_Expected_EmptyResultResult() {
+        final MenuDTO newMenu = getCreatedNewMenu();
+        final Integer menuId = newMenu.getDocId();
+
+        final Integer newDocId = documentDataInitializer.createData().getId();
+
+        assertNotEquals(menuId, newDocId);
+        List<MenuDTO> resultMenus = menuService.getByDocId(newDocId)
+                .stream()
+                .map(menuToMenuDTO)
+                .collect(Collectors.toList());
+
+        assertTrue(resultMenus.isEmpty());
+    }
+
 
     @Test
     public void saveMenu_When_ExistBefore_Expect_NoDuplicatedDataAndCorrectSave() {
@@ -166,26 +197,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
-
-        final MenuItemDTO menuItem0 = newMenuItems.get(0);
-
-        final List<MenuItemDTO> children1 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO("2.1"),
-                menuDataInitializer.createMenuItemDTO("2.2"),
-                menuDataInitializer.createMenuItemDTO("2.3")
-        );
-
-        menuItem0.setChildren(children1);
-
-        final List<MenuItemDTO> children2 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO("2.1.1"),
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO("")
-        );
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-
-        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
-        menuItem0FirstChild.setChildren(children2);
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
 
         testMenuDTO.setMenuItems(newMenuItems);
 
@@ -206,59 +218,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(newSize, menuItemAfter.size());
     }
 
-    @Test
-    public void saveMenu_When_SortNumbersIsEmptyTreeSort_Expect_NoDuplicatedDataAndCorrectSave() {
-        menuDataInitializer.cleanRepositories();
-        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
-
-        final MenuDTO expectedMenuDTO = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
-        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(TREE_SORT), 0);
-        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
-
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-
-        final MenuItemDTO menuItem0 = newMenuItems.get(0);
-
-        final List<MenuItemDTO> children1 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO("")
-        );
-
-        menuItem0.setChildren(children1);
-
-        final List<MenuItemDTO> children2 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO("")
-        );
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-
-        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
-        menuItem0FirstChild.setChildren(children2);
-
-        testMenuDTO.setMenuItems(newMenuItems);
-
-        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
-
-        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
-
-        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
-        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
-        assertEquals(expectedMenuItems.get(0).getSortNumber(), menuItemAfter.get(0).getSortNumber());
-        assertEquals(expectedMenuItems.stream()
-                        .map(MenuItemDTO::getSortNumber)
-                        .collect(Collectors.toList()),
-
-                menuItemAfter.stream()
-                        .map(MenuItemDTO::getSortNumber)
-                        .collect(Collectors.toList())
-        );
-    }
 
     @Test
-    public void saveMenu_When_SortNumbersIsEmptyManual_Expect_NoDuplicatedDataAndCorrectSave() {
+    public void saveMenu_When_ManualTypeSort_Expect_NoDuplicatedDataAndCorrectSave() {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
 
@@ -266,11 +228,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(MANUAL), 0);
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("4"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("5"));
 
         testMenuDTO.setMenuItems(newMenuItems);
 
@@ -281,11 +243,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(expectedMenuItems.size(), menuItemAfter.size());
         assertEquals(expectedMenuItems.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList()),
 
                 menuItemAfter.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList())
         );
 
@@ -298,7 +260,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         final MenuDTO menuDTO = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
         final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
-        menuItems.get(1).setSortNumber("1");
+        menuItems.get(1).setSortOrder("1");
         final MenuDTO expectedMenuDTO = menuService.saveFrom(menuDTO);
         final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
 
@@ -307,26 +269,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
-
-        final MenuItemDTO menuItem0 = newMenuItems.get(0);
-
-        final List<MenuItemDTO> children1 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO("1.1"),
-                menuDataInitializer.createMenuItemDTO("1.2"),
-                menuDataInitializer.createMenuItemDTO("1.3")
-        );
-
-        menuItem0.setChildren(children1);
-
-        final List<MenuItemDTO> children2 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO("1.1.1"),
-                menuDataInitializer.createMenuItemDTO("1.1.2"),
-                menuDataInitializer.createMenuItemDTO("1.1.3")
-        );
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
-
-        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
-        menuItem0FirstChild.setChildren(children2);
 
         testMenuDTO.setMenuItems(newMenuItems);
 
@@ -335,13 +278,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(expectedMenuItems.size(), menuItemAfter.size());
         assertEquals(expectedMenuItems.stream()
-                        .flatMap(MenuItemDTO::flattened)
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList()),
 
                 menuItemAfter.stream()
-                        .flatMap(MenuItemDTO::flattened)
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList())
         );
     }
@@ -358,26 +299,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
-
-        final MenuItemDTO menuItem0 = newMenuItems.get(0);
-
-        final List<MenuItemDTO> children1 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO("1.1"),
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO("1.3")
-        );
-
-        menuItem0.setChildren(children1);
-
-        final List<MenuItemDTO> children2 = Arrays.asList(
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO(""),
-                menuDataInitializer.createMenuItemDTO("")
-        );
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO(""));
-
-        final MenuItemDTO menuItem0FirstChild = menuItem0.getChildren().get(0);
-        menuItem0FirstChild.setChildren(children2);
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
 
         testMenuDTO.setMenuItems(newMenuItems);
 
@@ -387,13 +309,13 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(expectedMenuItems.size(), menuItemAfter.size());
-        assertEquals(expectedMenuItems.get(0).getSortNumber(), menuItemAfter.get(0).getSortNumber());
+        assertEquals(expectedMenuItems.get(0).getSortOrder(), menuItemAfter.get(0).getSortOrder());
         assertEquals(expectedMenuItems.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList()),
 
                 menuItemAfter.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList())
         );
     }
@@ -406,15 +328,15 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         final MenuDTO menuDTO = menuDataInitializer.createData(true, true, String.valueOf(MANUAL), 5);
         final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
-        menuItems.get(4).setSortNumber("1");
+        menuItems.get(4).setSortOrder("1");
         final MenuDTO expectedMenuDTO = menuService.saveFrom(menuDTO);
 
         final MenuDTO testMenuDTO = menuDataInitializer.createData(false, true, String.valueOf(MANUAL), 0);
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
-        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("4"));
         newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
 
@@ -427,11 +349,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(expectedMenuItems.size(), menuItemAfter.size());
         assertEquals(expectedMenuItems.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList()),
 
                 menuItemAfter.stream()
-                        .map(MenuItemDTO::getSortNumber)
+                        .map(MenuItemDTO::getSortOrder)
                         .collect(Collectors.toList())
         );
     }
@@ -519,7 +441,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void createVersionedContent() {
         final boolean withMenuItems = true;
-        final Menu workingVersionMenu = menuDataInitializer.createDataEntity(withMenuItems, true, null, 3);
+        final Menu workingVersionMenu = menuDataInitializer.createDataEntity(withMenuItems, true, 3);
 
         final Version workingVersion = versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO);
         final Version latestVersionDoc = versionService.getLatestVersion(DOC_ID);
@@ -572,7 +494,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
         assertEquals(menuItems.size(), expectedMenuItems.size());
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -596,7 +517,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
         assertEquals(2, expectedMenuItems.size());
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -690,7 +610,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
         assertEquals(menuItems.size(), expectedMenuItems.size());
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -732,12 +651,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.createVersionedContent(workingVersion, latestVersionDoc);
         menuService.saveFrom(menu);
 
-        assertTrue(menu.getMenuItems().get(0).getChildren().isEmpty());
-
         List<MenuItemDTO> publicMenuItems = menuService.getPublicMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested());
 
         assertEquals(menu.getMenuItems().size(), publicMenuItems.size());
-        publicMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -875,8 +791,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
-
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -900,7 +814,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -913,7 +826,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -935,7 +847,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -947,7 +858,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
-        expectedMenuItems.forEach(menuItemDTO -> assertTrue(menuItemDTO.getChildren().isEmpty()));
     }
 
     @Test
@@ -960,7 +870,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -973,7 +882,19 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
 
-        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
+    }
+
+    private MenuDTO getCreatedNewMenu() {
+        final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 3);
+        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        documentService.save(documentDTO);
+
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
+        return menuService.saveFrom(menu);
     }
 
 
@@ -995,9 +916,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
                 : menuService.getPublicMenuItems(menu.getDocId(), menu.getMenuIndex(), code, true);
 
         assertEquals(menuDataInitializer.getMenuItemDtoList().size(), menuItemDtosOfMenu.size());
-        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().size());
-        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().get(0).getChildren().size(),
-                menuItemDtosOfMenu.get(0).getChildren().get(0).getChildren().size());
+
     }
 
     private DocumentDTO setUpMenuItem(DocumentDTO document, String enableLang, Meta.DisabledLanguageShowMode showMode) {

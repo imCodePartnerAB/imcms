@@ -81,7 +81,6 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
                 final String ulData = getBuiltUlWithClassHtml(2, listAttr);
                 buildChildrenMenuItemHtml(buildContentMenu.append(ulData), currentParentItem.getChildren(),
                         dataTreeKey, 2, wrappers, listAttr, docId);
-                buildContentMenu.append(UL_TAG_CLOSE).append(LI_TAG_CLOSE);
             } else {
                 buildContentMenu.append(LI_TAG_CLOSE);//close current parent item
             }

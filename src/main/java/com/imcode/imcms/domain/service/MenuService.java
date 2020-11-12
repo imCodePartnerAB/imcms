@@ -27,6 +27,8 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
 
     List<Menu> getAll();
 
+    List<Menu> getByDocId(Integer docId);
+
     MenuDTO saveFrom(MenuDTO menuDTO);
 
     void deleteByVersion(Version version);

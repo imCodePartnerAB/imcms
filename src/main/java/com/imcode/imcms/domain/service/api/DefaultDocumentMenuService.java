@@ -10,6 +10,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Version;
@@ -22,7 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +81,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     @Override
-    public MenuItemDTO getMenuItemDTO(int docId, Language language) {
+    public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
+        final Integer docId = menuItem.getDocumentId();
         final Meta metaDocument = metaRepository.findOne(docId);
 
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
@@ -103,6 +109,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
         menuItemDTO.setHasNewerVersion(versionService.hasNewerVersion(docId));
         menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
+        menuItemDTO.setSortOrder(menuItem.getSortOrder());
 
         return menuItemDTO;
     }

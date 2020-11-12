@@ -18,6 +18,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
 
     List<ImageJPA> getUsedImagesInWorkingAndLatestVersions(String imageURL);
 
+    List<ImageJPA> getByDocId(Integer docId);
+
     Set<ImageJPA> getImagesAllVersionAndLanguages(int docId, Language language);
 
     void saveImage(ImageDTO imageDTO);

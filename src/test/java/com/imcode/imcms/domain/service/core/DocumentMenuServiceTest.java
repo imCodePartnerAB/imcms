@@ -11,8 +11,10 @@ import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -30,9 +32,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
@@ -51,6 +54,9 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+
+    @Autowired
+    private MenuRepository menuRepository;
 
     private Meta meta;
 
@@ -238,6 +244,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     private void testMenuItemDTO(String testAlias) {
         final Integer docId = meta.getId();
+
         final LanguageDTO language = languageDataInitializer.createData().get(0);
 
         final DocumentDTO documentDTO = documentService.get(docId);
@@ -252,7 +259,11 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         documentDTO.setAlias(testAlias);
         documentService.save(documentDTO);
 
-        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(docId, language);
+        final MenuItem menuItem = new MenuItem();
+        menuItem.setSortOrder("1");
+        menuItem.setDocumentId(docId);
+
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
 
         assertThat(menuItemDTO.getDocumentId(), is(docId));
         assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
@@ -260,7 +271,6 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         assertThat(menuItemDTO.getLink(), is("/" + (StringUtils.isBlank(testAlias) ? docId : testAlias)));
         assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
         assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-        assertThat(menuItemDTO.getChildren(), empty());
         assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
         assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
     }

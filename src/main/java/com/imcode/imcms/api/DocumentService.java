@@ -162,9 +162,13 @@ public class DocumentService {
             DocumentDomainObject internalDoc = document.getInternal();
             UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
 
-            return (0 == document.getId())
+            int docId = (0 == document.getId())
                     ? documentMapper.saveNewDocument(internalDoc, user).getId()
                     : documentMapper.saveDocument(internalDoc, user);
+
+            documentMapper.invalidateDocument(docId);
+
+            return docId;
 
         } catch (AliasAlreadyExistsInternalException e) {
             throw new AliasAlreadyExistsException(e);

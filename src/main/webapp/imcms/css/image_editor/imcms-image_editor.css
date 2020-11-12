@@ -118,3 +118,7 @@
 .imcms-control--permalink {
     margin-top: 14px;
 }
+
+.imcms-display-size.imcms-image-size-control__display-size {
+    display: none;
+}

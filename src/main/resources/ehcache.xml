@@ -2,36 +2,38 @@
          xsi:noNamespaceSchemaLocation="ehcache.xsd"
          updateCheck="true" monitoring="autodetect" dynamicConfig="true">
 
-    <diskStore path="auto/default/path"/>
-
     <defaultCache
             maxEntriesLocalHeap="10000"
             timeToIdleSeconds="6000"
             timeToLiveSeconds="3000"
             maxEntriesLocalDisk="10000000"
             diskExpiryThreadIntervalSeconds="120"
+            overflowToDisk="false"
             memoryStoreEvictionPolicy="LRU">
-        <persistence strategy="localTempSwap"/>
+        <persistence strategy="distributed"/>
     </defaultCache>
 
     <cache name="StaticContentCachingFilter"
            maxEntriesLocalHeap="2000"
+           overflowToDisk="false"
            eternal="true">
-        <persistence strategy="localTempSwap"/>
+        <persistence strategy="distributed"/>
     </cache>
 
     <cache name="OtherContentCachingFilter"
            maxEntriesLocalHeap="2000"
            timeToIdleSeconds="2629744"
+           overflowToDisk="false"
            timeToLiveSeconds="2629744">
-        <persistence strategy="localTempSwap"/>
+        <persistence strategy="distributed"/>
     </cache>
 
     <cache name="PublicDocumentsCache"
            maxEntriesLocalHeap="3000"
            timeToIdleSeconds="2629744"
            timeToLiveSeconds="2629744"
+           overflowToDisk="false"
            memoryStoreEvictionPolicy="LRU">
-        <persistence strategy="localTempSwap"/>
+        <persistence strategy="distributed"/>
     </cache>
 </ehcache>

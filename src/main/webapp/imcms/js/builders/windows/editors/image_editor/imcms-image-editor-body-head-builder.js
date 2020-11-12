@@ -158,7 +158,7 @@ define(
         let $tabPreview;
 
         function buildSwitchViewControls() {
-            $tabPreview = components.texts.titleText("<div>", texts.preview, {
+            $tabPreview = components.texts.titleText("<div>", texts.edit, {
                 "data-tab": "prev",
                 click: toggleImgArea
             });

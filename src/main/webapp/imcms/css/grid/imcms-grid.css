@@ -9,6 +9,7 @@
 }
 
 .imcms-document-editor-head-tools__tool--grid-col-2,
+.imcms-document-editor-head-tools__tool--grid-col-1,
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-editor-head-tools__tool--grid-col-4,
 .imcms-grid-col-1,
@@ -49,7 +50,11 @@
 
 .imcms-document-editor-head-tools__tool--grid-col-4,
 .imcms-grid-col-4 {
-    width: 33.33%;
+    width: 23.33%;
+}
+
+.imcms-document-editor-head-tools__tool--grid-col-1 {
+    width: 10%;
 }
 
 .imcms-grid-col-5 {
