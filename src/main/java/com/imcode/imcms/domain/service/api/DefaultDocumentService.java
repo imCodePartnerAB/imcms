@@ -352,9 +352,14 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
         int i = 1;
-        while (propertyService.existsByAlias(alias + "-" + i++));
+        while (propertyService.existsByAlias(alias + "-" + i++)) ;
 
         return alias + "-" + (i - 1);
+    }
+
+    @Override
+    public void deleteByIds(List<Integer> ids) {
+        ids.forEach(this::deleteByDocId);
     }
 
     protected void deleteDocumentContent(Integer docIdToDelete) {

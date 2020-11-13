@@ -154,4 +154,9 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         return defaultDocumentService.getUniqueAlias(alias);
     }
 
+    @Override
+    public void deleteByIds(List<Integer> ids) {
+        defaultDocumentService.deleteByIds(ids);
+    }
+
 }

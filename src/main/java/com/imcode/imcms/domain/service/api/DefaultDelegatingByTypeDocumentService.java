@@ -16,6 +16,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -92,6 +93,11 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     @Override
     public String getUniqueAlias(String alias) {
         return defaultDocumentService.getUniqueAlias(alias);
+    }
+
+    @Override
+    public void deleteByIds(List<Integer> ids) {
+        defaultDocumentService.deleteByIds(ids);
     }
 
     private DocumentService<? extends Document> getCorrespondingDocumentService(DocumentType type) {
