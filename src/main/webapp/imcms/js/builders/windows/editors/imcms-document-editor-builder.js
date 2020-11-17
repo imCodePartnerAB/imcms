@@ -400,22 +400,21 @@ define("imcms-document-editor-builder",
         }
 
         function removeEnabledMenuItems() {
-            $documentsList.each(function () {
+            const $documents = $('.imcms-document-items-list').find('.imcms-document-items');
+
+            $documents.each(function () {
                 const $doc = $(this).first();
                 const docIds = [];
 
                 if (isActiveCheckBoxMultiRemoveDocuments($doc)) {
-                    docIds.push(parseInt($doc.lastChild.dataset.docId));
-                    // docRestApi.removeByIds()
-                    // removeMenuItemFromEditor($doc, true);
+                    docIds.push(parseInt($doc.attr('data-doc-id')));
 
+                    removeDocuments(docIds);
                 }
             });
 
             function isActiveCheckBoxMultiRemoveDocuments($doc) {
-                return $doc.find(".imcms-controls")
-                    .last()
-                    .find('.imcms-controls__control--multi-remove')[0].firstChild.checked;
+                return $doc.find('.imcms-document-item__multi-remove-controls').children()[0].firstChild.checked;
             }
         }
 
@@ -1339,6 +1338,28 @@ define("imcms-document-editor-builder",
                         $(this).parent().parent().remove();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed));
+            });
+        }
+
+        function removeDocumentsFromEditor(documentIds) {
+            documentIds.forEach(id => {
+                $documentsList.find("[data-doc-id=" + id + "]").remove();
+            })
+        }
+
+        function removeDocuments(documentIds) {
+            const question = texts.controls.question;
+
+            imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
+                if (!answer) {
+                    return;
+                }
+
+                docRestApi.removeByIds(documentIds).done(() => {
+                    removeDocumentsFromEditor(documentIds);
+                    alert('Deleted is completed! Change!')
+                }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+
             });
         }
 
