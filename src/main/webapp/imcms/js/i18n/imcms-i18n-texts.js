@@ -267,6 +267,9 @@ const texts = {
                     edit: {
                         title: "Redigera"
                     },
+                    multiRemoveInfoOff: 'Multi-remove inaktiverad',
+                    multiRemoveInfoOn: 'Multi-remove aktiverat',
+                    removeButton: 'Ta bort',
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
@@ -1186,6 +1189,9 @@ const texts = {
                     edit: {
                         title: "Edit"
                     },
+                    multiRemoveInfoOff: 'Multi-remove disabled',
+                    multiRemoveInfoOn: 'Multi-remove enabled',
+                    removeButton: 'Remove',
                     copy: {
                         title: "Copy",
                         confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",

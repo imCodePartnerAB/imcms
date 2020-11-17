@@ -473,7 +473,7 @@ define("imcms-document-editor-builder",
             });
 
             const $buttonRemove = components.buttons.positiveButton({
-                text: 'Remove Change',
+                text: texts.controls.removeButton,
                 click: removeEnabledMenuItems
             });
 
@@ -629,8 +629,7 @@ define("imcms-document-editor-builder",
                 const documentId = $doc[0].lastChild.dataset.docId
                 const document = getDocumentById(documentId);
                 $doc.find(".imcms-controls")
-                    .replaceWith(buildDocItemControls(document, opts, isEnabledMultiRemove))
-                    .addClass(controlsClass);
+                    .replaceWith(buildDocItemControls(document, opts, isEnabledMultiRemove));
             });
         }
 
@@ -642,12 +641,12 @@ define("imcms-document-editor-builder",
 
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $switchActiveInfoBlock.text("OFF");
+                    $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOff);
                     // $removeButton.css('display', 'none');
                     // $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
-                    $switchActiveInfoBlock.text('ON');
+                    $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOn);
                     // $removeButton.css('display', 'block');
                     // $menuTitlesBlock.addClass(rightPaddingNoneClassName);
                 }
@@ -658,7 +657,7 @@ define("imcms-document-editor-builder",
             return new BEM({
                 block: 'imcms-remove-switch-block',
                 elements: {
-                    'active-info': components.texts.infoText('<div>', texts.multiRemoveInfoOff),
+                    'active-info': components.texts.infoText('<div>', texts.controls.multiRemoveInfoOff),
                     'button': components.buttons.switchOffButton({
                         click: switchButtonAction
                     }),
