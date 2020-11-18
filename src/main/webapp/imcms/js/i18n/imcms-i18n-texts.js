@@ -263,6 +263,7 @@ const texts = {
                 category: "Kategori",
                 by: 'av',
                 notShownInSelectedLang: 'Inte visad på valt språk',
+                deleteInfo: 'Ta bort dokument slutfördes!',
                 controls: {
                     edit: {
                         title: "Redigera"
@@ -1186,6 +1187,7 @@ const texts = {
                 category: "Category",
                 by: 'by',
                 notShownInSelectedLang: 'Not shown in the selected language',
+                deleteInfo: 'Delete documents were completed!',
                 controls: {
                     edit: {
                         title: "Edit"

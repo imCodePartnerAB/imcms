@@ -1357,7 +1357,7 @@ define("imcms-document-editor-builder",
 
                 docRestApi.removeByIds(documentIds).done(() => {
                     removeDocumentsFromEditor(documentIds);
-                    alert('Deleted is completed! Change!')
+                    alert(texts.deleteInfo)
                 }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
 
             });
