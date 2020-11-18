@@ -138,7 +138,8 @@ define("imcms-document-editor-builder",
 
         let $textField;
 
-        function buildBodyHeadTools() {
+        function buildBodyHeadTools(opts) {
+            opts = opts ? opts : {};
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
@@ -278,6 +279,7 @@ define("imcms-document-editor-builder",
             const $multiRemoveDocs = toolBEM.buildBlock('<div>', [{'remove': buildSwitchesOffOnButtons()}])
             $multiRemoveDocs.modifiers = ['grid-col-19'];
 
+
             return new BEM({
                 block: "imcms-document-editor-head-tools",
                 elements: {
@@ -287,17 +289,17 @@ define("imcms-document-editor-builder",
                         $usersFilter,
                         $categoriesFilter,
                         $loadingAnimation,
-                        $multiRemoveDocs
+                        !opts.inMenu && $multiRemoveDocs
                     ]
                 }
             }).buildBlockStructure("<div>");
         }
 
-        function buildBodyHead() {
+        function buildBodyHead(opts) {
             return new BEM({
                 block: "imcms-document-editor-head",
                 elements: {
-                    "tools": buildBodyHeadTools(),
+                    "tools": buildBodyHeadTools(opts),
                     "error-search": buildErrorBlock()
                 }
             }).buildBlockStructure("<div>");
@@ -1209,8 +1211,8 @@ define("imcms-document-editor-builder",
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
-        function buildDocumentList(documentList, savedFlag) {
-            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id), savedFlag));
+        function buildDocumentList(documentList, savedFlag, opts) {
+            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, opts, checkByDocIdInMenuEditor(document.id), savedFlag));
 
             return new BEM({
                 block: "imcms-document-items-list",
@@ -1267,11 +1269,11 @@ define("imcms-document-editor-builder",
             return WindowBuilder.buildFooter();
         }
 
-        function buildBody() {
+        function buildBody(opts) {
             return new BEM({
                 block: "imcms-document-editor-body",
                 elements: {
-                    "body-head": buildBodyHead()
+                    "body-head": buildBodyHead(opts)
                 }
             }).buildBlockStructure("<div>");
         }

@@ -1589,12 +1589,13 @@ define("imcms-menu-editor-builder",
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
             $menuElementsContainer.append($menuElementsTree);
 
-            $documentEditor = documentEditorBuilder.buildBody();
+            $documentEditor = documentEditorBuilder.buildBody(opts);
             $documentsContainer.append($documentEditor);
             documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
         }
 
         function loadMenuEditorContent(opts) {
+            opts.inMenu = true;
             addHeadData(opts);
             menusRestApi.read(opts)
                 .done(items => {
