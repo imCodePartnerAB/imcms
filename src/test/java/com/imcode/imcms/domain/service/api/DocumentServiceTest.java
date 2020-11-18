@@ -70,6 +70,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -212,6 +213,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() throws Exception {
+        documentDataInitializer.cleanRepositories();
         templateDataInitializer.cleanRepositories();
         userDataInitializer.cleanRepositories();
         createdDoc = documentDataInitializer.createData();
@@ -599,6 +601,77 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         assertThrows(DocumentNotExistException.class, () -> documentService.get(docId));
     }
 
+
+    @Test
+    public void deleteByIds_Expect_DocumentsNotExistExceptionAfterDeletion() {
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+
+        assertEquals(2, createdDocuments.size());
+        assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
+
+        final List<Integer> docIds = createdDocuments.stream()
+                .map(DocumentDTO::getId)
+                .collect(Collectors.toList());
+
+        docIds.forEach(id -> assertNotNull(documentService.get(id)));
+
+        documentService.deleteByIds(docIds);
+        metaRepository.flush();
+
+        docIds.forEach(docId -> assertThrows(DocumentNotExistException.class, () -> documentService.get(docId)));
+    }
+
+    @Test
+    public void deleteByIds_When_ExistDifferentContents_Expect_DocumentsNotExistExceptionAfterDeletion() {
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+
+        assertEquals(2, createdDocuments.size());
+        assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
+
+        final List<Integer> docIds = createdDocuments.stream()
+                .map(DocumentDTO::getId)
+                .collect(Collectors.toList());
+
+        final String templateName = "newTemlate";
+
+        docIds.forEach(docId -> templateDataInitializer.createData(docId, templateName, templateName));
+
+        createdDocuments.forEach(this::addContentForDocument);
+
+        final List<Integer> docIdsByTemplateName = textDocumentTemplateRepository.findDocIdByTemplateName(templateName);
+
+        assertFalse(docIdsByTemplateName.isEmpty());
+
+        assertEquals(docIds.size(), docIdsByTemplateName.size());
+        assertEquals(docIds, docIdsByTemplateName);
+
+        documentService.deleteByIds(docIds);
+        metaRepository.flush();
+
+        docIds.forEach(docId -> assertThrows(DocumentNotExistException.class, () -> documentService.get(docId)));
+    }
+
+    @Test
+    public void deleteByIds_When_UserNotAdmin_Expect_AccessDeniedException() {
+        final UserDomainObject user = new UserDomainObject(2);
+        user.addRoleId(Roles.USER.getId());
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(user); // means current user is user now
+
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+
+        assertEquals(2, createdDocuments.size());
+        assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
+
+        final List<Integer> docIds = createdDocuments.stream()
+                .map(DocumentDTO::getId)
+                .collect(Collectors.toList());
+
+        docIds.forEach(id -> assertNotNull(documentService.get(id)));
+
+        assertThrows(AccessDeniedException.class, () -> documentService.deleteByIds(docIds));
+    }
+
     @Test
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
@@ -610,6 +683,16 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final DocumentDTO documentDTO = documentService.get(createdDocId);
         assertNotNull(documentDTO);
 
+        addContentForDocument(documentDTO);
+
+        documentService.deleteByDocId(documentDTO.getId());
+        metaRepository.flush();
+
+        assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
+    }
+
+    private void addContentForDocument(DocumentDTO documentDTO) {
+        final Integer createdDocId = documentDTO.getId();
         final int testIndex = 1;
 
         final LoopEntryRefDTO[] loopEntryRefDTOS = {
@@ -653,11 +736,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         menuDTO.setMenuItems(new ArrayList<>(Collections.singletonList(menuItemDTO)));
 
         menuService.saveFrom(menuDTO);
-
-        documentService.deleteByDocId(documentDTO.getId());
-        metaRepository.flush();
-
-        assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
     }
 
     @Test
