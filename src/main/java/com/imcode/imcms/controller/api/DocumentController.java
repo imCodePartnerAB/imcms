@@ -6,9 +6,6 @@ import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
-import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
-import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,11 +70,6 @@ class DocumentController {
 
     @DeleteMapping("/deleteAll")
     public void deleteAll(@RequestBody List<Integer> ids) {
-        final UserDomainObject currentUser = Imcms.getUser();
-        if (!currentUser.isSuperAdmin()) {
-            throw new AccessDeniedException("Current user doesn't has role SuperAdmin");
-        }
-
         documentService.deleteByIds(ids);
     }
 }
