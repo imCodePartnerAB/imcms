@@ -8,6 +8,10 @@
     clear: both;
 }
 
+.imcms-document-editor-head-tools__tool--grid-col-19 {
+    float: right;
+}
+
 .imcms-document-editor-head-tools__tool--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-1,
 .imcms-document-editor-head-tools__tool--grid-col-3,
@@ -53,8 +57,9 @@
     width: 23.33%;
 }
 
-.imcms-document-editor-head-tools__tool--grid-col-1 {
-    width: 10%;
+.imcms-document-editor-head-tools__tool--grid-col-1,
+.imcms-document-editor-head-tools__tool--grid-col-19 {
+    width: 5%;
 }
 
 .imcms-grid-col-5 {

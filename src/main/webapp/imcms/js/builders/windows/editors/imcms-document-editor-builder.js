@@ -276,7 +276,7 @@ define("imcms-document-editor-builder",
             $loadingAnimation.modifiers = ['grid-col-1'];
 
             const $multiRemoveDocs = toolBEM.buildBlock('<div>', [{'remove': buildSwitchesOffOnButtons()}])
-            $multiRemoveDocs.modifiers = ['grid-col-1'];
+            $multiRemoveDocs.modifiers = ['grid-col-19'];
 
             return new BEM({
                 block: "imcms-document-editor-head-tools",
@@ -471,9 +471,10 @@ define("imcms-document-editor-builder",
                 modifiers: ['status'],
             });
 
-            const $buttonRemove = components.buttons.positiveButton({
+            $removeButton = components.buttons.positiveButton({
                 text: texts.controls.removeButton,
-                click: removeEnabledMenuItems
+                click: removeEnabledMenuItems,
+                style: 'display:none;'
             });
 
             return new BEM({
@@ -488,7 +489,7 @@ define("imcms-document-editor-builder",
                         $versionColumnHead,
                         $typeColumnHead,
                         $statusColumnHead,
-                        $buttonRemove
+                        $removeButton
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -614,9 +615,6 @@ define("imcms-document-editor-builder",
         function changeControlsByMultiRemove() {
             const $documents = $('.imcms-document-items-list').find('.imcms-document-items');
             const isEnabledMultiRemove = isMultiRemoveModeEnabled();
-            const controlsClass = isEnabledMultiRemove
-                ? 'imcms-document-item__multi-remove-controls'
-                : 'imcms-document-item__controls';
 
             const opts = { // i am not sure about this hard code ..
                 copyEnable: true,
@@ -625,12 +623,14 @@ define("imcms-document-editor-builder",
 
             $documents.each(function () {
                 const $doc = $(this).first();
-                const documentId = $doc[0].lastChild.dataset.docId
+                const documentId = $doc.attr('data-doc-id');
                 const document = getDocumentById(documentId);
                 $doc.find(".imcms-controls")
                     .replaceWith(buildDocItemControls(document, opts, isEnabledMultiRemove));
             });
         }
+
+        let $removeButton;
 
         function buildSwitchesOffOnButtons() {
 
@@ -641,12 +641,12 @@ define("imcms-document-editor-builder",
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
                     $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOff);
-                    // $removeButton.css('display', 'none');
+                    $removeButton.css('display', 'none');
                     // $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOn);
-                    // $removeButton.css('display', 'block');
+                    $removeButton.css('display', 'block');
                     // $menuTitlesBlock.addClass(rightPaddingNoneClassName);
                 }
 
