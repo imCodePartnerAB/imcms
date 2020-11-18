@@ -401,17 +401,17 @@ define("imcms-document-editor-builder",
 
         function removeEnabledMenuItems() {
             const $documents = $('.imcms-document-items-list').find('.imcms-document-items');
+            const docIds = [];
 
             $documents.each(function () {
                 const $doc = $(this).first();
-                const docIds = [];
 
                 if (isActiveCheckBoxMultiRemoveDocuments($doc)) {
                     docIds.push(parseInt($doc.attr('data-doc-id')));
-
-                    removeDocuments(docIds);
                 }
             });
+
+            removeDocuments(docIds);
 
             function isActiveCheckBoxMultiRemoveDocuments($doc) {
                 return $doc.find('.imcms-document-item__multi-remove-controls').children()[0].firstChild.checked;
