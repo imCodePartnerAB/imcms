@@ -30,6 +30,7 @@ import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -359,7 +360,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public void deleteByIds(List<Integer> ids) {
-        ids.forEach(this::deleteByDocId);
+        final UserDomainObject currentUser = Imcms.getUser();
+        if (!currentUser.isSuperAdmin()) {
+            throw new AccessDeniedException("Current user doesn't has role SuperAdmin");
+        }
+
+        ids.forEach(documentMapper::deleteDocument);
     }
 
     protected void deleteDocumentContent(Integer docIdToDelete) {
