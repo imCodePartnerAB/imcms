@@ -4,6 +4,8 @@ import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.model.Document;
 import org.apache.solr.common.SolrInputDocument;
 
+import java.util.List;
+
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.01.18.
@@ -21,5 +23,7 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
     D copy(int docId);
 
     String getUniqueAlias(String alias);
+
+    void deleteByIds(List<Integer> ids);
 
 }

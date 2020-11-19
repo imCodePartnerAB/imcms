@@ -105,4 +105,9 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     public String getUniqueAlias(String alias) {
         return defaultDocumentService.getUniqueAlias(alias);
     }
+
+    @Override
+    public void deleteByIds(List<Integer> ids) {
+        defaultDocumentService.deleteByIds(ids);
+    }
 }

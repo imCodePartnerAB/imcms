@@ -179,4 +179,9 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     public String getUniqueAlias(String alias) {
         return defaultDocumentService.getUniqueAlias(alias);
     }
+
+    @Override
+    public void deleteByIds(List<Integer> ids) {
+        defaultDocumentService.deleteByIds(ids);
+    }
 }

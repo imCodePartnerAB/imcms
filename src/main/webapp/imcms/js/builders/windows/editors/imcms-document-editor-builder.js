@@ -17,6 +17,10 @@ define("imcms-document-editor-builder",
 
         texts = texts.editors.document;
 
+        const classButtonOn = "imcms-button--switch-on";
+        const classButtonOff = "imcms-button--switch-off";
+        const rightPaddingNoneClassName = 'imcms-flex--pr-0';
+        const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
         let TREE_SORT = 'TREE_SORT';
         let WORKING_VERSION = 0;
         let topPointMenu = 178; // top point menu for set item before item in the top position. Improve it if you can
@@ -271,6 +275,9 @@ define("imcms-document-editor-builder",
             const $loadingAnimation = toolBEM.buildBlock('<div>', [{'load': buildLoadCopyAnimation()}]);
             $loadingAnimation.modifiers = ['grid-col-1'];
 
+            const $multiRemoveDocs = toolBEM.buildBlock('<div>', [{'remove': buildSwitchesOffOnButtons()}])
+            $multiRemoveDocs.modifiers = ['grid-col-1'];
+
             return new BEM({
                 block: "imcms-document-editor-head-tools",
                 elements: {
@@ -279,7 +286,8 @@ define("imcms-document-editor-builder",
                         $searchContainer,
                         $usersFilter,
                         $categoriesFilter,
-                        $loadingAnimation
+                        $loadingAnimation,
+                        $multiRemoveDocs
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -391,6 +399,26 @@ define("imcms-document-editor-builder",
             appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
         }
 
+        function removeEnabledMenuItems() {
+            $documentsList.each(function () {
+                const $doc = $(this).first();
+                const docIds = [];
+
+                if (isActiveCheckBoxMultiRemoveDocuments($doc)) {
+                    docIds.push(parseInt($doc.lastChild.dataset.docId));
+                    // docRestApi.removeByIds()
+                    // removeMenuItemFromEditor($doc, true);
+
+                }
+            });
+
+            function isActiveCheckBoxMultiRemoveDocuments($doc) {
+                return $doc.find(".imcms-controls")
+                    .last()
+                    .find('.imcms-controls__control--multi-remove')[0].firstChild.checked;
+            }
+        }
+
         function buildDocumentListTitlesRow() {
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
@@ -444,6 +472,11 @@ define("imcms-document-editor-builder",
                 modifiers: ['status'],
             });
 
+            const $buttonRemove = components.buttons.positiveButton({
+                text: 'Remove Change',
+                click: removeEnabledMenuItems
+            });
+
             return new BEM({
                 block: "imcms-document-list-titles",
                 elements: {
@@ -455,7 +488,8 @@ define("imcms-document-editor-builder",
                         $publishedColumnHead,
                         $versionColumnHead,
                         $typeColumnHead,
-                        $statusColumnHead
+                        $statusColumnHead,
+                        $buttonRemove
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -573,9 +607,83 @@ define("imcms-document-editor-builder",
             }
         }
 
-        function buildDocItemControls(document, opts) {
+
+        function isMultiRemoveModeEnabled() {
+            return $('.imcms-remove-switch-block__button').hasClass(classButtonOn);
+        }
+
+        function changeControlsByMultiRemove() {
+            const $documents = $('.imcms-document-items-list').find('.imcms-document-items');
+            const isEnabledMultiRemove = isMultiRemoveModeEnabled();
+            const controlsClass = isEnabledMultiRemove
+                ? 'imcms-document-item__multi-remove-controls'
+                : 'imcms-document-item__controls';
+
+            const opts = { // i am not sure about this hard code ..
+                copyEnable: true,
+                editEnable: true
+            }
+
+            $documents.each(function () {
+                const $doc = $(this).first();
+                const documentId = $doc[0].lastChild.dataset.docId
+                const document = getDocumentById(documentId);
+                $doc.find(".imcms-controls")
+                    .replaceWith(buildDocItemControls(document, opts, isEnabledMultiRemove))
+                    .addClass(controlsClass);
+            });
+        }
+
+        function buildSwitchesOffOnButtons() {
+
+            function switchButtonAction() {
+                const $switchButton = $('.imcms-remove-switch-block__button');
+                const $switchActiveInfoBlock = $('.imcms-remove-switch-block__active-info');
+
+                if (isMultiRemoveModeEnabled()) {
+                    $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
+                    $switchActiveInfoBlock.text("OFF");
+                    // $removeButton.css('display', 'none');
+                    // $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
+                } else if ($switchButton.hasClass(classButtonOff)) {
+                    $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
+                    $switchActiveInfoBlock.text('ON');
+                    // $removeButton.css('display', 'block');
+                    // $menuTitlesBlock.addClass(rightPaddingNoneClassName);
+                }
+
+                changeControlsByMultiRemove();
+            }
+
+            return new BEM({
+                block: 'imcms-remove-switch-block',
+                elements: {
+                    'active-info': components.texts.infoText('<div>', texts.multiRemoveInfoOff),
+                    'button': components.buttons.switchOffButton({
+                        click: switchButtonAction
+                    }),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function buildRemoveCheckBoxes() {
+            return components.checkboxes.imcmsCheckbox('<div>', {
+                change: changeValueCheckBox
+            });
+        }
+
+
+        function changeValueCheckBox() {
+            const $this = $(this);
+            const newVal = $this.is(":checked");
+            $this.val(newVal);
+        }
+
+        function buildDocItemControls(document, opts, isEnableMultiRemove) {
             const controls = [];
             opts = opts || {};
+            const $multiRemoveBoxControl = buildRemoveCheckBoxes();
+            $multiRemoveBoxControl.modifiers = ['multi-remove'];
 
             if (opts.removeEnable) {
                 const $controlRemove = components.controls.remove(function () {
@@ -583,6 +691,8 @@ define("imcms-document-editor-builder",
                 });
                 controls.push($controlRemove);
             }
+
+            if (isEnableMultiRemove) controls.push($multiRemoveBoxControl);
 
             if (opts.copyEnable) {
                 function onConfirm() {
@@ -614,7 +724,13 @@ define("imcms-document-editor-builder",
                 controls.push($controlEdit);
             }
 
-            return components.controls.buildControlsBlock("<div>", controls);
+            return isEnableMultiRemove
+                ? components.controls.buildControlsBlock("<div>", controls, {
+                    'class': multiRemoveControlClass
+                })
+                : components.controls.buildControlsBlock("<div>", controls, {
+                    'class': 'imcms-document-item__controls'
+                });
         }
 
         function moveFrame(event) {
@@ -734,9 +850,9 @@ define("imcms-document-editor-builder",
             // false -> under parent; true -> in parent; null -> under all
             function highlightMenuDoc() {
                 disableHighlightingMenuDoc();
-                    get$menuItemsList().find(".imcms-doc-item-copy").css({
-                        'border': '1px dashed red'
-                    });
+                get$menuItemsList().find(".imcms-doc-item-copy").css({
+                    'border': '1px dashed red'
+                });
             }
 
             $.each(allMenuDocObjArray, (obj, param) => {
