@@ -262,7 +262,6 @@ const texts = {
         editors: {
             document: {
                 title: "Dokumenthanterare",
-                newDoc: "Ny",
                 freeText: "Fri text",
                 freeTextPlaceholder: "Skriv för att söka dokument",
                 owner: "Ägare",
@@ -1192,7 +1191,6 @@ const texts = {
         editors: {
             document: {
                 title: "Document Manager",
-                newDoc: "New",
                 freeText: "Free text",
                 freeTextPlaceholder: "Type to find document",
                 owner: "Owner",

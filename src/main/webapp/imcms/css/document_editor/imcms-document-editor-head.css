@@ -13,7 +13,8 @@
 .imcms-document-editor-head-tool__button {
     text-align: center;
     padding: 13px 17px;
-    width: 100%;
+    width: 50%;
+    font-size: 30px;
 }
 
 .imcms-input-search__text-box {

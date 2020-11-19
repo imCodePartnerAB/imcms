@@ -19,7 +19,6 @@ define("imcms-document-editor-builder",
 
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
-        const rightPaddingNoneClassName = 'imcms-flex--pr-0';
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
         let TREE_SORT = 'TREE_SORT';
         let WORKING_VERSION = 0;
@@ -152,7 +151,7 @@ define("imcms-document-editor-builder",
 
             function buildNewDocButton() {
                 return components.buttons.negativeButton({
-                    text: texts.newDoc,
+                    text: '+',
                     click: onNewDocButtonClick
                 });
             }
