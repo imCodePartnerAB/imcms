@@ -13,6 +13,7 @@ module.exports = new WindowTabsBuilder({
         require('imcms-permissions-tab-builder'),
         require('imcms-status-tab-builder'),
         require('imcms-cache-tab-builder'),
+        require('imcms-properties-tab-builder'),
     ]
 });
 
