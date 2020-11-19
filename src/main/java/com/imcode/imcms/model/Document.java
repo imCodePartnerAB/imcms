@@ -48,6 +48,7 @@ public abstract class Document implements Serializable {
         setRoleIdToPermission(from.getRoleIdToPermission());
         setLinkableByOtherUsers(from.isLinkableByOtherUsers());
         setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
+        setProperties(from.getProperties());
     }
 
     public abstract Integer getId();
