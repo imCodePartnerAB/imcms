@@ -228,6 +228,12 @@ const texts = {
                 name: "URL",
                 title: "URL"
             },
+            properties: {
+                name: 'Egenskaper',
+                add: 'Lägg till',
+                key: 'Egendomsnamn',
+                value: 'Värde',
+            },
             buttons: {
                 ok: "ok",
                 cancel: "avbryt",
@@ -1151,6 +1157,12 @@ const texts = {
             url: {
                 name: "URL",
                 title: "URL"
+            },
+            properties: {
+                name: 'Properties',
+                add: 'Add',
+                key: 'Property name',
+                value: 'Value',
             },
             buttons: {
                 ok: "ok",
