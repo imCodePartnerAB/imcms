@@ -692,7 +692,7 @@ define("imcms-document-editor-builder",
                 controls.push($controlRemove);
             }
 
-            if (isEnableMultiRemove) controls.push($multiRemoveBoxControl);
+            if (isEnableMultiRemove && !opts.inMenu) controls.push($multiRemoveBoxControl);
 
             if (opts.copyEnable) {
                 function onConfirm() {
@@ -1224,7 +1224,7 @@ define("imcms-document-editor-builder",
 
         function buildEditorBody(documentList, opts) {
             currentEditorOptions = opts;
-            $documentsList = buildDocumentList(documentList);
+            $documentsList = buildDocumentList(documentList, false, opts);
 
             $documentsList.scroll(function () {
                 const $this = $(this);
