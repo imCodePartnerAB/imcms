@@ -34,12 +34,7 @@
     padding-bottom: 0;
 }
 
-.imcms-menu-editor-body__left-side .imcms-menu-new-button .imcms-menu-sort-container {
-    padding: 0 27px 16px 14px;
-    display: block;
-}
-
-.imcms-menu-editor-body__left-side .imcms-menu-new-button__button {
+.imcms-menu-new-button__button {
     padding: 10px 0;
     width: 35px;
     font-size: 30px;
