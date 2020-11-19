@@ -6,6 +6,14 @@
     justify-content: center !important;
 }
 
+.imcms-flex--align-items-center {
+    align-items: center !important;
+}
+
+.imcms-flex--align-items-flex-end {
+    align-items: flex-end !important;
+}
+
 .imcms-flex--m-auto {
     margin: auto !important;
 }
@@ -37,6 +45,10 @@
 
 .imcms-flex--mb-0 {
     margin-bottom: 0 !important;
+}
+
+.imcms-flex--w-10 {
+    width: 10% !important;
 }
 
 .imcms-flex--w-15 {
