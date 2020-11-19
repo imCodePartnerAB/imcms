@@ -20,6 +20,7 @@ import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -324,9 +325,21 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private List<MenuItemDTO> getSortedMenuItemsBySortOrder(List<MenuItemDTO> menuItems) {
+        final List<MenuItemDTO> itemsNotNumberSortOrders = new ArrayList<>();
         final List<MenuItemDTO> sortedMenuItems = menuItems.stream()
-                .sorted(Comparator.comparing(MenuItemDTO::getSortOrder))
+                .filter(item -> {
+                    if (StringUtils.isNumeric(item.getSortOrder())) {
+                        return true;
+                    } else {
+                        itemsNotNumberSortOrders.add(item);
+                        return false;
+                    }
+                })
+                .sorted(Comparator.comparingInt(o -> Integer.parseInt(o.getSortOrder())))
                 .collect(Collectors.toList());
+
+        //sort orders which aren't numbers must add or locations to last place in array !! otherwise bellow sorting won't be work!
+        sortedMenuItems.addAll(itemsNotNumberSortOrders);
 
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 
