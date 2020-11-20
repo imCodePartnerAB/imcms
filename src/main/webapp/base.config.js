@@ -95,6 +95,7 @@ module.exports = {
                         'imcms-jquery-tag-replacer',
                         'check-browser',
                         'css-utils',
+                        'js-utils',
                     ]
                 },
                 editor_initializer: {
