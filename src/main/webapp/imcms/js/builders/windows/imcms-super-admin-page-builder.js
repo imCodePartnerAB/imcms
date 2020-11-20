@@ -35,14 +35,15 @@ define(
                         'class': 'imcms-title',
                         text: texts.head
                     }),
-                    'old-admin': $('<a>', {
-                        href: imcms.contextPath + '/servlet/AdminManager',
-                        text: texts.oldInterface + ' \u2b95',
-                    }),
+                    'exit': components.buttons.closeButton().click(onExit),
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-info-head'
             });
+        }
+
+        function onExit(){
+            window.close()
         }
 
         function buildSuperAdmin() {
