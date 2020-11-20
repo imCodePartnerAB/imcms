@@ -1,9 +1,9 @@
 define('imcms-properties-tab-builder',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-users-rest-api', 'imcms', 'imcms-i18n-texts',
-        'imcms-page-info-tab', 'jquery',
+        'imcms-page-info-tab', 'jquery', 'js-utils',
     ],
-    function (BEM, components, usersRestApi, imcms, i18Texts, PageInfoTab, $) {
+    function (BEM, components, usersRestApi, imcms, i18Texts, PageInfoTab, $, jsUtils) {
 
         const texts = i18Texts.pageInfo.properties;
 
@@ -123,7 +123,7 @@ define('imcms-properties-tab-builder',
         function mapDtoPropertiesToProperties(props) {
             const entries = Object.entries(props)
                 .map((entry) => [Symbol(), { values: entry }]);
-            return Object.fromEntries(entries)
+            return jsUtils.fromEntries(entries)
         }
 
         /**
@@ -133,7 +133,7 @@ define('imcms-properties-tab-builder',
         function mapPropertiesToDtoProperties(props) {
             const entries = Object.getOwnPropertySymbols(props)
                 .map((key) => props[key].values);
-            return Object.fromEntries(entries);
+            return jsUtils.fromEntries(entries);
         }
 
         PropertiesTab.prototype.fillTabDataFromDocument = (document) => {
@@ -144,7 +144,7 @@ define('imcms-properties-tab-builder',
 
         function filterDocumentDtoProperties(properties) {
             const entries = Object.entries(properties).filter(([key]) => key !== ALIAS_PROPERTY_KEY);
-            return Object.fromEntries(entries);
+            return jsUtils.fromEntries(entries);
         }
 
         PropertiesTab.prototype.saveData = (document) => {
