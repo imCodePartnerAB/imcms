@@ -287,7 +287,7 @@ define('imcms-document-editor-builder',
                         $usersFilter,
                         $categoriesFilter,
                         $loadingAnimation,
-                        !opts.inMenu && $multiRemoveDocs
+                        opts.inMenu || $multiRemoveDocs
                     ]
                 }
             }).buildBlockStructure('<div>');
@@ -418,7 +418,7 @@ define('imcms-document-editor-builder',
             }
         }
 
-        function buildDocumentListTitlesRow() {
+        function buildDocumentListTitlesRow(opts) {
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
                 bySorting: defaultSortPropertyValue,
@@ -471,27 +471,25 @@ define('imcms-document-editor-builder',
                 modifiers: ['status'],
             });
 
-            $removeButton = components.buttons.positiveButton({
-                text: texts.controls.removeButton,
-                click: removeEnabledMenuItems,
-                style: 'display:none;'
-            });
+            const elements = {
+                title: [
+                    $idColumnHead,
+                    $titleColumnHead,
+                    $aliasColumnHead,
+                    $modifiedColumnHead,
+                    $publishedColumnHead,
+                    $versionColumnHead,
+                    $typeColumnHead,
+                    $statusColumnHead,
+                ],
+            };
+            if (!opts.inMenu) {
+                elements.button = buildRemoveButton();
+            }
 
             return new BEM({
                 block: 'imcms-document-list-titles',
-                elements: {
-                    'title': [
-                        $idColumnHead,
-                        $titleColumnHead,
-                        $aliasColumnHead,
-                        $modifiedColumnHead,
-                        $publishedColumnHead,
-                        $versionColumnHead,
-                        $typeColumnHead,
-                        $statusColumnHead,
-                        $removeButton
-                    ]
-                }
+                elements,
             }).buildBlockStructure('<div>');
         }
 
@@ -527,6 +525,15 @@ define('imcms-document-editor-builder',
             }
 
             return $titleRowBem;
+        }
+
+        function buildRemoveButton() {
+            $removeButton = components.buttons.positiveButton({
+                text: texts.controls.removeButton,
+                click: removeEnabledMenuItems,
+                style: 'display:none;'
+            });
+            return $('<div>').append($removeButton);
         }
 
         function createFrame(event) {
@@ -642,12 +649,10 @@ define('imcms-document-editor-builder',
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
                     $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOff);
                     $removeButton.css('display', 'none');
-                    // $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
                     $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOn);
                     $removeButton.css('display', 'block');
-                    // $menuTitlesBlock.addClass(rightPaddingNoneClassName);
                 }
 
                 changeControlsByMultiRemove();
@@ -842,8 +847,6 @@ define('imcms-document-editor-builder',
             let menuDoc = null,
                 placeStatus = null
             ;
-
-            let isTree = TREE_SORT === document.getElementById('type-sort').value;
 
             // false -> under parent; true -> in parent; null -> under all
             function highlightMenuDoc() {
@@ -1240,7 +1243,7 @@ define('imcms-document-editor-builder',
             return new BEM({
                 block: 'imcms-document-list',
                 elements: {
-                    'titles': buildDocumentListTitlesRow(),
+                    'titles': buildDocumentListTitlesRow(opts),
                     'items': $documentsList
                 }
             }).buildBlockStructure('<div>');

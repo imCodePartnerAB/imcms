@@ -150,7 +150,7 @@ define("imcms-menu-editor-builder",
             };
 
             menusRestApi.create(menuDTO)
-                .done(menu => {
+                .done(() => {
                     onMenuSaved();
                     menuWindowBuilder.closeWindow();
                 })
@@ -389,7 +389,6 @@ define("imcms-menu-editor-builder",
             let menuDoc = null,
                 placeStatus = null
             ;
-            let isTree = TREE_SORT === document.getElementById('type-sort').value;
 
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
@@ -888,7 +887,7 @@ define("imcms-menu-editor-builder",
 
         function findPlaceMenuElement(menuItems, index) {
             const indexArray = parseIndex(index);
-            const placementElement = indexArray.reduce((acc, value, i) => {
+            return indexArray.reduce((acc, value, i) => {
                 if (indexArray.length - 1 === i) {
                     return acc;
                 }
@@ -897,8 +896,6 @@ define("imcms-menu-editor-builder",
                 }
                 throw new Error(texts.error.invalidSortNumber);
             }, menuItems);
-
-            return placementElement;
         }
 
         function parseIndex(index) {
@@ -1102,19 +1099,6 @@ define("imcms-menu-editor-builder",
                     menuItems[foundSameItemIndex - 1] = sameItem;
                 }
             }
-        }
-
-        function getFlattenMenuItems(menuElements, flatMenuItems) {
-            flatMenuItems = (flatMenuItems.length) ? flatMenuItems : [];
-            for (let i = 0; i < menuElements.length; i++) {
-                const currentMenuItem = menuElements[i];
-                const hasChildren = currentMenuItem.children.length;
-                flatMenuItems.push(currentMenuItem);
-                if (hasChildren) {
-                    getFlattenMenuItems(currentMenuItem.children, flatMenuItems)
-                }
-            }
-            return flatMenuItems;
         }
 
         function buildMenuItemTree(menuElement, {level, sortType}) {
@@ -1591,7 +1575,7 @@ define("imcms-menu-editor-builder",
 
             $documentEditor = documentEditorBuilder.buildBody(opts);
             $documentsContainer.append($documentEditor);
-            documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
+            documentEditorBuilder.loadDocumentEditorContent($documentEditor, { ...opts, moveEnable: true });
         }
 
         function loadMenuEditorContent(opts) {
