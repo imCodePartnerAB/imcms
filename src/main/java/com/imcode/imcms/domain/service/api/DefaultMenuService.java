@@ -1,16 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.SortNotSupportedException;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.IdDeleterMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -21,18 +15,10 @@ import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -61,6 +47,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final CommonContentService commonContentService;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
     private final MenuHtmlConverter menuHtmlConverter;
+
+    private final String REGEX_ANY_NUMBER = "\\.(?:\\b|-)([1-9]{1,2}[0]?|100)\\b";
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -325,32 +313,31 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .collect(Collectors.toList()));
     }
 
-    private List<MenuItemDTO> getSortedMenuItemsBySortOrder(List<MenuItemDTO> menuItems) {
-        final List<MenuItemDTO> itemsNotNumberSortOrders = new ArrayList<>();
-        final List<MenuItemDTO> sortedMenuItems = menuItems.stream()
-                .filter(item -> {
-                    final String sortOrder = item.getSortOrder();
-                    if (StringUtils.isNumeric(sortOrder)) {
-                        return true;
-                    } else if (StringUtils.isBlank(sortOrder)) {
-                        throw new DataIsNotValidException("Sort order in menu item id " + item.getDocumentId() + " not valid!");
-                    } else {
-                        itemsNotNumberSortOrders.add(item);
-                        return false;
-                    }
-                })
-                .sorted(Comparator.comparingInt(o -> Integer.parseInt(o.getSortOrder())))
-                .collect(Collectors.toList());
+    public int compare(String sortOrder1, String sortOrder2) {
+        String[] split1 = sortOrder1.split("\\."), split2 = sortOrder2.split("\\.");
+        int result = 0;
+        for (int i = 0; i < Math.min(split1.length, split2.length); i++) {
+            // compare current segment
+            if ((result = Integer.compare(Integer.parseInt(split1[i]), Integer.parseInt(split2[i]))) != 0) {
+                return result;
+            }
+        }
+        // all was equal up to now, like "1.1" vs "1.1.1"
+        return Integer.compare(split1.length, split2.length);
+    }
 
-        //sort orders which aren't numbers must add or locations to last place in array !! otherwise bellow sorting won't be work!
-        sortedMenuItems.addAll(itemsNotNumberSortOrders);
+    private List<MenuItemDTO> getSortedMenuItemsBySortOrder(List<MenuItemDTO> menuItems) {
+
+        final List<MenuItemDTO> sortedMenuItems = menuItems.stream()
+                .sorted(Comparator.comparing(MenuItemDTO::getSortOrder, this::compare))
+                .collect(Collectors.toList());
 
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 
         sortedMenuItems.forEach(mainItemDTO -> {
 
             final List<MenuItemDTO> children = sortedMenuItems.stream()
-                    .filter(item -> item.getSortOrder().matches(mainItemDTO.getSortOrder().concat(".\\d")))
+                    .filter(item -> item.getSortOrder().matches(mainItemDTO.getSortOrder().concat(REGEX_ANY_NUMBER)))
                     .collect(Collectors.toList());
 
             if (!checkToContainsMenuItemInNewList(newMenuItems, children)) {
