@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -328,8 +329,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final List<MenuItemDTO> itemsNotNumberSortOrders = new ArrayList<>();
         final List<MenuItemDTO> sortedMenuItems = menuItems.stream()
                 .filter(item -> {
-                    if (StringUtils.isNumeric(item.getSortOrder())) {
+                    final String sortOrder = item.getSortOrder();
+                    if (StringUtils.isNumeric(sortOrder)) {
                         return true;
+                    } else if (StringUtils.isBlank(sortOrder)) {
+                        throw new DataIsNotValidException("Sort order in menu item id " + item.getDocumentId() + " not valid!");
                     } else {
                         itemsNotNumberSortOrders.add(item);
                         return false;
