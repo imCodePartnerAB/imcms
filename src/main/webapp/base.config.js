@@ -95,6 +95,7 @@ module.exports = {
                         'imcms-jquery-tag-replacer',
                         'check-browser',
                         'css-utils',
+                        'js-utils',
                     ]
                 },
                 editor_initializer: {
@@ -146,7 +147,8 @@ module.exports = {
                             'imcms-access-tab-builder',
                             'imcms-permissions-tab-builder',
                             'imcms-status-tab-builder',
-                            'imcms-cache-tab-builder'
+                            'imcms-cache-tab-builder',
+                            'imcms-properties-tab-builder',
                         ],
                         super_admin_tabs: [
                             'imcms-super-admin-tabs-builder',

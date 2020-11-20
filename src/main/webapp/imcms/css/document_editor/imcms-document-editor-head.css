@@ -7,13 +7,14 @@
 }
 
 .imcms-document-editor-head-tools__tool {
-    padding: 0 10px;
+    padding: 0 4px 0 25px;
 }
 
 .imcms-document-editor-head-tool__button {
     text-align: center;
     padding: 13px 17px;
-    width: 100%;
+    width: 50%;
+    font-size: 30px;
 }
 
 .imcms-input-search__text-box {

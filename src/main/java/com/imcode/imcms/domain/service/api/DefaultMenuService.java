@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -20,6 +21,7 @@ import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -324,9 +326,24 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private List<MenuItemDTO> getSortedMenuItemsBySortOrder(List<MenuItemDTO> menuItems) {
+        final List<MenuItemDTO> itemsNotNumberSortOrders = new ArrayList<>();
         final List<MenuItemDTO> sortedMenuItems = menuItems.stream()
-                .sorted(Comparator.comparing(MenuItemDTO::getSortOrder))
+                .filter(item -> {
+                    final String sortOrder = item.getSortOrder();
+                    if (StringUtils.isNumeric(sortOrder)) {
+                        return true;
+                    } else if (StringUtils.isBlank(sortOrder)) {
+                        throw new DataIsNotValidException("Sort order in menu item id " + item.getDocumentId() + " not valid!");
+                    } else {
+                        itemsNotNumberSortOrders.add(item);
+                        return false;
+                    }
+                })
+                .sorted(Comparator.comparingInt(o -> Integer.parseInt(o.getSortOrder())))
                 .collect(Collectors.toList());
+
+        //sort orders which aren't numbers must add or locations to last place in array !! otherwise bellow sorting won't be work!
+        sortedMenuItems.addAll(itemsNotNumberSortOrders);
 
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 

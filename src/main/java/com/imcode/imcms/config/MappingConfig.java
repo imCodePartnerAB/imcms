@@ -1,43 +1,14 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.api.SourceFile;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
-import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import com.imcode.imcms.domain.dto.ImageHistoryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.TextHistoryDTO;
-import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.mapping.jpa.doc.Property;
-import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -62,14 +33,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -318,7 +283,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService, PropertyRepository propertyRepository) {
+    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService) {
         return documentDTO -> {
             final Meta meta = new Meta();
             final Integer version = documentDTO.getCurrentVersion().getId();
@@ -366,21 +331,8 @@ class MappingConfig {
 
             meta.setModifiedDatetime(modifiedDatetime);
 
-            if (null == documentDTO.getId()) {
-                meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
-            } else {
-                List<Property> properties = propertyRepository.findByDocId(documentDTO.getId());
-                if (properties.isEmpty()) {
-                    meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
-                } else {
-                    Map<String, String> propertiesMap = properties.stream().collect((Collectors.toMap(Property::getName, Property::getValue)));
-                    meta.setProperties(propertiesMap);
-                    if (meta.getProperties().containsKey(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) {
-                        meta.getProperties().replace(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
-                    }
-                }
-            }
-
+            meta.setProperties(documentDTO.getProperties());
+            meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
 
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
@@ -486,7 +438,7 @@ class MappingConfig {
             if (imageDimension != null) {
                 imageFileDTO.setWidth(imageDimension.width);
                 imageFileDTO.setHeight(imageDimension.height);
-                imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
+                imageFileDTO.setResolution(imageDimension.width + "x" + imageDimension.height);
             }
 
             return imageFileDTO;

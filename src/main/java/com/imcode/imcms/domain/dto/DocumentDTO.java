@@ -14,13 +14,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.beans.ConstructorProperties;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -140,6 +134,7 @@ public class DocumentDTO extends Document implements Cloneable {
             cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
             cloneDocumentDTO.setLinkableByOtherUsers(cloneDocumentDTO.linkableByOtherUsers);
             cloneDocumentDTO.setLinkableForUnauthorizedUsers(cloneDocumentDTO.linkableForUnauthorizedUsers);
+            cloneDocumentDTO.setProperties(new HashMap<>(cloneDocumentDTO.properties));
 
             return cloneDocumentDTO;
         } catch (CloneNotSupportedException e) {

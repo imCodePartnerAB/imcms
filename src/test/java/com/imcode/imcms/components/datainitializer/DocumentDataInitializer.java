@@ -11,6 +11,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +79,16 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
     public DocumentDTO createData() {
         return createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED);
+    }
+
+    public List<DocumentDTO> createDocumentsData(Integer count) {
+        final List<DocumentDTO> newDocuments = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            newDocuments.add(createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED));
+        }
+
+        return newDocuments;
     }
 
     public DocumentDTO createData(Meta.PublicationStatus status) {

@@ -228,6 +228,12 @@ const texts = {
                 name: "URL",
                 title: "URL"
             },
+            properties: {
+                name: 'Egenskaper',
+                add: 'Lägg till',
+                key: 'Egendomsnamn',
+                value: 'Värde',
+            },
             buttons: {
                 ok: "ok",
                 cancel: "avbryt",
@@ -256,17 +262,21 @@ const texts = {
         editors: {
             document: {
                 title: "Dokumenthanterare",
-                newDoc: "Ny",
                 freeText: "Fri text",
                 freeTextPlaceholder: "Skriv för att söka dokument",
                 owner: "Ägare",
                 category: "Kategori",
                 by: 'av',
                 notShownInSelectedLang: 'Inte visad på valt språk',
+                deleteInfo: 'Ta bort dokument slutfördes!',
                 controls: {
                     edit: {
                         title: "Redigera"
                     },
+                    question: 'Are you sure want to delete this documents? This can not be undone!',
+                    multiRemoveInfoOff: 'Multi-remove inaktiverad',
+                    multiRemoveInfoOn: 'Multi-remove aktiverat',
+                    removeButton: 'Ta bort',
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
@@ -1147,6 +1157,12 @@ const texts = {
                 name: "URL",
                 title: "URL"
             },
+            properties: {
+                name: 'Properties',
+                add: 'Add',
+                key: 'Property name',
+                value: 'Value',
+            },
             buttons: {
                 ok: "ok",
                 cancel: "cancel",
@@ -1175,17 +1191,21 @@ const texts = {
         editors: {
             document: {
                 title: "Document Manager",
-                newDoc: "New",
                 freeText: "Free text",
                 freeTextPlaceholder: "Type to find document",
                 owner: "Owner",
                 category: "Category",
                 by: 'by',
                 notShownInSelectedLang: 'Not shown in the selected language',
+                deleteInfo: 'Delete documents were completed!',
                 controls: {
                     edit: {
                         title: "Edit"
                     },
+                    question: 'Are you sure want to delete this documents? This can not be undone!',
+                    multiRemoveInfoOff: 'Multi-remove disabled',
+                    multiRemoveInfoOn: 'Multi-remove enabled',
+                    removeButton: 'Remove',
                     copy: {
                         title: "Copy",
                         confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",
