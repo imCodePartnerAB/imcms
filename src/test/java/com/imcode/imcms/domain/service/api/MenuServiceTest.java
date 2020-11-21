@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
@@ -114,6 +115,38 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void saveFrom_When_MenuWithItems_Expect_SameSizeAndResultsEquals() {
         saveFrom_Expect_SameSizeAndResultsEquals(true);
+    }
+
+    @Test
+    public void saveFrom_When_ItemHasEmptySortOrder_Expect_CorrectException() {
+        final MenuDTO menu = menuDataInitializer.createData(true, true, TREE_SORT.toString(), 5);
+        versionDataInitializer.createData(WORKING_VERSION_NO, menu.getDocId());
+        final List<MenuItemDTO> menuItems = menu.getMenuItems();
+
+        final MenuItemDTO newMenuItem = menuDataInitializer.createMenuItemDTO("");
+        menuItems.add(newMenuItem);
+
+        assertTrue(menuItems.contains(newMenuItem));
+
+        menu.setMenuItems(menuItems);
+
+        assertThrows(DataIsNotValidException.class, () -> menuService.saveFrom(menu));
+    }
+
+    @Test
+    public void saveFrom_When_ItemHasNullSortOrder_Expect_CorrectException() {
+        final MenuDTO menu = menuDataInitializer.createData(true, true, TREE_SORT.toString(), 5);
+        versionDataInitializer.createData(WORKING_VERSION_NO, menu.getDocId());
+        final List<MenuItemDTO> menuItems = menu.getMenuItems();
+
+        final MenuItemDTO newMenuItem = menuDataInitializer.createMenuItemDTO(null);
+        menuItems.add(newMenuItem);
+
+        assertTrue(menuItems.contains(newMenuItem));
+
+        menu.setMenuItems(menuItems);
+
+        assertThrows(DataIsNotValidException.class, () -> menuService.saveFrom(menu));
     }
 
     @Test
