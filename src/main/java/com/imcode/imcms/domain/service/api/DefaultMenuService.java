@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -15,6 +16,7 @@ import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -314,6 +316,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     public int compare(String sortOrder1, String sortOrder2) {
+        if (StringUtils.isBlank(sortOrder1) || StringUtils.isBlank(sortOrder2)) {
+            throw new DataIsNotValidException("Sort order is empty or null!!");
+        }
         String[] split1 = sortOrder1.split("\\."), split2 = sortOrder2.split("\\.");
         int result = 0;
         for (int i = 0; i < Math.min(split1.length, split2.length); i++) {
