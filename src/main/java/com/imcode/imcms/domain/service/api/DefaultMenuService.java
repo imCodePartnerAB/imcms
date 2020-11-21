@@ -113,11 +113,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .flatMap(MenuItemDTO::flattened)
                 .collect(Collectors.toList());
 
-        final Language language = languageService.findByCode(langCode);
         //double map because from client to fetch itemsDTO which have only doc id and no more info..
         final List<MenuItemDTO> menuItemsDTO = getSortedMenuItemsBySortOrder(menuItems.stream()
                 .map(menuItemDtoToMenuItem)
-                .map(menuItem -> menuItemToDTO.apply(menuItem))
+                .map(menuItemToDTO)
                 .collect(Collectors.toList()));
 
         setHasNewerVersionsInItems(menuItemsDTO);
@@ -210,13 +209,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 menuDTO.getMenuItems()
                         .stream()
                         .flatMap(MenuItemDTO::flattened)
-                        .peek(menuItemDTO -> log.error("menu item docId - {}, sortOrder - {}", menuItemDTO.getDocumentId(), menuItemDTO.getSortOrder()))
+                        .peek(menuItemDTO -> checkOnValidDataSortOrder(menuItemDTO.getSortOrder()))
                         .collect(Collectors.toList()))
         );
 
         final MenuDTO savedMenu = menuSaver.apply(menu);
         savedMenu.setTypeSort(typeSort);
-//        savedMenu.setMenuItems(savedMenu.getMenuItems());
 
         super.updateWorkingVersion(docId);
 
@@ -315,10 +313,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .collect(Collectors.toList()));
     }
 
-    public int compare(String sortOrder1, String sortOrder2) {
-        if (StringUtils.isBlank(sortOrder1) || StringUtils.isBlank(sortOrder2)) {
+
+    private void checkOnValidDataSortOrder(String sortOrder) {
+        if (StringUtils.isBlank(sortOrder)) {
             throw new DataIsNotValidException("Sort order is empty or null!!");
         }
+    }
+
+    private int compare(String sortOrder1, String sortOrder2) {
+        checkOnValidDataSortOrder(sortOrder1);
+        checkOnValidDataSortOrder(sortOrder2);
+
         String[] split1 = sortOrder1.split("\\."), split2 = sortOrder2.split("\\.");
         int result = 0;
         for (int i = 0; i < Math.min(split1.length, split2.length); i++) {
