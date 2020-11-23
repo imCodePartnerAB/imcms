@@ -1351,18 +1351,24 @@ define('imcms-document-editor-builder',
         }
 
         function removeDocuments(documentIds) {
-            const question = texts.controls.question;
+            const question1 = texts.controls.question;
+            const question2 = texts.controls.question2;
 
-            imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
+            imcmsModalWindowBuilder.buildModalWindow(question1, function (answer) {
                 if (!answer) {
                     return;
                 }
 
-                docRestApi.removeByIds(documentIds).done(() => {
-                    removeDocumentsFromEditor(documentIds);
-                    alert(texts.deleteInfo)
-                }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+                imcmsModalWindowBuilder.buildModalWindow(question2, function (answer) {
+                    if (!answer) {
+                        return;
+                    }
 
+                    docRestApi.removeByIds(documentIds).done(() => {
+                        removeDocumentsFromEditor(documentIds);
+                        alert(texts.deleteInfo)
+                    }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+                });
             });
         }
 
