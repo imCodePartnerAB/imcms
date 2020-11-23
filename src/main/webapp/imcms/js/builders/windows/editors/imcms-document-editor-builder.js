@@ -1163,7 +1163,7 @@ define('imcms-document-editor-builder',
                         $originalDocStatus
                     ]
                 },
-                {'controls': buildDocItemControls(document, opts)}
+                {'controls': buildDocItemControls(document, opts, isMultiRemoveModeEnabled())}
             ];
 
             const $moveControl = components.controls.move();
@@ -1372,7 +1372,8 @@ define('imcms-document-editor-builder',
             loadDocumentEditorContent($documentsContainer, {
                 editEnable: true,
                 copyEnable: true,
-                removeEnable: false // todo: maybe should be replaced with archivationEnable in future
+                removeEnable: false, // todo: maybe should be replaced with archivationEnable in future
+                inMenu: false
             });
         }
 
