@@ -273,7 +273,8 @@ const texts = {
                     edit: {
                         title: "Redigera"
                     },
-                    question: 'Are you sure want to delete this documents? This can not be undone!',
+                    question: 'Vill du ta bort de här dokumenten? Detta kan inte göras ogjort!',
+                    question2: 'Du kan inte ångra detta dokument! Ta bort?',
                     multiRemoveInfoOff: 'Multi-remove inaktiverad',
                     multiRemoveInfoOn: 'Multi-remove aktiverat',
                     removeButton: 'Ta bort',
@@ -1203,6 +1204,7 @@ const texts = {
                         title: "Edit"
                     },
                     question: 'Are you sure want to delete this documents? This can not be undone!',
+                    question2: 'You can not revert this document! Remove?',
                     multiRemoveInfoOff: 'Multi-remove disabled',
                     multiRemoveInfoOn: 'Multi-remove enabled',
                     removeButton: 'Remove',
