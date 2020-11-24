@@ -492,26 +492,36 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_MenuNoAndDocIdAndUserLanguageNestedOn_Expect_MenuItemsIsReturnedWithTitleOfUsersLanguage() {
+    public void getMenuDTO_MenuNoAndDocIdAndUserLanguageNestedOn_Expect_CorrectSizeAndData() {
         final MenuDTO menu = menuDataInitializer.createData(true, true, String.valueOf(TREE_SORT), 3);
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
         documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(documentDTO);
+
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
         final String language = Imcms.getUser().getLanguage();
 
-        final List<MenuItemDTO> menuItems = menuService
-                .getMenuItems(menu.getDocId(), menu.getMenuIndex(), language, menu.isNested(), menu.getTypeSort());
+        final MenuDTO resultMenu = menuService
+                .getMenuDTO(menu.getDocId(), menu.getMenuIndex(), language, menu.isNested(), menu.getTypeSort());
 
-        assertEquals(menu.getMenuItems().size(), menuItems.size());
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
+        assertEquals(expectedMenuItems, resultMenuItems);
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEnNestedOff_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
+    public void getMenuDTO_When_UserSetEnLangAndMenuDisableEnNestedOff_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, false, String.valueOf(TypeSort.MANUAL), 3);
 
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, SHOW_IN_DEFAULT_LANGUAGE);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -524,13 +534,25 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
+
+        final MenuDTO resultMenu = menuService.getMenuDTO(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(menuItems.size(), expectedMenuItems.size());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
+        assertEquals(expectedMenuItems, resultMenuItems);
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
+
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_NestedOff_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
+    public void getMenuDTO_When_NestedOff_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, false, String.valueOf(TypeSort.MANUAL), 3);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
@@ -547,17 +569,28 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
+
+        final MenuDTO resultMenu = menuService.getMenuDTO(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(2, expectedMenuItems.size());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(menuItems.size() - 1, resultMenuItems.size()); // -1 because 1 doc is do not show mode
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
+
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_NestedOn_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
+    public void getMenu_When_NestedOn_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 2);
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(1).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(1).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, DO_NOT_SHOW);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -569,18 +602,29 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).size());
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size() - 1, resultMenuItems.size());
+
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
     }
 
     @Test
-    public void getMenuItems_When_NestedOn_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSize() {
+    public void getMenu_When_NestedOn_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 3);
 
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, SHOW_IN_DEFAULT_LANGUAGE);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -592,17 +636,29 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(menuItems.size(), menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).size());
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
+        assertEquals(expectedMenuItems, resultMenuItems);
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_NestedOn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
+    public void getMenu_When_UserSetEnLangAndMenuDisableEn_NestedOn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 3);
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, DO_NOT_SHOW);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -614,20 +670,30 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).size());
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size() - 1, resultMenuItems.size());
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
     }
 
     @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_NestedOff_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
+    public void getMenu_When_UserSetSvLangAndMenuDisableEN_NestedOff_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
         final MenuDTO menu = menuDataInitializer.createData(true, 1, false, String.valueOf(TypeSort.MANUAL), 3);
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, DO_NOT_SHOW);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -639,21 +705,29 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
-        assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
+        final MenuDTO resultMenu = menuService.getMenuDTO(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(menuItems.size(), expectedMenuItems.size());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
+        assertFalse(resultMenuItems.isEmpty());
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_NestedOn_ShowModeSHOW_ON_DEFAULT_Expect_CorrectEntitiesSize() {
+    public void getMenu_When_UserSetSvLangAndMenuDisableEN_NestedOn_ShowModeSHOW_ON_DEFAULT_Expect_CorrectEntitiesSize() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
         final MenuDTO menu = menuDataInitializer.createData(true, 1, true, String.valueOf(TREE_SORT), 3);
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = menu.getMenuItems();
-        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        final List<MenuItemDTO> expectedMenuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(expectedMenuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, SHOW_IN_DEFAULT_LANGUAGE);
 
         final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
@@ -665,13 +739,24 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
+
+        assertNotNull(resultMenu);
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(menu.getMenuItems().size(), menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).size());
+
+        assertFalse(resultMenuItems.isEmpty());
+
+        assertEquals(expectedMenuItems.size(), resultMenuItems.size());
+        assertEquals(expectedMenuItems, resultMenuItems);
+        assertEquals(menu.getTypeSort(), resultMenu.getTypeSort());
     }
 
     @Test
-    public void getPublicMenuItems_When_NestedMenuItemsDisable_Expect_CorrectEntitiesSizeAndEmptyChildren() {
+    public void getPublicMenuItems_When_NestedMenuItemsDisable_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, false, String.valueOf(TypeSort.MANUAL), 3);
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
         documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
@@ -786,12 +871,18 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
-        MenuItemDTO menuItemDTO = menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).get(0);
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
+
+        assertNotNull(resultMenu);
+
+        MenuItemDTO menuItemDTO = resultMenu.getMenuItems().get(0);
+
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
+
         assertNotEquals(documentService.get(menuItemDTO.getDocumentId()).getCommonContents().get(0).getLanguage(), Imcms.getLanguage());
-        assertEquals(2, menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort()).size());
+
+        assertEquals(2, resultMenu.getMenuItems().size());
     }
 
 
@@ -804,61 +895,89 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(foundMenus);
         assertEquals(2, foundMenus.size());
+        assertEquals(TREE_SORT.toString(), foundMenus.get(0).getTypeSort());
+        assertEquals(TREE_SORT.toString(), foundMenus.get(1).getTypeSort());
     }
 
     @Test
-    public void getMenuItems_When_TypeTreeSortAndNestedOn_Expected_CorrectSizeEntities() {
+    public void getMenu_When_TypeTreeSortAndNestedOn_Expected_CorrectSizeEntities() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TREE_SORT), true, 3);
         final String langUser = Imcms.getUser().getLanguage();
 
-        assertEquals(menuDTO.getMenuItems().size(), menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()).size());
+        MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getMenuItems().size(), resultMenu.getMenuItems().size());
     }
 
     @Test
-    public void getMenuItems_When_TypeManualAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeManualAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.MANUAL), true, 2);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_TypeNullAndNestedOn_Expected_CorrectSize() {
+    public void getMenu_When_TypeNullAndNestedOn_Expected_CorrectSize() {
         final MenuDTO menuDTO = setUpMenu(null, true, 3);
         final String langUser = Imcms.getUser().getLanguage();
 
-        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        assertNotNull(resultMenu);
+        assertEquals(TREE_SORT.toString(), resultMenu.getTypeSort());
+
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
     }
 
     @Test
-    public void getMenuItems_When_TypeAlphabeticalASCAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeAlphabeticalASCAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.ALPHABETICAL_ASC), true, 5);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
 
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_TypeAlphabeticalDESCAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeAlphabeticalDESCAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.ALPHABETICAL_DESC), true, 4);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
 
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -866,54 +985,78 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TREE_SORT), false, 2);
         final String langUser = Imcms.getUser().getLanguage();
 
-        assertThrows(SortNotSupportedException.class, () -> menuService.getMenuItems(
+        assertThrows(SortNotSupportedException.class, () -> menuService.getMenuDTO(
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()));
     }
 
     @Test
-    public void getMenuItems_When_TypeManualAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeManualAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.MANUAL), false, 4);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
 
     }
 
     @Test
-    public void getMenuItems_When_TypeNullAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeNullAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(null, false, 5);
         final String langUser = Imcms.getUser().getLanguage();
 
-        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(MANUAL.toString(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_TypeAlphabeticalASCAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeAlphabeticalASCAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.ALPHABETICAL_ASC), false, 4);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
 
     }
 
     @Test
-    public void getMenuItems_When_TypeAlphabeticalDESCAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
+    public void getMenu_When_TypeAlphabeticalDESCAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
         final MenuDTO menuDTO = setUpMenu(String.valueOf(TypeSort.ALPHABETICAL_DESC), false, 4);
         final String langUser = Imcms.getUser().getLanguage();
 
-        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+        final MenuDTO resultMenu = menuService.getMenuDTO(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort()
+        );
+        assertNotNull(resultMenu);
+        assertEquals(menuDTO.getTypeSort(), resultMenu.getTypeSort());
 
-        assertEquals(menuDTO.getMenuItems().size(), expectedMenuItems.size());
+        final List<MenuItemDTO> resultMenuItems = resultMenu.getMenuItems();
+
+        assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
+        resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
 
     }
 
