@@ -10,6 +10,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -44,6 +45,9 @@ public class Menu extends VersionedContent {
 
     @NotNull
     private boolean nested;
+
+    @Column(name = "type_sort", nullable = false)
+    private String typeSort;
 
     public Set<MenuItem> getMenuItems() {
         if (menuItems == null) menuItems = new LinkedHashSet<>();
