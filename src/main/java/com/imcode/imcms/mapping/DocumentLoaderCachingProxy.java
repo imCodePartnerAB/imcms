@@ -44,7 +44,7 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
     private final CacheWrapper<String, Integer> aliasesToIds;
     private final CacheWrapper<Integer, String> idsToAliases;
-    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> allMenuItems;
+    private final CacheWrapper<MenuCacheKey, MenuDTO> menuDTO;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> sortedMenuItems;
@@ -70,19 +70,19 @@ public class DocumentLoaderCachingProxy {
         defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
         aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
         idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
-        allMenuItems = CacheWrapper.of(cacheConfiguration("allMenuItems"));
+        menuDTO = CacheWrapper.of(cacheConfiguration("menuDTO"));
         visibleMenuItems = CacheWrapper.of(cacheConfiguration("visibleMenuItems"));
         publicMenuItems = CacheWrapper.of(cacheConfiguration("publicMenuItems"));
         sortedMenuItems = CacheWrapper.of(cacheConfiguration("sortedMenuItems"));
 
         Stream.of(
                 metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases,
-                allMenuItems, visibleMenuItems, publicMenuItems, sortedMenuItems
+                menuDTO, visibleMenuItems, publicMenuItems, sortedMenuItems
         )
                 .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
 
         menuCaches = Arrays.asList(
-                allMenuItems.cache(),
+                menuDTO.cache(),
                 visibleMenuItems.cache(),
                 publicMenuItems.cache(),
                 sortedMenuItems.cache()
@@ -219,9 +219,9 @@ public class DocumentLoaderCachingProxy {
         documentsCache.invalidateDoc(docId, aliasCurrentDoc.orElse(null));
     }
 
-    public List<MenuItemDTO> getMenuItems(final MenuCacheKey menuCacheKey,
-                                          final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
-        return allMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
+    public MenuDTO getMenuItems(final MenuCacheKey menuCacheKey,
+                                final Supplier<MenuDTO> menuDtoSupplier) {
+        return menuDTO.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
 
