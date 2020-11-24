@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
 import lombok.val;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.sorted.TypeSort.MANUAL;
+import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Component
 public class MenuDataInitializer extends TestDataCleaner {
@@ -68,9 +72,8 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version,
                               boolean nested, String typeSort, int count) {
-        val menu = createDataEntity(withMenuItems, menuIndex, version, nested, count);
+        val menu = createDataEntity(withMenuItems, menuIndex, version, nested, count, typeSort);
         final MenuDTO menuDTO = menuToMenuDTO.apply(menu);
-        menuDTO.setTypeSort(typeSort);
         return menuDTO;
     }
 
@@ -94,19 +97,23 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     public Menu createDataEntity(boolean withMenuItems, boolean nested, int count) {
         version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
-        return createDataEntity(withMenuItems, MENU_INDEX, version, nested, count);
+        return createDataEntity(withMenuItems, MENU_INDEX, version, nested, count, TREE_SORT.toString());
     }
 
     private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version,
-                                  boolean nested, int count) {
+                                  boolean nested, int count, String typeSort) {
+        if (StringUtils.isBlank(typeSort)) {
+            typeSort = nested ? TREE_SORT.toString() : MANUAL.toString();
+        }
         final Menu menu = new Menu();
         menu.setVersion(version);
         menu.setNo(menuIndex);
         menu.setNested(nested);
+        menu.setTypeSort(typeSort);
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {
-            addMenuItemsTo(savedMenu,  count);
+            addMenuItemsTo(savedMenu, count);
         }
 
         return savedMenu;
