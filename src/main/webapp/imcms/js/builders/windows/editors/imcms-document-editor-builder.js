@@ -1163,7 +1163,7 @@ define('imcms-document-editor-builder',
                         $originalDocStatus
                     ]
                 },
-                {'controls': buildDocItemControls(document, opts)}
+                {'controls': buildDocItemControls(document, opts, isMultiRemoveModeEnabled())}
             ];
 
             const $moveControl = components.controls.move();
@@ -1351,18 +1351,24 @@ define('imcms-document-editor-builder',
         }
 
         function removeDocuments(documentIds) {
-            const question = texts.controls.question;
+            const question1 = texts.controls.question;
+            const question2 = texts.controls.question2;
 
-            imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
+            imcmsModalWindowBuilder.buildModalWindow(question1, function (answer) {
                 if (!answer) {
                     return;
                 }
 
-                docRestApi.removeByIds(documentIds).done(() => {
-                    removeDocumentsFromEditor(documentIds);
-                    alert(texts.deleteInfo)
-                }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+                imcmsModalWindowBuilder.buildModalWindow(question2, function (answer) {
+                    if (!answer) {
+                        return;
+                    }
 
+                    docRestApi.removeByIds(documentIds).done(() => {
+                        removeDocumentsFromEditor(documentIds);
+                        alert(texts.deleteInfo)
+                    }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+                });
             });
         }
 
@@ -1372,7 +1378,8 @@ define('imcms-document-editor-builder',
             loadDocumentEditorContent($documentsContainer, {
                 editEnable: true,
                 copyEnable: true,
-                removeEnable: false // todo: maybe should be replaced with archivationEnable in future
+                removeEnable: false, // todo: maybe should be replaced with archivationEnable in future
+                inMenu: false
             });
         }
 
