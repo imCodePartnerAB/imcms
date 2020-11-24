@@ -13,7 +13,11 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -350,7 +354,8 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getMenuItems() {
             final List<MenuItemDTO> menuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true, null);
+                    .getMenuDTO(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true, null)
+                    .getMenuItems();
 
             return convertToMenuItem(menuItems);
         }
