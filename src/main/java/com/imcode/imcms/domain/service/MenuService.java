@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MenuService extends VersionedContentService, DeleterByDocumentId, MenuAsHtmlService {
 
-    List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort);
+    MenuDTO getMenuDTO(int docId, int menuIndex, String language, boolean nested, String typeSort);
 
     // TODO: Cover by tests
     List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode);
