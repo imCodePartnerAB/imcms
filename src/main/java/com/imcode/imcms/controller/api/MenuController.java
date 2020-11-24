@@ -7,7 +7,13 @@ import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,8 +29,8 @@ public class MenuController {
     }
 
     @GetMapping
-    public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu) {
-        return menuService.getMenuItems(
+    public MenuDTO getMenuItems(@ModelAttribute MenuDTO menu) {
+        return menuService.getMenuDTO(
                 menu.getDocId(),
                 menu.getMenuIndex(),
                 Imcms.getLanguage().getCode(),
