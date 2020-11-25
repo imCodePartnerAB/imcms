@@ -5,7 +5,6 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.SortNotSupportedException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
@@ -25,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 import static imcode.server.ImcmsConstants.SWE_CODE;
@@ -76,7 +73,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
+    public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, false, null, COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
@@ -88,14 +85,14 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        List<MenuItemDTO> menuItems = menuService.getMenuItems(
+        MenuDTO resultMenu = menuService.getMenuDTO(
                 menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.isNested(), menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(resultMenu));
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNestedOn_Expect_MenuItemsDtosJson() throws Exception {
+    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNestedOn_Expect_MenuDtoJson() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, true, null, COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
@@ -108,7 +105,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("nested", String.valueOf(menu.isNested()));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -143,7 +140,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(menu.isNested()))
                 .param("typeSort", String.valueOf(TREE_SORT));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -160,7 +157,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", String.valueOf(TypeSort.MANUAL));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -178,7 +175,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", String.valueOf(TypeSort.MANUAL));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -195,7 +192,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", String.valueOf(TypeSort.ALPHABETICAL_ASC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -213,11 +210,11 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", String.valueOf(TypeSort.ALPHABETICAL_DESC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNoNestedParamSortPublishedASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
+    public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndNoNestedParamSortPublishedASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TypeSort.PUBLISHED_DATE_ASC), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
@@ -230,7 +227,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", String.valueOf(TypeSort.PUBLISHED_DATE_ASC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -248,7 +245,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", String.valueOf(TypeSort.PUBLISHED_DATE_DESC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -265,7 +262,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", String.valueOf(TypeSort.MODIFIED_DATE_ASC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -283,11 +280,11 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", String.valueOf(TypeSort.MODIFIED_DATE_DESC));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParamSortInvalid_Expect_Exception() throws Exception {
+    public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParamSortInvalid_Expect_CorrectData() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, false, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
@@ -295,14 +292,14 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         assertEquals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE, document.getDisabledLanguageShowMode());
 
-        final String fakeNested = "test";
+        final String fakeTypeSort = "test";
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()))
-                .param("typeSort", fakeNested);
+                .param("typeSort", fakeTypeSort);
 
-        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -321,7 +318,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -341,7 +338,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("nested", String.valueOf(menu.isNested()));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -384,7 +381,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(menu.isNested()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -405,7 +402,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -427,7 +424,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(menu.isNested()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -448,7 +445,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -470,7 +467,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(menu.isNested()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -490,7 +487,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -511,7 +508,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -532,7 +529,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
@@ -553,7 +550,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("nested", String.valueOf(true))
                 .param("typeSort", menu.getTypeSort());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
 
@@ -571,14 +568,14 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        List<MenuItemDTO> menuItems = menuService.getMenuItems(
+        MenuDTO resultMenu = menuService.getMenuDTO(
                 menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), menu.isNested(), null);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(resultMenu));
     }
 
     @Test
-    public void getMenuItems_When_UserSuperAdminMenuExistInModeDONOTSHOWNestedOn_Expect_CorrectEntitiesSize() throws Exception {
+    public void getMenu_When_UserSuperAdminMenuExistInModeDONOTSHOWNestedOn_Expect_CorrectEntitiesSize() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, true, null, COUNT_MENU_ITEMS);
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
@@ -592,7 +589,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()))
                 .param("nested", String.valueOf(menu.isNested()));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
     }
 
     @Test
@@ -604,7 +601,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", "1")
                 .param("docId", "1001");
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "{}");
     }
 
     @Test
