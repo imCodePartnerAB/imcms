@@ -1,8 +1,8 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.UserPropertyDTO;
 import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.model.UserProperty;
-import com.imcode.imcms.persistence.entity.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,12 +39,12 @@ public class UserPropertyController {
     }
 
     @PostMapping
-    public UserProperty create(@RequestBody UserProperty userProperty) {
+    public UserProperty create(@RequestBody UserPropertyDTO userProperty) {
         return userPropertyService.create(userProperty);
     }
 
     @PutMapping
-    public UserProperty update(@RequestBody UserProperty userProperty) {
+    public UserProperty update(@RequestBody UserPropertyDTO userProperty) {
         return userPropertyService.update(userProperty);
     }
 
