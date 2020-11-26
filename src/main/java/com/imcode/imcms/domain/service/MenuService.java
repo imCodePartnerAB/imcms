@@ -9,21 +9,14 @@ import java.util.List;
 
 public interface MenuService extends VersionedContentService, DeleterByDocumentId, MenuAsHtmlService {
 
-    MenuDTO getMenuDTO(int docId, int menuIndex, String language, boolean nested, String typeSort);
+    MenuDTO getMenuDTO(int docId, int menuIndex, String language, String typeSort);
 
     // TODO: Cover by tests
     List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode);
 
-    /**
-     * @param nested - false/true show nested in menu.
-     * nested (false) - Will return all the items in the menu, no matter what level. All sub levels are empty.
-     * ********************************************************************************
-     * nested (true) - will get just the menu items of the first level. Nested items are in sub levels.
-     *
-     */
-    List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested);
+    List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language);
 
-    List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested);
+    List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language);
 
     List<Menu> getAll();
 

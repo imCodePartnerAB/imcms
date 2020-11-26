@@ -34,15 +34,15 @@
         <c:when test="${isTagBodyEmpty}">
             <c:set var="menuItems" value="${
          (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, isNested, attributes, treeKey, wrap)
-         : menuService.getPublicMenuAsHtml(targetDocId, index, language, isNested, attributes, treeKey, wrap)
+         ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap)
+         : menuService.getPublicMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap)
          }" scope="request"/>
         </c:when>
         <c:otherwise>
             <c:set var="menuItems" value="${
         (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuItems(targetDocId, index, language, isNested)
-         : menuService.getPublicMenuItems(targetDocId, index, language, isNested)
+         ? menuService.getVisibleMenuItems(targetDocId, index, language)
+         : menuService.getPublicMenuItems(targetDocId, index, language)
          }" scope="request"/>
         </c:otherwise>
     </c:choose>

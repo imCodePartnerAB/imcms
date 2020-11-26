@@ -148,7 +148,6 @@ class MappingConfig {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
-            menuDTO.setNested(menu.isNested());
             menuDTO.setTypeSort(menu.getTypeSort());
             menuDTO.setMenuItems(menu.getMenuItems()
                     .stream()

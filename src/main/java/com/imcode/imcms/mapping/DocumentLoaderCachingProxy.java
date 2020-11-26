@@ -297,24 +297,21 @@ public class DocumentLoaderCachingProxy {
         private int menuIndex;
         private int docId;
         private String language;
-        private boolean nested;
         private String typeSort;
         private List<MenuItemDTO> menuItems;
 
 
-        public MenuCacheKey(int menuIndex, int docId, String language, boolean nested, String typeSort) {
+        public MenuCacheKey(int menuIndex, int docId, String language, String typeSort) {
             this.menuIndex = menuIndex;
             this.docId = docId;
             this.language = language;
-            this.nested = nested;
             this.typeSort = typeSort;
         }
 
-        public MenuCacheKey(int menuIndex, int docId, String language, boolean nested) {
+        public MenuCacheKey(int menuIndex, int docId, String language) {
             this.menuIndex = menuIndex;
             this.docId = docId;
             this.language = language;
-            this.nested = nested;
         }
     }
 }

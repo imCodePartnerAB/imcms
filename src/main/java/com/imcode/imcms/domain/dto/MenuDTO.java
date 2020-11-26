@@ -18,7 +18,5 @@ public class MenuDTO implements Documentable, Serializable {
 
     private List<MenuItemDTO> menuItems;
 
-    private boolean nested;
-
     private String typeSort;
 }

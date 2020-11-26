@@ -86,7 +86,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()));
 
         MenuDTO resultMenu = menuService.getMenuDTO(
-                menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.isNested(), menu.getTypeSort());
+                menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.getTypeSort());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(resultMenu));
     }
@@ -569,7 +569,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()));
 
         MenuDTO resultMenu = menuService.getMenuDTO(
-                menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), menu.isNested(), null);
+                menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), null);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(resultMenu));
     }

@@ -34,7 +34,6 @@ public class MenuController {
                 menu.getDocId(),
                 menu.getMenuIndex(),
                 Imcms.getLanguage().getCode(),
-                menu.isNested(),
                 menu.getTypeSort()
         );
     }

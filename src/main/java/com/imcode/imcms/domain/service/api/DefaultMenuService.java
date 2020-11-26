@@ -4,7 +4,6 @@ import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.exception.SortNotSupportedException;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static com.imcode.imcms.sorted.TypeSort.MANUAL;
 import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Service
@@ -92,7 +90,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public MenuDTO getMenuDTO(int docId, int menuIndex, String language, boolean nested, String typeSort) {
+    public MenuDTO getMenuDTO(int docId, int menuIndex, String language, String typeSort) {
 
         final MenuDTO menuDTO = getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, false);
         final List<MenuItemDTO> menuItemsOf = menuDTO.getMenuItems();
@@ -100,18 +98,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         typeSort = menuDTO.getTypeSort();
 
         if (StringUtils.isBlank(typeSort)) {
-            if (nested) {
-                typeSort = String.valueOf(TREE_SORT);
-            } else {
-                typeSort = String.valueOf(MANUAL);
-            }
+            typeSort = String.valueOf(TREE_SORT); //default value
         }
 
         setHasNewerVersionsInItems(menuItemsOf);
-
-        if (!nested && typeSort.equals(String.valueOf(TREE_SORT))) {
-            throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
-        }
 
         menuDTO.setMenuItems(getSortingMenuItemsByTypeSort(typeSort, menuItemsOf));
 
@@ -122,10 +112,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode) {
 
         final String typeSort = menuDTO.getTypeSort();
-
-        if (!menuDTO.isNested() && typeSort.equals(String.valueOf(TREE_SORT))) {
-            throw new SortNotSupportedException("Current sorting don't support in flat menu!");
-        }
 
         final List<MenuItemDTO> menuItems = menuDTO.getMenuItems().stream()
                 .flatMap(MenuItemDTO::flattened)
@@ -143,10 +129,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
-        final List<MenuItemDTO> menuItemsOf = nested
-                ? getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems()
-                : convertItemsToFlatList(getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems(), true);
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language) {
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -154,10 +138,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
-        List<MenuItemDTO> menuItemsOf = nested
-                ? getMenuDTO(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true).getMenuItems()
-                : convertItemsToFlatList(getMenuDTO(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true).getMenuItems(), true);
+    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -166,26 +148,25 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
-                                       boolean nested, String attributes, String treeKey, String wrap) {
-        List<MenuItemDTO> menuItemsOf = nested
-                ? getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems()
-                : convertItemsToFlatList(getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems(), true);
+                                       String attributes, String treeKey, String wrap) {
+        List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, docId, MenuItemsStatus.ALL, language, true).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
+
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
-        return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
+        return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);
     }
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
-                                      boolean nested, String attributes, String treeKey, String wrap) {
-        List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+                                      String attributes, String treeKey, String wrap) {
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
-        return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, nested, attributes, treeKey, wrap);
+        return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);
     }
 
     @Override
@@ -197,7 +178,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
-                docId, menuIndex, startedMenuItems, false, null, null, null
+                docId, menuIndex, startedMenuItems, null, null, null
         );
     }
 
@@ -212,7 +193,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
-                docId, menuIndex, startedMenuItems, false, null, null, null
+                docId, menuIndex, startedMenuItems, null, null, null
         );
     }
 
@@ -225,7 +206,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         final String typeSort = menuDTO.getTypeSort();
 
-        menu.setNested(menuDTO.isNested());
         menu.setTypeSort(typeSort);
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(
                 menuDTO.getMenuItems()
@@ -261,7 +241,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menu.setId(null);
         menu.setNo(jpa.getNo());
         menu.setVersion(newVersion);
-        menu.setNested(jpa.isNested());
         menu.setTypeSort(jpa.getTypeSort());
 
         final Set<MenuItem> newMenuItems = jpa.getMenuItems()

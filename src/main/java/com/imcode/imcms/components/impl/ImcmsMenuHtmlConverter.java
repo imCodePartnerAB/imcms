@@ -27,7 +27,7 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
 
     @Override
     public String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS,
-                                    boolean nested, String attributes, String treeKey, String wrap) {
+                                    String attributes, String treeKey, String wrap) {
 
         List<MenuItemDTO> menuItems;
         final StringBuilder buildContentMenu = new StringBuilder();
@@ -59,19 +59,11 @@ class ImcmsMenuHtmlConverter implements MenuHtmlConverter {
             buildContentMenu.append(">");
         }
 
-        if (nested) {
-            menuItems = menuItemDTOS;
-        } else {
-            menuItems = menuItemDTOS.stream()
-                    .flatMap(MenuItemDTO::flattened)
-                    .collect(Collectors.toList());
-        }
-
         List<String> wrappers = StringUtils.isBlank(wrap) ? Collections.EMPTY_LIST : Arrays.asList(wrap.split(","));
         Collections.reverse(wrappers);
 
-        for (int i = 0; i < menuItems.size(); i++) {
-            final MenuItemDTO currentParentItem = menuItems.get(i);
+        for (int i = 0; i < menuItemDTOS.size(); i++) {
+            final MenuItemDTO currentParentItem = menuItemDTOS.get(i);
             final String dataTreeKey = StringUtils.isBlank(treeKey) ? ((i + 1) * 10) + "" : treeKey + "." + ((i + 1) * 10);
             final boolean hasChildren = !currentParentItem.getChildren().isEmpty();
 

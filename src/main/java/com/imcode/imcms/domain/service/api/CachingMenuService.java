@@ -29,10 +29,10 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public MenuDTO getMenuDTO(int docId, int menuIndex, String language, boolean nested, String typeSort) {
+    public MenuDTO getMenuDTO(int docId, int menuIndex, String language, String typeSort) {
         return documentLoaderCachingProxy.getMenuItems(
-                getKey(menuIndex, docId, language, nested, typeSort),
-                () -> defaultMenuService.getMenuDTO(docId, menuIndex, language, nested, typeSort)
+                getKey(menuIndex, docId, language, typeSort),
+                () -> defaultMenuService.getMenuDTO(docId, menuIndex, language, typeSort)
         );
     }
 
@@ -42,7 +42,6 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
                 getKey(menuDTO.getMenuIndex(),
                         menuDTO.getDocId(),
                         langCode,
-                        menuDTO.isNested(),
                         menuDTO.getTypeSort(),
                         menuDTO.getMenuItems()),
                 () -> defaultMenuService.getSortedMenuItems(menuDTO, langCode)
@@ -50,31 +49,31 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
-                getKey(menuIndex, docId, language, nested),
-                () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
+                getKey(menuIndex, docId, language),
+                () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language)
         );
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
+    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language, nested),
-                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, nested)
+                getKey(menuIndex, docId, language),
+                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language)
         );
     }
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
-                                       boolean nested, String attributes, String treeKey, String wrap) {
-        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, language, nested, attributes, treeKey, wrap);
+                                       String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
     }
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
-                                      boolean nested, String attributes, String treeKey, String wrap) {
-        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, nested, attributes, treeKey, wrap);
+                                      String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
     }
 
     @Override
@@ -124,25 +123,22 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
 
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
                                                            final int docId,
-                                                           final String language,
-                                                           final boolean nested) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested);
+                                                           final String language) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language);
     }
 
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
                                                            final int docId,
                                                            final String language,
-                                                           final boolean nested,
                                                            final String typeSort) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort);
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, typeSort);
     }
 
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
                                                            final int docId,
                                                            final String language,
-                                                           final boolean nested,
                                                            final String typeSort,
                                                            final List<MenuItemDTO> menuItems) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort, menuItems);
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, typeSort, menuItems);
     }
 }

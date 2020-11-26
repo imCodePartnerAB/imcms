@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface MenuHtmlConverter {
 
-    String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS, boolean nested,
+    String convertToMenuHtml(int docId, int menuIndex, List<MenuItemDTO> menuItemDTOS,
                              String attributes, String treeKey, String wrap);
 }

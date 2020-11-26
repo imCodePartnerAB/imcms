@@ -43,9 +43,6 @@ public class Menu extends VersionedContent {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<MenuItem> menuItems;
 
-    @NotNull
-    private boolean nested;
-
     @Column(name = "type_sort", nullable = false)
     private String typeSort;
 
