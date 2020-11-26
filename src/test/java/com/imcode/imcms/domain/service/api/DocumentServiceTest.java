@@ -747,7 +747,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, false, String.valueOf(TREE_SORT), 2);
+        menuDataInitializer.createData(false, index, workingVersion, String.valueOf(TREE_SORT), 2);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
@@ -818,7 +818,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, true, String.valueOf(TREE_SORT), 2);
+        menuDataInitializer.createData(false, index, workingVersion, String.valueOf(TREE_SORT), 2);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 

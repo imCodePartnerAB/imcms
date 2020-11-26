@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.sorted.TypeSort.MANUAL;
 import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
 
 @Component
@@ -33,48 +31,44 @@ public class MenuDataInitializer extends TestDataCleaner {
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
-    private final LanguageService languageService;
     private Menu savedMenu;
     private Version version;
-    private DocumentDataInitializer documentDataInitializer;
-    private DocumentService<DocumentDTO> documentService;
+    private final DocumentDataInitializer documentDataInitializer;
+    private final DocumentService<DocumentDTO> documentService;
 
     public MenuDataInitializer(MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
                                Function<Menu, MenuDTO> menuToMenuDTO,
-                               LanguageService languageService,
                                DocumentDataInitializer documentDataInitializer,
                                DocumentService<DocumentDTO> documentService) {
         super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
         this.menuToMenuDTO = menuToMenuDTO;
-        this.languageService = languageService;
         this.documentDataInitializer = documentDataInitializer;
         this.documentService = documentService;
     }
 
-    public MenuDTO createData(boolean withMenuItems, boolean nested, String typeSort, int count) {
+    public MenuDTO createData(boolean withMenuItems, String typeSort, int count) {
         cleanRepositories();
-        return createData(withMenuItems, MENU_INDEX, nested, typeSort, count);
+        return createData(withMenuItems, MENU_INDEX, typeSort, count);
     }
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex,
-                              boolean nested, String typeSort, int count) {
-        return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID, nested, typeSort, count);
+                              String typeSort, int count) {
+        return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID, typeSort, count);
     }
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, int versionIndex,
-                              int docId, boolean nested, String typeSort, int count) {
+                              int docId, String typeSort, int count) {
         version = versionDataInitializer.createData(versionIndex, docId);
-        return createData(withMenuItems, menuIndex, version, nested, typeSort, count);
+        return createData(withMenuItems, menuIndex, version, typeSort, count);
     }
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version,
-                              boolean nested, String typeSort, int count) {
-        val menu = createDataEntity(withMenuItems, menuIndex, version, nested, count, typeSort);
-        final MenuDTO menuDTO = menuToMenuDTO.apply(menu);
-        return menuDTO;
+                              String typeSort, int count) {
+        val menu = createDataEntity(withMenuItems, menuIndex, version, count, typeSort);
+        return menuToMenuDTO.apply(menu);
     }
 
     public Version getVersion() {
@@ -95,20 +89,18 @@ public class MenuDataInitializer extends TestDataCleaner {
         super.cleanRepositories();
     }
 
-    public Menu createDataEntity(boolean withMenuItems, boolean nested, int count) {
+    public Menu createDataEntity(boolean withMenuItems, int count) {
         version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
-        return createDataEntity(withMenuItems, MENU_INDEX, version, nested, count, TREE_SORT.toString());
+        return createDataEntity(withMenuItems, MENU_INDEX, version, count, TREE_SORT.toString());
     }
 
-    private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version,
-                                  boolean nested, int count, String typeSort) {
+    private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version, int count, String typeSort) {
         if (StringUtils.isBlank(typeSort)) {
-            typeSort = nested ? TREE_SORT.toString() : MANUAL.toString();
+            typeSort = TREE_SORT.toString();
         }
         final Menu menu = new Menu();
         menu.setVersion(version);
         menu.setNo(menuIndex);
-        menu.setNested(nested);
         menu.setTypeSort(typeSort);
         savedMenu = menuRepository.saveAndFlush(menu);
 
