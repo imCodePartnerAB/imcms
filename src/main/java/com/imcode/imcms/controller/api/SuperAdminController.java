@@ -131,13 +131,12 @@ class SuperAdminController {
     public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
                                  @RequestParam(value = "return", required = false) String returnUrl,
-                                 @RequestParam boolean nested,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
         mav.setViewName("EditMenu");
         addObjectModelViewData(mav, metaId);
-        addCommonModelData(metaId, index, returnUrl, nested, request, mav);
+        addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
     }
@@ -191,13 +190,6 @@ class SuperAdminController {
         addCommonModelData(returnUrl, request, mav);
 
         return mav;
-    }
-
-    private void addCommonModelData(Integer metaId, Integer index, String returnUrl, boolean nested, HttpServletRequest request,
-                                    ModelAndView mav) {
-
-        mav.addObject("isNested", nested);
-        addCommonModelData(metaId, index, returnUrl, request, mav);
     }
 
     private void addCommonModelData(Integer metaId, Integer index, String returnUrl, HttpServletRequest request,
