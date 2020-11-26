@@ -25,6 +25,8 @@ define("imcms-menu-editor-builder",
         const MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         const TREE_SORT = 'TREE_SORT';
         const MANUAL = 'MANUAL';
+        const ALPHABETICAL_ASC = 'ALPHABETICAL_ASC';
+        const ALPHABETICAL_DESC = 'ALPHABETICAL_DESC';
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
@@ -41,6 +43,17 @@ define("imcms-menu-editor-builder",
             texts.typesSort.publishedDateDesc,
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
+        ];
+
+        const originalTypes = [
+            TREE_SORT,
+            MANUAL,
+            ALPHABETICAL_ASC,
+            ALPHABETICAL_DESC,
+            PUBLISHED_DATE_ASC,
+            PUBLISHED_DATE_DESC,
+            MODIFIED_DATE_ASC,
+            MODIFIED_DATE_DESC
         ];
         const topPointMenu = 178; // top point menu for set item before item in the top position.
         // todo: maybe need use getFirstItemInMenuArea().offset().top - 4 or something like this? Same in doc-editor
@@ -112,7 +125,7 @@ define("imcms-menu-editor-builder",
                     }
                 });
 
-            } else{
+            } else {
                 menuElement = {
                     documentId: docId,
                     type: document.type,
@@ -127,7 +140,7 @@ define("imcms-menu-editor-builder",
                 };
             }
 
-                return menuElement;
+            return menuElement;
         }
 
         function getAllMenuItems() {
@@ -257,9 +270,9 @@ define("imcms-menu-editor-builder",
 
         function highlightMenuDoc() {
             disableHighlightingMenuDoc();
-                $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
-                    'border': '1px dashed red'
-                });
+            $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
+                'border': '1px dashed red'
+            });
         }
 
         function removedPreviousItemFrame() {
@@ -567,11 +580,17 @@ define("imcms-menu-editor-builder",
                             );
                         }
                     } else {
-                        $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
+                        $menuElement = buildMenuItemTree(menuElementsTree, {
+                            level,
+                            sortType: $dataInput.attr("data-type-sort")
+                        });
                         $menuElementsContainer.find("[data-document-id=" + parentId + "]").before($menuElement);
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, { level, sortType: $dataInput.attr("data-type-sort") });
+                    $menuElement = buildMenuItemTree(menuElementsTree, {
+                        level,
+                        sortType: $dataInput.attr("data-type-sort")
+                    });
                     $menuElementsContainer.find(".imcms-menu-items-list").append($menuElement);
                 }
             }
@@ -600,7 +619,7 @@ define("imcms-menu-editor-builder",
 
 
         function controlPaddingClassForTitlesHEAD() {
-            if (isMultiRemoveModeEnabled() && !$menuTitlesBlock.hasClass(rightPaddingNoneClassName) ) {
+            if (isMultiRemoveModeEnabled() && !$menuTitlesBlock.hasClass(rightPaddingNoneClassName)) {
                 $menuTitlesBlock.addClass(rightPaddingNoneClassName);
             } else {
                 $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
@@ -688,7 +707,7 @@ define("imcms-menu-editor-builder",
         function appendNewMenuItem(doc) {
             const sortType = document.getElementById("type-sort").value;
 
-            getFirstItemInMenuArea().before(buildMenuItemTree(getMenuElementTree(doc), { level: 1, sortType }));
+            getFirstItemInMenuArea().before(buildMenuItemTree(getMenuElementTree(doc), {level: 1, sortType}));
 
             documentEditorBuilder.addDocumentToList(doc);
             reorderMenuListBySortNumber(getAllMenuItems());
@@ -983,7 +1002,7 @@ define("imcms-menu-editor-builder",
             components.overlays.defaultTooltip(
                 $docId,
                 documentEditorBuilder.getIdTooltipText(menuElement.documentId, menuElement.createdDate, menuElement.createdBy),
-                { placement: 'right' },
+                {placement: 'right'},
             );
 
             const title = menuElement.title
@@ -1380,14 +1399,14 @@ define("imcms-menu-editor-builder",
                 ? $element => $element.show()
                 : $element => $element.hide();
 
-            menuDocs.each(function() {
+            menuDocs.each(function () {
                 const $item = $(this).find('.imcms-document-item__sort-order');
                 toggleCommand($item);
             });
         }
 
         function toggleMenuTitlesIndent(isChecked) {
-            isChecked ? $sortOrderColumnHead.show() :$sortOrderColumnHead.hide();
+            isChecked ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
         }
 
         function toggleDragAndDrop(isChecked) {
@@ -1414,6 +1433,8 @@ define("imcms-menu-editor-builder",
         let $typesSortSelect;
 
         function buildTypeSortingSelect(opts) {
+            const lastSavedTypeSort = opts.typeSort;
+
             $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
                 class: 'imcms-flex--w-40',
@@ -1427,33 +1448,20 @@ define("imcms-menu-editor-builder",
                 change: onChangeNumberingSortFlag,
             });
 
-            const requestNested = {
-                nested: opts.nested
-            };
+            mapTypesSort.clear();
+            originalTypes.map((typeOriginal, index) => {
+                mapTypesSort.set(localizeTypesSort[index], typeOriginal)
+            });
 
-            function defineListLocalizeTypesByNested(localizeTypes, nested) {
-                if (nested) {
-                    return localizeTypes;
-                } else {
-                    return localizeTypes.slice(1);
-                }
-            }
+            let keys = [...mapTypesSort.keys()];
 
-            typesSortRestAPI.getSortTypes(requestNested).done(types => {
-                mapTypesSort.clear();
-                types.map((typeOriginal, index) => {
-                    mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, requestNested.nested)[index], typeOriginal)
-                });
+            let typesSortDataMapped = keys.map(typeKey => ({
+                text: typeKey,
+                'data-value': mapTypesSort.get(typeKey),
+                'class': lastSavedTypeSort === mapTypesSort.get(typeKey) && 'imcms-last-saved-mode'
+            }));
 
-                let keys = [...mapTypesSort.keys()];
-
-                let typesSortDataMapped = keys.map(typeKey => ({
-                    text: typeKey,
-                    'data-value': mapTypesSort.get(typeKey)
-                }));
-
-                components.selects.addOptionsToSelect(typesSortDataMapped, $typesSortSelect.getSelect(), buildOnSelectedTypeSort(opts));
-            }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+            components.selects.addOptionsToSelect(typesSortDataMapped, $typesSortSelect.getSelect(), buildOnSelectedTypeSort(opts));
 
             return new BEM({
                 block: 'imcms-menu-sort',
@@ -1566,7 +1574,7 @@ define("imcms-menu-editor-builder",
         }
 
         function fillEditorContent(menuElementsTree, opts) {
-            const typeSort = opts.nested ? TREE_SORT : MANUAL;
+            const typeSort = opts.typeSort;
             prevType = typeSort;
             $menuElementsContainer.append(buildEditorContainer(opts));
 
@@ -1575,15 +1583,16 @@ define("imcms-menu-editor-builder",
 
             $documentEditor = documentEditorBuilder.buildBody(opts);
             $documentsContainer.append($documentEditor);
-            documentEditorBuilder.loadDocumentEditorContent($documentEditor, { ...opts, moveEnable: true });
+            documentEditorBuilder.loadDocumentEditorContent($documentEditor, {...opts, moveEnable: true});
         }
 
         function loadMenuEditorContent(opts) {
-            opts.inMenu = true;
             addHeadData(opts);
             menusRestApi.read(opts)
-                .done(items => {
-                    fillEditorContent(items, opts)
+                .done(menu => {
+                    opts.inMenu = true;
+                    opts.typeSort = menu.typeSort
+                    fillEditorContent(menu.menuItems, opts);
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
