@@ -25,20 +25,14 @@ public class UserPropertyDataInitializer extends TestDataCleaner{
         return new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(userProperty)));
     }
 
-//    public UserProperty createData(String keyName, String value){
-//
-//        return new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(userProperty)));
-///       return new UserPropertyDTO(id, keyName, value);
-//    }
-//
+    public UserProperty createData(Integer id, Integer userId, String keyName, String value){
+        UserProperty userProperty = new UserPropertyDTO();
 
-//    public List<UserPropertyDTO> createData(int count, String value, String keyName, Integer userId) {
-//        final List<UserPropertyDTO> listUserPropertyDTO = new ArrayList<>();
-//
-//        for(int i = 0; i < count; i++){
-//            listUserPropertyDTO.add(createData(value));
-//        }
-//        return listUserPropertyDTO;
-//    }
+        userProperty.setUserId(userId);
+        userProperty.setKeyName(keyName);
+        userProperty.setValue(value);
+
+        return userProperty;
+    }
 
 }
