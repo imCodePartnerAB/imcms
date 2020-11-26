@@ -11,7 +11,6 @@
 <%@ attribute name="wrap" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="nested" required="false" type="java.lang.Boolean" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -30,8 +29,6 @@
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
     <jsp:doBody var="tagContentBody"/>
     <c:set var="isTagBodyEmpty" value="${empty tagContentBody}"/>
-
-    <c:set var="isNested" value="${empty nested ? false : nested}"/>
 
     <c:choose>
         <c:when test="${isTagBodyEmpty}">
@@ -79,14 +76,13 @@
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--menu" data-nested="${isNested}"
-                 data-doc-id="${targetDocId}"${externalPart}
+            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
                  data-menu-index="${index}">
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-                     data-menu-index="${index}" data-nested="${isNested}">${menuContent}</div>
+                     data-menu-index="${index}">${menuContent}</div>
                     <%-- attributes used as unique identifier while reload --%>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">

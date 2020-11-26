@@ -12,7 +12,6 @@
 <%--@elvariable id="index" type="int"--%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="returnUrl" type="java.lang.String"--%>
-<%--@elvariable id="isNested" type="boolean"--%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,9 +28,9 @@
 
 <input type="hidden" id="return-url" value="${returnUrl}">
 <div class="imcms-editor-area imcms-editor-area--menu"
-     data-doc-id="${targetDocId}" data-menu-index="${index}" data-nested="${isNested}">
+     data-doc-id="${targetDocId}" data-menu-index="${index}">
     <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-         data-menu-index="${index}" data-nested="${isNested}"></div>
+         data-menu-index="${index}"></div>
 </div>
 
 </body>

@@ -158,7 +158,6 @@ define("imcms-menu-editor-builder",
                 menuIndex: opts.menuIndex,
                 docId: opts.docId,
                 menuItems: menuItems,
-                nested: opts.nested,
                 typeSort: document.getElementById('type-sort').value.trim()
             };
 
@@ -1501,7 +1500,6 @@ define("imcms-menu-editor-builder",
                     docId: opts.docId,
                     menuIndex: opts.menuIndex,
                     menuItems: menuItems,
-                    nested: opts.nested,
                     typeSort: type
                 };
 
@@ -1513,7 +1511,7 @@ define("imcms-menu-editor-builder",
                     }
                 }
 
-                if (menuData.nested === true && prevType === TREE_SORT && type !== TREE_SORT) {
+                if (prevType === TREE_SORT && type !== TREE_SORT) {
                     modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
                         if (!confirmed) {
                             let prevKeySelected = getKeyByValue(mapTypesSort, prevType);
@@ -1600,8 +1598,7 @@ define("imcms-menu-editor-builder",
         function addHeadData(opts) {
             let linkData = "/api/admin/menu?meta-id="
                 + opts.docId
-                + "&index=" + opts.menuIndex
-                + "&nested=" + opts.nested;
+                + "&index=" + opts.menuIndex;
 
             $title.text(linkData).css({
                 'text-transform': 'lowercase',
