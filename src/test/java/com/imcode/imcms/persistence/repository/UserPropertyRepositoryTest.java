@@ -28,6 +28,10 @@ public class UserPropertyRepositoryTest extends WebAppSpringTestConfig {
     private UserPropertyDataInitializer userPropertyDataInitializer;
 
     private User user;
+    private int userId;
+    private final String keyName = "keyName";
+    private final String value = "value";
+    private UserProperty userProperty;
 
 
     @BeforeEach
@@ -36,13 +40,14 @@ public class UserPropertyRepositoryTest extends WebAppSpringTestConfig {
         userPropertyDataInitializer.cleanRepositories();
 
         user = userDataInitializer.createData("test");
+        userId = user.getId();
+        userProperty = userPropertyDataInitializer.createData(userId, keyName, value);
+
     }
 
 
     @Test
     public void getByUserId_When_UserExist_Expected_CorrectResult() {
-        userPropertyDataInitializer.createData(user.getId(), "keyName", "value");
-
         List<UserProperty> userPropertyList = userPropertyRepository.findByUserId(user.getId());
 
         assertFalse(userPropertyList.isEmpty());
@@ -51,27 +56,26 @@ public class UserPropertyRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void getByUserIdAndKeyName_When_UserExist_Expected_CorrectResult() {
-        String keyName = "keyName";
+        UserProperty expectedUserProperty = userPropertyRepository.findByUserIdAndKeyName(userId, keyName);
 
-        final UserProperty userProperty = userPropertyDataInitializer.createData(user.getId(), keyName, "value");
-        UserProperty expectedUserProperty = userPropertyRepository.findByUserIdAndKeyName(user.getId(), keyName);
-
-        assertNotNull(userProperty);
-        assertEquals(expectedUserProperty, userProperty);
+        assertNotNull(expectedUserProperty);
+        assertEquals(userProperty.getId(), expectedUserProperty.getId());
+        assertEquals(userProperty.getUserId(), expectedUserProperty.getUserId());
+        assertEquals(userProperty.getKeyName(), expectedUserProperty.getKeyName());
+        assertEquals(userProperty.getValue(), expectedUserProperty.getValue());
     }
 
     @Test
     public void getByUserIdAndValue_When_UserExist_Expected_CorrectResult() {
-        String value = "value";
-
-        final UserProperty expectedUserProperty1 = userPropertyDataInitializer.createData(user.getId(), "keyName", value);
-        final UserProperty expectedUserProperty2 = userPropertyDataInitializer.createData(user.getId(), "keyName2", value);
-
-        List<UserProperty> userPropertyList = userPropertyRepository.findByUserIdAndValue(user.getId(), value);
+        List<UserProperty> userPropertyList = userPropertyRepository.findByUserIdAndValue(userId, value);
 
         assertFalse(userPropertyList.isEmpty());
-        assertEquals(2, userPropertyList.size());
-        assertEquals(expectedUserProperty1,  userPropertyList.get(0));
-        assertEquals(expectedUserProperty2,  userPropertyList.get(1));
+        assertEquals(1, userPropertyList.size());
+        UserProperty actualUserProperty = userPropertyList.get(0);
+
+        assertEquals(userProperty.getId(), actualUserProperty.getId());
+        assertEquals(userProperty.getUserId(), actualUserProperty.getUserId());
+        assertEquals(userProperty.getKeyName(), actualUserProperty.getKeyName());
+        assertEquals(userProperty.getValue(), actualUserProperty.getValue());
     }
 }

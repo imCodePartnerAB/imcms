@@ -14,8 +14,8 @@ import imcode.server.user.UserDomainObject;
 import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -60,7 +60,7 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getAll_When_UserPropertyExist_Expected_CorrectResult() {
         assertNotNull(userProperty);
-        final UserProperty userProperty2 = userPropertyDataInitializer.createData(user.getId(), "keyName2", "value");
+        final UserProperty userProperty2 = userPropertyDataInitializer.createData(userId, "keyName2", "value");
 
         List<UserProperty> expectedUserPropertyList = userPropertyService.getAll();
 
@@ -72,12 +72,13 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getAll_When_UserPropertyNotExist_Expected_EmptyResult() {
+        userPropertyService.deleteById(userProperty.getId());
         List<UserProperty> expectedUserPropertyList = userPropertyService.getAll();
         assertTrue(expectedUserPropertyList.isEmpty());
     }
 
     @Test
-    public void getAll_When_UserIsNotSuperAdmin_Expected_AccessDeniedException() {
+    public void getAll_When_UserIsNotSuperAdmin_Expected_CorrectException() {
         setCommonUser();
         assertThrows(AccessDeniedException.class, () -> userPropertyService.getAll());
     }
@@ -85,23 +86,29 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getByUserId_When_UserPropertyExist_Expected_CorrectResult() {
         assertNotNull(userProperty);
-        final UserProperty userProperty2 = userPropertyDataInitializer.createData(userId, "keyName2", "value");
 
         List<UserProperty> expectedUserPropertyList = userPropertyService.getByUserId(userId);
 
         assertFalse(expectedUserPropertyList.isEmpty());
-        assertEquals(userProperty, expectedUserPropertyList.get(0));
-        assertEquals(userProperty2, expectedUserPropertyList.get(1));
+        assertEquals(1, expectedUserPropertyList.size());
+
+        UserProperty actualUserProperty = expectedUserPropertyList.get(0);
+        assertEquals(userProperty.getId(), actualUserProperty.getId());
+        assertEquals(userProperty.getUserId(), actualUserProperty.getUserId());
+        assertEquals(userProperty.getKeyName(), actualUserProperty.getKeyName());
+        assertEquals(userProperty.getValue(), actualUserProperty.getValue());
+
     }
 
     @Test
     public void getByUserId_When_UserPropertyNotExist_Expected_EmptyResult() {
+        userPropertyService.deleteById(userProperty.getId());
         List<UserProperty> expectedUserPropertyList = userPropertyService.getByUserId(userId);
         assertTrue(expectedUserPropertyList.isEmpty());
     }
 
     @Test
-    public void getByUserId_When_UserNotSuperAdmin_Expected_AccessDeniedException() {
+    public void getByUserId_When_UserNotSuperAdmin_Expected_CorrectException() {
         setCommonUser();
         assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserId(userId));
     }
@@ -120,26 +127,31 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
         int nonExistentId = 1000;
         Optional<UserProperty> expectedUserProperty = userPropertyService.getByUserIdAndKeyName(nonExistentId, keyName);
         assertFalse(expectedUserProperty.isPresent());
-        Optional<UserProperty> expectedUserProperty2 = userPropertyService.getByUserIdAndKeyName(user.getId(), "nonExistentKeyName");
+        Optional<UserProperty> expectedUserProperty2 = userPropertyService.getByUserIdAndKeyName(userId, "nonExistentKeyName");
         assertFalse(expectedUserProperty2.isPresent());
     }
 
 
     @Test
-    public void getByUserIdAndKeyName_When_UserNotSuperAdmin_Expected_AccessDeniedException() {
+    public void getByUserIdAndKeyName_When_UserNotSuperAdmin_Expected_CorrectException() {
+        assertNotNull(userProperty);
+
         setCommonUser();
         assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserIdAndKeyName(userId, keyName).get());
     }
 
     @Test
     public void getByUserIdAndValue_When_userPropertyExist_Expected_CorrectResult() {
-        assertNotNull(userProperty);
-
         List<UserProperty> userPropertyList = userPropertyService.getByUserIdAndValue(userId, value);
 
         assertFalse(userPropertyList.isEmpty());
         assertEquals(1, userPropertyList.size());
-        assertEquals(userProperty, userPropertyList.get(0));
+
+        UserProperty actualUserProperty = userPropertyList.get(0);
+        assertEquals(userProperty.getId(), actualUserProperty.getId());
+        assertEquals(userProperty.getUserId(), actualUserProperty.getUserId());
+        assertEquals(userProperty.getKeyName(), actualUserProperty.getKeyName());
+        assertEquals(userProperty.getValue(), actualUserProperty.getValue());
     }
 
     @Test
@@ -153,9 +165,11 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
 
 
     @Test
-    public void getByUserIdAndValue_When_Expected_AccessDeniedException(){
+    public void getByUserIdAndValue_When_UserNotSuperAdmin_Expected_CorrectException(){
+        assertNotNull(userProperty);
+
         setCommonUser();
-        assertThrows(AccessDeniedException.class, (Executable) userPropertyService.getByUserIdAndValue(userId, value));
+        assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserIdAndValue(userId, value));
     }
 
     @Test
@@ -170,15 +184,15 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void create_When_KeyNameOrValueIsEmpty_Expected_DataIsNotValidException() {
+    public void create_When_KeyNameOrValueIsEmpty_Expected_CorrectException() {
         UserProperty nonExistentUserProperty = new UserPropertyDTO(1000, 1000, "",  "");
-        assertThrows(DataIsNotValidException.class, (Executable) userPropertyService.create(nonExistentUserProperty));
+        assertThrows(DataIsNotValidException.class, () -> userPropertyService.create(nonExistentUserProperty));
     }
 
     @Test
-    public void create_When_UserNotSuperAdmin_Expected_AccessDeniedException() {
+    public void create_When_UserNotSuperAdmin_Expected_CorrectException() {
         setCommonUser();
-        assertThrows(AccessDeniedException.class, (Executable) userPropertyService.create(userProperty));
+        assertThrows(AccessDeniedException.class, () -> userPropertyService.create(userProperty));
     }
 
     @Test
@@ -203,29 +217,30 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void update_When_UserPropertyNotExist_Expected_EntityNotFoundException() {
+    public void update_When_UserPropertyNotExist_Expected_CorrectException() {
         assertNotNull(userProperty);
 
         UserProperty nonExistentUserProperty = new UserPropertyDTO(1000, 1000, keyName,  value);
-        assertThrows(EntityNotFoundException.class, (Executable) userPropertyService.update(nonExistentUserProperty));
+        assertThrows(EntityNotFoundException.class, () -> userPropertyService.update(nonExistentUserProperty));
     }
 
     @Test
-    public void update_When_KeyNameOrValueIsEmpty_Expected_DataIsNotValidException() {
+    public void update_When_KeyNameOrValueIsEmpty_Expected_CorrectException() {
+        assertNotNull(userProperty);
+
         UserProperty userPropertyWithEmptyValue = userProperty;
         userPropertyWithEmptyValue.setValue("");
-        assertThrows(DataIsNotValidException.class, (Executable) userPropertyService.update(userPropertyWithEmptyValue));
-        assertNotEquals(userPropertyWithEmptyValue, userPropertyService.getByUserId(userId));
+        assertThrows(DataIsNotValidException.class, () -> userPropertyService.update(userPropertyWithEmptyValue));
+        assertNotNull(userPropertyService.getByUserIdAndValue(userId, value));
     }
 
     @Test
-    public void update_When_UserNotSuperAdmin_Expected_AccessDeniedException() {
-        setCommonUser();
-        final UserProperty userProperty = userPropertyDataInitializer.createData(userId, keyName, value);
-        userProperty.setKeyName("keyName2");
-        assertThrows(AccessDeniedException.class, (Executable) userPropertyService.update(userProperty));
+    public void update_When_UserNotSuperAdmin_Expected_CorrectException() {
+        assertNotNull(userProperty);
 
-        assertNotEquals(userProperty, userPropertyService.getByUserIdAndKeyName(userId, keyName).get());
+        setCommonUser();
+        userProperty.setKeyName("keyName2");
+        assertThrows(AccessDeniedException.class, () -> userPropertyService.update(userProperty));
     }
 
     @Test
@@ -235,21 +250,21 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_When_UserPropertyNotExist_Expected_Exception() {
-        //exceptions
-        userPropertyService.deleteById(1000);
-
+    public void delete_When_UserPropertyNotExist_Expected_CorrectException() {
+        int nonExistenceId = 1000;
+        assertThrows(EmptyResultDataAccessException.class, ()-> userPropertyService.deleteById(nonExistenceId));
     }
 
     @Test
-    public void delete_When_UserPropertyExistNotSuperAdmin_Expected_AccessDeniedException() {                //
+    public void delete_When_UserPropertyExistNotSuperAdmin_Expected_CorrectException() {
+        assertNotNull(userProperty);
+
         setCommonUser();
         assertThrows(AccessDeniedException.class, () -> userPropertyService.deleteById(userProperty.getId()));
-        assertFalse(userPropertyService.getAll().isEmpty());
     }
 
     private void setCommonUser() {
-        final UserDomainObject commonUser = new UserDomainObject(1);
+        final UserDomainObject commonUser = new UserDomainObject(2);
         commonUser.setLanguageIso639_2("eng");
         commonUser.addRoleId(Roles.USER.getId());
         Imcms.setUser(commonUser);
