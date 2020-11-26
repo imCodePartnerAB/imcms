@@ -953,6 +953,7 @@ define("imcms-menu-editor-builder",
             });
 
             $numberingSortBox.$input.blur(events => {
+                const typeSort = document.getElementById('type-sort').value;
                 const currentValue = $(events.target).val();
                 const currentIndex = $(events.target).attr('id');
                 const documentId = $(events.target).attr('name');
@@ -970,6 +971,12 @@ define("imcms-menu-editor-builder",
                     removeAndAddClassForInCorrectData($(events.target), true);
                     return;
                 }
+                if (typeSort && typeSort !== TREE_SORT && currentValue.includes('.')) {
+                    alert(`${typeSort} sort doesn't support nesting!!`)
+                    $(events.target).val(currentIndex)
+                    return;
+                }
+
 
                 if (parsedIndex.every((value, index) => value === parsedValue[index])) {
                     removeAndAddClassForInCorrectData($(events.target), true);
