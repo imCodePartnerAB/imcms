@@ -1,10 +1,10 @@
 package com.imcode.imcms.model;
 
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
 
-@NoArgsConstructor
+@AllArgsConstructor
 public abstract class UserProperty implements Serializable {
 
     private static final long serialVersionUID = 2649214048826330042L;
