@@ -251,7 +251,6 @@ module.exports = {
                     'imcms-category-types-rest-api',
                     'imcms-loops-rest-api',
                     'imcms-menus-rest-api',
-                    'imcms-sort-types-rest-api',
                     'imcms-images-rest-api',
                     'imcms-languages-rest-api',
                     'imcms-texts-rest-api',

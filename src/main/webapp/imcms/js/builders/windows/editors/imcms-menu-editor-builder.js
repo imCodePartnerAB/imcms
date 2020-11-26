@@ -8,11 +8,11 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder, typesSortRestAPI) {
+              docProfileSelectBuilder) {
 
         const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
