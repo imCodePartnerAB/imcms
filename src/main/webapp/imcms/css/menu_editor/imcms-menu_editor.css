@@ -131,6 +131,10 @@
     display: none;
 }
 
+.imcms-drop-down-list__items .imcms-last-saved-mode {
+    color: #b40d4c;
+}
+
 @media screen and (max-width: 1500px) {
     .imcms-menu-editor *,
     .imcms-menu-editor *::placeholder {
