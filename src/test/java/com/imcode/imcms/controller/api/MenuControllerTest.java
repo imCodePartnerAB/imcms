@@ -524,23 +524,6 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getMenu_When_UserSuperAdminMenuExistInModeDONOTSHOWOn_Expect_CorrectEntitiesSize() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
-        user.addRoleId(Roles.SUPER_ADMIN.getId());
-        Imcms.setUser(user);
-
-        assertTrue(Imcms.getUser().isSuperAdmin());
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("menuIndex", String.valueOf(menu.getMenuIndex()))
-                .param("docId", String.valueOf(menu.getDocId()));
-
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
-    }
-
-    @Test
     public void getMenuItems_When_MenuMissing_Expect_Expect_EmptyArray() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
         versionDataInitializer.createData(0, 1001);
