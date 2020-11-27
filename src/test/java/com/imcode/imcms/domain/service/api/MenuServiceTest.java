@@ -250,6 +250,24 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(newSize, menuItemAfter.size());
     }
 
+    @Test
+    public void saveMenu_When_TypeSortNotTREE_SORTAndSort_Order_NotNumber_Expect_CorrectException() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+        final MenuDTO testMenuDTO = menuDataInitializer.createData(false, String.valueOf(MANUAL), 0);
+        final List<MenuItemDTO> newMenuItems = new ArrayList<>();
+
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("2"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("2.1"));
+        newMenuItems.add(menuDataInitializer.createMenuItemDTO("3"));
+
+        testMenuDTO.setMenuItems(newMenuItems);
+
+        assertThrows(DataIsNotValidException.class, () -> menuService.saveFrom(testMenuDTO));
+    }
+
 
     @Test
     public void saveMenu_When_ManualTypeSort_Expect_NoDuplicatedDataAndCorrectSave() {
@@ -391,7 +409,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveMenu_When_FlatMenuAndSortNumbersIsNotEmpty_Expect_NoDuplicatedDataAndCorrectSave() {
+    public void saveMenu_When_FlatMenuAndItemHasSubLevel_Expect_CorretException() {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
 
@@ -407,21 +425,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         testMenuDTO.setMenuItems(newMenuItems);
 
-        final List<MenuItemDTO> expectedMenuItems = expectedMenuDTO.getMenuItems();
-
-        MenuDTO savedMenu = menuService.saveFrom(testMenuDTO);
-
-        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
-        assertEquals(expectedMenuItems.size(), menuItemAfter.size());
-
-        final List<MenuItemDTO> menuItems = testMenuDTO.getMenuItems();
-        final MenuItemDTO removed = menuItems.remove(0);
-        final int newSize = menuItems.size();
-        assertNotNull(removed);
-        savedMenu = menuService.saveFrom(testMenuDTO);
-
-        menuItemAfter = savedMenu.getMenuItems();
-        assertEquals(newSize, menuItemAfter.size());
+        assertThrows(DataIsNotValidException.class, () -> menuService.saveFrom(testMenuDTO));
     }
 
     @Test
