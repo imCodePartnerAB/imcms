@@ -1496,6 +1496,16 @@ define("imcms-menu-editor-builder",
             $menuElementsContainer.append($menuItemsSortedList);
         }
 
+        function addHighlightToSelectItemByLastSavedType(currentSelectedVal, lastSavedType) {
+            const $currentSelectedVal = $('.imcms-drop-down-list__select-item-value');
+            if (currentSelectedVal === lastSavedType && !$currentSelectedVal.hasClass('imcms-last-saved-mode')) {
+                $currentSelectedVal.addClass('imcms-last-saved-mode');
+            } else {
+                $currentSelectedVal.removeClass('imcms-last-saved-mode');
+            }
+
+        }
+
         function buildOnSelectedTypeSort(opts) {
             return type => {
 
@@ -1517,6 +1527,8 @@ define("imcms-menu-editor-builder",
                         }
                     }
                 }
+
+                addHighlightToSelectItemByLastSavedType(type, opts.typeSort);
 
                 if (prevType === TREE_SORT && type !== TREE_SORT) {
                     modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
@@ -1582,6 +1594,8 @@ define("imcms-menu-editor-builder",
             const typeSort = opts.typeSort;
             prevType = typeSort;
             $menuElementsContainer.append(buildEditorContainer(opts));
+
+            addHighlightToSelectItemByLastSavedType($('#type-sort').val(), typeSort);
 
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
             $menuElementsContainer.append($menuElementsTree);
