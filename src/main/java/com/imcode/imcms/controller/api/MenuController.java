@@ -29,7 +29,7 @@ public class MenuController {
     }
 
     @GetMapping
-    public MenuDTO getMenuItems(@ModelAttribute MenuDTO menu) {
+    public MenuDTO getMenu(@ModelAttribute MenuDTO menu) {
         return menuService.getMenuDTO(
                 menu.getDocId(),
                 menu.getMenuIndex(),

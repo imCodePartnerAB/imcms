@@ -211,7 +211,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 menuDTO.getMenuItems()
                         .stream()
                         .flatMap(MenuItemDTO::flattened)
-                        .peek(menuItemDTO -> checkOnValidDataSortOrder(menuItemDTO.getSortOrder()))
+                        .peek(menuItemDTO -> checkOnValidDataSortOrder(menuItemDTO.getSortOrder(), typeSort))
                         .collect(Collectors.toList()))
         );
 
@@ -323,15 +323,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
 
-    private void checkOnValidDataSortOrder(String sortOrder) {
-        if (StringUtils.isBlank(sortOrder)) {
-            throw new DataIsNotValidException("Sort order is empty or null!!");
+    private void checkOnValidDataSortOrder(String sortOrder, String typeSort) {
+        boolean isNotNumber = !StringUtils.isNumeric(sortOrder);
+
+        if (StringUtils.isBlank(sortOrder) || !typeSort.equals(String.valueOf(TREE_SORT)) && isNotNumber) {
+            throw new DataIsNotValidException("Sort order is not valid it looks like - " + sortOrder);
         }
     }
 
     private int compare(String sortOrder1, String sortOrder2) {
-        checkOnValidDataSortOrder(sortOrder1);
-        checkOnValidDataSortOrder(sortOrder2);
+        checkOnValidDataSortOrder(sortOrder1, "");
+        checkOnValidDataSortOrder(sortOrder2, "");
 
         String[] split1 = sortOrder1.split("\\."), split2 = sortOrder2.split("\\.");
         int result = 0;
