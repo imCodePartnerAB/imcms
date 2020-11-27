@@ -325,8 +325,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private void checkOnValidDataSortOrder(String sortOrder, String typeSort) {
         boolean isNotNumber = !StringUtils.isNumeric(sortOrder);
+        boolean isNotTreeSortType = StringUtils.isNoneBlank(typeSort) && !typeSort.equals(String.valueOf(TREE_SORT));
 
-        if (StringUtils.isBlank(sortOrder) || !typeSort.equals(String.valueOf(TREE_SORT)) && isNotNumber) {
+        if (StringUtils.isBlank(sortOrder) || isNotTreeSortType && isNotNumber) {
             throw new DataIsNotValidException("Sort order is not valid it looks like - " + sortOrder);
         }
     }
