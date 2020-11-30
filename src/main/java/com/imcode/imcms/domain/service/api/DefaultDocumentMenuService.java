@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.api.DocumentVersion.WORKING_VERSION_NO;
+
 @Service
 @Transactional
 public class DefaultDocumentMenuService implements DocumentMenuService {
@@ -85,12 +87,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final Integer docId = menuItem.getDocumentId();
         final Meta metaDocument = metaRepository.findOne(docId);
 
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Version latestVersion = versionService.getLatestVersion(docId);
 
         final List<CommonContent> commonContentList = commonContentService
-                .getOrCreateCommonContents(docId, workingVersion.getNo());
+                .getOrCreateCommonContents(docId, latestVersion.getNo());
 
-        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, workingVersion, commonContentList);
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
 
         final String documentDTOAlias = documentDTO.getAlias();
 
@@ -107,7 +109,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setCreatedBy(documentDTO.getCreated().getBy());
         menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
         menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
-        menuItemDTO.setHasNewerVersion(versionService.hasNewerVersion(docId));
+        menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
         menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
         menuItemDTO.setSortOrder(menuItem.getSortOrder());
 

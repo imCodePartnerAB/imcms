@@ -134,12 +134,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Version latestVersion = versionService.getLatestVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, workingVersion.getNo()
+                docId, latestVersion.getNo()
         );
         final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), workingVersion, commonContents
+                metaRepository.findOne(docId), latestVersion, commonContents
         );
 
         documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
@@ -226,10 +226,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         final DocumentDTO doc = get(docId);
         final Meta metaDoc = metaRepository.findOne(docId);
-        final Integer currentVersionDocNo = versionService.hasNewerVersion(docId)
-                ? doc.getCurrentVersion().getId()
-                : metaDoc.getDefaultVersionNo();
 
+        final Integer currentVersionDocNo = doc.getCurrentVersion().getId();
 
         SolrInputDocument indexDoc = new SolrInputDocument();
 
