@@ -309,15 +309,19 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .stream()
                 .map(menuItemFunction)
                 .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+
+
+        final List<MenuItemDTO> filteredMenuItems = sortedMenuItems.stream()
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
                 .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
                 .filter(isMenuItemAccessibleForLang(language, versionReceiver))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
 
 
         final MenuDTO menuDTO = menu.map(menuToMenuDTO).orElse(new MenuDTO());
 
-        menuDTO.setMenuItems(sortedMenuItems);
+        menuDTO.setMenuItems(filteredMenuItems);
 
         return menuDTO;
     }
