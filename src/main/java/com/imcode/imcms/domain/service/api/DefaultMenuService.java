@@ -316,6 +316,16 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
                 .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
                 .filter(isMenuItemAccessibleForLang(language, versionReceiver))
+                .peek(menuItemDTO -> {
+                    if (status == MenuItemsStatus.ALL) return;
+
+                    final List<MenuItemDTO> children = menuItemDTO.getChildren()
+                            .stream()
+                            .filter(this::isPublicMenuItem)
+                            .collect(Collectors.toList());
+
+                    menuItemDTO.setChildren(children);
+                })
                 .collect(Collectors.toList());
 
 
