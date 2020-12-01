@@ -87,12 +87,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final Integer docId = menuItem.getDocumentId();
         final Meta metaDocument = metaRepository.findOne(docId);
 
-        final Version latestVersion = versionService.getLatestVersion(docId);
+        final Version currentVersion = versionService.getCurrentVersion(docId);
 
         final List<CommonContent> commonContentList = commonContentService
-                .getOrCreateCommonContents(docId, latestVersion.getNo());
+                .getOrCreateCommonContents(docId, currentVersion.getNo());
 
-        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, currentVersion, commonContentList);
 
         final String documentDTOAlias = documentDTO.getAlias();
 
