@@ -52,6 +52,11 @@ public class DefaultVersionService implements VersionService {
     }
 
     @Override
+    public Version getCurrentVersion(int docId) throws DocumentNotExistException {
+        return hasNewerVersion(docId) ? getDocumentWorkingVersion(docId) : getLatestVersion(docId);
+    }
+
+    @Override
     public Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }

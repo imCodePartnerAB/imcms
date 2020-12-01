@@ -12,6 +12,8 @@ public interface VersionService extends DeleterByDocumentId {
 
     Version getLatestVersion(int docId) throws DocumentNotExistException;
 
+    Version getCurrentVersion(int docId) throws DocumentNotExistException;
+
     Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException;
 
     Version create(int docId);
