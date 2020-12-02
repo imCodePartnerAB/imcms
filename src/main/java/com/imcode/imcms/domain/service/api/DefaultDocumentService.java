@@ -223,13 +223,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public SolrInputDocument index(int docId) {
-
         final DocumentDTO doc = get(docId);
-        final Meta metaDoc = metaRepository.findOne(docId);
 
-        final Integer currentVersionDocNo =  versionService.hasNewerVersion(docId)
-                ? doc.getCurrentVersion().getId()
-                : metaDoc.getDefaultVersionNo();
+        final Integer currentVersionDocNo = versionService.getCurrentVersion(docId).getNo();
 
         SolrInputDocument indexDoc = new SolrInputDocument();
 
