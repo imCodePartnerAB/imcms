@@ -176,7 +176,8 @@ define('imcms-document-editor-builder',
                 });
 
                 $textField.$input.on('input', function () {
-                    const textFieldValue = $(this).val().toLowerCase().trim();
+                    const textFieldValue = $(this).val().toLowerCase().trim().replace(/:/g, '\\:');
+                    //todo: maybe add support all special symbols in the future.. ?
                     if (searchQueryObj[term] !== textFieldValue) {
                         appendDocuments(term, textFieldValue, true, true);
                     }
