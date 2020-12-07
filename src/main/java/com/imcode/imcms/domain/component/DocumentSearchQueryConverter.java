@@ -20,7 +20,6 @@ import static org.springframework.data.domain.Sort.Order;
 @Component
 public class DocumentSearchQueryConverter {
 
-    private static final Sort DEFAULT_SORT = new Sort(new Order(Direction.DESC, DocumentIndex.FIELD__META_ID));
     private static final Integer DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
 
     public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery) {
@@ -64,7 +63,7 @@ public class DocumentSearchQueryConverter {
             solrQuery.addFilterQuery(userFilter);
         }
 
-        prepareSolrQueryPaging(searchQuery, solrQuery);
+        prepareSolrQueryPaging(searchQuery, solrQuery, searchingUser);
 
         prepareSolrIsSuperAdminQuery(searchingUser, solrQuery);
 
@@ -72,14 +71,15 @@ public class DocumentSearchQueryConverter {
     }
 
     public SolrQuery convertToSolrQuery(String searchQuery) {
+        final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
-        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery);
+        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery, user);
         prepareSolrIsSuperAdminQuery(Imcms.getUser(), solrQuery);
 
         return solrQuery;
     }
 
-    private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
+    private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery, UserDomainObject user) {
         PageRequestDTO page;
         if (searchQuery.getTerm() != null) {
             page = searchQuery.getPage();
@@ -95,7 +95,7 @@ public class DocumentSearchQueryConverter {
         solrQuery.setRows(page.getSize());
 
         final Order order = Optional.ofNullable(page.getSort())
-                .orElse(DEFAULT_SORT)
+                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD__META_HEADLINE + "_" + user.getLanguage()).ignoreCase()))
                 .iterator()
                 .next();
 
