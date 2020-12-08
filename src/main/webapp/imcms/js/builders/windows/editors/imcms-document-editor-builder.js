@@ -52,7 +52,7 @@ define('imcms-document-editor-builder',
 
         const pageSkip = 'page.skip';
 
-        const defaultSortPropertyValue = 'meta_id';
+        const defaultSortPropertyValue = 'meta_headline_' + imcms.userLanguage;
         const asc = 'ASC';
         const desc = 'DESC';
 
@@ -1055,7 +1055,7 @@ define('imcms-document-editor-builder',
             let title;
             if (savedFlag) {
                 const content = document.commonContents.filter(content => content.enabled)
-                    .filter(enableContent => enableContent.language.code === Imcms.language.code)
+                    .filter(enableContent => enableContent.language.code === imcms.language.code)
                     .shift();
 
                 title = content ? content.headline : texts.notShownInSelectedLang;
