@@ -74,7 +74,7 @@ public class DocumentSearchQueryConverter {
         final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
         prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery, user);
-        prepareSolrIsSuperAdminQuery(Imcms.getUser(), solrQuery);
+        prepareSolrIsSuperAdminQuery(user, solrQuery);
 
         return solrQuery;
     }
