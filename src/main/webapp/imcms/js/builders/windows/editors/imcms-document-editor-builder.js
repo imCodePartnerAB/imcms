@@ -52,7 +52,7 @@ define('imcms-document-editor-builder',
 
         const pageSkip = 'page.skip';
 
-        const defaultSortPropertyValue = 'meta_headline_' + imcms.userLanguage;
+        const defaultSortPropertyValue = 'meta_headline_l_' + imcms.userLanguage;
         const asc = 'ASC';
         const desc = 'DESC';
 
@@ -331,7 +331,7 @@ define('imcms-document-editor-builder',
         }
 
         function highlightDefaultSorting() {
-            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title').first();
+            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title--title');
             highlightSorting($defaultSortingHeader);
         }
 
@@ -422,15 +422,16 @@ define('imcms-document-editor-builder',
         function buildDocumentListTitlesRow(opts) {
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
-                bySorting: defaultSortPropertyValue,
+                bySorting: 'meta_id',
                 elementClass: 'imcms-grid-col-18',
                 modifiers: ['id'],
             });
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                bySorting: 'meta_headline_' + imcms.language.code,
+                bySorting: defaultSortPropertyValue,
                 elementClass: 'imcms-flex--flex-3',
+                modifiers: ['title']
             });
 
             const $aliasColumnHead = buildTitleRow({
@@ -1239,6 +1240,7 @@ define('imcms-document-editor-builder',
                     && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
+                errorMsg.slideUp();
             });
 
             return new BEM({
@@ -1289,6 +1291,7 @@ define('imcms-document-editor-builder',
                     $editorBody = buildEditorBody(newDocsList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
+                    setDefaultSortProperties();
                 })
                 .fail(() => {
                     errorMsg.slideDown();
