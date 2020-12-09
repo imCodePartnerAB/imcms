@@ -140,10 +140,10 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void convert_WhenDefaultSortIsSet_Expect_SortByMetaIdDesc() {
+    public void convert_WhenDefaultSortIsSet_Expect_SortByHeadlineDesc() {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
-        final String expected = String.format("%s %s", DocumentIndex.FIELD_META_HEADLINE,
+        final String expected = String.format("%s %s", DocumentIndex.FIELD_META_HEADLINE + "_" + Imcms.getUser().getLanguage(),
                 Sort.Direction.DESC.toString().toLowerCase());
 
         assertThat(solrQuery.get(CommonParams.SORT), is(expected));
