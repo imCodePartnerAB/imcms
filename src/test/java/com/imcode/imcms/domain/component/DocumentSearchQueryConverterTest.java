@@ -143,7 +143,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     public void convert_WhenDefaultSortIsSet_Expect_SortByMetaIdDesc() {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
-        final String expected = String.format("%s %s", DocumentIndex.FIELD__META_ID,
+        final String expected = String.format("%s %s", DocumentIndex.FIELD_META_HEADLINE,
                 Sort.Direction.DESC.toString().toLowerCase());
 
         assertThat(solrQuery.get(CommonParams.SORT), is(expected));
