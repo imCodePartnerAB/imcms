@@ -13,7 +13,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
-import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
 
 /**
  * General controller for document viewing in any mode.
@@ -115,7 +113,7 @@ public class ViewDocumentController {
         final int docId = textDocument.getId();
         final String alias = textDocument.getAlias();
 
-        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, docId);
+        final RestrictedPermission userPermission = accessService.getPermission(user, docId);
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
@@ -127,15 +125,9 @@ public class ViewDocumentController {
             publicDocumentsCache.invalidateDoc(docId, alias);
         }
 
-        if ((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userEditPermission)) {
-
-            final Object loginTarget = Optional
-                    .ofNullable(request.getAttribute(FORWARD_REQUEST_URI))
-                    .orElse(request.getRequestURL());
-
-            Utility.forwardToLogin(
-                    request, response, HttpServletResponse.SC_FORBIDDEN, new StringBuffer(loginTarget.toString())
-            );
+        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userPermission)) || !hasUserContentViewAccess(userPermission)) {
+            response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            return null;
         }
 
         final String viewName = textDocument.getTemplateName();
@@ -181,7 +173,7 @@ public class ViewDocumentController {
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
-        mav.addObject("editOptions", userEditPermission);
+        mav.addObject("editOptions", userPermission);
         mav.addObject("isDocNew", textDocument.hasNewStatus());
 
         return mav;
@@ -199,5 +191,9 @@ public class ViewDocumentController {
     private boolean hasUserContentEditAccess(final RestrictedPermission permission) {
         return permission.isEditImage() || permission.isEditLoop()
                 || permission.isEditMenu() || permission.isEditText();
+    }
+
+    private boolean hasUserContentViewAccess(final RestrictedPermission permission) {
+        return !permission.getPermission().getName().equals("none");
     }
 }
