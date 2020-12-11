@@ -16,12 +16,7 @@ import imcode.server.user.RoleGetter;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Document implements Serializable {
 
@@ -164,7 +159,7 @@ public class Document implements Serializable {
 
     @SuppressWarnings("unused")
     public RestrictedPermission getDocumentPermissionSetForUser() {
-        return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser(), getId());
+        return Imcms.getServices().getAccessService().getPermission(Imcms.getUser(), getId());
     }
 
     /**

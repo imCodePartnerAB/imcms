@@ -88,7 +88,7 @@ class SuperAdminController {
 
     private void addObjectModelViewData(ModelAndView mav, Integer metaId) {
         final UserDomainObject user = Imcms.getUser();
-        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, metaId);
+        final RestrictedPermission userEditPermission = accessService.getPermission(user, metaId);
 
         mav.addObject("isAdmin", user.isSuperAdmin());
         mav.addObject("editOptions", userEditPermission);

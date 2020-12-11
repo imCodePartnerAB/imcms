@@ -13,5 +13,5 @@ import imcode.server.user.UserDomainObject;
 public interface AccessService {
     boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType);
 
-    RestrictedPermission getEditPermission(UserDomainObject user, int documentId);
+    RestrictedPermission getPermission(UserDomainObject user, int documentId);
 }
