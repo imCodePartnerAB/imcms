@@ -24,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -155,6 +153,29 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
         user.addRoleId(Roles.USER.getId());
         Imcms.setUser(user);
         assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1).andExpect(status().isNotFound()));
+    }
+
+    @Test
+    public void getDocument_whenUserIsUsualAndDocumentHaveNoRoles_Expect_NotFound404Response() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.USER.getId());
+        Imcms.setUser(user);
+        assertDoesNotThrow(() -> testWhenDocumentHaveNoRules().andExpect(status().isNotFound()));
+    }
+
+    @Test
+    public void getDocument_whenUserIsSuperAdminAndDocumentHaveNoRoles_Expect_OkResponse() {
+        assertDoesNotThrow(() -> testWhenDocumentHaveNoRules().andExpect(status().isOk()));
+    }
+
+    private ResultActions testWhenDocumentHaveNoRules() throws Exception {
+        final LanguageDTO language = languages.get(1);
+        Imcms.setLanguage(language);
+
+        final Integer docId = textDocument.getId();
+
+        return mockMvc.perform(get(VIEW_DOC + docId));
     }
 
     private ResultActions testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(int languageIndex) throws Exception {
