@@ -40,6 +40,11 @@ public class DefaultAccessService implements AccessService {
             permission -> permission.setPermission(Permission.VIEW)
     );
 
+    private final RestrictedPermissionDTO nonePermission = Value.with(
+            new RestrictedPermissionDTO(),
+            permission -> permission.setPermission(Permission.NONE)
+    );
+
     private final DocumentRolesService documentRolesService;
 
     DefaultAccessService(DocumentRolesService documentRolesService) {
@@ -71,7 +76,7 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
-    public RestrictedPermission getEditPermission(UserDomainObject user, int documentId) {
+    public RestrictedPermission getPermission(UserDomainObject user, int documentId) {
         if (user.isSuperAdmin()) {
             return fullEditPermission;
         }
@@ -80,7 +85,7 @@ public class DefaultAccessService implements AccessService {
 
         // if no common roles for document and user then return VIEW permission
         if (documentRoles.hasNoRoles()) {
-            return viewPermission;
+            return nonePermission;
         }
 
         final Set<Permission> userPermissions = documentRoles.getPermissions();
@@ -118,10 +123,14 @@ public class DefaultAccessService implements AccessService {
                     .filter(permission -> permission.getPermission().equals(restrictedPermission))
                     .findFirst()
                     .map(RestrictedPermissionDTO::new)
-                    .orElse(viewPermission);
+                    .orElse(userPermissions.contains(Permission.VIEW) ? viewPermission : nonePermission);
         }
 
-        return viewPermission;
+        if (userPermissions.contains(Permission.VIEW)) {
+            return viewPermission;
+        }
+
+        return nonePermission;
     }
 
     private RestrictedPermission mergePermissions(Permission resultPermission,
