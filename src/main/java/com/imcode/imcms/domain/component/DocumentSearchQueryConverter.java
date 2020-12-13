@@ -95,7 +95,7 @@ public class DocumentSearchQueryConverter {
         solrQuery.setRows(page.getSize());
 
         final Order order = Optional.ofNullable(page.getSort())
-                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage()).ignoreCase()))
+                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage())))
                 .iterator()
                 .next();
 
