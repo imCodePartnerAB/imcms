@@ -85,7 +85,11 @@ public class DefaultCommonContentService
 
     @Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
-        final Set<CommonContentJPA> toSave = saveUs.stream().map(CommonContentJPA::new).collect(Collectors.toSet());
+        final Set<CommonContentJPA> toSave = saveUs.stream().map(commonContent -> {
+            commonContent.setHeadline(commonContent.getHeadline().trim());
+            return new CommonContentJPA(commonContent);
+        }).collect(Collectors.toSet());
+
         repository.save(toSave);
         super.updateWorkingVersion(docId);
     }
