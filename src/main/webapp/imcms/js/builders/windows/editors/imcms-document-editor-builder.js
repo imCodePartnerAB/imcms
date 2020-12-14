@@ -52,7 +52,7 @@ define('imcms-document-editor-builder',
 
         const pageSkip = 'page.skip';
 
-        const defaultSortPropertyValue = 'meta_headline_l_' + imcms.userLanguage;
+        const defaultSortPropertyValue = 'meta_headline_l_' + imcms.language.code;
         const asc = 'ASC';
         const desc = 'DESC';
 
