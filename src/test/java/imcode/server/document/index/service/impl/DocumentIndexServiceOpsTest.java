@@ -1,8 +1,10 @@
 package imcode.server.document.index.service.impl;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -25,27 +27,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DocumentIndexServiceOpsTest {
+public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
     private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
     private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
@@ -67,6 +63,9 @@ class DocumentIndexServiceOpsTest {
     private DocumentIndexer documentIndexer;
 
     private SearchQueryDTO searchQueryDTO;
+
+    @Autowired
+    private LanguageService languageService;
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -106,6 +105,8 @@ class DocumentIndexServiceOpsTest {
 
             addedInitDocuments = true;
         }
+
+        Imcms.setLanguage(languageService.getDefaultLanguage());
     }
 
     @Test
