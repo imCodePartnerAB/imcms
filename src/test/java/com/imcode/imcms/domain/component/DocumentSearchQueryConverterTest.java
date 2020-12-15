@@ -5,6 +5,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
@@ -14,6 +15,7 @@ import org.apache.solr.common.params.CommonParams;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
@@ -36,6 +38,9 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     private SearchQueryDTO searchQueryDTO;
 
+    @Autowired
+    private LanguageService languageService;
+
     @BeforeAll
     public static void setConverter() {
         documentSearchQueryConverter = new DocumentSearchQueryConverter();
@@ -48,6 +53,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() {
         searchQueryDTO = new SearchQueryDTO("");
+        Imcms.setLanguage(languageService.getDefaultLanguage());
     }
 
     @Test

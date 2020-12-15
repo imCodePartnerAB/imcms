@@ -63,7 +63,7 @@ public class DocumentSearchQueryConverter {
             solrQuery.addFilterQuery(userFilter);
         }
 
-        prepareSolrQueryPaging(searchQuery, solrQuery, searchingUser);
+        prepareSolrQueryPaging(searchQuery, solrQuery);
 
         prepareSolrIsSuperAdminQuery(searchingUser, solrQuery);
 
@@ -73,13 +73,13 @@ public class DocumentSearchQueryConverter {
     public SolrQuery convertToSolrQuery(String searchQuery) {
         final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
-        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery, user);
+        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery);
         prepareSolrIsSuperAdminQuery(user, solrQuery);
 
         return solrQuery;
     }
 
-    private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery, UserDomainObject user) {
+    private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
         PageRequestDTO page;
         if (searchQuery.getTerm() != null) {
             page = searchQuery.getPage();
@@ -95,7 +95,7 @@ public class DocumentSearchQueryConverter {
         solrQuery.setRows(page.getSize());
 
         final Order order = Optional.ofNullable(page.getSort())
-                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage()).ignoreCase()))
+                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD_META_HEADLINE + "_" + Imcms.getLanguage().getCode())))
                 .iterator()
                 .next();
 
