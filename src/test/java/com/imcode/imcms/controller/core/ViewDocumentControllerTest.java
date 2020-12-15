@@ -161,19 +161,17 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
         user.setLanguageIso639_2("eng");
         user.addRoleId(Roles.USER.getId());
         Imcms.setUser(user);
-        assertDoesNotThrow(() -> testWhenDocumentHaveNoRules().andExpect(status().isNotFound()));
+        assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isNotFound()));
     }
 
     @Test
     public void getDocument_whenUserIsSuperAdminAndDocumentHaveNoRoles_Expect_OkResponse() {
-        assertDoesNotThrow(() -> testWhenDocumentHaveNoRules().andExpect(status().isOk()));
+        assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isOk()));
     }
 
-    private ResultActions testWhenDocumentHaveNoRules() throws Exception {
+    private ResultActions performRequestToDocument(Integer docId) throws Exception {
         final LanguageDTO language = languages.get(1);
         Imcms.setLanguage(language);
-
-        final Integer docId = textDocument.getId();
 
         return mockMvc.perform(get(VIEW_DOC + docId));
     }
