@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static com.imcode.imcms.persistence.entity.Meta.Permission.NONE;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
 
@@ -125,7 +126,7 @@ public class ViewDocumentController {
             publicDocumentsCache.invalidateDoc(docId, alias);
         }
 
-        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userPermission)) || !hasUserContentViewAccess(userPermission)) {
+        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userPermission)) || !hasUserViewAccess(userPermission)) {
             response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             return null;
         }
@@ -193,7 +194,7 @@ public class ViewDocumentController {
                 || permission.isEditMenu() || permission.isEditText();
     }
 
-    private boolean hasUserContentViewAccess(final RestrictedPermission permission) {
-        return !permission.getPermission().getName().equals("none");
+    private boolean hasUserViewAccess(final RestrictedPermission permission) {
+        return !permission.getPermission().getName().equals(NONE.getName());
     }
 }
