@@ -52,7 +52,7 @@ define('imcms-document-editor-builder',
 
         const pageSkip = 'page.skip';
 
-        const defaultSortPropertyValue = 'meta_id';
+        const defaultSortPropertyValue = 'meta_headline_l_' + imcms.language.code;
         const asc = 'ASC';
         const desc = 'DESC';
 
@@ -176,7 +176,8 @@ define('imcms-document-editor-builder',
                 });
 
                 $textField.$input.on('input', function () {
-                    const textFieldValue = $(this).val().toLowerCase().trim();
+                    const textFieldValue = $(this).val().toLowerCase().trim().replace(/:/g, '\\:');
+                    //todo: maybe add support all special symbols in the future.. ?
                     if (searchQueryObj[term] !== textFieldValue) {
                         appendDocuments(term, textFieldValue, true, true);
                     }
@@ -330,7 +331,7 @@ define('imcms-document-editor-builder',
         }
 
         function highlightDefaultSorting() {
-            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title').first();
+            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title--title');
             highlightSorting($defaultSortingHeader);
         }
 
@@ -421,15 +422,16 @@ define('imcms-document-editor-builder',
         function buildDocumentListTitlesRow(opts) {
             const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
-                bySorting: defaultSortPropertyValue,
+                bySorting: 'meta_id',
                 elementClass: 'imcms-grid-col-18',
                 modifiers: ['id'],
             });
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                bySorting: 'meta_headline_' + imcms.language.code,
+                bySorting: defaultSortPropertyValue,
                 elementClass: 'imcms-flex--flex-3',
+                modifiers: ['title']
             });
 
             const $aliasColumnHead = buildTitleRow({
@@ -1054,7 +1056,7 @@ define('imcms-document-editor-builder',
             let title;
             if (savedFlag) {
                 const content = document.commonContents.filter(content => content.enabled)
-                    .filter(enableContent => enableContent.language.code === Imcms.language.code)
+                    .filter(enableContent => enableContent.language.code === imcms.language.code)
                     .shift();
 
                 title = content ? content.headline : texts.notShownInSelectedLang;
@@ -1238,6 +1240,7 @@ define('imcms-document-editor-builder',
                     && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
+                errorMsg.slideUp();
             });
 
             return new BEM({
@@ -1288,6 +1291,7 @@ define('imcms-document-editor-builder',
                     $editorBody = buildEditorBody(newDocsList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
+                    setDefaultSortProperties();
                 })
                 .fail(() => {
                     errorMsg.slideDown();

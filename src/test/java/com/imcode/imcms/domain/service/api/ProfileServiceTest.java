@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
                 .code("en")
                 .build();
 
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         docGetterCallback.setLanguage(language);
         Imcms.setUser(user);
     }

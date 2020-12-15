@@ -1,8 +1,10 @@
 package imcode.server.document.index.service.impl;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -25,33 +27,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DocumentIndexServiceOpsTest {
+public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
     private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
     private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
     private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
     private static final String aliasField = DocumentIndex.FIELD__ALIAS;
     private static final List<String> mockData = new ArrayList<>();
+
+    private final String testHeadline = "testHeadline";
 
     private static String titleField;
     private static String titleFieldLower;
@@ -65,6 +63,9 @@ class DocumentIndexServiceOpsTest {
     private DocumentIndexer documentIndexer;
 
     private SearchQueryDTO searchQueryDTO;
+
+    @Autowired
+    private LanguageService languageService;
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -104,16 +105,23 @@ class DocumentIndexServiceOpsTest {
 
             addedInitDocuments = true;
         }
+
+        Imcms.setLanguage(languageService.getDefaultLanguage());
     }
 
     @Test
     public void getDocumentWithMaxId_When_DefaultSearchQuerySet_Expect_isFirst() throws Exception {
+        final int id = ++documentSize;
+        final SolrInputDocument solrInputDocument = addRequiredFields(id);
+        addFieldToSolrDocument(solrInputDocument, "headline_lower", testHeadline);
+        indexDocument(id, solrInputDocument);
+
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
         assertEquals(solrDocumentList.size(), documentSize);
         assertEquals(
-                solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
-                String.valueOf(getDocId(documentSize))
+                solrDocumentList.get(0).getFieldValue(titleFieldLower),
+                testHeadline.toLowerCase()
         );
     }
 
@@ -302,35 +310,17 @@ class DocumentIndexServiceOpsTest {
     @Test
     public void getDocuments_When_SecondPageIsSet_Expect_Returned() throws Exception {
         final int pageSize = 5;
+        final int id = ++documentSize;
 
         final PageRequestDTO pageRequestDTO = new PageRequestDTO();
         pageRequestDTO.setSkip(pageSize);
         pageRequestDTO.setSize(pageSize);
 
-        searchQueryDTO.setPage(pageRequestDTO);
+        final SolrInputDocument solrInputDocument = addRequiredFields(id);
+        solrInputDocument.addField(titleField, testHeadline);
+        solrInputDocument.addField(titleFieldLower, testHeadline.toLowerCase());
+        indexDocument(id, solrInputDocument);
 
-        final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
-
-        assertEquals(solrDocumentList.size(), pageSize);
-
-        final List<Integer> expectedDocId = IntStream
-                .rangeClosed(documentSize - 2 * pageSize + 1, documentSize - pageSize)
-                .map(this::getDocId)
-                .boxed()
-                .collect(Collectors.toList());
-
-        solrDocumentList.forEach(solrDocument -> {
-            final int docID = Integer.parseInt((String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID));
-            assertTrue(expectedDocId.contains(docID));
-        });
-    }
-
-    @Test
-    public void getDocuments_When_SpecifiedPageRequest_Expect_Returned() throws Exception {
-        final int pageSize = 3;
-
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
-        pageRequestDTO.setSize(pageSize);
 
         searchQueryDTO.setPage(pageRequestDTO);
 
@@ -338,15 +328,13 @@ class DocumentIndexServiceOpsTest {
 
         assertEquals(solrDocumentList.size(), pageSize);
 
-        final List<Integer> expectedDocId = IntStream
-                .rangeClosed(documentSize - pageSize + 1, documentSize)
-                .map(this::getDocId)
-                .boxed()
-                .collect(Collectors.toList());
+        searchQueryDTO.setTerm(testHeadline.toLowerCase());
 
-        solrDocumentList.forEach(solrDocument -> {
-            final int docID = Integer.parseInt((String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID));
-            assertTrue(expectedDocId.contains(docID));
+        SolrDocumentList solrDocuments = getSolrDocumentList(searchQueryDTO);
+
+        solrDocuments.forEach(solrDocument -> {
+            final String title = (String) solrDocument.getFieldValue(titleField);
+            assertEquals(testHeadline, title);
         });
     }
 
@@ -623,6 +611,9 @@ class DocumentIndexServiceOpsTest {
         switch (field) {
             case "headline":
                 solrInputDocument.addField(titleField, value);
+                break;
+            case "headline_lower":
+                solrInputDocument.addField(titleFieldLower, value.toLowerCase());
                 break;
             case "alias":
                 solrInputDocument.addField(DocumentIndex.FIELD__ALIAS, value);

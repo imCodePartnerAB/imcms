@@ -2,11 +2,13 @@ package imcode.server.document.textdocument;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -73,6 +75,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public TextDocumentDomainObject(int documentId) {
         setId(documentId);
+        setLanguage(DocumentLanguage.builder().code(Imcms.getUser().getLanguage()).build());
     }
 
     @Override

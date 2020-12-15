@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
 import imcode.server.LanguageMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +86,12 @@ public class DefaultCommonContentService
 
     @Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
-        final Set<CommonContentJPA> toSave = saveUs.stream().map(CommonContentJPA::new).collect(Collectors.toSet());
+        final Set<CommonContentJPA> toSave = saveUs.stream().map(commonContent -> {
+            final String headline = commonContent.getHeadline();
+            if (StringUtils.isNotBlank(headline)) commonContent.setHeadline(headline.trim());
+            return new CommonContentJPA(commonContent);
+        }).collect(Collectors.toSet());
+
         repository.save(toSave);
         super.updateWorkingVersion(docId);
     }

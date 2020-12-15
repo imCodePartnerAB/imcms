@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class ProfileControllerTest extends AbstractControllerTest {
@@ -38,6 +40,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
                 .code("en")
                 .build();
 
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         docGetterCallback.setLanguage(language);
         Imcms.setUser(user);
     }

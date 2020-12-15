@@ -17,9 +17,13 @@
 }
 
 .imcms-select__drop-down-list--active {
-    border-color: #0b94d8;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    overflow-y: visible;
+    overflow-x: hidden;
+    padding-bottom: 200px;
+    margin-bottom: -205px;
+    z-index: 100;
 }
 
 .imcms-drop-down-list__button {
@@ -68,7 +72,7 @@
 
 .imcms-drop-down-list__items {
     background: #fff;
-    border: 1px solid #0b94d8;
+    border: 1px solid #fff;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
