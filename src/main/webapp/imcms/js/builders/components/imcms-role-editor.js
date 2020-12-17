@@ -6,9 +6,9 @@ define(
     'imcms-role-editor',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
-        'imcms-roles-rest-api', 'imcms-role-to-row-transformer', 'imcms-document-editor-builder'
+        'imcms-roles-rest-api', 'imcms-role-to-row-transformer', 'imcms-document-editor-builder', "jquery"
     ],
-    function (BEM, components, texts, modal, rolesRestAPI, roleToRow, documentEditorBuilder) {
+    function (BEM, components, texts, modal, rolesRestAPI, roleToRow, documentEditorBuilder, $) {
 
         texts = texts.superAdmin.roles;
 
@@ -96,6 +96,7 @@ define(
                     text: texts.deleteRole,
                     click: onDeleteRole
                 }),
+                buildLinkDocumentEditor(),
                 components.buttons.positiveButton({
                     text: texts.editRole,
                     click: onEditRole
@@ -233,10 +234,11 @@ define(
             if (currentRole === null) return;
 
 
-            return components.buttons.openInNewWindow('<div>', {
+            return components.buttons.positive('<div>', {
+                text: texts.documentEditor,
                 title: texts.documentEditor,
-                target: '_blank',
                 click: function () {
+                    $('.imcms-info-page').css({'display': 'none'});
                     documentEditorBuilder.build(currentRole.id);
                 }
             })
@@ -250,7 +252,6 @@ define(
                     'role-permissions': buildRolePermissions(),
                     'role-view-buttons': buildRoleViewButtons(),
                     'role-edit-buttons': buildRoleEditButtons(),
-                    'link-document-editor': buildLinkDocumentEditor(),
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }

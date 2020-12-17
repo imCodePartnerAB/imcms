@@ -1391,6 +1391,7 @@ define('imcms-document-editor-builder',
 
         function clearData() {
             events.trigger('document-editor-closed');
+            $('.imcms-info-page').css({'display': 'block'});
 
             // setting default values
             searchQueryObj[pageSkip] = currentDocumentNumber = 0;
