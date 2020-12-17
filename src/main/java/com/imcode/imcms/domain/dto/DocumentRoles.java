@@ -33,6 +33,10 @@ public class DocumentRoles {
         return document;
     }
 
+    public List<DocumentRole> getDocumentRoles() {
+        return documentRoles;
+    }
+
     public Set<Meta.Permission> getPermissions() {
         return documentRoles.stream()
                 .map(DocumentRole::getPermission)
