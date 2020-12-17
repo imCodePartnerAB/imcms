@@ -624,13 +624,15 @@ const texts = {
                 roleName: 'Rollnamn',
                 save: 'Spara',
                 cancel: 'Avbryt',
+                documentEditor: 'Dokumentredigerare',
                 externalRolesInfo: 'Du kan ställa in fjärrroller för att fungera som lokala',
                 permissions: {
                     title: 'Rollbehörigheter',
                     getPasswordByEmail: 'Få lösenord via e-post',
                     accessToAdminPages: 'Tillgång till admin sidor',
                     useImagesInImageArchive: 'Använd bilder i bildarkivet',
-                    changeImagesInImageArchive: 'Ändra bilder i bildarkivet'
+                    changeImagesInImageArchive: 'Ändra bilder i bildarkivet',
+                    accessToDocumentEditor: 'Tillgång till dokumentredigerare'
                 },
                 deleteConfirm: 'Vill du verkligen ta bort den här rollen?',
                 editRole: 'Redigera rollen',
@@ -1552,6 +1554,7 @@ const texts = {
                 createNewRole: 'Create new role',
                 roleName: 'Role name',
                 save: 'Save',
+                documentEditor: 'Document editor',
                 cancel: 'Cancel',
                 externalRolesInfo: 'You can set remote roles to behave as local ones',
                 permissions: {
@@ -1559,7 +1562,8 @@ const texts = {
                     getPasswordByEmail: 'Get password by email',
                     accessToAdminPages: 'Access to admin pages',
                     useImagesInImageArchive: 'Use images in image archive',
-                    changeImagesInImageArchive: 'Change images in image archive'
+                    changeImagesInImageArchive: 'Change images in image archive',
+                    accessToDocumentEditor: 'Access to document editor'
                 },
                 deleteConfirm: 'Do you really want to delete this role?',
                 editRole: 'Edit role',
