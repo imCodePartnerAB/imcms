@@ -6,9 +6,9 @@ define(
     'imcms-role-editor',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
-        'imcms-roles-rest-api', 'imcms-role-to-row-transformer'
+        'imcms-roles-rest-api', 'imcms-role-to-row-transformer', 'imcms-document-editor-builder'
     ],
-    function (BEM, components, texts, modal, rolesRestAPI, roleToRow) {
+    function (BEM, components, texts, modal, rolesRestAPI, roleToRow, documentEditorBuilder) {
 
         texts = texts.superAdmin.roles;
 
@@ -18,6 +18,7 @@ define(
         let $accessToAdminPages;
         let $useImagesInImageArchive;
         let $changeImagesInImageArchive;
+        let $accessToDocumentEditor;
 
         let permissionCheckboxes$;
 
@@ -43,7 +44,8 @@ define(
                 $getPasswordByEmail = createCheckboxWithText(texts.permissions.getPasswordByEmail),
                 $accessToAdminPages = createCheckboxWithText(texts.permissions.accessToAdminPages),
                 $useImagesInImageArchive = createCheckboxWithText(texts.permissions.useImagesInImageArchive),
-                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive)
+                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive),
+                $accessToDocumentEditor = createCheckboxWithText(texts.permissions.accessToDocumentEditor)
             ];
 
             return components.checkboxes.checkboxContainerField(
@@ -226,6 +228,20 @@ define(
         var $roleRow;
         var onRoleView = onRoleSimpleView;
 
+        function buildLinkDocumentEditor() {
+
+            if (currentRole === null) return;
+
+
+            return components.buttons.openInNewWindow('<div>', {
+                title: texts.documentEditor,
+                target: '_blank',
+                click: function () {
+                    documentEditorBuilder.build(currentRole.id);
+                }
+            })
+        }
+
         function buildContainer() {
             return $container || ($container = new BEM({
                 block: 'roles-editor',
@@ -233,7 +249,8 @@ define(
                     'role-name-row': buildRoleNameRow(),
                     'role-permissions': buildRolePermissions(),
                     'role-view-buttons': buildRoleViewButtons(),
-                    'role-edit-buttons': buildRoleEditButtons()
+                    'role-edit-buttons': buildRoleEditButtons(),
+                    'link-document-editor': buildLinkDocumentEditor(),
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
