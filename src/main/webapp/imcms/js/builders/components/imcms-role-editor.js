@@ -229,12 +229,14 @@ define(
         var $roleRow;
         var onRoleView = onRoleSimpleView;
 
+        let $linkDocumentEditor;
+
         function buildLinkDocumentEditor() {
 
             if (currentRole === null) return;
 
-
-            return components.buttons.positive('<div>', {
+            return $linkDocumentEditor = components.buttons.positive('<div>', {
+                class: 'document-editor-link',
                 text: texts.documentEditor,
                 title: texts.documentEditor,
                 click: function () {
