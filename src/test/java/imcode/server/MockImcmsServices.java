@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -249,6 +250,11 @@ public class MockImcmsServices implements ImcmsServices {
 
     @Override
     public VersionService getVersionService() {
+        return null;
+    }
+
+    @Override
+    public DocumentRolesService getDocumentRolesService() {
         return null;
     }
 
