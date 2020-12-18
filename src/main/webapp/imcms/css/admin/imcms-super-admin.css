@@ -760,8 +760,12 @@
     padding-left: 40px;
 }
 
-.document-editor-link {
+.document-editor-link--inactive {
     display: none;
+}
+
+.document-editor-link--active {
+    display: block;
 }
 
 .rules-table {
