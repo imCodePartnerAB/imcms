@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.persistence.entity.Meta.Permission.VIEW;
+import static com.imcode.imcms.persistence.entity.Meta.Permission.NONE;
 
 @Service
 public class DefaultSearchDocumentService implements SearchDocumentService {
@@ -59,12 +59,12 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
                 .collect(Collectors.toList());
     }
 
-    private boolean isDocumentRolesHavePermissionAndContainsRole(DocumentRoles documentRoles, Role role) {
+    private boolean isDocumentRolesHavePermissionAndContainsRole(DocumentRoles documentRoles, Role selectedRole) {
         return documentRoles.getDocumentRoles()
                 .stream()
-                .filter(documentRole -> documentRole.getPermission().getName().equals(VIEW.getName()))
+                .filter(documentRole -> !documentRole.getPermission().getName().equals(NONE.getName()))
                 .map(DocumentRole::getRole)
-                .anyMatch(roleJPA -> roleJPA.getId().equals(role.getId()));
+                .anyMatch(roleJPA -> roleJPA.getId().equals(selectedRole.getId()));
     }
 
     private List<DocumentStoredFieldsDTO> searchDocumentsBySelectedRole(SearchQueryDTO searchQuery,
