@@ -174,6 +174,7 @@ class SuperAdminController {
                                       ModelAndView mav) {
 
         mav.setViewName("EditDocuments");
+        mav.addObject("accessToDocumentEditor", accessService.hasUserAccessToDocumentEditor(Imcms.getUser()));
         addCommonModelData(returnUrl, request, mav);
 
         return mav;
