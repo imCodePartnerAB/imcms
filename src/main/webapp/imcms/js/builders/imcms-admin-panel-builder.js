@@ -60,6 +60,7 @@ define("imcms-admin-panel-builder",
             const editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
             const editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
             const adminDisplayProperty = imcms.isAdmin ? "" : "display:none";
+            const documentDisplayProperty = imcms.accessToDocumentEditor ? "" : "display:none";
 
             const versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"];
             const publishVersionButtonModifiers = (imcms.isVersioningAllowed && imcms.document.hasNewerVersion)
@@ -112,7 +113,7 @@ define("imcms-admin-panel-builder",
                     title: texts.documentTitle,
                     onClick: initDocumentEditor,
                     modifiers: ["document"],
-                    style: adminDisplayProperty
+                    style: documentDisplayProperty
                 }, {
                     name: 'admin',
                     tag: "<a>",
