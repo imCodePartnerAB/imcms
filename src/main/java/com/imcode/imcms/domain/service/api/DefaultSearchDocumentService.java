@@ -77,7 +77,8 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
                     final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentStoredFields.id());
 
                     return !documentRoles.hasNoRoles() &&
-                            isDocumentRolesHavePermissionAndContainsRole(documentRoles, selectedRole);
+                            isDocumentRolesHavePermissionAndContainsRole(documentRoles, selectedRole)
+                            || selectedRole.getPermissions().isAccessToAdminPages();
                 })
                 .map(DocumentStoredFieldsDTO::new)
                 .collect(Collectors.toList());
