@@ -4,7 +4,10 @@ import com.imcode.imcms.domain.dto.DocumentRoles;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.DocumentRolesService;
+import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.RestrictedPermission;
+import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,9 +51,11 @@ public class DefaultAccessService implements AccessService {
     );
 
     private final DocumentRolesService documentRolesService;
+    private final RoleService roleService;
 
-    DefaultAccessService(DocumentRolesService documentRolesService) {
+    DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService) {
         this.documentRolesService = documentRolesService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -96,6 +103,22 @@ public class DefaultAccessService implements AccessService {
         }
 
         return getRestrictedPermissionForUser(userPermissions, documentRoles.getDocument().getRestrictedPermissions());
+    }
+
+    @Override
+    public boolean hasUserAccessToDocumentEditor(UserDomainObject user) {
+        if (user.isDefaultUser()) return false;
+
+        return getRolePermissionsByUser(user).stream()
+                .anyMatch(RolePermissions::isAccessToDocumentEditor);
+    }
+
+    private List<RolePermissions> getRolePermissionsByUser(UserDomainObject user) {
+        return user.getRoleIds().stream()
+                .map(roleService::getById)
+                .filter(Objects::nonNull)
+                .map(Role::getPermissions)
+                .collect(Collectors.toList());
     }
 
     private RestrictedPermission getRestrictedPermissionForUser(Set<Permission> userPermissions,
