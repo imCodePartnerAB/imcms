@@ -12,5 +12,7 @@ public enum AccessType {
     TEXT(),
     MENU(),
     LOOP(),
-    DOC_INFO()
+    DOC_INFO(),
+    DOCUMENT_EDITOR(),
+    ADMIN_PAGES()
 }
