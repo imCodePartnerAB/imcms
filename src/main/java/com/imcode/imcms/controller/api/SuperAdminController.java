@@ -167,7 +167,7 @@ class SuperAdminController {
         return mav;
     }
 
-    @CheckAccess
+    @CheckAccess(AccessType.DOCUMENT_EDITOR)
     @RequestMapping("/documents")
     public ModelAndView editDocuments(HttpServletRequest request,
                                       @RequestParam(value = "return", required = false) String returnUrl,
