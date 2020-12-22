@@ -72,6 +72,9 @@ public class AccessControlAspect {
                         docId = (Integer) args[0];
                     }
                     break;
+                case DOCUMENT_EDITOR:
+                    hasAccess = accessService.hasUserAccessToDocumentEditor(user);
+                    break;
             }
 
             if (docId != null) {
