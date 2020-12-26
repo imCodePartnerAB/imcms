@@ -165,6 +165,10 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td><%= user.getEmailAddress() %>&nbsp;</td>
 </tr>
 <tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/18 ?></td>
+	<td><%= user.getRef() %>&nbsp;</td>
+</tr>
+<tr>
     <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
