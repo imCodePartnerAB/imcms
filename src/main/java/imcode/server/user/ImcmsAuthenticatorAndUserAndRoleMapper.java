@@ -3,12 +3,7 @@ package imcode.server.user;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.CompositeDatabaseCommand;
-import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.api.exception.UserAlreadyExistsException;
@@ -30,14 +25,7 @@ import org.joda.time.Hours;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -198,6 +186,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setCreateDate(user.getCreateDate());
         //userDO.setCurrentContextPath();
         userDO.setEmailAddress(user.getEmail());
+        userDO.setRef(user.getRef());
         userDO.setFirstName(user.getFirstName());
         userDO.setId(user.getId());
         userDO.setLoginName(user.getLogin());
@@ -313,6 +302,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.getCountry(),
                 user.getProvince(),
                 user.getEmailAddress(),
+                user.getRef(),
                 user.isImcmsExternal() ? "1" : "0",
                 user.isActive() ? "1" : "0",
                 user.getLanguageIso639_2(),
@@ -335,6 +325,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     + "country = ?,\n"
                     + "county_council = ?,\n"
                     + "email = ?,\n"
+                    + "ref = ?,\n"
                     + "external = ?,\n"
                     + "active = ?,\n"
                     + "language = ?,\n"
@@ -419,6 +410,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     {"country", user.getCountry()},
                     {"county_council", user.getProvince()},
                     {"email", user.getEmailAddress()},
+                    {"ref", user.getRef()},
                     {"external", user.isImcmsExternal() ? "1" : "0"},
                     {"active", user.isActive() ? "1" : "0"},
                     {"language", user.getLanguageIso639_2()},

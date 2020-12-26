@@ -58,6 +58,8 @@ public class User extends UserData implements Serializable {
     @Email
     @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "ref")
+    private String ref;
     @Column(columnDefinition = "int")
     private boolean active = true;
     @NotNull
@@ -100,6 +102,7 @@ public class User extends UserData implements Serializable {
         this.zip = "";
         this.country = "";
         this.province = "";
+        this.ref = "";
     }
 
     public User(UserData from) {

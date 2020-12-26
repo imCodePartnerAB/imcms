@@ -19,6 +19,7 @@ public abstract class UserData extends BasicUserData implements Serializable {
         setCity(from.getCity());
         setProvince(from.getProvince());
         setCountry(from.getCountry());
+        setRef(from.getRef());
     }
 
     public abstract String getPassword();
@@ -52,6 +53,10 @@ public abstract class UserData extends BasicUserData implements Serializable {
     public abstract String getCountry();
 
     public abstract void setCountry(String country);
+
+    public abstract String getRef();
+
+    public abstract void setRef(String ref);
 
     public abstract boolean isActive();
 

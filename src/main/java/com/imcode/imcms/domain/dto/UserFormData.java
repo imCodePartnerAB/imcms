@@ -34,6 +34,7 @@ public class UserFormData extends UserData {
     private String country;
     private String langCode;
     private String email;
+    private String ref;
     private boolean active;
     private Date createDate;
     private Integer[] userPhoneNumberType;
