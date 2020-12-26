@@ -115,6 +115,7 @@ public class ViewDocumentController {
         final String alias = textDocument.getAlias();
 
         final RestrictedPermission userPermission = accessService.getPermission(user, docId);
+        final boolean isAccessToDocumentEditor = accessService.hasUserAccessToDocumentEditor(user);
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
@@ -176,6 +177,7 @@ public class ViewDocumentController {
         mav.addObject("version", version);
         mav.addObject("editOptions", userPermission);
         mav.addObject("isDocNew", textDocument.hasNewStatus());
+        mav.addObject("accessToDocumentEditor", isAccessToDocumentEditor);
 
         return mav;
     }

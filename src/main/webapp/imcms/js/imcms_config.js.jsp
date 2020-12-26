@@ -17,6 +17,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
                     editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop
             }
         },
+        accessToDocumentEditor: ${accessToDocumentEditor or false},
         document: {
             id: ${empty currentDocument.id ? 'null' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
@@ -41,3 +42,4 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
     <%--@elvariable id="isAdmin" type="boolean"--%>
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
+    <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>

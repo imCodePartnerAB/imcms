@@ -760,6 +760,14 @@
     padding-left: 40px;
 }
 
+.document-editor-link--inactive {
+    display: none;
+}
+
+.document-editor-link--active {
+    display: block;
+}
+
 .rules-table {
     height: 400px;
     overflow-y: auto;

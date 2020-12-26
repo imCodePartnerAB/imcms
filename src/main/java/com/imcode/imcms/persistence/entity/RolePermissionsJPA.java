@@ -89,6 +89,16 @@ public class RolePermissionsJPA extends RolePermissions {
         return changeImagesInImageArchive;
     }
 
+
+    @Column(
+            name = "access_to_document_editor",
+            nullable = false,
+            columnDefinition = "tinyint"
+    )
+    public boolean isAccessToDocumentEditor() {
+        return accessToDocumentEditor;
+    }
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn
     public RoleJPA getRole() {

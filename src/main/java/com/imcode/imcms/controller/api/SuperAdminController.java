@@ -167,13 +167,14 @@ class SuperAdminController {
         return mav;
     }
 
-    @CheckAccess
+    @CheckAccess(AccessType.DOCUMENT_EDITOR)
     @RequestMapping("/documents")
     public ModelAndView editDocuments(HttpServletRequest request,
                                       @RequestParam(value = "return", required = false) String returnUrl,
                                       ModelAndView mav) {
 
         mav.setViewName("EditDocuments");
+        mav.addObject("accessToDocumentEditor", accessService.hasUserAccessToDocumentEditor(Imcms.getUser()));
         addCommonModelData(returnUrl, request, mav);
 
         return mav;

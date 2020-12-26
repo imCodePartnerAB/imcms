@@ -17,6 +17,7 @@ public abstract class RolePermissions implements Serializable {
     protected boolean accessToAdminPages;
     protected boolean useImagesInImageArchive;
     protected boolean changeImagesInImageArchive;
+    protected boolean accessToDocumentEditor;
 
     protected RolePermissions(RolePermissions from) {
         setRoleId(from.getRoleId());
@@ -24,5 +25,6 @@ public abstract class RolePermissions implements Serializable {
         setGetPasswordByEmail(from.isGetPasswordByEmail());
         setUseImagesInImageArchive(from.isUseImagesInImageArchive());
         setChangeImagesInImageArchive(from.isChangeImagesInImageArchive());
+        setAccessToDocumentEditor(from.isAccessToDocumentEditor());
     }
 }

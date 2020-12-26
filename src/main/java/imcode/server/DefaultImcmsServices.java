@@ -12,6 +12,7 @@ import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -158,6 +159,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     @Autowired
     private VersionService versionService;
+
+    @Getter
+    @Autowired
+    private DocumentRolesService documentRolesService;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,

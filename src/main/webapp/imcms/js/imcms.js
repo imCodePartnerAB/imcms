@@ -25,6 +25,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
         isEditDocInfo: Imcms.editOptions.isEditDocInfo,
         isEditContent: Imcms.editOptions.isEditContent,
     },
+    accessToDocumentEditor: Imcms.accessToDocumentEditor,
     document: {
         id: Imcms.document.id,
         type: Imcms.document.type,

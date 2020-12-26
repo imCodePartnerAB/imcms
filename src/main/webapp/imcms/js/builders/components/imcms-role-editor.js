@@ -6,9 +6,9 @@ define(
     'imcms-role-editor',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
-        'imcms-roles-rest-api', 'imcms-role-to-row-transformer'
+        'imcms-roles-rest-api', 'imcms-role-to-row-transformer', 'imcms-document-editor-builder', "jquery"
     ],
-    function (BEM, components, texts, modal, rolesRestAPI, roleToRow) {
+    function (BEM, components, texts, modal, rolesRestAPI, roleToRow, documentEditorBuilder, $) {
 
         texts = texts.superAdmin.roles;
 
@@ -18,6 +18,7 @@ define(
         let $accessToAdminPages;
         let $useImagesInImageArchive;
         let $changeImagesInImageArchive;
+        let $accessToDocumentEditor;
 
         let permissionCheckboxes$;
 
@@ -43,7 +44,8 @@ define(
                 $getPasswordByEmail = createCheckboxWithText(texts.permissions.getPasswordByEmail),
                 $accessToAdminPages = createCheckboxWithText(texts.permissions.accessToAdminPages),
                 $useImagesInImageArchive = createCheckboxWithText(texts.permissions.useImagesInImageArchive),
-                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive)
+                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive),
+                $accessToDocumentEditor = createCheckboxWithText(texts.permissions.accessToDocumentEditor)
             ];
 
             return components.checkboxes.checkboxContainerField(
@@ -90,6 +92,7 @@ define(
 
         function buildRoleViewButtons() {
             return $roleViewButtons = components.buttons.buttonsContainer('<div>', [
+                buildLinkDocumentEditor(),
                 components.buttons.errorButton({
                     text: texts.deleteRole,
                     click: onDeleteRole
@@ -97,7 +100,7 @@ define(
                 components.buttons.positiveButton({
                     text: texts.editRole,
                     click: onEditRole
-                }),
+                })
             ]);
         }
 
@@ -116,7 +119,8 @@ define(
                     getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
                     accessToAdminPages: permissionCheckboxes$[1].isChecked(),
                     useImagesInImageArchive: permissionCheckboxes$[2].isChecked(),
-                    changeImagesInImageArchive: permissionCheckboxes$[3].isChecked()
+                    changeImagesInImageArchive: permissionCheckboxes$[3].isChecked(),
+                    accessToDocumentEditor: permissionCheckboxes$[4].isChecked()
                 }
             };
 
@@ -130,6 +134,7 @@ define(
                         currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
                         currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
                         currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
+                        currentRole.permissions.accessToDocumentEditor = savedRole.permissions.accessToDocumentEditor;
 
                         onRoleView = onRoleSimpleView;
                         prepareRoleView();
@@ -202,7 +207,8 @@ define(
                 currentRole.permissions.getPasswordByEmail,
                 currentRole.permissions.accessToAdminPages,
                 currentRole.permissions.useImagesInImageArchive,
-                currentRole.permissions.changeImagesInImageArchive
+                currentRole.permissions.changeImagesInImageArchive,
+                currentRole.permissions.accessToDocumentEditor
             ];
 
             permissionCheckboxes$.forEach(($checkbox, i) => {
@@ -211,6 +217,7 @@ define(
             });
 
             $container.css('display', 'inline-block');
+            addModifierByAccessToDocEditorForSelectedRole(currentRole, $linkDocumentEditor)
         }
 
         function onRoleSimpleView($roleRowElement, role) {
@@ -221,10 +228,35 @@ define(
             prepareRoleView();
         }
 
+        function addModifierByAccessToDocEditorForSelectedRole(selectedRole, $item) {
+            if (selectedRole && selectedRole.permissions.accessToDocumentEditor) {
+                $item.removeClass('document-editor-link--inactive').addClass('document-editor-link--active')
+            } else {
+                $item.removeClass('document-editor-link--active').addClass('document-editor-link--inactive')
+            }
+        }
+
         var $container;
         var currentRole;
         var $roleRow;
         var onRoleView = onRoleSimpleView;
+
+        let $linkDocumentEditor;
+
+        function buildLinkDocumentEditor() {
+            $linkDocumentEditor = components.buttons.neutralButton({
+                text: texts.documentEditor,
+                title: texts.documentEditor,
+                click: function () {
+                    $('.imcms-info-page').css({'display': 'none'});
+                    documentEditorBuilder.build(currentRole.id);
+                }
+            });
+
+            addModifierByAccessToDocEditorForSelectedRole(currentRole, $linkDocumentEditor);
+
+            return $linkDocumentEditor;
+        }
 
         function buildContainer() {
             return $container || ($container = new BEM({
@@ -233,7 +265,7 @@ define(
                     'role-name-row': buildRoleNameRow(),
                     'role-permissions': buildRolePermissions(),
                     'role-view-buttons': buildRoleViewButtons(),
-                    'role-edit-buttons': buildRoleEditButtons()
+                    'role-edit-buttons': buildRoleEditButtons(),
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }

@@ -14,4 +14,6 @@ public interface AccessService {
     boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType);
 
     RestrictedPermission getPermission(UserDomainObject user, int documentId);
+
+    boolean hasUserAccessToDocumentEditor(UserDomainObject user);
 }

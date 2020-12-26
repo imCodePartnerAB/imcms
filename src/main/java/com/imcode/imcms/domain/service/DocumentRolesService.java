@@ -7,4 +7,6 @@ public interface DocumentRolesService {
 
     DocumentRoles getDocumentRoles(int documentId, UserDomainObject user);
 
+    DocumentRoles getDocumentRoles(int documentId);
+
 }

@@ -61,4 +61,11 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
 
         return new DocumentRoles(roleList, meta);
     }
+
+    @Override
+    public DocumentRoles getDocumentRoles(int documentId) {
+        final List<DocumentRole> documentRoles = new ArrayList<>(documentRolesRepository.findByDocument_Id(documentId));
+
+        return new DocumentRoles(documentRoles, metaRepository.findOne(documentId));
+    }
 }

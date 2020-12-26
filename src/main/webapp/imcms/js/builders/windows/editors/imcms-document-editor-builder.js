@@ -49,6 +49,7 @@ define('imcms-document-editor-builder',
         const categoriesId = 'categoriesId';
         const sortProperty = 'page.property';
         const sortDirection = 'page.direction';
+        const roleIdProperty = 'roleId';
 
         const pageSkip = 'page.skip';
 
@@ -62,7 +63,8 @@ define('imcms-document-editor-builder',
             'term': '',
             'userId': null,
             'categoriesId': {},
-            'page.skip': currentDocumentNumber
+            'page.skip': currentDocumentNumber,
+            'roleId': null
         };
 
         let sendSearchDocRequest = true;
@@ -1283,7 +1285,7 @@ define('imcms-document-editor-builder',
         }
 
         function loadDocumentEditorContent($documentsContainer, opts) {
-            docSearchRestApi.read()
+            docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
                     pushDocumentsInArray(documentList);
                     const newDocsList = documentList.slice(0, 100);
@@ -1389,12 +1391,14 @@ define('imcms-document-editor-builder',
 
         function clearData() {
             events.trigger('document-editor-closed');
+            $('.imcms-info-page').css({'display': 'block'});
 
             // setting default values
             searchQueryObj[pageSkip] = currentDocumentNumber = 0;
             searchQueryObj[term] = '';
             searchQueryObj[userId] = null;
             searchQueryObj[categoriesId] = {};
+            searchQueryObj[roleIdProperty] = null;
 
             sendSearchDocRequest = true;
 
@@ -1436,7 +1440,8 @@ define('imcms-document-editor-builder',
             getPublishedDateTooltipText,
             refreshDocumentInList,
             getDocumentById,
-            build: function () {
+            build: function (roleId) {
+                searchQueryObj[roleIdProperty] = roleId;
                 documentWindowBuilder.buildWindow.apply(documentWindowBuilder, arguments);
             }
         };

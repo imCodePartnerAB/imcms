@@ -23,6 +23,8 @@ public class SearchQueryDTO implements Serializable {
 
     private PageRequestDTO page;
 
+    private Integer roleId;
+
     public SearchQueryDTO(String term) {
         this.term = term;
     }
