@@ -248,6 +248,17 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function CreateUserPropertiesModalWindow($userPropertiesData, onConfirmed, onDeclined) {
+            return new BEM({
+                block: "imcms-create-properties-modal-window",
+                elements: {
+                    "modal-head": buildHead('User-Properties'),
+                    "modal-body": $userPropertiesData,
+                    "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function CreateEditFileModalWindow(textField, textarea, editCheckBox, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-edit-modal-window",
@@ -336,6 +347,12 @@ define(
             this.$modal = CreateCreateFileModalWindow(textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
         };
 
+        const UserPropertiesModalWindow = function ($userPropertiesData, callback) {
+            this.onConfirmed = this.buildOnDecide(true, callback);
+            this.onDeclined = this.buildOnDecide(false, callback);
+            this.$modal = CreateUserPropertiesModalWindow($userPropertiesData, this.onConfirmed, this.onDeclined);
+        };
+
         const EditFileModalWindow = function (textField, textarea, editCheckBox, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
@@ -409,6 +426,8 @@ define(
 
         CreateFileModalWindow.prototype = Object.create(ModalWindow.prototype);
 
+        UserPropertiesModalWindow.prototype = Object.create(ModalWindow.prototype);
+
         EditFileModalWindow.prototype = Object.create(ModalWindow.prototype);
         EditDirectoryModalWindow.prototype = Object.create(ModalWindow.prototype);
 
@@ -440,6 +459,12 @@ define(
 
         function buildCreateFileModalWindow(textField, checkBoxIsDir, callback) {
             return new CreateFileModalWindow(textField, checkBoxIsDir, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
+        function buildCreatePropertiesKeyValueModalWindow($userPropertiesData, callback) {
+            return new UserPropertiesModalWindow($userPropertiesData, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -496,6 +521,7 @@ define(
             buildEditFileModalWindow,
             buildEditDirectoryModalWindow,
             buildModalWindowWithButtonGroup,
+            buildCreatePropertiesKeyValueModalWindow,
             buildConfirmWindow: (question, onConfirm) => {
                 buildModalWindow(question, confirm => {
                     confirm && onConfirm.call();
