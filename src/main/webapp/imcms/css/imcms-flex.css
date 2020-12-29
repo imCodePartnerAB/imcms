@@ -14,6 +14,10 @@
     align-items: flex-end !important;
 }
 
+.imcms-flex--align-items-flex-start {
+    align-items: flex-start !important;
+}
+
 .imcms-flex--m-auto {
     margin: auto !important;
 }
