@@ -9,10 +9,24 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Email;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Entity
@@ -71,6 +85,16 @@ public class User extends UserData implements Serializable {
     private boolean external;
     @Column(name = "remember_cd")
     private String rememberCd;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "user_properties",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @MapKeyColumn(name = "key_name")
+    @Column(name = "value", nullable = false)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private Map<String, String> userProperties = new HashMap<>();
     /**
      * Http session id.
      */

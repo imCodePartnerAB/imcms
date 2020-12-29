@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -74,6 +75,8 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();
 
     private Set<Integer> roleIds = createRolesSetWithUserRole();
+
+    private Map<String, String> userProperties = new HashMap<>();
 
     /**
      * Http session id.
