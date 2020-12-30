@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.UserPropertyDTO;
 import com.imcode.imcms.model.UserProperty;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface UserPropertyService {
 
     List<UserProperty> getByUserIdAndValue(Integer userId, String value);
 
-    UserProperty create(UserProperty userProperty);
+    void create(List<UserPropertyDTO> userProperties);
 
     UserProperty update(UserProperty userProperty);
 

@@ -69,15 +69,21 @@ public class DefaultUserPropertyService implements UserPropertyService {
     }
 
     @Override
-    public UserProperty create(UserProperty userProperty) {
+    public void create(List<UserPropertyDTO> userProperties) {
         final UserDomainObject user = Imcms.getUser();
         if (!user.isSuperAdmin()) {
             throw new AccessDeniedException("Current user doesn't has access with loginName: " + user.getLogin());
         }
-        if (userProperty.getKeyName().isEmpty() || userProperty.getValue().isEmpty()) {
-            throw new DataIsNotValidException();
-        }
-        return new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(userProperty)));
+
+        userProperties.forEach(userProperty -> {
+
+            if (userProperty.getKeyName().isEmpty() || userProperty.getValue().isEmpty()) {
+                throw new DataIsNotValidException();
+            }
+
+            userPropertyRepository.save(new UserPropertyJPA(userProperty));
+        });
+
     }
 
     @Override
