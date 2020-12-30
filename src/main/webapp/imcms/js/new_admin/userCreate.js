@@ -104,7 +104,7 @@ function buildRow(key) {
 }
 
 function renderRows() {
-    $('.imcms-create-properties-modal-window__modal-body').children().remove();
+    $propertiesContainer.children().remove();
     Object.getOwnPropertySymbols(properties)
         .map((key) => buildRow(key))
         .forEach(($row) => $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row)));
@@ -135,6 +135,9 @@ function buildRowForNewUserProperty() {
 }
 
 function onViewUserProperties() {
+    const $form = $('#user-edit-form');
+    const $userData = $form.find('.imcms-user-properties');
+    const $userData2 = $('#userData');
 
     function buildPropertiesContainer() {
         return new BEM({

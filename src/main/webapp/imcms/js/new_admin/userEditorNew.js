@@ -13,6 +13,9 @@ const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
+const BEM = require('imcms-bem-builder');
+const jsUtils = require('js-utils');
+const userPropertiesRestAPI = require('imcms-user-properties-rest-api');
 
 function activateUserAdminRoles() {
     texts = texts.languageFlags;
@@ -55,6 +58,133 @@ function onSubmit(e) {
     alert(texts.alertInfoLanguage + chooseLang + ')');
 
     $('[name=userPhoneNumber]').removeAttr('disabled');
+}
+
+let properties = {};
+let $propertiesContainer = $('<div>', {
+    class: 'new-user-properties'
+});
+
+
+function addRow(values) {
+    const key = Symbol();
+    properties[key] = {values};
+    const $row = buildRow(key);
+    $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
+}
+
+function buildInput(value) {
+    return components.texts.textBox('<div>', {
+        name: 'userProperties',
+        value: value
+    });
+}
+
+function removeRow(key) {
+    delete properties[key];
+    renderRows();
+}
+
+function buildRow(key) {
+    const $inputs = properties[key].values.map((value) => buildInput(value));
+
+    properties[key].$inputs = $inputs;
+
+    const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
+
+    return new BEM({
+        block: 'imcms-field',
+        elements: {
+            'item': $inputs,
+            'button': $removeButton,
+        }
+    }).buildBlockStructure('<div>', {
+        class: 'imcms-flex--d-flex imcms-flex--align-items-center',
+    });
+}
+
+function renderRows() {
+    $propertiesContainer.children().remove();
+    Object.getOwnPropertySymbols(properties)
+        .map((key) => buildRow(key))
+        .forEach(($row) => $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row)));
+}
+
+function buildRowForNewUserProperty() {
+    const $keyInput = components.texts.textBox('<div>', {text: texts.userProperties.key});
+    const $valueInput = components.texts.textBox('<div>', {text: texts.userProperties.value});
+
+    const $addButton = components.buttons.positiveButton({
+        text: texts.userProperties.add,
+        click: () => {
+            addRow([$keyInput.getValue(), $valueInput.getValue()]);
+            $keyInput.setValue('');
+            $valueInput.setValue('');
+        },
+    });
+
+    return new BEM({
+        block: 'imcms-field',
+        elements: {
+            'item': [$keyInput, $valueInput],
+            'button': $addButton,
+        },
+    }).buildBlockStructure('<div>', {
+        class: 'imcms-flex--d-flex imcms-flex--align-items-flex-start',
+    })
+}
+
+function mapPropertiesToDtoProperties(props) {
+    const entries = Object.getOwnPropertySymbols(props)
+        .map((key) => props[key].values);
+    return jsUtils.fromEntries(entries);
+}
+
+function updateValuesOnProperties() {
+    Object.getOwnPropertySymbols(properties)
+        .map((key) => properties[key])
+        .forEach((prop) => {
+            prop.values = prop.$inputs.map(($input) => $input.getValue())
+        });
+}
+
+function onViewUserProperties() {
+
+    const $form = $('#user-edit-form');
+    const editedUserId = $form[0].id.value;
+
+    function buildPropertiesContainer() {
+        return new BEM({
+            block: 'user-properties-content',
+            elements: {
+                'items': buildRowForNewUserProperty(),
+                'properties': $propertiesContainer
+            },
+        }).buildBlockStructure('<div>');
+    }
+
+    return modal.buildCreatePropertiesKeyValueModalWindow(buildPropertiesContainer(), confirmed => {
+        if (confirmed) {
+            const userProperties = mapPropertiesToUserProperties();
+            userPropertiesRestAPI.create(userProperties).done(() => {
+                alert('success!');
+            })
+        }
+    });
+
+    function mapPropertiesToUserProperties() {
+        return Object.getOwnPropertySymbols(properties)
+            .map((key) => {
+                const propKey = properties[key].values[0];
+                const propValue = properties[key].values[1];
+
+                return {
+                    userId: editedUserId,
+                    keyName: propKey,
+                    value: propValue
+                }
+            });
+    }
 }
 
 function onReset() {
@@ -201,6 +331,7 @@ $(function () {
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
     $('#edit-user-cancel').click(onRedirectSuperAdminPage);
+    $('#edit-user-properties').click(onViewUserProperties);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
