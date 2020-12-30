@@ -201,6 +201,7 @@ class DefaultUserService implements UserService {
         final User user = new User(userData);
         user.setExternal(userData.isExternal());
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
+        user.setUserProperties(userData.getUserProperties());
         return user;
     }
 
