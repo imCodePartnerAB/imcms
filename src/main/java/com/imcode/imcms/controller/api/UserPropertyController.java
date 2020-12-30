@@ -46,8 +46,8 @@ public class UserPropertyController {
     }
 
     @PostMapping
-    public UserProperty create(@RequestBody UserPropertyDTO userProperty) {
-        return userPropertyService.create(userProperty);
+    public void create(@RequestBody List<UserPropertyDTO> userProperties) {
+        userPropertyService.create(userProperties);
     }
 
     @PutMapping
