@@ -1,9 +1,9 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.UserPropertyDTO;
 import com.imcode.imcms.model.UserProperty;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserPropertyService {
 
@@ -11,11 +11,11 @@ public interface UserPropertyService {
 
     List<UserProperty> getByUserId(Integer userId);
 
-    Optional<UserProperty> getByUserIdAndKeyName(Integer userId, String keyName);
+    UserProperty getByUserIdAndKeyName(Integer userId, String keyName);
 
     List<UserProperty> getByUserIdAndValue(Integer userId, String value);
 
-    UserProperty create(UserProperty userProperty);
+    void create(List<UserPropertyDTO> userProperties);
 
     UserProperty update(UserProperty userProperty);
 

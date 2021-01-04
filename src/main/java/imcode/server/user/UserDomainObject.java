@@ -67,6 +67,8 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     private Set<Integer> roleIds = createRolesSetWithUserRole();
 
+    private Map<String, String> userProperties = new HashMap<>();
+
     /**
      * Http session id.
      */

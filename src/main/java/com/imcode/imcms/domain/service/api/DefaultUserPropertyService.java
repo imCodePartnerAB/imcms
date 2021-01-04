@@ -9,6 +9,7 @@ import com.imcode.imcms.persistence.repository.UserPropertyRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.apache.cxf.interceptor.security.AccessDeniedException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,12 +50,13 @@ public class DefaultUserPropertyService implements UserPropertyService {
     }
 
     @Override
-    public Optional<UserProperty> getByUserIdAndKeyName(Integer userId, String keyName) {
+    public UserProperty getByUserIdAndKeyName(Integer userId, String keyName) {
         final UserDomainObject user = Imcms.getUser();
         if (!user.isSuperAdmin()) {
             throw new AccessDeniedException("Current user doesn't has access with loginName: " + user.getLogin());
         }
-        return Optional.ofNullable(userPropertyRepository.findByUserIdAndKeyName(userId, keyName)).map(UserPropertyDTO::new);
+        return Optional.ofNullable(userPropertyRepository.findByUserIdAndKeyName(userId, keyName)).map(UserPropertyDTO::new)
+                .orElseThrow(() -> new EmptyResultDataAccessException(keyName, userId));
     }
 
     @Override
@@ -67,15 +69,21 @@ public class DefaultUserPropertyService implements UserPropertyService {
     }
 
     @Override
-    public UserProperty create(UserProperty userProperty) {
+    public void create(List<UserPropertyDTO> userProperties) {
         final UserDomainObject user = Imcms.getUser();
         if (!user.isSuperAdmin()) {
             throw new AccessDeniedException("Current user doesn't has access with loginName: " + user.getLogin());
         }
-        if (userProperty.getKeyName().isEmpty() || userProperty.getValue().isEmpty()) {
-            throw new DataIsNotValidException();
-        }
-        return new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(userProperty)));
+
+        userProperties.forEach(userProperty -> {
+
+            if (userProperty.getKeyName().isEmpty() || userProperty.getValue().isEmpty()) {
+                throw new DataIsNotValidException();
+            }
+
+            userPropertyRepository.save(new UserPropertyJPA(userProperty));
+        });
+
     }
 
     @Override

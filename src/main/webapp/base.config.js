@@ -270,7 +270,8 @@ module.exports = {
                     'imcms-temporal-data-rest-api',
                     'imcms-version-data-rest-api',
                     'imcms-cache-document-rest-api',
-                    'imcms-doc-view-request-api'
+                    'imcms-doc-view-request-api',
+                    'imcms-user-properties-rest-api'
                 ]
             }
         ),

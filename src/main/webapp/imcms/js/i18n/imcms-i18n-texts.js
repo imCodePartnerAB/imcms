@@ -1487,7 +1487,12 @@ const texts = {
             alertInfoLanguage: 'Language will effect after new login (lang: ',
             error: {
                 loadFailed: 'Failed to load languages. Try again'
-            }
+            },
+            userProperties: {
+                key: 'Key',
+                value: 'Value',
+                add: 'Add',
+            },
         },
         textHistory: {
             title: "Text history",
