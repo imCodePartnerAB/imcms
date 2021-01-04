@@ -122,10 +122,10 @@
                     <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <td><input type="password" name="<%= UserEditorPage.REQUEST_PARAMETER__PASSWORD1 %>"
-                                       size="16" maxlength="15" value=""></td>
+                                       size="16" maxlength="50" value=""></td>
                             <td class="imcmsAdmText" nowrap>&nbsp; <? templates/sv/AdminUserResp.htm/1001 ?> &nbsp;</td>
                             <td><input type="password" name="<%= UserEditorPage.REQUEST_PARAMETER__PASSWORD2 %>"
-                                       size="16" maxlength="15" value=""></td>
+                                       size="16" maxlength="50" value=""></td>
                         </tr>
                     </table>
                 </td>
