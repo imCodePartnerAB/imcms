@@ -22,7 +22,7 @@ define(
 
             function buildUsersNameFilter() {
                 const $usersNameFilterBox = components.texts.textBox('<div>', texts.searchFilter.byName);
-                $usersNameFilter = $usersNameFilterBox.$input;
+                $usersNameFilter = $usersNameFilterBox.$input.attr("maxLength", 50);
                 return $usersNameFilterBox;
             }
 
