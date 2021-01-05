@@ -192,7 +192,7 @@ function buildRowForNewUserProperty() {
         block: 'imcms-field',
         elements: {
             'item': [$keyInput, $valueInput],
-            'button': $addButton,
+            'add-property': $addButton,
         },
     }).buildBlockStructure('<div>', {
         class: 'imcms-flex--d-flex imcms-flex--align-items-flex-start',
