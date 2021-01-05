@@ -561,7 +561,8 @@ const texts = {
                 key: 'Nyckel',
                 value: 'Värde',
                 add: 'Tillägga',
-                successDelete: 'Lyckades bort!'
+                successDelete: 'Lyckades bort!',
+                wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!'
             },
         },
         textHistory: {
@@ -1498,7 +1499,8 @@ const texts = {
                 key: 'Key',
                 value: 'Value',
                 add: 'Add',
-                successDelete: 'Successed deleted!'
+                successDelete: 'Successed deleted!',
+                wrongKeyError: 'The key exists, please write another key!'
             },
         },
         textHistory: {
