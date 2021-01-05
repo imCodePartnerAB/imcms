@@ -97,9 +97,7 @@ function removeRow(key) {
             delete properties[key];
             lastIndexExistProp--;
             userPropertiesRestAPI.remove(propertyId).done(() => {
-                alert(texts.userProperties.successDelete)
-            })
-                .fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
+            }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
         }
 
         renderRows();
@@ -110,9 +108,8 @@ function updateRowProperties(key) {
     updateValuesOnProperties();
     const toUpdateProperty = mapToPropertyDTO(properties[key].values);
 
-
     userPropertiesRestAPI.replace(toUpdateProperty).done(updatedProp => {
-        alert('update success!');
+        alert(texts.userProperties.updateMessage);
         renderRows();
 
     }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
@@ -251,9 +248,12 @@ function onViewUserProperties() {
         if (confirmed) {
             const userProperties = mapPropertiesToUserProperties();
             const propertiesToSave = userProperties.slice(lastIndexExistProp);
-            userPropertiesRestAPI.create(propertiesToSave).done(() => {
-                alert('success!');
-            }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
+
+            if (propertiesToSave.length > 0) {
+                userPropertiesRestAPI.create(propertiesToSave).done(() => {
+                    alert(texts.userProperties.savedSuccess);
+                }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
+            }
         }
     });
 
