@@ -61,6 +61,7 @@ function onSubmit(e) {
 }
 
 let properties = {};
+let lastIndexExistProp = 0;
 let $propertiesContainer = $('<div>', {
     class: 'new-user-properties'
 });
@@ -73,11 +74,18 @@ function addRow(values) {
     $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
 }
 
-function buildInput(value) {
-    return components.texts.textBox('<div>', {
+function buildInputs(values) {
+    const key = values[0];
+    const value = values[1];
+    return [components.texts.textBox('<div>', {
         name: 'userProperties',
-        value: value
-    });
+        value: key
+    }),
+        components.texts.textBox('<div>', {
+            name: 'userProperties',
+            value: value
+        })
+    ];
 }
 
 function removeRow(key) {
@@ -86,8 +94,7 @@ function removeRow(key) {
 }
 
 function buildRow(key) {
-    const $inputs = properties[key].values.map((value) => buildInput(value));
-
+    const $inputs = buildInputs(properties[key].values);
     properties[key].$inputs = $inputs;
 
     const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
@@ -117,7 +124,7 @@ function buildRowForNewUserProperty() {
     const $addButton = components.buttons.positiveButton({
         text: texts.userProperties.add,
         click: () => {
-            addRow([$keyInput.getValue(), $valueInput.getValue()]);
+            addRow([$keyInput.getValue(), $valueInput.getValue(), null]);
             $keyInput.setValue('');
             $valueInput.setValue('');
         },
@@ -134,12 +141,6 @@ function buildRowForNewUserProperty() {
     })
 }
 
-function mapPropertiesToDtoProperties(props) {
-    const entries = Object.getOwnPropertySymbols(props)
-        .map((key) => props[key].values);
-    return jsUtils.fromEntries(entries);
-}
-
 function updateValuesOnProperties() {
     Object.getOwnPropertySymbols(properties)
         .map((key) => properties[key])
@@ -152,6 +153,18 @@ function onViewUserProperties() {
 
     const $form = $('#user-edit-form');
     const editedUserId = $form[0].id.value;
+    $propertiesContainer.children().remove();
+    properties = {};
+
+    userPropertiesRestAPI.getPropertiesByUserId(editedUserId).done(props => {
+        lastIndexExistProp = props.length;
+        props.forEach(prop => {
+            const key = prop.keyName;
+            const value = prop.value;
+            const id = {id: prop.id};
+            addRow([key, value, id]);
+        });
+    });
 
     function buildPropertiesContainer() {
         return new BEM({
