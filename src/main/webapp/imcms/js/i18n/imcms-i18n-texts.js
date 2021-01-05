@@ -562,7 +562,9 @@ const texts = {
                 value: 'Värde',
                 add: 'Tillägga',
                 successDelete: 'Lyckades bort!',
-                wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!'
+                wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!',
+                errorMessage: 'Något händer fel',
+                deleteConfirm: 'Vill du ta bort egendom?'
             },
         },
         textHistory: {
@@ -1500,7 +1502,9 @@ const texts = {
                 value: 'Value',
                 add: 'Add',
                 successDelete: 'Successed deleted!',
-                wrongKeyError: 'The key exists, please write another key!'
+                wrongKeyError: 'The key exists, please write another key!',
+                errorMessage: 'Something happens wrong',
+                deleteConfirm: 'Do you want to remove property?'
             },
         },
         textHistory: {
