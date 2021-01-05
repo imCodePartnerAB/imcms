@@ -564,7 +564,9 @@ const texts = {
                 successDelete: 'Lyckades bort!',
                 wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!',
                 errorMessage: 'Något händer fel',
-                deleteConfirm: 'Vill du ta bort egendom?'
+                deleteConfirm: 'Vill du ta bort egendom?',
+                updateMessage: 'Uppdatera fastighets framgång!',
+                savedSuccess: 'Fastigheter framgång sparad!'
             },
         },
         textHistory: {
@@ -1504,7 +1506,9 @@ const texts = {
                 successDelete: 'Successed deleted!',
                 wrongKeyError: 'The key exists, please write another key!',
                 errorMessage: 'Something happens wrong',
-                deleteConfirm: 'Do you want to remove property?'
+                deleteConfirm: 'Do you want to remove property?',
+                updateMessage: 'Update property success!',
+                savedSuccess: 'Properties success saved!'
             },
         },
         textHistory: {
