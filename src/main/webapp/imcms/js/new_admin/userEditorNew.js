@@ -91,12 +91,19 @@ function buildInputs(values) {
 
 function removeRow(key) {
     const propertyId = properties[key].values[2].id;
-    delete properties[key];
-    lastIndexExistProp--;
-    userPropertiesRestAPI.remove(propertyId).done(() => {
-        alert(texts.userProperties.successDelete)
+
+    modal.buildModalWindow(texts.userProperties.deleteConfirm, onConfirm => {
+        if (onConfirm) {
+            delete properties[key];
+            lastIndexExistProp--;
+            userPropertiesRestAPI.remove(propertyId).done(() => {
+                alert(texts.userProperties.successDelete)
+            })
+                .fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
+        }
+
+        renderRows();
     });
-    renderRows();
 }
 
 function updateRowProperties(key) {
@@ -107,7 +114,8 @@ function updateRowProperties(key) {
     userPropertiesRestAPI.replace(toUpdateProperty).done(updatedProp => {
         alert('update success!');
         renderRows();
-    });
+
+    }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
 }
 
 function existPropertyId(prop) {
@@ -226,7 +234,8 @@ function onViewUserProperties() {
             const id = {id: prop.id};
             addRow([key, value, id]);
         });
-    });
+
+    }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
 
     function buildPropertiesContainer() {
         return new BEM({
@@ -244,7 +253,7 @@ function onViewUserProperties() {
             const propertiesToSave = userProperties.slice(lastIndexExistProp);
             userPropertiesRestAPI.create(propertiesToSave).done(() => {
                 alert('success!');
-            })
+            }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
         }
     });
 
