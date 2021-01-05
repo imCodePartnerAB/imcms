@@ -81,7 +81,7 @@ public class DefaultUserPropertyService implements UserPropertyService {
                 throw new DataIsNotValidException();
             }
 
-            userPropertyRepository.save(new UserPropertyJPA(userProperty));
+            userPropertyRepository.saveAndFlush(new UserPropertyJPA(userProperty));
         });
 
     }
