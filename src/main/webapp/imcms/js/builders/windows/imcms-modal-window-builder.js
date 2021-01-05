@@ -252,9 +252,9 @@ define(
             return new BEM({
                 block: "imcms-create-properties-modal-window",
                 elements: {
-                    "modal-head": buildHead('User-Properties'),
+                    "modal-head": buildHead(texts.userProperties),
                     "modal-body": $userPropertiesData,
-                    "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
+                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }
