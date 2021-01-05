@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -43,7 +41,6 @@ public class UserFormData extends UserData {
     private int[] roleIds;
     private int[] userAdminRoleIds;
     private boolean external;
-    private Map<String, String> userProperties = new HashMap<>();
 
     public UserFormData(UserData from) {
         super(from);
