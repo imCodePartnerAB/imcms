@@ -199,6 +199,10 @@
     margin: 12px;
 }
 
+.imcms-field__add-property {
+    padding: 10px 20px;
+}
+
 .user-properties-content__items {
     margin: 10px;
 }
