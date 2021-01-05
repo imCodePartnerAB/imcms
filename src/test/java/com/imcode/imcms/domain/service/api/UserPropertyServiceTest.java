@@ -19,8 +19,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +40,7 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     private int userId;
     private final String keyName = "keyName";
     private final String value = "value";
-    private UserProperty userProperty;
+    private UserPropertyDTO userProperty;
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
 
         user = userDataInitializer.createData("test");
         userId = user.getId();
-        userProperty = userPropertyDataInitializer.createData(userId, keyName, value);
+        userProperty = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, keyName, value));
 
         final UserDomainObject userSuperAdmin = new UserDomainObject(1);
         userSuperAdmin.setLanguageIso639_2("eng");
@@ -117,18 +117,15 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     public void getByUserIdAndKeyName_When_UserPropertyExist_Expected_CorrectData() {
         assertNotNull(userProperty);
 
-        Optional<UserProperty> expectedUserProperty = userPropertyService.getByUserIdAndKeyName(userId, keyName);
-        assertTrue(expectedUserProperty.isPresent());
-        assertEquals(userProperty, expectedUserProperty.get());
+        UserProperty expectedUserProperty = userPropertyService.getByUserIdAndKeyName(userId, keyName);
+        assertNotNull(expectedUserProperty);
+        assertEquals(userProperty, expectedUserProperty);
     }
 
     @Test
     public void getByUserIdAndKeyName_When_UserPropertyNotExist_Expected_EmptyData() {
         int nonExistentId = 1000;
-        Optional<UserProperty> expectedUserProperty = userPropertyService.getByUserIdAndKeyName(nonExistentId, keyName);
-        assertFalse(expectedUserProperty.isPresent());
-        Optional<UserProperty> expectedUserProperty2 = userPropertyService.getByUserIdAndKeyName(userId, "nonExistentKeyName");
-        assertFalse(expectedUserProperty2.isPresent());
+        assertThrows(EmptyResultDataAccessException.class, () -> userPropertyService.getByUserIdAndKeyName(nonExistentId, keyName));
     }
 
 
@@ -137,7 +134,7 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
         assertNotNull(userProperty);
 
         setCommonUser();
-        assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserIdAndKeyName(userId, keyName).get());
+        assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserIdAndKeyName(userId, keyName));
     }
 
     @Test
@@ -157,10 +154,7 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getByUserIdAndValue_When_userPropertyNotExist_Expected_CorrectResult() {
         int nonExistentId = 1000;
-        Optional<UserProperty> expectedUserProperty = userPropertyService.getByUserIdAndKeyName(nonExistentId, value);
-        assertFalse(expectedUserProperty.isPresent());
-        List<UserProperty> userPropertyList = userPropertyService.getByUserIdAndValue(userId, "nonExistentValue");
-        assertTrue(userPropertyList.isEmpty());
+        assertThrows(EmptyResultDataAccessException.class, () -> userPropertyService.getByUserIdAndKeyName(nonExistentId, value));
     }
 
 
@@ -174,10 +168,17 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void create_When_UserPropertyIsCorrect_Expected_CorrectUserProperty() {
-        final UserProperty userProperty = new UserPropertyDTO(null, userId, keyName, value);
-        UserProperty expectedUserProperty = userPropertyService.create(userProperty);
+        final UserPropertyDTO userProperty = new UserPropertyDTO(null, userId, keyName, value);
 
-        assertNotNull(expectedUserProperty);
+        userPropertyService.create(Collections.singletonList(userProperty));
+
+        final List<UserProperty> expectedUserProperties = userPropertyService.getAll();
+
+        assertNotNull(expectedUserProperties);
+        assertFalse(expectedUserProperties.isEmpty());
+
+        UserProperty expectedUserProperty = expectedUserProperties.get(0);
+
         assertEquals(userProperty.getUserId(), expectedUserProperty.getUserId());
         assertEquals(userProperty.getKeyName(), expectedUserProperty.getKeyName());
         assertEquals(userProperty.getValue(), expectedUserProperty.getValue());
@@ -185,14 +186,14 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void create_When_KeyNameOrValueIsEmpty_Expected_CorrectException() {
-        UserProperty nonExistentUserProperty = new UserPropertyDTO(1000, 1000, "",  "");
-        assertThrows(DataIsNotValidException.class, () -> userPropertyService.create(nonExistentUserProperty));
+        UserPropertyDTO nonExistentUserProperty = new UserPropertyDTO(1000, 1000, "", "");
+        assertThrows(DataIsNotValidException.class, () -> userPropertyService.create(Collections.singletonList(nonExistentUserProperty)));
     }
 
     @Test
     public void create_When_UserNotSuperAdmin_Expected_CorrectException() {
         setCommonUser();
-        assertThrows(AccessDeniedException.class, () -> userPropertyService.create(userProperty));
+        assertThrows(AccessDeniedException.class, () -> userPropertyService.create(Collections.singletonList(userProperty)));
     }
 
     @Test

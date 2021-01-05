@@ -20,9 +20,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class UserPropertyControllerTest extends AbstractControllerTest {
@@ -129,7 +132,7 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         userPropertyDataInitializer.createData(userId, keyName, value);
         assertFalse(userPropertyService.getAll().isEmpty());
 
-        final UserProperty userProperty = userPropertyService.getByUserIdAndKeyName(userId, keyName).get();
+        final UserProperty userProperty = userPropertyService.getByUserIdAndKeyName(userId, keyName);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/name").param("id", userId+"").param("keyName", keyName);
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userProperty));
@@ -188,8 +191,8 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     public void createEntity_When_UserPropertyCorrect_Expected_OkAndCreatedCorrectData() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
 
-        final UserProperty userProperty = userPropertyDataInitializer.createData(null, userId, keyName, value);
-        performPostWithContentExpectOk(userProperty);
+        final UserPropertyDTO userProperty = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, keyName, value));
+        performPostWithContentExpectOk(Collections.singletonList(userProperty));
 
         final List<UserProperty> userPropertyList = userPropertyService.getAll();
         assertEquals(1, userPropertyList.size());
@@ -204,8 +207,8 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     public void createEntity_When_KeyNameOrValueIsEmpty_Expected_CorrectException() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
 
-        final UserProperty userPropertyDTO = userPropertyDataInitializer.createData(null, userId, "", "");
-        performPostWithContentExpectException(userPropertyDTO, DataIsNotValidException.class);
+        final UserPropertyDTO userPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, "", ""));
+        performPostWithContentExpectException(Collections.singletonList(userPropertyDTO), DataIsNotValidException.class);
     }
 
     @Test
@@ -213,8 +216,8 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         assertTrue(userPropertyService.getAll().isEmpty());
         setCommonUser();
 
-        final UserProperty userPropertyDTO = userPropertyDataInitializer.createData(null, userId, keyName, value);
-        performPostWithContentExpectException(userPropertyDTO, AccessDeniedException.class);
+        final UserPropertyDTO userPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, keyName, value));
+        performPostWithContentExpectException(Collections.singletonList(userPropertyDTO), AccessDeniedException.class);
     }
 
     @Test
