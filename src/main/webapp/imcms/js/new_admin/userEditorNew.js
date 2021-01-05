@@ -89,8 +89,24 @@ function buildInputs(values) {
 }
 
 function removeRow(key) {
+    const propertyId = properties[key].values[2].id;
     delete properties[key];
+    lastIndexExistProp--;
+    userPropertiesRestAPI.remove(propertyId).done(() => {
+        alert(texts.userProperties.successDelete)
+    });
     renderRows();
+}
+
+function updateRowProperties(key) {
+    updateValuesOnProperties();
+    const toUpdateProperty = mapToPropertyDTO(properties[key].values);
+
+
+    userPropertiesRestAPI.replace(toUpdateProperty).done(updatedProp => {
+        alert('update success!');
+        renderRows();
+    });
 }
 
 function buildRow(key) {
@@ -98,12 +114,14 @@ function buildRow(key) {
     properties[key].$inputs = $inputs;
 
     const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
+    const $updateButton = $(components.controls.edit(() => updateRowProperties(key))).addClass('imcms-flex--w-10');
 
     return new BEM({
         block: 'imcms-field',
         elements: {
             'item': $inputs,
             'button': $removeButton,
+            'update-btn': $updateButton,
         }
     }).buildBlockStructure('<div>', {
         class: 'imcms-flex--d-flex imcms-flex--align-items-center',
@@ -145,7 +163,9 @@ function updateValuesOnProperties() {
     Object.getOwnPropertySymbols(properties)
         .map((key) => properties[key])
         .forEach((prop) => {
-            prop.values = prop.$inputs.map(($input) => $input.getValue())
+            const propertyId = prop.values[2].id;
+            prop.values = prop.$inputs.map(($input) => $input.getValue());
+            prop.values.push({id: propertyId})
         });
 }
 
@@ -179,7 +199,8 @@ function onViewUserProperties() {
     return modal.buildCreatePropertiesKeyValueModalWindow(buildPropertiesContainer(), confirmed => {
         if (confirmed) {
             const userProperties = mapPropertiesToUserProperties();
-            userPropertiesRestAPI.create(userProperties).done(() => {
+            const propertiesToSave = userProperties.slice(lastIndexExistProp);
+            userPropertiesRestAPI.create(propertiesToSave).done(() => {
                 alert('success!');
             })
         }
@@ -197,6 +218,17 @@ function onViewUserProperties() {
                     value: propValue
                 }
             });
+    }
+}
+
+function mapToPropertyDTO(propertiesData) {
+    const $form = $('#user-edit-form');
+    const editedUserId = $form[0].id.value;
+    return {
+        id: propertiesData[2].id,
+        userId: editedUserId,
+        keyName: propertiesData[0],
+        value: propertiesData[1]
     }
 }
 
