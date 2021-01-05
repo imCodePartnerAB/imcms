@@ -14,7 +14,6 @@ const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
 const BEM = require('imcms-bem-builder');
-const jsUtils = require('js-utils');
 const userPropertiesRestAPI = require('imcms-user-properties-rest-api');
 
 function activateUserAdminRoles() {
@@ -63,7 +62,7 @@ function onSubmit(e) {
 let properties = {};
 let lastIndexExistProp = 0;
 let $propertiesContainer = $('<div>', {
-    class: 'new-user-properties'
+    class: 'user-properties'
 });
 
 
@@ -72,9 +71,7 @@ function addRow(values) {
     properties[key] = {values};
     const $row = buildRow(key);
     const propValues = properties[key].values;
-    if (!existPropertyId(propValues)) {
-        $row.css('width', '84%');
-    }
+    addWidthToRow(propValues, $row);
     $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
 }
 
@@ -145,20 +142,44 @@ function buildRow(key) {
 function renderRows() {
     $propertiesContainer.children().remove();
     Object.getOwnPropertySymbols(properties)
-        .map((key) => buildRow(key))
+        .map((key) => {
+            const $row = buildRow(key);
+            addWidthToRow(properties[key].values, $row);
+            return $row;
+        })
         .forEach(($row) => $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row)));
 }
 
+function addWidthToRow(propValues, $row) {
+    if (!existPropertyId(propValues)) {
+        $row.css('width', '84%');
+    }
+}
+
 function buildRowForNewUserProperty() {
+
+    function cleanInputs() {
+        $keyInput.setValue('');
+        $valueInput.setValue('');
+    }
+
     const $keyInput = components.texts.textBox('<div>', {text: texts.userProperties.key});
     const $valueInput = components.texts.textBox('<div>', {text: texts.userProperties.value});
 
     const $addButton = components.buttons.positiveButton({
         text: texts.userProperties.add,
         click: () => {
-            addRow([$keyInput.getValue(), $valueInput.getValue(), null]);
-            $keyInput.setValue('');
-            $valueInput.setValue('');
+            const keysProperties = getAllExistPropertyKeys();
+            const inputKeyVal = $keyInput.getValue();
+
+            if (keysProperties.includes(inputKeyVal)) {
+                alert(texts.userProperties.wrongKeyError);
+                cleanInputs();
+                return;
+            }
+
+            addRow([inputKeyVal, $valueInput.getValue(), null]);
+            cleanInputs();
         },
     });
 
@@ -171,6 +192,13 @@ function buildRowForNewUserProperty() {
     }).buildBlockStructure('<div>', {
         class: 'imcms-flex--d-flex imcms-flex--align-items-flex-start',
     })
+}
+
+function getAllExistPropertyKeys() {
+    return Object.getOwnPropertySymbols(properties)
+        .map((key) => properties[key])
+        .map(prop => prop.values)
+        .map(value => value[0]);
 }
 
 function updateValuesOnProperties() {
