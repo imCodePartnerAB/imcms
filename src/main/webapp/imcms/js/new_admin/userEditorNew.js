@@ -71,6 +71,10 @@ function addRow(values) {
     const key = Symbol();
     properties[key] = {values};
     const $row = buildRow(key);
+    const propValues = properties[key].values;
+    if (!existPropertyId(propValues)) {
+        $row.css('width', '84%');
+    }
     $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
 }
 
@@ -109,12 +113,22 @@ function updateRowProperties(key) {
     });
 }
 
+function existPropertyId(prop) {
+    return !!prop[2];
+}
+
 function buildRow(key) {
-    const $inputs = buildInputs(properties[key].values);
+    const propValues = properties[key].values;
+    const $inputs = buildInputs(propValues);
     properties[key].$inputs = $inputs;
 
     const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
     const $updateButton = $(components.controls.edit(() => updateRowProperties(key))).addClass('imcms-flex--w-10');
+
+    if (!existPropertyId(propValues)) {
+        $removeButton.css('display', 'none');
+        $updateButton.css('display', 'none');
+    }
 
     return new BEM({
         block: 'imcms-field',
