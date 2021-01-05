@@ -556,7 +556,13 @@ const texts = {
             alertInfoLanguage: 'Språket kommer att gälla efter ny inloggning (lang:',
             error: {
                 loadFailed: 'Misslyckades med att ladda språk. Försök igen'
-            }
+            },
+            userProperties: {
+                key: 'Nyckel',
+                value: 'Värde',
+                add: 'Tillägga',
+                successDelete: 'Lyckades bort!'
+            },
         },
         textHistory: {
             title: "Texthistorik",
@@ -1492,6 +1498,7 @@ const texts = {
                 key: 'Key',
                 value: 'Value',
                 add: 'Add',
+                successDelete: 'Successed deleted!'
             },
         },
         textHistory: {
