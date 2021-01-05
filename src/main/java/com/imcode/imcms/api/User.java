@@ -130,6 +130,13 @@ public class User {
         internalUser.setEmailAddress(emailAddress);
     }
 
+    public String getRef() {
+        return internalUser.getRef();
+    }
+
+    public void setRef(String ref) {
+        internalUser.setRef(ref);
+    }
     /**
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */

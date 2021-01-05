@@ -223,6 +223,15 @@
 
             <div class="imcms-field">
                 <div class="imcms-text-box">
+                    <label for="ref" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/38"/></label>
+                    <input id="ref" class="imcms-input imcms-text-box__input" type="text" name="ref"
+                            maxlength="50" value="<c:out value='${editedUser.ref}'/>">
+                </div>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
                     <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
                     <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>

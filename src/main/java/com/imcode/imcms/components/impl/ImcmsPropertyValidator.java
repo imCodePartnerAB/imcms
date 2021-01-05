@@ -26,7 +26,7 @@ class ImcmsPropertyValidator implements Validator<Properties> {
             "JdbcDriver",
             "JdbcUrl",
             "User",
-            "Password",
+            "Password"
     };
 
     @Override
