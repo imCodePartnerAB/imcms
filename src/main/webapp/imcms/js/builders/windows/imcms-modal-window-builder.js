@@ -254,7 +254,7 @@ define(
                 elements: {
                     "modal-head": buildHead(texts.userProperties),
                     "modal-body": $userPropertiesData,
-                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
+                    "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }
