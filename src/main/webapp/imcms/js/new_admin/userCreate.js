@@ -12,7 +12,6 @@ const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
-const BEM = require('imcms-bem-builder');
 
 function activateUserAdminRoles() {
 
@@ -64,95 +63,6 @@ function onSubmit(e) {
 
 function onReset() {
     window.location.reload(true);
-}
-
-let properties = {};
-let $propertiesContainer = $('<div>').addClass('new-user-properties');
-
-function addRow(values) {
-    const key = Symbol();
-    properties[key] = {values};
-    const $row = buildRow(key);
-    $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
-}
-
-function buildInput(value) {
-    return components.texts.textBox('<div>', {value});
-}
-
-function removeRow(key) {
-    delete properties[key];
-    renderRows();
-}
-
-function buildRow(key) {
-    const $inputs = properties[key].values.map((value) => buildInput(value));
-
-    properties[key].$inputs = $inputs;
-
-    const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
-
-    return new BEM({
-        block: 'imcms-field',
-        elements: {
-            'item': $inputs,
-            'button': $removeButton,
-        }
-    }).buildBlockStructure('<div>', {
-        class: 'imcms-flex--d-flex imcms-flex--align-items-center',
-    });
-}
-
-function renderRows() {
-    $propertiesContainer.children().remove();
-    Object.getOwnPropertySymbols(properties)
-        .map((key) => buildRow(key))
-        .forEach(($row) => $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row)));
-}
-
-function buildRowForNewUserProperty() {
-    const $keyInput = components.texts.textBox('<div>', {text: texts.userProperties.key});
-    const $valueInput = components.texts.textBox('<div>', {text: texts.userProperties.value});
-
-    const $addButton = components.buttons.positiveButton({
-        text: texts.userProperties.add,
-        click: () => {
-            addRow([$keyInput.getValue(), $valueInput.getValue()]);
-            $keyInput.setValue('');
-            $valueInput.setValue('');
-        },
-    });
-
-    return new BEM({
-        block: 'imcms-field',
-        elements: {
-            'item': [$keyInput, $valueInput],
-            'button': $addButton,
-        },
-    }).buildBlockStructure('<div>', {
-        class: 'imcms-flex--d-flex imcms-flex--align-items-flex-start',
-    })
-}
-
-function onViewUserProperties() {
-    const $form = $('#user-edit-form');
-    const $userData = $form.find('.imcms-user-properties');
-    const $userData2 = $('#userData');
-
-    function buildPropertiesContainer() {
-        return new BEM({
-            block: 'user-properties-content',
-            elements: {
-                'items': buildRowForNewUserProperty(),
-            },
-        }).buildBlockStructure('<div>');
-    }
-
-    return modal.buildCreatePropertiesKeyValueModalWindow(buildPropertiesContainer(), confirmed => {
-        if (confirmed) {
-            return;
-        }
-    });
 }
 
 function onCancel() {
@@ -295,7 +205,6 @@ $(function () {
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
     $('#edit-user-cancel').click(onRedirectSuperAdminPage);
-    $('#edit-user-properties').click(onViewUserProperties);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
