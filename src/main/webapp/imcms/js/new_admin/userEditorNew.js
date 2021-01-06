@@ -449,7 +449,7 @@ $(function () {
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
     $('#edit-user-cancel').click(onRedirectSuperAdminPage);
-    $('#edit-user-properties').click(onViewUserProperties);
+    $('#edit-user-properties').click(onViewUserProperties).css('display', 'inline-block');
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
