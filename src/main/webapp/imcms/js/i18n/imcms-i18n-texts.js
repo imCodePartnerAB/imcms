@@ -567,7 +567,8 @@ const texts = {
                 errorMessage: 'Något händer fel',
                 deleteConfirm: 'Vill du ta bort egendom?',
                 updateMessage: 'Uppdatera fastighets framgång!',
-                savedSuccess: 'Fastigheter framgång sparad!'
+                savedSuccess: 'Fastigheter framgång sparad!',
+                save: 'Spara'
             },
         },
         textHistory: {
@@ -1510,7 +1511,8 @@ const texts = {
                 errorMessage: 'Something happens wrong',
                 deleteConfirm: 'Do you want to remove property?',
                 updateMessage: 'Update property success!',
-                savedSuccess: 'Properties success saved!'
+                savedSuccess: 'Properties success saved!',
+                save: 'Save'
             },
         },
         textHistory: {
