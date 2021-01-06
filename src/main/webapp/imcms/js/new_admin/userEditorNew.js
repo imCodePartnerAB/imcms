@@ -78,7 +78,7 @@ function addRow(values) {
 function buildInputs(values) {
     const key = values[0];
     const value = values[1];
-    return [components.texts.textBox('<div>', {
+    const $inputs = [components.texts.textBox('<div>', {
         name: 'userProperties',
         value: key
     }),
@@ -87,6 +87,10 @@ function buildInputs(values) {
             value: value
         })
     ];
+
+    $inputs.map(input => input.$input.attr('disabled', 'disabled'));
+
+    return $inputs;
 }
 
 function removeRow(key) {
@@ -104,12 +108,19 @@ function removeRow(key) {
     });
 }
 
-function updateRowProperties(key) {
+function activeEditPropertiesInputs(key, $saveUpdateButton, $editBtn) {
+    $editBtn.hide();
+    $saveUpdateButton.show();
+    properties[key].$inputs.map(input => input.$input.removeAttr('disabled'));
+}
+
+function updateRowProperties(key, $saveUpdateBtn, $editBtn) {
     updateValuesOnProperties();
     const toUpdateProperty = mapToPropertyDTO(properties[key].values);
 
     userPropertiesRestAPI.replace(toUpdateProperty).done(updatedProp => {
-        alert(texts.userProperties.updateMessage);
+        $saveUpdateBtn.hide();
+        $editBtn.show();
         renderRows();
 
     }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
@@ -125,15 +136,21 @@ function buildRow(key) {
     properties[key].$inputs = $inputs;
 
     const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
-    const $updateButton = $(components.controls.edit(() => updateRowProperties(key))).addClass('imcms-flex--w-10');
     const $saveUpdateButton = components.buttons.positiveButton({
         text: texts.userProperties.save,
-        click: () => updateRowProperties(key).addClass('imcms-flex--w-10')
+        click: function () {
+            updateRowProperties(key, $(this), $('.imcms-field__update-btn')).addClass('imcms-flex--w-10')
+        }
     });
+
+    const $editButton = $(components.controls.edit(function () {
+        activeEditPropertiesInputs(key, $saveUpdateButton, $(this))
+    })).addClass('imcms-flex--w-10');
+
 
     if (!existPropertyId(propValues)) {
         $removeButton.css('display', 'none');
-        $updateButton.css('display', 'none');
+        $editButton.css('display', 'none');
     }
 
     return new BEM({
@@ -141,7 +158,7 @@ function buildRow(key) {
         elements: {
             'item': $inputs,
             'button': $removeButton,
-            'update-btn': $updateButton,
+            'update-btn': $editButton,
             'save-btn': $saveUpdateButton
         }
     }).buildBlockStructure('<div>', {
