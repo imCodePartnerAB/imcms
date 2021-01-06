@@ -208,8 +208,9 @@
 }
 
 .imcms-field__save-btn {
-    padding: 10px 20px;
+    padding: 10px 8px;
     display: none;
+    line-height: 10%;
 }
 
 .user-properties-content__items {
