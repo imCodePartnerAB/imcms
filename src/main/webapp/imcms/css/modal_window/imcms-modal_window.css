@@ -203,6 +203,15 @@
     padding: 10px 20px;
 }
 
+.imcms-field__update-btn {
+    display: block;
+}
+
+.imcms-field__save-btn {
+    padding: 10px 20px;
+    display: none;
+}
+
 .user-properties-content__items {
     margin: 10px;
 }
