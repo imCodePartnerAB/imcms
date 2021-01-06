@@ -126,6 +126,10 @@ function buildRow(key) {
 
     const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
     const $updateButton = $(components.controls.edit(() => updateRowProperties(key))).addClass('imcms-flex--w-10');
+    const $saveUpdateButton = components.buttons.positiveButton({
+        text: texts.userProperties.save,
+        click: () => updateRowProperties(key).addClass('imcms-flex--w-10')
+    });
 
     if (!existPropertyId(propValues)) {
         $removeButton.css('display', 'none');
@@ -138,6 +142,7 @@ function buildRow(key) {
             'item': $inputs,
             'button': $removeButton,
             'update-btn': $updateButton,
+            'save-btn': $saveUpdateButton
         }
     }).buildBlockStructure('<div>', {
         class: 'imcms-flex--d-flex imcms-flex--align-items-center',
