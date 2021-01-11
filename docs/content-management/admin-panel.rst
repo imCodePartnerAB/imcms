@@ -15,7 +15,7 @@ ImCMS 6 provide new modern Admin Panel with several features.
 Panel Features
 --------------
 
-.. |readOnlyModeIcon| image:: admin-panel/_static/01-ReadonlyMode.png
+.. |publicModeIcon| image:: admin-panel/_static/01-PublicMode.png
     :width: 20pt
     :height: 20pt
 
@@ -24,30 +24,45 @@ Panel Features
     :width: 20pt
     :height: 20pt
 
+.. |previewIcon| image:: admin-panel/_static/03-PreviewMode.png
+:width: 20pt
+    :height: 20pt
 
-.. |pageInfoIcon| image:: admin-panel/_static/03-PageInfo.png
+.. |publishIcon| image:: admin-panel/_static/04-PublishMode.png
+:width: 20pt
+    :height: 20pt
+
+.. |pageInfoIcon| image:: admin-panel/_static/05-PageInfoMode.png
     :width: 20pt
     :height: 20pt
 
 
-.. |documentsIcon| image:: admin-panel/_static/04-DocumentsIcon.png
+.. |documentsIcon| image:: admin-panel/_static/06-Documents.png
     :width: 20pt
     :height: 20pt
 
 
-.. |adminManagerIcon| image:: admin-panel/_static/05-AdminManagerIcon.png
+.. |adminManagerIcon| image:: admin-panel/_static/07-Admin.png
     :width: 20pt
     :height: 20pt
 
 
-.. |logoutIcon| image:: admin-panel/_static/06-LogoutIcon.png
+.. |logoutIcon| image:: admin-panel/_static/08-LogOut.png
     :width: 20pt
     :height: 20pt
 
+.. |settingPanelIcon| image:: admin-panel/_static/09-SettingPanel.png
+:width: 20pt
+    :height: 20pt
 
-- |readOnlyModeIcon| ReadOnly Mode - Enable read only mode and hide any on-place editors.
+
+    - |publicModeIcon| Public Mode - enable public mode - Show all published contents.
 
 - |editModeIcon| Edit Mode - enable edit mode - all available in template editor will show on page.
+
+- |previewIcon| Preview Mode - enable preview mode - prepare to show published contents on the page.
+
+- |publishIcon| Publish Mode - publishing - publish current page.
 
 - |pageInfoIcon| PageInfo - show current document information and give ability for edit it.
 
@@ -56,3 +71,6 @@ Panel Features
 - |adminManagerIcon| Admin Manager - open backend admin manager.
 
 - |logoutIcon| Logout - logout current user from ImCMS system.
+
+- |settingPanelIcon| Setting panel - show all setting for panel admin.
+

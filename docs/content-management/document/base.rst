@@ -28,7 +28,7 @@ Today there are two way of document creation:
 
     .. image:: base/_static/01-OpenDocumentManager.png
 
-    - In opened window click on *Create new...* button to open *new document dialog*
+    - In opened window click on *+* button to open *new document dialog*
 
     .. image:: base/_static/02-CreateNewDocument.png
 
@@ -45,11 +45,11 @@ Today there are two way of document creation:
 
     .. image:: base/_static/04-EnableEditMode.png
 
-    * Find **Menu Editor** label on the left side of page an click on it for open **Menu Editor**
+    * Find **Menu Editor** label on the right side of page an click on it for open **Menu Editor**
 
     .. image:: base/_static/05-MenuEditorLabel.png
 
-    * Click on **Create new...** button
+    * Click on **+** button
 
     .. image:: base/_static/06-CreateNewDocumentFromMenu.png
 
