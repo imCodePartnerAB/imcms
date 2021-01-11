@@ -21,6 +21,7 @@ import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -163,6 +164,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     @Autowired
     private DocumentRolesService documentRolesService;
+
+    @Getter
+    @Autowired
+    private UserPropertyService userPropertyService;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
