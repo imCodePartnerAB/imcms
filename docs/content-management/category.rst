@@ -39,6 +39,8 @@ To create new category first create new category type.
 ``Inherited to new documents`` - enable inheritance for new documents, that is mean that all new documents, create from prototype document,
 inherited already chosen category for this category type;
 
+``Visible in Page-Info`` - visible this category type and categories to page info tab
+
 Now, create category as show on image below
 
 
@@ -48,7 +50,3 @@ Now, create category as show on image below
 ``Category name`` - name of created category;
 
 ``Description`` - short description of created category;
-
-``Icon`` - brows image for category if needed;
-
-``Add to category type`` - parent category type;

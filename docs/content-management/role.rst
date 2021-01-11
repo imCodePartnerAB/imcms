@@ -20,7 +20,7 @@ Role editor located on address ``<domain-name>/servlet/AdminRoles`` and looks li
 
 .. image:: role/_static/01-RoleEditor.png
 
-To create new role click on button ``Add new role``, then, in opened window fill name of new role and choose basic permissions.
+To create new role click on button ``Create new role``, then, in opened window fill name of new role and choose basic permissions.
 
 .. image:: role/_static/02-CreateNewRoleWindow.png
 
@@ -33,3 +33,6 @@ Remove role **Users** if it has been presented and add created role from the lis
 
 .. image:: role/_static/06-ChangedRolePermission.png
 
+Delete selected role from system - to press red button **delete**
+
+.. image:: role/_static/07-DeleteRole.png
