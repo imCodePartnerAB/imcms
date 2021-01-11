@@ -13,8 +13,6 @@ public interface UserPropertyService {
 
     UserProperty getByUserIdAndKeyName(Integer userId, String keyName);
 
-    List<UserProperty> getByUserIdAndValue(Integer userId, String value);
-
     void create(List<UserPropertyDTO> userProperties);
 
     UserProperty update(UserProperty userProperty);

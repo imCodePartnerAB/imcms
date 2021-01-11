@@ -40,11 +40,6 @@ public class UserPropertyController {
         return userPropertyService.getByUserIdAndKeyName(id, keyName);
     }
 
-    @GetMapping("/value")
-    public List<UserProperty> getByUserIdAndValue(@RequestParam Integer id, @RequestParam String value) {
-        return userPropertyService.getByUserIdAndValue(id, value);
-    }
-
     @PostMapping
     public void create(@RequestBody List<UserPropertyDTO> userProperties) {
         userPropertyService.create(userProperties);

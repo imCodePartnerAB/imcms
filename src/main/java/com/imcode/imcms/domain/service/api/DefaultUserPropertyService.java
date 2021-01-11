@@ -60,15 +60,6 @@ public class DefaultUserPropertyService implements UserPropertyService {
     }
 
     @Override
-    public List<UserProperty> getByUserIdAndValue(Integer userId, String value) {
-        final UserDomainObject user = Imcms.getUser();
-        if (!user.isSuperAdmin()) {
-            throw new AccessDeniedException("Current user doesn't has access with loginName: " + user.getLogin());
-        }
-        return userPropertyRepository.findByUserIdAndValue(userId, value);
-    }
-
-    @Override
     public void create(List<UserPropertyDTO> userProperties) {
         final UserDomainObject user = Imcms.getUser();
         if (!user.isSuperAdmin()) {
