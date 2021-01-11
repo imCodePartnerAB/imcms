@@ -138,33 +138,11 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getByUserIdAndValue_When_userPropertyExist_Expected_CorrectResult() {
-        List<UserProperty> userPropertyList = userPropertyService.getByUserIdAndValue(userId, value);
-
-        assertFalse(userPropertyList.isEmpty());
-        assertEquals(1, userPropertyList.size());
-
-        UserProperty actualUserProperty = userPropertyList.get(0);
-        assertEquals(userProperty.getId(), actualUserProperty.getId());
-        assertEquals(userProperty.getUserId(), actualUserProperty.getUserId());
-        assertEquals(userProperty.getKeyName(), actualUserProperty.getKeyName());
-        assertEquals(userProperty.getValue(), actualUserProperty.getValue());
-    }
-
-    @Test
     public void getByUserIdAndValue_When_userPropertyNotExist_Expected_CorrectResult() {
         int nonExistentId = 1000;
         assertThrows(EmptyResultDataAccessException.class, () -> userPropertyService.getByUserIdAndKeyName(nonExistentId, value));
     }
 
-
-    @Test
-    public void getByUserIdAndValue_When_UserNotSuperAdmin_Expected_CorrectException(){
-        assertNotNull(userProperty);
-
-        setCommonUser();
-        assertThrows(AccessDeniedException.class, () -> userPropertyService.getByUserIdAndValue(userId, value));
-    }
 
     @Test
     public void create_When_UserPropertyIsCorrect_Expected_CorrectUserProperty() {
@@ -232,7 +210,6 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
         UserProperty userPropertyWithEmptyValue = userProperty;
         userPropertyWithEmptyValue.setValue("");
         assertThrows(DataIsNotValidException.class, () -> userPropertyService.update(userPropertyWithEmptyValue));
-        assertNotNull(userPropertyService.getByUserIdAndValue(userId, value));
     }
 
     @Test

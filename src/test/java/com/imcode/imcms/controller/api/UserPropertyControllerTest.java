@@ -158,17 +158,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getByUserIdAndValue_When_UserPropertyExist_Expected_OkAndCorrectResult() throws Exception {
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        final List<UserProperty> userPropertyList = userPropertyService.getByUserIdAndValue(userId, value);
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/value").param("id", userId+"").param("value", value);
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userPropertyList));
-    }
-
-    @Test
     public void getByIdAndValue_When_UserPropertyNotExist_Expected_OkAndEmptyResult() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
 
