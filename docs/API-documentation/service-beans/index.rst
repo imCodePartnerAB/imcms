@@ -39,6 +39,7 @@ Service-beans
     userAdminRolesService
     userCreationService
     userEditorService
+            userPropertyService
     userRolesService
     userService
     versionService

@@ -12,4 +12,5 @@ Content Management
     menu
     category
     role
+            user-property
 
