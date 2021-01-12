@@ -158,25 +158,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getByIdAndValue_When_UserPropertyNotExist_Expected_OkAndEmptyResult() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/value").param("id", userId+"").param("value", value);
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
-    }
-
-    @Test
-    public void getByIdAndValue_When_UserNotSuperAdmin_Expected_CorrectException() throws Exception {
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        setCommonUser();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/value").param("id", userId+"").param("value", value);
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
-    }
-
-    @Test
     public void createEntity_When_UserPropertyCorrect_Expected_OkAndCreatedCorrectData() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
 
