@@ -2,7 +2,7 @@ Content Management
 ==================
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
 
        document/index
        admin-panel
