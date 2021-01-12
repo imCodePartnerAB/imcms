@@ -10,6 +10,6 @@ Content Management
     image
     loop
     menu
+            user-property
     category
     role
-            user-property
