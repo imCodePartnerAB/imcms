@@ -16,61 +16,61 @@ Panel Features
 --------------
 
 .. |publicModeIcon| image:: admin-panel/_static/01-PublicMode.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 
 .. |editModeIcon| image:: admin-panel/_static/02-EditMode.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 .. |previewIcon| image:: admin-panel/_static/03-PreviewMode.png
-:width: 20pt
-    :height: 20pt
+:width: 60pt
+     :height: 60pt
 
 .. |publishIcon| image:: admin-panel/_static/04-PublishMode.png
-:width: 20pt
-    :height: 20pt
+:width: 60pt
+     :height: 60pt
 
 .. |pageInfoIcon| image:: admin-panel/_static/05-PageInfoMode.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 
 .. |documentsIcon| image:: admin-panel/_static/06-Documents.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 
 .. |adminManagerIcon| image:: admin-panel/_static/07-Admin.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 
 .. |logoutIcon| image:: admin-panel/_static/08-LogOut.png
-    :width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 .. |settingPanelIcon| image:: admin-panel/_static/09-SettingPanel.png
-:width: 20pt
-    :height: 20pt
+:width: 60pt
+    :height: 60pt
 
 
     - |publicModeIcon| Public Mode - enable public mode - Show all published contents.
 
-- |editModeIcon| Edit Mode - enable edit mode - all available in template editor will show on page.
+    - |editModeIcon| Edit Mode - enable edit mode - all available in template editor will show on page.
 
-- |previewIcon| Preview Mode - enable preview mode - prepare to show published contents on the page.
+    - |previewIcon| Preview Mode - enable preview mode - prepare to show published contents on the page.
 
-- |publishIcon| Publish Mode - publishing - publish current page.
+    - |publishIcon| Publish Mode - publishing - publish current page.
 
-- |pageInfoIcon| PageInfo - show current document information and give ability for edit it.
+    - |pageInfoIcon| PageInfo - show current document information and give ability for edit it.
 
-- |documentsIcon| Document Editor - list all presented documents in the system.
+    - |documentsIcon| Document Editor - list all presented documents in the system.
 
-- |adminManagerIcon| Admin Manager - open backend admin manager.
+    - |adminManagerIcon| Admin Manager - open backend admin manager.
 
-- |logoutIcon| Logout - logout current user from ImCMS system.
+    - |logoutIcon| Logout - logout current user from ImCMS system.
 
-- |settingPanelIcon| Setting panel - show all setting for panel admin.
+    - |settingPanelIcon| Setting panel - show all setting for panel admin.
 
