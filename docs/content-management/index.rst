@@ -13,4 +13,3 @@ Content Management
     category
     role
             user-property
-
