@@ -4,6 +4,7 @@ Base Management
 In this article:
     - `Introduction`_
     - `Create Document`_
+    - `Remove Document`_
     - `Edit Life Cycle`_
     - `Edit Appearance`_
     - `Edit Access`_
@@ -58,6 +59,19 @@ Today there are two way of document creation:
 
 .. _label:
     * nothing
+
+
+---------------
+Remove Document
+---------------
+
+Select multi remove documents in editors and select documents which we would want to remove.
+
+
+#.
+
+   - Click on *Multi-Remove* and choose checkbox on document, which we would want to remove:
+   .. image:: base/_static/multi-remove.png
 
 ---------------
 Edit Life Cycle
