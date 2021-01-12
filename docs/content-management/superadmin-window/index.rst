@@ -2,11 +2,11 @@ Super Admin Window Management
 =============================
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
 
-           users
-           delete-document
-           files
-           link-validator
-           profile
-           index-cache
+    users
+    delete-document
+    files
+    link-validator
+    profile
+    index-cache
