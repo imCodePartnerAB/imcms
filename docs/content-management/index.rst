@@ -13,3 +13,4 @@ Content Management
     user-property
     category
     role
+    superadmin-window/index
