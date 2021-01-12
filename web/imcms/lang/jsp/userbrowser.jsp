@@ -53,7 +53,7 @@
         <td width="70%">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="text" id="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="50" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
+            <td><input type="text" id="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="250" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
             <td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
         </tr>
         </table></td>
