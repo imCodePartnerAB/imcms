@@ -155,7 +155,7 @@ ImcmsConstants {
     public static final String LOGIN_URL = "/login";
     public static final String LOGOUT_URL = "/login/logged_out.jsp";
 
-    public static final int MAXIMUM_PASSWORD_LENGTH = 128;
+    public static final int MAXIMUM_PASSWORD_LENGTH = 250;
     public static final int MINIMUM_PASSWORD_LENGTH = 4;
 
     public static final String VIEW_DOC_PATH = "/viewDoc";

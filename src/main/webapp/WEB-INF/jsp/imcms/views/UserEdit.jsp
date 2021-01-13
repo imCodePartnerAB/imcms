@@ -62,7 +62,7 @@ ${"-->"}
                     <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/8"/></label>
                     <input id="login-name" type="text" name="login" class="imcms-input imcms-text-box__input"
-                           maxlength="50" value="<c:out value='${editedUser.login}'/>">
+                           maxlength="250" value="<c:out value='${editedUser.login}'/>">
                 </div>
             </div>
             <div class="imcms-field">
@@ -70,7 +70,7 @@ ${"-->"}
                     <label for="password" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/10"/></label>
                     <input id="password" type="password" name="password" class="imcms-input imcms-text-box__input"
-                           maxlength="50" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>"
+                           maxlength="250" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>"
                            value="<c:out value='${editedUser.password}'/>">
                 </div>
             </div>
@@ -79,7 +79,7 @@ ${"-->"}
                     <label for="password2" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/1001"/></label>
                     <input id="password2" type="password" name="password2" class="imcms-input imcms-text-box__input"
-                           maxlength="50" value="${editedUser.password}">
+                           maxlength="250" value="${editedUser.password}">
                 </div>
             </div>
             <div class="imcms-field">

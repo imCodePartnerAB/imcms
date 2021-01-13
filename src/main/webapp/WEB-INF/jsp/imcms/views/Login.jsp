@@ -68,7 +68,7 @@ ${"-->"}
                             </label>
                             <input id="username" type="text"
                                    name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>"
-                                   maxlength="50"
+                                   maxlength="250"
                                    class="imcms-input imcms-text-box__input">
                         </div>
                     </div>
@@ -80,7 +80,7 @@ ${"-->"}
                             </label>
                             <input id="password" type="password"
                                    name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>"
-                                   maxlength="50"
+                                   maxlength="250"
                                    class="imcms-input imcms-text-box__input">
                         </div>
                     </div>
