@@ -118,8 +118,9 @@ class LocalUserCreationValidatorTest {
         final UserFormData userData = new UserFormData();
         userData.setPassword(
                 "--------10--------20--------30--------40--------50--------60--------70--------80--------90-------100"
-                        + "-------110-------120-----128" + "1"// extra one
-        ); // max is 128, don't know why
+                        + "-------110-------120-------130-------140-------150-------160-------170-------180-------190"
+                + "-------200-------210-------220-------230-------240-------250" + "1"
+        );
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         assertTrue(validationResult.isPassword1TooLong());
@@ -177,8 +178,9 @@ class LocalUserCreationValidatorTest {
         final UserFormData userData = new UserFormData();
         userData.setPassword2(
                 "--------10--------20--------30--------40--------50--------60--------70--------80--------90-------100"
-                        + "-------110-------120-----128" + "1"// extra one
-        ); // max is 128, don't know why
+                        + "-------110-------120-------130-------140-------150-------160-------170-------180-------190"
+                        + "-------200-------210-------220-------230-------240-------250" + "1"
+        );
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         assertTrue(validationResult.isPassword2TooLong());
