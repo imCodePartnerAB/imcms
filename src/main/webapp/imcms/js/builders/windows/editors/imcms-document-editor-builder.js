@@ -117,6 +117,7 @@ define('imcms-document-editor-builder',
                     }
                     incrementDocumentNumber(documentList.length);
                     $documentsList.empty();
+                    pushDocumentsInArray(documentList);
                     documentList.forEach(document => {
                         $documentsList.append(buildDocument(document, currentEditorOptions, false));
                     });
@@ -1303,9 +1304,9 @@ define('imcms-document-editor-builder',
         let docs = [];
 
         function pushDocumentsInArray(documentList) {
-            const allDocIds = docs.map(doc => doc.documentId);
+            const allDocIds = docs.map(doc => doc.documentId || doc.id);
             documentList.forEach(document => {
-                if (!allDocIds.includes(document.documentId)) {
+                if (!allDocIds.includes(document.documentId || document.id)) {
                     docs.push(document);
                 }
             });
