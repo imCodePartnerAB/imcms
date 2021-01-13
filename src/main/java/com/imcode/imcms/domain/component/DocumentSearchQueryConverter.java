@@ -82,12 +82,12 @@ public class DocumentSearchQueryConverter {
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
         PageRequestDTO page = searchQuery.getPage();
 
-        if (StringUtils.isBlank(searchQuery.getTerm())) {
-            page.setSize(DEFAULT_MAX_SIZE);
-        }
-
         if (page == null) {
             page = new PageRequestDTO();
+        }
+
+        if (StringUtils.isBlank(searchQuery.getTerm()) && page.getSize() == PageRequestDTO.DEFAULT_PAGE_SIZE_FOR_UI) {
+            page.setSize(DEFAULT_MAX_SIZE);
         }
 
         solrQuery.setStart(page.getSkip());
