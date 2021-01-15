@@ -121,11 +121,11 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void convert_WhenDefaultPageRequestIsSet_Expect_StartEq0AndRowsEq100() {
+    public void convert_WhenDefaultPageRequestIsSet_Expect_StartEq0AndRowsEqMaxValue() {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
         assertThat(solrQuery.get(CommonParams.START), is("0"));
-        assertThat(solrQuery.get(CommonParams.ROWS), is("100"));
+        assertThat(solrQuery.get(CommonParams.ROWS), is(Integer.MAX_VALUE + ""));
     }
 
     @Test

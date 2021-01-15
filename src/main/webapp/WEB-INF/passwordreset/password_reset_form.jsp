@@ -33,7 +33,7 @@
                 </td>
                 <td width="50%" style="padding: 0 10px;"><input type="password"
                                                                 name="<%=PasswordReset.REQUEST_PARAM_PASSWORD%>"
-                                                                maxlength="50"
+                                                                maxlength="250"
                                                                 style="width:100%;"></td>
             </tr>
             <tr>
@@ -41,7 +41,7 @@
                 </td>
                 <td style="padding: 0 10px;"><input type="password"
                                                     name="<%=PasswordReset.REQUEST_PARAM_PASSWORD_CHECK%>"
-                                                    maxlength="50"
+                                                    maxlength="250"
                                                     style="width:100%;"></td>
             </tr>
             <tr>

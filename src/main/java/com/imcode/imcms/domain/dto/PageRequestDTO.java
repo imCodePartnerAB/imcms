@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 
 public class PageRequestDTO {
 
-    private static final int DEFAULT_PAGE_SIZE_FOR_UI = 100;
+    public static final int DEFAULT_PAGE_SIZE_FOR_UI = 100;
     private static final int DEFAULT_PAGE_NUMBER = 0;
 
     private PageRequest pageRequest;

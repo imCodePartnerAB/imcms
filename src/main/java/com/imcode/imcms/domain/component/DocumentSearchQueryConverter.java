@@ -80,15 +80,14 @@ public class DocumentSearchQueryConverter {
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
-        PageRequestDTO page;
-        if (searchQuery.getTerm() != null) {
-            page = searchQuery.getPage();
-        } else {
-            page = new PageRequestDTO(DEFAULT_MAX_SIZE);
-        }
+        PageRequestDTO page = searchQuery.getPage();
 
         if (page == null) {
             page = new PageRequestDTO();
+        }
+
+        if (StringUtils.isBlank(searchQuery.getTerm()) && page.getSize() == PageRequestDTO.DEFAULT_PAGE_SIZE_FOR_UI) {
+            page.setSize(DEFAULT_MAX_SIZE);
         }
 
         solrQuery.setStart(page.getSkip());
