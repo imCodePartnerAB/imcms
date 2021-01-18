@@ -36,6 +36,14 @@ function activateUserAdminRoles() {
     }
 }
 
+function onCancel() {
+    window.history.back()
+}
+
+function onReset() {
+    window.location.reload(true)
+}
+
 function onSubmit(e) {
     const $form = $('#user-edit-form');
 
@@ -186,6 +194,8 @@ $(function () {
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
     $('#select-role-ids').change(activateUserAdminRoles);
+    $('#edit-user-cancel').click(onCancel);
+    $('#edit-user-reset').click(onReset);
     $('#edit-user-submit-button').click(onSubmit);
     $('#button-add-phone').click(addPhone);
 

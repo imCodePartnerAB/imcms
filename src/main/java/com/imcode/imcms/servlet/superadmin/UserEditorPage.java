@@ -103,17 +103,23 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
         editedUser.setProvince(request.getParameter(REQUEST_PARAMETER__DISTRICT));
         editedUser.setEmailAddress(StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAMETER__EMAIL)));
-        editedUser.setRef(request.getParameter(REQUEST_PARAMETER__REF));
         editedUser.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE)));
-        editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
+        updateUserRefFromRequest(request);
         updateUserPhones(request);
         updateUserRolesFromRequest(request);
         updateUserAdminRolesFromRequest(request);
         updateUserPasswordFromRequest(editedUser, request);
+        updateUserActiveFromRequest(request);
 
         if (getErrorMessage() == null) {
             setErrorMessage(validateUserEmail());
+        }
+    }
+
+    private void updateUserRefFromRequest(HttpServletRequest request){
+        if(editedUser.isSuperAdmin()){
+            editedUser.setRef(request.getParameter(REQUEST_PARAMETER__REF));
         }
     }
 
@@ -167,6 +173,12 @@ public class UserEditorPage extends OkCancelPage {
             editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request));
             editedUser.removeUserAdminRoleId(Roles.SUPER_ADMIN.getId());
             editedUser.removeUserAdminRoleId(Roles.USER_ADMIN.getId());
+        }
+    }
+
+    private void updateUserActiveFromRequest(HttpServletRequest request){
+        if(editedUser.isSuperAdmin()){
+            editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
         }
     }
 
@@ -340,7 +352,7 @@ public class UserEditorPage extends OkCancelPage {
         request.setAttribute("loggedOnUser", loggedOnUser);
         request.setAttribute("errorMessage", errorMessage);
         request.setAttribute("userLanguage", Imcms.getUser().getLanguage());
-
+        request.setAttribute("isEditorUserPage", true);
         super.forward(request, response);
     }
 
