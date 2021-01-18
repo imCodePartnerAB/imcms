@@ -32,15 +32,18 @@ class SuperAdminController {
     private final String imagesPath;
     private final TextService textService;
     private final AccessService accessService;
+    private final String documentationLink;
 
 
     SuperAdminController(@Value("${ImagePath}") String imagesPath,
                          TextService textService,
-                         AccessService accessService) {
+                         AccessService accessService,
+                         @Value("${documentation-host}") String documentationLink) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
         this.accessService = accessService;
+        this.documentationLink = documentationLink;
     }
 
     @CheckAccess
@@ -214,6 +217,7 @@ class SuperAdminController {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
+        mav.addObject("documentationLink", documentationLink);
     }
 
 }
