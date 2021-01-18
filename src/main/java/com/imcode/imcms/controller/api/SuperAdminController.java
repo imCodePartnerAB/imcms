@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
@@ -33,16 +32,18 @@ class SuperAdminController {
     private final String imagesPath;
     private final TextService textService;
     private final AccessService accessService;
-    private final DelegatingByTypeDocumentService documentService;
+    private final String documentationLink;
+
 
     SuperAdminController(@Value("${ImagePath}") String imagesPath,
                          TextService textService,
-                         AccessService accessService, DelegatingByTypeDocumentService documentService) {
+                         AccessService accessService,
+                         @Value("${documentation-host}") String documentationLink) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
         this.accessService = accessService;
-        this.documentService = documentService;
+        this.documentationLink = documentationLink;
     }
 
     @CheckAccess
@@ -216,6 +217,7 @@ class SuperAdminController {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
+        mav.addObject("documentationLink", documentationLink);
     }
 
 }

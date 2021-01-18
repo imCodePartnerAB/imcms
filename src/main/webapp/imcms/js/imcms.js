@@ -21,6 +21,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     isPreviewMode: Imcms.isPreviewMode,
     isVersioningAllowed: Imcms.isVersioningAllowed,
     isAdmin: Imcms.isAdmin,
+    documentationLink: Imcms.documentationLink,
     editOptions: {
         isEditDocInfo: Imcms.editOptions.isEditDocInfo,
         isEditContent: Imcms.editOptions.isEditContent,

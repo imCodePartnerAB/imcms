@@ -11,6 +11,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         isPreviewMode: ${isPreviewMode or false},
         isVersioningAllowed: ${isVersioningAllowed or false},
         isAdmin: ${isAdmin or false},
+        documentationLink: "${documentationLink}",
         editOptions: {
             isEditDocInfo: ${editOptions.editDocInfo or false},
             isEditContent: ${
@@ -41,6 +42,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
+    <%--@elvariable id="documentationLink" type="java.lang.String"--%>
     <%--@elvariable id="isAdmin" type="boolean"--%>
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
     <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>

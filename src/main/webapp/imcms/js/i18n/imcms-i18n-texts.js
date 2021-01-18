@@ -940,6 +940,10 @@ const texts = {
             menuTab: {
                 name: 'Meny'
             },
+            documentationTab: {
+                title: 'Dokumentation ',
+                label: 'Länk till dokumentation senaste versionen'
+            }
         },
         login: {
             alternativeLogin: "Alternativ inloggning:",
@@ -1884,6 +1888,10 @@ const texts = {
             menuTab: {
                 name: 'Menu'
             },
+            documentationTab: {
+                title: 'Documentation',
+                label: 'Link to documentation latest version '
+            }
         },
         login: {
             alternativeLogin: "Alternative login:",
