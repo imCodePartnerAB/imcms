@@ -41,5 +41,6 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     },
     browserInfo: {
         isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
-    }
+    },
+    isEditorUserPage: Imcms.isEditorUserPage
 };

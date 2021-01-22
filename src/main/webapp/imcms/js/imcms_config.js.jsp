@@ -30,7 +30,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
-        }
+        },
+        isEditorUserPage: ${isEditorUserPage or false}
     };
 
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
@@ -45,3 +46,4 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="isAdmin" type="boolean"--%>
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
     <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>
+    <%--@elvariable id="isEditorUserPage" type="boolean"--%>

@@ -221,27 +221,29 @@
                 </div>
             </div>
 
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="ref" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/38"/></label>
-                    <input id="ref" class="imcms-input imcms-text-box__input" type="text" name="ref"
-                            maxlength="50" value="<c:out value='${editedUser.ref}'/>">
+            <c:if test="${editedUser.isSuperAdmin()}">
+                <div class="imcms-field">
+                    <div class="imcms-text-box">
+                        <label for="ref" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp.htm/38"/></label>
+                        <input id="ref" class="imcms-input imcms-text-box__input" type="text" name="ref"
+                                maxlength="50" value="<c:out value='${editedUser.ref}'/>">
+                    </div>
                 </div>
-            </div>
 
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
-                    <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
-                    <c:if test="${editedUser.createDate ne null}">
-                        &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
-                        &nbsp; <fmt:formatDate value="${editedUser.createDate}"
-                                               pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
-                    </c:if>
+                <div class="imcms-field">
+                    <div class="imcms-text-box">
+                        <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
+                        <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
+                        <c:if test="${editedUser.createDate ne null}">
+                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
+                            &nbsp; <fmt:formatDate value="${editedUser.createDate}"
+                                                   pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+                        </c:if>
+                    </div>
                 </div>
-            </div>
+            </c:if>
 
             <c:if test="${loggedOnUser.canEditRolesFor(uneditedUser)}">
                 <div class="imcms-field">
@@ -280,16 +282,18 @@
                     </c:if>
                 </div>
             </c:if>
-            <div class="imcms-info-footer imcms-info-footer__user-edit">
-                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2009"/></button>
-                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2008"/></button>
-                <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
-                        class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2007"/></button>
-            </div>
         </form>
+        <div class="imcms-info-footer imcms-info-footer__user-edit">
+            <button id="edit-user-cancel"
+                    class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
+                    key="templates/sv/AdminUserResp.htm/2009"/></button>
+            <button id="edit-user-reset"
+                    class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
+                    key="templates/sv/AdminUserResp.htm/2008"/></button>
+            <button id="edit-user-submit-button" type="submit" form="user-edit-form" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
+                    class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
+                    key="templates/sv/AdminUserResp.htm/2007"/></button>
+        </div>
     </div>
 </div>
 
