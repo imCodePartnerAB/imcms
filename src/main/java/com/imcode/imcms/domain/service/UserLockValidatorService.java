@@ -11,6 +11,7 @@ public interface UserLockValidatorService {
     Integer increaseAttempts(UserDomainObject user);
     void resetAttempts(Integer userId);
     void unLockDateTimeBlocked(Integer userId);
+    long getRemainingWaitTime(UserDomainObject user);
 
 
 }

@@ -36,7 +36,7 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
         final long currentTimeMillis = System.currentTimeMillis();
         final long millisTimeBlocked = timeBlocking * 60 * 1000;
 
-        if (null == user.getBlockedDate()) return false;
+        if (user == null || null == user.getBlockedDate()) return false;
 
         return currentTimeMillis - user.getBlockedDate().getTime() < millisTimeBlocked;
     }
@@ -85,6 +85,12 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
         receivedUserData.setBlockedDate(null);
 
         userService.saveUser(receivedUserData);
+    }
+
+    @Override
+    public long getRemainingWaitTime(UserDomainObject user) {
+
+        return System.currentTimeMillis() - user.getBlockedDate().getTime();
     }
 
 }
