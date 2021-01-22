@@ -70,7 +70,7 @@ public class VerifyUser extends HttpServlet {
         boolean isAllowed = userAndRoleMapper.isAllowedToAccess(req.getRemoteAddr(), userToCheck);
 
         if (isAllowed) {
-            cms = ContentManagementSystem.login(req, name, passwd);
+            cms = ContentManagementSystem.login(req, userToCheck);
         }
 
         if (null != cms) {
