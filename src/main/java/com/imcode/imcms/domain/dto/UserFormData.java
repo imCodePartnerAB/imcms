@@ -42,6 +42,8 @@ public class UserFormData extends UserData {
     private int[] roleIds;
     private int[] userAdminRoleIds;
     private boolean external;
+    private Date blockedDate; //date when user was blocked
+    private Integer attempts; // amount possible attempts log in again relate with prop amount_attempts
 
     public UserFormData(UserData from) {
         super(from);

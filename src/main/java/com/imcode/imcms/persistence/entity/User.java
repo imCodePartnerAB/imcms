@@ -18,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -81,6 +83,13 @@ public class User extends UserData implements Serializable {
     private boolean external;
     @Column(name = "remember_cd")
     private String rememberCd;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "blocked_date")
+    private Date blockedDate; //date when user was blocked
+
+    @Column(name = "amount_attempts", nullable = false)
+    private Integer attempts; // count possible attempts log in again
 
     /**
      * Http session id.
