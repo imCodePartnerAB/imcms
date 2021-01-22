@@ -33,8 +33,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__PASSWORD;
-import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME;
 import static imcode.server.ImcmsConstants.API_PREFIX;
 import static imcode.server.ImcmsConstants.LOGIN_URL;
 
@@ -188,25 +186,20 @@ public class ImcmsSetupFilter implements Filter {
                 Imcms.setUser(user);
                 Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
 
-
-                // todo: optimize;
-                // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
-                // -invalidates current session if it does not match to last user's session
-                // -redirects to the login page.
             } else {
-                final String login = req.getParameter(REQUEST_PARAMETER__USERNAME);
-                final String password = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+//                final String login = req.getParameter(REQUEST_PARAMETER__USERNAME);
+//                final String password = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
 
-                final UserDomainObject userToCheckAccess;
-                if (null != login && null != password) {
-                    userToCheckAccess = service.verifyUser(login, password);
-                } else {
-                    userToCheckAccess = user;
-                }
-
-
-                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, userToCheckAccess)) return;
+//                final UserDomainObject userToCheckAccess;
+//                if (null != login && null != password) {
+//                    userToCheckAccess = service.verifyUser(login, password);
+//                } else {
+//                    userToCheckAccess = user;
+//                }
+//
+//
+//                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, userToCheckAccess)) return;
 
                 if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
                     String sessionId = session.getId();
