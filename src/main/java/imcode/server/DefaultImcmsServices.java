@@ -21,6 +21,7 @@ import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.UserLockValidatorService;
 import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -169,6 +170,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Autowired
     private UserPropertyService userPropertyService;
 
+    @Getter
+    @Autowired
+    private UserLockValidatorService userLockValidatorService;
+
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
@@ -252,11 +257,21 @@ public class DefaultImcmsServices implements ImcmsServices {
         } else if (!user.isActive()) {
             logUserDeactivated(user);
 
+        } else if(userLockValidatorService.isUserBlocked(user)) {
+            mainLog.info("->User '" + login + "' failed to log in: User is blocked to login.");
+
         } else if (!userAuthenticates) {
             mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
+            final Integer userAttemptsToLogin = userLockValidatorService.increaseAttempts(user);
+
+            if (userLockValidatorService.isAmountAttemptsMorePropValue(userAttemptsToLogin)) {
+                mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
+                userLockValidatorService.lockUserForLogin(user.getId());
+            }
 
         } else {
             result = user;
+            userLockValidatorService.unlockingUserForLogin(user);
             logUserLoggedIn(user);
         }
         return result;
