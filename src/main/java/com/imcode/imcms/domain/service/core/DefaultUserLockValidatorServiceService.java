@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.UserLockValidatorService;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,8 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
                                            @Value("${amount_attempts}") Integer amountAttempts,
                                            @Value("${time_blocking}") long timeBlocking) {
         this.userService = userService;
-        this.amountAttempts = amountAttempts;
-        this.timeBlocking = timeBlocking * 60 * 1000;
+        this.amountAttempts = Integer.parseInt(StringUtils.defaultIfBlank(amountAttempts + "", "3"));
+        this.timeBlocking = Long.parseLong(StringUtils.defaultIfBlank(timeBlocking + "", "1"));
     }
 
     @Override
@@ -33,10 +34,11 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
     @Override
     public boolean isUserBlocked(UserDomainObject user) {
         final long currentTimeMillis = System.currentTimeMillis();
+        final long millisTimeBlocked = timeBlocking * 60 * 1000;
 
         if (null == user.getBlockedDate()) return false;
 
-        return currentTimeMillis - user.getBlockedDate().getTime() < timeBlocking;
+        return currentTimeMillis - user.getBlockedDate().getTime() < millisTimeBlocked;
     }
 
     @Override
