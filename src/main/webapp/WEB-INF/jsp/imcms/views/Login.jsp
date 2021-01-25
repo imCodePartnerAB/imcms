@@ -37,7 +37,7 @@ ${"-->"}
             <div id="default-login-provider" class="login-provider login-provider--active">
                 <c:if test="${requestScope['error'] ne null}">
                     <div class="imcms-field">
-                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
+                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)} ${requestScope['time_error']}</div>
                     </div>
                 </c:if>
                 <div class="imcms-field info-block">
