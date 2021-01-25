@@ -21,7 +21,7 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
     private final long timeBlocking;
 
     DefaultUserLockValidatorServiceService(UserService userService,
-                                           @Value("${amount_attempts}") Integer amountAttempts,
+                                           @Value("${amount_attempts_loggedIn}") Integer amountAttempts,
                                            @Value("${time_blocking}") long timeBlocking) {
         this.userService = userService;
         this.amountAttempts = Integer.parseInt(StringUtils.defaultIfBlank(amountAttempts + "", "3"));
