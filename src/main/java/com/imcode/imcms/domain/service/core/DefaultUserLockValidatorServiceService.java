@@ -4,11 +4,11 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.UserLockValidatorService;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.user.UserDomainObject;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -110,7 +110,7 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
     }
 
     @Override
-    public Integer getRemainAttemptsLoggedIn(@NotNull final UserDomainObject user) {
+    public Integer getRemainAttemptsLoggedIn(@NonNull final UserDomainObject user) {
         int remainAttempts = amountAttempts - user.getAttempts();
 
         if (remainAttempts > 0) {
