@@ -89,7 +89,7 @@ public class User extends UserData implements Serializable {
     private Date blockedDate; //date when user was blocked
 
     @Column(name = "amount_attempts", nullable = false)
-    private Integer attempts; // count possible attempts log in again
+    private Integer attempts = 0; // count possible attempts log in again
 
     /**
      * Http session id.
