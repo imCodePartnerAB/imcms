@@ -12,6 +12,6 @@ public interface UserLockValidatorService {
     void resetAttempts(Integer userId);
     void unLockDateTimeBlocked(Integer userId);
     String getRemainingWaitTime(UserDomainObject user);
-
+    Integer getRemainAttemptsLoggedIn(UserDomainObject user);
 
 }

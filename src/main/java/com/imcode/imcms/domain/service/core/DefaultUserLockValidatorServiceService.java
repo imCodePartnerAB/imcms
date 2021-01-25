@@ -108,4 +108,15 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
         return String.format("%d min : %d sec", minutes, seconds);
     }
 
+    @Override
+    public Integer getRemainAttemptsLoggedIn(UserDomainObject user) {
+        int remainAttempts = amountAttempts - user.getAttempts();
+
+        if (remainAttempts > 0) {
+            return user.getAttempts();
+        } else {
+            return 1;// if user had exhausted attempts logged in so he will be have only 1 after unblocking
+        }
+    }
+
 }
