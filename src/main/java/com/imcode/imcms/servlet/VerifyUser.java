@@ -30,6 +30,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     public static final String REQUEST_ATTRIBUTE__WAIT_TIME = "time_error";
+    public static final String REQUEST_ATTRIBUTE__INFO_LEFT_ATTEMPTS = "left_attempts_info";
     /**
      * Too many sessions message key.
      */
@@ -41,6 +42,7 @@ public class VerifyUser extends HttpServlet {
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
     private final static LocalizedMessage ERROR__ATTEMPTS_EXHAUSTED = new LocalizedMessage("templates/login/access_denied.html/5");
+    private final static LocalizedMessage LEFT__ATTEMPTS_INFO = new LocalizedMessage("templates/login/access_denied.html/6");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
         req.getSession().invalidate();
