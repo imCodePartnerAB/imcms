@@ -93,7 +93,7 @@ public class VerifyUser extends HttpServlet {
         final UserLockValidatorService userLockValidatorService = Imcms.getServices().getUserLockValidatorService();
         if (userLockValidatorService.isUserBlocked(user)) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__ATTEMPTS_EXHAUSTED);
-            req.setAttribute(REQUEST_ATTRIBUTE__ERROR, String.valueOf(userLockValidatorService.getRemainingWaitTime(user)));
+            req.setAttribute(REQUEST_ATTRIBUTE__WAIT_TIME, userLockValidatorService.getRemainingWaitTime(user));
         } else {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         }
