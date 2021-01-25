@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -109,7 +110,7 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
     }
 
     @Override
-    public Integer getRemainAttemptsLoggedIn(UserDomainObject user) {
+    public Integer getRemainAttemptsLoggedIn(@NotNull final UserDomainObject user) {
         int remainAttempts = amountAttempts - user.getAttempts();
 
         if (remainAttempts > 0) {
