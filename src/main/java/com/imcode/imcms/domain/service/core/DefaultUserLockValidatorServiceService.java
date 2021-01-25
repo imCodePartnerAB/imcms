@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 
 @Service
@@ -33,12 +34,17 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
 
     @Override
     public boolean isUserBlocked(UserDomainObject user) {
-        final long currentTimeMillis = System.currentTimeMillis();
+        final Date currentTime = new Date(System.currentTimeMillis());
         final long millisTimeBlocked = timeBlocking * 60 * 1000;
 
         if (user == null || null == user.getBlockedDate()) return false;
 
-        return currentTimeMillis - user.getBlockedDate().getTime() < millisTimeBlocked;
+        final Calendar dateTime = Calendar.getInstance();
+        dateTime.setTimeInMillis(user.getBlockedDate().getTime() + millisTimeBlocked);
+
+        final Date timeUnBlocked = dateTime.getTime();
+
+        return currentTime.before(timeUnBlocked);
     }
 
     @Override
@@ -88,9 +94,18 @@ class DefaultUserLockValidatorServiceService implements UserLockValidatorService
     }
 
     @Override
-    public long getRemainingWaitTime(UserDomainObject user) {
+    public String getRemainingWaitTime(UserDomainObject user) {
+        final Calendar dateTime = Calendar.getInstance();
+        final long millisTimeBlocked = timeBlocking * 60 * 1000;
 
-        return System.currentTimeMillis() - user.getBlockedDate().getTime();
+        dateTime.setTimeInMillis(user.getBlockedDate().getTime() + millisTimeBlocked);
+
+        long timeRemained = dateTime.getTimeInMillis() - System.currentTimeMillis();
+
+        long minutes = (timeRemained / 1000) / 60;
+        long seconds = (timeRemained / 1000) % 60;
+
+        return String.format("%d min : %d sec", minutes, seconds);
     }
 
 }
