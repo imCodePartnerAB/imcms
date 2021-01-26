@@ -15,6 +15,7 @@ ${"-->"}
 
 <html>
 <head>
+    <meta charset="UTF-8">
     <title><fmt:message key="templates/login/index.html/1" bundle="${resource_property}"/></title>
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
