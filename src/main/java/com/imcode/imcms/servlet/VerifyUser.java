@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
-import com.imcode.imcms.domain.service.UserLockValidator;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;

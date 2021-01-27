@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.controller.MockingControllerTest;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
@@ -37,6 +38,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
     @InjectMocks
     private UserAdministrationController controller;
+
+    @Mock
+    private UserLockValidator userLockValidator;
 
     @Override
     protected Object controllerToMock() {

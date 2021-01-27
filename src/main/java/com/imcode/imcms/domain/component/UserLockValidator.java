@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service;
+package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserFormData;
 import imcode.server.user.UserDomainObject;

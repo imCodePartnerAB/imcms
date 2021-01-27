@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserFormData;
-import com.imcode.imcms.domain.service.UserLockValidator;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.user.UserDomainObject;
 import lombok.NonNull;

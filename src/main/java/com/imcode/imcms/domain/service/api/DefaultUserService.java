@@ -8,7 +8,7 @@ import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserAdminRolesService;
-import com.imcode.imcms.domain.service.UserLockValidator;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.ExternalUser;

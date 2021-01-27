@@ -5,7 +5,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
-import com.imcode.imcms.domain.service.UserLockValidator;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
