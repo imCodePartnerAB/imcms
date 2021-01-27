@@ -5,7 +5,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
-import com.imcode.imcms.domain.service.UserLockValidatorService;
+import com.imcode.imcms.domain.service.UserLockValidator;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
@@ -27,18 +27,18 @@ class UserAdministrationController {
     private final UserCreationService userCreationService;
     private final UserEditorService userEditorService;
     private final UserService userService;
-    private final UserLockValidatorService userLockValidatorService;
+    private final UserLockValidator userLockValidator;
 
     @Autowired
     public UserAdministrationController(UserCreationService userCreationService,
                                         UserEditorService userEditorService,
                                         UserService userService,
-                                        UserLockValidatorService userLockValidatorService) {
+                                        UserLockValidator userLockValidator) {
 
         this.userCreationService = userCreationService;
         this.userEditorService = userEditorService;
         this.userService = userService;
-        this.userLockValidatorService = userLockValidatorService;
+        this.userLockValidator = userLockValidator;
     }
 
     @GetMapping("/edition/{userId}")
@@ -51,7 +51,7 @@ class UserAdministrationController {
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
-        modelAndView.addObject("isBlockedNow", userLockValidatorService.isUserBlocked(user));
+        modelAndView.addObject("isBlockedNow", userLockValidator.isUserBlocked(user));
         return modelAndView;
     }
 

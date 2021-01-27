@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
-import com.imcode.imcms.domain.service.UserLockValidatorService;
+import com.imcode.imcms.domain.service.UserLockValidator;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
@@ -92,10 +92,10 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res, UserDomainObject user) throws IOException, ServletException {
-        final UserLockValidatorService userLockValidatorService = Imcms.getServices().getUserLockValidatorService();
-        if (userLockValidatorService.isUserBlocked(user)) {
+        final UserLockValidator userLockValidator = Imcms.getServices().getUserLockValidator();
+        if (userLockValidator.isUserBlocked(user)) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__ATTEMPTS_EXHAUSTED);
-            req.setAttribute(REQUEST_ATTRIBUTE__WAIT_TIME, userLockValidatorService.getRemainingWaitTime(user));
+            req.setAttribute(REQUEST_ATTRIBUTE__WAIT_TIME, userLockValidator.getRemainingWaitTime(user));
         } else {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         }

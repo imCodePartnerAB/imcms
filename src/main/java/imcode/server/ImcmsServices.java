@@ -17,7 +17,7 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.UserLockValidatorService;
+import com.imcode.imcms.domain.service.UserLockValidator;
 import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -137,5 +137,5 @@ public interface ImcmsServices {
 
     UserPropertyService getUserPropertyService();
 
-    UserLockValidatorService getUserLockValidatorService();
+    UserLockValidator getUserLockValidator();
 }

@@ -21,7 +21,7 @@ import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.UserLockValidatorService;
+import com.imcode.imcms.domain.service.UserLockValidator;
 import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -172,7 +172,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     @Getter
     @Autowired
-    private UserLockValidatorService userLockValidatorService;
+    private UserLockValidator userLockValidator;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
@@ -257,21 +257,21 @@ public class DefaultImcmsServices implements ImcmsServices {
         } else if (!user.isActive()) {
             logUserDeactivated(user);
 
-        } else if(userLockValidatorService.isUserBlocked(user)) {
+        } else if(userLockValidator.isUserBlocked(user)) {
             mainLog.info("->User '" + login + "' failed to log in: User is blocked to login.");
 
         } else if (!userAuthenticates) {
             mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
-            final Integer userAttemptsToLogin = userLockValidatorService.increaseAttempts(user);
+            final Integer userAttemptsToLogin = userLockValidator.increaseAttempts(user);
 
-            if (userLockValidatorService.isAmountAttemptsMorePropValue(userAttemptsToLogin)) {
+            if (userLockValidator.isAmountAttemptsMorePropValue(userAttemptsToLogin)) {
                 mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
-                userLockValidatorService.lockUserForLogin(user.getId());
+                userLockValidator.lockUserForLogin(user.getId());
             }
 
         } else {
             result = user;
-            userLockValidatorService.unlockingUserForLogin(user);
+            userLockValidator.unlockingUserForLogin(user);
             logUserLoggedIn(user);
         }
         return result;
