@@ -141,23 +141,6 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndTrueParamSortMANUAL_Expect_CorrectEntitiesEmptyChild() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
-        document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
-        documentService.save(document);
-
-        assertEquals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE, document.getDisabledLanguageShowMode());
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("menuIndex", String.valueOf(menu.getMenuIndex()))
-                .param("docId", String.valueOf(menu.getDocId()))
-                .param("typeSort", String.valueOf(TypeSort.MANUAL));
-
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu));
-    }
-
-    @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortAlphabeticASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.ALPHABETICAL_ASC), COUNT_MENU_ITEMS);
         final DocumentDTO document = documentService.get(menu.getDocId());
