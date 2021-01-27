@@ -10,11 +10,13 @@ ${"-->"}
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="C" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <%--@elvariable id="editedUser" type="com.imcode.imcms.domain.dto.UserFormData"--%>
 <%--@elvariable id="loggedOnUser" type="imcode.server.user.UserDomainObject"--%>
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
+<%--@elvariable id="isBlockedNow" type="boolean"--%>
 
 <html>
 <head>
@@ -234,6 +236,39 @@ ${"-->"}
                            maxlength="50" value="<c:out value='${editedUser.ref}'/>">
                 </div>
             </div>
+
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label class="imcms-label imcms-text-box__label"><fmt:message
+                            key="webapp/imcms/lang/jsp/blocked_datetime"/></label>
+                    <c:choose>
+                        <c:when test="${editedUser.blockedDate ne null}">
+                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/13"/>
+                            &nbsp; <fmt:formatDate value="${editedUser.blockedDate}"
+                                                   pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+                        </c:when>
+                        <c:otherwise>
+                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/14"/>
+                        </c:otherwise>
+                    </c:choose>
+
+                    <c:if test="${isBlockedNow}">
+                        &nbsp;&nbsp; <input id="flagControlBlocking" type="checkbox" name="flagOfBlocking" ${isBlockedNow ? ' checked="checked"':''}>
+                    </c:if>
+                </div>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label class="imcms-label imcms-text-box__label"><fmt:message
+                            key="webapp/imcms/lang/jsp/attempts_loggedin"/></label>
+                    &nbsp; <fmt:message key="${editedUser.attempts}"/>
+                    <input class="imcms-input imcms-text-box__input" type="hidden" name="attempts"
+                           value="<c:out value='${editedUser.attempts}'/>">
+                </div>
+            </div>
+
 
             <div class="imcms-field">
                 <div class="imcms-text-box">
