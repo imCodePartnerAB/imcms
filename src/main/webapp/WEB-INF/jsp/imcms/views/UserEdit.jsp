@@ -243,19 +243,20 @@ ${"-->"}
                     <label class="imcms-label imcms-text-box__label"><fmt:message
                             key="webapp/imcms/lang/jsp/blocked_datetime"/></label>
                     <c:choose>
-                        <c:when test="${editedUser.blockedDate ne null}">
+                        <c:when test="${editedUser.blockedDate ne null and isBlockedNow}">
                             &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/13"/>
                             &nbsp; <fmt:formatDate value="${editedUser.blockedDate}"
                                                    pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+
+                            &nbsp;&nbsp; <input id="flagControlBlocking" type="checkbox" name="flagOfBlocking" ${isBlockedNow ? ' checked="checked"':''}>
+
+                            &nbsp;&nbsp;  <label for="flagControlBlocking" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="webapp/imcms/lang/jsp/unblock"/></label>
                         </c:when>
                         <c:otherwise>
                             &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/14"/>
                         </c:otherwise>
                     </c:choose>
-
-                    <c:if test="${isBlockedNow}">
-                        &nbsp;&nbsp; <input id="flagControlBlocking" type="checkbox" name="flagOfBlocking" ${isBlockedNow ? ' checked="checked"':''}>
-                    </c:if>
                 </div>
             </div>
 
