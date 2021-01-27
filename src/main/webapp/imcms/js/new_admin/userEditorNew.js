@@ -39,6 +39,20 @@ function activateUserAdminRoles() {
     onUserAdminRoleClicked.call($userAdminRole);
 }
 
+function unBlockingUser() {
+    const $form = $('#user-edit-form');
+    const blockingFlag = $form.find('#flagControlBlocking');
+
+    blockingFlag.change(function () {
+        const checkBox = blockingFlag[0];
+        if (checkBox.checked) {
+            checkBox.value = true
+        } else {
+            checkBox.value = false
+        }
+    })
+}
+
 function onSubmit(e) {
     const $form = $('#user-edit-form');
     const valuePass = $form.find('input[name=password]').val();
@@ -441,6 +455,7 @@ $(function () {
     $('input[name=login]').focus();
     activateUserAdminRoles();
     loadLanguages();
+    unBlockingUser();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
