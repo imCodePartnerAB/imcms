@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Roles;
@@ -101,6 +102,9 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     public UserDomainObject(int id) {
         this.id = id;
+    }
+    public UserDomainObject(UserFormData userFormData) {
+        super(userFormData);
     }
 
     private static Set<Integer> createRolesSetWithUserRole() {
