@@ -55,9 +55,7 @@ class DefaultUserLockValidator implements UserLockValidator {
 
     @Override
     public boolean isUserBlocked(UserFormData user) {
-        final UserDomainObject userDomainObject = new UserDomainObject();
-        userDomainObject.setBlockedDate(user.getBlockedDate());
-        return isUserBlockedNow(userDomainObject);
+        return isUserBlockedNow(new UserDomainObject(user));
     }
 
     @Override
