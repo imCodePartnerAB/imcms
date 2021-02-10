@@ -3,6 +3,7 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @NoArgsConstructor
 public abstract class UserData extends BasicUserData implements Serializable {
@@ -20,6 +21,8 @@ public abstract class UserData extends BasicUserData implements Serializable {
         setProvince(from.getProvince());
         setCountry(from.getCountry());
         setRef(from.getRef());
+        setBlockedDate(from.getBlockedDate());
+        setAttempts(from.getAttempts());
     }
 
     public abstract String getPassword();
@@ -61,4 +64,12 @@ public abstract class UserData extends BasicUserData implements Serializable {
     public abstract boolean isActive();
 
     public abstract void setActive(boolean active);
+
+    public abstract Date getBlockedDate();
+
+    public abstract void setBlockedDate(Date blockedDate);
+
+    public abstract Integer getAttempts();
+
+    public abstract void setAttempts(Integer attempts);
 }

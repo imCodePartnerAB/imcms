@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserAdminRolesService;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.ExternalUser;
@@ -54,6 +55,7 @@ class DefaultUserService implements UserService {
     private final UserRolesService userRolesService;
     private final ExternalToLocalRoleLinkService externalToLocalRoleService;
     private final UserAdminRolesService userAdminRolesService;
+    private final UserLockValidator userLockValidator;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -63,7 +65,8 @@ class DefaultUserService implements UserService {
                        PhoneService phoneService,
                        UserRolesService userRolesService,
                        ExternalToLocalRoleLinkService externalToLocalRoleLinkService,
-                       UserAdminRolesService userAdminRolesService) {
+                       UserAdminRolesService userAdminRolesService,
+                       UserLockValidator userLockValidator) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
@@ -71,6 +74,7 @@ class DefaultUserService implements UserService {
         this.userRolesService = userRolesService;
         this.externalToLocalRoleService = externalToLocalRoleLinkService;
         this.userAdminRolesService = userAdminRolesService;
+        this.userLockValidator = userLockValidator;
     }
 
     @Override
@@ -192,9 +196,20 @@ class DefaultUserService implements UserService {
             user.setRememberCd(existingUser.getRememberCd());
             user.setPasswordType(existingUser.getPasswordType());
             user.setExternal(existingUser.isExternal());
+
+            if (userData.isFlagOfBlocking() && userLockValidator.isUserBlocked(toUserFormData(existingUser))) {
+                user.setBlockedDate(existingUser.getCreateDate());
+            }
         }
 
         return userRepository.save(user);
+    }
+
+    private UserFormData toUserFormData(User user) {
+        UserFormData userFormData = new UserFormData(user);
+        userFormData.setExternal(user.isExternal());
+
+        return userFormData;
     }
 
     private User toUserJPA(UserFormData userData) {

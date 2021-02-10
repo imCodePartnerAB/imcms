@@ -15,6 +15,7 @@ ${"-->"}
 
 <html>
 <head>
+    <meta charset="UTF-8">
     <title><fmt:message key="templates/login/index.html/1" bundle="${resource_property}"/></title>
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
@@ -37,7 +38,7 @@ ${"-->"}
             <div id="default-login-provider" class="login-provider login-provider--active">
                 <c:if test="${requestScope['error'] ne null}">
                     <div class="imcms-field">
-                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
+                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)} ${requestScope['time_error']}</div>
                     </div>
                 </c:if>
                 <div class="imcms-field info-block">

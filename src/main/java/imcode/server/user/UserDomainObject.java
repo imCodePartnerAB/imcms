@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Roles;
@@ -11,14 +12,17 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
-import java.util.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -74,6 +78,9 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     private Set<Integer> roleIds = createRolesSetWithUserRole();
 
+    private Date blockedDate; //date when user was blocked
+    private Integer attempts; // count possible attempts log in again
+
     /**
      * Http session id.
      */
@@ -95,6 +102,9 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     public UserDomainObject(int id) {
         this.id = id;
+    }
+    public UserDomainObject(UserFormData userFormData) {
+        super(userFormData);
     }
 
     private static Set<Integer> createRolesSetWithUserRole() {

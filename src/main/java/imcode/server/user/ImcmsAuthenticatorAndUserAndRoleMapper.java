@@ -204,6 +204,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setTitle(user.getTitle());
         //userDO.setUserAdminRolesIds();
         userDO.setZip(user.getZip());
+        userDO.setBlockedDate(user.getBlockedDate());
+        userDO.setAttempts(user.getAttempts());
 
         initUserRoles(userDO);
         initUserPhoneNumbers(userDO);
@@ -306,6 +308,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.isImcmsExternal() ? "1" : "0",
                 user.isActive() ? "1" : "0",
                 user.getLanguageIso639_2(),
+                user.getBlockedDate() + "",
+                user.getAttempts() + "",
                 user.isPasswordEncrypted() ? "1" : "0",
                 user.hasPasswordReset() ? user.getPasswordReset().getId() : null,
                 user.hasPasswordReset() ? Long.toString(user.getPasswordReset().getTime()) : null,
@@ -329,6 +333,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     + "external = ?,\n"
                     + "active = ?,\n"
                     + "language = ?,\n"
+                    + "blocked_date = ?,\n"
+                    + "amount_attempts = ?,\n"
                     + "login_password_is_encrypted = ?,\n"
                     + "login_password_reset_id = ?,\n"
                     + "login_password_reset_ts = ?\n"
@@ -415,6 +421,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     {"active", user.isActive() ? "1" : "0"},
                     {"language", user.getLanguageIso639_2()},
                     {"create_date", Utility.makeSqlStringFromDate(new Date())},
+                    {"blocked_date", Utility.makeSqlStringFromDate(null)},
+                    {"amount_attempts", user.getAttempts() + ""},
 
                     {"login_password_is_encrypted", BooleanUtils.toString(user.isPasswordEncrypted(), "1", "0")},
                     {"login_password_reset_id", user.hasPasswordReset() ? user.getPasswordReset().getId() : null},

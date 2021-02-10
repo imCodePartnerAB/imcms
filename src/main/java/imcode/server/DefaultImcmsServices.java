@@ -8,6 +8,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -146,6 +147,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Autowired
     private DocumentDataService documentDataService;
 
+    @Getter
+    @Autowired
+    private UserLockValidator userLockValidator;
+
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
@@ -229,11 +234,21 @@ public class DefaultImcmsServices implements ImcmsServices {
         } else if (!user.isActive()) {
             logUserDeactivated(user);
 
+        } else if(userLockValidator.isUserBlocked(user)) {
+            mainLog.info("->User '" + login + "' failed to log in: User is blocked to login.");
+
         } else if (!userAuthenticates) {
             mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
+            final Integer userAttemptsToLogin = userLockValidator.increaseAttempts(user);
+
+            if (userLockValidator.isAmountAttemptsMorePropValue(userAttemptsToLogin)) {
+                mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
+                userLockValidator.lockUserForLogin(user.getId());
+            }
 
         } else {
             result = user;
+            userLockValidator.unlockingUserForLogin(user);
             logUserLoggedIn(user);
         }
         return result;

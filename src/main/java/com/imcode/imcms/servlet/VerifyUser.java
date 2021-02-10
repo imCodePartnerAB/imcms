@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
@@ -28,6 +29,8 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
+    public static final String REQUEST_ATTRIBUTE__WAIT_TIME = "time_error";
+    public static final String REQUEST_ATTRIBUTE__INFO_LEFT_ATTEMPTS = "left_attempts_info";
     /**
      * Too many sessions message key.
      */
@@ -38,6 +41,8 @@ public class VerifyUser extends HttpServlet {
     private static final String SESSION_ATTRIBUTE__NEXT_META = REQUEST_PARAMETER__NEXT_META;
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
+    private final static LocalizedMessage ERROR__ATTEMPTS_EXHAUSTED = new LocalizedMessage("templates/login/access_denied.html/5");
+    private final static LocalizedMessage LEFT__ATTEMPTS_INFO = new LocalizedMessage("templates/login/access_denied.html/6");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
         req.getSession().invalidate();
@@ -60,7 +65,7 @@ public class VerifyUser extends HttpServlet {
         String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
         if ((name == null) || (passwd == null)) {
-            goToLoginFailedPage(req, res);
+            goToLoginFailedPage(req, res, null);
             return;
         }
 
@@ -68,9 +73,10 @@ public class VerifyUser extends HttpServlet {
         ContentManagementSystem cms = null;
         UserDomainObject userToCheck = Imcms.getServices().verifyUser(name, passwd);
         boolean isAllowed = userAndRoleMapper.isAllowedToAccess(req.getRemoteAddr(), userToCheck);
+        final UserDomainObject userByLogin = userAndRoleMapper.getUserByLoginIgnoreCase(name);
 
         if (isAllowed) {
-            cms = ContentManagementSystem.login(req, name, passwd);
+            cms = ContentManagementSystem.login(req, userToCheck);
         }
 
         if (null != cms) {
@@ -81,12 +87,19 @@ public class VerifyUser extends HttpServlet {
                 goToLoginSuccessfulPage(req, res);
             }
         } else {
-            goToLoginFailedPage(req, res);
+            goToLoginFailedPage(req, res, userByLogin);
         }
     }
 
-    private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
+    private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res, UserDomainObject user) throws IOException, ServletException {
+        final UserLockValidator userLockValidator = Imcms.getServices().getUserLockValidator();
+        if (userLockValidator.isUserBlocked(user)) {
+            req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__ATTEMPTS_EXHAUSTED);
+            req.setAttribute(REQUEST_ATTRIBUTE__WAIT_TIME, userLockValidator.getRemainingWaitTime(user));
+        } else {
+            req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
+        }
+
         req.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(req, res);
     }
 
