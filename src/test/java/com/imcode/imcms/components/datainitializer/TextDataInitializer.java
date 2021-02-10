@@ -42,4 +42,18 @@ public class TextDataInitializer extends TestDataCleaner {
         textRepository.saveAndFlush(text);
     }
 
+
+    public void createLikePublishedText(int index, LanguageJPA language, Version version, String testText, LoopEntryRef loopEntryRef) {
+        final TextJPA text = new TextJPA();
+        text.setIndex(index);
+        text.setLanguage(language);
+        text.setText(testText);
+        text.setType(TEXT);
+        text.setVersion(version);
+        text.setLoopEntryRef(loopEntryRef);
+        text.setLikePublished(true);
+
+        textRepository.saveAndFlush(text);
+    }
+
 }
