@@ -12,7 +12,7 @@ public class RegistrationPassword1Tag extends AbstractFormInputTag {
 
     @Override
     public void setAttributes(String attributes) {
-        attributes += " required  minlength=\"4\" maxlength=\"15\"";
+        attributes += " required  minlength=\"4\" maxlength=\"250\"";
 
         super.setAttributes(attributes);
     }
