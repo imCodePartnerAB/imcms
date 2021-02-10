@@ -493,13 +493,13 @@ define(
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getPercentageRatio(),
-                        getZoomResetButton(),
                         getFitButton(),
                         getShowImageRotationControls(),
                         getRotateLeftButton(),
                         getRotateRightButton(),
                         getCroppingButton(),
-                        getRevertButton(),
+                        getZoomResetButton(),
+                        getRevertButton()
                     ],
                 }
             }).buildBlockStructure("<div>"))
