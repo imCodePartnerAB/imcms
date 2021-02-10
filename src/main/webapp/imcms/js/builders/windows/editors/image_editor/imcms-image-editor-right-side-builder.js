@@ -61,11 +61,11 @@ define(
         };
 
         function buildActiveImageSizeInfo() {
-            return $imageSizeInfo = $('<div>');
+            return $imageSizeInfo = components.texts.titleText('<div>');
         }
 
         function buildActiveImagePathInfo() {
-            return $imageInfoPath = $('<div>')
+            return $imageInfoPath = components.texts.titleText('<div>');
         }
 
         let $noImageInfo;
