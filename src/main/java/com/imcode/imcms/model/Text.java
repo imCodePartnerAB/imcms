@@ -16,6 +16,7 @@ public abstract class Text implements Documentable, Cloneable, Serializable {
         setHtmlFilteringPolicy(from.getHtmlFilteringPolicy());
         setText(from.getText());
         setLoopEntryRef(from.getLoopEntryRef());
+        setLikePublished(from.isLikePublished());
     }
 
     public abstract Integer getIndex();
@@ -39,6 +40,10 @@ public abstract class Text implements Documentable, Cloneable, Serializable {
     public abstract LoopEntryRef getLoopEntryRef();
 
     public abstract void setLoopEntryRef(LoopEntryRef loopEntryRef);
+
+    public abstract boolean isLikePublished();
+
+    public abstract void setLikePublished(boolean publishAsStub);
 
     public enum HtmlFilteringPolicy {
         RESTRICTED,

@@ -74,6 +74,9 @@ public class TextHistoryJPA extends TextHistory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
+    @Column(name = "like_published", nullable = false, columnDefinition = "tinyint")
+    private boolean likePublished;
+
     public TextHistoryJPA() {
         htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
     }
@@ -88,6 +91,7 @@ public class TextHistoryJPA extends TextHistory {
         setModifiedBy(modifiedBy);
         setModifiedDt(new Date());
         setLanguage(new LanguageJPA(language));
+        setLikePublished(text.isLikePublished());
     }
 
     public TextHistoryJPA(TextHistory from) {

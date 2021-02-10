@@ -67,6 +67,9 @@ public class TextJPA extends Text {
 
     private LoopEntryRefJPA loopEntryRef;
 
+    @Column(name = "like_published", nullable = false, columnDefinition = "tinyint")
+    private boolean likePublished;
+
     public TextJPA() {
         htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
     }

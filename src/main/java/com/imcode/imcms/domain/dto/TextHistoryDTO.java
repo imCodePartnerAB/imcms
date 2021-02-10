@@ -25,6 +25,7 @@ public class TextHistoryDTO extends TextHistory {
     private String langCode;
     private LoopEntryRefDTO loopEntryRef;
     private UserDTO modifiedBy;
+    private boolean likePublished;
 
     public TextHistoryDTO(TextHistory from) {
         super(from);

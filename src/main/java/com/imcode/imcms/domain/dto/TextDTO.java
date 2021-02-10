@@ -24,11 +24,21 @@ public class TextDTO extends Text {
     private Type type;
     private HtmlFilteringPolicy htmlFilteringPolicy;
     private String text;
+    private boolean likePublished;
 
     public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRef loopEntryRef) {
         this.index = index;
         this.docId = docId;
         this.langCode = langCode;
+        htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
+        setLoopEntryRef(loopEntryRef);
+    }
+
+    public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRef loopEntryRef, boolean likePublished) {
+        this.index = index;
+        this.docId = docId;
+        this.langCode = langCode;
+        this.likePublished = likePublished;
         htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
         setLoopEntryRef(loopEntryRef);
     }
