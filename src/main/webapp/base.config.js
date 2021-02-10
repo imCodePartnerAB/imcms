@@ -149,6 +149,7 @@ module.exports = {
                             'imcms-status-tab-builder',
                             'imcms-cache-tab-builder',
                             'imcms-properties-tab-builder',
+                            'imcms-all-data-tab-builder'
                         ],
                         super_admin_tabs: [
                             'imcms-super-admin-tabs-builder',
@@ -272,7 +273,8 @@ module.exports = {
                     'imcms-version-data-rest-api',
                     'imcms-cache-document-rest-api',
                     'imcms-doc-view-request-api',
-                    'imcms-user-properties-rest-api'
+                    'imcms-user-properties-rest-api',
+                    'imcms-all-data-document-rest-api'
                 ]
             }
         ),

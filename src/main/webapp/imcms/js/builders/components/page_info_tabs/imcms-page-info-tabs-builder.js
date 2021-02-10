@@ -14,6 +14,7 @@ module.exports = new WindowTabsBuilder({
         require('imcms-status-tab-builder'),
         require('imcms-cache-tab-builder'),
         require('imcms-properties-tab-builder'),
+        require('imcms-all-data-tab-builder')
     ]
 });
 
