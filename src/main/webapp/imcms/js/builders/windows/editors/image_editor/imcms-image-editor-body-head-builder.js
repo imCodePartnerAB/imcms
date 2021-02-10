@@ -483,9 +483,11 @@ define(
                     'size-place': [
                         imageEditSizeControls.getOriginSizeControls(),
                     ],
-                    "button": [
+                    'proportions':[
                         imageProportionsLocker.getProportionsButton(),
-                        imageProportionsLocker.getProportionsText(),
+                        imageProportionsLocker.getProportionsText()
+                    ],
+                    'button': [
                         getRemoveCroppingButton(),
                         getRevertToOriginCropButton(),
                         getZoomPlusButton(),
