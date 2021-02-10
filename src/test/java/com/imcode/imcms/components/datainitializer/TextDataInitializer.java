@@ -13,13 +13,20 @@ import static com.imcode.imcms.model.Text.Type.TEXT;
 public class TextDataInitializer extends TestDataCleaner {
 
     private final TextRepository textRepository;
+    private final LanguageDataInitializer languageDataInitializer;
 
-    public TextDataInitializer(TextRepository textRepository) {
+    public TextDataInitializer(TextRepository textRepository, LanguageDataInitializer languageDataInitializer) {
         super(textRepository);
         this.textRepository = textRepository;
+        this.languageDataInitializer = languageDataInitializer;
     }
 
-    public void createText(int index, LanguageJPA language, Version version, String testText) {
+    public TextJPA createText(int index, Version version, String testText){
+        LanguageJPA language = new LanguageJPA(languageDataInitializer.createData().get(0));
+        return createText(index, language, version, testText);
+    }
+
+    public TextJPA createText(int index, LanguageJPA language, Version version, String testText) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
         text.setLanguage(language);
@@ -27,10 +34,10 @@ public class TextDataInitializer extends TestDataCleaner {
         text.setType(TEXT);
         text.setVersion(version);
 
-        textRepository.saveAndFlush(text);
+        return textRepository.saveAndFlush(text);
     }
 
-    public void createText(int index, LanguageJPA language, Version version, String testText, LoopEntryRef loopEntryRef) {
+    public TextJPA createText(int index, LanguageJPA language, Version version, String testText, LoopEntryRef loopEntryRef) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
         text.setLanguage(language);
@@ -39,7 +46,7 @@ public class TextDataInitializer extends TestDataCleaner {
         text.setVersion(version);
         text.setLoopEntryRef(loopEntryRef);
 
-        textRepository.saveAndFlush(text);
+        return textRepository.saveAndFlush(text);
     }
 
 }

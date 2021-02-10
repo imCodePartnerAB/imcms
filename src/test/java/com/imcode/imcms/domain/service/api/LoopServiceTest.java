@@ -71,6 +71,27 @@ public class LoopServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getByDocId_Expect_correctFieldsData() {
+        final Loop loopDTO1 = new LoopDTO(TEST_DOC_ID, 10, Collections.emptyList());
+        loopService.saveLoop(loopDTO1);
+        final Loop loopDTO2 = new LoopDTO(TEST_DOC_ID, 20, Collections.emptyList());
+        loopService.saveLoop(loopDTO2);
+
+        final Collection<Loop> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2);
+        final Collection<Loop> allByVersion = loopService.getByDocId(TEST_DOC_ID);
+
+        assertEquals(loopDTOS.size(), allByVersion.size());
+        assertTrue(allByVersion.containsAll(loopDTOS));
+    }
+
+    @Test
+    public void getByDocId_When_DocDoesNotExist_Expect_correctFieldsData() {
+        final int nonExistingDocId = 42;
+        assertThrows(DocumentNotExistException.class,
+                () -> loopService.getByDocId(nonExistingDocId));
+    }
+
+    @Test
     public void getLoop_Expect_correctFieldsData() {
         final Loop loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
         assertEquals(TEST_LOOP_DTO, loop);
