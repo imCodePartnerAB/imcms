@@ -20,9 +20,13 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
 
     Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
+    Text getLikePublishedText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
+
     Text save(Text text);
 
     Set<Text> getPublicTexts(int docId, Language language);
+
+    Set<Text> getLikePublishedTexts(int docId, Language language);
 
     Text filter(Text text);
 

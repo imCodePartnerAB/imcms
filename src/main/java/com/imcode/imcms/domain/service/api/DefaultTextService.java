@@ -93,6 +93,13 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     }
 
     @Override
+    public Text getLikePublishedText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
+
+        return getLikePublishedText(docId, index, language, loopEntryRef);
+    }
+
+    @Override
     public Text save(Text text) {
         final Integer docId = text.getDocId();
         final Version version = versionService.getDocumentWorkingVersion(docId);
@@ -134,10 +141,31 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
     @Override
     public Set<Text> getPublicTexts(int docId, Language language) {
+
         final Version latestVersion = versionService.getLatestVersion(docId);
         final LanguageJPA languageJPA = new LanguageJPA(language);
 
-        return repository.findByVersionAndLanguage(latestVersion, languageJPA)
+        final Set<TextJPA> likePublishedTexts = repository.findByDocIdAndLanguageAndLikePublishedIsTrue(docId, languageJPA);
+
+        final Set<TextJPA> versionPublishedTexts = repository.findByVersionAndLanguage(latestVersion, languageJPA);
+
+        return getUnionPublicTexts(likePublishedTexts, versionPublishedTexts);
+    }
+
+
+    private Set<Text> getUnionPublicTexts(Set<TextJPA> likePublishedTexts, Set<TextJPA> versionPublishedTexts) {
+        likePublishedTexts.addAll(versionPublishedTexts);
+
+        return likePublishedTexts.stream()
+                .map(TextDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<Text> getLikePublishedTexts(int docId, Language language) {
+        final LanguageJPA languageJPA = new LanguageJPA(language);
+
+        return repository.findByDocIdAndLanguageAndLikePublishedIsTrue(docId, languageJPA)
                 .stream()
                 .map(TextDTO::new)
                 .collect(Collectors.toSet());
@@ -152,16 +180,32 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         return Optional.ofNullable(text)
                 .map(TextDTO::new)
-                .orElse(new TextDTO(index, docId, langCode, loopEntryRef));
+                .orElse(new TextDTO(index, docId, langCode, loopEntryRef, false));
     }
 
     private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
+
+        final TextJPA likePublishedText = getLikePublishedText(version.getDocId(), index, language, loopEntryRef);
+
+        if (likePublishedText != null) return likePublishedText;
+
         if (loopEntryRef == null) {
             return repository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
 
         } else {
             return repository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
                     version, language, index, new LoopEntryRefJPA(loopEntryRef)
+            );
+        }
+    }
+
+    private TextJPA getLikePublishedText(Integer docId, int index, LanguageJPA language, LoopEntryRef loopEntryRef) {
+        if (loopEntryRef == null) {
+            return repository.findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRefIsNull(index, docId, language);
+
+        } else {
+            return repository.findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRef(
+                    index, docId, language, new LoopEntryRefJPA(loopEntryRef)
             );
         }
     }
