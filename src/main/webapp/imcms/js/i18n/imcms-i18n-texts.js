@@ -243,6 +243,32 @@ const texts = {
             error: {
                 createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
                 loadDocumentFailed: 'Misslyckades att ladda. Försök igen'
+            },
+            allData:{
+                name: 'All Data',
+                edit: 'Ändra',
+                errorGettingData: 'Fel att få data!',
+                noData: 'Inga föremål',
+                index: 'Index',
+                insideLoop: 'I Loop',
+                text:{
+                    title:'texter',
+                    access:'Tillgång',
+                    type:'Typ'
+                },
+                menu:{
+                    title:'menyer',
+                    countElements:'Antal punkter'
+                },
+                loop:{
+                    title:'loops',
+                    countElements:'Antal poster'
+                },
+                image:{
+                    title:'bilder',
+                    allLanguages:'Alla språk',
+                    path:'Väg'
+                }
             }
         },
         modal: {
@@ -458,7 +484,7 @@ const texts = {
                 page: 'sida ',
                 imageName: 'bild ',
                 teaser: 'Teaser-bild',
-                proportion: "Aktivera proportioner",
+                proportion: "Proportioner",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
                 activeTitle: 'Aktiv bild:',
@@ -1192,6 +1218,34 @@ const texts = {
             error: {
                 createDocumentFailed: 'Failed to save document. Try again',
                 loadDocumentFailed: 'Failed to load. Try again'
+            },
+            allData:{
+                name: 'All Data',
+                edit: 'edit',
+                errorGettingData: 'Error getting data!',
+                noData: 'No items',
+                errorGettingData: 'Error getting data!',
+                noData: 'No items',
+                index: 'Index',
+                insideLoop: 'In Loop',
+                text:{
+                    title:'texts',
+                    access:'Access',
+                    type:'Type'
+                },
+                menu:{
+                    title:'menus',
+                    countElements:'Number of items'
+                },
+                loop:{
+                    title:'loops',
+                    countElements:'Number of entries'
+                },
+                image:{
+                    title:'images',
+                    allLanguages:'All languages',
+                    path:'Path'
+                }
             }
         },
         modal: {
@@ -1406,7 +1460,7 @@ const texts = {
                 page: 'page ',
                 imageName: 'image ',
                 teaser: "Teaser image ",
-                proportion: "Enable proportion",
+                proportion: "Proportions",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
                 activeTitle: 'Active image:',

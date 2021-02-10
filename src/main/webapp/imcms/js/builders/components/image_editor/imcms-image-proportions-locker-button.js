@@ -8,30 +8,33 @@ const imageResize = require('imcms-image-resize');
 const imageCropper = require('imcms-image-cropper');
 const $ = require('jquery');
 
-let $proportionsText;
-
-function getProportionsText() {
-    return $proportionsText || ($proportionsText = components.texts.infoText('<div>', texts.proportion, {
-        style: 'line-height: 35px; vertical-align: top;'
-    }))
-}
 
 let $proportionsBtn;
+const classButtonOn = 'imcms-button--switch-on';
+const classButtonOff = 'imcms-button--switch-off';
+
+const $proportionsText = components.texts.infoText('<div>', texts.proportion, {
+    style: 'line-height: 35px; vertical-align: top;'
+});
 
 function getProportionsButton() {
     if ($proportionsBtn) {
         return $proportionsBtn;
     }
-    $proportionsBtn = components.buttons.proportionsButton({
-        'data-state': 'active',
+
+        $proportionsBtn =  components.buttons.switchOnButton({
+            'data-state': 'active',
         click: function () {
             if (imageResize.isProportionsLockedByStyle()) return;
 
             let saveProportions = imageResize.toggleSaveProportions();
-            $(this).attr('data-state', saveProportions ? 'active' : 'passive');
-
-            const $proportionsText = getProportionsText();
-            $proportionsText.toggle(saveProportions);
+            if(saveProportions){
+                $(this).attr('data-state', 'active');
+                $proportionsBtn.removeClass(classButtonOff).addClass(classButtonOn);
+            }else{
+                $(this).attr('data-state', 'passive');
+                $proportionsBtn.removeClass(classButtonOn).addClass(classButtonOff);
+            }
 
             $('.imcms-image-crop-proportions-info').css('display', saveProportions ? 'inline-block' : 'none');
 
@@ -46,7 +49,7 @@ function getProportionsButton() {
 module.exports = {
     getProportionsButton: getProportionsButton,
 
-    getProportionsText: getProportionsText,
+    getProportionsText: () => $proportionsText,
 
     enableProportionsLock() {
         getProportionsButton().attr('data-state', 'active');
