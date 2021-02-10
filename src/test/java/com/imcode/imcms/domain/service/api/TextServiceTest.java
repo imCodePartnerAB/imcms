@@ -142,6 +142,140 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getByDocId_When_LikePublishTrueButTextHasWorkVersion_Expected_EqualResult() {
+        final Integer idNewDoc = documentDataInitializer.createData().getId();
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, idNewDoc);
+
+        final LanguageJPA enLang = languages.get(0);
+
+        final String testText = "someTextTest";
+
+        textDataInitializer.createLikePublishedText(1, enLang, workVersion, testText, null);
+
+        List<TextJPA> resultTexts = textService.getByDocId(idNewDoc);
+
+        assertFalse(resultTexts.isEmpty());
+
+        assertEquals(1, resultTexts.size());
+        assertEquals(textService.getText(1, testText), resultTexts);
+
+    }
+
+    @Test
+    public void getTextsLikePublished_When_LikePublishedFalseAndLoopExistsAndTextHasWorkVersion_Expected_EmptyResult() {
+        final int index = 1;
+        final String testText = "testText";
+        final LanguageJPA engLang = languages.get(0);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        textDataInitializer.createText(index, engLang, workingVersion, testText, loopEntryRef);
+
+        final Text receivedTestText = textService.getText(DOC_ID, index, engLang.getCode(), loopEntryRef);
+
+        assertNotNull(receivedTestText);
+        assertEquals(testText, receivedTestText.getText());
+
+        assertTrue(textService.getLikePublishedTexts(DOC_ID, engLang).isEmpty());
+    }
+
+    @Test
+    public void getTextLikePublished_When_LikePublishedFalseAndLoopExistsAndTextHasWorkVersion_Expected_NUllResult() {
+        final int index = 1;
+        final String testText = "testText";
+        final LanguageJPA engLang = languages.get(0);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        textDataInitializer.createText(index, engLang, workingVersion, testText, loopEntryRef);
+
+        final Text receivedTestText = textService.getText(DOC_ID, index, engLang.getCode(), loopEntryRef);
+
+        assertNotNull(receivedTestText);
+        assertEquals(testText, receivedTestText.getText());
+
+        assertNull(textService.getLikePublishedText(DOC_ID, index, engLang.getCode(), loopEntryRef));
+    }
+
+    @Test
+    public void getTextsLikePublished_When_LikePublishedFalse_Expected_EmptyResult() {
+        final Integer documentId = documentDataInitializer.createData().getId();
+        versionDataInitializer.createData(LATEST_VERSION_NO, documentId);
+        final LanguageJPA engLang = languages.get(0);
+
+        final Set<Text> createdTexts = createTexts();
+
+        assertFalse(createdTexts.isEmpty());
+
+        assertTrue(textService.getLikePublishedTexts(documentId, engLang).isEmpty());
+    }
+
+    @Test
+    public void getTextsLikePublished_When_LikePublishedTrueButTextHasWorkVersion_Expected_EqualResult() {
+        final int index = 1;
+        final String testText = "testText";
+        final LanguageJPA engLang = languages.get(0);
+        final Integer docId = documentDataInitializer.createData().getId();
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, docId);
+
+        textDataInitializer.createText(index, engLang, workVersion, testText);
+        textDataInitializer.createText(index + 1, engLang, workVersion, testText);
+
+        assertFalse(textService.getByDocId(docId).isEmpty());
+
+        assertTrue(textService.getLikePublishedTexts(docId, engLang).isEmpty());
+
+        final String publishedTestText = testText + 1;
+
+        textDataInitializer.createLikePublishedText(index + 2, engLang, workVersion, publishedTestText, null);
+
+        assertFalse(textService.getLikePublishedTexts(docId, engLang).isEmpty());
+
+        assertEquals(publishedTestText, textService.getLikePublishedText(docId, index + 2, engLang.getCode(), null).getText());
+    }
+
+    @Test
+    public void getTextsLikePublished_When_LikePublishedTrueAndTextLatestVersion_Expected_EqualResult() {
+
+        final int index = 1;
+        final TextJPA text = createText(index, languages.get(0), workingVersion);
+        textRepository.saveAndFlush(text);
+
+        textService.createVersionedContent(workingVersion, latestVersion);
+
+        final LanguageJPA enLang = languages.get(0);
+
+        final String testText = "someTextTest";
+
+        textDataInitializer.createLikePublishedText(2, enLang, workingVersion, testText, null);
+
+
+        Set<Text> resultTexts = textService.getLikePublishedTexts(DOC_ID, enLang);
+
+        assertFalse(resultTexts.isEmpty());
+
+        assertEquals(1, resultTexts.size());
+        assertEquals(textService.getLikePublishedTexts(DOC_ID, enLang), resultTexts);
+    }
+
+    @Test
+    public void getTextsLikePublished_When_LikePublishedTrueAndDocHasWorkVersion_Expected_EqualResult() {
+
+        final Integer docId = documentDataInitializer.createData().getId();
+
+        final Version workVersion = versionDataInitializer.createData(WORKING_VERSION_NO, docId);
+        final LanguageJPA enLang = languages.get(0);
+        final String testText = "someTextTest";
+
+        textDataInitializer.createLikePublishedText(1, enLang, workVersion, testText, null);
+
+        assertFalse(textService.getLikePublishedTexts(docId, enLang).isEmpty());
+
+        final Text likePublishedText = textService.getLikePublishedText(docId, 1, enLang.getCode(), null);
+
+        assertNotNull(likePublishedText);
+
+        assertEquals(testText, likePublishedText.getText());
+
+    }
+
+    @Test
     public void getTexts_When_TextNotInLoop_Expected_EqualResult() {
 
         final Integer idNewDoc = documentDataInitializer.createData().getId();
@@ -243,6 +377,39 @@ public class TextServiceTest extends WebAppSpringTestConfig {
         for (Text textDTO : textDTOS) {
             final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
+        }
+    }
+
+    @Test
+    public void saveText_When_LikePublishedTrue_Expect_CorrectDTO() {
+        final List<Text> textDTOS = new ArrayList<>();
+        final LoopEntryRef loopEntryRef = new LoopEntryRefDTO(1, 1);
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef, true);
+                textDTO.setText("test");
+                textDTO.setType(TEXT);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+
+
+
+        assertFalse(textService.getLikePublishedTexts(DOC_ID, new LanguageJPA(languages.get(0))).isEmpty());
+
+        for (LanguageJPA language : languages) {
+           final Set<Text> likePublishedTexts = textService.getLikePublishedTexts(DOC_ID, new LanguageJPA(language));
+
+            assertEquals(textDTOS.size() / 2, likePublishedTexts.size());
         }
     }
 
@@ -393,7 +560,7 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getPublicTexts_When_FewVersionsExist_Expect_AllTextsForLatestVersionFound() {
+    public void getPublicTexts_When_FewVersionsExist_Expect_AllTextsForLatestVersionFound() { //
         final Version middleVersion = latestVersion;
         final Version newLatestVersion = versionDataInitializer.createData(LATEST_VERSION_NO + 1, DOC_ID);
 
