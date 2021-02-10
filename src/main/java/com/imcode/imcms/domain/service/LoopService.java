@@ -9,6 +9,8 @@ import java.util.function.Function;
 
 public interface LoopService extends VersionedContentService, DeleterByDocumentId {
 
+    Set<Loop> getByDocId(int docId);
+
     Loop getLoop(int loopIndex, int docId);
 
     Loop getLoopPublic(int loopIndex, int docId);

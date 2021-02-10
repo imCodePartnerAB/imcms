@@ -30,6 +30,17 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
     }
 
     @Override
+    public Set<Loop> getByDocId(int docId){
+        boolean isNewVersion = versionService.hasNewerVersion(docId);
+
+        final Version version = isNewVersion
+                ? versionService.getDocumentWorkingVersion(docId)
+                : versionService.getLatestVersion(docId);
+
+        return getByVersion(version);
+    }
+
+    @Override
     public Loop getLoop(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
     }
