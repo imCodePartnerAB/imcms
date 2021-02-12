@@ -1,10 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.DocumentContentDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentDataDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
@@ -22,6 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DocumentDataServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
-    LanguageDataInitializer languageDataInitializer;
-    @Autowired
     private DocumentDataService documentDataService;
     @Autowired
     private DocumentService<DocumentDTO> documentService;
     @Autowired
     private TextService textService;
+    @Autowired
+    private VersionService versionService;
     @Autowired
     private DocumentContentDataInitializer documentContentDataInitializer;
     @Autowired
@@ -44,7 +46,9 @@ public class DocumentDataServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
     @Autowired
-    private VersionService versionService;
+    private LanguageDataInitializer languageDataInitializer;
+    @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
 
     @BeforeEach
     public void setUp() {
@@ -73,7 +77,10 @@ public class DocumentDataServiceTest extends WebAppSpringTestConfig {
         assertFalse(expectedDocumentDataDTO.getTextsDTO().isEmpty()
                 && expectedDocumentDataDTO.getImagesDTO().isEmpty()
                 && expectedDocumentDataDTO.getMenusDTO().isEmpty()
-                && expectedDocumentDataDTO.getLoopsDTO().isEmpty());
+                && expectedDocumentDataDTO.getLoopsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && expectedDocumentDataDTO.getCategoriesDTO().isEmpty());
 
         assertEquals(expectedDocumentDataDTO, documentDataDTO);
     }
@@ -97,14 +104,19 @@ public class DocumentDataServiceTest extends WebAppSpringTestConfig {
         assertFalse(documentDataDTO.getTextsDTO().isEmpty()
                 && documentDataDTO.getImagesDTO().isEmpty()
                 && documentDataDTO.getMenusDTO().isEmpty()
-                && documentDataDTO.getLoopsDTO().isEmpty());
+                && documentDataDTO.getLoopsDTO().isEmpty()
+                && documentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && documentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && documentDataDTO.getCategoriesDTO().isEmpty());
 
         final DocumentDataDTO expectedDocumentDataDTO = documentDataService.getDataByDocId(docId);
 
         assertTrue(expectedDocumentDataDTO.getTextsDTO().isEmpty()
                 && expectedDocumentDataDTO.getImagesDTO().isEmpty()
                 && expectedDocumentDataDTO.getMenusDTO().isEmpty()
-                && expectedDocumentDataDTO.getLoopsDTO().isEmpty());
+                && expectedDocumentDataDTO.getLoopsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty());
     }
 
     @Test
@@ -154,7 +166,27 @@ public class DocumentDataServiceTest extends WebAppSpringTestConfig {
         assertTrue(expectedDocumentDataDTO.getTextsDTO().isEmpty()
                 && expectedDocumentDataDTO.getImagesDTO().isEmpty()
                 && expectedDocumentDataDTO.getMenusDTO().isEmpty()
-                && expectedDocumentDataDTO.getLoopsDTO().isEmpty());
+                && expectedDocumentDataDTO.getLoopsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && expectedDocumentDataDTO.getLoopDataDTO().getTextsDTO().isEmpty()
+                && expectedDocumentDataDTO.getCategoriesDTO().isEmpty());
+    }
+
+    @Test
+    public void getDocumentDataByDocId_When_DocumentExistAndHasCategories_Expected_CorrectResult() {
+        final DocumentDTO documentDTO = documentDataInitializer.createData();
+        final int docId = documentDTO.getId();
+
+        DocumentDataDTO documentDataDTO = documentContentDataInitializer.createData();
+
+        Set<CategoryDTO> categoriesDTO = categoryDataInitializer.createData(2).stream()
+                .map(CategoryDTO::new).collect(Collectors.toSet());
+        documentDTO.setCategories(new HashSet(categoriesDTO));
+        documentService.save(documentDTO);
+        documentDataDTO.setCategoriesDTO(categoriesDTO);
+
+        DocumentDataDTO expectedDocumentDataDTO = documentDataService.getDataByDocId(docId);
+        assertEquals(expectedDocumentDataDTO, documentDataDTO);
     }
 
     @Test
