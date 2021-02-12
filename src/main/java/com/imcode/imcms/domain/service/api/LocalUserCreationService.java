@@ -26,6 +26,9 @@ class LocalUserCreationService extends LocalUserValidationAndSaving implements U
         if (StringUtils.isBlank(userData.getEmail())) {
             userData.setEmail(null);
         }
+        if(userData.getAttempts() == null){
+            userData.setAttempts(0);
+        }
 
         super.saveIfValid(userData);
     }
