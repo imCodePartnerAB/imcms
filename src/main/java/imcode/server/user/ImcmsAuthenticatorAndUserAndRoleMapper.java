@@ -206,6 +206,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setZip(user.getZip());
         userDO.setBlockedDate(user.getBlockedDate());
         userDO.setAttempts(user.getAttempts());
+        userDO.setLastLoginDate(user.getLastLoginDate());
 
         initUserRoles(userDO);
         initUserPhoneNumbers(userDO);
@@ -310,6 +311,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.getLanguageIso639_2(),
                 user.getBlockedDate() + "",
                 user.getAttempts() + "",
+                user.getLastLoginDate() + "",
                 user.isPasswordEncrypted() ? "1" : "0",
                 user.hasPasswordReset() ? user.getPasswordReset().getId() : null,
                 user.hasPasswordReset() ? Long.toString(user.getPasswordReset().getTime()) : null,
@@ -335,6 +337,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     + "language = ?,\n"
                     + "blocked_date = ?,\n"
                     + "amount_attempts = ?,\n"
+                    + "login_date = ?,\n"
                     + "login_password_is_encrypted = ?,\n"
                     + "login_password_reset_id = ?,\n"
                     + "login_password_reset_ts = ?\n"
@@ -423,6 +426,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     {"create_date", Utility.makeSqlStringFromDate(new Date())},
                     {"blocked_date", Utility.makeSqlStringFromDate(null)},
                     {"amount_attempts", user.getAttempts() + ""},
+                    {"login_date", Utility.makeSqlStringFromDate(null)},
 
                     {"login_password_is_encrypted", BooleanUtils.toString(user.isPasswordEncrypted(), "1", "0")},
                     {"login_password_reset_id", user.hasPasswordReset() ? user.getPasswordReset().getId() : null},
