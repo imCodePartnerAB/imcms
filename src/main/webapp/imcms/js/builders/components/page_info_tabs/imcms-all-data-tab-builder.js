@@ -13,6 +13,9 @@ define(
         let $documentMenuDataContainer = $('<div>', {
             'class': 'imcms-all-data-menu-container'
         });
+        let $documentCategoryDataContainer = $('<div>', {
+            'class': 'imcms-all-data-category-container'
+        });
         let $documentLoopDataContainer = $('<div>', {
             'class': 'imcms-all-data-loop-container'
         });
@@ -23,17 +26,17 @@ define(
         function buildDataList() {
 
            allDataDocumentRestApi.getAllDataDocument(docId).done(dataDocumentDTO => {
-
                buildTextList(dataDocumentDTO.textsDTO);
                buildMenuList(dataDocumentDTO.menusDTO);
-               buildLoopList(dataDocumentDTO.loopsDTO);
+               buildCategoryList(dataDocumentDTO.categoriesDTO);
+               buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
                buildImageList(dataDocumentDTO.imagesDTO);
            }).fail(() => modal.buildErrorWindow(localization.errorGettingData));
             function buildTextList(textsData) {
-                $documentTextDataContainer.append(components.texts.titleText('<div>', localization.text.title).addClass('imcms-all-data-title'));
+                $documentTextDataContainer.append(buildTextTitle(localization.text.title));
 
                 if (textsData === undefined || textsData === null || textsData.length === 0){
-                    $documentTextDataContainer.append(components.texts.infoText('<div>', localization.noData));
+                    $documentTextDataContainer.append(buildTextInfo(localization.noData));
                 }else {
                     let $frameContainer = $('<div>', {
                         'class': 'all-data-text'
@@ -41,25 +44,7 @@ define(
 
                     $frameContainer.append(
                         textsData.map(textDTO => {
-                            return new BEM({
-                                block: 'imcms-text-data-info',
-                                elements: {
-                                    'info': $('<div>', {
-                                        html: [
-                                            buildText(localization.index, textDTO.index).css('width', '140px'),
-                                            buildText(localization.insideLoop, isElementInsideLoopEntry(textDTO.loopEntryRef)).css('width', '140px'),
-                                            buildText(localization.text.access, textDTO.htmlFilteringPolicy).css('width', '140px'),
-                                            buildText(localization.text.type, textDTO.type).css('width', '140px')
-                                        ]
-                                    }),
-                                    'content': $('<div>', {
-                                        html: [
-                                            buildInput(textDTO.text),
-                                            buildEditButton('text', textDTO.index, textDTO.loopEntryRef)
-                                        ]
-                                    })
-                                }
-                            }).buildBlockStructure('<div>')
+                            return buildTextContentContainerBEM(textDTO);
                         })
                     );
                     $documentTextDataContainer.append($frameContainer);
@@ -67,26 +52,43 @@ define(
                 $documentTextDataContainer.append($('<hr/>'));
             }
 
+            function buildTextContentContainerBEM(textDTO){
+                return new BEM({
+                    block: 'imcms-text-data',
+                    elements: {
+                        'info': $('<div>', {
+                            html: [
+                                buildTextProperty(localization.index, textDTO.index),
+                                buildTextProperty(localization.text.access, textDTO.htmlFilteringPolicy),
+                                buildTextProperty(localization.text.type, textDTO.type)
+                            ]
+                        }),
+                        'content': $('<div>', {
+                            html: [
+                                buildInput(textDTO.text),
+                                buildEditButton('text', textDTO.index, textDTO.loopEntryRef)
+                            ]
+                        })
+                    }
+                }).buildBlockStructure('<div>')
+            }
+
             function buildMenuList(menusData){
 
-                $documentMenuDataContainer.append(components.texts.titleText('<div>', localization.menu.title).addClass('imcms-all-data-title'));
+                $documentMenuDataContainer.append(buildTextTitle(localization.menu.title));
 
                 if (menusData === undefined || menusData === null || menusData.length === 0){
-                    $documentMenuDataContainer.append(components.texts.infoText('<div>', localization.noData))
+                    $documentMenuDataContainer.append(buildTextInfo(localization.noData));
                 }else {
 
                     let $frameContainer = $('<div>', {
                         'class': 'all-data-menu'
                     });
+                    menusData = sortData(menusData, 'menuIndex');
 
                     $frameContainer.append(
                         menusData.map(menuDTO => {
-                            const htmlComponents = [
-                                buildText(localization.index, menuDTO.menuIndex),
-                                buildText(localization.insideLoop, isElementInsideLoopEntry(menuDTO.loopEntryRef)),
-                                buildText(localization.menu.countElements, menuDTO.menuItems.length)
-                            ];
-                            return buildContentContainerBEM('menu', htmlComponents, menuDTO.menuIndex, menuDTO.loopEntryRef);
+                            return buildMenuContentContainerBEM(menuDTO.menuIndex, menuDTO.menuItems.length);
                         })
                     );
                     $documentMenuDataContainer.append($frameContainer);
@@ -94,11 +96,61 @@ define(
                 $documentMenuDataContainer.append($('<hr/>'));
             }
 
-            function buildLoopList(loopsData){
-                $documentLoopDataContainer.append(components.texts.titleText('<div>', localization.loop.title).addClass('imcms-all-data-title'));
+            function buildMenuContentContainerBEM(index, countElements){
+                return new BEM({
+                    block: 'imcms-menu-data',
+                    elements: {
+                        'info': $('<div>', {
+                            html: [buildTextProperty(localization.index, index),
+                                buildTextProperty(localization.menu.countElements, countElements)]
+                        }),
+                        'button': buildEditButton('menu', index, null)
+                    }
+                }).buildBlockStructure('<div>');
+            }
+
+            function buildCategoryList(categoriesData){
+
+                $documentCategoryDataContainer.append(buildTextTitle(localization.category.title));
+
+                if (categoriesData === undefined || categoriesData === null || categoriesData.length === 0){
+                    $documentCategoryDataContainer.append(buildTextInfo(localization.noData))
+                }else {
+
+                    let $frameContainer = $('<div>', {
+                        'class': 'all-data-category'
+                    });
+
+                    $frameContainer.append(
+                        categoriesData.map(categoryDTO => {
+                            return buildCategoryContentContainerBEM(categoryDTO.type.id, categoryDTO.type.visible, categoryDTO.type.name,
+                                                                categoryDTO.id, categoryDTO.name)
+                        })
+                    );
+                    $documentCategoryDataContainer.append($frameContainer);
+                }
+                $documentCategoryDataContainer.append($('<hr/>'));
+            }
+
+            function buildCategoryContentContainerBEM(typeId, typeVisible, typeName, categoryId, categoryName){
+                return new BEM({
+                    block: 'imcms-category-data',
+                    elements: {
+                        'typeId': buildTextProperty(localization.id, typeId),
+                        'visible': buildTextProperty(localization.category.visible, typeVisible),
+                        'typeName': buildTextInfo(typeName),
+                        'dash': buildTextInfo('—\t'),
+                        'categoryId': buildTextProperty(localization.id, categoryId),
+                        'categoryName': buildTextInfo(categoryName)
+                    }
+                }).buildBlockStructure('<div>');
+            }
+
+            function buildLoopList(loopsData, loopsContentData){
 
                 if (loopsData === undefined || loopsData === null || loopsData.length === 0){
-                $documentLoopDataContainer.append(components.texts.infoText('<div>', localization.noData));
+                    $documentLoopDataContainer.append(buildTextTitle(localization.loop.title));
+                    $documentLoopDataContainer.append(buildTextInfo( localization.noData));
                 }else {
                     loopsData = sortData(loopsData, "index");
 
@@ -108,11 +160,7 @@ define(
 
                     $frameContainer.append(
                         loopsData.map(loopDTO => {
-                            const htmlComponents = [
-                                buildText(localization.index, loopDTO.index),
-                                buildText(localization.loop.countElements, loopDTO.entries.length)
-                            ];
-                            return buildContentContainerBEM('loop', htmlComponents, loopDTO.index, null);
+                            return buildLoopContentContainerBEM(loopDTO, loopsContentData);
                         })
                     );
                     $documentLoopDataContainer.append($frameContainer);
@@ -120,25 +168,76 @@ define(
                 $documentLoopDataContainer.append($('<hr/>'));
             }
 
+            function buildLoopContentContainerBEM(loopDTO, loopContentDTO){
+                let $titleContainer = $('<div>', {
+                    'class': 'all-data-loop-title'
+                });
+                $titleContainer.append(buildTextTitle(localization.loop.titleSingle));
+                $titleContainer.append(buildTextProperty(localization.index, loopDTO.index));
+                $titleContainer.append(buildTextProperty(localization.loop.countElements, loopDTO.entries.length));
+                $titleContainer.append(buildEditButton('loop', loopDTO.index, null));
+
+                return new BEM({
+                    block: 'imcms-loop-data',
+                    elements: {
+                        'title': $titleContainer,
+                        'text': buildTextContentContainerInLoopBEM(loopDTO.index, loopContentDTO.textsDTO),
+                        'image': buildImageContentContainerInLoopBEM(loopDTO.index, loopContentDTO.imagesDTO)
+                    }
+                }).buildBlockStructure('<div>');
+            }
+
+            function buildTextContentContainerInLoopBEM(loopIndex, textListDTO){
+                let $textContainer = $('<div>', {
+                    'class': 'imcms-text-data'
+                });
+
+                let textList = [];
+                textListDTO.forEach(textDTO => {
+                    if(textDTO.loopEntryRef.loopIndex === loopIndex) textList.push(textDTO);
+                })
+
+                $textContainer.append(
+                    textList.map(textDTO => {
+                        return buildTextContentContainerBEM(textDTO);
+                    })
+                );
+
+                return $textContainer;
+            }
+
+            function buildImageContentContainerInLoopBEM(loopIndex, imageListDTO){
+                let $imageContainer = $('<div>', {
+                    'class': 'all-data-image'
+                });
+
+                let imageList = [];
+                imageListDTO.forEach(imageDTO => {
+                    if(imageDTO.loopEntryRef.loopIndex === loopIndex) imageList.push(imageDTO);
+                })
+
+                $imageContainer.append(
+                    imageList.map(imageDTO => {
+                        return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.path, imageDTO.loopEntryRef);
+                    })
+                );
+
+                return $imageContainer;
+            }
+
             function buildImageList(imagesData){
-                $documentImageDataContainer.append(components.texts.titleText('<div>', localization.image.title).addClass('imcms-all-data-title'));
+                $documentImageDataContainer.append(buildTextTitle(localization.image.title));
 
                 if (imagesData === undefined || imagesData === null || imagesData.length === 0) {
-                    $documentImageDataContainer.append(components.texts.infoText('<div>', localization.noData));
+                    $documentImageDataContainer.append(buildTextInfo(localization.noData));
                 }else {
                     let $frameContainer = $('<div>', {
-                        'class': 'all-data-loop'
+                        'class': 'all-data-image'
                     });
 
                     $frameContainer.append(
                         imagesData.map(imageDTO => {
-                            const htmlComponents = [
-                                buildText(localization.index, imageDTO.index),
-                                buildText(localization.insideLoop, isElementInsideLoopEntry(imageDTO.loopEntryRef !== null)),
-                                buildText(localization.image.allLanguages, imageDTO.allLanguages),
-                                buildText(localization.image.path, imageDTO.path)
-                            ];
-                            return buildContentContainerBEM('image', htmlComponents, imageDTO.index, imageDTO.loopEntryRef);
+                            return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.path, imageDTO.loopEntryRef);
                         })
                     );
                     $documentImageDataContainer.append($frameContainer);
@@ -146,14 +245,16 @@ define(
                 $documentImageDataContainer.append($('<hr/>'));
             }
 
-            function buildContentContainerBEM(name, htmlComponents, index, loopEntryRef){
+            function buildImageContentContainerBEM(index, allLanguages, path, loopEntryRef){
                 return new BEM({
-                    block: 'imcms-all-data-info',
+                    block: 'imcms-image-data',
                     elements: {
-                        'content' : $('<div>', {
-                            html: htmlComponents
+                        'info': $('<div>', {
+                            html: [buildTextProperty(localization.index, index),
+                                buildTextProperty(localization.image.allLanguages, allLanguages),
+                                buildTextProperty(localization.image.path, path)]
                         }),
-                        'button': buildEditButton(name, index, loopEntryRef)
+                        'button': buildEditButton('image', index, loopEntryRef)
                     }
                 }).buildBlockStructure('<div>');
             }
@@ -181,12 +282,16 @@ define(
                     loopIndexInLink + loopEntryIndexInLink;
             }
 
-            function isElementInsideLoopEntry(loopEntryRef){
-                return loopEntryRef !== null
+            function buildTextProperty(name, value){
+                return components.texts.infoText('<div>', name + ': ' + value).addClass('info-text')
             }
 
-            function buildText(name, value){
-                return components.texts.infoText('<div>', name + ': ' + value).addClass('info-text')
+            function buildTextInfo(value){
+                return components.texts.infoText('<div>', value).addClass('info-text')
+            }
+
+            function buildTextTitle(value){
+                return components.texts.titleText('<div>', value).addClass('imcms-all-data-title');
             }
 
             function buildInput(value) {
@@ -219,6 +324,7 @@ define(
                 elements: {
                     'texts' : $documentTextDataContainer,
                     'menus' : $documentMenuDataContainer,
+                    'categories' : $documentCategoryDataContainer,
                     'loops' : $documentLoopDataContainer,
                     'images': $documentImageDataContainer
                 }
@@ -245,11 +351,11 @@ define(
         AllDataTab.prototype.clearTabData = () => {
             $documentTextDataContainer.empty();
             $documentMenuDataContainer.empty();
+            $documentCategoryDataContainer.empty();
             $documentLoopDataContainer.empty();
             $documentImageDataContainer.empty();
         };
 
         return new AllDataTab(localization.name);
         }
-
     );

@@ -247,25 +247,30 @@ const texts = {
             allData:{
                 name: 'All Data',
                 edit: 'Ändra',
-                errorGettingData: 'Fel att få data!',
+                errorGettingData: 'Fel att få all data!',
                 noData: 'Inga föremål',
                 index: 'Index',
-                insideLoop: 'I Loop',
+                id: 'Id',
                 text:{
-                    title:'texter',
+                    title:'Texter',
                     access:'Tillgång',
                     type:'Typ'
                 },
                 menu:{
-                    title:'menyer',
+                    title:'Menyer',
                     countElements:'Antal punkter'
+                },
+                category:{
+                    title:'Kategorier',
+                    visible:'Synlig'
                 },
                 loop:{
                     title:'loops',
+                    titleSingle:'Loop',
                     countElements:'Antal poster'
                 },
                 image:{
-                    title:'bilder',
+                    title:'Bilder',
                     allLanguages:'Alla språk',
                     path:'Väg'
                 }
@@ -1221,28 +1226,31 @@ const texts = {
             },
             allData:{
                 name: 'All Data',
-                edit: 'edit',
-                errorGettingData: 'Error getting data!',
-                noData: 'No items',
-                errorGettingData: 'Error getting data!',
+                edit: 'Edit',
+                errorGettingData: 'Error getting all data!',
                 noData: 'No items',
                 index: 'Index',
-                insideLoop: 'In Loop',
+                id: 'Id',
                 text:{
-                    title:'texts',
+                    title:'Texts',
                     access:'Access',
                     type:'Type'
                 },
                 menu:{
-                    title:'menus',
+                    title:'Menus',
                     countElements:'Number of items'
                 },
+                category:{
+                    title:'Categories',
+                    visible:'Visible'
+                },
                 loop:{
-                    title:'loops',
+                    title:'Loops',
+                    titleSingle:'Loop',
                     countElements:'Number of entries'
                 },
                 image:{
-                    title:'images',
+                    title:'Images',
                     allLanguages:'All languages',
                     path:'Path'
                 }
