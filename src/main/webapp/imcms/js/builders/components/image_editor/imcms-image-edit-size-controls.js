@@ -240,6 +240,19 @@ module.exports = {
     swapControls: (isInverted) => {
         $wantedSizeControls.find('.imcms-title').text((isInverted) ? texts.revertWantedSize : texts.wantedSize);
         $displaySizePrevBlock.find('.imcms-title').text((isInverted) ? texts.revertDisplaySize : texts.displaySize);
+
+        const widthControlDisabled = getWantedWidthControl().getInput().is('[disabled=disabled]');
+        const heigthControlDisabled = getWantedHeightControl().getInput().is('[disabled=disabled]');
+
+        getWantedWidthControl().getInput().removeAttr('disabled');
+        getWantedHeightControl().getInput().removeAttr('disabled');
+
+        if(widthControlDisabled){
+            getWantedHeightControl().getInput().attr('disabled', 'disabled');
+        }
+        if(heigthControlDisabled){
+            getWantedWidthControl().getInput().attr('disabled', 'disabled');
+        }
     },
     setHeight: (newHeight) => getHeightControl().getInput().val(newHeight),
 
