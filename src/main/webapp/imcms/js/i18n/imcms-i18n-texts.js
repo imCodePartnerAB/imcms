@@ -1231,6 +1231,7 @@ const texts = {
                 noData: 'No items',
                 index: 'Index',
                 id: 'Id',
+                language: 'Language',
                 text:{
                     title:'Texts',
                     access:'Access',

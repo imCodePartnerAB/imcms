@@ -60,7 +60,8 @@ define(
                             html: [
                                 buildTextProperty(localization.index, textDTO.index),
                                 buildTextProperty(localization.text.access, textDTO.htmlFilteringPolicy),
-                                buildTextProperty(localization.text.type, textDTO.type)
+                                buildTextProperty(localization.text.type, textDTO.type),
+                                buildTextProperty(localization.language, textDTO.langCode),
                             ]
                         }),
                         'content': $('<div>', {
@@ -218,7 +219,7 @@ define(
 
                 $imageContainer.append(
                     imageList.map(imageDTO => {
-                        return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.path, imageDTO.loopEntryRef);
+                        return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.langCode, imageDTO.path, imageDTO.loopEntryRef);
                     })
                 );
 
@@ -237,7 +238,7 @@ define(
 
                     $frameContainer.append(
                         imagesData.map(imageDTO => {
-                            return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.path, imageDTO.loopEntryRef);
+                            return buildImageContentContainerBEM(imageDTO.index, imageDTO.allLanguages, imageDTO.langCode, imageDTO.path, imageDTO.loopEntryRef);
                         })
                     );
                     $documentImageDataContainer.append($frameContainer);
@@ -245,13 +246,14 @@ define(
                 $documentImageDataContainer.append($('<hr/>'));
             }
 
-            function buildImageContentContainerBEM(index, allLanguages, path, loopEntryRef){
+            function buildImageContentContainerBEM(index, allLanguages, language, path, loopEntryRef){
                 return new BEM({
                     block: 'imcms-image-data',
                     elements: {
                         'info': $('<div>', {
                             html: [buildTextProperty(localization.index, index),
                                 buildTextProperty(localization.image.allLanguages, allLanguages),
+                                buildTextProperty(localization.language, language),
                                 buildTextProperty(localization.image.path, path)]
                         }),
                         'button': buildEditButton('image', index, loopEntryRef)

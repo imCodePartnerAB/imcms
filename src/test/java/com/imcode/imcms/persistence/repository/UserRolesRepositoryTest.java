@@ -36,7 +36,7 @@ class UserRolesRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void findAll_When_RecordsExist_Expect_RecordsReturned() {
         final List<UserRoles> userRoles = userRolesRepository.findAll();
-        assertNotNull(userRoles.size());
+        assertFalse(userRoles.isEmpty());
     }
 
     @Test
