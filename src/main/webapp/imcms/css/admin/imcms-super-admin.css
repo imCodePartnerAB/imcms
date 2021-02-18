@@ -116,6 +116,12 @@
     padding: 5px;
 }
 
+.imcms-user-info-row__user-name{
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .imcms-user-info-row .imcms-control {
     margin: 5px;
 }

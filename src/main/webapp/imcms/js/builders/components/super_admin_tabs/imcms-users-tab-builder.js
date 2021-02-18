@@ -109,6 +109,10 @@ define(
                         ? $controlArchive
                         : $('<div>', {text: texts.searchResult.archived});
 
+                    const username = user.login;
+                    const $userLogin = $('<div>', {text: username});
+                    if(username.length > 30) components.overlays.defaultTooltip($userLogin, username);
+
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
@@ -121,9 +125,7 @@ define(
                             'last-name': $('<div>', {
                                 text: user.lastName
                             }),
-                            'user-name': $('<div>', {
-                                text: user.login
-                            }),
+                            'user-name': $userLogin,
                             'email': $('<div>', {
                                 text: user.email || ''
                             }),
