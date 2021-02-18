@@ -6,6 +6,8 @@ import previewImage from 'imcms-preview-image-area';
 import sizeControls from 'imcms-image-edit-size-controls';
 import {removeCssFunctionsFromString} from 'css-utils';
 
+const imageResize = require('imcms-image-resize');
+
 const angleNorth = {
     name: "NORTH",
     proportionsInverted: false,
@@ -48,6 +50,7 @@ const anglesByDegrees = {
     90: angleEast,
     180: angleSouth,
     270: angleWest,
+    360: angleNorth
 };
 
 function getRotateCssTransformString(angle) {
@@ -70,7 +73,7 @@ function getRotateCssTransformString(angle) {
 }
 
 function getUpdatedTransformString(angle, $image) {
-    const rotateCss = getRotateCssTransformString(currentAngle);
+    const rotateCss = getRotateCssTransformString(angle);
     const transformString = $image[0].style.transform;
     const cleanTransformString = removeCssFunctionsFromString(transformString, ['rotate', 'translate']);
 
@@ -83,8 +86,11 @@ function rotate(newAngle) {
 
     currentAngle = newAngle || angleNorth;
 
-    const $image = previewImage.getPreviewImage();
+    if(imageResize.isAnyRestrictedStyleSize() || imageResize.isMaxRestrictedStyleSize()){
+        currentAngle = anglesByDegrees[imageResize.changeSizingForRotating(currentAngle.degrees)];
+    }
 
+    const $image = previewImage.getPreviewImage();
     $image.css('transform', getUpdatedTransformString(currentAngle, $image));
 
     sizeControls.swapControls(currentAngle.proportionsInverted);

@@ -131,6 +131,16 @@ function updateHeightProportionally(newWidth, isOriginal) {
         : setHeightProportionally(proportionalHeight, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
+function changeRestrictionsForRotation(){
+    let currentMinHeight = minHeight;
+    let currentMaxHeight = maxHeight;
+
+    minHeight = minWidth;
+    maxHeight = maxWidth;
+    minWidth = currentMinHeight;
+    maxWidth = currentMaxHeight;
+}
+
 let $heightControl, $widthControl;
 let $heightPreviewControl, $widthPreviewControl;
 let $heightWantedControl, $widthWantedControl;
@@ -282,6 +292,10 @@ module.exports = {
 
     isRestrictedHeightStyleSize() {
         return minHeight;
+    },
+
+    isMaxRestrictedStyleSize(){
+      return maxWidth || maxHeight;
     },
 
     isSaveProportionsEnabled: () => saveProportions,
@@ -462,6 +476,37 @@ module.exports = {
 
         setHeightProportionally(currentHeight, isOriginal);
         setWidthProportionally(currentWidth, isOriginal);
+    },
+
+    changeSizingForRotating(degrees){
+        const currentSaveProportions = saveProportions;
+        saveProportions = true;
+
+        if(degrees === 90 || degrees === 270){
+
+            if(minHeight && minWidth && minWidth === minHeight){
+                // skip and do the default action
+            }else if(minWidth && minWidth === maxWidth){
+                changeRestrictionsForRotation();
+                setHeightProportionally(minWidth, false);
+            }else if(minHeight && minWidth === maxWidth){
+                changeRestrictionsForRotation();
+                setWidthProportionally(minHeight, false);
+            }else degrees = degrees + 90;
+
+        }else{
+
+            if(minWidth && minWidth === maxWidth){
+                changeRestrictionsForRotation();
+                setHeightProportionally(minHeight, false);
+            }else if(minHeight && minWidth === maxWidth){
+                changeRestrictionsForRotation();
+                setWidthProportionally(minWidth, false);
+            }
+        }
+
+        saveProportions = currentSaveProportions;
+        return degrees;
     },
 
     checkCropRegionExist(image) {
