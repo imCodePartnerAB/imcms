@@ -111,7 +111,11 @@ define(
 
                     const username = user.login;
                     const $userLogin = $('<div>', {text: username});
-                    if(username.length > 30) components.overlays.defaultTooltip($userLogin, username);
+                    if(username.length > 25) components.overlays.defaultTooltip($userLogin, username);
+
+                    const email = user.email || '';
+                    const $userEmail = $('<div>', {text: email});
+                    if(email.length > 25) components.overlays.defaultTooltip($userEmail, email)
 
                     return new BEM({
                         block: 'imcms-user-info-row',
@@ -126,9 +130,7 @@ define(
                                 text: user.lastName
                             }),
                             'user-name': $userLogin,
-                            'email': $('<div>', {
-                                text: user.email || ''
-                            }),
+                            'email': $userEmail,
                             'edit': $controlEdit,
                             'archive': $archiveBlock,
                         }

@@ -122,6 +122,12 @@
     overflow: hidden;
 }
 
+.imcms-user-info-row__email{
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .imcms-user-info-row .imcms-control {
     margin: 5px;
 }
