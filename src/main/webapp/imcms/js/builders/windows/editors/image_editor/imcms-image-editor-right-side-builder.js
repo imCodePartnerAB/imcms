@@ -1,13 +1,13 @@
 define(
     "imcms-image-editor-right-side-builder",
     [
-        "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
+        "imcms-components-builder", "imcms-i18n-texts", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
+        "imcms-window-builder", "imcms-image-rotate", 'imcms-image-resize',
         'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls'
     ],
-    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers, path, imageEditSize) {
+    function (components, texts, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
+              imageRotate, imageResize, cropCoordsControllers, path, imageEditSize) {
 
         texts = texts.editors.image;
 
@@ -124,20 +124,6 @@ define(
                 const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
                 imageData = opts.imageData;
-
-                function buildSelectImageBtnContainer() {
-
-                    const $selectImageBtn = components.buttons.buttonWithIcon({
-                        button: components.buttons.positiveButton({
-                            text: texts.selectImage,
-                        }),
-                        icon: components.controls.images(),
-                    }, {
-                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
-                    });
-
-                    return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
-                }
 
 
                 function buildAltTextContainer() {
@@ -708,12 +694,11 @@ define(
 
                 const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
                 const $infoImage = buildInfoSizePathContainer();
-                const $selectImageBtnContainer = buildSelectImageBtnContainer().addClass('select-image-button');
                 $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($restrictStyleInfo, $infoImage,
-                    $selectImageBtnContainer, $showExifBtn, $editableControls, $footer);
+                    $showExifBtn, $editableControls, $footer);
             }
         }
     }

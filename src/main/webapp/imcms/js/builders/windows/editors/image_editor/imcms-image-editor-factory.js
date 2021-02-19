@@ -32,7 +32,7 @@ module.exports = {
     buildEditor: opts => {
         const $rightSidePanel = rightSideBuilder.build(opts);
         const $leftSide = leftSideBuilder.build();
-        const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
+        const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData, opts.fillData);
         const $head = opts.imageWindowBuilder.buildHead();
         //need for get data after build and data in the $infoData, in another way fix build this..
         $head.find('.imcms-title').append($infoData).append($imageLinkContainerInfo);
