@@ -131,6 +131,11 @@ function updateHeightProportionally(newWidth, isOriginal) {
         : setHeightProportionally(proportionalHeight, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
+let $heightControl, $widthControl;
+let $heightPreviewControl, $widthPreviewControl;
+let $heightWantedControl, $widthWantedControl;
+let isRestrictedValuesChanged = true;
+
 function changeRestrictionsForRotation(){
     let currentMinHeight = minHeight;
     let currentMaxHeight = maxHeight;
@@ -140,10 +145,6 @@ function changeRestrictionsForRotation(){
     minWidth = currentMinHeight;
     maxWidth = currentMaxHeight;
 }
-
-let $heightControl, $widthControl;
-let $heightPreviewControl, $widthPreviewControl;
-let $heightWantedControl, $widthWantedControl;
 
 module.exports = {
     resetToOriginal(imageData) {
@@ -478,6 +479,10 @@ module.exports = {
         setWidthProportionally(currentWidth, isOriginal);
     },
 
+    isRestrictedValuesChanged(){
+        return isRestrictedValuesChanged;
+    },
+
     changeSizingForRotating(degrees){
         const currentSaveProportions = saveProportions;
         saveProportions = true;
@@ -492,7 +497,10 @@ module.exports = {
             }else if(minHeight && minWidth === maxWidth){
                 changeRestrictionsForRotation();
                 setWidthProportionally(minHeight, false);
-            }else degrees = degrees + 90;
+            }else{
+                degrees = degrees + 90;
+                isRestrictedValuesChanged = false;
+            }
 
         }else{
 

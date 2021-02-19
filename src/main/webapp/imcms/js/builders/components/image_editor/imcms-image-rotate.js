@@ -93,7 +93,7 @@ function rotate(newAngle) {
     const $image = previewImage.getPreviewImage();
     $image.css('transform', getUpdatedTransformString(currentAngle, $image));
 
-    sizeControls.swapControls(currentAngle.proportionsInverted);
+    sizeControls.swapControls(currentAngle.proportionsInverted, imageResize.isRestrictedValuesChanged());
 }
 
 export const rotateLeft = () => rotate(currentAngle.prev);
