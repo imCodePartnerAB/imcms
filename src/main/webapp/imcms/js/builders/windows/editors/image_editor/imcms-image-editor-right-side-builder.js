@@ -76,18 +76,12 @@ define(
 
         function buildRestrictedWidthStyle(prefix, width) {
             const widthText = width ? `${prefix}: ${width}` : '';
-            return $restrictedStyleWidth = $('<div>', {
-                'class': 'imcms-restricted-width',
-                text: widthText
-            });
+            return $restrictedStyleWidth = components.texts.titleText('<div>', widthText, {class:'imcms-restricted-width'});
         }
 
         function buildRestrictedHeightStyle(prefix, height) {
             const heightText = height ? `${prefix}: ${height}` : '';
-            return $restrictedStyleHeight = $('<div>', {
-                'class': 'imcms-restricted-height',
-                text: heightText
-            });
+            return $restrictedStyleHeight = components.texts.titleText('<div>', heightText, {class:'imcms-restricted-height'});
         }
 
         function isStyleExist(styles) {
