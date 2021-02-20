@@ -4,9 +4,8 @@
  */
 import previewImage from 'imcms-preview-image-area';
 import sizeControls from 'imcms-image-edit-size-controls';
+import imageResize from 'imcms-image-resize';
 import {removeCssFunctionsFromString} from 'css-utils';
-
-const imageResize = require('imcms-image-resize');
 
 const angleNorth = {
     name: "NORTH",
@@ -81,13 +80,15 @@ function getUpdatedTransformString(angle, $image) {
 }
 
 function rotate(newAngle) {
+    const previousAngel = currentAngle;
+
     const sameAngle = (newAngle === currentAngle);
     if (sameAngle) return;
 
     currentAngle = newAngle || angleNorth;
 
     if(imageResize.isAnyRestrictedStyleSize() || imageResize.isMaxRestrictedStyleSize()){
-        currentAngle = anglesByDegrees[imageResize.changeSizingForRotating(currentAngle.degrees)];
+        currentAngle = anglesByDegrees[imageResize.changeSizingForRotating(previousAngel.degrees, currentAngle.degrees)];
     }
 
     const $image = previewImage.getPreviewImage();

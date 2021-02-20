@@ -136,14 +136,20 @@ let $heightPreviewControl, $widthPreviewControl;
 let $heightWantedControl, $widthWantedControl;
 let isRestrictedValuesChanged = true;
 
-function changeRestrictionsForRotation(){
-    let currentMinHeight = minHeight;
-    let currentMaxHeight = maxHeight;
+function changeRestrictionsForRotation(needChange){
+    if(needChange){
+        let currentMinHeight = minHeight;
+        let currentMaxHeight = maxHeight;
 
-    minHeight = minWidth;
-    maxHeight = maxWidth;
-    minWidth = currentMinHeight;
-    maxWidth = currentMaxHeight;
+        minHeight = minWidth;
+        maxHeight = maxWidth;
+        minWidth = currentMinHeight;
+        maxWidth = currentMaxHeight;
+
+        isRestrictedValuesChanged = true;
+    }else{
+        isRestrictedValuesChanged = false;
+    }
 }
 
 module.exports = {
@@ -480,7 +486,7 @@ module.exports = {
         return isRestrictedValuesChanged;
     },
 
-    changeSizingForRotating(degrees){
+    changeSizingForRotating(previousDegrees, degrees){
         const currentSaveProportions = saveProportions;
         saveProportions = true;
 
@@ -488,12 +494,10 @@ module.exports = {
 
             if(minHeight && minWidth && minWidth === minHeight){
                 // skip and do the default action
-            }else if(minWidth && minWidth === maxWidth){
-                changeRestrictionsForRotation();
-                setHeightProportionally(minWidth, false);
-            }else if(minHeight && minWidth === maxWidth){
-                changeRestrictionsForRotation();
-                setWidthProportionally(minHeight, false);
+            }else if((minWidth && minWidth === maxWidth) || (minHeight && minWidth === maxWidth)){
+                changeRestrictionsForRotation(true);
+                minWidth ? setWidthProportionally(minHeight, false)
+                                : setHeightProportionally(minWidth, false);
             }else{
                 degrees = degrees + 90;
                 isRestrictedValuesChanged = false;
@@ -501,13 +505,12 @@ module.exports = {
 
         }else{
 
-            if(minWidth && minWidth === maxWidth){
-                changeRestrictionsForRotation();
-                setHeightProportionally(minHeight, false);
-            }else if(minHeight && minWidth === maxWidth){
-                changeRestrictionsForRotation();
-                setWidthProportionally(minWidth, false);
+            if((minWidth && minWidth === maxWidth) || (minHeight && minWidth === maxWidth)){
+                changeRestrictionsForRotation(previousDegrees === 90 || previousDegrees === 270);
+                minWidth ? setWidthProportionally(minWidth, false)
+                                : setHeightProportionally(minHeight, false);
             }
+
         }
 
         saveProportions = currentSaveProportions;
