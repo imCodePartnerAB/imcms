@@ -191,7 +191,7 @@ define(
                 }),
                 icon: components.controls.images(),
             }, {
-                click: contentManager.build.bind(contentManager, fillData, () => this.getImagePath())
+                click: contentManager.build.bind(contentManager, fillData, () => $imgUrl.attr('data-path'))
             });
 
             return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
@@ -584,7 +584,6 @@ define(
                 ]);
             },
             getImageUrl: () => $imgUrl,
-            getImagePath: () => $imgUrl.attr('data-path'),
 
             clearData() {
                 [
