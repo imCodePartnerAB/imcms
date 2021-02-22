@@ -23,6 +23,7 @@ public abstract class UserData extends BasicUserData implements Serializable {
         setRef(from.getRef());
         setBlockedDate(from.getBlockedDate());
         setAttempts(from.getAttempts());
+        setLastLoginDate(from.getLastLoginDate());
     }
 
     public abstract String getPassword();
@@ -72,4 +73,8 @@ public abstract class UserData extends BasicUserData implements Serializable {
     public abstract Integer getAttempts();
 
     public abstract void setAttempts(Integer attempts);
+
+    public abstract Date getLastLoginDate();
+
+    public abstract void setLastLoginDate(Date lastLoginDate);
 }

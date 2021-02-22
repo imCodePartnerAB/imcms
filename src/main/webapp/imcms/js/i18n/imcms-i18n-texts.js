@@ -247,25 +247,30 @@ const texts = {
             allData:{
                 name: 'All Data',
                 edit: 'Ändra',
-                errorGettingData: 'Fel att få data!',
+                errorGettingData: 'Fel att få all data!',
                 noData: 'Inga föremål',
                 index: 'Index',
-                insideLoop: 'I Loop',
+                id: 'Id',
                 text:{
-                    title:'texter',
+                    title:'Texter',
                     access:'Tillgång',
                     type:'Typ'
                 },
                 menu:{
-                    title:'menyer',
+                    title:'Menyer',
                     countElements:'Antal punkter'
+                },
+                category:{
+                    title:'Kategorier',
+                    visible:'Synlig'
                 },
                 loop:{
                     title:'loops',
+                    titleSingle:'Loop',
                     countElements:'Antal poster'
                 },
                 image:{
-                    title:'bilder',
+                    title:'Bilder',
                     allLanguages:'Alla språk',
                     path:'Väg'
                 }
@@ -536,9 +541,9 @@ const texts = {
                 height: "Höjd",
                 width: "Bredd",
                 preview: "Förhandsvisning",
-                edit: 'Redigera',
+                edit: 'Redigerad',
                 original: "Original",
-                selectImage: "Välj bild",
+                selectImage: "Bildbibliotek",
                 suggestAltText: 'Ge ett förslag',
                 warnChange: 'Alt-texten är inte tom! Vill du ändra alt-text?',
                 altText: "Alt. text (För synnedsatta. Bör anges)",
@@ -1221,28 +1226,32 @@ const texts = {
             },
             allData:{
                 name: 'All Data',
-                edit: 'edit',
-                errorGettingData: 'Error getting data!',
-                noData: 'No items',
-                errorGettingData: 'Error getting data!',
+                edit: 'Edit',
+                errorGettingData: 'Error getting all data!',
                 noData: 'No items',
                 index: 'Index',
-                insideLoop: 'In Loop',
+                id: 'Id',
+                language: 'Language',
                 text:{
-                    title:'texts',
+                    title:'Texts',
                     access:'Access',
                     type:'Type'
                 },
                 menu:{
-                    title:'menus',
+                    title:'Menus',
                     countElements:'Number of items'
                 },
+                category:{
+                    title:'Categories',
+                    visible:'Visible'
+                },
                 loop:{
-                    title:'loops',
+                    title:'Loops',
+                    titleSingle:'Loop',
                     countElements:'Number of entries'
                 },
                 image:{
-                    title:'images',
+                    title:'Images',
                     allLanguages:'All languages',
                     path:'Path'
                 }
@@ -1512,9 +1521,9 @@ const texts = {
                 height: "Height",
                 width: "Width",
                 preview: "Preview",
-                edit: "Edit",
+                edit: "Edited",
                 original: "Original",
-                selectImage: "Select Image",
+                selectImage: "Image Library",
                 suggestAltText: 'Make a suggestion',
                 warnChange: 'Alt text isn\'t empty! Do you want to change alt text?',
                 altText: "Alt. text (For visually impaired. Should be specified)",

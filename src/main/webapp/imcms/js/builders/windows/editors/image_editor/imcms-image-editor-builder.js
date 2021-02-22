@@ -85,9 +85,9 @@ define(
                 $('.imcms-image_editor__right-side')
                     .find('.imcms-info-edit-image')
                     .append(editSizeControls.getImageSizeControlBlock().show());
+                imageRotate.rotateImage(imageData.rotateDirection);
             }
 
-            imageRotate.rotateImage(imageData.rotateDirection);
             imageResize.disabledResetToOriginalFlag();
             imageZoom.fitImage();
         }

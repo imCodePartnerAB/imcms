@@ -2,23 +2,20 @@ package com.imcode.imcms.domain.factory;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.MailService;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentUrlService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.persistence.entity.User;
 import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import javax.transaction.Transactional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@Transactional
 public class ImcmsServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
@@ -60,6 +57,8 @@ public class ImcmsServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private VersionService versionService;
 
+    @Autowired
+    private UserDataInitializer userDataInitializer;
 
     @Test
     public void languageService_Expect_CorrectBeanClass() {
@@ -121,4 +120,45 @@ public class ImcmsServiceTest extends WebAppSpringTestConfig {
         assertEquals(versionService, imcmsServices.getVersionService());
     }
 
+    @Test
+    public void verifyUser_WhenUserExist_And_LoginAndPasswordIsCorrect_Expect_CorrectResult(){
+
+        userDataInitializer.cleanRepositories();
+
+        User user = userDataInitializer.createData("login");
+        user.setLanguageIso639_2("eng");
+        userService.saveUser(new UserFormData(user));
+
+        assertNotNull(user);
+        assertNull(user.getLastLoginDate());
+
+        User expectedUser = new User(imcmsServices.verifyUser(user.getLogin(), user.getPassword()));
+        assertNotNull(expectedUser);
+
+        user = userService.getUser(user.getId());
+        assertNotNull(user.getLastLoginDate());
+        assertEquals(expectedUser.getLastLoginDate().getTime()/1000,
+                        user.getLastLoginDate().getTime()/1000);
+    }
+
+    @Test
+    public void verifyUser_WhenUserExist_And_LoginAndPasswordIsNotCorrect_Expect_CorrectResult(){
+        userDataInitializer.cleanRepositories();
+
+        User user = userDataInitializer.createData("login");
+        user.setLanguageIso639_2("eng");
+        userService.saveUser(new UserFormData(user));
+
+        assertNotNull(user);
+        assertNull(user.getLastLoginDate());
+
+        int attempts = user.getAttempts();
+
+        UserDomainObject expectedUser = imcmsServices.verifyUser(user.getLogin(), "wrong password");
+        assertNull(expectedUser);
+
+        user = userService.getUser(user.getId());
+        assertNull(user.getLastLoginDate());
+        assertEquals(attempts + 1 , (int) user.getAttempts());
+    }
 }

@@ -7,9 +7,9 @@ module.exports = merge(baseConfig, {
     mode: 'development',
     watch: true,
     output: {
-        path: path.resolve(__dirname, './../../../build/libs/exploded/imcms-6.0.0-beta12-SNAPSHOT.war/dist')
+        path: path.resolve(__dirname, './../../../build/libs/exploded/imcms-6.0.0-beta13-SNAPSHOT.war/dist')
     },
     plugins: [
-        new CleanWebpackPlugin(['./../../../build/libs/exploded/imcms-6.0.0-beta12-SNAPSHOT.war/dist'])
+        new CleanWebpackPlugin(['./../../../build/libs/exploded/imcms-6.0.0-beta13-SNAPSHOT.war/dist'])
     ],
 });

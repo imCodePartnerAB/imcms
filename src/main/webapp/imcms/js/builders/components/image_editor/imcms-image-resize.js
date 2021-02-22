@@ -134,6 +134,23 @@ function updateHeightProportionally(newWidth, isOriginal) {
 let $heightControl, $widthControl;
 let $heightPreviewControl, $widthPreviewControl;
 let $heightWantedControl, $widthWantedControl;
+let isRestrictedValuesChanged = true;
+
+function changeRestrictionsForRotation(needChange){
+    if(needChange){
+        let currentMinHeight = minHeight;
+        let currentMaxHeight = maxHeight;
+
+        minHeight = minWidth;
+        maxHeight = maxWidth;
+        minWidth = currentMinHeight;
+        maxWidth = currentMaxHeight;
+
+        isRestrictedValuesChanged = true;
+    }else{
+        isRestrictedValuesChanged = false;
+    }
+}
 
 module.exports = {
     resetToOriginal(imageData) {
@@ -141,31 +158,28 @@ module.exports = {
         this.setHeightStrict(0, original.height, false);
         this.setWidthStrict(0, original.width, false);
 
-        let width, height;
+        const currentProportions = saveProportions;
+        saveProportions = true;
 
         if (minWidth && minHeight) {
-            width = minWidth;
-            height = minHeight;
             preview.width = minWidth;
             preview.height = minHeight;
-
+            this.setCurrentPreviewSize(minWidth, minHeight);
+            this.updateSizing(imageData, true, false);
+        } else if (minWidth || minHeight) {
+            minWidth ? setWidthProportionally(minWidth, false) : setHeightProportionally(minHeight, false);
+        } else if (maxWidth && !maxHeight) {
+            original.width > maxWidth ? setWidthProportionally(maxWidth, false) : setWidthProportionally(original.width, false);
+        } else if (maxHeight && !maxWidth) {
+            original.height > maxHeight ? setHeightProportionally(maxHeight, false) : setHeightProportionally(original.height, false);
         } else {
-            if (this.isAnyRestrictedStyleSize()) {
-                width = minWidth ? minWidth : original.width;
-                height = minHeight ? minHeight : original.height;
-                preview.width = width;
-                preview.height = height;
-            } else {
-                width = original.width;
-                height = original.height;
-                preview.width = original.width;
-                preview.height = original.height;
-            }
-
+            preview.width = original.width;
+            preview.height = original.height;
+            this.setCurrentPreviewSize(original.width, original.height);
+            this.updateSizing(imageData, true, false);
         }
 
-        this.setCurrentPreviewSize(width, height);
-        this.updateSizing(imageData, true, false);
+        saveProportions = currentProportions;
         this.disabledResetToOriginalFlag();
     },
 
@@ -282,6 +296,10 @@ module.exports = {
 
     isRestrictedHeightStyleSize() {
         return minHeight;
+    },
+
+    isMaxRestrictedStyleSize(){
+      return maxWidth || maxHeight;
     },
 
     isSaveProportionsEnabled: () => saveProportions,
@@ -462,6 +480,41 @@ module.exports = {
 
         setHeightProportionally(currentHeight, isOriginal);
         setWidthProportionally(currentWidth, isOriginal);
+    },
+
+    isRestrictedValuesChanged(){
+        return isRestrictedValuesChanged;
+    },
+
+    changeSizingForRotating(previousDegrees, degrees){
+        const currentSaveProportions = saveProportions;
+        saveProportions = true;
+
+        if(degrees === 90 || degrees === 270){
+
+            if(minHeight && minWidth && minWidth === minHeight){
+                // skip and do the default action
+            }else if((minWidth && minWidth === maxWidth) || (minHeight && minWidth === maxWidth)){
+                changeRestrictionsForRotation(true);
+                minWidth ? setWidthProportionally(minHeight, false)
+                                : setHeightProportionally(minWidth, false);
+            }else{
+                degrees = degrees + 90;
+                isRestrictedValuesChanged = false;
+            }
+
+        }else{
+
+            if((minWidth && minWidth === maxWidth) || (minHeight && minWidth === maxWidth)){
+                changeRestrictionsForRotation(previousDegrees === 90 || previousDegrees === 270);
+                minWidth ? setWidthProportionally(minWidth, false)
+                                : setHeightProportionally(minHeight, false);
+            }
+
+        }
+
+        saveProportions = currentSaveProportions;
+        return degrees;
     },
 
     checkCropRegionExist(image) {

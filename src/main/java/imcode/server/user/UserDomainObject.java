@@ -12,24 +12,14 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -80,7 +70,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     private Date blockedDate; //date when user was blocked
     private Integer attempts; // count possible attempts log in again
-
+    private Date lastLoginDate;
     /**
      * Http session id.
      */

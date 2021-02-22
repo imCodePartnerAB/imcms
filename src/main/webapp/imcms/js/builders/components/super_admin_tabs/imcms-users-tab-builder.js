@@ -109,6 +109,14 @@ define(
                         ? $controlArchive
                         : $('<div>', {text: texts.searchResult.archived});
 
+                    const username = user.login;
+                    const $userLogin = $('<div>', {text: username});
+                    if(username.length > 25) components.overlays.defaultTooltip($userLogin, username);
+
+                    const email = user.email || '';
+                    const $userEmail = $('<div>', {text: email});
+                    if(email.length > 25) components.overlays.defaultTooltip($userEmail, email)
+
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
@@ -121,12 +129,8 @@ define(
                             'last-name': $('<div>', {
                                 text: user.lastName
                             }),
-                            'user-name': $('<div>', {
-                                text: user.login
-                            }),
-                            'email': $('<div>', {
-                                text: user.email || ''
-                            }),
+                            'user-name': $userLogin,
+                            'email': $userEmail,
                             'edit': $controlEdit,
                             'archive': $archiveBlock,
                         }

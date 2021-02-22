@@ -3,16 +3,17 @@ const imageProportionsLocker = require('imcms-image-proportions-locker-button');
 define(
     "imcms-image-editor-body-head-builder",
     [
-        "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
-        "imcms-image-rotate", "imcms-image-resize", 'imcms-originally-image', 'imcms-preview-image-area',
+        "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "imcms-content-manager-builder", "jquery",
+        'imcms-image-edit-size-controls', "imcms-image-rotate", "imcms-image-resize", 'imcms-originally-image', 'imcms-preview-image-area',
         'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-originally-area',
         'imcms-image-active-tab', 'imcms-image-zoom'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, originalImage, previewImageArea,
+    function (texts, BEM, components, contentManager, $, imageEditSizeControls, imageRotate, imageResize, originalImage, previewImageArea,
               ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom) {
 
         texts = texts.editors.image;
         let imageData;
+        let fillData;
 
         const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
             .hide(
@@ -174,6 +175,26 @@ define(
                     "tab": [$tabOriginal, $tabPreview]
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        let $imageLibraryButton;
+
+        function getImageLibraryButton(){
+            return $imageLibraryButton || ($imageLibraryButton = buildSelectImageBtnContainer().addClass('select-image-button'))
+        }
+
+        function buildSelectImageBtnContainer() {
+
+            const $selectImageBtn = components.buttons.buttonWithIcon({
+                button: components.buttons.positiveButton({
+                    text: texts.selectImage,
+                }),
+                icon: components.controls.images(),
+            }, {
+                click: contentManager.build.bind(contentManager, fillData, () => $imgUrl.attr('data-path'))
+            });
+
+            return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
         }
 
         function wrapWithNoOpIfNoImageYet(wrapMe) {
@@ -529,8 +550,9 @@ define(
 
             showPreviewImageArea: () => toggleImgArea.call($tabPreview),
 
-            build: function ($rightSidePanel, _imageData) {
+            build: function ($rightSidePanel, _imageData, _fillData) {
                 imageData = _imageData;
+                fillData = _fillData;
 
                 const bodyHeadBEM = new BEM({
                     block: "imcms-image-toolbar",
@@ -555,12 +577,13 @@ define(
                         "toolbar": buildToolbar()
                     }, {
                         "button": $showHideRightPanelBtn,
-                        modifiers: ["right-panel"]
+                        modifiers: ["right-panel"],
+                    }, {
+                        "image-library-button" : getImageLibraryButton(),
                     }
                 ]);
             },
             getImageUrl: () => $imgUrl,
-            getImagePath: () => $imgUrl.attr('data-path'),
 
             clearData() {
                 [
