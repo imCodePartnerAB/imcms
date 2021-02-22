@@ -114,20 +114,38 @@ public class TextDocument extends Document {
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) {
-        setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN, false);
     }
 
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
-        setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML, false);
     }
 
     public void setCleanHtmlTextField(int textFieldIndexInDocument, String newText) {
         newText = Utility.getTextContentFilter().cleanText(newText);
-        setTextField(textFieldIndexInDocument, newText, TextField.Format.EDITOR);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.EDITOR, false);
     }
 
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
-        TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
+        TextDomainObject imcmsText = new TextDomainObject(newText, format.getType(), false, textFieldIndexInDocument);
+        getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
+    }
+
+    public void setPlainTextField(int textFieldIndexInDocument, String newText, boolean likePublished) {
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN, likePublished);
+    }
+
+    public void setHtmlTextField(int textFieldIndexInDocument, String newText, boolean likePublished) {
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML, likePublished);
+    }
+
+    public void setCleanHtmlTextField(int textFieldIndexInDocument, String newText, boolean likePublished) {
+        newText = Utility.getTextContentFilter().cleanText(newText);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.EDITOR, likePublished);
+    }
+
+    public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format, boolean likePublished) {
+        TextDomainObject imcmsText = new TextDomainObject(newText, format.getType(), likePublished, textFieldIndexInDocument);
         getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
     }
 
