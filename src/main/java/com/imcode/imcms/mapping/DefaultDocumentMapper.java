@@ -6,6 +6,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.PropertyService;
@@ -28,6 +29,7 @@ import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -56,10 +58,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 
 @Transactional
 @Service
@@ -611,6 +616,31 @@ public class DefaultDocumentMapper implements DocumentMapper {
             documentSaver.saveText(container, user);
         } finally {
             invalidateDocument(container.getDocId());
+        }
+    }
+
+    @Override
+    public void saveTextsDocText(TextDocument textDocument, UserDomainObject user) throws NoPermissionInternalException {
+        try {
+            final TextDocumentDomainObject internalTextDoc = textDocument.getInternal();
+
+            final Map<DocumentLanguage, TextDomainObject> langTexts = internalTextDoc.getTexts().values()
+                    .stream()
+                    .collect(Collectors.toMap(i -> internalTextDoc.getLanguage(), text -> text));
+
+            final List<TextDocTextContainer> containers = langTexts.entrySet().stream()
+                    .map(entry -> {
+                        final TextDomainObject textDO = entry.getValue();
+                        return TextDocTextContainer.of(internalTextDoc.getRef(), textDO.getNo(), textDO);
+                    })
+                    .collect(Collectors.toList());
+
+
+            for (TextDocTextContainer container: containers) {
+                documentSaver.saveText(container, user);
+            }
+        } finally {
+            invalidateDocument(textDocument.getId());
         }
     }
 

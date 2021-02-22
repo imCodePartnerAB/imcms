@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -221,6 +222,9 @@ public interface DocumentMapper extends DocumentGetter {
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
     void saveTextDocText(TextDocTextContainer container, UserDomainObject user)
+            throws NoPermissionInternalException;
+
+    void saveTextsDocText(TextDocument textDocument, UserDomainObject user)
             throws NoPermissionInternalException;
 
     /**
