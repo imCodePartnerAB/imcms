@@ -284,6 +284,7 @@ public class TextDocumentContentSaver {
         text.setText(textDO.getText());
         text.setType(Text.Type.values()[textDO.getType()]);
         text.setLoopEntryRef(loopEntryRef);
+        text.setLikePublished(textDO.isLikePublished());
 
         return text;
     }
