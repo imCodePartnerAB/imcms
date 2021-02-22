@@ -25,6 +25,8 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     private volatile String text;
     private volatile int type;
+    private volatile boolean likePublished;
+    private volatile int no;
 
     public TextDomainObject() {
         this("");
@@ -43,6 +45,22 @@ public class TextDomainObject implements Serializable, Cloneable {
     public TextDomainObject(String text, int type) {
         setText(text);
         setType(type);
+    }
+
+    /**
+     * Create a published text for a text-page.
+     *
+     * @param text The text
+     * @param type The type of the text.
+     * @param likePublished as published text.
+     * @param no index text.
+     *
+     */
+    public TextDomainObject(String text, int type, boolean likePublished, int no) {
+        setText(text);
+        setType(type);
+        setLikePublished(likePublished);
+        setNo(no);
     }
 
     public static Builder builder() {
@@ -140,6 +158,22 @@ public class TextDomainObject implements Serializable, Cloneable {
         }
     }
 
+    public boolean isLikePublished() {
+        return likePublished;
+    }
+
+    public void setLikePublished(boolean likePublished) {
+        this.likePublished = likePublished;
+    }
+
+    public int getNo() {
+        return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
+    }
+
     public static final class Builder {
         private TextDomainObject textDomainObject;
 
@@ -162,6 +196,16 @@ public class TextDomainObject implements Serializable, Cloneable {
 
         public Builder type(int type) {
             textDomainObject.type = type;
+            return this;
+        }
+
+        public Builder likePublished(boolean likePublished) {
+            textDomainObject.likePublished = likePublished;
+            return this;
+        }
+
+        public Builder no(int no) {
+            textDomainObject.no = no;
             return this;
         }
     }
