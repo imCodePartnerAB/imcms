@@ -51,11 +51,13 @@ public class TextDomainObject implements Serializable, Cloneable {
      * Create a published text for a text-page.
      *
      * @param text The text
-     * @param type The type of the text.
      * @param likePublished as published text.
-     * @param no index text.
      *
      */
+    public TextDomainObject(String text, boolean likePublished) {
+        this(text, TEXT_TYPE_PLAIN, likePublished, 0);
+    }
+
     public TextDomainObject(String text, int type, boolean likePublished, int no) {
         setText(text);
         setType(type);
