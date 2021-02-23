@@ -43,11 +43,11 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer>, Version
     @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.text = ?2")
     List<TextJPA> findByIndexAndText(Integer index, String text);
 
-    @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.version.docId = ?2 AND t.language = ?3 AND t.loopEntryRef = ?4 AND t.likePublished = true")
-    TextJPA findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRef(Integer index, Integer docId, LanguageJPA language, LoopEntryRefJPA loopEntryRefJPA);
+    @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.version = ?2 AND t.language = ?3 AND t.loopEntryRef = ?4 AND t.likePublished = true")
+    TextJPA findByIndexAndVersionAndLanguageAndLikePublishedIsTrueAndLoopEntryRef(Integer index, Version version, LanguageJPA language, LoopEntryRefJPA loopEntryRefJPA);
 
-    @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.version.docId = ?2 AND t.language = ?3 AND t.loopEntryRef IS NULL AND t.likePublished = true")
-    TextJPA findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRefIsNull(Integer index, Integer docId, LanguageJPA language);
+    @Query("SELECT t FROM TextJPA t WHERE t.index = ?1 AND t.version = ?2 AND t.language = ?3 AND t.loopEntryRef IS NULL AND t.likePublished = true")
+    TextJPA findByIndexAndVersionAndLanguageAndLikePublishedIsTrueAndLoopEntryRefIsNull(Integer index, Version version, LanguageJPA language);
 
     @Query("SELECT t FROM TextJPA t WHERE t.version.docId = ?1 AND t.language = ?2 AND t.likePublished = true")
     Set<TextJPA> findByDocIdAndLanguageAndLikePublishedIsTrue(Integer docId, LanguageJPA language);

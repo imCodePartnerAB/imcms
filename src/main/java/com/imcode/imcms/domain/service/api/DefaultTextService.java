@@ -95,8 +95,9 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     @Override
     public Text getLikePublishedText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
+        final Version latestVersion = versionService.getLatestVersion(docId);
 
-        return getLikePublishedText(docId, index, language, loopEntryRef);
+        return getLikePublishedText(latestVersion, index, language, loopEntryRef);
     }
 
     @Override
@@ -185,7 +186,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
     private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
 
-        final TextJPA likePublishedText = getLikePublishedText(version.getDocId(), index, language, loopEntryRef);
+        final TextJPA likePublishedText = getLikePublishedText(version, index, language, loopEntryRef);
 
         if (likePublishedText != null) return likePublishedText;
 
@@ -199,13 +200,13 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         }
     }
 
-    private TextJPA getLikePublishedText(Integer docId, int index, LanguageJPA language, LoopEntryRef loopEntryRef) {
+    private TextJPA getLikePublishedText(Version version, int index, LanguageJPA language, LoopEntryRef loopEntryRef) {
         if (loopEntryRef == null) {
-            return repository.findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRefIsNull(index, docId, language);
+            return repository.findByIndexAndVersionAndLanguageAndLikePublishedIsTrueAndLoopEntryRefIsNull(index, version, language);
 
         } else {
-            return repository.findByIndexAndDocIdAndLanguageAndLikePublishedIsTrueAndLoopEntryRef(
-                    index, docId, language, new LoopEntryRefJPA(loopEntryRef)
+            return repository.findByIndexAndVersionAndLanguageAndLikePublishedIsTrueAndLoopEntryRef(
+                    index, version, language, new LoopEntryRefJPA(loopEntryRef)
             );
         }
     }
