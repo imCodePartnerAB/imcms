@@ -83,7 +83,7 @@ public class User extends UserData implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "login_date")
-    private Date lastLoginDate; //date when user was blocked
+    private Date lastLoginDate; //date when user was accessed login to system
     /**
      * Http session id.
      */
