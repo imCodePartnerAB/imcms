@@ -200,6 +200,8 @@ public class TextDocumentContentSaver {
             TextJPA text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
             saveText(text, user, saveMode);
+
+            saveTextForWorkingVersion(text, user, saveMode);
         }
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> entry : doc.getLoopTexts().entrySet()) {
@@ -209,8 +211,20 @@ public class TextDocumentContentSaver {
             TextJPA text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
             saveText(text, user, saveMode);
+
+            saveTextForWorkingVersion(text, user, saveMode);
         }
     }
+
+    private void saveTextForWorkingVersion(TextJPA text, User user, SaveMode saveMode) {
+        if (text.isLikePublished()) {
+            final Version workingVersion = versionRepository.findWorking(text.getDocId());
+            text.setVersion(workingVersion);
+
+            saveText(text, user, saveMode);
+        }
+    }
+
 
     private void saveImage(ImageJPA image, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
