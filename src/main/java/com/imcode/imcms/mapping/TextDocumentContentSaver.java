@@ -201,7 +201,7 @@ public class TextDocumentContentSaver {
 
             saveText(text, user, saveMode);
 
-            saveTextForWorkingVersion(text, user, saveMode);
+            updateWorkingVersionText(text, user);
         }
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> entry : doc.getLoopTexts().entrySet()) {
@@ -212,16 +212,28 @@ public class TextDocumentContentSaver {
 
             saveText(text, user, saveMode);
 
-            saveTextForWorkingVersion(text, user, saveMode);
+            updateWorkingVersionText(text, user);
         }
     }
 
-    private void saveTextForWorkingVersion(TextJPA text, User user, SaveMode saveMode) {
+    //need to update working version to latest version text because if text set like published
+    // we must have same texts to both version
+    private void updateWorkingVersionText(TextJPA text, User user) {
         if (text.isLikePublished()) {
-            final Version workingVersion = versionRepository.findWorking(text.getDocId());
-            text.setVersion(workingVersion);
 
-            saveText(text, user, saveMode);
+            final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
+            final Integer index = text.getIndex();
+            final Version version = versionRepository.findWorking(text.getDocId());
+            final LanguageJPA language = text.getLanguage();
+
+            final TextJPA receivedText = (loopEntryRef == null)
+                    ? textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
+                    : textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+
+            if (null != receivedText) {
+                receivedText.setText(text.getText());
+                savingText(version, receivedText, language, user);
+            }
         }
     }
 
@@ -244,10 +256,10 @@ public class TextDocumentContentSaver {
         final Version version = text.getVersion();
         final LanguageJPA language = text.getLanguage();
         final Integer index = text.getIndex();
+        final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
 
         if (saveMode == SaveMode.UPDATE) {
 
-            final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
             final Integer id = (loopEntryRef == null)
                     ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
                     : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
@@ -255,6 +267,10 @@ public class TextDocumentContentSaver {
             text.setId(id);
         }
 
+        savingText(version, text, language, user);
+    }
+
+    private void savingText(Version version, TextJPA text, LanguageJPA language, User user) {
         createLoopEntryIfNotExists(version, text.getLoopEntryRef());
         textRepository.save(text);
         textHistoryRepository.save(new TextHistoryJPA(text, language, user));
