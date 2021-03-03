@@ -1,4 +1,4 @@
-package com.imcode.imcms.sorted;
+package com.imcode.imcms.enums;
 
 public enum TypeSort {
     TREE_SORT,

@@ -4,17 +4,23 @@ import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.enums.SaveMode;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.persistence.repository.UserRepository;
+import imcode.server.Imcms;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,12 +47,16 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     private final VersionService versionService;
     private final TextHistoryService textHistoryService;
     private final TextContentFilter textContentFilter;
+    private final LoopService loopService;
+    private final UserRepository userRepository;
 
     DefaultTextService(TextRepository textRepository,
                        LanguageService languageService,
                        VersionService versionService,
                        TextHistoryService textHistoryService,
-                       TextContentFilter textContentFilter) {
+                       TextContentFilter textContentFilter,
+                       LoopService loopService,
+                       UserRepository userRepository) {
 
         super(textRepository);
 
@@ -54,6 +64,8 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         this.versionService = versionService;
         this.textHistoryService = textHistoryService;
         this.textContentFilter = textContentFilter;
+        this.loopService = loopService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -134,6 +146,33 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         return savedText;
     }
+
+    @Override
+    public Text updateTextInCurrentVersion(TextJPA text, SaveMode saveMode) {
+        final Version version = text.getVersion();
+        final LanguageJPA language = text.getLanguage();
+        final Integer index = text.getIndex();
+        final User currentUser = userRepository.getOne(Imcms.getUser().getId());
+
+        if (saveMode == SaveMode.UPDATE) {
+
+            final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
+            final Integer id = (loopEntryRef == null)
+                    ? repository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
+                    : repository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+
+            text.setId(id);
+        }
+
+        loopService.createLoopEntryIfNotExists(version, text.getLoopEntryRef());
+
+        final TextJPA savedText = repository.save(text);
+
+        textHistoryService.save(new TextHistoryJPA(text, language, currentUser));
+
+        return savedText;
+    }
+
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {

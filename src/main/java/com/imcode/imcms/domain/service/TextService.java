@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.enums.SaveMode;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -23,6 +24,8 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
     Text getLikePublishedText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
     Text save(Text text);
+
+    Text updateTextInCurrentVersion(TextJPA text, SaveMode saveMode);
 
     Set<Text> getPublicTexts(int docId, Language language);
 

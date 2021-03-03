@@ -1,13 +1,37 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.enums.SaveMode;
+import com.imcode.imcms.mapping.container.Container;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.LanguageContainer;
+import com.imcode.imcms.mapping.container.MenuContainer;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.mapping.container.TextDocLoopContainer;
+import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.container.TextDocTextsContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.repository.*;
+import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.LoopJPA;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
+import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -28,32 +52,32 @@ public class TextDocumentContentSaver {
     private final MenuService menuService;
     private final VersionRepository versionRepository;
     private final TextRepository textRepository;
-    private final TextHistoryRepository textHistoryRepository;
     private final ImageRepository imageRepository;
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
-    private final LoopRepository loopRepository;
     private final LanguageRepository languageRepository;
     private final UserRepository userRepository;
+    private final TextService textService;
+    private final LoopService loopService;
 
     public TextDocumentContentSaver(MenuService menuService,
                                     VersionRepository versionRepository,
                                     TextRepository textRepository,
-                                    TextHistoryRepository textHistoryRepository,
                                     ImageRepository imageRepository,
                                     TextDocumentTemplateRepository textDocumentTemplateRepository,
-                                    LoopRepository loopRepository,
                                     LanguageRepository languageRepository,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    TextService textService,
+                                    LoopService loopService) {
 
         this.menuService = menuService;
         this.versionRepository = versionRepository;
         this.textRepository = textRepository;
-        this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
-        this.loopRepository = loopRepository;
         this.languageRepository = languageRepository;
         this.userRepository = userRepository;
+        this.textService = textService;
+        this.loopService = loopService;
     }
 
     /**
@@ -63,11 +87,10 @@ public class TextDocumentContentSaver {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
         LanguageJPA language = findLanguage(docRef);
-        User user = findUser(userDomainObject);
 
         // loops must be created before loop items (texts and images)
 //        createLoops(doc, version);
-        saveTexts(doc, version, language, user, SaveMode.CREATE);
+        saveTexts(doc, version, language, SaveMode.CREATE);
         saveImages(doc, version, language, SaveMode.CREATE);
 //        saveMenus(doc, version, SaveMode.CREATE);
 
@@ -87,9 +110,8 @@ public class TextDocumentContentSaver {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
         LanguageJPA language = findLanguage(docRef);
-        User user = findUser(userDomainObject);
 
-        saveTexts(doc, version, language, user, SaveMode.CREATE);
+        saveTexts(doc, version, language, SaveMode.CREATE);
         saveImages(doc, version, language, SaveMode.CREATE);
     }
 
@@ -100,7 +122,6 @@ public class TextDocumentContentSaver {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
         LanguageJPA language = findLanguage(docRef);
-        User user = findUser(userDomainObject);
 
         // loop items must be deleted before loops (texts and images)
         textRepository.deleteByVersionAndLanguage(version, language);
@@ -111,7 +132,7 @@ public class TextDocumentContentSaver {
         loopRepository.deleteByVersion(version);
 
         createLoops(doc, version);*/
-        saveTexts(doc, version, language, user, SaveMode.UPDATE);
+        saveTexts(doc, version, language, SaveMode.UPDATE);
         saveImages(doc, version, language, SaveMode.UPDATE);
 //        saveMenus(doc, version, SaveMode.UPDATE);
 
@@ -146,21 +167,19 @@ public class TextDocumentContentSaver {
     }
 
     public void saveText(TextDocTextContainer container, UserDomainObject userDomainObject) {
-        User user = findUser(userDomainObject);
         TextJPA text = toJpaObject(container);
 
-        saveText(text, user, SaveMode.UPDATE);
+        textService.save(text);
     }
 
     public void saveTexts(TextDocTextsContainer container, UserDomainObject userDomainObject) {
-        User user = findUser(userDomainObject);
         Version version = findVersion(container);
 
         container.getTexts().forEach((languageDO, textDO) -> {
             LanguageJPA language = findLanguage(languageDO);
             TextJPA text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
-            saveText(text, user, SaveMode.UPDATE);
+            textService.save(text);
         });
     }
 
@@ -195,13 +214,11 @@ public class TextDocumentContentSaver {
         }
     }
 
-    private void saveTexts(TextDocumentDomainObject doc, Version version, LanguageJPA language, User user, SaveMode saveMode) {
+    private void saveTexts(TextDocumentDomainObject doc, Version version, LanguageJPA language, SaveMode saveMode) {
         for (Map.Entry<Integer, TextDomainObject> entry : doc.getTexts().entrySet()) {
             TextJPA text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
-            saveText(text, user, saveMode);
-
-            updateWorkingVersionText(text, user);
+            textService.save(text);
         }
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> entry : doc.getLoopTexts().entrySet()) {
@@ -210,33 +227,9 @@ public class TextDocumentContentSaver {
 
             TextJPA text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
-            saveText(text, user, saveMode);
-
-            updateWorkingVersionText(text, user);
+            textService.save(text);
         }
     }
-
-    //need to update working version to latest version text because if text set like published
-    // we must have same texts to both version
-    private void updateWorkingVersionText(TextJPA text, User user) {
-        if (text.isLikePublished()) {
-
-            final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
-            final Integer index = text.getIndex();
-            final Version version = versionRepository.findWorking(text.getDocId());
-            final LanguageJPA language = text.getLanguage();
-
-            final TextJPA receivedText = (loopEntryRef == null)
-                    ? textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                    : textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
-
-            if (null != receivedText) {
-                receivedText.setText(text.getText());
-                savingText(version, receivedText, language, user);
-            }
-        }
-    }
-
 
     private void saveImage(ImageJPA image, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
@@ -248,53 +241,8 @@ public class TextDocumentContentSaver {
             image.setId(id);
         }
 
-        createLoopEntryIfNotExists(image.getVersion(), image.getLoopEntryRef());
+        loopService.createLoopEntryIfNotExists(image.getVersion(), image.getLoopEntryRef());
         imageRepository.save(image);
-    }
-
-    private void saveText(TextJPA text, User user, SaveMode saveMode) {
-        final Version version = text.getVersion();
-        final LanguageJPA language = text.getLanguage();
-        final Integer index = text.getIndex();
-        final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
-
-        if (saveMode == SaveMode.UPDATE) {
-
-            final Integer id = (loopEntryRef == null)
-                    ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                    : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
-
-            text.setId(id);
-        }
-
-        savingText(version, text, language, user);
-    }
-
-    private void savingText(Version version, TextJPA text, LanguageJPA language, User user) {
-        createLoopEntryIfNotExists(version, text.getLoopEntryRef());
-        textRepository.save(text);
-        textHistoryRepository.save(new TextHistoryJPA(text, language, user));
-    }
-
-    private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {
-        if (entryRef == null) return;
-
-        LoopJPA loop = loopRepository.findByVersionAndIndex(
-                version, entryRef.getLoopIndex());
-        int entryIndex = entryRef.getLoopEntryIndex();
-        int loopIndex = entryRef.getLoopIndex();
-
-        if (loop == null) {
-            loop = new LoopJPA();
-            loop.setVersion(version);
-            loop.setIndex(loopIndex);
-            loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
-        } else {
-            if (!loop.containsEntry(entryRef.getLoopEntryIndex())) {
-                loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
-            }
-        }
-        loopRepository.save(loop);
     }
 
     private TextJPA toJpaObject(TextDocTextContainer container) {
@@ -400,9 +348,5 @@ public class TextDocumentContentSaver {
 
     private LanguageJPA findLanguage(com.imcode.imcms.api.DocumentLanguage documentLanguage) {
         return languageRepository.findByCode(documentLanguage.getCode());
-    }
-
-    private enum SaveMode {
-        CREATE, UPDATE
     }
 }

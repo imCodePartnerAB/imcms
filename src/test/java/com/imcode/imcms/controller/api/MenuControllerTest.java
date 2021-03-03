@@ -13,7 +13,7 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.sorted.TypeSort;
+import com.imcode.imcms.enums.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
+import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static imcode.server.ImcmsConstants.SWE_CODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

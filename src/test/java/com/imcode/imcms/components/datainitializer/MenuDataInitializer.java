@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
+import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 
 @Component
 public class MenuDataInitializer extends TestDataCleaner {
