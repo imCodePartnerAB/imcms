@@ -292,7 +292,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
-    // todo: move to TemplateService!
     public String getAdminTemplatePath(String adminTemplateName) {
         return "/" + config.getTemplatePath().getPath() + "/" + Imcms.getUser().getLanguage() + "/admin/"
                 + adminTemplateName;

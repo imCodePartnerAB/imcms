@@ -14,4 +14,8 @@ public interface LanguageService {
 
     Language getDefaultLanguage();
 
+    void deleteByCode(String code);
+
+    void save(Language language);
+
 }

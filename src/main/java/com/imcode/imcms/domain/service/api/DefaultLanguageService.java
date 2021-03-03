@@ -4,15 +4,18 @@ import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.exception.LanguageNotAvailableException;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.LanguageMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service("languageService")
 @Slf4j
 class DefaultLanguageService implements LanguageService {
@@ -61,5 +64,26 @@ class DefaultLanguageService implements LanguageService {
     @Override
     public Language getDefaultLanguage() {
         return new LanguageDTO(findByCode(defaultLang));
+    }
+
+    @Override
+    public void deleteByCode(String code) {
+        final LanguageJPA foundLanguage = languageRepository.findByCode(code);
+
+        languageRepository.delete(foundLanguage);
+    }
+
+    @Override
+    public void save(Language language) {
+        LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
+
+        if (jpaLanguage != null) {
+            jpaLanguage.setName(language.getName());
+            jpaLanguage.setNativeName(language.getNativeName());
+        } else {
+            languageRepository.save(
+                    new LanguageJPA(language.getCode(), language.getName(), language.getNativeName())
+            );
+        }
     }
 }

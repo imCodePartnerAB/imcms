@@ -36,7 +36,6 @@ import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.STATIC_CACHE_NAME;
 import static net.sf.ehcache.CacheManager.getCacheManager;
 
-//TODO cover by tests if possible
 @Service
 public class DefaultTemporalDataService implements TemporalDataService {
 
