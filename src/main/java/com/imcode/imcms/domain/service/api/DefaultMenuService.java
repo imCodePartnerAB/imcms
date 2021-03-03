@@ -16,7 +16,7 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.sorted.TypeSort;
+import com.imcode.imcms.enums.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
+import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 
 @Service
 @Slf4j

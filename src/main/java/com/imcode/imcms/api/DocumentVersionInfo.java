@@ -32,7 +32,7 @@ public class DocumentVersionInfo implements Serializable {
     private final DocumentVersion defaultVersion;
 
     /**
-     * Version list sorted ascending.
+     * Version list enums ascending.
      */
     private final List<DocumentVersion> versions;
 
@@ -110,7 +110,7 @@ public class DocumentVersionInfo implements Serializable {
 
     /**
      * Return unmodifiable map of document's version
-     * sorted by number in ascending order.
+     * enums by number in ascending order.
      *
      * @return unmodifiable list of document's versions.
      */

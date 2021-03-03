@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TypeSorterMenuService;
-import com.imcode.imcms.sorted.TypeSort;
+import com.imcode.imcms.enums.TypeSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

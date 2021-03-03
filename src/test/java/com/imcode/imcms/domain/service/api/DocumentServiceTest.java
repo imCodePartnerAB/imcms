@@ -97,7 +97,7 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static com.imcode.imcms.sorted.TypeSort.TREE_SORT;
+import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
