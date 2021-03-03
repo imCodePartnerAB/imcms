@@ -809,8 +809,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final String namePathTest = pathTest.getFileName().toString();
         final String namePathTarget = pathTarget.getFileName().toString();
         final DocumentDTO document = documentDataInitializer.createData();
-        final Template template = templateDataInitializer.createData(namePathTest);
-        templateDataInitializer.createData(document.getId(), template.getName(), template.getName());
+
+        templateDataInitializer.createData(document.getId(), namePathTest, namePathTest);
 
         Files.createDirectories(pathTest);
 
@@ -909,7 +909,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createFile(oldTemplatePath);
         Files.createFile(newTemplatePath);
-        templateDataInitializer.createData(oldTemplateName);
+
         templateDataInitializer.createData(replaceTemplateName);
         templateDataInitializer.createData(document.getId(), oldTemplateName, oldTemplateName);
 
@@ -924,18 +924,18 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void replaceTemplate_When_oldTemplateNotFileButNameExists_Expected_ReplacedTemplate() throws IOException {
-        final Template oldTemplate = templateDataInitializer.createData(testTemplateName);
         final Template newTemplate = templateDataInitializer.createData(testTemplateName + "2");
         final DocumentDTO document = documentDataInitializer.createData();
-        templateDataInitializer.createData(document.getId(), oldTemplate.getName(), oldTemplate.getName());
-        final Path oldTemplatePath = Paths.get(oldTemplate.getName());
+
+        templateDataInitializer.createData(document.getId(), testTemplateName, testTemplateName);
+        final Path oldTemplatePath = Paths.get(testTemplateName);
         final Path newTemplatePath = Paths.get(newTemplate.getName());
-        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(oldTemplate.getName())).size());
+        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
         assertEquals(0, fileService.getDocumentsByTemplatePath(Paths.get(newTemplate.getName())).size());
 
         fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath);
         assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
-        assertNotNull(templateRepository.findByName(oldTemplate.getName()));
+        assertNotNull(templateRepository.findByName(testTemplateName));
     }
 
     @Test
@@ -981,7 +981,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createFile(newTemplatePath);
         templateDataInitializer.createData("testTemplateName");
-        templateDataInitializer.createData(replaceTemplateName);
         templateDataInitializer.createData(document.getId(), replaceTemplateName, replaceTemplateName);
 
         assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath));
