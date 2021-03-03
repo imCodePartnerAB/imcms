@@ -7,6 +7,8 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
@@ -93,6 +95,28 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
                 .stream()
                 .map(LoopDTO::new)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {
+        if (entryRef == null) return;
+
+        LoopJPA loop = repository.findByVersionAndIndex(
+                version, entryRef.getLoopIndex());
+        int entryIndex = entryRef.getLoopEntryIndex();
+        int loopIndex = entryRef.getLoopIndex();
+
+        if (loop == null) {
+            loop = new LoopJPA();
+            loop.setVersion(version);
+            loop.setIndex(loopIndex);
+            loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
+        } else {
+            if (!loop.containsEntry(entryRef.getLoopEntryIndex())) {
+                loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
+            }
+        }
+        repository.save(loop);
     }
 
     @Override
