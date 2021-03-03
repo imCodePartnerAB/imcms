@@ -46,22 +46,17 @@ public class TemplateDataInitializer extends TestDataCleaner {
                 .collect(Collectors.toList());
     }
 
-    public Template createData(final String name) { //todo improve: delete condition on exist
-        if (templateRepository.findByName(name) != null) {
-            return new TemplateDTO(templateRepository.findByName(name));
-        } else {
+    public Template createData(final String name) {
             return Value.apply(new TemplateJPA(), template -> {
                 template.setName(name);
                 template.setHidden(Math.random() < 0.5);
                 templateRepository.saveAndFlush(template);
                 return new TemplateDTO(template);
             });
-        }
     }
 
     public TextDocumentTemplateJPA createData(int docId, String templateName, String childrenTemplate) {
-        createData(templateName);
-//        createData(childrenTemplate);
+        if (templateRepository.findByName(templateName) == null) createData(templateName);
 
         final TextDocumentTemplateJPA textDocumentTemplate = new TextDocumentTemplateJPA();
         textDocumentTemplate.setTemplateName(templateName);
