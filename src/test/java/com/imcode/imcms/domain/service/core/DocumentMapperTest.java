@@ -6,8 +6,8 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentService;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.mapping.DocGetterCallback;
@@ -33,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 public class DocumentMapperTest extends WebAppSpringTestConfig {
 
+    private final String templateNameTest = "testTemplate";
+
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
@@ -46,13 +48,14 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
     private LanguageService languageService;
 
     @Autowired
-    private com.imcode.imcms.domain.service.DocumentService<TextDocumentDTO> textDocumentService;
+    private TemplateDataInitializer templateDataInitializer;
 
 
     @BeforeEach
     public void setUp() {
         documentDataInitializer.cleanRepositories();
         versionDataInitializer.cleanRepositories();
+        templateDataInitializer.cleanRepositories();
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
@@ -73,6 +76,8 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
         final ContentManagementSystem contentManagementSystem = ContentManagementSystem.create(Imcms.getServices(), Imcms.getUser());
         final Integer docId = documentDataInitializer.createData().getId();
         versionDataInitializer.createData(0, docId);
+        templateDataInitializer.createData(docId, templateNameTest, templateNameTest);
+
         DocumentService documentService = contentManagementSystem.getDocumentService();
 
         TextDocument textDocument = documentService.getTextDocument(docId);
@@ -106,6 +111,8 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
         final ContentManagementSystem contentManagementSystem = ContentManagementSystem.create(Imcms.getServices(), Imcms.getUser());
         final Integer docId = documentDataInitializer.createData().getId();
         versionDataInitializer.createData(0, docId);
+        templateDataInitializer.createData(docId, templateNameTest, templateNameTest);
+
         DocumentService documentService = contentManagementSystem.getDocumentService();
 
         TextDocument textDocument = documentService.getTextDocument(docId);
@@ -127,6 +134,8 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
         final ContentManagementSystem contentManagementSystem = ContentManagementSystem.create(Imcms.getServices(), Imcms.getUser());
         final Integer docId = documentDataInitializer.createData().getId();
         versionDataInitializer.createData(0, docId);
+        templateDataInitializer.createData(docId, templateNameTest, templateNameTest);
+
         DocumentService documentService = contentManagementSystem.getDocumentService();
 
         TextDocument textDocument = documentService.getTextDocument(docId);
@@ -166,6 +175,8 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
         final UserDomainObject user = Imcms.getUser();
 
         versionDataInitializer.createData(1, docId);
+
+        templateDataInitializer.createData(docId, templateNameTest, templateNameTest);
 
         DocumentService documentService = contentManagementSystem.getDocumentService();
 
