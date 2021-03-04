@@ -269,7 +269,7 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void copyTextDocument_Expect_Copied() {
-        commonContentDataInitializer.createData(1001, 0);
+        commonContentDataInitializer.createData(1001, 0, true, true);
 
         final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
         final TextDocumentTemplateJPA textTemplate =
@@ -445,7 +445,7 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void copyDocument_Expect_Copied() {
-        commonContentDataInitializer.createData(1001, 0);
+        commonContentDataInitializer.createData(1001, 0, true, true);
 
         final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
 

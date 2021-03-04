@@ -35,7 +35,7 @@ public class CommonContentRepositoryTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void recreateCommonContents() {
         commonContentDataInitializer.cleanRepositories();
-        commonContentDataInitializer.createData(DOC_ID, VERSION_NO);
+        commonContentDataInitializer.createData(DOC_ID, VERSION_NO, true, true);
     }
 
     @Test

@@ -63,7 +63,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getOrCreateCommonContent_When_Exist_Expect_CorrectDTO() {
-        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX)
+        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     public void getOrCreateCommonContent_When_NotExist_Expect_CreatedAndCorrectDTO() {
         final int newVersion = 100;
         versionDataInitializer.createData(newVersion, DOC_ID);
-        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX);
+        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,true, true);
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
             assertNotNull(commonContentService.getOrCreate(DOC_ID, newVersion, languageDTO));
         }
@@ -86,7 +86,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveCommonContent_When_ExistBefore_Expect_Saved() {
-        final List<CommonContent> contents = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX)
+        final List<CommonContent> contents = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
@@ -139,7 +139,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
         version.setDocId(DOC_ID);
         version.setNo(WORKING_VERSION_INDEX);
 
-        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX);
+        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true);
         assertFalse(commonContentRepository.findByVersion(version).isEmpty());
 
         commonContentService.deleteByDocId(DOC_ID);
@@ -148,7 +148,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getByVersion() {
-        final Set<CommonContentDTO> expected = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX)
+        final Set<CommonContentDTO> expected = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toSet());
@@ -165,7 +165,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void createVersionedContent() {
 
-        final Set<CommonContentDTO> expected = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX)
+        final Set<CommonContentDTO> expected = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
                 .stream()
                 .map(CommonContentDTO::new)
                 .peek(commonContentDTO -> {

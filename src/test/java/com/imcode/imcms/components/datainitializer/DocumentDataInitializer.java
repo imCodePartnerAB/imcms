@@ -39,7 +39,8 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 
-    protected DocumentDTO createData(Meta.DocumentType type, Meta.PublicationStatus status) {
+    protected DocumentDTO createData(Meta.DocumentType type, Meta.PublicationStatus status,
+                                     boolean isEnabledEngContent, boolean isEnabledSweContent) {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
             meta.setArchiverId(1);
@@ -65,7 +66,9 @@ public class DocumentDataInitializer extends TestDataCleaner {
         final Integer docId = metaDoc.getId();
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, docId);
         final int versionIndex = version.getNo();
-        final List<CommonContent> commonContents = commonContentDataInitializer.createData(docId, versionIndex);
+        final List<CommonContent> commonContents = commonContentDataInitializer.createData(
+                docId, versionIndex, isEnabledEngContent, isEnabledSweContent
+        );
 
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDoc, version, commonContents);
         documentDTO.setLatestVersion(AuditDTO.fromVersion(version));
@@ -74,25 +77,25 @@ public class DocumentDataInitializer extends TestDataCleaner {
     }
 
     protected DocumentDTO createData(Meta.DocumentType type) {
-        return createData(type, Meta.PublicationStatus.APPROVED);
+        return createData(type, Meta.PublicationStatus.APPROVED, true, true);
     }
 
     public DocumentDTO createData() {
-        return createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED);
+        return createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED, true, true);
     }
 
-    public List<DocumentDTO> createDocumentsData(Integer count) {
+    public List<DocumentDTO> createDocumentsData(Integer count, boolean isEnabledEngContent, boolean isEnabledSweContent) {
         final List<DocumentDTO> newDocuments = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            newDocuments.add(createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED));
+            newDocuments.add(createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED, isEnabledEngContent, isEnabledSweContent));
         }
 
         return newDocuments;
     }
 
-    public DocumentDTO createData(Meta.PublicationStatus status) {
-        return createData(Meta.DocumentType.TEXT, status);
+    public DocumentDTO createData(Meta.PublicationStatus status, boolean isEnabledEngContent, boolean isEnabledSweContent ) {
+        return createData(Meta.DocumentType.TEXT, status, isEnabledEngContent, isEnabledSweContent);
     }
 
     public void cleanRepositories(int createdDocId) {
