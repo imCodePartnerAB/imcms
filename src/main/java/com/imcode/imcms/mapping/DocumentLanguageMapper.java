@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated use {@link LanguageService}
+ */
+
+@Deprecated
 @Service
 @Transactional
 public class DocumentLanguageMapper {
