@@ -18,4 +18,6 @@ public interface LanguageService {
 
     void save(Language language);
 
+    List<Language> getEnabledContentLanguagesByDocId(Integer docId);
+
 }
