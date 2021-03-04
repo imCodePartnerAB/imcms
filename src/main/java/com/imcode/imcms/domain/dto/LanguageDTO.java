@@ -28,4 +28,11 @@ public class LanguageDTO extends Language {
     public LanguageDTO(Language from) {
         super(from);
     }
+
+    public LanguageDTO(String code, String name, String nativeName) {
+        this.id = null;
+        this.code = code;
+        this.name = name;
+        this.nativeName = nativeName;
+    }
 }
