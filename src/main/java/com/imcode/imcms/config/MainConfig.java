@@ -59,7 +59,8 @@ import java.util.function.BiFunction;
         DBConfig.class,
         ApplicationConfig.class,
         MappingConfig.class,
-        WebConfig.class
+        WebConfig.class,
+        CachingConfig.class
 })
 @ComponentScan({
         "com.imcode.imcms.domain",
