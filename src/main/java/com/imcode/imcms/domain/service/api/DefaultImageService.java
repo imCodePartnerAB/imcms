@@ -18,6 +18,8 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
+import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.maxBy;
@@ -61,6 +65,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         this.imageJPAToImageDTO = imageJPAToImageDTO;
     }
 
+    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#dataHolder.docId+'-'+#dataHolder.langCode+'-'+#dataHolder.index")
     @Override
     public ImageDTO getImage(ImageDTO dataHolder) {
 
@@ -76,11 +81,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         );
     }
 
+    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
     @Override
     public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
+    @Cacheable(cacheNames = PUBLIC_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
     @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
@@ -129,6 +136,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return repository.findByVersionAndLanguage(version, new LanguageJPA(language));
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
     @Override
     public void saveImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
@@ -148,6 +156,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         super.updateWorkingVersion(docId);
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
@@ -178,6 +187,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 });
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
     @Override
     public void deleteImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
