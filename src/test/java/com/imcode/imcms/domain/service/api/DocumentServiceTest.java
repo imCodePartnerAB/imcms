@@ -10,6 +10,7 @@ import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
@@ -153,6 +154,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private MetaRepository metaRepository;
     @Autowired
+    private ImageCacheManager imageCacheManager;
+    @Autowired
     private TextDocumentTemplateRepository textDocumentTemplateRepository;
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
@@ -207,7 +210,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 propertyService, versionedContentServices,
                 menuService,
                 menuToMenuDTO,
-                imageJPAImageDTO);
+                imageJPAImageDTO,
+                imageCacheManager);
         ((DefaultDocumentService) documentService).init();
     }
 
