@@ -21,15 +21,16 @@
     </cache>
 
     <cache name="OtherContentCachingFilter"
-           maxEntriesLocalHeap="2000"
+           maxEntriesLocalHeap="20000"
            timeToIdleSeconds="2629744"
            overflowToDisk="false"
-           timeToLiveSeconds="2629744">
+           timeToLiveSeconds="2629744"
+           memoryStoreEvictionPolicy="LRU">
         <persistence strategy="distributed"/>
     </cache>
 
     <cache name="PublicDocumentsCache"
-           maxEntriesLocalHeap="3000"
+           maxEntriesLocalHeap="30000"
            timeToIdleSeconds="2629744"
            timeToLiveSeconds="2629744"
            overflowToDisk="false"

@@ -81,6 +81,7 @@ dependencies {
     compile("net.sf.ehcache:ehcache-web:2.0.4") {
         exclude(module: 'ehcache-core')
     }
+    implementation "org.springframework:spring-context-support:${springframeworkVersion}"
     compile "org.apache.commons:commons-collections4:4.3"
     compile "org.apache.commons:commons-email:1.5"
     compile "org.apache.commons:commons-lang3:3.8.1"

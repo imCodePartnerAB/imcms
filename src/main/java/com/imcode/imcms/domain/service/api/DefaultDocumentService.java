@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
@@ -72,6 +73,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final MenuService menuService;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
+    private final ImageCacheManager imageCacheManager;
 
     private DeleterByDocumentId[] docContentServices = {};
 
@@ -89,7 +91,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            PropertyService propertyService,
                            @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices,
                            MenuService menuService, Function<Menu, MenuDTO> menuToMenuDTO,
-                           Function<ImageJPA, ImageDTO> imageJPAToImageDTO) {
+                           Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
+                           ImageCacheManager imageCacheManager) {
 
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.metaRepository = metaRepository;
@@ -107,6 +110,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.menuService = menuService;
         this.menuToMenuDTO = menuToMenuDTO;
         this.imageJPAToImageDTO = imageJPAToImageDTO;
+        this.imageCacheManager = imageCacheManager;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
 
@@ -205,6 +209,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         final Meta publishMe = metaRepository.findOne(docId);
         documentsCache.invalidateDoc(docId, publishMe.getAlias());
+        imageCacheManager.removePublicImagesFromCacheByKey(String.valueOf(docId));
 
         if (Meta.PublicationStatus.NEW.equals(publishMe.getPublicationStatus())) {
             publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);

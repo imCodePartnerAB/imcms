@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.factory.ImageInTextFactory;
@@ -18,6 +19,8 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
+import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.maxBy;
@@ -44,13 +49,15 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     private final TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA;
     private final ImageInTextFactory imageInTextFactory;
     private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
+    private final ImageCacheManager imageCacheManager;
 
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
                         LanguageService languageService,
                         ImageHistoryService imageHistoryService, TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA,
                         ImageInTextFactory imageInTextFactory,
-                        Function<ImageJPA, ImageDTO> imageJPAToImageDTO) {
+                        Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
+                        ImageCacheManager imageCacheManager) {
 
         super(imageRepository);
         this.versionService = versionService;
@@ -59,6 +66,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         this.imageDTOToImageJPA = imageDTOToImageJPA;
         this.imageInTextFactory = imageInTextFactory;
         this.imageJPAToImageDTO = imageJPAToImageDTO;
+        this.imageCacheManager = imageCacheManager;
     }
 
     @Override
@@ -76,11 +84,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         );
     }
 
+    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
     @Override
     public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
+    @Cacheable(cacheNames = PUBLIC_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
     @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
@@ -129,6 +139,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return repository.findByVersionAndLanguage(version, new LanguageJPA(language));
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
     @Override
     public void saveImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
@@ -144,10 +155,12 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             updateImagesWithDifferentLangCode(imageDTO, version);
 
         }
+        imageCacheManager.removeOtherImagesFromCacheByKey(""+docId);
 
         super.updateWorkingVersion(docId);
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
@@ -178,6 +191,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 });
     }
 
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
     @Override
     public void deleteImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
