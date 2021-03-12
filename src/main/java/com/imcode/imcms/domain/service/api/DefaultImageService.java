@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.factory.ImageInTextFactory;
@@ -48,13 +49,15 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     private final TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA;
     private final ImageInTextFactory imageInTextFactory;
     private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
+    private final ImageCacheManager imageCacheManager;
 
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
                         LanguageService languageService,
                         ImageHistoryService imageHistoryService, TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA,
                         ImageInTextFactory imageInTextFactory,
-                        Function<ImageJPA, ImageDTO> imageJPAToImageDTO) {
+                        Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
+                        ImageCacheManager imageCacheManager) {
 
         super(imageRepository);
         this.versionService = versionService;
@@ -63,9 +66,9 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         this.imageDTOToImageJPA = imageDTOToImageJPA;
         this.imageInTextFactory = imageInTextFactory;
         this.imageJPAToImageDTO = imageJPAToImageDTO;
+        this.imageCacheManager = imageCacheManager;
     }
 
-    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#dataHolder.docId+'-'+#dataHolder.langCode+'-'+#dataHolder.index")
     @Override
     public ImageDTO getImage(ImageDTO dataHolder) {
 
@@ -152,6 +155,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             updateImagesWithDifferentLangCode(imageDTO, version);
 
         }
+        imageCacheManager.removeOtherImagesFromCacheByKey(""+docId);
 
         super.updateWorkingVersion(docId);
     }
