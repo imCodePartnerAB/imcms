@@ -35,21 +35,21 @@ public class CommonContentDataInitializer extends TestDataCleaner {
         versionDataInitializer.cleanRepositories();
     }
 
-    public List<CommonContent> createData(Integer docId, Integer versionIndex) {
-        return createData(versionDataInitializer.createData(versionIndex, docId));
+    public List<CommonContent> createData(Integer docId, Integer versionIndex, boolean isEnabledEngContent, boolean isEnabledSweContent) {
+        return createData(versionDataInitializer.createData(versionIndex, docId), isEnabledEngContent, isEnabledSweContent);
     }
 
-    public List<CommonContent> createData(Version version) {
+    public List<CommonContent> createData(Version version, boolean isEnabledEngContent, boolean isEnabledSweContent) {
         LanguageJPA en = languageRepository.findByCode(ENG_CODE);
         LanguageJPA se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
 
         return Arrays.asList(
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        version.getDocId(), en, "headline_en", "menuText_en", true, version.getNo()
+                        version.getDocId(), en, "headline_en", "menuText_en", isEnabledEngContent, version.getNo()
                 )),
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        version.getDocId(), se, "headline_se", "menuText_se", true, version.getNo()
+                        version.getDocId(), se, "headline_se", "menuText_se", isEnabledSweContent, version.getNo()
                 ))
         );
     }

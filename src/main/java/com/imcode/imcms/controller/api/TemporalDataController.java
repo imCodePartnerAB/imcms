@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/temporal-data")
@@ -65,27 +64,27 @@ public class TemporalDataController {
     }
 
     @GetMapping(value = "/date-reindex", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getDateDocumentReindex() throws IOException {
+    public String getDateDocumentReindex() {
         return temporalDataService.getDateDocumentReIndex();
     }
 
     @GetMapping(value = "/date-public-document", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getDateRemoveDocumentCache() throws IOException {
+    public String getDateRemoveDocumentCache() {
         return temporalDataService.getDateInvalidateDocumentCache();
     }
 
     @GetMapping(value = "/date-static-content", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getDateRemoveStaticContentCache() throws IOException {
+    public String getDateRemoveStaticContentCache() {
         return temporalDataService.getDateStaticContentCache();
     }
 
     @GetMapping(value = "/date-other-content", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getDateRemoveOtherContentCache() throws IOException {
+    public String getDateRemoveOtherContentCache() {
         return temporalDataService.getDateInvalidateContentCache();
     }
 
     @GetMapping(value = "/date-recache", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getDateReCacheDocuments() throws IOException {
+    public String getDateReCacheDocuments() {
         return temporalDataService.getDateAddedInCacheDocuments();
     }
 }

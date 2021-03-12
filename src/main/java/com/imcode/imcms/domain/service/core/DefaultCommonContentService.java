@@ -105,6 +105,14 @@ public class DefaultCommonContentService
     }
 
     @Override
+    public List<CommonContent> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(toList());
+    }
+
+    @Override
     public void deleteByDocId(Integer docId) {
         repository.deleteByDocId(docId);
     }

@@ -123,7 +123,7 @@ public class LinkValidationServiceTest extends WebAppSpringTestConfig {
         int docId = documentDataInitializer.createData().getId();
         final Version latestVersionDoc = versionService.create(docId, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(latestVersionDoc);
+        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(latestVersionDoc, true, true);
 
         commonContentDTOS.get(0).setHeadline("Test");
 
@@ -183,7 +183,7 @@ public class LinkValidationServiceTest extends WebAppSpringTestConfig {
         int docId = documentDataInitializer.createData().getId();
         final Version version = versionService.create(docId, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(version);
+        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(version, true, true);
         commonContentDTOS.get(0).setHeadline("Test");
 
         commonContentService.save(docId, commonContentDTOS);

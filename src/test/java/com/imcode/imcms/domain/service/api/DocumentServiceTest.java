@@ -604,7 +604,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteByIds_Expect_DocumentsNotExistExceptionAfterDeletion() {
-        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2, true, true);
 
         assertEquals(2, createdDocuments.size());
         assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
@@ -623,7 +623,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteByIds_When_ExistDifferentContents_Expect_DocumentsNotExistExceptionAfterDeletion() {
-        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2, true, true);
 
         assertEquals(2, createdDocuments.size());
         assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
@@ -658,7 +658,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is user now
 
-        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2);
+        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2, true, true);
 
         assertEquals(2, createdDocuments.size());
         assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
@@ -868,7 +868,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void publishNewDocVersion_When_StatusIsNew_Expect_StatusSetToApproved() {
-        createdDoc = documentDataInitializer.createData(PublicationStatus.NEW);
+        createdDoc = documentDataInitializer.createData(PublicationStatus.NEW, true, true);
 
         assertEquals(PublicationStatus.NEW, createdDoc.getPublicationStatus());
 

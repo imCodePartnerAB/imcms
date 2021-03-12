@@ -5,75 +5,58 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemporalDataService;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.persistence.entity.DataOfTimeLastUseJPA;
+import com.imcode.imcms.persistence.repository.TemporalTimeLastUseRepository;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Meta.DocumentType.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.PublicationStatus.APPROVED;
-import static imcode.server.ImcmsConstants.IMCMS_HEADER_CACHING_ACTIVE;
-import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
-import static imcode.server.ImcmsConstants.STATIC_CACHE_NAME;
+import static imcode.server.ImcmsConstants.*;
 import static net.sf.ehcache.CacheManager.getCacheManager;
 
-//TODO cover by tests if possible
 @Service
+@Transactional
 public class DefaultTemporalDataService implements TemporalDataService {
 
-    private static final String REINDEX_DATE_REGEX = "(Last-date-reindex:)\\s+([\\d|-]*\\s+[\\d|:]*)";
-    private static final String PUBLIC_DOC_CACHE_DATE_REGEX = "(Public-document-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
-    private static final String STATIC_CONTENT_CACHE_DATE_REGEX = "(Static-content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
-    private static final String CONTENT_CACHE_DATE_REGEX = "(Content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
-    private static final String RECACHE_DATE_REGEX = "(Last-date-recache:)\\s+([\\d|-]*\\s+[\\d|:]*)";
-
     private final static Logger logger = Logger.getLogger(DefaultTemporalDataService.class);
-
+    private final Integer IDENTIFIER_LAST_DATA_USE = 1;
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final DocumentsCache publicDocumentsCache;
     private final ResolvingQueryIndex resolvingQueryIndex;
     private final DocumentMapper documentMapper;
-
-    private final Pattern patternReindexDate = Pattern.compile(REINDEX_DATE_REGEX);
-    private final Pattern patternDocCacheDate = Pattern.compile(PUBLIC_DOC_CACHE_DATE_REGEX);
-    private final Pattern patternStaticContentCacheDate = Pattern.compile(STATIC_CONTENT_CACHE_DATE_REGEX);
-    private final Pattern patternContentCacheDate = Pattern.compile(CONTENT_CACHE_DATE_REGEX);
-    private final Pattern patternReCacheDate = Pattern.compile(RECACHE_DATE_REGEX);
+    private final TemporalTimeLastUseRepository temporalTimeLastUseRepository;
 
     private final DocumentIndexServiceOps documentIndexServiceOps;
     private final DocumentService<DocumentDTO> defaultDocumentService;
 
-    @Value("/WEB-INF/logs/error.log")
-    private Path path;
-
     public DefaultTemporalDataService(DocumentsCache publicDocumentsCache,
                                       ResolvingQueryIndex resolvingQueryIndex,
                                       DocumentMapper documentMapper,
+                                      TemporalTimeLastUseRepository temporalTimeLastUseRepository,
                                       DocumentIndexServiceOps documentIndexServiceOps,
                                       DocumentService<DocumentDTO> defaultDocumentService) {
         this.publicDocumentsCache = publicDocumentsCache;
         this.resolvingQueryIndex = resolvingQueryIndex;
         this.documentMapper = documentMapper;
+        this.temporalTimeLastUseRepository = temporalTimeLastUseRepository;
         this.documentIndexServiceOps = documentIndexServiceOps;
         this.defaultDocumentService = defaultDocumentService;
     }
@@ -81,26 +64,37 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public void invalidatePublicDocumentCache() {
         publicDocumentsCache.invalidateCache();
-        logger.error("Public-document-invalidate-cache-date: " + formatter.format(new Date()));
+
+        final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(PUBLIC_CACHE_NAME);
+
+        logger.error("Public-document-invalidate-cache-date: " + formatter.format(updatedLastDate.getTimeLastRemovePublicCache()));
     }
 
     @Override
     public void invalidateStaticContentCache() {
         getCacheManager(null).getEhcache(STATIC_CACHE_NAME).removeAll();
-        logger.error("Static-content-invalidate-cache-date: " + formatter.format(new Date()));
+
+        final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(STATIC_CACHE_NAME);
+
+        logger.error("Static-content-invalidate-cache-date: " + formatter.format(updatedLastDate.getTimeLastRemoveStaticCache()));
     }
 
     @Override
     public void invalidateOtherContentCache() {
         getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
-        logger.error("Content-invalidate-cache-date: " + formatter.format(new Date()));
+
+        final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(OTHER_CACHE_NAME);
+
+        logger.error("Content-invalidate-cache-date: " + formatter.format(updatedLastDate.getTimeLastRemoveOtherCache()));
     }
 
     @Override
     public long rebuildDocumentIndexAndGetDocumentsAmount() {
         if (getAmountOfIndexedDocuments() == -1) {
             resolvingQueryIndex.rebuild();
-            logger.error("Last-date-reindex: " + formatter.format(new Date()));
+
+            final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(REINDEX_NAME);
+            logger.error("Last-date-reindex: " + formatter.format(updatedLastDate.getTimeLastReindex()));
         }
 
         return defaultDocumentService.countDocuments();
@@ -112,28 +106,33 @@ public class DefaultTemporalDataService implements TemporalDataService {
     }
 
     @Override
-    public String getDateInvalidateDocumentCache() throws IOException {
-        return getLastDateModification(patternDocCacheDate);
+    public String getDateInvalidateDocumentCache() {
+        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
+                .getTimeLastRemovePublicCache());
     }
 
     @Override
-    public String getDateStaticContentCache() throws IOException {
-        return getLastDateModification(patternStaticContentCacheDate);
+    public String getDateStaticContentCache() {
+        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
+                .getTimeLastRemoveStaticCache());
     }
 
     @Override
-    public String getDateInvalidateContentCache() throws IOException {
-        return getLastDateModification(patternContentCacheDate);
+    public String getDateInvalidateContentCache() {
+        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
+                .getTimeLastRemoveOtherCache());
     }
 
     @Override
-    public String getDateDocumentReIndex() throws IOException {
-        return getLastDateModification(patternReindexDate);
+    public String getDateDocumentReIndex() {
+        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
+                .getTimeLastReindex());
     }
 
     @Override
-    public String getDateAddedInCacheDocuments() throws IOException {
-        return getLastDateModification(patternReCacheDate);
+    public String getDateAddedInCacheDocuments() {
+        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
+                .getTimeLastBuildCache());
     }
 
     @Override
@@ -166,34 +165,15 @@ public class DefaultTemporalDataService implements TemporalDataService {
                     logger.error(String.format("Not connect on the path URL %s !", path));
                 }
             }
-            logger.error("Last-date-recache: " + formatter.format(new Date()));
+            final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(BUILD_CACHE_NAME);
+            logger.error("Last-date-recache: " + formatter.format(updatedLastDate.getTimeLastBuildCache()));
             publicDocumentsCache.setAmountOfCachedDocuments(-1);
-
         }
     }
 
     @Override
     public int getTotalAmountTextDocDataForCaching() {
         return getCountPublishedTextDocIdAndAlias().size();
-    }
-
-    private String getLastDateModification(Pattern pattern) throws IOException {
-        final List<String> validLines = new ArrayList<>();
-        final List<String> logLines = Files.readAllLines(path);
-        for (String line : logLines) {
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find()) {
-                validLines.add(matcher.group(2));
-            }
-        }
-        final long amountValidLines = validLines.size();
-        String validDateLine = null;
-        if (amountValidLines == 1) {
-            validDateLine = validLines.get(0);
-        } else if (amountValidLines > 1) {
-            validDateLine = validLines.stream().skip(amountValidLines - 1).findFirst().get();
-        }
-        return validDateLine;
     }
 
     private List<String> getCountPublishedTextDocIdAndAlias() {
@@ -214,4 +194,55 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
         return docIdsAndAlias;
     }
+
+    private DataOfTimeLastUseJPA getLastUseDateTime(String nameDate) {
+        DataOfTimeLastUseJPA updatedLastDate = new DataOfTimeLastUseJPA();
+        final Date currentDate = new Date();
+
+        DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
+        final Integer id = receivedDate.getId();
+        final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
+        final Date timeLastReindex = receivedDate.getTimeLastReindex();
+        final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
+        final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
+        final Date timeLastBuildCache = receivedDate.getTimeLastBuildCache();
+
+        switch (nameDate) {
+            case PUBLIC_CACHE_NAME:
+                updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+                        id, timeLastReindex, currentDate,
+                        timeLastRemoveStaticCache, timeLastRemoveOtherCache, timeLastBuildCache
+                ));
+                break;
+            case STATIC_CACHE_NAME:
+
+                updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+                        id, timeLastReindex, timeLastRemovePublicCache,
+                        currentDate, timeLastRemoveOtherCache, timeLastBuildCache
+                ));
+                break;
+            case OTHER_CACHE_NAME:
+
+                updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+                        id, timeLastReindex, timeLastRemovePublicCache,
+                        timeLastRemoveStaticCache, currentDate, timeLastBuildCache
+                ));
+                break;
+            case REINDEX_NAME:
+                updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+                        id, currentDate, timeLastRemovePublicCache,
+                        timeLastRemoveStaticCache, timeLastRemoveOtherCache,timeLastBuildCache
+                ));
+                break;
+            case BUILD_CACHE_NAME:
+                updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+                        id, timeLastReindex, timeLastRemovePublicCache,
+                        timeLastRemoveStaticCache, timeLastRemoveOtherCache, currentDate
+                ));
+                break;
+        }
+
+        return updatedLastDate;
+    }
 }
+

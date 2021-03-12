@@ -16,9 +16,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated use {@link LanguageService}
+ */
+
+@Deprecated
 @Service
 @Transactional
-// todo: move to LanguageService
 public class DocumentLanguageMapper {
 
     private final LanguageRepository languageRepository;
@@ -40,6 +44,10 @@ public class DocumentLanguageMapper {
         return toApiObject(languageService.findByCode(code));
     }
 
+    /**
+     * @deprecated use {@link LanguageService#deleteByCode(String)}
+     */
+    @Deprecated
     public void deleteByCode(String code) {
         LanguageJPA language = languageRepository.findByCode(code);
         if (language != null) languageRepository.delete(language);
@@ -49,6 +57,11 @@ public class DocumentLanguageMapper {
         setDefault(language.getCode());
     }
 
+    /** DocumentLanguage is deprecated class. Use Language class instead of this!
+     *
+     * @deprecated use {@link LanguageService#save(Language)}
+     */
+    @Deprecated
     public void save(DocumentLanguage language) {
         LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
 

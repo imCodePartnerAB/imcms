@@ -166,6 +166,9 @@ ImcmsConstants {
     //Should be same as at web.xml to support cache clean at TemporalDataService
     public static final String OTHER_CACHE_NAME = "OtherContentCachingFilter";
     public static final String STATIC_CACHE_NAME = "StaticContentCachingFilter";
+    public static final String PUBLIC_CACHE_NAME = "PublicCaching";
+    public static final String REINDEX_NAME = "ReIndexing";
+    public static final String BUILD_CACHE_NAME = "BuildCaching";
 
     public static final String IMCMS_HEADER_CACHING_ACTIVE = "Process-Caching-Active";
 

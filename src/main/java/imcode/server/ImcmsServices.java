@@ -38,6 +38,10 @@ public interface ImcmsServices {
     // set  session counter date
     void setSessionCounterDate(Date date);
 
+    /**
+     * @deprecated use {@link TemplateService#getTemplateAdminPath(String)}
+     */
+    @Deprecated
     // return template path
     String getAdminTemplatePath(String adminTemplateName);
 

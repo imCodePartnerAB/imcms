@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.06.18.
  */
-//TODO need check why we get errors with annotation transactional here !!
+
 @Service
 class LocalUserCreationService extends LocalUserValidationAndSaving implements UserCreationService {
 

@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 public interface TemporalDataService {
 
@@ -15,15 +14,15 @@ public interface TemporalDataService {
 
     long getAmountOfIndexedDocuments();
 
-    String getDateInvalidateDocumentCache() throws IOException;
+    String getDateInvalidateDocumentCache();
 
-    String getDateStaticContentCache() throws IOException;
+    String getDateStaticContentCache();
 
-    String getDateInvalidateContentCache() throws IOException;
+    String getDateInvalidateContentCache();
 
-    String getDateDocumentReIndex() throws IOException;
+    String getDateDocumentReIndex();
 
-    String getDateAddedInCacheDocuments() throws IOException;
+    String getDateAddedInCacheDocuments();
 
     void addDocumentsInCache(HttpServletRequest request);
 
