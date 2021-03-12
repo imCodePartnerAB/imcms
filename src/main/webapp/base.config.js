@@ -131,7 +131,7 @@ module.exports = {
                             'imcms-toolbar-view-builder',
                             'imcms-cropping-angle',
                             'imcms-crop-coords-controllers',
-                            'imcms-image-proportions-locker-button',
+                            'imcms-image-locker-button',
                             'imcms-image-active-tab',
                             'imcms-image-zoom',
                         ],
