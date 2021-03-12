@@ -88,6 +88,7 @@
 .imcms-advanced-mode__file-format {
     float: left;
     width: 40%;
+    height: 125px;
 }
 
 .imcms-advanced-mode__file-format .imcms-drop-down-list {
