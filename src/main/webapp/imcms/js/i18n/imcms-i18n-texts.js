@@ -490,6 +490,7 @@ const texts = {
                 imageName: 'bild ',
                 teaser: 'Teaser-bild',
                 proportion: "Proportioner",
+                compression: "Kompression",
                 presetCrop: "Förinställt beskärningsformat",
                 crop: "Förinställt",
                 activeTitle: 'Aktiv bild:',
@@ -532,7 +533,8 @@ const texts = {
                     title: 'Begränsade stilar',
                     info: 'Den använda bilden är begränsad till denna stil'
                 },
-                proportionsButtonTitle: "Bevara bildens proportioner Av/På",
+                proportionsButtonTitle: "Bevara bildens proportioner På/Av",
+                compressionButtonTitle: "Bildkomprimering På/Av",
                 wantedSize: "Önskad storlek (W x H)",
                 revertWantedSize: "Önskad storlek (H x W)",
                 displaySize: "Visad storlek (W x H)",
@@ -1470,6 +1472,7 @@ const texts = {
                 imageName: 'image ',
                 teaser: "Teaser image ",
                 proportion: "Proportions",
+                compression: "Compression",
                 presetCrop: "Preset crop format",
                 crop: "Crop",
                 activeTitle: 'Active image:',
@@ -1513,6 +1516,7 @@ const texts = {
                     info: 'The used image is restricted to this styles'
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
+                compressionButtonTitle: "Image compression On/Off",
                 wantedSize: "Wanted size (W x H)",
                 revertWantedSize: "Wanted size (H x W)",
                 displaySize: "Display size (W x H)",

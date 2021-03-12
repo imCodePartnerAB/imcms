@@ -10,12 +10,14 @@ const $ = require('jquery');
 
 
 let $proportionsBtn;
+
+let compress = true;
+let $compressBtn;
+
 const classButtonOn = 'imcms-button--switch-on';
 const classButtonOff = 'imcms-button--switch-off';
 
-const $proportionsText = components.texts.infoText('<div>', texts.proportion, {
-    style: 'line-height: 35px; vertical-align: top;'
-});
+const $proportionsText = getExplainText(texts.proportion);
 
 function getProportionsButton() {
     if ($proportionsBtn) {
@@ -46,6 +48,39 @@ function getProportionsButton() {
     return $proportionsBtn;
 }
 
+const $compressText = getExplainText(texts.compression);
+
+function getCompressButton() {
+
+    compess = true;
+
+    $compressBtn =  components.buttons.switchOnButton({
+        'data-state': 'active',
+        click: function () {
+
+            compress = !compress;
+
+            if(compress){
+                $(this).attr('data-state', 'active');
+                $compressBtn.removeClass(classButtonOff).addClass(classButtonOn);
+            }else{
+                $(this).attr('data-state', 'passive');
+                $compressBtn.removeClass(classButtonOn).addClass(classButtonOff);
+            }
+
+        }
+    });
+    components.overlays.defaultTooltip($compressBtn, texts.compressionButtonTitle);
+
+    return $compressBtn;
+}
+
+function getExplainText(text){
+    return components.texts.infoText('<div>', text, {
+        style: 'line-height: 35px; vertical-align: top;'
+    });
+}
+
 module.exports = {
     getProportionsButton: getProportionsButton,
 
@@ -55,4 +90,10 @@ module.exports = {
         getProportionsButton().attr('data-state', 'active');
         imageResize.enableSaveProportions();
     },
+
+    getCompressButton: getCompressButton,
+
+    getCompressText: () => $compressText,
+
+    getCompress: () => compress
 };

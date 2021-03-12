@@ -4,14 +4,14 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", 'imcms-image-resize',
-        'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls'
+        'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls', '../../../components/image_editor/imcms-image-locker-button'
     ],
     function (components, texts, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageResize, cropCoordsControllers, path, imageEditSize) {
+              imageRotate, imageResize, cropCoordsControllers, path, imageEditSize, compressionLock) {
 
         texts = texts.editors.image;
 
-        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath;
+        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath, $compressionContainer;
         let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
         const imgPosition = {
             align: "NONE",
@@ -92,8 +92,17 @@ define(
             return image.path !== '' && image.width > 0 && image.height > 0;
         }
 
+        function setDisplayCompressionButton(format){
+            if(format == 'JPEG'){
+                $compressionContainer.show();
+            }else $compressionContainer.hide();
+        }
+
         module.exports = {
             updateImageData: ($newTag, newImageData) => {
+
+                setDisplayCompressionButton(newImageData.format);
+
                 $tag = $newTag;
                 imageData = newImageData;
 
@@ -347,7 +356,19 @@ define(
                     }, {
                         text: "GIF",
                         "data-value": "GIF"
-                    }]);
+                    }]).click(() =>{
+                        setDisplayCompressionButton($fileFormat.getSelectedValue());
+                    });
+                }
+
+                function buildCompressionContainer(){
+                    const $compressionContainer = $('<div>', {
+                        'class': 'imcms-compression'
+                    });
+                    $compressionContainer.append(compressionLock.getCompressButton());
+                    $compressionContainer.append(compressionLock.getCompressText());
+
+                    return $compressionContainer;
                 }
 
                 function showExif() {
@@ -387,6 +408,7 @@ define(
                     const $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                     const $cropCoordinatesContainer = buildCropCoordinatesContainer();
                     $fileFormat = buildFileFormatSelect();
+                    $compressionContainer = buildCompressionContainer();
 
                     return advancedModeBEM.buildBlock("<div>", [
                         {"title": $textAlignmentBtnsTitle},
@@ -394,7 +416,8 @@ define(
                         {"space-around": $spaceAroundImageInputContainer},
                         {"title": $cropCoordinatesText},
                         {"crop-coordinates": $cropCoordinatesContainer},
-                        {"file-format": $fileFormat}
+                        {"file-format": $fileFormat},
+                        {"compression": $compressionContainer}
                     ]);
                 }
 
@@ -635,6 +658,8 @@ define(
                         imageData.spaceAround = imgPosition.spaceAround;
 
                         imageData.format = $fileFormat.getSelectedValue();
+
+                        imageData.compress = compressionLock.getCompress();
 
                         imageRestApi.create(imageData)
                             .done(onImageSaved)

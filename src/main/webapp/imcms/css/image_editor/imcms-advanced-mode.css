@@ -23,6 +23,11 @@
     margin-bottom: 10px;
 }
 
+.imcms-advanced-mode__compression{
+    display: flex;
+    padding: 30px;
+}
+
 .imcms-crop-coordinates .imcms-number {
     display: block;
     float: left;
