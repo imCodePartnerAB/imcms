@@ -361,8 +361,14 @@ public class ImcmsImageUtils {
         setSize(image, operation);
         setRotateDirection(image, operation);
         setFormat(image.getFormat(), operation);
-        operation.quality(75);
+        setQuality(image.isCompress(), image.getFormat(), operation);
         operation.processToFile(destFile);
+    }
+
+    private static void setQuality(boolean compress, Format format, ImageOp operation){
+        if(compress && format == Format.JPEG){
+            operation.quality(75);
+        }
     }
 
     private static void setFormat(Format format, ImageOp operation) {
