@@ -39,9 +39,6 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
     @Value("#{'${AvailableLanguages}'.split(';')}")
     private List<String> availableLanguages;
 
-    @Value("#{'${DefaultLanguage}'}")
-    private String defaultLang;
-
     @Autowired
     private LanguageService languageService;
 
