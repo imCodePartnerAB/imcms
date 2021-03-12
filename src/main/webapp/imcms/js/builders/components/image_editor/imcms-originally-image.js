@@ -20,6 +20,9 @@ module.exports = {
         $image.removeAttr('style'); // not sure
         $image.css('background-image', `url('${src}')`);
 
+        const size = imageData.size ? imageData.size : imageData.sizeFormatted;
+        imageData.size = null;
+
         const actualImage = new Image();
         actualImage.src = src;
 
@@ -29,7 +32,7 @@ module.exports = {
             const $heightWidthBlock = $('.imcms-image-toolbar__img-origin-size');
             $heightWidthBlock.show();
             const $imageInfoSize = $('.imcms-info-edit-image__size-info');
-            $imageInfoSize.text(` (${this.width} x ${this.height}) ${imageData.sizeFormatted}`);
+            $imageInfoSize.text(` (${this.width} x ${this.height}) ${size}`);
 
             require('imcms-image-resize').setOriginal(this.width, this.height);
 
