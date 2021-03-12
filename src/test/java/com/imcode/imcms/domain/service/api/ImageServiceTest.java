@@ -10,12 +10,7 @@ import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageHistoryDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.ImageService;
@@ -371,6 +366,156 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
                 assertTrue(FileUtility.forceDelete(generatedImage));
             }
         }
+    }
+
+    @Test
+    public void saveImage_When_CompressionIsTrueAndDifferentFormat_Expect_GeneratedImagesExistWithSmallerSizeOnlyForJPEG() throws IOException {
+        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+            img.setIndex(TEST_IMAGE_INDEX);
+            img.setDocId(TEST_DOC_ID);
+            img.setPath("img1.jpg");
+            img.setFormat(Format.JPEG);
+            img.setLangCode("en");
+            img.setName("img1");
+            img.setWidth(100);
+            img.setHeight(100);
+            img.setAlternateText("");
+            img.setLinkUrl("");
+            img.setBorder(0);
+            img.setAlign("");
+            img.setLowResolutionUrl("");
+            img.setTarget("");
+            img.setType(0);
+            img.setRotateAngle(0);
+            img.setCompress(false);
+        });
+
+        //JPEG
+        imageService.saveImage(imageDTO);
+        ImageDTO result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        File generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        long sizeWithoutCompress = generatedImage.length();
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        imageDTO.setCompress(true);
+        imageService.saveImage(imageDTO);
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+
+        long sizeWithCompress = generatedImage.length();
+        assertTrue(sizeWithoutCompress > sizeWithCompress);
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        //PNG
+        imageDTO.setFormat(Format.PNG);
+        imageService.saveImage(imageDTO);
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        sizeWithoutCompress = generatedImage.length();
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        imageDTO.setCompress(true);
+        imageService.saveImage(imageDTO);
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+
+        sizeWithCompress = generatedImage.length();
+        assertFalse(sizeWithoutCompress > sizeWithCompress);
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        //GIF
+        imageDTO.setFormat(Format.GIF);
+        imageService.saveImage(imageDTO);
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        sizeWithoutCompress = generatedImage.length();
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        imageDTO.setCompress(true);
+        imageService.saveImage(imageDTO);
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+
+        sizeWithCompress = generatedImage.length();
+        assertFalse(sizeWithoutCompress > sizeWithCompress);
+
+        assertTrue(FileUtility.forceDelete(generatedImage));
+    }
+
+    @Test
+    public void saveImage_When_ImagesHaveDifferentFormats_Expect_GeneratedImagesExist() throws IOException {
+        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+            img.setIndex(TEST_IMAGE_INDEX);
+            img.setDocId(TEST_DOC_ID);
+            img.setPath("img1.jpg");
+            img.setFormat(Format.JPEG);
+            img.setLangCode("en");
+            img.setName("img1");
+            img.setWidth(100);
+            img.setHeight(100);
+            img.setAlternateText("");
+            img.setLinkUrl("");
+            img.setBorder(0);
+            img.setAlign("");
+            img.setLowResolutionUrl("");
+            img.setTarget("");
+            img.setType(0);
+            img.setRotateAngle(0);
+            img.setCompress(true);
+        });
+        //JPEG
+        imageService.saveImage(imageDTO);
+        ImageDTO result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        File generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        //PNG
+        imageDTO.setFormat(Format.PNG);
+        imageService.saveImage(imageDTO);
+
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        assertTrue(FileUtility.forceDelete(generatedImage));
+
+        //GIF
+        imageDTO.setFormat(Format.GIF);
+        imageService.saveImage(imageDTO);
+
+        result = imageService.getImage(imageDTO);
+        assertNotNull(result);
+
+        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+        assertTrue(generatedImage.exists());
+        assertTrue(FileUtility.forceDelete(generatedImage));
     }
 
     @Test
