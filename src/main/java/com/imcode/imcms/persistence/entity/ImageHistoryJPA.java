@@ -6,17 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -112,6 +102,9 @@ public class ImageHistoryJPA implements Serializable {
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 
+    @Column(name = "compress", columnDefinition = "tinyint")
+    private boolean compress;
+
     public ImageHistoryJPA(ImageJPA image, User modifiedBy, LocalDateTime modifiedAt) {
         this.version = image.getVersion();
         this.language = image.getLanguage();
@@ -136,6 +129,7 @@ public class ImageHistoryJPA implements Serializable {
         this.archiveImageId = image.getArchiveImageId();
         this.allLanguages = image.isAllLanguages();
         this.inText = image.isInText();
+        this.compress = image.isCompress();
         this.setSpaceAround(new SpaceAroundJPA(image.getSpaceAround()));
 
         this.modifiedBy = modifiedBy;

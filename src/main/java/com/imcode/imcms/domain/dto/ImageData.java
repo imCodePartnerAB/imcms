@@ -29,6 +29,7 @@ public abstract class ImageData implements Documentable, Serializable {
     protected ImageCropRegionDTO cropRegion = new ImageCropRegionDTO();
     protected ImageSource source = new NullImageSource();
     protected SpaceAroundDTO spaceAround = new SpaceAroundDTO();
+    protected boolean compress;
 
     private Resize resize;
     private RotateDirection rotateDirection = RotateDirection.NORTH;

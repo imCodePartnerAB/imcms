@@ -67,6 +67,7 @@ public class ImageDTO extends ImageData {
         this.type = -1;
         this.rotateAngle = 0;
         this.sizeFormatted = "";
+        this.compress = false;
     }
 
     public ImageDTO(Integer index, Integer docId) {
@@ -95,6 +96,7 @@ public class ImageDTO extends ImageData {
         this.type = from.type;
         this.rotateAngle = from.rotateAngle;
         this.sizeFormatted = from.sizeFormatted;
+        this.compress = from.compress;
     }
 
     /**

@@ -7,17 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -106,6 +96,9 @@ public class ImageJPA implements Serializable {
     @Column(name = "in_text", columnDefinition = "tinyint")
     private boolean inText;
 
+    @Transient
+    private boolean compress;
+
     public ImageJPA(ImageJPA from, Version version) {
         this.version = version;
         this.language = from.language;
@@ -130,6 +123,7 @@ public class ImageJPA implements Serializable {
         this.archiveImageId = from.archiveImageId;
         this.allLanguages = from.allLanguages;
         this.inText = from.inText;
+        this.compress = from.compress;
 
         setSpaceAround(from.getSpaceAround());
     }
