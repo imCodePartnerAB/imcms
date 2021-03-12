@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -39,6 +40,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     private AtomicLong amountDocsInCaches = new AtomicLong(-1);
 
+    @Getter
     private Ehcache cache;
     //set on String because may has default value empty line - false
     @Value("${disabledCache}")
