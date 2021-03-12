@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
@@ -36,10 +36,18 @@ public class DefaultImageCacheManager implements ImageCacheManager {
         removeImagesFromCache(otherCache, key);
     }
 
+    @Override
+    public void removeOtherImagesFromCacheByKey(String key) {
+        final Ehcache otherCache = Objects.requireNonNull(cacheManager.getCacheManager()).getEhcache(OTHER_CACHE_NAME);
+
+        removeImagesFromCache(otherCache, key);
+    }
+
 
     private void removeImagesFromCache(Ehcache cache, String key) {
-        Stream.of(cache.getKeys())
-                .filter(cacheKey -> cacheKey.toString().contains(key))
+        Arrays.stream(cache.getKeys().toArray())
+                .map(Object::toString)
+                .filter(cacheKey -> String.valueOf(cacheKey).contains(key))
                 .forEach(cache::remove);
     }
 }

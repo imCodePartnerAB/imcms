@@ -6,4 +6,6 @@ public interface ImageCacheManager {
 
     void removeAllImagesFromCacheByKey(String key);
 
+    void removeOtherImagesFromCacheByKey(String key);
+
 }
