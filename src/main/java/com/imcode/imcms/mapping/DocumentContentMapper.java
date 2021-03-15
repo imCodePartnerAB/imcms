@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,12 +26,14 @@ public class DocumentContentMapper {
     private final CommonContentRepository commonContentRepository;
     private final LanguageRepository languageRepository;
     private final DocumentLanguageMapper languageMapper;
+    private final CommonContentService commonContentService;
 
     public DocumentContentMapper(CommonContentRepository commonContentRepository, LanguageRepository languageRepository,
-                                 DocumentLanguageMapper languageMapper) {
+                                 DocumentLanguageMapper languageMapper, CommonContentService commonContentService) {
         this.commonContentRepository = commonContentRepository;
         this.languageRepository = languageRepository;
         this.languageMapper = languageMapper;
+        this.commonContentService = commonContentService;
     }
 
     /**
@@ -44,7 +49,12 @@ public class DocumentContentMapper {
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
         Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
-        for (CommonContentJPA commonContent : commonContentRepository.findByDocIdAndVersionNo(docId, versionNo)) {
+        final List<CommonContentJPA> receivedContents = commonContentService.getOrCreateCommonContents(docId, versionNo)
+                .stream()
+                .map(CommonContentJPA::new)
+                .collect(Collectors.toList());
+
+        for (CommonContentJPA commonContent : receivedContents) {
             result.put(
                     languageMapper.toApiObject(commonContent.getLanguage()),
                     toApiObject(commonContent)
