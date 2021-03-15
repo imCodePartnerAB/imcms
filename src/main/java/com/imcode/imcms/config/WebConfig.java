@@ -48,7 +48,6 @@ class WebConfig implements WebMvcConfigurer {
         viewResolver.setSuffix(".jsp");
         viewResolver.setOrder(1);
         viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService");
-        viewResolver.setCache(true);
         return viewResolver;
     }
 
@@ -57,7 +56,6 @@ class WebConfig implements WebMvcConfigurer {
         final ResourceBundleViewResolver viewResolver = new ResourceBundleViewResolver();
         viewResolver.setBasename("views");
         viewResolver.setOrder(0);
-        viewResolver.setCache(true);
         return viewResolver;
     }
 
