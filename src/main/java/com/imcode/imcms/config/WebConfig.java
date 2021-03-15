@@ -79,8 +79,8 @@ class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("\\w*\\/images\\/.*")
-                .addResourceLocations("classpath:/images/**")
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("/webapp/images/", "/webapp/images/generated", "")
                 .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic())
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
