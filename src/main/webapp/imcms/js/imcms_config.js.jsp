@@ -20,7 +20,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         },
         accessToDocumentEditor: ${accessToDocumentEditor or false},
         document: {
-            id: ${empty currentDocument.id ? targetDocId : currentDocument.id},
+            id: ${empty currentDocument.id ? targetDocId+'' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
             hasNewerVersion: ${hasNewerVersion or false},
             headline: "${currentDocument.headline}",
@@ -47,4 +47,4 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
     <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>
     <%--@elvariable id="isEditorUserPage" type="boolean"--%>
-    <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
+    <%--@elvariable id="targetDocId" type="int"--%>
