@@ -107,32 +107,27 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public String getDateInvalidateDocumentCache() {
-        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
-                .getTimeLastRemovePublicCache());
+        return getFormattedLastDateTime(PUBLIC_CACHE_NAME);
     }
 
     @Override
     public String getDateStaticContentCache() {
-        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
-                .getTimeLastRemoveStaticCache());
+        return getFormattedLastDateTime(STATIC_CACHE_NAME);
     }
 
     @Override
     public String getDateInvalidateContentCache() {
-        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
-                .getTimeLastRemoveOtherCache());
+        return getFormattedLastDateTime(OTHER_CACHE_NAME);
     }
 
     @Override
     public String getDateDocumentReIndex() {
-        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
-                .getTimeLastReindex());
+        return getFormattedLastDateTime(REINDEX_NAME);
     }
 
     @Override
     public String getDateAddedInCacheDocuments() {
-        return formatter.format(temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE)
-                .getTimeLastBuildCache());
+        return getFormattedLastDateTime(BUILD_CACHE_NAME);
     }
 
     @Override
@@ -193,6 +188,46 @@ public class DefaultTemporalDataService implements TemporalDataService {
         }
 
         return docIdsAndAlias;
+    }
+
+    private String getFormattedLastDateTime(String nameData) {
+        String formattedLastDataTime = null;
+        final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
+        final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
+        final Date timeLastReindex = receivedDate.getTimeLastReindex();
+        final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
+        final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
+        final Date timeLastBuildCache = receivedDate.getTimeLastBuildCache();
+
+        switch (nameData) {
+            case PUBLIC_CACHE_NAME:
+                if (timeLastRemovePublicCache != null) {
+                    formattedLastDataTime = formatter.format(timeLastRemovePublicCache);
+                }
+                break;
+            case OTHER_CACHE_NAME:
+                if (timeLastRemoveOtherCache != null) {
+                    formattedLastDataTime = formatter.format(timeLastRemoveOtherCache);
+                }
+                break;
+            case STATIC_CACHE_NAME:
+                if (timeLastRemoveStaticCache != null) {
+                    formattedLastDataTime = formatter.format(timeLastRemoveStaticCache);
+                }
+                break;
+            case REINDEX_NAME:
+                if (timeLastReindex != null) {
+                    formattedLastDataTime = formatter.format(timeLastReindex);
+                }
+                break;
+            case BUILD_CACHE_NAME:
+                if (timeLastBuildCache != null) {
+                    formattedLastDataTime = formatter.format(timeLastBuildCache);
+                }
+        }
+
+        return formattedLastDataTime;
+
     }
 
     private DataOfTimeLastUseJPA getLastUseDateTime(String nameDate) {
