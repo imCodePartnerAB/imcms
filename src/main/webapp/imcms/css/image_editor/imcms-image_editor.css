@@ -54,13 +54,13 @@
     border-top: 1px solid #d3d8de;
     border-left: 1px solid #d3d8de;
     display: block;
-    position: relative;
-    height: 5%;
     width: 100%;
+    padding-top: 15px;
+    padding-left: 35px;
 }
 
 .imcms-image_editor__footer button {
-    position: absolute;
+    position: inherit;
     top: 25%;
     display: inline-block;
     padding-left: 20px;
