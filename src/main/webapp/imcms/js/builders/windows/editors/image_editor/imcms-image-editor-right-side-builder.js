@@ -627,6 +627,7 @@ define(
                             $('.imcms-image-in-text').parent().focus();
                         }
                     }
+                    // window.location.reload(true);
                 }
 
                 function onImageSaved() {
@@ -722,8 +723,8 @@ define(
                 $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($restrictStyleInfo, $infoImage,
-                    $showExifBtn, $editableControls, $footer);
+                return $("<div>").append($restrictStyleInfo, $infoImage, $footer,
+                    $showExifBtn, $editableControls);
             }
         }
     }
