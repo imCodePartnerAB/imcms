@@ -1,4 +1,4 @@
-const imageProportionsLocker = require('../../../components/image_editor/imcms-image-locker-button');
+const imageProportionsLocker = require('imcms-image-locker-button');
 
 define(
     "imcms-image-editor-body-head-builder",

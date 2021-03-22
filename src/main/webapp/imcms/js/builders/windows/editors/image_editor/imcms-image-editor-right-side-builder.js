@@ -4,7 +4,7 @@ define(
         "imcms-components-builder", "imcms-i18n-texts", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", 'imcms-image-resize',
-        'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls', '../../../components/image_editor/imcms-image-locker-button'
+        'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls', 'imcms-image-locker-button'
     ],
     function (components, texts, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
               imageRotate, imageResize, cropCoordsControllers, path, imageEditSize, compressionLock) {
@@ -660,7 +660,7 @@ define(
 
                         imageData.format = $fileFormat.getSelectedValue();
 
-                        imageData.compress = compressionLock.getCompress();
+                        imageData.compress = compressionLock.getCompress() && $fileFormat.getSelectedValue() == 'JPEG';
 
                         imageRestApi.create(imageData)
                             .done(onImageSaved)
