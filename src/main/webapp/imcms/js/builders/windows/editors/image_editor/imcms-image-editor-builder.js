@@ -119,7 +119,6 @@ define(
                     if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
                         imageData.width = Math.min(imageData.width, maxWidth);
                         imageResize.setMaxWidth(maxWidth);
-                        editSizeControls.getWantedWidthControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let maxHeight = resultStyleObj['max-height'];
@@ -127,7 +126,6 @@ define(
                     if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
                         imageData.height = Math.min(imageData.height, maxHeight);
                         imageResize.setMaxHeight(maxHeight);
-                        editSizeControls.getWantedHeightControl().getInput().attr('disabled', 'disabled');
                     }
 
                     let width = parseInt(resultStyleObj.width);
