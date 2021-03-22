@@ -499,7 +499,7 @@ module.exports = {
                 minWidth ? setWidthProportionally(minHeight, false)
                                 : setHeightProportionally(minWidth, false);
             }else{
-                degrees = degrees + 90;
+                degrees = previousDegrees === 180 ? 0 : 180;
                 isRestrictedValuesChanged = false;
             }
 
