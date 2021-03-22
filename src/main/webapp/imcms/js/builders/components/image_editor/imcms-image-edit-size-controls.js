@@ -13,7 +13,7 @@ let $heightControl, $widthControl, $hPreviewControl, $wPreviewControl;
 function getNewVal($input) {
     const newVal = +$input.val();
 
-    if (isNaN(newVal) || newVal < 0) {
+    if (isNaN(newVal) || newVal <= 0) {
         $input.val($input.val().replace(/[^0-9]/g, ''));
         return;
     }
