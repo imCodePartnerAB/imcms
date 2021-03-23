@@ -21,6 +21,7 @@ let existsCropRegion = true;
 let maxWidth, maxHeight, minWidth, minHeight;
 
 function trimToMaxMinWidth(newWidth) {
+    if (newWidth === 0) newWidth = 1;
     if (maxWidth) newWidth = Math.min(newWidth, maxWidth);
     if (minWidth) newWidth = Math.max(newWidth, minWidth);
 
@@ -28,6 +29,7 @@ function trimToMaxMinWidth(newWidth) {
 }
 
 function trimToMaxMinHeight(newHeight) {
+    if (newHeight === 0) newHeight = 1;
     if (maxHeight) newHeight = Math.min(newHeight, maxHeight);
     if (minHeight) newHeight = Math.max(newHeight, minHeight);
 
