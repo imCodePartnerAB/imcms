@@ -61,19 +61,10 @@
 
 .imcms-image_editor__footer button {
     position: inherit;
-    top: 25%;
     display: inline-block;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
     width: 45%;
-}
-
-.imcms-image_editor__footer .imcms-button--negative {
-    left: 3%;
-}
-
-.imcms-image_editor__footer .imcms-button--save {
-    left: 52%;
 }
 
 .image-exif-window {
