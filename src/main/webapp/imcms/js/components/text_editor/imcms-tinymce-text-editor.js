@@ -36,24 +36,24 @@ define(
         const fullscreenPlugin = fullScreenPlugin.pluginName;
         const saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
         const switchModePlugins = [
+            switchToTextEditorPlugin.pluginName,
             switchToPlainTextPlugin.pluginName,
-            switchToHtmlModePlugin.pluginName,
-            switchToTextEditorPlugin.pluginName
+            switchToHtmlModePlugin.pluginName
         ].join(' ');
         const htmlFilteringPolicyPlugins = htmlFilteringPolicyPlugin.pluginName;
 
         const toolbar = [
-            sourceCodePlugin,
+            fullscreenPlugin,
             fontPlugins,
             listsPlugins,
             horizontalLinePlugin,
             textAlignPlugins,
             specialInsertsPlugins,
-            customImcmsTextPlugins,
-            fullscreenPlugin,
-            saveAndDiscardPlugins,
             switchModePlugins,
-            htmlFilteringPolicyPlugins
+            sourceCodePlugin,
+            customImcmsTextPlugins,
+            htmlFilteringPolicyPlugins,
+            saveAndDiscardPlugins
         ].join(' | ');
 
         const styleFormats = [
@@ -83,15 +83,15 @@ define(
             init_instance_callback: prepareEditor,
             save_onsavecallback: textEditorUtils.saveContent,
             setup: editor => {
-                textHistory.initTextHistory(editor);
-                textValidation.initTextValidation(editor);
                 fullScreenPlugin.initFullScreen(editor);
                 imageInText.initImageInText(editor);
-                discardChangesPlugin.initDiscardChanges(editor);
+                switchToTextEditorPlugin.initSwitchToTextEditor(editor);
                 switchToPlainTextPlugin.initSwitchToPlainText(editor);
                 switchToHtmlModePlugin.initSwitchToHtmlMode(editor);
-                switchToTextEditorPlugin.initSwitchToTextEditor(editor);
+                textHistory.initTextHistory(editor);
+                textValidation.initTextValidation(editor);
                 htmlFilteringPolicyPlugin.initHtmlFilteringPolicy(editor);
+                discardChangesPlugin.initDiscardChanges(editor);
             },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save paste'],
