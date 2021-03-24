@@ -10,6 +10,10 @@ public interface LanguageService {
 
     List<Language> getAll();
 
+    List<String> getAllAdminLangCode();
+
+    boolean isAdminLanguage(String code);
+
     List<Language> getAvailableLanguages();
 
     Language getDefaultLanguage();

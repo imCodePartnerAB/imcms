@@ -12,6 +12,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
+import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +72,18 @@ class DefaultLanguageService implements LanguageService {
                 .stream()
                 .map(LanguageDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllAdminLangCode() { // maybe in future we can fetch langs admin from db..
+        return Arrays.asList(ImcmsConstants.ENG_CODE, ImcmsConstants.SWE_CODE);
+    }
+
+    @Override
+    public boolean isAdminLanguage(String code) {
+        code = convertLanguage(code);
+
+        return getAllAdminLangCode().contains(code);
     }
 
     @Override
