@@ -1,14 +1,15 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserAdminRolesService;
-import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.ExternalUser;
@@ -19,6 +20,7 @@ import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
+import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,6 +58,7 @@ class DefaultUserService implements UserService {
     private final ExternalToLocalRoleLinkService externalToLocalRoleService;
     private final UserAdminRolesService userAdminRolesService;
     private final UserLockValidator userLockValidator;
+    private final LanguageService languageService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -66,7 +69,8 @@ class DefaultUserService implements UserService {
                        UserRolesService userRolesService,
                        ExternalToLocalRoleLinkService externalToLocalRoleLinkService,
                        UserAdminRolesService userAdminRolesService,
-                       UserLockValidator userLockValidator) {
+                       UserLockValidator userLockValidator,
+                       LanguageService languageService) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
@@ -75,6 +79,7 @@ class DefaultUserService implements UserService {
         this.externalToLocalRoleService = externalToLocalRoleLinkService;
         this.userAdminRolesService = userAdminRolesService;
         this.userLockValidator = userLockValidator;
+        this.languageService = languageService;
     }
 
     @Override
@@ -186,6 +191,10 @@ class DefaultUserService implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected User saveAndGetUser(UserFormData userData) {
+        if (!languageService.isAdminLanguage(userData.getLangCode())) {
+            userData.setLangCode(ImcmsConstants.SWE_CODE);
+        }
+
         final User user = toUserJPA(userData);
 
         if (userData.getId() != null) {
