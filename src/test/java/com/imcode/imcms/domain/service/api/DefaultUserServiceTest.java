@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserAdminRolesService;
@@ -41,6 +42,9 @@ class DefaultUserServiceTest {
     private UserRolesService userRolesService;
     @Mock
     private UserAdminRolesService userAdminRolesService;
+
+    @Mock
+    private LanguageService languageService;
 
     @InjectMocks
     private DefaultUserService userService;
