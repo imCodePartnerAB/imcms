@@ -112,10 +112,10 @@ define(
                 const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
-                    textHistory.buildPlainTextHistoryButton($textEditor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(editor),
-                    discardChangesPlugin.buildPlainTextButton(editor)
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    buildSaveButton(editor)
                 ]);
 
                 return editor;
@@ -124,12 +124,12 @@ define(
                 const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
+                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     textHistory.buildPlainTextHistoryButton($textEditor),
                     textValidation.buildHtmlValidationButton(editor),
-                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(editor),
+                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor),
                     discardChangesPlugin.buildPlainTextButton(editor),
-                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
+                    buildSaveButton(editor)
                 ]);
 
                 return editor;
@@ -138,13 +138,13 @@ define(
                 const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
-                    textHistory.buildPlainTextHistoryButton($textEditor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(editor),
-                    discardChangesPlugin.buildPlainTextButton(editor),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor),
                     switchToPlainTextPlugin.buildDisabledSwitchToPlainTextButton(),
                     switchToHtmlModePlugin.buildSwitchToHtmlModeFromPlainTextButton(editor),
-                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    buildSaveButton(editor)
                 ]);
 
                 return editor;
@@ -153,15 +153,15 @@ define(
                 const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
-                    textHistory.buildPlainTextHistoryButton($textEditor),
-                    textValidation.buildHtmlValidationButton(editor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(editor),
-                    discardChangesPlugin.buildPlainTextButton(editor),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor),
                     switchToPlainTextPlugin.buildSwitchToPlainTextFromHtmlButton(editor),
                     switchToHtmlModePlugin.buildDisabledSwitchToHtmlModeButton(),
-                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor),
-                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    textValidation.buildHtmlValidationButton(editor),
+                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor),
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    buildSaveButton(editor)
                 ]);
 
                 return editor;

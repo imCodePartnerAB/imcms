@@ -3,12 +3,15 @@ package com.imcode.imcms.servlet;
 import com.imcode.db.DatabaseException;
 import com.imcode.imcms.db.Schema;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +53,8 @@ public class Version extends HttpServlet {
         }
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
         final ServletContext servletContext = getServletContext();
         String imcmsVersion = getImcmsVersion(servletContext);
@@ -61,10 +65,13 @@ public class Version extends HttpServlet {
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
         out.println(imcmsVersion);
-        out.println(javaVersion);
-        out.println(serverInfo);
-        out.println("Required DB schema version: " + StringUtils.defaultString(getRequiredDbVersion(), "N/A"));
-        out.println(databaseProductNameAndVersion);
+
+        if (user.isSuperAdmin()) {
+            out.println(javaVersion);
+            out.println(serverInfo);
+            out.println("Required DB schema version: " + StringUtils.defaultString(getRequiredDbVersion(), "N/A"));
+            out.println(databaseProductNameAndVersion);
+        }
     }
 
     private String getJavaVersion() {
