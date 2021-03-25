@@ -20,7 +20,6 @@ import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
-import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -44,6 +43,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static imcode.server.ImcmsConstants.ENG_CODE;
 
 @Service
 @Transactional
@@ -191,8 +192,10 @@ class DefaultUserService implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected User saveAndGetUser(UserFormData userData) {
-        if (!languageService.isAdminLanguage(userData.getLangCode())) {
-            userData.setLangCode(ImcmsConstants.SWE_CODE);
+        final String userLangCode = userData.getLangCode();
+        if (!languageService.isAdminLanguage(userLangCode)) {
+            log.info(String.format("Language  as %s does not support in admin lang, so will set to %s", userLangCode, ENG_CODE));
+            userData.setLangCode(ENG_CODE);
         }
 
         final User user = toUserJPA(userData);
