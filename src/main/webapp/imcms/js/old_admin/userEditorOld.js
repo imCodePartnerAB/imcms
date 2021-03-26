@@ -78,7 +78,7 @@ function loadLanguages() {
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
-    languagesRestApi.read()
+    languagesRestApi.getAvailableLangs()
         .done(languages => {
             languages = languages.map(lang => ({
                 'data-value': lang.code,

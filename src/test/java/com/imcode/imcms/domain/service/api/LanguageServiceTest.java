@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
+import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
 import static imcode.server.ImcmsConstants.LANGUAGES;
 import static imcode.server.ImcmsConstants.SWE_CODE;
+import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -140,6 +142,36 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
         final DocumentDTO documentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED,false, false);
 
         assertTrue(languageService.getEnabledContentLanguagesByDocId(documentDTO.getId()).isEmpty());
+    }
+
+    @Test
+    public void isAdminLanguage_AdminLangNULL_Expected_AdminLangFalse() {
+        assertFalse(languageService.isAdminLanguage(null));
+    }
+
+    @Test
+    public void isAdminLanguage_When_SetNotAdminLang_Expected_AdminLangFalse() {
+        assertFalse(languageService.isAdminLanguage("TESTLANG"));
+    }
+
+    @Test
+    public void isAdminLanguage_When_SetENAdminLang_Expected_AdminLangTrue() {
+        assertTrue(languageService.isAdminLanguage(ENG_CODE));
+    }
+
+    @Test
+    public void isAdminLanguage_When_SetSVAdminLang_Expected_AdminLangTrue() {
+        assertTrue(languageService.isAdminLanguage(SWE_CODE));
+    }
+
+    @Test
+    public void isAdminLanguage_When_SetENGAdminLang_Expected_AdminLangTrue() {
+        assertTrue(languageService.isAdminLanguage(ENG_CODE_ISO_639_2));
+    }
+
+    @Test
+    public void isAdminLanguage_When_SetSWEAdminLang_Expected_AdminLangTrue() {
+        assertTrue(languageService.isAdminLanguage(SWE_CODE_ISO_639_2));
     }
 
     @Test

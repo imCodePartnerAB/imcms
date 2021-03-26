@@ -69,7 +69,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     private Set<Integer> roleIds = createRolesSetWithUserRole();
 
     private Date blockedDate; //date when user was blocked
-    private Integer attempts; // count possible attempts log in again
+    private Integer attempts = 0; // count possible attempts log in again
     private Date lastLoginDate;
     /**
      * Http session id.
