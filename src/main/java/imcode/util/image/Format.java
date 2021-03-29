@@ -56,7 +56,7 @@ public enum Format {
     }
 
     public static boolean isImage(String formatOrExtension) {
-        return FORMAT_MAP.containsKey(formatOrExtension) || EXTENSION_MAP.containsKey(formatOrExtension);
+        return FORMAT_MAP.containsKey(formatOrExtension.toUpperCase()) || EXTENSION_MAP.containsKey(formatOrExtension);
     }
 
 }
