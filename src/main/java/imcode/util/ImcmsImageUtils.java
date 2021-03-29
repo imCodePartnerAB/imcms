@@ -197,10 +197,11 @@ public class ImcmsImageUtils {
     public static Dimension getImageDimension(File imgFile) {
         try {
             BufferedImage bufferedImg = ImageIO.read(imgFile);
-
-            final int width = bufferedImg.getWidth();
-            final int height = bufferedImg.getHeight();
-            return new Dimension(width, height);
+            if (bufferedImg != null) {
+                final int width = bufferedImg.getWidth();
+                final int height = bufferedImg.getHeight();
+                return new Dimension(width, height);
+            }
 
         } catch (IOException e) {
             log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
