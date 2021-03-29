@@ -17,14 +17,18 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import imcode.util.io.FileUtility;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -34,13 +38,19 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class ImcmsImageUtils {
@@ -185,25 +195,16 @@ public class ImcmsImageUtils {
      * @see <a href="https://stackoverflow.com/questions/672916/how-to-get-image-height-and-width-using-java#answer-12164026">method source</a>
      */
     public static Dimension getImageDimension(File imgFile) {
-        final String suffix = FilenameUtils.getExtension(imgFile.getName());
-        final Iterator<ImageReader> imageReaders = ImageIO.getImageReadersBySuffix(suffix);
+        try {
+            BufferedImage bufferedImg = ImageIO.read(imgFile);
 
-        while (imageReaders.hasNext()) {
-            final ImageReader reader = imageReaders.next();
-            try (ImageInputStream stream = new FileImageInputStream(imgFile)) {
-                reader.setInput(stream);
-                final int width = reader.getWidth(reader.getMinIndex());
-                final int height = reader.getHeight(reader.getMinIndex());
-                return new Dimension(width, height);
+            final int width = bufferedImg.getWidth();
+            final int height = bufferedImg.getHeight();
+            return new Dimension(width, height);
 
-            } catch (IOException e) {
-                log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
-
-            } finally {
-                reader.dispose();
-            }
+        } catch (IOException e) {
+            log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
         }
-
         return null;
     }
 
@@ -365,8 +366,8 @@ public class ImcmsImageUtils {
         operation.processToFile(destFile);
     }
 
-    private static void setQuality(boolean compress, Format format, ImageOp operation){
-        if(compress && format == Format.JPEG){
+    private static void setQuality(boolean compress, Format format, ImageOp operation) {
+        if (compress && format == Format.JPEG) {
             operation.quality(75);
         }
     }
