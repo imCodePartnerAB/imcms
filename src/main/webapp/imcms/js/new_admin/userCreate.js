@@ -12,6 +12,7 @@ const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
+const cookies = require('imcms-cookies');
 
 function activateUserAdminRoles() {
 
@@ -93,9 +94,15 @@ function loadLanguages() {
             }));
 
             components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
-            $select.selectValue(imcms.userLanguage);
+            $select.selectValue(getCookieLang());
         })
         .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+}
+
+function getCookieLang() {
+    const cookieLang = cookies.getCookie('userLanguage');
+
+    return cookieLang && cookieLang !== undefined ? cookieLang : imcms.userLanguage;
 }
 
 function bindOnEditClicked($phoneRow) {
