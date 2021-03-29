@@ -599,7 +599,7 @@
     .imcms-panel__item {
         background-size: 12px;
         padding-top: 18px;
-        min-width: 60px;
+        min-width: 50px;
         font-size: 9px;
     }
 
@@ -617,7 +617,7 @@
     .imcms-panel__item {
         background-size: 10px;
         padding-top: 16px;
-        min-width: 45px;
+        min-width: 41px;
         font-size: 7px;
     }
 
@@ -651,6 +651,7 @@
     .imcms-panel__item {
         background-size: 7px;
         padding-top: 16px;
+        min-width: 31px;
         font-size: 6px;
     }
 
@@ -673,6 +674,11 @@
         font-size: 8px;
         padding: 3px 5px;
     }
+
+    .imcms-panel__item {
+        min-width: 25px;
+        font-size: 5px;
+    }
 }
 
 @media screen and (max-width: 460px) {
@@ -680,5 +686,10 @@
     .imcms-panel__item--logout button {
         font-size: 6px;
         padding: 3px 5px;
+    }
+
+    .imcms-panel__item {
+        min-width: 21px;
+        font-size: 4px;
     }
 }
