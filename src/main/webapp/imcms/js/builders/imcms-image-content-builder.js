@@ -263,7 +263,7 @@ define("imcms-image-content-builder",
                 "class": "imcms-button",
                 text: texts.add,
                 click: () => {
-                    let folderName = $folderNameInput.val();
+                    let folderName = $folderNameInput.val().replace(/\s/g, '_');
 
                     if (!folderName) {
                         return;
