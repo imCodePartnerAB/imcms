@@ -62,6 +62,7 @@ public class Version extends HttpServlet {
         String databaseProductNameAndVersion = getDatabaseProductNameAndVersion();
         String javaVersion = getJavaVersion();
 
+        res.setHeader("Cache-Control", "no-store");
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
         out.println(imcmsVersion);
