@@ -11,7 +11,7 @@ define(
 
         function onPluginButtonClicked() {
             const uniqueId = Date.now();
-            const tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text imcms-editor-area--image">\n'
+            const tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text imcms-editor-area--image" contenteditable="false">\n'
                 + '   <div class="imcms-editor-content">\n'
                 + '       <a>\n'
                 + '         <img>\n'
