@@ -38,8 +38,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -192,20 +194,24 @@ public class ImcmsImageUtils {
      *
      * @param imgFile image file
      * @return dimensions of image
-     * @see <a href="https://stackoverflow.com/questions/672916/how-to-get-image-height-and-width-using-java#answer-12164026">method source</a>
+     * @see <a href="https://stackoverflow.com/questions/1559253/java-imageio-getting-image-dimensions-without-reading-the-entire-file/1560052#1560052">method source</a>
      */
     public static Dimension getImageDimension(File imgFile) {
-        try {
-            BufferedImage bufferedImg = ImageIO.read(imgFile);
-            if (bufferedImg != null) {
-                final int width = bufferedImg.getWidth();
-                final int height = bufferedImg.getHeight();
-                return new Dimension(width, height);
+        try (ImageInputStream in = ImageIO.createImageInputStream(imgFile)) {
+            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(in);
+                    return new Dimension(reader.getWidth(0), reader.getHeight(0));
+                } finally {
+                    reader.dispose();
+                }
             }
-
         } catch (IOException e) {
             log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
         }
+
         return null;
     }
 
