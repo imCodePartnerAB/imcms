@@ -403,7 +403,7 @@ function init(_imageData) {
 
     if (!_imageData || !_imageData.path) return;
 
-    cropArea.getCroppingBlock().css({
+    const $croppingBlock = cropArea.getCroppingBlock().css({
         "z-index": 50,
     });
 
@@ -468,6 +468,24 @@ function init(_imageData) {
     const fixedLeft = cropRegion.cropX1 - angleBorderSize;
     const fixedRight = originImageWidth - cropRegion.cropX2 - angleBorderSize;
     const fixedBottom = originImageHeight - cropRegion.cropY2 - angleBorderSize;
+
+    const zoomVal = imageZoom.getRelativeZoomValueByOriginalImg();
+    if (!isNaN(zoomVal)) {
+        const koefOverrideStyles = Math.round(100 / Number(zoomVal * 100).toFixed(1));
+
+            for (let i = 1; i < 11; i++) {
+                $croppingBlock.find('.imcms-angle-' + i).each(function () {
+                    const $angle = $(this);
+                    $angle.removeClass('imcms-angle-' + i);
+
+                    addClassToAngle($angle, koefOverrideStyles);
+                })
+            }
+    }
+
+    function addClassToAngle($angle, koefOverrideStyles) {
+        $angle.addClass('imcms-angle-'+ koefOverrideStyles);
+    }
 
     angles.showAll();
 
