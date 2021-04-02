@@ -52,6 +52,7 @@ class SuperAdminController {
 
         mav.setViewName("AdminManager");
         addMinimumModelData(request, mav);
+        mav.addObject("imagesPath", imagesPath);
         return mav;
     }
 

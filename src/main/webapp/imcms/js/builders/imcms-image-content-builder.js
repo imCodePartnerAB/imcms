@@ -584,6 +584,7 @@ define("imcms-image-content-builder",
 
             viewModel.folders.push(buildRootFolder(viewModel.root));
 
+            selectedFullImagePath = selectedFullImagePath ? selectedFullImagePath : '';
             const slashLastIndex = selectedFullImagePath.lastIndexOf("/");
 
             const path = selectedFullImagePath.substring(0, slashLastIndex);
