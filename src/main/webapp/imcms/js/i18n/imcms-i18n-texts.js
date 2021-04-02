@@ -843,6 +843,10 @@ const texts = {
                     validationFailed: 'Misslyckades att validera. Försök igen'
                 }
             },
+            imagesTab: {
+                title: 'Bilder',
+                label: 'Länk till bildbibliotek'
+            },
             categories: {
                 name: 'Kategorier',
                 createButtonName: "Skapa",
@@ -1824,6 +1828,10 @@ const texts = {
                 error: {
                     validationFailed: 'Failed to validate. Try again'
                 }
+            },
+            imagesTab: {
+                title: 'Images',
+                label: 'Link to images library'
             },
             categories: {
                 name: 'Categories',

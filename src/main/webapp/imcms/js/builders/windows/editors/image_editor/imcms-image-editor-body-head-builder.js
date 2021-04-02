@@ -6,12 +6,13 @@ define(
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "imcms-content-manager-builder", "jquery",
         'imcms-image-edit-size-controls', "imcms-image-rotate", "imcms-image-resize", 'imcms-originally-image', 'imcms-preview-image-area',
         'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-originally-area',
-        'imcms-image-active-tab', 'imcms-image-zoom'
+        'imcms-image-active-tab', 'imcms-image-zoom', 'imcms'
     ],
     function (texts, BEM, components, contentManager, $, imageEditSizeControls, imageRotate, imageResize, originalImage, previewImageArea,
-              ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom) {
+              ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom, imcms) {
 
         texts = texts.editors.image;
+        imcms.disableContentManagerSaveButton = false;
         let imageData;
         let fillData;
 
@@ -584,6 +585,8 @@ define(
                 ]);
             },
             getImageUrl: () => $imgUrl,
+
+            buildSelectImageBtnContainer : buildSelectImageBtnContainer,
 
             clearData() {
                 [
