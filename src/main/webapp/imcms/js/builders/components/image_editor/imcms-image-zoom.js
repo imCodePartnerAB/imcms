@@ -37,6 +37,15 @@ define(
 
             updateZoomGradeValueByCssProperty(currentZoom);
         }
+        
+        function updateImageToCoverContainerEditor() {
+            const isPreview = isPreviewTab();
+            const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
+
+            $image.css('transform', getUpdatedTransformString(1, $image));
+            updateZoomGradeValue();
+            fitImage();
+        }
 
         function updateZoomGradeValueByCssProperty(cssZoomProperty) {
             const percentValue = Number((cssZoomProperty * 100).toFixed(1));
@@ -152,7 +161,8 @@ define(
             zoomMinus,
             resetZoom,
             clearData,
-            getUpdatedTransformString
+            getUpdatedTransformString,
+            updateImageToCoverContainerEditor,
         }
     }
 );
