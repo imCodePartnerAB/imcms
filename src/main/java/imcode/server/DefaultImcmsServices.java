@@ -9,6 +9,7 @@ import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -275,11 +276,13 @@ public class DefaultImcmsServices implements ImcmsServices {
             }
 
         } else {
-            result = user;
             userLockValidator.unlockingUserForLogin(user);
 
-            user.setLastLoginDate(new Date(System.currentTimeMillis()));
-            userService.saveUser(userService.getUserData(user.getId()));
+            final UserFormData userData = userService.getUserData(user.getId());
+            userData.setLastLoginDate(new Date(System.currentTimeMillis()));
+            userService.saveUser(userData);
+
+            result = new UserDomainObject(userData);
 
             logUserLoggedIn(user);
         }
