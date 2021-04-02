@@ -276,13 +276,16 @@ public class DefaultImcmsServices implements ImcmsServices {
             }
 
         } else {
+            result = user;
+
             userLockValidator.unlockingUserForLogin(user);
 
+            final Date currentDate = new Date(System.currentTimeMillis());
             final UserFormData userData = userService.getUserData(user.getId());
-            userData.setLastLoginDate(new Date(System.currentTimeMillis()));
+            userData.setLastLoginDate(currentDate);
             userService.saveUser(userData);
 
-            result = new UserDomainObject(userData);
+            result.setLastLoginDate(currentDate);
 
             logUserLoggedIn(user);
         }
