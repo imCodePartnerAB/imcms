@@ -84,7 +84,7 @@ define("imcms-life-cycle-tab-builder",
                     }
                 }),
                 $clearDateTimeContainer = components.buttons.buttonsContainer("<div>", [$clearDateTimeBtn]),
-                $dateTime = components.dateTime.dateTimeReadOnly({title: containerData.savedDateTimeTitle})
+                $dateTime = components.dateTime.dateTimeReadOnly({title: containerData.savedDateTimeTitle}).addClass("saved-date-life-cycle");
             ;
 
             saveDateTimeContainerData(containerData.dataTitle, $time, $date, $dateTime);
