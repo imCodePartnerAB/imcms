@@ -151,7 +151,7 @@ define(
 
                 if (loopsData === undefined || loopsData === null || loopsData.length === 0){
                     $documentLoopDataContainer.append(buildTextTitle(localization.loop.title));
-                    $documentLoopDataContainer.append(buildTextInfo( localization.noData));
+                    $documentLoopDataContainer.append(buildTextInfo(localization.noData));
                 }else {
                     loopsData = sortData(loopsData, "index");
 
@@ -301,6 +301,7 @@ define(
                     placeholder: value,
                     readonly: true
                 });
+                $testInput.addClass('text-content');
                 $testInput.$input.addClass('text-content-input');
 
                 return $testInput;

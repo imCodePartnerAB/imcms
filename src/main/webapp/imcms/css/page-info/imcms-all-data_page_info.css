@@ -28,8 +28,14 @@
 
 .imcms-text-data__info{
     display: flex;
-    width: 540px;
+    width: 85%;
     place-content: space-around;
+}
+
+@media screen and (max-width: 750px) {
+    .imcms-text-data__info{
+        width: auto;
+    }
 }
 
 .imcms-text-data__content{
@@ -37,8 +43,12 @@
     place-content: space-between;
 }
 
+.text-content{
+    display: contents;
+}
+
 .text-content-input{
-    width: 540px;
+    width: 90%;
     height: 70px;
     margin: 0 10px 0 0;
 }
@@ -61,7 +71,6 @@
 .all-data-loop,
 .all-data-image{
     display: flex;
-    width: 650px;
     flex-wrap: wrap;
     place-content: space-between;
 }
@@ -69,6 +78,7 @@
 .all-data-text,
 .imcms-loop-data{
     margin: 0 0 20px 0;
+    width: 100%;
 }
 
 .all-data-loop-title{
