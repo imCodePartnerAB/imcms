@@ -1,4 +1,4 @@
-define('imcms-properties-tab-builder',
+    define('imcms-properties-tab-builder',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-users-rest-api', 'imcms', 'imcms-i18n-texts',
         'imcms-page-info-tab', 'jquery', 'js-utils',
@@ -73,7 +73,7 @@ define('imcms-properties-tab-builder',
 
             properties[key].$inputs = $inputs;
 
-            const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
+            const $removeButton = $(components.controls.remove(() => removeRow(key))).css("padding-right", "80px");
 
             return new BEM({
                 block: 'imcms-field',
