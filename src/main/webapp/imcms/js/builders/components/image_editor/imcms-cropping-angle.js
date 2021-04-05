@@ -5,7 +5,7 @@
 const $ = require('jquery');
 const BEM = require('imcms-bem-builder');
 
-const angleClass = "imcms-angle-1";
+const angleClass = "imcms-angle";
 
 const angleAttributes = {
     "class": angleClass,

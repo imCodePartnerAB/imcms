@@ -10,7 +10,23 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.dto.UserFormData;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.AuthenticationProvidersService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.domain.service.DocumentDataService;
+import com.imcode.imcms.domain.service.DocumentRolesService;
+import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.UserPropertyService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -18,7 +34,14 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.*;
+import imcode.server.user.Authenticator;
+import imcode.server.user.ChainedLdapUserAndRoleRegistry;
+import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.LdapUserAndRoleRegistry;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.UserAndRoleRegistry;
+import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -44,7 +67,12 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
@@ -249,10 +277,15 @@ public class DefaultImcmsServices implements ImcmsServices {
 
         } else {
             result = user;
+
             userLockValidator.unlockingUserForLogin(user);
 
-            user.setLastLoginDate(new Date(System.currentTimeMillis()));
-            userService.saveUser(new UserFormData(user));
+            final Date currentDate = new Date(System.currentTimeMillis());
+            final UserFormData userData = userService.getUserData(user.getId());
+            userData.setLastLoginDate(currentDate);
+            userService.saveUser(userData);
+
+            result.setLastLoginDate(currentDate);
 
             logUserLoggedIn(user);
         }

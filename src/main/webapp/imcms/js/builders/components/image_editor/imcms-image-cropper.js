@@ -473,18 +473,12 @@ function init(_imageData) {
     if (!isNaN(zoomVal)) {
         const koefOverrideStyles = Math.round(100 / Number(zoomVal * 100).toFixed(1));
 
-            for (let i = 1; i < 11; i++) {
-                $croppingBlock.find('.imcms-angle-' + i).each(function () {
-                    const $angle = $(this);
-                    $angle.removeClass('imcms-angle-' + i);
-
-                    addClassToAngle($angle, koefOverrideStyles);
-                })
-            }
-    }
-
-    function addClassToAngle($angle, koefOverrideStyles) {
-        $angle.addClass('imcms-angle-'+ koefOverrideStyles);
+        $croppingBlock.find('.imcms-angle').each(function () {
+            const $angle = $(this).first();
+            $angle.css({
+                'transform': 'scale(' + koefOverrideStyles +')'
+            })
+        })
     }
 
     angles.showAll();
