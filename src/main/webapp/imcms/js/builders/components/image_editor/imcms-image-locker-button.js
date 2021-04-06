@@ -24,8 +24,8 @@ function getProportionsButton() {
         return $proportionsBtn;
     }
 
-        $proportionsBtn =  components.buttons.switchOnButton({
-            'data-state': 'active',
+    $proportionsBtn =  components.buttons.switchOnButton({
+        'data-state': 'active',
         click: function () {
             if (imageResize.isProportionsLockedByStyle()) return;
 
@@ -33,14 +33,13 @@ function getProportionsButton() {
             if(saveProportions){
                 $(this).attr('data-state', 'active');
                 $proportionsBtn.removeClass(classButtonOff).addClass(classButtonOn);
+                imageCropper.refreshCropping();
             }else{
                 $(this).attr('data-state', 'passive');
                 $proportionsBtn.removeClass(classButtonOn).addClass(classButtonOff);
             }
 
             $('.imcms-image-crop-proportions-info').css('display', saveProportions ? 'inline-block' : 'none');
-
-            if (saveProportions) imageCropper.refreshCropping();
         }
     });
     components.overlays.defaultTooltip($proportionsBtn, texts.proportionsButtonTitle);
@@ -88,6 +87,7 @@ module.exports = {
 
     enableProportionsLock() {
         getProportionsButton().attr('data-state', 'active');
+        $proportionsBtn.removeClass(classButtonOff).addClass(classButtonOn);
         imageResize.enableSaveProportions();
     },
 
