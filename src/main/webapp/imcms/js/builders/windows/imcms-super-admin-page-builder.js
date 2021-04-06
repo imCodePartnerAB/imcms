@@ -50,7 +50,7 @@ define(
             panels$ = buildSuperAdminPanels();
 
             return new BEM({
-                block: 'imcms-pop-up-modal',
+                block: 'imcms-pop-up-super-admin-modal',
                 elements: {
                     'head': buildHead(),
                     'left-side': superAdminTabs.buildWindowTabs(panels$),

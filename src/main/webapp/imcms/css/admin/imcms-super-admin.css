@@ -39,7 +39,7 @@
     right: 20px;
 }
 
-.imcms-pop-up-modal {
+.imcms-pop-up-super-admin-modal {
     height: 905px;
 }
 
@@ -68,7 +68,7 @@
     padding-left: 0;
 }
 
-.imcms-pop-up-modal__right-side {
+.imcms-pop-up-super-admin-modal__right-side {
     width: 80%;
     padding: 30px 60px;
     height: 95%;
@@ -173,7 +173,7 @@
     border: solid 1px #d1d2c6;
 }
 
-.imcms-pop-up-modal__left-side {
+.imcms-pop-up-super-admin-modal__left-side {
     max-width: none;
     width: 20%;
 }
