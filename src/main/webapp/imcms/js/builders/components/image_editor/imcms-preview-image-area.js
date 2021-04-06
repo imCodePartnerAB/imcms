@@ -11,6 +11,11 @@ let $previewImageArea;
 let $previewImgContainer;
 let $previewImg;
 
+let backgroundPositionX;
+let backgroundPositionY;
+let backgroundWidth;
+let backgroundHeight;
+
 function getPreviewImage() {
     return $previewImg || ($previewImg = $('<div>', {'class': 'imcms-preview-img'}))
 }
@@ -60,6 +65,7 @@ module.exports = {
     },
 
     setBackgroundPositionX(newPositionX) {
+        backgroundPositionX = newPositionX;
         if ($previewImg[0].style.backgroundPositionX.trim().length === 0) {
             savePrePreviewPosition = true;
         }
@@ -71,6 +77,7 @@ module.exports = {
     },
 
     setBackgroundPositionY(newPositionY) {
+        backgroundPositionY = newPositionY;
         if ($previewImg[0].style.backgroundPositionY.trim().length === 0) {
             savePrePreviewPosition = true;
         }
@@ -86,31 +93,45 @@ module.exports = {
     },
 
     getBackgroundPositionX() {
-        return parseInt($previewImg[0].style.backgroundPositionX, 10)
+        if(!backgroundPositionX){
+            backgroundPositionX = parseInt($previewImg[0].style.backgroundPositionX, 10);
+        }
+        return backgroundPositionX;
     },
 
     getBackgroundPositionY() {
-        return parseInt($previewImg[0].style.backgroundPositionY, 10)
+        if(!backgroundPositionY){
+            backgroundPositionY = parseInt($previewImg[0].style.backgroundPositionY, 10);
+        }
+        return backgroundPositionY;
     },
 
     setBackgroundWidth(newWidth) {
+        backgroundWidth = newWidth;
         const backgroundSize = $previewImg[0].style.backgroundSize;
         this.setBacBackgroundSize(newWidth, backgroundSize ? this.getBackgroundHeight() : 0);
     },
 
     setBackgroundHeight(newHeight) {
+        backgroundHeight = newHeight;
         const backgroundSize = $previewImg[0].style.backgroundSize;
         this.setBacBackgroundSize(backgroundSize ? this.getBackgroundWidth() : 0, newHeight);
     },
 
     getBackgroundWidth() {
-        const backgroundSize = $previewImg[0].style.backgroundSize;
-        return backgroundSize ? parseInt(backgroundSize.split(' ')[0], 10) : 0
+        if(!backgroundWidth){
+            const backgroundSize = $previewImg[0].style.backgroundSize;
+            backgroundWidth = backgroundSize ? parseInt(backgroundSize.split(' ')[0], 10) : 0;
+        }
+        return backgroundWidth;
     },
 
     getBackgroundHeight() {
-        const backgroundSize = $previewImg[0].style.backgroundSize;
-        return (backgroundSize && backgroundSize.includes(' ')) ? parseInt(backgroundSize.split(' ')[1], 10) : 0
+        if(!backgroundHeight){
+            const backgroundSize = $previewImg[0].style.backgroundSize;
+            backgroundHeight = (backgroundSize && backgroundSize.includes(' ')) ? parseInt(backgroundSize.split(' ')[1], 10) : 0
+        }
+        return backgroundHeight;
     },
     getPreviewImage: getPreviewImage,
     getPreviewImageArea: getPreviewImageArea,
