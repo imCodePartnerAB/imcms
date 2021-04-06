@@ -58,7 +58,7 @@ define("imcms-status-tab-builder",
 
             saveStatusInfoRowData(statusTab.dataTitle, $dateBlock, $timeBlock, $doneByBlock);
 
-            const $dateTimeField = buildLabelWithInputs(statusTab.title, [$dateBlock, $timeBlock]);
+            const $dateTimeField = buildLabelWithInputs(statusTab.title, [$dateBlock, $timeBlock]).addClass("date-time-status-block");
             return buildRowBlock($dateTimeField, $doneByBlock);
         }
 
