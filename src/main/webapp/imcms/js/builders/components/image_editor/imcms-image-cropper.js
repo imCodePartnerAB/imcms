@@ -10,7 +10,11 @@ const imageResize = require('imcms-image-resize');
 const previewImageArea = require('imcms-preview-image-area');
 const imageZoom = require('imcms-image-zoom');
 
-let $imageEditor, croppingAreaParams, angleBorderSize, imageCoords, imageData;
+let $imageEditor, angleBorderSize, imageCoords, imageData;
+let croppingAreaParams= {
+    height: null,
+    width: null
+};
 
 function moveCropImage(newTop, newLeft) {
     const cropImgTop = -newTop;
