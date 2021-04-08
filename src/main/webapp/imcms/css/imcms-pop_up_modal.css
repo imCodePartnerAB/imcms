@@ -23,6 +23,10 @@
 
 @media screen and (max-width: 950px) {
     .imcms-pop-up-modal {
+        left: -webkit-calc(50% - 425px);
+        left: -moz-calc(50% - 425px);
+        left: -ms-calc(50% - 425px);
+        left: -o-calc(50% - 425px);
         left: calc(50% - 425px);
         height: 720px;
         width: 850px;
@@ -31,6 +35,10 @@
 
 @media screen and (max-width: 850px) {
     .imcms-pop-up-modal {
+        left: -webkit-calc(50% - 375px);
+        left: -moz-calc(50% - 375px);
+        left: -ms-calc(50% - 375px);
+        left: -o-calc(50% - 375px);
         left: calc(50% - 375px);
         height: 720px;
         width: 750px;
@@ -102,6 +110,12 @@
 
 .imcms-pop-up-modal__footer {
     background-color: #f3f5f7;
+}
+
+@media screen and (max-width: 750px){
+    .imcms-pop-up-modal__footer .imcms-button--save{
+        max-width: 249px;
+    }
 }
 
 .imcms-modal-window__modal-body .imcms-checkbox__label {

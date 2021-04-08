@@ -9,6 +9,9 @@
 
         const ALIAS_PROPERTY_KEY = 'imcms.document.alias';
 
+        const classRow = 'properties-row';
+        const classButton = 'properties-button';
+
         /**
          * Model of properties. Since we can not bind change() to input, I put inputs to $inputs field,
          * so we can update 'values' property like:
@@ -38,8 +41,8 @@
         }
 
         function buildRowForNewProperty() {
-            const $keyInput = components.texts.textBox('<div>', { text: texts.key });
-            const $valueInput = components.texts.textBox('<div>', { text: texts.value });
+            const $keyInput = components.texts.textBox('<div>', { text: texts.key }).addClass(classRow);
+            const $valueInput = components.texts.textBox('<div>', { text: texts.value }).addClass(classRow);
 
             const $addButton = components.buttons.positiveButton({
                 text: texts.add,
@@ -48,7 +51,7 @@
                     $keyInput.setValue('');
                     $valueInput.setValue('');
                 },
-            });
+            }).addClass(classButton);
 
             return new BEM({
                 block: 'imcms-field',
@@ -69,11 +72,11 @@
         }
 
         function buildRow(key) {
-            const $inputs = properties[key].values.map((value) => buildInput(value));
+            const $inputs = properties[key].values.map((value) => buildInput(value).addClass(classRow));
 
             properties[key].$inputs = $inputs;
 
-            const $removeButton = $(components.controls.remove(() => removeRow(key))).css("padding-right", "80px");
+            const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass(classButton);
 
             return new BEM({
                 block: 'imcms-field',
