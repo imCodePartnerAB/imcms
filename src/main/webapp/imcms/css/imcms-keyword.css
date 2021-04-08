@@ -9,6 +9,7 @@
 
 .imcms-keyword__button {
     display: inline-block;
+    width: 10%;
 }
 
 .imcms-keyword__keywords {
@@ -36,6 +37,6 @@
 }
 
 .imcms-field .imcms-keyword .imcms-input.imcms-input--wide {
-    width: 90%;
-    margin-right: 23px;
+    width: 87%;
+    margin-right: 10px;
 }
