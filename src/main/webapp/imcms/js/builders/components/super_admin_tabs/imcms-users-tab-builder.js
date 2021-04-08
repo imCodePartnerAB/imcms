@@ -111,11 +111,11 @@ define(
 
                     const username = user.login;
                     const $userLogin = $('<div>', {text: username});
-                    if(username.length > 25) components.overlays.defaultTooltip($userLogin, username);
+                    components.overlays.defaultTooltip($userLogin, username, {followCursor: 'horizontal'});
 
                     const email = user.email || '';
                     const $userEmail = $('<div>', {text: email});
-                    if(email.length > 25) components.overlays.defaultTooltip($userEmail, email)
+                    if(user.email) components.overlays.defaultTooltip($userEmail, email, {followCursor: 'horizontal'});
 
                     return new BEM({
                         block: 'imcms-user-info-row',

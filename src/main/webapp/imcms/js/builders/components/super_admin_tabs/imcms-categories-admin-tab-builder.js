@@ -328,7 +328,7 @@ define(
                         type: currentCategoryType
                     };
 
-                    $categoryTypeCreateContainer.slideUp();
+                    if($(window).width() > 1000) $categoryTypeCreateContainer.slideUp();
 
                     categorySaveButtons.find('.imcms-button--error').show();
                     categoryCreateContainer.slideDown();

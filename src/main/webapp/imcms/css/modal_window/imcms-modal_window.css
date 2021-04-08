@@ -104,6 +104,96 @@
     background-color: #d9edf7;
 }
 
+@media screen and (max-width: 1000px) {
+    .imcms-edit-modal-window {
+        left: -webkit-calc(50% - 450px);
+        left: -moz-calc(50% - 450px);
+        left: -ms-calc(50% - 450px);
+        left: -o-calc(50% - 450px);
+        left: calc(50% - 450px);
+        width: 900px;
+        background-color: #d9edf7;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .imcms-edit-modal-window {
+        left: -webkit-calc(50% - 400px);
+        left: -moz-calc(50% - 400px);
+        left: -ms-calc(50% - 400px);
+        left: -o-calc(50% - 400px);
+        left: calc(50% - 400px);
+        width: 800px;
+        background-color: #d9edf7;
+    }
+}
+
+@media screen and (max-width: 800px){
+    .imcms-edit-modal-window {
+        left: -webkit-calc(50% - 350px);
+        left: -moz-calc(50% - 350px);
+        left: -ms-calc(50% - 350px);
+        left: -o-calc(50% - 350px);
+        left: calc(50% - 350px);
+        width: 700px;
+        background-color: #d9edf7;
+    }
+
+    .imcms-modal-view-window,
+    .imcms-modal-optional-window {
+        left: -webkit-calc(50% - 350px);
+        left: -moz-calc(50% - 350px);
+        left: -ms-calc(50% - 350px);
+        left: -o-calc(50% - 350px);
+        left: calc(50% - 350px);
+        width: 700px;
+    }
+}
+
+@media screen and (max-width: 700px){
+    .imcms-edit-modal-window {
+        left: -webkit-calc(50% - 300px);
+        left: -moz-calc(50% - 300px);
+        left: -ms-calc(50% - 300px);
+        left: -o-calc(50% - 300px);
+        left: calc(50% - 300px);
+        width: 600px;
+        background-color: #d9edf7;
+    }
+
+    .imcms-modal-view-window,
+    .imcms-modal-optional-window {
+        left: -webkit-calc(50% - 300px);
+        left: -moz-calc(50% - 300px);
+        left: -ms-calc(50% - 300px);
+        left: -o-calc(50% - 300px);
+        left: calc(50% - 300px);
+        width: 600px;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .imcms-edit-modal-window {
+        left: -webkit-calc(50% - 250px);
+        left: -moz-calc(50% - 250px);
+        left: -ms-calc(50% - 250px);
+        left: -o-calc(50% - 250px);
+        left: calc(50% - 250px);
+        width: 500px;
+        background-color: #d9edf7;
+    }
+
+    .imcms-modal-view-window,
+    .imcms-modal-optional-window {
+        left: -webkit-calc(50% - 250px);
+        left: -moz-calc(50% - 250px);
+        left: -ms-calc(50% - 250px);
+        left: -o-calc(50% - 250px);
+        left: calc(50% - 250px);
+        width: 500px;
+    }
+}
+
 .imcms-modal-buttons-window {
     overflow: hidden;
     top: -webkit-calc(50% - 250px);
