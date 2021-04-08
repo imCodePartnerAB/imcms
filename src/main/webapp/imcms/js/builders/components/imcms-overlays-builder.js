@@ -3,6 +3,7 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
     const defaultAttributes = {
         delay: {show: 400, hide: null},
         placement: 'top',
+        followCursor: false
     };
 
     /**
@@ -21,6 +22,7 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
         {
             delay = defaultAttributes.delay,
             placement = defaultAttributes.placement,
+            followCursor = defaultAttributes.followCursor
         } = defaultAttributes
     ) {
         const correctDelay = getCorrectDelay(delay);
@@ -30,7 +32,9 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
             delay: [correctDelay.show, correctDelay.hide],
             placement: placement,
             theme: 'default',
+            followCursor: followCursor,
             zIndex: 999999,
+            plugins: [tippy.followCursor]
         })
     }
 
