@@ -24,7 +24,19 @@ public class TextDTO extends Text {
     private Type type;
     private HtmlFilteringPolicy htmlFilteringPolicy;
     private String text;
-    private boolean likePublished;
+    private boolean likePublished; //default value false
+
+    public TextDTO(Integer index, Integer docId, LoopEntryRefDTO loopEntryRef, String langCode,
+                   Type type, HtmlFilteringPolicy htmlFilteringPolicy, String text) {
+        this.index = index;
+        this.docId = docId;
+        this.loopEntryRef = loopEntryRef;
+        this.langCode = langCode;
+        this.type = type;
+        this.htmlFilteringPolicy = htmlFilteringPolicy;
+        this.text = text;
+        this.likePublished = false;
+    }
 
     public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRef loopEntryRef) {
         this.index = index;
