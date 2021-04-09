@@ -11,10 +11,7 @@ const previewImageArea = require('imcms-preview-image-area');
 const imageZoom = require('imcms-image-zoom');
 
 let $imageEditor, angleBorderSize, imageCoords, imageData;
-let croppingAreaParams= {
-    height: null,
-    width: null
-};
+let croppingAreaParams= {};
 
 function moveCropImage(newTop, newLeft) {
     const cropImgTop = -newTop;
@@ -143,7 +140,7 @@ function isOversize(width, height) {
 }
 
 function resizeCroppingTopLeft(deltaX, deltaY) {
-    if ((deltaX === 0) && (deltaY === 0)) return;
+    if ((deltaX === 0) && (deltaY === 0)|| croppingAreaParams === null) return;
 
     const oldWidth = cropArea.getCroppingArea().width();
     const oldHeight = cropArea.getCroppingArea().height();
@@ -200,7 +197,7 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
 }
 
 function resizeCroppingTopRight(deltaX, deltaY) {
-    if ((deltaX === 0) && (deltaY === 0)) return;
+    if ((deltaX === 0) && (deltaY === 0) || croppingAreaParams === null) return;
 
     const oldWidth = cropArea.getCroppingArea().width();
     const oldHeight = cropArea.getCroppingArea().height();
@@ -264,7 +261,7 @@ function resizeCroppingTopRight(deltaX, deltaY) {
 }
 
 function resizeCroppingBottomRight(deltaX, deltaY) {
-    if ((deltaX === 0) && (deltaY === 0)) return;
+    if ((deltaX === 0) && (deltaY === 0) || croppingAreaParams === null) return;
 
     const oldWidth = cropArea.getCroppingArea().width();
     const oldHeight = cropArea.getCroppingArea().height();
@@ -332,7 +329,7 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
 }
 
 function resizeCroppingBottomLeft(deltaX, deltaY) {
-    if ((deltaX === 0) && (deltaY === 0)) return;
+    if ((deltaX === 0) && (deltaY === 0) || croppingAreaParams === null) return;
 
     const oldWidth = cropArea.getCroppingArea().width();
     const oldHeight = cropArea.getCroppingArea().height();
