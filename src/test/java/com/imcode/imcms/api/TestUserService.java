@@ -44,36 +44,6 @@ public class TestUserService extends TestCase {
         userService = new UserService(contentManagementSystem);
     }
 
-    public void testUserCanEditSelf() throws SaveException, NoPermissionException {
-        String loginName = "loginName";
-        String firstName = "firstName";
-
-        internalUser.setLoginName(loginName);
-        internalUser.setFirstName(firstName);
-        internalUser.setLastName("lastName");
-
-        User user = contentManagementSystem.getCurrentUser();
-
-        String newLoginName = "newLoginName";
-        String newFirstName = "newFirstName";
-        assertEquals(loginName, user.getLoginName());
-        assertEquals(firstName, user.getFirstName());
-        user.setLoginName(newLoginName);
-        user.setFirstName(newFirstName);
-        userService.saveUser(user);
-
-        database.assertCalled("User can update contents of users table.", new MockDatabase.UpdateTableSqlCallPredicate("users", "" + HIGHEST_USER_ID));
-        database.assertNotCalled("Old login name set.", new MockDatabase.UpdateTableSqlCallPredicate("users", loginName));
-        database.assertCalled("New login name not set.", new MockDatabase.UpdateTableSqlCallPredicate("users", newLoginName));
-        database.assertNotCalled("Old first name set.", new MockDatabase.UpdateTableSqlCallPredicate("users", firstName));
-        database.assertCalled("New first name not set.", new MockDatabase.UpdateTableSqlCallPredicate("users", newFirstName));
-        database.assertCalled("User can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate("role"));
-
-        internalUser.addRoleId(Roles.SUPER_ADMIN.getId());
-        userService.saveUser(user);
-        database.assertCalled("Superadmin can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate("role"));
-    }
-
     public void testCreateNewRole() throws SaveException, NoPermissionException {
         internalUser.addRoleId(Roles.SUPER_ADMIN.getId());
         database.addExpectedSqlCall(new MockDatabase.EqualsSqlCallPredicate(ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES), 3);
