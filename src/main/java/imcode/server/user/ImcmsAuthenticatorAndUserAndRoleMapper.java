@@ -8,6 +8,7 @@ import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.api.exception.UserAlreadyExistsException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Roles;
@@ -291,60 +292,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public void saveUser(UserDomainObject user) {
         modifyPasswordIfNecessary(user);
-
-        String[] params = {
-                getSafeTrimmedString(user.getLoginName()),
-                (null == user.getPassword()) ? "" : user.getPassword().trim(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getTitle(),
-                user.getCompany(),
-                user.getAddress(),
-                user.getCity(),
-                user.getZip(),
-                user.getCountry(),
-                user.getProvince(),
-                user.getEmailAddress(),
-                user.getRef(),
-                user.isImcmsExternal() ? "1" : "0",
-                user.isActive() ? "1" : "0",
-                user.getLanguageIso639_2(),
-                user.getBlockedDate() + "",
-                user.getAttempts() + "",
-                user.getLastLoginDate() + "",
-                user.isPasswordEncrypted() ? "1" : "0",
-                user.hasPasswordReset() ? user.getPasswordReset().getId() : null,
-                user.hasPasswordReset() ? Long.toString(user.getPasswordReset().getTime()) : null,
-                "" + user.getId(),
-        };
-        try {
-            services.getDatabase().execute(new SqlUpdateCommand("UPDATE users \n"
-                    + "SET login_name = ?,\n"
-                    + "login_password = ?,\n"
-                    + "first_name = ?,\n"
-                    + "last_name = ?,\n"
-                    + "title = ?,\n"
-                    + "company = ?,\n"
-                    + "address =  ?,\n"
-                    + "city = ?,\n"
-                    + "zip = ?,\n"
-                    + "country = ?,\n"
-                    + "county_council = ?,\n"
-                    + "email = ?,\n"
-                    + "ref = ?,\n"
-                    + "external = ?,\n"
-                    + "active = ?,\n"
-                    + "language = ?,\n"
-                    + "blocked_date = ?,\n"
-                    + "amount_attempts = ?,\n"
-                    + "login_date = ?,\n"
-                    + "login_password_is_encrypted = ?,\n"
-                    + "login_password_reset_id = ?,\n"
-                    + "login_password_reset_ts = ?\n"
-                    + "WHERE user_id = ?", params));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
+        userService.saveUser(new UserFormData(user));
 
         updateUserRoles(user);
         removePhoneNumbers(user);
