@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.PROPERTY_NAME_2FA;
@@ -38,6 +40,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
+    public static final String DEFAULT_START_PAGE_URL = "/servlet/StartDoc";
 
     private static final Log log = LogFactory.getLog(VerifyUser.class);
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
@@ -118,7 +121,7 @@ public class VerifyUser extends HttpServlet {
     public static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(final HttpServletRequest request,
                              final HttpServletResponse response) throws IOException, ServletException {
-            String nexturl = "/servlet/StartDoc";
+            String nexturl = DEFAULT_START_PAGE_URL;
             final HttpSession session = request.getSession(true);
             if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {
                 nexturl = "/servlet/GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
@@ -134,7 +137,22 @@ public class VerifyUser extends HttpServlet {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
                 session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }
-            response.sendRedirect(nexturl.startsWith("/") ? request.getContextPath() + nexturl : nexturl);
+
+            try {
+                if (nexturl.startsWith("/")) {
+                    nexturl = request.getContextPath() + nexturl;
+                } else {
+                    final URI uri = new URI(request.getRequestURL().toString());
+                    final String host = uri.getHost();
+                    if (!nexturl.contains(host)) {
+                        nexturl = DEFAULT_START_PAGE_URL;
+                    }
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+
+            response.sendRedirect(nexturl);
         }
     }
 }
