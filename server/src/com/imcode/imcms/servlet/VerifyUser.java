@@ -150,6 +150,8 @@ public class VerifyUser extends HttpServlet {
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
+                log.error("GoToLoginSuccessfulPage URI not correct as " + request.getRequestURL().toString());
+                nexturl = DEFAULT_START_PAGE_URL;
             }
 
             response.sendRedirect(nexturl);
