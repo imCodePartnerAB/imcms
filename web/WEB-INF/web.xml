@@ -94,11 +94,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.Help</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-class>
     </servlet>
@@ -380,11 +375,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <url-pattern>/Help/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
