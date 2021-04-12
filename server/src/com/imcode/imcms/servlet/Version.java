@@ -4,6 +4,8 @@ import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletContext;
@@ -49,12 +51,17 @@ public class Version extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if(!user.isSuperAdmin()){
+           res.sendError(HttpServletResponse.SC_FORBIDDEN);
+        }
 
         String imcmsVersion = getImcmsVersion(getServletContext());
         String serverInfo = getServletContext().getServerInfo();
         String databaseProductNameAndVersion = getDatabaseProductNameAndVersion();
         String javaVersion = getJavaVersion();
 
+        res.setHeader("Cache-Control", "no-store");
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
         out.println(imcmsVersion);

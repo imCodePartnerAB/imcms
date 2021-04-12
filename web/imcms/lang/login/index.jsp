@@ -209,7 +209,7 @@
                                             <td>&nbsp;</td>
                                             <td><input type="password"
                                                        name="<%= TwoFactorAuthService.REQUEST_PARAMETER_2FA %>"
-                                                       size="15" style="width:180px"></td>
+                                                       size="15" maxlength="250" style="width:180px"></td>
                                         </tr>
                                     </c:when>
                                     <c:otherwise>
@@ -218,7 +218,7 @@
                                             </td>
                                             <td>&nbsp;</td>
                                             <td><input type="text" name="<%= VerifyUser.REQUEST_PARAMETER__USERNAME %>"
-                                                       size="15"
+                                                       size="15" maxlength="250"
                                                        style="width:180px"></td>
                                         </tr>
                                         <tr>
@@ -227,7 +227,7 @@
                                             <td>&nbsp;</td>
                                             <td><input type="password"
                                                        name="<%= VerifyUser.REQUEST_PARAMETER__PASSWORD %>"
-                                                       size="15" style="width:180px"></td>
+                                                       size="15" maxlength="250" style="width:180px"></td>
                                         </tr>
                                     </c:otherwise>
                                 </c:choose>
