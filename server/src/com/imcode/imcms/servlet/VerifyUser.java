@@ -145,13 +145,15 @@ public class VerifyUser extends HttpServlet {
                     final URI uri = new URI(request.getRequestURL().toString());
                     final String host = uri.getHost();
                     if (!nexturl.contains(host)) {
-                        nexturl = DEFAULT_START_PAGE_URL;
+                        Utility.redirectToStartDocument(request, response);
+                        return;
                     }
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 log.error("GoToLoginSuccessfulPage URI not correct as " + request.getRequestURL().toString());
-                nexturl = DEFAULT_START_PAGE_URL;
+                Utility.redirectToStartDocument(request, response);
+                return;
             }
 
             response.sendRedirect(nexturl);
