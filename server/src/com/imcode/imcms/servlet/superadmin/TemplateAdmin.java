@@ -224,18 +224,6 @@ public class TemplateAdmin extends HttpServlet {
         if (req.getParameter("cancel") != null) {
             res.sendRedirect("AdminManager");
             return;
-        } else if (req.getParameter("add_template") != null) {
-            htmlStr = createUploadTemplateDialog(templateMapper, lang, imcref, user);
-        } else if (req.getParameter("add_demotemplate") != null) {
-            htmlStr = createUploadDemoTemplateDialog(lang, templateMapper, imcref, user);
-        } else if (req.getParameter("delete_template") != null) {
-            htmlStr = createDeleteTemplateDialog(templateMapper, user, lang, imcref);
-        } else if (req.getParameter("rename_template") != null) {
-            htmlStr = createRenameTemplateDialog(lang, imcref, templateMapper, user, null);
-        } else if (req.getParameter("get_template") != null) {
-            htmlStr = createDownloadTemplateDialog(lang, imcref, templateMapper, user);
-        } else if (req.getParameter("edit_template") != null) {
-            htmlStr = createEditTemplateDialog(lang, imcref, templateMapper, user);
         } else if (req.getParameter("add_group") != null) {
             htmlStr = createAddGroupDialog(imcref, user);
         } else if (req.getParameter("delete_group") != null) {
