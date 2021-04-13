@@ -44,13 +44,6 @@ public class TemplateChange extends HttpServlet {
         String lang = request.getParameter("language");
         if (request.getParameter("cancel") != null) {
             response.sendRedirect("TemplateAdmin");
-        } else if (request.getParameter("template_get") != null) {
-            downloadTemplate(request, imcref, response);
-        } else if (request.getParameter("template_delete_cancel") != null) {
-            htmlStr = TemplateAdmin.createDeleteTemplateDialog(templateMapper, user, lang, imcref);
-        } else if (request.getParameter("template_delete") != null) {
-            deleteTemplate(request, imcref);
-            htmlStr = TemplateAdmin.createDeleteTemplateDialog(templateMapper, user, lang, imcref);
         } else if (request.getParameter("assign") != null) {
             htmlStr = addTemplatesToGroup(request, templateMapper, lang, user, imcref);
         } else if (request.getParameter("deassign") != null) {
@@ -61,10 +54,6 @@ public class TemplateChange extends HttpServlet {
             htmlStr =
                     TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper, templateGroup, lang, user,
                             imcref);
-        } else if (request.getParameter("template_rename") != null) {
-            htmlStr = renameTemplate(request, templateMapper, lang, imcref, user);
-        } else if (request.getParameter("template_delete_check") != null) {
-            htmlStr = deleteTemplateAfterCheckingUsage(request, imcref, lang, user);
         } else if (request.getParameter("group_delete_check") != null) {
             htmlStr = deleteTemplateGroupAfterCheckingUsage(request, imcref, user);
         } else if (request.getParameter("group_delete") != null) {
