@@ -205,7 +205,7 @@ public class FileAdmin extends HttpServlet {
             for (int i = 0; i < relativeSourceFileTree.length; i++) {
                 File currentFile = relativeSourceFileTree[i];
                 if (!isUnderRoot(currentFile, getRoots())) {
-                    LOG.error(String.format("File path %s is not locate under root dir", currentFile.toPath()));
+                    LOG.error(String.format("move: File path %s is not locate under root dir", currentFile.getAbsolutePath()));
                     return true;
                 }
             }
@@ -249,7 +249,7 @@ public class FileAdmin extends HttpServlet {
             for (int i = 0; i < relativeSourceFileTree.length; i++) {
                 File currentFile = relativeSourceFileTree[i];
                 if (!isUnderRoot(currentFile, getRoots())) {
-                    LOG.error(String.format("File path %s is not locate under root dir", currentFile.toPath()));
+                    LOG.error(String.format("copy: File path %s is not locate under root dir", currentFile.getAbsolutePath()));
                     return true;
                 }
             }
@@ -296,6 +296,8 @@ public class FileAdmin extends HttpServlet {
                 File oldFilename = new File(dir, files[0]);
                 File newFilename = new File(dir, name);
                 if (!isUnderRoot(oldFilename, roots) && !isUnderRoot(newFilename, roots)) {
+                    LOG.error(String.format("rename: File paths newName %s or oldName %s are not locate under root dir",
+                            newFilename.getAbsolutePath(), oldFilename.getAbsolutePath()));
                     return true;
                 }
 
@@ -314,7 +316,10 @@ public class FileAdmin extends HttpServlet {
         boolean handledOutput = false;
         if (files != null && files.length == 1) {    //Has the user chosen just one file?
             File file = new File(dir, files[0]);
-            if (!isUnderRoot(file, getRoots())) return true;
+            if (!isUnderRoot(file, getRoots())) {
+                LOG.error(String.format("download: File path %s is not locate under root dir ", file.getAbsolutePath()));
+                return true;
+            }
             try {
                 res.setContentType("application/octet-stream");
                 res.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + '\"');
@@ -343,7 +348,7 @@ public class FileAdmin extends HttpServlet {
             for (int i = 0; i < filelist.length; i++) {
                 File currentFile = filelist[i];
                 if (!isUnderRoot(currentFile, getRoots())) {
-                    LOG.error(String.format("File path %s is not locate under root dir", currentFile.toPath()));
+                    LOG.error(String.format("delete: File path %s is not locate under root dir", currentFile.getAbsolutePath()));
                     return true;
                 }
             }
@@ -381,7 +386,7 @@ public class FileAdmin extends HttpServlet {
         String filename = parameterFileItem.getName();
         File file = new File(destDir, filename);
             if (!isUnderRoot(file, getRoots())) {
-                LOG.error(String.format("File path %s is not locate under root dir", file.toPath()));
+                LOG.error(String.format("upload: File path %s is not locate under root dir", file.getAbsolutePath()));
                 return true;
             }
 
@@ -550,7 +555,10 @@ public class FileAdmin extends HttpServlet {
 
     private void copyOk(HttpServletRequest mp, File[] roots) throws IOException {
         fromSourceToDestination(mp, roots, (source, destination) -> {
-            if (!isUnderRoot(destination, roots)) return;
+            if (!isUnderRoot(destination, roots)) {
+                LOG.error(String.format("copyOk: destination %s is not locate under root dir", destination.getAbsolutePath()));
+                return;
+            }
 
             if (source.isDirectory()) {
                 destination.mkdir();
