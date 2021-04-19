@@ -115,10 +115,12 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     @Override
     public Text save(Text text) {
         final Integer docId = text.getDocId();
-        final Version version = versionService.getDocumentWorkingVersion(docId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Version latestVersion = versionService.getLatestVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
-        final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
+        final TextJPA textJPA = getText(text.getIndex(), workingVersion, language, text.getLoopEntryRef());
+
         final String textContent = text.getText();
         final Text.Type type = text.getType();
         final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
@@ -135,10 +137,18 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
             text.setText(textContentFilter.cleanText(textContent, filteringPolicy));
         }
 
-        final TextJPA newTextJPA = new TextJPA(text, version, language);
+        final TextJPA newTextJPA = new TextJPA(text, workingVersion, language);
         newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
 
         final Text savedText = repository.save(newTextJPA);
+
+        if (text.isLikePublished()) {
+            final TextJPA latestVersionTextJPA = getText(text.getIndex(), latestVersion, language, text.getLoopEntryRef());
+            final TextJPA newLatestTextJPA = new TextJPA(text, latestVersion, language);
+            newLatestTextJPA.setId((latestVersionTextJPA == null) ? null : latestVersionTextJPA.getId());
+
+            repository.save(newLatestTextJPA);
+        }
 
         super.updateWorkingVersion(docId);
 
