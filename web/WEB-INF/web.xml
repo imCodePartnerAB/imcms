@@ -48,6 +48,12 @@
     </filter>
 
     <filter>
+        <description>Protection from csrf attacks</description>
+        <filter-name>CSRFProtectionFilter</filter-name>
+        <filter-class>com.imcode.imcms.servlet.csrf.filter.CSRFProtectionFilter</filter-class>
+    </filter>
+
+    <filter>
         <description>Restrict api samples to superadmin.</description>
         <filter-name>SuperAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
@@ -76,6 +82,11 @@
 
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CSRFProtectionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
