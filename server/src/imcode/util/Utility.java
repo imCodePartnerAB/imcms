@@ -87,6 +87,8 @@ public class Utility {
     public static final ResultSetHandler<List<String>> STRING_LIST_HANDLER = new StringListResultSetHandler();
     public static final ResultSetHandler<List<Integer>> INTEGER_LIST_HANDLER = new IntegerListResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+    public static final String IM_REMEMBER_CD = "im_remember_cd";
+
     private final static Logger log = Logger.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
@@ -456,6 +458,7 @@ public class Utility {
         sessionInfoDTO.setLoginDate(loginDate);
         sessionInfoDTO.setExpireDate(DateUtils.addSeconds(loginDate, req.getSession().getMaxInactiveInterval()));
 
+
         sessions.put(currentSession.getId(), sessionInfoDTO);
 
         if (null != user) {
@@ -508,7 +511,7 @@ public class Utility {
     }
 
     public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
-        Cookie cookie = new Cookie("im_remember_cd", rememberCd);
+        Cookie cookie = new Cookie(IM_REMEMBER_CD, rememberCd);
         cookie.setMaxAge(60 * 60 * 2);
         cookie.setPath("/");
 
@@ -517,7 +520,7 @@ public class Utility {
     }
 
     public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = new Cookie("im_remember_cd", "");
+        Cookie cookie = new Cookie(IM_REMEMBER_CD, "");
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
