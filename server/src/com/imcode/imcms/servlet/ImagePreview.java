@@ -109,7 +109,7 @@ public class ImagePreview extends HttpServlet {
         int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
         RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
 
-        String etag = ImcmsImageUtils.getImageETag(path, imageFile, null, 0, null,
+        String etag = ImcmsImageUtils.getImageETag(path, imageFile, 0, null,
                 format, width, height, cropRegion, rotateDirection);
         String ifNoneMatch = request.getHeader("If-None-Match");
 

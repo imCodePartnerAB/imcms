@@ -26,15 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +125,7 @@ public class ImageHandling extends HttpServlet {
         }
     }
 
-    static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, String fileNo,
+    static ImageCacheDomainObject createImageCacheObject(String path, int fileId, String fileNo,
                                                          Format format, int width, int height, Resize resize, CropRegion cropRegion, RotateDirection rotateDirection,
                                                          Integer metaId, Integer no) {
         ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
@@ -148,11 +140,8 @@ public class ImageHandling extends HttpServlet {
             }
             imageCache.setResource(res);
             imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
-        } else if (url != null) {
-            imageCache.setResource(url);
-            imageCache.setType(ImageCacheDomainObject.TYPE_URL);
         } else {
-            throw new RuntimeException("path, url or fileId must be valid");
+            throw new RuntimeException("path or fileId must be valid");
         }
 
         imageCache.setFormat(format);
@@ -192,6 +181,8 @@ public class ImageHandling extends HttpServlet {
         return null;
     }
 
+    @Deprecated
+    // Need to protect from SSRF attacks, hard check the data we receive
     private static SourceFile getExternalFile(String url) {
         GetMethod fileGet = new GetMethod(url);
         fileGet.addRequestHeader("User-Agent", USER_AGENT);
@@ -201,7 +192,6 @@ public class ImageHandling extends HttpServlet {
 
             if (responseCode != HttpStatus.SC_OK) {
                 drainInput(fileGet.getResponseBodyAsStream());
-
                 return null;
             }
 
@@ -288,7 +278,6 @@ public class ImageHandling extends HttpServlet {
         String desiredFilename = getDesiredFilename(request);
 
         String path = StringUtils.trimToNull(request.getParameter("path"));
-        String url = StringUtils.trimToNull(request.getParameter("url"));
         int fileId = NumberUtils.toInt(request.getParameter("file_id"));
         String fileNo = StringUtils.trimToNull(request.getParameter("file_no"));
 
@@ -333,7 +322,7 @@ public class ImageHandling extends HttpServlet {
         width = Math.max(width, 0);
         height = Math.max(height, 0);
 
-        if ((path == null && url == null && fileId <= 0) || (format != null && !format.isWritable())) {
+        if ((path == null && fileId <= 0) || (format != null && !format.isWritable())) {
             sendNotFound(response);
             return;
         }
@@ -348,7 +337,7 @@ public class ImageHandling extends HttpServlet {
         int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
         RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
 
-        ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, fileNo, format, width,
+        ImageCacheDomainObject imageCache = createImageCacheObject(path, fileId, fileNo, format, width,
                 height, resize, cropRegion, rotateDirection, metaId, no);
         String cacheId = imageCache.getId();
 
@@ -367,7 +356,7 @@ public class ImageHandling extends HttpServlet {
             }
         }
 
-        String etag = ImcmsImageUtils.getImageETag(path, localImageFile, url, fileId, fileNo,
+        String etag = ImcmsImageUtils.getImageETag(path, localImageFile, fileId, fileNo,
                 format, width, height, cropRegion, rotateDirection);
 
         // Try to reuse an existing cache file
@@ -401,10 +390,8 @@ public class ImageHandling extends HttpServlet {
         SourceFile source;
         if (path != null) {
             source = getLocalFile(path);
-        } else if (fileId > 0) {
-            source = getFileDocument(fileId, fileNo);
         } else {
-            source = getExternalFile(url);
+            source = getFileDocument(fileId, fileNo);
         }
 
         if (source == null) {
