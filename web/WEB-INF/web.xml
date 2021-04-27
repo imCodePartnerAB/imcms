@@ -36,6 +36,12 @@
     </filter>
 
     <filter>
+        <description> Protection for xss attacks</description>
+        <filter-name>XSSProtectionFilter</filter-name>
+        <filter-class>com.imcode.imcms.servlet.XssFilter</filter-class>
+    </filter>
+
+    <filter>
         <description>Checks for multiple user login</description>
         <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsMultipleUserLoginFilter</filter-class>
@@ -72,6 +78,11 @@
     <filter-mapping>
         <filter-name>SSOFilter</filter-name>
         <url-pattern>/acs</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>XSSProtectionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
