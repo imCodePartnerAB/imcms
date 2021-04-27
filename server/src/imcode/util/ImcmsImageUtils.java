@@ -7,14 +7,9 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
@@ -30,18 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
@@ -413,7 +398,7 @@ public class ImcmsImageUtils {
         }
     }
 
-    public static String getImageETag(String path, File imageFile, String url, int fileId, String fileNo,
+    public static String getImageETag(String path, File imageFile, int fileId, String fileNo,
                                       Format format, int width, int height, CropRegion cropRegion,
                                       RotateDirection rotateDirection) {
 
@@ -437,9 +422,6 @@ public class ImcmsImageUtils {
             builder.append(cropRegion.getCropY2());
         }
 
-        if (url != null) {
-            builder.append(url);
-        }
         if (fileId > 0) {
             builder.append(fileId);
         }
