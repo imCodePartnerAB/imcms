@@ -13,18 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.NDC;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
@@ -108,7 +98,7 @@ public class ImcmsSetupFilter implements Filter {
             NDC.push(contextPath);
         }
         NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
-
+        XssFilter.isVisitFilter.set(false);
         handleDocumentUri(chain, request, response, service, fallbackDecoder);
         NDC.setMaxDepth(0);
     }
