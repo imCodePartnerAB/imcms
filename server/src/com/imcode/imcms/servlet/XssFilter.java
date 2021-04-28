@@ -23,11 +23,11 @@ public final class XssFilter implements Filter {
 
 
         if (parameterNames.hasMoreElements() && httpRequest.getMethod().equals("GET")) {
-            XssHttpServletWrapper xssRequest = encodeParametersRequest(httpRequest, parameterNames);
+            String newUrl = encodeParametersRequest(httpRequest, parameterNames);
 
             if (!isVisitFilter.get()) {
                 isVisitFilter.set(true);
-                servletResponse.sendRedirect(xssRequest.getNewUrl());
+                servletResponse.sendRedirect(newUrl);
                 return;
             }
         }
@@ -41,7 +41,7 @@ public final class XssFilter implements Filter {
     public void init(FilterConfig filterConfig) {
     }
 
-    private XssHttpServletWrapper encodeParametersRequest(HttpServletRequest request, Enumeration<String> parameterNames) {
+    private String encodeParametersRequest(HttpServletRequest request, Enumeration<String> parameterNames) {
 
         final StringBuffer requestURL = request.getRequestURL();
 
@@ -57,7 +57,7 @@ public final class XssFilter implements Filter {
             requestURL.append(handleParameterForRequest(requestURL, paramName, encodeValue));
         }
 
-        return new XssHttpServletWrapper(request, requestURL.toString());
+        return requestURL.toString();
     }
 
     private String handleParameterForRequest(StringBuffer requestURL, String paramName, String value) {
