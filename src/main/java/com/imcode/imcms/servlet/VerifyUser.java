@@ -11,6 +11,7 @@ import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static imcode.server.ImcmsConstants.API_PREFIX;
 import static imcode.server.ImcmsConstants.LOGIN_URL;
@@ -31,6 +34,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     public static final String REQUEST_ATTRIBUTE__WAIT_TIME = "time_error";
     public static final String REQUEST_ATTRIBUTE__INFO_LEFT_ATTEMPTS = "left_attempts_info";
+    public static final String DEFAULT_START_PAGE_URL = "/servlet/StartDoc";
     /**
      * Too many sessions message key.
      */
@@ -118,12 +122,15 @@ public class VerifyUser extends HttpServlet {
     }
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
+
+        private final Logger log = Logger.getLogger(GoToLoginSuccessfulPageCommand.class);
+
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
-            String nexturl = "/";
-            HttpSession session = request.getSession(true);
+            String nexturl = DEFAULT_START_PAGE_URL;
+            final HttpSession session = request.getSession(true);
             if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {
-                nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
+                nexturl = "/servlet/GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
                 session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
             } else if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
@@ -131,11 +138,30 @@ public class VerifyUser extends HttpServlet {
             } else if (request.getParameter(REQUEST_PARAMETER__NEXT_URL) != null) {
                 nexturl = request.getParameter(REQUEST_PARAMETER__NEXT_URL);
             } else if (request.getParameter(REQUEST_PARAMETER__NEXT_META) != null) {
-                nexturl = "GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
+                nexturl = "/servlet/GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
             } else if (session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
                 session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }
+
+            try {
+                if (nexturl.startsWith("/")) {
+                    nexturl = request.getContextPath() + nexturl;
+                } else {
+                    final URI uri = new URI(request.getRequestURL().toString());
+                    final String host = uri.getHost();
+                    if (!nexturl.contains(host)) {
+                        Utility.redirectToStartDocument(request, response);
+                        return;
+                    }
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                log.error("GoToLoginSuccessfulPage URI not correct as " + request.getRequestURL().toString());
+                Utility.redirectToStartDocument(request, response);
+                return;
+            }
+
             response.sendRedirect(nexturl);
         }
     }
