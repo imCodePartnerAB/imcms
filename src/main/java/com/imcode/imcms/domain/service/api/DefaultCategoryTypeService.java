@@ -8,6 +8,7 @@ import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
+import imcode.util.Utility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         if (saveMe.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
+        saveMe.setName(Utility.escapeValue(saveMe.getName()));
         final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(
                 modelMapper.map(saveMe, CategoryTypeJPA.class)
         );
@@ -64,7 +66,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     public CategoryType update(CategoryType updateMe) {
         final CategoryType receivedCategoryType = categoryTypeRepository.findOne(updateMe.getId());
         receivedCategoryType.setId(updateMe.getId());
-        receivedCategoryType.setName(updateMe.getName());
+        receivedCategoryType.setName(Utility.escapeValue(updateMe.getName()));
         receivedCategoryType.setInherited(updateMe.isInherited());
         receivedCategoryType.setMultiSelect(updateMe.isMultiSelect());
         receivedCategoryType.setVisible(updateMe.isVisible());

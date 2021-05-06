@@ -6,6 +6,8 @@ import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
+import imcode.util.Utility;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ class DefaultCategoryService implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final ModelMapper modelMapper;
+    private Logger logger = Logger.getLogger(DefaultCategoryService.class);
 
     @Autowired
     DefaultCategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
@@ -45,6 +48,7 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category save(Category saveMe) {
+        saveMe.setName(Utility.escapeValue(saveMe.getName()));
         return new CategoryDTO(categoryRepository.save(modelMapper.map(saveMe, CategoryJPA.class)));
     }
 
@@ -52,7 +56,7 @@ class DefaultCategoryService implements CategoryService {
     public Category update(Category updateMe) {
         final Category receivedCategory = categoryRepository.findOne(updateMe.getId());
         receivedCategory.setId(updateMe.getId());
-        receivedCategory.setName(updateMe.getName());
+        receivedCategory.setName(Utility.escapeValue(updateMe.getName()));
         receivedCategory.setDescription(updateMe.getDescription());
         receivedCategory.setType(updateMe.getType());
         final Category updatedCategory = categoryRepository.saveAndFlush(modelMapper.map(receivedCategory, CategoryJPA.class));
