@@ -8,11 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class XssFilter implements Filter {
-
-    public static AtomicBoolean isVisitFilter = new AtomicBoolean(false);
 
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
@@ -21,12 +18,11 @@ public final class XssFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse servletResponse = (HttpServletResponse) response;
 
-
         if (parameterNames.hasMoreElements() && httpRequest.getMethod().equals("GET")) {
-            String newUrl = encodeParametersRequest(httpRequest, parameterNames);
+            String url = completeUrl(httpRequest, parameterNames, false);
+            String newUrl = completeUrl(httpRequest, request.getParameterNames(), true);
 
-            if (!isVisitFilter.get()) {
-                isVisitFilter.set(true);
+            if (!url.equals(newUrl)) {
                 servletResponse.sendRedirect(newUrl);
                 return;
             }
@@ -41,20 +37,24 @@ public final class XssFilter implements Filter {
     public void init(FilterConfig filterConfig) {
     }
 
-    private String encodeParametersRequest(HttpServletRequest request, Enumeration<String> parameterNames) {
+    private String completeUrl(HttpServletRequest request, Enumeration<String> parameterNames, boolean encode) {
 
         final StringBuffer requestURL = request.getRequestURL();
 
         while (parameterNames.hasMoreElements()) {
 
             String paramName = parameterNames.nextElement();
+            String value;
+            if(encode){
+                value = Arrays.stream(request.getParameterValues(paramName))
+                        .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                        .map(StringEscapeUtils::escapeHtml4)
+                        .findFirst().orElse("");
+            }else{
+                value = request.getParameter(paramName);
+            }
 
-            String encodeValue = Arrays.stream(request.getParameterValues(paramName))
-                    .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
-                    .map(StringEscapeUtils::escapeHtml4)
-                    .findFirst().orElse("");
-
-            requestURL.append(handleParameterForRequest(requestURL, paramName, encodeValue));
+            requestURL.append(handleParameterForRequest(requestURL, paramName, value));
         }
 
         return requestURL.toString();
