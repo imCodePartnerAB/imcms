@@ -6,6 +6,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -37,7 +39,7 @@ public final class XssFilter implements Filter {
     public void init(FilterConfig filterConfig) {
     }
 
-    private String completeUrl(HttpServletRequest request, Enumeration<String> parameterNames, boolean encode) {
+    private String completeUrl(HttpServletRequest request, Enumeration<String> parameterNames, boolean encode) throws UnsupportedEncodingException {
 
         final StringBuffer requestURL = request.getRequestURL();
 
@@ -48,13 +50,14 @@ public final class XssFilter implements Filter {
             if(encode){
                 value = Arrays.stream(request.getParameterValues(paramName))
                         .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                        .map(StringEscapeUtils::unescapeHtml4)
                         .map(StringEscapeUtils::escapeHtml4)
                         .findFirst().orElse("");
             }else{
                 value = request.getParameter(paramName);
             }
 
-            requestURL.append(handleParameterForRequest(requestURL, paramName, value));
+            requestURL.append(handleParameterForRequest(requestURL, paramName, URLEncoder.encode(value,"UTF-8")));
         }
 
         return requestURL.toString();
