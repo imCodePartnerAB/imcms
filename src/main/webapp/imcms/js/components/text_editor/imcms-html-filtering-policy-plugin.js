@@ -108,13 +108,30 @@ define(
         }
 
         function filterAndPasteContent(content, policy) {
+            textUtils.filterContent(content, policy, textDto => {
+                insertTextAndRemoveTag(textDto.text);
+            }, () => {
+                insertTextAndRemoveTag(content);
+            })
+        }
+
+        function setCursorAfterInsertedText(pasteContainerId) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+
+            range.setEndBefore(document.getElementById(pasteContainerId));
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+
+        //to set cursor position after inserted text -> insert text before span and after that delete it
+        function insertTextAndRemoveTag(content) {
             const $pasteContainer = $(`#${PASTE_CONTAINER_ID}`);
 
-            textUtils.filterContent(content, policy, textDto => {
-                $pasteContainer.replaceWith(textDto.text);
-            }, () => {
-                $pasteContainer.replaceWith(content);
-            })
+            $pasteContainer.before(content);
+            setCursorAfterInsertedText(`${PASTE_CONTAINER_ID}`);
+            $pasteContainer.remove();
         }
 
         return {
