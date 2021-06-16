@@ -384,7 +384,7 @@ public class ImageEditPage extends OkCancelPage {
         builder.append("=yes&");
 
         String imageArchiveUrl = String.format(protocol + "%s?returnTo=%s", Imcms.getServices().getConfig().getImageArchiveUrl(),
-                Utility.encodeUrl(builder.toString()));
+                builder);
 
         response.sendRedirect(imageArchiveUrl);
     }
