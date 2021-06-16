@@ -98,7 +98,6 @@ public class ImcmsSetupFilter implements Filter {
             NDC.push(contextPath);
         }
         NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
-        XssFilter.isVisitFilter.set(false);
         handleDocumentUri(chain, request, response, service, fallbackDecoder);
         NDC.setMaxDepth(0);
     }
