@@ -3,33 +3,17 @@ package imcode.server.user.saml2.store;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import imcode.server.Imcms;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserAlreadyExistsException;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.saml2.core.AuthnStatement;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.saml2.core.Statement;
+import org.opensaml.saml2.core.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class SAMLSessionManager {
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
@@ -102,7 +86,7 @@ public class SAMLSessionManager {
         if (StringUtils.isEmpty(rememberCd)) {
             cms.getUserService().updateUserRememberCd(user);
         }
-        Utility.setRememberCdCookie(request, response, user.getRememberCd());
+        Utility.setUserToken(request, response, user);
         Utility.makeUserLoggedIn(request, user);
     }
 

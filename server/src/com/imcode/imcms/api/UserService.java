@@ -2,11 +2,7 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.model.ExternalUser;
 import imcode.server.Imcms;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.NameTooLongException;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
@@ -252,16 +248,20 @@ public class UserService implements ExternalUserService {
      * @see imcode.util.Utility#setRememberCdCookie(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, String)
      */
     public void updateUserRememberCd(UserDomainObject user) {
+        String code = generateNewRememberCd(user);
+        user.setRememberCd(code);
+
+        getMapper().updateUserRememberCd(user);
+    }
+
+    public String generateNewRememberCd(UserDomainObject user){
         long rand = 0L;
 
         synchronized (RANDOM) {
             rand = RANDOM.nextLong();
         }
 
-        String code = DigestUtils.shaHex(Integer.toString(user.getId()) + Long.toString(rand));
-        user.setRememberCd(code);
-
-        getMapper().updateUserRememberCd(user);
+        return DigestUtils.shaHex(Integer.toString(user.getId()) + Long.toString(rand));
     }
 
     /**

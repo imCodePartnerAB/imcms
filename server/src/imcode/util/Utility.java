@@ -3,11 +3,7 @@ package imcode.util;
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.db.IntegerListResultSetHandler;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.db.StringListResultSetHandler;
+import com.imcode.imcms.db.*;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.servlet.beans.SessionInfoDTO;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -16,11 +12,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.Factory;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.SetUtils;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.*;
 import org.apache.commons.collections.iterators.ObjectArrayIterator;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -36,11 +28,7 @@ import org.w3c.dom.Document;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -60,22 +48,7 @@ import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -87,7 +60,7 @@ public class Utility {
     public static final ResultSetHandler<List<String>> STRING_LIST_HANDLER = new StringListResultSetHandler();
     public static final ResultSetHandler<List<Integer>> INTEGER_LIST_HANDLER = new IntegerListResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
-    public static final String IM_REMEMBER_CD = "im_remember_cd";
+    public static final String IM_TOKEN = "im_token";
 
     private final static Logger log = Logger.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
@@ -510,8 +483,22 @@ public class Utility {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
     }
 
-    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
-        Cookie cookie = new Cookie(IM_REMEMBER_CD, rememberCd);
+    public static void setUserToken(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) {
+        String token = getContentManagementSystemFromRequest(request).getUserService().generateNewRememberCd(user);
+        Utility.setTokenToSession(request, token);
+        Utility.setRememberCdCookie(request, response, token);
+    }
+
+    public static void setTokenToSession(HttpServletRequest request, String token) {
+        request.getSession().setAttribute(IM_TOKEN, token);
+    }
+
+    public static void removeTokenSession(HttpServletRequest request) {
+        request.getSession().setAttribute(IM_TOKEN, "");
+    }
+
+    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie(IM_TOKEN, token);
         cookie.setMaxAge(60 * 60 * 2);
         cookie.setPath("/");
 
@@ -520,7 +507,7 @@ public class Utility {
     }
 
     public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = new Cookie(IM_REMEMBER_CD, "");
+        Cookie cookie = new Cookie(IM_TOKEN, "");
         cookie.setMaxAge(0);
         cookie.setPath("/");
 

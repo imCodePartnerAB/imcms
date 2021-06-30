@@ -38,6 +38,10 @@ public class CSRFProtectionFilter implements Filter {
                     //add default user for system
                     Utility.makeUserLoggedIn(request, Imcms.getServices().verifyUserByIpOrDefault(request.getRemoteAddr()));
                     throw new ServletException("Potential CSRF detected!! Inform a scary sysadmin ASAP!");
+                }else{
+                    if(request.getMethod().equals("POST")){
+                        Utility.setUserToken(request, response, user);
+                    }
                 }
             }
         }

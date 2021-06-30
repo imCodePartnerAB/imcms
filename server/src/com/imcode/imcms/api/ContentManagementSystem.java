@@ -62,7 +62,8 @@ public abstract class ContentManagementSystem {
         if (StringUtils.isEmpty(rememberCd)) {
             cms.getUserService().updateUserRememberCd(user);
         }
-        Utility.setRememberCdCookie(request, response, user.getRememberCd());
+
+        Utility.setUserToken(request, response, user);
 
         Utility.makeUserLoggedIn(request, user);
 
