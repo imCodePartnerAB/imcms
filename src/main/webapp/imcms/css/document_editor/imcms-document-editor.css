@@ -296,7 +296,9 @@
 }
 
 .imcms-document-item__info--date,
-.imcms-document-list-titles__title--date {
+.imcms-document-list-titles__title--date,
+.imcms-document-list-titles__title--modified-date,
+.imcms-document-list-titles__title--published-date{
     min-width: 9em;
 }
 
