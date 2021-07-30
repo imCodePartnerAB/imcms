@@ -145,7 +145,7 @@ public class VerifyUser extends HttpServlet {
             }
 
             try {
-                if (nexturl.startsWith("/")) {
+                if (nexturl.startsWith("/") && !nexturl.startsWith("//")) {
                     nexturl = request.getContextPath() + nexturl;
                 } else {
                     final URI uri = new URI(request.getRequestURL().toString());

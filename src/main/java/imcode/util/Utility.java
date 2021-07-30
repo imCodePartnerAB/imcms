@@ -184,7 +184,7 @@ public class Utility {
     }
 
     public static void redirectToStartDocument(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        res.sendRedirect(req.getContextPath());
+        res.sendRedirect(req.getContextPath() + "/");
     }
 
     public static boolean isValidEmail(String email) {
