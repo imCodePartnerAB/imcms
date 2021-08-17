@@ -595,6 +595,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         solrInputDocument.addField(DocumentIndex.FIELD__ID, id);
         solrInputDocument.addField(DocumentIndex.FIELD__META_ID, getDocId(id));
         solrInputDocument.addField(DocumentIndex.FIELD__TIMESTAMP, new Date());
+        solrInputDocument.addField(DocumentIndex.FIELD__MODIFIED_DATETIME, new Date());
         solrInputDocument.addField(DocumentIndex.FIELD__LANGUAGE_CODE, "test_lang_code");
         solrInputDocument.addField(DocumentIndex.FIELD__VERSION_NO, 0);
         solrInputDocument.addField(DocumentIndex.FIELD__SEARCH_ENABLED, true);
