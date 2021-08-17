@@ -152,8 +152,8 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getProportionsCoefficient();
-        const newProportionsK = newWidth / newHeight;
+	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
+	    const newProportionsK = (newWidth / newHeight).toFixed(3);
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -209,8 +209,8 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getProportionsCoefficient();
-        const newProportionsK = newWidth / newHeight;
+	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
+	    const newProportionsK = (newWidth / newHeight).toFixed(3);
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -273,8 +273,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getProportionsCoefficient();
-        const newProportionsK = newWidth / newHeight;
+	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
+	    const newProportionsK = (newWidth / newHeight).toFixed(3);
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -341,8 +341,8 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getProportionsCoefficient();
-        const newProportionsK = newWidth / newHeight;
+	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
+	    const newProportionsK = (newWidth / newHeight).toFixed(3);
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -537,9 +537,9 @@ function init(_imageData) {
             prevY = undefined;
             return;
         }
-
-        const newX = getValidCoordX(event.clientX);
-        const newY = getValidCoordY(event.clientY);
+	    const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
+	    const newX = getValidCoordX(event.clientX / zoomValue).toFixed(0);
+	    const newY = getValidCoordY(event.clientY / zoomValue).toFixed(0);
 
         if (prevX === undefined || prevY === undefined) {
             prevX = newX;
