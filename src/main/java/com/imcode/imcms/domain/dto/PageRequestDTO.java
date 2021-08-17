@@ -18,13 +18,13 @@ public class PageRequestDTO {
 
     public PageRequestDTO() {
         this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE_FOR_UI);
-        this.property = DocumentIndex.FIELD_META_HEADLINE;
+        this.property = DocumentIndex.FIELD__MODIFIED_DATETIME;
         this.direction = Sort.Direction.DESC;
     }
 
     public PageRequestDTO(int defaultPageSize) {
         this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, defaultPageSize);
-        this.property = DocumentIndex.FIELD_META_HEADLINE;
+        this.property = DocumentIndex.FIELD__MODIFIED_DATETIME;
         this.direction = Sort.Direction.DESC;
     }
 

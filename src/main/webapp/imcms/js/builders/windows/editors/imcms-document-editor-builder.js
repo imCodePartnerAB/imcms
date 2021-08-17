@@ -53,7 +53,7 @@ define('imcms-document-editor-builder',
 
         const pageSkip = 'page.skip';
 
-        const defaultSortPropertyValue = 'meta_headline_l_' + imcms.language.code;
+        const defaultSortPropertyValue = 'modified_datetime'
         const asc = 'ASC';
         const desc = 'DESC';
 
@@ -334,7 +334,7 @@ define('imcms-document-editor-builder',
         }
 
         function highlightDefaultSorting() {
-            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title--title');
+            const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title--modified-date');
             highlightSorting($defaultSortingHeader);
         }
 
@@ -432,7 +432,7 @@ define('imcms-document-editor-builder',
 
             const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                bySorting: defaultSortPropertyValue,
+                bySorting: 'meta_headline_l_' + imcms.language.code,
                 elementClass: 'imcms-flex--flex-3',
                 modifiers: ['title']
             });
@@ -445,16 +445,16 @@ define('imcms-document-editor-builder',
 
             const $modifiedColumnHead = buildTitleRow({
                 text: texts.sort.modified,
-                bySorting: 'modified_datetime',
+                bySorting: defaultSortPropertyValue,
                 elementClass: 'imcms-grid-col-17',
-                modifiers: ['date'],
+                modifiers: ['modified-date'],
             });
 
             const $publishedColumnHead = buildTitleRow({
                 text: texts.sort.published,
                 bySorting: 'publication_start_datetime',
                 elementClass: 'imcms-grid-col-17',
-                modifiers: ['date'],
+                modifiers: ['published-date'],
             });
 
             const $versionColumnHead = buildTitleRow({

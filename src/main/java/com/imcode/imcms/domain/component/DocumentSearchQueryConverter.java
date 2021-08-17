@@ -37,7 +37,8 @@ public class DocumentSearchQueryConverter {
                         DocumentIndex.FIELD__TEXT,
                         DocumentIndex.FIELD__VERSION_NO,
                         DocumentIndex.FIELD__ALIAS,
-                        DocumentIndex.FIELD__URL})
+                        DocumentIndex.FIELD__URL,
+                        DocumentIndex.FIELD__MODIFIED_DATETIME})
                         .map(field -> String.format("%s:*%s*", field,
                                 searchQuery.getTerm().replaceAll("\\s+", "?")))
                         .collect(Collectors.joining(" "))
@@ -94,7 +95,7 @@ public class DocumentSearchQueryConverter {
         solrQuery.setRows(page.getSize());
 
         final Order order = Optional.ofNullable(page.getSort())
-                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD_META_HEADLINE + "_" + Imcms.getLanguage().getCode())))
+                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD__MODIFIED_DATETIME)))
                 .iterator()
                 .next();
 
