@@ -125,6 +125,7 @@ function onImageLoad() {
             transform: transformStyle,
             width,
             height,
+	        'border-width': `${this.width * 0.01}px`,
         });
     });
 }

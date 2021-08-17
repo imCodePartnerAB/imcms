@@ -1,7 +1,6 @@
 .imcms-originally-img-area {
     background-color: #9b9b9b;
     display: block;
-    overflow: auto;
     position: relative;
     z-index: 15;
     width: 100%;
@@ -10,7 +9,6 @@
 
 .image-cropping-block {
     background-color: #9b9b9b;
-    overflow: auto;
     position: absolute;
     z-index: 10;
 }
@@ -72,8 +70,7 @@
 .imcms-preview-img:not(.image-cropping-wrap__img),
 .image-cropping-wrap,
 .imcms-originally-img {
-    border: 15px solid #9b9b9b;
+    border: solid #9b9b9b;
     background: no-repeat center;
     transform-origin: top left;
-    margin: 1%;
 }
