@@ -28,6 +28,10 @@
     background-color: #d0e9f9;
 }
 
+.imcms-access-role__body{
+	overflow-wrap: anywhere;
+}
+
 .imcms-access-role__body .imcms-access-role__column,
 .imcms-access-role__body .imcms-access-role__column-title {
     display: block;

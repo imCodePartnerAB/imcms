@@ -238,6 +238,7 @@
     background-color: ghostwhite;
     border: 1px solid gainsboro;
     display: inline-block;
+	overflow-wrap: anywhere;
 }
 
 .roles-table__role-row {
@@ -459,6 +460,7 @@
 .buttons-action {
     display: inline-flex;
     width: 100%;
+	margin-top: 10px;
 }
 
 .buttons-move,
@@ -805,7 +807,6 @@
 }
 
 .imcms-content-action-row > .imcms-title {
-    margin-bottom: 5px;
 }
 
 .imcms-content-action-row__actions {
