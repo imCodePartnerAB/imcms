@@ -37,8 +37,7 @@ public class DocumentSearchQueryConverter {
                         DocumentIndex.FIELD__TEXT,
                         DocumentIndex.FIELD__VERSION_NO,
                         DocumentIndex.FIELD__ALIAS,
-                        DocumentIndex.FIELD__URL,
-                        DocumentIndex.FIELD__MODIFIED_DATETIME})
+                        DocumentIndex.FIELD__URL})
                         .map(field -> String.format("%s:*%s*", field,
                                 searchQuery.getTerm().replaceAll("\\s+", "?")))
                         .collect(Collectors.joining(" "))

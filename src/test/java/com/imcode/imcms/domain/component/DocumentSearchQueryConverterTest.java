@@ -149,7 +149,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     public void convert_WhenDefaultSortIsSet_Expect_SortByModifiedDatetimeDesc() {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
-        final String expected = String.format("%s %s", DocumentIndex.FIELD__MODIFIED_DATETIME + "_" + Imcms.getUser().getLanguage(),
+        final String expected = String.format("%s %s", DocumentIndex.FIELD__MODIFIED_DATETIME,
                 Sort.Direction.DESC.toString().toLowerCase());
 
         assertThat(expected, is(solrQuery.get(CommonParams.SORT)));
