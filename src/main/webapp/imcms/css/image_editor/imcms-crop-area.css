@@ -29,20 +29,14 @@
 }
 
 .imcms-angle {
-    border: 2px solid #fff;
+    border: 0 solid #fff;
     display: block;
     position: absolute;
-    width: 20px;
-    height: 20px;
     z-index: 10003;
 }
 
 
 .imcms-angle-inner {
-    border: 1px solid #000;
-    opacity: 0;
-    width: 19px;
-    height: 19px;
 }
 
 .imcms-angle--top-left,
