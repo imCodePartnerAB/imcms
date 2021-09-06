@@ -13,6 +13,7 @@ public abstract class UserData extends BasicUserData implements Serializable {
     public UserData(UserData from) {
         super(from);
         setPassword(from.getPassword());
+        setActive(from.isActive());
         setTitle(from.getTitle());
         setCompany(from.getCompany());
         setAddress(from.getAddress());
