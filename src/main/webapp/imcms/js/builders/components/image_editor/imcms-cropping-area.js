@@ -121,12 +121,14 @@ function onImageLoad() {
             width,
             height,
         });
-        $croppingWrap.css({
-            transform: transformStyle,
-            width,
-            height,
-	        'border-width': `${this.width * 0.01}px`,
-        });
+	    let borderWidth = width * 0.01;
+	    if (height > width) borderWidth = height * 0.01
+	    $croppingWrap.css({
+		    transform: transformStyle,
+		    width,
+		    height,
+		    'border-width': borderWidth + 'px',
+	    });
     });
 }
 

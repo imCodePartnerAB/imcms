@@ -472,14 +472,43 @@ function init(_imageData) {
 
     const zoomVal = imageZoom.getRelativeZoomValueByOriginalImg();
     if (!isNaN(zoomVal)) {
-        const koefOverrideStyles = Math.round(100 / Number(zoomVal * 100).toFixed(1));
+	    let koefOverrideStyles = Math.round(100 / Number(zoomVal * 100));//TODO: improve this code
+	    let angleWidth = koefOverrideStyles*10;
+	    let angleHeight = koefOverrideStyles*10;
+	    if (zoomVal<0.5) {
+		    angleWidth=koefOverrideStyles*20
+		    angleHeight=koefOverrideStyles*20
+		    koefOverrideStyles *= 2
+	    }
 
-        $croppingBlock.find('.imcms-angle').each(function () {
-            const $angle = $(this).first();
-            $angle.css({
-                'transform': 'scale(' + koefOverrideStyles +')'
-            })
-        })
+	    angles.topLeft.css({
+		    'width':angleWidth,
+		    'height':angleHeight,
+		    'border-width':koefOverrideStyles,
+		    'border-right-width':0,
+		    'border-bottom-width':0,
+	    })
+	    angles.topRight.css({
+		    'width':angleWidth,
+		    'height':angleHeight,
+		    'border-width':koefOverrideStyles,
+		    'border-left-width':0,
+		    'border-bottom-width':0,
+	    })
+	    angles.bottomLeft.css({
+		    'width':angleWidth,
+		    'height':angleHeight,
+		    'border-width':koefOverrideStyles,
+		    'border-right-width':0,
+		    'border-top-width':0,
+	    })
+	    angles.bottomRight.css({
+		    'width':angleWidth,
+		    'height':angleHeight,
+		    'border-width':koefOverrideStyles,
+		    'border-top-width':0,
+		    'border-left-width':0,
+	    })
     }
 
     angles.showAll();
