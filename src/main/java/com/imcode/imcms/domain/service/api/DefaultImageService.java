@@ -4,11 +4,7 @@ import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.factory.ImageInTextFactory;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.ImageHistoryService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.ImageJPA;
@@ -34,10 +30,7 @@ import java.util.stream.Collectors;
 
 import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.maxBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Transactional
 @Service("imageService")
@@ -84,13 +77,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         );
     }
 
-    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
+    @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index+'-'+#loopEntryRef")
     @Override
     public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
-    @Cacheable(cacheNames = PUBLIC_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index")
+    @Cacheable(cacheNames = PUBLIC_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index+'-'+#loopEntryRef")
     @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
@@ -139,7 +132,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return repository.findByVersionAndLanguage(version, new LanguageJPA(language));
     }
 
-    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
+	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
     @Override
     public void saveImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
@@ -191,7 +184,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 });
     }
 
-    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index")
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
     @Override
     public void deleteImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
