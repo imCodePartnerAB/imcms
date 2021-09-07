@@ -106,11 +106,10 @@ define(
             const $imageArea = originallyImageArea.getOriginalImageArea();
             const $image = originalImage.getImage();
 
-            const currentZoom = getCurrentZoom($image);
             const imageBorderWidth = getBorderWidth($image);
 
-            const imageWidth = ($image.width() + imageBorderWidth * 2) * currentZoom;
-            const imageHeight = ($image.height() + imageBorderWidth * 2) * currentZoom;
+            const imageWidth = ($image.width() + imageBorderWidth * 2) ;
+            const imageHeight = ($image.height() + imageBorderWidth * 2);
 
             if (imageWidth < $imageArea.width() && imageHeight < $imageArea.height()) {
                 return 1;
@@ -119,8 +118,7 @@ define(
             const widthScale = imageWidth / $imageArea.width();
             const heightScale = imageHeight / $imageArea.height();
 
-            const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
-            const newZoomValue = currentZoom * zoomScale;
+	        const newZoomValue = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
 
             updateZoomGradeValueByCssProperty(newZoomValue);
             return newZoomValue;
