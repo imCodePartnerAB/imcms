@@ -23,6 +23,8 @@ class LocalUserCreationService extends LocalUserValidationAndSaving implements U
 
     @Override
     public void createUser(UserFormData userData) throws UserValidationException {
+        userData.setActive(true);
+
         if (StringUtils.isBlank(userData.getEmail())) {
             userData.setEmail(null);
         }

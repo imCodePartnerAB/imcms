@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -60,8 +61,8 @@ public class User extends UserData implements Serializable {
     private String email;
     @Column(name = "ref")
     private String ref;
-    @Column(columnDefinition = "int")
-    private boolean active = true;
+    @Column(columnDefinition = "int default 1")
+    private boolean active;
     @NotNull
     @Column(name = "create_date")
     private Date createDate = new Date();
@@ -104,6 +105,7 @@ public class User extends UserData implements Serializable {
         this.login = login;
         this.password = password;
         this.email = email;
+        this.active = true;
         this.firstName = "";
         this.lastName = "";
         this.title = "";

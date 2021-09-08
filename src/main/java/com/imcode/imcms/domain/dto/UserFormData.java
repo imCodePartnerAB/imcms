@@ -54,7 +54,6 @@ public class UserFormData extends UserData {
     public UserFormData(User from) {
         super(from);
         this.setCreateDate(from.getCreateDate());
-        this.setActive(from.isActive());
         this.setLangCode(LanguageMapper.convert639_2to639_1(from.getLanguageIso639_2()));
     }
 

@@ -53,7 +53,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     private String ref = "";
 
-    private volatile boolean active = true;
+    private volatile boolean active;
 
     private volatile Date createDate;
 
