@@ -8,6 +8,7 @@
     text-align: center;
     float: left;
     margin-right: 5px;
+    margin-top: 5px;
 }
 
 .buttons__button:last-child {

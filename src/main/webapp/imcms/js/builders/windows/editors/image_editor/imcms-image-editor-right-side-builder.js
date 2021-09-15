@@ -505,8 +505,8 @@ define(
 
                     /** @namespace imageData.loopEntryRef */
                     if (imageData.loopEntryRef) {
-                        imageRequestData["loopEntryRef.loopEntryIndex"] = imageData["loopEntryRef.loopEntryIndex"];
-                        imageRequestData["loopEntryRef.loopIndex"] = imageData["loopEntryRef.loopIndex"];
+                        imageRequestData["loopEntryRef.loopEntryIndex"] = imageData.loopEntryRef.loopEntryIndex;
+                        imageRequestData["loopEntryRef.loopIndex"] = imageData.loopEntryRef.loopIndex;
                     }
 
                     return imageRequestData;

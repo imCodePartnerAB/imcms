@@ -11,7 +11,7 @@
 
 .common-info-image {
     width: 50%;
-    display: contents;
+    display: inline-flex;
 }
 
 .imcms-image_editor__image-characteristics {
