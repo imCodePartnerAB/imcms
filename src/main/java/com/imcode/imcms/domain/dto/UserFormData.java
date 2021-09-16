@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.UserData;
+import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
@@ -46,6 +47,7 @@ public class UserFormData extends UserData {
     private Integer attempts;
     private Date lastLoginDate;
     private boolean flagOfBlocking; // check unblocking user from the GUI or API..
+    private PasswordResetDTO passwordReset;
 
     public UserFormData(UserData from) {
         super(from);
@@ -68,7 +70,8 @@ public class UserFormData extends UserData {
         setLangCode(from.getLanguage());
 
         final int[] roles = from.getRoleIds().stream().mapToInt(Integer::intValue).toArray();
-
         setRoleIds(roles);
+
+        setPasswordReset(from.getPasswordReset());
     }
 }

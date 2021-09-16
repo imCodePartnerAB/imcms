@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.domain.dto.PasswordResetDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
@@ -85,7 +86,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
      * @since 4.0.7
      */
     @Getter
-    private volatile PasswordReset passwordReset = null;
+    private volatile PasswordResetDTO passwordReset = null;
 
     public UserDomainObject() {
     }
@@ -498,7 +499,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
      * @since 4.0.7
      */
     void setPasswordReset(String resetId, long time) {
-        this.passwordReset = new PasswordReset(resetId, time);
+        this.passwordReset = new PasswordResetDTO(resetId, time);
     }
 
     public boolean isAdmin() {
@@ -540,16 +541,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
      */
     enum PasswordType {
         UNENCRYPTED, ENCRYPTED
-    }
-
-    /**
-     * @since 4.0.7
-     */
-    @Data
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class PasswordReset {
-        private final String id;
-        private final long time;
     }
 
     private static class PhoneNumberOfTypePredicate implements Predicate<PhoneNumber> {
