@@ -5,7 +5,7 @@
 <%!
 
     static final LocalizedMessage confirmation = new LocalizedMessage("passwordreset.confirmation.password_changed");
-    static final LocalizedMessage lnkStartPage = new LocalizedMessage("passwordreset.link.start_page");
+    static final LocalizedMessage lnkLoginPage = new LocalizedMessage("passwordreset.link.login_page");
 
 %>
 <jsp:include page="inc_header.jsp" flush="true"/>
@@ -14,7 +14,7 @@
     <p><%= confirmation.toLocalizedString(request) %>
     </p>
 
-    <a href="<%= request.getContextPath() %>"><%= lnkStartPage.toLocalizedString(request) %>
+    <a href="${contextPath}/login"><%= lnkLoginPage.toLocalizedString(request) %>
     </a>
 </div>
 

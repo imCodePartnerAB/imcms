@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.dto.PasswordResetDTO;
 import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
@@ -18,6 +19,7 @@ import com.imcode.imcms.model.PhoneType;
 import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
@@ -203,7 +205,7 @@ class DefaultUserService implements UserService {
         if (userData.getId() != null) {
             final User existingUser = userRepository.findById(userData.getId());
             if (StringUtils.isBlank(user.getPassword())) user.setPassword(existingUser.getPassword());
-            user.setPasswordReset(existingUser.getPasswordReset());
+            if (user.getPasswordReset() == null) user.setPasswordReset(existingUser.getPasswordReset());
             user.setSessionId(existingUser.getSessionId());
             user.setRememberCd(existingUser.getRememberCd());
             user.setPasswordType(existingUser.getPasswordType());
@@ -228,6 +230,12 @@ class DefaultUserService implements UserService {
         final User user = new User(userData);
         user.setExternal(userData.isExternal());
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
+
+        PasswordResetDTO passwordResetDTO = userData.getPasswordReset();
+        if(passwordResetDTO != null){
+            user.setPasswordReset(new PasswordReset(passwordResetDTO.getId(), passwordResetDTO.getTime()));
+        }
+
         return user;
     }
 
