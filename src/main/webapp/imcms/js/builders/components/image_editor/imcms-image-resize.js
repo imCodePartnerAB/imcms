@@ -99,32 +99,45 @@ function setHeight(newHeight, isOriginal) {
     }
 }
 
-function setHeightProportionally(newHeight, isOriginal) {
-    newHeight = trimToMaxMinHeight(newHeight);
-    setHeight(newHeight, isOriginal);
+let stop = false; // add this flag to stop possible recursion
+
+function setHeightProportionally(newHeight, isOriginal, stop) {
+	newHeight = trimToMaxMinHeight(newHeight);
+	setHeight(newHeight, isOriginal);
+	if (saveProportions && !stop) {
+		updateWidthProportionally(newHeight, isOriginal);
+	}
 }
 
-function setWidthProportionally(newWidth, isOriginal) {
-    newWidth = trimToMaxMinWidth(newWidth);
-    setWidth(newWidth, isOriginal);
+function setWidthProportionally(newWidth, isOriginal, stop) {
+	newWidth = trimToMaxMinWidth(newWidth);
+	setWidth(newWidth, isOriginal);
+	if (saveProportions && !stop) {
+		updateHeightProportionally(newWidth, isOriginal);
+	}
 }
+
 
 function updateWidthProportionally(newHeight, isOriginal) {
     const proportionalWidth = ~~(newHeight * proportionsCoefficient);
     const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
-    (fixedWidth === proportionalWidth)
-        ? setWidth(proportionalWidth, isOriginal)
-        : setWidthProportionally(proportionalWidth, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+	if (fixedWidth !== proportionalWidth) {
+		stop = true;
+		setWidthProportionally(proportionalWidth, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
+	} else
+		setWidth(proportionalWidth, isOriginal)
 }
 
 function updateHeightProportionally(newWidth, isOriginal) {
     const proportionalHeight = ~~(newWidth / proportionsCoefficient);
     const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
-    (fixedHeight === proportionalHeight)
-        ? setHeight(proportionalHeight, isOriginal)
-        : setHeightProportionally(proportionalHeight, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+	if (fixedHeight !== proportionalHeight) {
+		stop = true;
+		setHeightProportionally(proportionalHeight, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
+	} else
+		setHeight(proportionalHeight, isOriginal)
 }
 
 let $heightControl, $widthControl;
@@ -540,5 +553,6 @@ module.exports = {
         resetToOriginal = false;
         selectedImgActive = false;
         existsCropRegion = true;
+	    stop = false;
     },
 };

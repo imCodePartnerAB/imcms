@@ -470,7 +470,7 @@ function init(_imageData) {
     const fixedRight = originImageWidth - cropRegion.cropX2 - angleBorderSize;
     const fixedBottom = originImageHeight - cropRegion.cropY2 - angleBorderSize;
 
-    const zoomVal = imageZoom.getRelativeZoomValueByOriginalImg();
+    const zoomVal = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
     if (!isNaN(zoomVal)) {
 	    let koefOverrideStyles = Math.round(100 / Number(zoomVal * 100));//TODO: improve this code
 	    let angleWidth = koefOverrideStyles*10;
@@ -719,7 +719,7 @@ module.exports = {
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
         imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing(imageData, false, false);
+        imageResize.updateSizing(imageData, true, false);
         imageResize.disabledResetToOriginalFlag(); //did default state
     },
     destroyImageCropper: destroy
