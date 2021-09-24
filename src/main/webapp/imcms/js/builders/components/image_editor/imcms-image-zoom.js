@@ -30,6 +30,10 @@ define(
             return parseFloat($image.css('border-bottom-width'));
         }
 
+	    function getMarginWidth($image) {
+			return $image.outerWidth(true) - $image.outerWidth();
+	    }
+
         function updateZoomGradeValue() {
             const isPreview = isPreviewTab();
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
@@ -62,14 +66,14 @@ define(
             const $image = isPreview ? previewImageArea.getPreviewImage() : originalImage.getImage();
 
             const currentZoom = getCurrentZoom($image);
-            const imageSize = getImageSize($image, currentZoom);
+            const imageSize = getImageSizeWithZoom($image,currentZoom);
 
             if (imageSize.width < $imageArea.width() && imageSize.height < $imageArea.height()) {
                 return;
             }
 
-            const heightScale = imageSize.width / $imageArea.width();
-            const widthScale = imageSize.height / $imageArea.height();
+	        const heightScale = (imageSize.width / ($imageArea.width() - getMarginWidth($image)));
+	        const widthScale = (imageSize.height / ($imageArea.height() - getMarginWidth($image)));
 
             const zoomScale = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
             const newZoomValue = currentZoom * zoomScale;
@@ -79,15 +83,25 @@ define(
             updateZoomGradeValueByCssProperty(newZoomValue);
         }
 
-        function getImageSize($image, currentZoom = 1) {
+        function getImageSize($image) {
             const imageBorderWidth = getBorderWidth($image);
 
-            const width = ($image.width() + imageBorderWidth * 2) * currentZoom;
-            const height = ($image.height() + imageBorderWidth * 2) * currentZoom;
+            const width = ($image.width() + imageBorderWidth * 2) ;
+            const height = ($image.height() + imageBorderWidth * 2) ;
 
             return imageRotate.getCurrentAngle().proportionsInverted
                 ? { width: height, height: width }
                 : { width, height };
+        }
+        function getImageSizeWithZoom($image,currentZoom) {
+	        const imageBorderWidth = getBorderWidth($image);
+
+	        const width = ($image.width() + imageBorderWidth * 2) * currentZoom;
+	        const height = ($image.height() + imageBorderWidth * 2) * currentZoom;
+
+	        return imageRotate.getCurrentAngle().proportionsInverted
+		        ? { width: height, height: width }
+		        : { width, height };
         }
 
         function getUpdatedTransformString(zoomValue, $image) {
@@ -106,17 +120,14 @@ define(
             const $imageArea = originallyImageArea.getOriginalImageArea();
             const $image = originalImage.getImage();
 
-            const imageBorderWidth = getBorderWidth($image);
+	        const imageSize = getImageSize($image);
 
-            const imageWidth = ($image.width() + imageBorderWidth * 2) ;
-            const imageHeight = ($image.height() + imageBorderWidth * 2);
-
-            if (imageWidth < $imageArea.width() && imageHeight < $imageArea.height()) {
+            if (imageSize.width < $imageArea.width() && imageSize.height < $imageArea.height()) {
                 return 1;
             }
 
-            const widthScale = imageWidth / $imageArea.width();
-            const heightScale = imageHeight / $imageArea.height();
+	        const heightScale = (imageSize.width / ($imageArea.width() - getMarginWidth(previewImageArea.getPreviewImage())));
+	        const widthScale = (imageSize.height / ($imageArea.height() - getMarginWidth(previewImageArea.getPreviewImage())));
 
 	        const newZoomValue = widthScale > heightScale ? (1 / widthScale) : (1 / heightScale);
 

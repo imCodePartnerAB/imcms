@@ -472,42 +472,15 @@ function init(_imageData) {
 
     const zoomVal = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
     if (!isNaN(zoomVal)) {
-	    let koefOverrideStyles = Math.round(100 / Number(zoomVal * 100));//TODO: improve this code
-	    let angleWidth = koefOverrideStyles*10;
-	    let angleHeight = koefOverrideStyles*10;
-	    if (zoomVal<0.5) {
-		    angleWidth=koefOverrideStyles*20
-		    angleHeight=koefOverrideStyles*20
-		    koefOverrideStyles *= 2
-	    }
-
-	    angles.topLeft.css({
-		    'width':angleWidth,
-		    'height':angleHeight,
-		    'border-width':koefOverrideStyles,
-		    'border-right-width':0,
-		    'border-bottom-width':0,
-	    })
-	    angles.topRight.css({
-		    'width':angleWidth,
-		    'height':angleHeight,
-		    'border-width':koefOverrideStyles,
-		    'border-left-width':0,
-		    'border-bottom-width':0,
-	    })
-	    angles.bottomLeft.css({
-		    'width':angleWidth,
-		    'height':angleHeight,
-		    'border-width':koefOverrideStyles,
-		    'border-right-width':0,
-		    'border-top-width':0,
-	    })
-	    angles.bottomRight.css({
-		    'width':angleWidth,
-		    'height':angleHeight,
-		    'border-width':koefOverrideStyles,
-		    'border-top-width':0,
-		    'border-left-width':0,
+	    let angleWidthHeight = Math.round(1000 / Number(zoomVal * 100));
+	    let angleBorderWidth = Math.round(100 / Number(zoomVal * 100));
+	    $croppingBlock.find('.imcms-angle').each(function () {
+		    const $angle = $(this).first();
+		    $angle.css({
+			    'width': angleWidthHeight,
+			    'height': angleWidthHeight,
+			    'border-width': angleBorderWidth,
+		    })
 	    })
     }
 
@@ -713,6 +686,7 @@ module.exports = {
         cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
         cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
+        imageResize.disableStopFlag(); // need to stop possible recursion
         imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
         imageResize.checkCropRegionExist(imageData);
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);

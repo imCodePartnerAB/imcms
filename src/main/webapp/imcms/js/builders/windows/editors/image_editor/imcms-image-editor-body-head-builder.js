@@ -90,6 +90,7 @@ define(
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
 
             imageZoom.updateZoomGradeValue();
+	        imageZoom.updateImageToCoverContainerEditor();
         }
 
         function showHidePanel(panelOpts) {
@@ -135,19 +136,10 @@ define(
                     cropY1: 0,
                     cropY2: 0,
                 };
-                imageRotate.rotateImage("NORTH");
-                imageZoom.resetZoom();
                 imageResize.resetToOriginal(imageData);
-            } else {
-                imageData.cropRegion = {
-                    cropX1: 0,
-                    cropX2: 0,
-                    cropY1: 0,
-                    cropY2: 0,
-                };
-                imageRotate.rotateImage("NORTH");
-                imageZoom.resetZoom();
             }
+	        imageRotate.rotateImage("NORTH");
+	        imageZoom.resetZoom();
         }
 
         let $switchViewControls;

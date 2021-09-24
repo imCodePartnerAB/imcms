@@ -27,10 +27,7 @@ module.exports = {
         actualImage.src = src;
 
         actualImage.onload = function () {
-	        $image.css({
-		        'background-size': `${this.width}px ${this.height}px`,
-		        'border-width': `${this.width * 0.01}px`
-            });
+	        $image.css({'background-size': `${this.width}px ${this.height}px`,});
             const $heightWidthBlock = $('.imcms-image-toolbar__img-origin-size');
             $heightWidthBlock.show();
             const $imageInfoSize = $('.imcms-info-edit-image__size-info');

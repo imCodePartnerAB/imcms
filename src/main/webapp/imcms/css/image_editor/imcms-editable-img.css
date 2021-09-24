@@ -71,8 +71,8 @@
 .imcms-preview-img:not(.image-cropping-wrap__img),
 .image-cropping-wrap,
 .imcms-originally-img {
-    border: solid 0 #9b9b9b;
     background: no-repeat center;
     transform-origin: top left;
 	box-sizing: content-box;
+	margin:1%;
 }

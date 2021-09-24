@@ -349,6 +349,10 @@ module.exports = {
         setWidth(trimToMaxMinWidth(newValue), isOriginal);
     },
 
+	disableStopFlag() {
+		stop = false;
+	},
+
     /**
      * Setting without any proportions or min/max checking
      * @param padding for cropped images
