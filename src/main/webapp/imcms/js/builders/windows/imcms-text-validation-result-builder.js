@@ -44,11 +44,11 @@ define(
                 const $container = $("<div>").addClass("imcms-w3c-error"),
                     $sourceContainer = $("<div>");
 
-                const errorMessage = pos + 1 + ". " + item.message.charAt(0).toUpperCase() + item.message.slice(1);
+                const errorMessage = pos + 1 + ". " + item.message;
                 const $errorMessage = $("<div>").text(errorMessage);
 
                 const $invalidHtml = $("<code>").addClass("language-html")
-                    .html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, ""));
+	                .html(item.line + ": " + item.source.replace(/[<]/g, "&lt").replace(/[>]/g,"&gt"));
 
                 $sourceContainer.append($invalidHtml);
                 $container.append($errorMessage).append($sourceContainer);
