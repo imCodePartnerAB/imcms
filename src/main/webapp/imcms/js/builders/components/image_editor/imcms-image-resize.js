@@ -17,6 +17,7 @@ let currentFinalPrevImg = {};
 let proportionsCoefficient;
 let selectedImgActive = false; // default value
 let existsCropRegion = true;
+let stop = false; // add this flag to stop possible recursion
 
 let maxWidth, maxHeight, minWidth, minHeight;
 
@@ -99,8 +100,6 @@ function setHeight(newHeight, isOriginal) {
     }
 }
 
-let stop = false; // add this flag to stop possible recursion
-
 function setHeightProportionally(newHeight, isOriginal, stop) {
 	newHeight = trimToMaxMinHeight(newHeight);
 	setHeight(newHeight, isOriginal);
@@ -123,8 +122,8 @@ function updateWidthProportionally(newHeight, isOriginal) {
     const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
 	if (fixedWidth !== proportionalWidth) {
-		stop = true;
 		setWidthProportionally(proportionalWidth, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
+		stop = true;
 	} else
 		setWidth(proportionalWidth, isOriginal)
 }
@@ -134,8 +133,8 @@ function updateHeightProportionally(newWidth, isOriginal) {
     const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
 	if (fixedHeight !== proportionalHeight) {
-		stop = true;
 		setHeightProportionally(proportionalHeight, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
+		stop = true;
 	} else
 		setHeight(proportionalHeight, isOriginal)
 }
@@ -491,8 +490,8 @@ module.exports = {
         const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
         const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
 
-        setHeightProportionally(currentHeight, isOriginal);
-        setWidthProportionally(currentWidth, isOriginal);
+	    setHeightProportionally(currentHeight, isOriginal, stop);
+	    setWidthProportionally(currentWidth, isOriginal, stop);
     },
 
     isRestrictedValuesChanged(){
