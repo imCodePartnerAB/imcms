@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,5 +20,5 @@ public class ImageFileDTO {
     private String size;
     private Integer width;
     private Integer height;
-
+    private List<String> exifInfo;
 }
