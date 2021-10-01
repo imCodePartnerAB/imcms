@@ -14,6 +14,7 @@ import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
@@ -73,8 +74,8 @@ public class DefaultVersionDataService implements VersionDataService {
     }
 
     private String getProductNameVersionData() {
-        try {
-            DatabaseMetaData metaData = databaseService.getConnection().getMetaData();
+        try (final Connection connection = databaseService.getConnection()){
+            DatabaseMetaData metaData = connection.getMetaData();
             return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
         } catch (SQLException e) {
             final String errorMessage = "Failed get database version and product name !";
