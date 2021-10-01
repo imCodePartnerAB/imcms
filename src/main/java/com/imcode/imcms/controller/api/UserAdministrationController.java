@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +44,12 @@ class UserAdministrationController {
     }
 
     @GetMapping("/edition/{userId}")
-    public ModelAndView goToEditUser(@PathVariable("userId") Integer userId) {
+    public ModelAndView goToEditUser(@PathVariable("userId") Integer userId, HttpServletResponse response) throws IOException {
         final UserDomainObject loggedOnUser = Imcms.getUser();
+        if (!loggedOnUser.isSuperAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
         final ModelAndView modelAndView = new ModelAndView("UserEdit");
 
         final UserFormData user = userService.getUserData(userId);
@@ -74,9 +80,13 @@ class UserAdministrationController {
     }
 
     @GetMapping("/creation")
-    public ModelAndView goToCreateUser() {
+    public ModelAndView goToCreateUser(HttpServletResponse response) throws IOException {
 
         final UserDomainObject loggedOnUser = Imcms.getUser();
+        if (!loggedOnUser.isSuperAdmin()) {
+            response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            return null;
+        }
         final ModelAndView modelAndView = new ModelAndView("UserCreate");
 
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
