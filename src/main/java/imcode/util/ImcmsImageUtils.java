@@ -4,6 +4,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.drew.metadata.icc.IccDirectory;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -47,12 +48,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class ImcmsImageUtils {
@@ -68,6 +66,14 @@ public class ImcmsImageUtils {
 
     @Value("${ImageMagickPath}")
     private String imgMagickPath;
+
+    private static final Set<Integer> unnecessaryExifInfo = new HashSet<>();
+    static {
+        unnecessaryExifInfo.add(IccDirectory.TAG_TAG_rTRC);
+        unnecessaryExifInfo.add(IccDirectory.TAG_TAG_bTRC);
+        unnecessaryExifInfo.add(IccDirectory.TAG_TAG_gTRC);
+        unnecessaryExifInfo.add(IccDirectory.TAG_TAG_kTRC);
+    }
 
     public static String getImageUrl(ImageDomainObject image, String contextPath) {
         return getImageUrl(image, contextPath, false);
@@ -436,7 +442,16 @@ public class ImcmsImageUtils {
                 final Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
 
                 for (Directory directory : metadata.getDirectories()) {
-                    for (Tag tag : directory.getTags()) {
+
+                    Collection<Tag> tags = directory.getTags();
+                    //remove unnecessary information that takes up a lot of space
+                    if(directory instanceof IccDirectory){
+                        tags = directory.getTags().stream()
+                                .filter(tag -> !unnecessaryExifInfo.contains(tag.getTagType()))
+                                .collect(Collectors.toList());
+                    }
+
+                    for (Tag tag : tags) {
                         exifInfo.add(tag.toString());
                     }
                     for (String error : directory.getErrors()) {

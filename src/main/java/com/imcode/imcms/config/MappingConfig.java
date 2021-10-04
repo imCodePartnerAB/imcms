@@ -442,6 +442,8 @@ class MappingConfig {
                 imageFileDTO.setResolution(imageDimension.width + "x" + imageDimension.height);
             }
 
+            imageFileDTO.setExifInfo(ImcmsImageUtils.getExifInfo(relativePath));
+
             return imageFileDTO;
         };
     }
