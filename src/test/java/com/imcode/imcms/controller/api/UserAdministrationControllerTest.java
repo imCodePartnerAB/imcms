@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.hamcrest.Matchers;
@@ -48,6 +49,16 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
+    void createUser_When_GoingToCreatePage_And_CurrentUserIsNotSuperAdmin_Expect_StatusIsForbidden() {
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.isSuperAdmin()).thenReturn(false);
+        Imcms.setUser(user);
+
+        final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/creation");
+        perform(requestBuilder).andExpect(status().isForbidden());
+    }
+
+    @Test
     void createUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() {
 
         final UserDomainObject user = mock(UserDomainObject.class);
@@ -74,8 +85,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void editUser_When_GoingToEditPageWithExistingUserId_Expect_ThatUserIsInModel() {
+    void editUser_When_GoingToEditPageWithExistingUserId_And_CurrentUserIsSuperAdmin_Expect_ThatUserIsInModel() {
         final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.isSuperAdmin()).thenReturn(true);
         Imcms.setUser(user);
 
         final int userId = 42;
@@ -86,6 +98,20 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/edition/" + userId);
         perform(requestBuilder).andExpect(model().attribute("editedUser", Matchers.is(mockUser)));
+    }
+
+    @Test
+    void editUser_When_GoingToEditPageWithExistingUserId_And_CurrentUserIsNotSuperAdmin_Expect_StatusIsForbidden() {
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.isSuperAdmin()).thenReturn(false);
+        Imcms.setUser(user);
+
+        final int userId = 42;
+        final UserFormData mockUser = mock(UserFormData.class);
+        mockUser.setId(userId);
+
+        final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/edition/" + userId);
+        perform(requestBuilder).andExpect(status().isForbidden());
     }
 
     @Test

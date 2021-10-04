@@ -84,7 +84,7 @@ class UserAdministrationController {
 
         final UserDomainObject loggedOnUser = Imcms.getUser();
         if (!loggedOnUser.isSuperAdmin()) {
-            response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
         final ModelAndView modelAndView = new ModelAndView("UserCreate");
