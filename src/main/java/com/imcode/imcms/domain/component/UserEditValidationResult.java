@@ -38,11 +38,6 @@ class UserEditValidationResult extends UserValidationResult {
     }
 
     @Override
-    protected void validatePasswords(UserFormData userData) {
-        setPasswordsEqual(true);
-    }
-
-    @Override
     protected void validateLoginName(UserFormData userData, UserService userService) {
         final String login = StringUtils.defaultString(userData.getLogin());
 

@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -79,10 +78,16 @@ public class UserEditorPage extends OkCancelPage {
      * @since 4.0.7
      */
     public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
-        if (StringUtils.isBlank(password)) return ERROR__PASSWORD_LENGTH;
-        else if (Objects.equals(password, passwordCheck))
-            return login.equalsIgnoreCase(password) ? ERROR__PASSWORD_TOO_WEAK : null;
-        else return ERROR__PASSWORDS_DID_NOT_MATCH;
+	    LocalizedMessage message = null;
+	    if (!password.equals(passwordCheck)) {
+		    message = ERROR__PASSWORDS_DID_NOT_MATCH;
+	    } else {
+		    if (!passwordPassesLengthRequirements(password))
+			    message = ERROR__PASSWORD_LENGTH;
+		    if (login.equalsIgnoreCase(password))
+			    message = ERROR__PASSWORD_TOO_WEAK;
+	    }
+	    return message;
     }
 
     private static boolean passwordPassesLengthRequirements(String password1) {

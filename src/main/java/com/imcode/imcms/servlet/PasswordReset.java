@@ -18,11 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,9 +48,11 @@ public class PasswordReset extends HttpServlet {
 
         if (view == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else {
-            request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
+        } else if (view.equals(password_reset_form_view)){
+	        UserDomainObject user = getUserByPasswordResetId(request);
+			request.setAttribute("userLanguage", user.getLanguage());
         }
+	    request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
     }
 
     private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {

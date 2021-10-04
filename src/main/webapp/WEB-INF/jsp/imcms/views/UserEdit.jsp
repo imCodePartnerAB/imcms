@@ -18,7 +18,7 @@ ${"-->"}
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
 <%--@elvariable id="isBlockedNow" type="boolean"--%>
 
-<fmt:setLocale value="${cookie['userLanguage'].value}"/>
+<fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
 <html>

@@ -6,8 +6,6 @@ import com.imcode.imcms.domain.service.UserService;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.07.18.
@@ -28,18 +26,6 @@ class UserCreationValidationResult extends UserValidationResult {
 
         setEmailValid(Utility.isValidEmail(email));
         setEmailAlreadyTaken(!userService.getUsersByEmail(email).isEmpty());
-    }
-
-    @Override
-    protected void validatePasswords(UserFormData userData) {
-        final String password1 = StringUtils.defaultString(userData.getPassword());
-        final String password2 = StringUtils.defaultString(userData.getPassword2());
-
-        validatePassword1(password1);
-        validatePassword2(password2);
-
-        setPasswordsEqual(Objects.equals(password1, password2));
-        setPasswordTooWeak(password1.equalsIgnoreCase(userData.getLogin()));
     }
 
     @Override

@@ -94,15 +94,9 @@ function loadLanguages() {
             }));
 
             components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
-            $select.selectValue(getCookieLang());
+            $select.selectValue('sv');
         })
         .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
-}
-
-function getCookieLang() {
-    const cookieLang = cookies.getCookie('userLanguage');
-
-    return cookieLang && cookieLang !== undefined ? cookieLang : imcms.userLanguage;
 }
 
 function bindOnEditClicked($phoneRow) {
