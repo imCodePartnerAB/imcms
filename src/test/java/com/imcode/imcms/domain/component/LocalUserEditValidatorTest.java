@@ -110,30 +110,65 @@ class LocalUserEditValidatorTest {
     void validate_With_NotEmptyPasswords_Expect_PasswordsValidationIsOk() {
         final UserFormData userData = new UserFormData();
         userData.setPassword("password");
+	    userData.setPassword2("password");
 
         given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
 
         final UserValidationResult validationResult = userValidator.validate(userData);
 
-        assertAll(
-                () -> assertFalse(validationResult.isEmptyPassword1()),
-                () -> assertFalse(validationResult.isPassword1TooLong()),
-                () -> assertFalse(validationResult.isEmptyPassword2()),
-                () -> assertFalse(validationResult.isPassword2TooShort()),
-                () -> assertFalse(validationResult.isPassword2TooLong()),
-                () -> assertTrue(validationResult.isPasswordsEqual())
-        );
+	    assertAll(
+			    () -> assertFalse(validationResult.isEmptyPassword1()),
+			    () -> assertFalse(validationResult.isPassword1TooLong()),
+			    () -> assertFalse(validationResult.isEmptyPassword2()),
+			    () -> assertFalse(validationResult.isPassword2TooShort()),
+			    () -> assertFalse(validationResult.isPassword2TooLong()),
+			    () -> assertTrue(validationResult.isPasswordsEqual())
+	    );
     }
 
-    @Test
-    void validate_With_ValidEmail_Expect_EmailValidIsTrue() {
-        final UserFormData userData = new UserFormData();
-        userData.setEmail("test@test.com");
-        given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
-        final UserValidationResult validationResult = userValidator.validate(userData);
+	@Test
+	void validate_With_EmptyPasswords_Expect_PasswordsValidationIsOk() {
+		final UserFormData userData = new UserFormData();
+		userData.setPassword("");
+		userData.setPassword2("");
 
-        assertTrue(validationResult.isEmailValid());
-    }
+		given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
+
+		final UserValidationResult validationResult = userValidator.validate(userData);
+
+		assertAll(
+				() -> assertFalse(validationResult.isEmptyPassword1()),
+				() -> assertFalse(validationResult.isEmptyPassword2()),
+				() -> assertFalse(validationResult.isPassword1TooLong()),
+				() -> assertFalse(validationResult.isPassword2TooLong()),
+				() -> assertFalse(validationResult.isPassword1TooShort()),
+				() -> assertFalse(validationResult.isPassword2TooShort()),
+				() -> assertTrue(validationResult.isPasswordsEqual())
+		);
+	}
+
+	@Test
+	void validate_With_DifferentPasswords_Expect_PasswordsAreNotEqual() {
+		final UserFormData userData = new UserFormData();
+		userData.setPassword("password1");
+		userData.setPassword2("password2");
+
+		given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
+
+		final UserValidationResult validationResult = userValidator.validate(userData);
+
+		assertFalse(validationResult.isPasswordsEqual());
+	}
+
+	@Test
+	void validate_With_ValidEmail_Expect_EmailValidIsTrue() {
+		final UserFormData userData = new UserFormData();
+		userData.setEmail("test@test.com");
+		given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
+		final UserValidationResult validationResult = userValidator.validate(userData);
+
+		assertTrue(validationResult.isEmailValid());
+	}
 
     @Test
     void validate_With_InvalidEmail_Expect_EmailValidIsFalse() {
@@ -226,18 +261,18 @@ class LocalUserEditValidatorTest {
         assertFalse(validationResult.isEmptyUserRoles());
     }
 
-    @Test
-    void validate_With_SameLoginAndPasswordButDifferentCases_Expect_PasswordTooWeakIsFalse() {
-        final UserFormData userData = new UserFormData();
-        final String login = "TEst";
-        final String pass = "teST";
-        userData.setLogin(login);
-        userData.setPassword(pass);
+	@Test
+	void validate_With_SameLoginAndPasswordButDifferentCases_Expect_PasswordTooWeakIsTrue() {
+		final UserFormData userData = new UserFormData();
+		final String login = "TEst";
+		final String pass = "teST";
+		userData.setLogin(login);
+		userData.setPassword(pass);
 
-        given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
-        final UserValidationResult validationResult = userValidator.validate(userData);
+		given(userService.getUser(anyString())).willThrow(UserNotExistsException.class);
+		final UserValidationResult validationResult = userValidator.validate(userData);
 
-        assertFalse(validationResult.isPasswordTooWeak());
+		assertTrue(validationResult.isPasswordTooWeak());
     }
 
     @Test

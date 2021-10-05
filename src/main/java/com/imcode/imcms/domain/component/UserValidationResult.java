@@ -7,7 +7,6 @@ import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Data
@@ -60,16 +59,7 @@ public abstract class UserValidationResult {
 
     protected abstract void validateEmail(UserFormData userData, UserService userService);
 
-    protected void validatePasswords(UserFormData userData){
-	    final String password1 = StringUtils.defaultString(userData.getPassword());
-	    final String password2 = StringUtils.defaultString(userData.getPassword2());
-
-	    validatePassword1(password1);
-	    validatePassword2(password2);
-
-	    setPasswordsEqual(Objects.equals(password1, password2));
-	    setPasswordTooWeak(password1.equalsIgnoreCase(userData.getLogin()));
-    };
+	protected abstract void validatePasswords(UserFormData userData);
 
     void validatePassword1(String password) {
         validatePassword(password, this::setEmptyPassword1, this::setPassword1TooLong, this::setPassword1TooShort);
