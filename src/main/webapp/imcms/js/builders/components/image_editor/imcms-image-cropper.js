@@ -142,28 +142,28 @@ function isOversize(width, height) {
 function resizeCroppingTopLeft(deltaX, deltaY) {
     if ((deltaX === 0) && (deltaY === 0)|| croppingAreaParams === null) return;
 
-    const oldWidth = cropArea.getCroppingArea().width();
-    const oldHeight = cropArea.getCroppingArea().height();
+	const oldWidth = cropArea.getCroppingArea().width();
+	const oldHeight = cropArea.getCroppingArea().height();
 
-    let newWidth = oldWidth + deltaX;
-    let newHeight = oldHeight + deltaY;
+	let newWidth = oldWidth + deltaX;
+	let newHeight = oldHeight + deltaY;
 
-    newWidth = getValidLeftCropWidth(newWidth);
-    newHeight = getValidCropHeightTop(newHeight);
+	newWidth = getValidLeftCropWidth(newWidth);
+	newHeight = getValidCropHeightTop(newHeight);
 
-    if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
-	    const newProportionsK = (newWidth / newHeight).toFixed(3);
+	if (imageResize.isSaveProportionsEnabled()) {
+		const proportionsK = imageResize.getProportionsCoefficient();
+		const newProportionsK = (newWidth / newHeight).toFixed(2);
 
-        if (proportionsK !== newProportionsK) {
-            if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
-            else newWidth = ~~(proportionsK * newHeight);
-            deltaX = newWidth - oldWidth;
-            deltaY = newHeight - oldHeight;
+		if (proportionsK !== newProportionsK) {
+			if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
+			else newWidth = ~~(proportionsK * newHeight);
+			deltaX = newWidth - oldWidth;
+			deltaY = newHeight - oldHeight;
 
-            if (isOversize(newWidth, newHeight)) return;
-        }
-    }
+			if (isOversize(newWidth, newHeight)) return;
+		}
+	}
 
     croppingAreaParams.width = newWidth;
     croppingAreaParams.height = newHeight;
@@ -209,16 +209,16 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
-	    const newProportionsK = (newWidth / newHeight).toFixed(3);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight).toFixed(2);
 
-        if (proportionsK !== newProportionsK) {
-            if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
-            else newWidth = ~~(proportionsK * newHeight);
-            deltaY = newHeight - oldHeight;
+	    if (proportionsK !== newProportionsK) {
+		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
+		    else newWidth = ~~(proportionsK * newHeight);
+		    deltaY = newHeight - oldHeight;
 
-            if (isOversize(newWidth, newHeight)) return;
-        }
+		    if (isOversize(newWidth, newHeight)) return;
+	    }
     }
 
     croppingAreaParams.width = newWidth;
@@ -273,15 +273,15 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
-	    const newProportionsK = (newWidth / newHeight).toFixed(3);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight).toFixed(2);
 
-        if (proportionsK !== newProportionsK) {
-            if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
-            else newWidth = ~~(proportionsK * newHeight);
+	    if (proportionsK !== newProportionsK) {
+		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
+		    else newWidth = ~~(proportionsK * newHeight);
 
-            if (isOversize(newWidth, newHeight)) return;
-        }
+		    if (isOversize(newWidth, newHeight)) return;
+	    }
     }
 
     croppingAreaParams.width = newWidth;
@@ -341,16 +341,16 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(3);
-	    const newProportionsK = (newWidth / newHeight).toFixed(3);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight).toFixed(2);
 
-        if (proportionsK !== newProportionsK) {
-            if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
-            else newWidth = ~~(proportionsK * newHeight);
-            deltaX = newWidth - oldWidth;
+	    if (proportionsK !== newProportionsK) {
+		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
+		    else newWidth = ~~(proportionsK * newHeight);
+		    deltaX = newWidth - oldWidth;
 
-            if (isOversize(newWidth, newHeight)) return;
-        }
+		    if (isOversize(newWidth, newHeight)) return;
+	    }
     }
 
     croppingAreaParams.width = newWidth;
@@ -534,23 +534,23 @@ function init(_imageData) {
     let prevX, prevY;
 
     $imageEditor.on('mousemove', event => {
-        if (!isMouseDown) {
-            prevX = undefined;
-            prevY = undefined;
-            return;
-        }
+	    if (!isMouseDown) {
+		    prevX = undefined;
+		    prevY = undefined;
+		    return;
+	    }
 	    const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
-	    const newX = getValidCoordX(event.clientX / zoomValue).toFixed(0);
-	    const newY = getValidCoordY(event.clientY / zoomValue).toFixed(0);
+	    const newX = ~~getValidCoordX(event.clientX / zoomValue);
+	    const newY = ~~getValidCoordY(event.clientY / zoomValue);
 
-        if (prevX === undefined || prevY === undefined) {
-            prevX = newX;
-            prevY = newY;
-            return;
-        }
+	    if (prevX === undefined || prevY === undefined) {
+		    prevX = newX;
+		    prevY = newY;
+		    return;
+	    }
 
-        const deltaX = prevX - newX;
-        const deltaY = prevY - newY;
+	    const deltaX = prevX - newX;
+	    const deltaY = prevY - newY;
 
         prevX = newX;
         prevY = newY;
@@ -676,25 +676,24 @@ module.exports = {
 
         if (!imageData || !imageData.path) return;
 
-        const $croppingArea = cropArea.getCroppingArea();
-        const cropRegion = imageData.cropRegion || (imageData.cropRegion = {});
-        const croppedWidth = $croppingArea.getCurrentWidth();
-        const croppedHeight = $croppingArea.getCurrentHeight();
+	    const $croppingArea = cropArea.getCroppingArea();
+	    const cropRegion = imageData.cropRegion || (imageData.cropRegion = {});
+	    const croppedWidth = $croppingArea.getCurrentWidth();
+	    const croppedHeight = $croppingArea.getCurrentHeight();
 
-        cropRegion.cropX1 = $croppingArea.getLeft();
-        cropRegion.cropY1 = $croppingArea.getTop();
-        cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
-        cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
+	    cropRegion.cropX1 = $croppingArea.getLeft();
+	    cropRegion.cropY1 = $croppingArea.getTop();
+	    cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
+	    cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
 
-        imageResize.disableStopFlag(); // need to stop possible recursion
-        imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
-        imageResize.checkCropRegionExist(imageData);
-        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
-        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
-        imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
+	    imageResize.enableResetToOriginalFlag(); // => need to correct set background W/H in strictW/strictH
+	    imageResize.checkCropRegionExist(imageData);
+	    imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth, false);
+	    imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight, false);
+	    imageResize.setCurrentPreviewSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing(imageData, true, false);
-        imageResize.disabledResetToOriginalFlag(); //did default state
+	    imageResize.updateSizing(imageData, true, false);
+	    imageResize.disabledResetToOriginalFlag(); //did default state
     },
     destroyImageCropper: destroy
 };
