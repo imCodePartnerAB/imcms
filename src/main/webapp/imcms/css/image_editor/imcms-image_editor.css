@@ -10,8 +10,7 @@
 }
 
 .common-info-image {
-    width: 50%;
-    display: inline-flex;
+	white-space: nowrap;
 }
 
 .imcms-image_editor__image-characteristics {
@@ -92,11 +91,9 @@
 }
 
 .image-editor-info {
-    display: -webkit-inline-box;
-    text-transform: lowercase;
-    margin-left: 38%;
-    position: absolute;
-    right: 10%;
+	text-transform: lowercase;
+	display: inline-flex;
+	text-align: left;
 }
 
 .imcms-image-info {
@@ -104,7 +101,13 @@
 }
 
 #data-link-image {
-    color: #fff2f9;
+	color: #fff2f9;
+	display: inline-block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	vertical-align: top;
+	/*width: 100%;*/
 }
 
 .imcms-control--permalink {
