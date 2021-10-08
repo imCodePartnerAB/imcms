@@ -54,7 +54,7 @@ define("imcms-page-info-builder",
                     }
 
                     if (documentDTO.id === imcms.document.id) {
-                        events.trigger("imcms-version-modified");
+	                    events.trigger("imcms-version-modified");
 
                     } else {
 	                    documentDTO.id = savedDoc.id;
@@ -64,13 +64,12 @@ define("imcms-page-info-builder",
 		                onDocumentSavedCallback(savedDoc);
 	                }
 
-	                if (onDocumentSaved) {
-		                onDocumentSaved(savedDoc, true);
-	                }
-	                if (alias !== savedDoc.alias) {
+	                if (alias !== savedDoc.alias && alias !== "") {
+		                documentDTO = savedDoc;
 		                modal.buildErrorWindow(texts.error.duplicateAlias)
 	                } else {
 		                pageInfoWindowBuilder.closeWindow();
+		                onDocumentSaved(savedDoc, true);
 	                }
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));

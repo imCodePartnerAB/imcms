@@ -243,7 +243,7 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
 	            loadDocumentFailed: 'Misslyckades att ladda. Försök igen',
-	            duplicateAlias: 'Aliaset används redan på ett annat dokument. Försök igen'
+	            duplicateAlias: 'Aliaset används redan på ett annat dokument.'
             },
             allData:{
                 name: 'All Data',
@@ -1230,7 +1230,7 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
 	            loadDocumentFailed: 'Failed to load. Try again',
-	            duplicateAlias: 'The alias is already in use on another document. Try again'
+	            duplicateAlias: 'The alias is already in use on another document.'
             },
             allData:{
                 name: 'All Data',

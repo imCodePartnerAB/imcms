@@ -146,9 +146,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    final String newAlias = saveMe.getAlias();
 	    final UserDomainObject currentUser = Imcms.getUser();
 
-	    Integer documentId = propertyService.getDocIdByAlias(newAlias);
-	    if (documentId != null && !documentId.equals(id)) {
-		    saveMe.setAlias(null);
+	    if (!Objects.equals(newAlias, "")) {
+		    Integer documentId = propertyService.getDocIdByAlias(newAlias);
+		    if (documentId != null && !documentId.equals(id)) {
+			    saveMe.setAlias("");
+		    }
 	    }
 
 	    if (!isNew) {
@@ -177,7 +179,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             documentMapper.invalidateDocument(id);
         }
 
-        return saveMe;
+	    return get(docId);
     }
 
     private AuditDTO auditData(Date date, UserDomainObject currentUser) {
