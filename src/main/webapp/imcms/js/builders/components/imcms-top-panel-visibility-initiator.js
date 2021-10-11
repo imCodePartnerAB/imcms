@@ -15,20 +15,20 @@ define(
             $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
 
             setTimeout(() => {
-                panels$.filter($panel => !$panel.hasClass('imcms-special-hidden'))
-                    .forEach(showPanel);
+	            panels$.filter($panel => !$panel.hasClass('imcms-special-hidden'))
+		            .forEach(showPanel);
 
-                onPanelsShown();
-            }, 100);
+	            onPanelsShown();
+            });
         }
 
         function hidePanels() {
             $("body").css({"top": 0});
             panels$.forEach(hidePanel);
 
-            setTimeout(() => {
-                $("#imcmsAdminSpecial").css("display", "none");
-            }, 300);
+	        setTimeout(() => {
+		        $("#imcmsAdminSpecial").css("display", "none");
+	        });
         }
 
         streams.subscribeFromLast("admin panel visibility", content => {

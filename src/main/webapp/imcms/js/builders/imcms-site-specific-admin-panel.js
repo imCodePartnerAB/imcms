@@ -18,17 +18,10 @@ define(
             if ($imcmsAdminSpecial.length) {
                 const $imcms = $('#imcms-admin');
 
-                const adminPanelHeight = panelState.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
-                const specialTopInitial = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
-
-                $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
-                    .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
-                    .addClass('imcms-special-hidden')
-                    .appendTo($imcms)
-                    .css("padding-top", adminPanelHeight); // exactly separated css calls!
-
-                const specialTop = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
-                $imcmsAdminSpecial.css("top", specialTop);
+                $imcmsAdminSpecial // there is no real height now
+	                .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
+	                .addClass('imcms-special-hidden')
+	                .appendTo($imcms);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
@@ -75,14 +68,18 @@ define(
                 }
             });
 
-            if (cookies.getCookie("imcms-client-special-area") === "opened") {
-                $link.addClass('imcms-panel__item--active');
-                $collapsible.removeClass('imcms-special-hidden');
+	        if (cookies.getCookie("imcms-client-special-area") === "opened") {
+		        $link.addClass('imcms-panel__item--active');
+		        $collapsible.removeClass('imcms-special-hidden');
 
-                if ($imcms.hasClass("imcms-panel-visible")) {
-                    $collapsible.css('display', 'block');
-                }
-            }
+		        if ($imcms.hasClass("imcms-panel-visible")) {
+			        $collapsible.css('display', 'block');
+		        }
+	        }
+
+	        if (cookies.getCookie("panel-appearance") === "visible") {
+		        $('#imcmsAdminSpecial').removeClass('imcms-collapsible')
+	        }
         }
 
         return {
