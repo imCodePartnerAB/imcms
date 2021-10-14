@@ -67,7 +67,7 @@ define(
                         'content': $('<div>', {
                             html: [
                                 buildInput(textDTO.text),
-                                buildEditButton('text', textDTO.index, textDTO.loopEntryRef)
+                                buildEditButton('text', textDTO.index, textDTO.loopEntryRef, textDTO.langCode)
                             ]
                         })
                     }
@@ -105,7 +105,7 @@ define(
                             html: [buildTextProperty(localization.index, index),
                                 buildTextProperty(localization.menu.countElements, countElements)]
                         }),
-                        'button': buildEditButton('menu', index, null)
+                        'button': buildEditButton('menu', index, null, null)
                     }
                 }).buildBlockStructure('<div>');
             }
@@ -176,7 +176,7 @@ define(
                 $titleContainer.append(buildTextTitle(localization.loop.titleSingle));
                 $titleContainer.append(buildTextProperty(localization.index, loopDTO.index));
                 $titleContainer.append(buildTextProperty(localization.loop.countElements, loopDTO.entries.length));
-                $titleContainer.append(buildEditButton('loop', loopDTO.index, null));
+                $titleContainer.append(buildEditButton('loop', loopDTO.index, null, null));
 
                 return new BEM({
                     block: 'imcms-loop-data',
@@ -256,13 +256,13 @@ define(
                                 buildTextProperty(localization.language, language),
                                 buildTextProperty(localization.image.path, path)]
                         }),
-                        'button': buildEditButton('image', index, loopEntryRef)
+                        'button': buildEditButton('image', index, loopEntryRef, language)
                     }
                 }).buildBlockStructure('<div>');
             }
 
-            function buildEditButton(nameItem, index, loopEntryRef) {
-                const linkToEditor = buildLinkToEditor(nameItem, index, loopEntryRef);
+            function buildEditButton(nameItem, index, loopEntryRef, lang) {
+                const linkToEditor = buildLinkToEditor(nameItem, index, loopEntryRef, lang);
                 return components.buttons.positiveButton( {
                     text: localization.edit,
                     click: () => {
@@ -271,17 +271,21 @@ define(
                 }).addClass('all-data-edit-button');
             }
 
-            function buildLinkToEditor(nameItem, index, loopEntryRef){
+            function buildLinkToEditor(nameItem, index, loopEntryRef, lang){
                 let indexInLink = '&index=' + index;
                 let loopIndexInLink = '';
                 let loopEntryIndexInLink = '';
+                let langInLink = '';
                 if(loopEntryRef !== undefined && loopEntryRef !== null){
                     loopIndexInLink = '&loop-index=' + loopEntryRef.loopIndex;
                     loopEntryIndexInLink = '&loop-entry-index=' + loopEntryRef.loopEntryIndex;
                 }
+                if(lang !== undefined && lang !== null){
+                    langInLink = '&lang=' + lang;
+                }
 
                 return '/api/admin/' + nameItem + '?meta-id=' + docId + indexInLink +
-                    loopIndexInLink + loopEntryIndexInLink;
+                    loopIndexInLink + loopEntryIndexInLink + langInLink;
             }
 
             function buildTextProperty(name, value){
