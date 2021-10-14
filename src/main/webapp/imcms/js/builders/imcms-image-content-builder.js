@@ -306,12 +306,14 @@ define("imcms-image-content-builder",
                         .fail(() => modal.buildErrorWindow(texts.error.addFolderFailed));
                 }
             });
+            const $closeBtn = components.controls.remove(() => $(`#${FOLDER_CREATION_BLOCK_ID}`).remove());
 
             const $folderCreationBlock = new BEM({
                 block: "imcms-panel-named",
                 elements: {
                     "input": $folderNameInput,
-                    "button": $confirmBtn
+                    "button": $confirmBtn,
+                    "control-close": $closeBtn
                 }
             }).buildBlockStructure("<div>", {id: FOLDER_CREATION_BLOCK_ID});
 

@@ -2,8 +2,7 @@
     cursor: pointer;
     display: block;
     overflow: hidden;;
-    padding-left: 70px;
-    padding-right: 35px;
+    padding: 25px 35px 25px 70px;
     position: relative;
     width: 100%;
 }
@@ -27,7 +26,6 @@
     display: block;
     padding: 10px;
     position: absolute;
-    top: 23px;
     left: 37px;
     width: 10px;
     height: 10px;
@@ -48,7 +46,6 @@
 .imcms-folder__name {
     color: #fff;
     cursor: pointer;
-    line-height: 70px;
     text-transform: uppercase;
     text-align: left;
     float: left;

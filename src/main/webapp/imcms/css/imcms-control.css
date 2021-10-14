@@ -116,6 +116,7 @@
     background-image: url("/imcms/images/controls/icon_folder_controll_edit.png");
 }
 
+.imcms-panel-named__control-close .imcms-control--remove,
 .imcms-folder__controls .imcms-control--remove {
     background-image: url("/imcms/images/controls/icon_folder_controll_remove.png");
 }

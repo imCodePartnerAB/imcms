@@ -44,6 +44,11 @@
     margin-bottom: 0;
 }
 
+.imcms-editor-toolbar-panel--close-button{
+    float: right;
+    margin-right: 5px;
+}
+
 @media screen and (max-width: 1800px) {
     .imcms-editor-toolbar-panel .imcms-flags {
         margin-right: 0;
