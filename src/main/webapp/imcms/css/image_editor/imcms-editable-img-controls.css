@@ -86,6 +86,7 @@
     align-items: center;
     place-self: center;
 }
-.select-image-button .imcms-button{
+.select-image-button > div{
     margin: 0;
+    min-height: 45px;
 }

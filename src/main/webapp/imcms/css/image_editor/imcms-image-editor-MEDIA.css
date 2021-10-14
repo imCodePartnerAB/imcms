@@ -50,10 +50,6 @@
         display: none;
     }
 
-    .imcms-image-toolbar .select-image-button .imcms-button{
-        padding-top: 7px;
-        padding-bottom: 7px;
-    }
 }
 
 @media screen and (max-width: 965px) {

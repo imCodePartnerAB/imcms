@@ -1,3 +1,25 @@
+.common-info-image {
+    width: 50%;
+    padding-left: 95px;
+    min-width: 350px;
+}
+
+.image-editor-info {
+    width: 45%;
+    margin-right: 5%;
+    display: inline-flex;
+    text-transform: lowercase;
+    justify-content: flex-end;
+}
+
+.image-editor-info__data-link{
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
+
 .imcms-image_editor {
     background-color: #f3f3fc;
     display: block;
@@ -70,7 +92,7 @@
 
 .image-exif-window .imcms-pop-up-modal__body {
     overflow-y: auto;
-	height: 95%;
+    height: 95%;
     background-color: #f3f3fc;
 }
 
