@@ -44,6 +44,9 @@ $(function () {
         },
         {
             type: 'language'
+        },
+        {
+            type: 'close'
         }
     ];
 

@@ -43,18 +43,26 @@ define("imcms-standalone-editor-toolbar-builder",
 
             let toolbarElements = [];
             itemsToDisplay.forEach(item => {
-                let $itemContainer;
+                                                                                                                                                                                                                                                                                                                                        let $itemContainer = $("<div>");
 
                 switch (item.type) {
                     case 'language':
                         $itemContainer = buildFlags();
                         break;
+                    case 'close':
+                        if(window.opener != null){
+                            $itemContainer = $("<div>")
+                                .append(componentsBuilder.buttons.closeButton().click(() => window.close()))
+                                .addClass("imcms-editor-toolbar-panel--close-button");
+                        }
+                        break;
                     default:
-                        const $item = toolbarBEM.buildBlockElement(item.type, "<div>", {
-                            text: item.text,
-                            title: item.title,
-                        });
-                        $itemContainer = $("<div>").append($item);
+                        $itemContainer.append(
+                            toolbarBEM.buildBlockElement(item.type, "<div>", {
+                                text: item.text,
+                                title: item.title,
+                            })
+                        );
                         break;
                 }
 

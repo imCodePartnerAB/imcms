@@ -34,6 +34,9 @@ $(function () {
             type: 'index',
             text: texts.toolbar.elementIndex + editorData.index,
             title: texts.toolbar.elementIndexTitle,
+        },
+        {
+            type: 'close'
         }
     ];
 

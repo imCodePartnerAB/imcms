@@ -38,6 +38,8 @@ $(() => {
             text: editorData.label ? ('Label ' + editorData.label) : ''
         }, {
             type: 'language'
+        }, {
+            type: 'close'
         }
     ];
 
