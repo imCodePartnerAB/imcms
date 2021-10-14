@@ -6,15 +6,16 @@
 
 .mce-btn-group {
     float: left;
+    border-left: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    border-right: 1px;
+    padding-right: 3px;
+    margin-right: 3px;
 }
 
 .imcms-editor-area__text-toolbar {
     border-radius: 5px 5px 0 0;
-}
-
-.imcms-editor-area__text-toolbar,
-.imcms-editor-area__text-toolbar [class^="mce"] {
-    padding: 0;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button {
@@ -64,8 +65,7 @@ input:focus:-ms-input-placeholder {
 .text-toolbar-wrapper {
     background-color: white;
     display: none;
-    padding-top: 1px;
-    padding-left: 1px;
+    padding: 5px 0 5px 1px;
     height: 25px;
 }
 
@@ -247,7 +247,6 @@ input:focus:-ms-input-placeholder {
 
 .mce-fullscreen-toolbar {
     height: 33px !important;
-    padding-top: 20px;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;

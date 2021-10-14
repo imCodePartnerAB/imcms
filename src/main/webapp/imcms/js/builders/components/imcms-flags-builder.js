@@ -21,14 +21,6 @@ define("imcms-flags-builder",
             }
         });
 
-        function changeNeighborFlag($btn) {
-            const $neighborFlag = ($btn.next("." + FLAGS_CLASS).length !== 0)
-                ? $btn.next("." + FLAGS_CLASS)
-                : $btn.prev("." + FLAGS_CLASS);
-
-            $neighborFlag.toggleClass(FLAG_ACTIVE_CLASS);
-        }
-
         function onFlagClick(event) {
             const $clickedFlag = $(this);
 
@@ -40,8 +32,8 @@ define("imcms-flags-builder",
                 event.preventDefault();
 
             } else {
+                $clickedFlag.parent().find(`.${FLAG_ACTIVE_CLASS}`).toggleClass(FLAG_ACTIVE_CLASS);
                 $clickedFlag.addClass(FLAG_ACTIVE_CLASS);
-                changeNeighborFlag($clickedFlag);
             }
         }
 
