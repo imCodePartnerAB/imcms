@@ -86,13 +86,7 @@ define(
 
                         $categoryTypeCreateContainer.slideDown();
 
-                        if (id) {
-                            buildShowCategoryType.find('.category-editor').remove();
-                            buildShowCategoryType.append(categoryTypeBem.makeBlockElement('category', buildCategoriesSelection(id)));
-                            categoriesList.slideDown();
-                            $categoryTypeSaveButtons.find('.imcms-button--error').show();
-                            categoryCreateBtnContainer.slideDown();
-                        }
+                        if (id) buildAndShowDropDownListCategories(id);
 
                         return categoryTypeObj
                     })
@@ -202,11 +196,11 @@ define(
 
                 typesRestApi.remove(currentCategoryType)
                     .done(() => {
-
-                        categoryTypeSelected.find(`[data-value='${currentCategoryType.id}']`).remove();
+                        categoryTypeSelected.deleteOption(currentCategoryType.id);
                         currentCategoryType = null;
                         categoryTypeSelected.selectFirst();
                         hideCategoriesContainer();
+                        $categoryTypeCreateContainer.slideUp();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeFailed));
             });
@@ -246,7 +240,7 @@ define(
 
                         categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
-                        $categoryTypeCreateContainer.slideUp();
+                        categoryTypeSelected.selectValue(savedCategoryType.id);
                     })
                     .fail(() => {
                         modal.buildErrorWindow(texts.error.invalidName);
@@ -263,6 +257,8 @@ define(
 
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
                         categoryTypeSelected.selectLast();
+
+                        buildAndShowDropDownListCategories();
                     })
                     .fail(() => {
                         modal.buildErrorWindow(texts.error.invalidName);
@@ -339,6 +335,14 @@ define(
             };
         }
 
+        function buildAndShowDropDownListCategories(id){
+            buildShowCategoryType.find('.category-editor').remove();
+            buildShowCategoryType.append(categoryTypeBem.makeBlockElement('category', buildCategoriesSelection(id)));
+            categoriesList.slideDown();
+            $categoryTypeSaveButtons.find('.imcms-button--error').slideDown();
+            categoryCreateBtnContainer.slideDown();
+        }
+
         function buildDropDownListCategories(id) {
             let categorySelect = components.selects.selectContainer('<div>', {
                 id: "category-filter",
@@ -350,18 +354,19 @@ define(
 
             categorySelected = categorySelect.getSelect();
 
-            categoriesRestApi.getCategoriesByCategoryTypeId(id).done(function (categories) {
-
-                let categoriesDataMapped = categories.map(function (category) {
-                    return {
-                        text: category.name,
-                        'data-value': category.id
-                    }
+            if (id) {
+                categoriesRestApi.getCategoriesByCategoryTypeId(id).done(function (categories) {
+                    let categoriesDataMapped = categories.map(function (category) {
+                        return {
+                            text: category.name,
+                            'data-value': category.id
+                        }
+                    });
+                    components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected());
                 });
-
-                components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected());
-
-            });
+            }else{
+                components.selects.addOptionsToSelect([], categorySelect.getSelect(), onCategorySelected());
+            }
 
             return categorySelect;
         }
@@ -473,12 +478,12 @@ define(
                     categoriesRestApi.remove(currentCategory)
                         .done(() => {
 
-                            categorySelected.find(`[data-value='${currentCategory.id}']`).remove();
+                            categorySelected.deleteOption(currentCategory.id);
                             currentCategory = null;
                             categorySelected.selectFirst();
                             categoryCreateContainer.slideUp();
                         })
-                        .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+                        .fail(() => modal.buildErrorWindow(texts.error.category.removeFailed));
                 });
             }
 
