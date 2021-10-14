@@ -400,15 +400,6 @@ public class Utility {
         }
     }
 
-    public static String escapeValue(String value) {
-        try {
-            return URLEncoder.encode(value, Imcms.UTF_8_ENCODING).replaceAll("%2F", "/").replaceAll("\\+", " ");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static Date addDate(Date date, int i) {
         if (null == date) {
             return null;
