@@ -28,6 +28,7 @@
     font-size: 15px;
     font-weight: 600;
     line-height: 20px;
+    word-break: break-all;
 }
 
 .imcms-form__field .imcms-title {

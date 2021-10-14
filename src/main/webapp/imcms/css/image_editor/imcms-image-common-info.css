@@ -9,6 +9,10 @@
 }
 
 .image-exif-info {
+    width: 100%;
+    margin-top: 20px;
+    height: 52px;
+    float: left;
     text-align: -webkit-center;
     text-align: -moz-center;
 }
