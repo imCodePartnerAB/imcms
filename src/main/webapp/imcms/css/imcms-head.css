@@ -12,23 +12,23 @@
 }
 
 .imcms-head__logo {
-    background: url(/imcms/images/icon_logo_main.png) no-repeat 0 0;
-    background-size: contain;
-    text-indent: -99999px;
-    display: block;
-    position: absolute;
-    top: 4px;
-    left: 20px;
-    height: 100%;
-    width: 69px;
+	background: url(/imcms/images/icon_logo_main.png) no-repeat 0 0;
+	background-size: contain;
+	text-indent: -99999px;
+	margin-left: 20px;
+	margin-top: 4px;
+	height: 100%;
+	width: 69px;
 }
 
 .imcms-head__title {
-    color: #fff;
-    text-align: center;
-    line-height: 42px;
-    height: 42px;
-    text-transform: uppercase;
+	color: #fff;
+	line-height: 42px;
+	height: 42px;
+	text-transform: uppercase;
+	width: 94%;
+	display: inline-flex;
+	justify-content: space-around;
 }
 
 .imcms-head__toolbar,

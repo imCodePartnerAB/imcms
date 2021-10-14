@@ -16,16 +16,16 @@ const $infoData = $('<div>', {
 });
 
 const $imageLinkContainerInfo = new BEM({
-    block: 'image-editor-info',
-    elements: {
-        'icon-link': $('<a>', {
-            html: components.controls.permalink(),
-            target: '_blank'
-        }),
-        'data-link': $('<div>', {
-            html: $imageLinkInfo
-        })
-    }
+	block: 'image-editor-info',
+	elements: {
+		'icon-link': $('<a>', {
+			html: components.controls.permalink(),
+			target: '_blank'
+		}),
+		'data-link': $('<div>', {
+			html: $imageLinkInfo
+		})
+	}
 }).buildBlockStructure('<div>');
 
 module.exports = {

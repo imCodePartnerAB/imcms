@@ -40,12 +40,11 @@ define("imcms-page-info-builder",
         function saveAndClose(onDocumentSavedCallback) {
             pageInfoTabs.tabBuilders.forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
 
-            pageInfoWindowBuilder.closeWindow();
-
             //Clear modified info before send to API
             documentDTO.modified = {id: ""};
+			const alias = documentDTO.alias;
 
-            documentsRestApi.create(documentDTO)
+	        documentsRestApi.create(documentDTO)
                 .done((savedDoc) => {
 
                     if (documentDTO.newFiles) {
@@ -55,19 +54,23 @@ define("imcms-page-info-builder",
                     }
 
                     if (documentDTO.id === imcms.document.id) {
-                        events.trigger("imcms-version-modified");
+	                    events.trigger("imcms-version-modified");
 
                     } else {
-                        documentDTO.id = savedDoc.id;
+	                    documentDTO.id = savedDoc.id;
                     }
 
-                    if (onDocumentSavedCallback) {
-                        onDocumentSavedCallback(savedDoc);
-                    }
+	                if (onDocumentSavedCallback) {
+		                onDocumentSavedCallback(savedDoc);
+	                }
 
-                    if (onDocumentSaved) {
-                        onDocumentSaved(savedDoc, true);
-                    }
+	                if (alias !== savedDoc.alias && alias !== "") {
+		                documentDTO = savedDoc;
+		                modal.buildErrorWindow(texts.error.duplicateAlias)
+	                } else {
+		                pageInfoWindowBuilder.closeWindow();
+		                onDocumentSaved(savedDoc, true);
+	                }
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));
         }

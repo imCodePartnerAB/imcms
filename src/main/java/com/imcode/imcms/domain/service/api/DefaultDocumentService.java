@@ -2,21 +2,8 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.component.ImageCacheManager;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DeleterByDocumentId;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.PropertyService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.ImageJPA;
@@ -154,20 +141,27 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     public DocumentDTO save(DocumentDTO saveMe) {
 
-        final Integer id = saveMe.getId();
-        final boolean isNew = (saveMe.getId() == null);
-        final String newAlias = saveMe.getAlias();
-        final UserDomainObject currentUser = Imcms.getUser();
+	    final Integer id = saveMe.getId();
+	    final boolean isNew = (saveMe.getId() == null);
+	    final String newAlias = saveMe.getAlias();
+	    final UserDomainObject currentUser = Imcms.getUser();
 
-        if (!isNew) {
-            final String oldAlias = metaRepository.findOne(id).getAlias();
+	    if (!Objects.equals(newAlias, "")) {
+		    Integer documentId = propertyService.getDocIdByAlias(newAlias);
+		    if (documentId != null && !documentId.equals(id)) {
+			    saveMe.setAlias("");
+		    }
+	    }
 
-            if (!Objects.equals(oldAlias, newAlias)) {
-                documentMapper.invalidateDocument(id);
-            }
-        }
+	    if (!isNew) {
+		    final String oldAlias = metaRepository.findOne(id).getAlias();
 
-        final Meta meta = documentSaver.apply(saveMe);
+		    if (!Objects.equals(oldAlias, newAlias)) {
+			    documentMapper.invalidateDocument(id);
+		    }
+	    }
+
+	    final Meta meta = documentSaver.apply(saveMe);
         final Integer docId = meta.getId();
 
         if (isNew) {
@@ -185,7 +179,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             documentMapper.invalidateDocument(id);
         }
 
-        return saveMe;
+	    return get(docId);
     }
 
     private AuditDTO auditData(Date date, UserDomainObject currentUser) {

@@ -92,9 +92,6 @@ define(
         function buildPoliciesModal(node) {
             const $node = $(node);
 
-            const $meta = $($node.children()[0]);
-            $meta.remove();
-
             const content = $node.html();
 
             $node.html(`<span id="${PASTE_CONTAINER_ID}">&nbsp</span>`);

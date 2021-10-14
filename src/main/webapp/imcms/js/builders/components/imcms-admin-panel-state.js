@@ -18,11 +18,6 @@ define("imcms-admin-panel-state", ["jquery"], function ($) {
         },
         refreshSpecialPanelPosition: function () {
             const $imcmsAdminSpecial = $('#imcmsAdminSpecial');
-
-            if ($imcmsAdminSpecial.length) {
-                const adminPanelHeight = this.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
-                $imcmsAdminSpecial.css("padding-top", adminPanelHeight);
-            }
         },
         disableSpecialPanelHiding: function () {
             this.isSpecialPanelHidingPrevented = true;

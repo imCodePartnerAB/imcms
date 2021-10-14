@@ -17,7 +17,6 @@ let currentFinalPrevImg = {};
 let proportionsCoefficient;
 let selectedImgActive = false; // default value
 let existsCropRegion = true;
-let stop = false; // add this flag to stop possible recursion
 
 let maxWidth, maxHeight, minWidth, minHeight;
 
@@ -100,43 +99,38 @@ function setHeight(newHeight, isOriginal) {
     }
 }
 
-function setHeightProportionally(newHeight, isOriginal, stop) {
+function setHeightProportionally(newHeight, isOriginal) {
 	newHeight = trimToMaxMinHeight(newHeight);
 	setHeight(newHeight, isOriginal);
-	if (saveProportions && !stop) {
+	if (saveProportions) {
 		updateWidthProportionally(newHeight, isOriginal);
 	}
 }
 
-function setWidthProportionally(newWidth, isOriginal, stop) {
+function setWidthProportionally(newWidth, isOriginal) {
 	newWidth = trimToMaxMinWidth(newWidth);
 	setWidth(newWidth, isOriginal);
-	if (saveProportions && !stop) {
+	if (saveProportions) {
 		updateHeightProportionally(newWidth, isOriginal);
 	}
 }
 
-
 function updateWidthProportionally(newHeight, isOriginal) {
-    const proportionalWidth = ~~(newHeight * proportionsCoefficient);
-    const fixedWidth = trimToMaxMinWidth(proportionalWidth);
+	const proportionalWidth = trimToMaxMinWidth(newHeight * proportionsCoefficient);
+	const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
-	if (fixedWidth !== proportionalWidth) {
-		setWidthProportionally(proportionalWidth, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
-		stop = true;
-	} else
-		setWidth(proportionalWidth, isOriginal)
+	(fixedWidth === proportionalWidth)
+		? setWidth(proportionalWidth, isOriginal)
+		: setWidthProportionally(proportionalWidth, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
 function updateHeightProportionally(newWidth, isOriginal) {
-    const proportionalHeight = ~~(newWidth / proportionsCoefficient);
-    const fixedHeight = trimToMaxMinHeight(proportionalHeight);
+	const proportionalHeight = Math.trunc(newWidth / proportionsCoefficient);
+	const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
-	if (fixedHeight !== proportionalHeight) {
-		setHeightProportionally(proportionalHeight, isOriginal, stop);// MAY (or not) APPEAR RECURSIVE, SO ADDED FLAG TO STOP IT
-		stop = true;
-	} else
-		setHeight(proportionalHeight, isOriginal)
+	(fixedHeight === proportionalHeight)
+		? setHeight(proportionalHeight, isOriginal)
+		: setHeightProportionally(proportionalHeight, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
 let $heightControl, $widthControl;
@@ -233,13 +227,13 @@ module.exports = {
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
-        currentSize.height = height;
-        proportionsCoefficient = currentSize.width / currentSize.height;
+	    currentSize.height = height;
+	    proportionsCoefficient = (currentSize.width / currentSize.height).toFixed(2);
     },
     setCurrentPreviewSize(width, height) {
         currentPrevSize.width = width;
-        currentPrevSize.height = height;
-        proportionsCoefficient = currentPrevSize.width / currentPrevSize.height;
+	    currentPrevSize.height = height;
+	    proportionsCoefficient = (currentPrevSize.width / currentPrevSize.height).toFixed(2);
     },
     setFinalPreviewImageData(image) {
         currentFinalPrevImg = JSON.parse(JSON.stringify(image));
@@ -347,10 +341,6 @@ module.exports = {
     setWidth(newValue, isOriginal) {
         setWidth(trimToMaxMinWidth(newValue), isOriginal);
     },
-
-	disableStopFlag() {
-		stop = false;
-	},
 
     /**
      * Setting without any proportions or min/max checking
@@ -481,17 +471,17 @@ module.exports = {
             this.setWidthStrict(cropRegion.cropX1, newWidth, isOriginal);
             this.setHeightStrict(cropRegion.cropY1, newHeight, isOriginal);
 
-            if (!ignoreCropping) {
-                cropRegion.cropX2 = cropWidth;
-                cropRegion.cropY2 = cropHeight;
-            }
+	        if (!ignoreCropping) {
+		        cropRegion.cropX2 = cropWidth;
+		        cropRegion.cropY2 = cropHeight;
+	        }
         }
 
-        const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
-        const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
+	    const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
+	    const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
 
-	    setHeightProportionally(currentHeight, isOriginal, stop);
-	    setWidthProportionally(currentWidth, isOriginal, stop);
+	    setHeightProportionally(currentHeight, isOriginal);
+	    setWidthProportionally(currentWidth, isOriginal);
     },
 
     isRestrictedValuesChanged(){
@@ -556,6 +546,5 @@ module.exports = {
         resetToOriginal = false;
         selectedImgActive = false;
         existsCropRegion = true;
-	    stop = false;
     },
 };
