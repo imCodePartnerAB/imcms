@@ -114,12 +114,12 @@ define(
 
                 $fileFormat.selectValue(imageData.format);
                 if (checkExistImageData(imageData)) {
-                    $editableControls.removeAttr('style');
+                    $editableControls.children().not(".imcms-advanced-mode").show();
                     $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
                     $imageSizeInfo.show();
                     $noImageInfo.hide();
                 } else {
-                    $editableControls.css('visibility', 'hidden');
+                    $editableControls.children().hide();
                     $imageInfoPath.hide();
                     $imageSizeInfo.hide();
                     $noImageInfo.text(texts.noSelectedImage).show();
@@ -211,17 +211,22 @@ define(
                         components.buttons.negativeButton({
                             text: texts.advanced,
                             "data-state": "false",
+                            "id": "imcms-image-advanced-button",
                             click: function () {
                                 const $btn = $(this);
 
                                 if ($btn.attr("data-state") === "false") {
                                     $advancedControls.css("display", "block");
                                     $btn.attr("data-state", "true").text(texts.simple);
-
                                 } else {
                                     $advancedControls.css("display", "none");
                                     $btn.attr("data-state", "false").text(texts.advanced);
                                 }
+
+                                let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
+                                let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
+                                let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight();
+                                $(".imcms-editable-controls-area").css("height","calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)");
                             }
                         })
                     ]);
@@ -372,7 +377,9 @@ define(
                 }
 
                 function showExif() {
-                    exifInfoWindowBuilder.buildWindow();
+                    exifInfoWindowBuilder.buildWindowWithShadow.apply(
+                        exifInfoWindowBuilder, arguments
+                    );
                 }
 
                 const $showExifBtn = new BEM({
@@ -384,8 +391,7 @@ define(
                             name: 'exifInfo'
                         })
                     }
-                }).buildBlockStructure('<div>');
-
+                }).buildBlockStructure('<div>', {"class": "image-exif-window"});
                 components.overlays.defaultTooltip($showExifBtn, texts.exif.title);
 
                 function buildAdvancedControls() {
@@ -417,7 +423,8 @@ define(
                         {"title": $cropCoordinatesText},
                         {"crop-coordinates": $cropCoordinatesContainer},
                         {"file-format": $fileFormat},
-                        {"compression": $compressionContainer}
+                        {"compression": $compressionContainer},
+                        {"exif": $showExifBtn}
                     ]);
                 }
 
@@ -677,7 +684,16 @@ define(
                     }
                 }
 
+                function cancelAndClose(){
+                    imageWindowBuilder.closeWindow();
+                }
+
                 function buildFooter() {
+                    const $cancelButton = components.buttons.negativeButton({
+                        text: texts.cancelAndClose,
+                        click: cancelAndClose
+                    });
+
                     const $removeAndCloseButton = components.buttons.negativeButton({
                         text: texts.removeAndClose,
                         click: removeAndClose
@@ -688,7 +704,7 @@ define(
                         click: saveAndClose
                     });
 
-                    return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
+                    return $("<div>").append($cancelButton, $removeAndCloseButton, $saveAndCloseButton);
                 }
 
                 const style = $tag.data('style');
@@ -723,8 +739,7 @@ define(
                 $editableControls = buildEditableControls();
                 const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
-                return $("<div>").append($restrictStyleInfo, $infoImage, $footer,
-                    $showExifBtn, $editableControls);
+                return $("<div>").append($restrictStyleInfo, $infoImage, $footer, $editableControls);
             }
         }
     }

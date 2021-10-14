@@ -35,7 +35,10 @@ module.exports = {
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData, opts.fillData);
         const $head = opts.imageWindowBuilder.buildHead();
         //need for get data after build and data in the $infoData, in another way fix build this..
-        $head.find('.imcms-title').append($infoData).append($imageLinkContainerInfo);
+        const $title = $head.find('.imcms-title');
+        $title.append($infoData);
+        $title.append($imageLinkContainerInfo);
+        $title.css("display", "flex");
 
         return new BEM({
             block: "imcms-image_editor",

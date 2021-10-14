@@ -105,6 +105,7 @@ define(
                 const style = $tag.data('style');
                 const resultStyleObj = {};
 
+                editSizeControls.getDisplaySizeBlock().css('display', 'none');
                 if (style) {
                     style.split(';')
                         .map(x => x.trim())
@@ -174,6 +175,13 @@ define(
             if (imageData.inText) $tag.attr("data-index", imageData.index);
 
             imageEditorFactory.updateImageData($tag, imageData);
+
+            if(image.path !== '' && imageData.height > 0 && imageData.width > 0){
+                editSizeControls.getImageSizeControlBlock().show();
+            }else{
+                imageDataContainers.$langFlags.show();
+                editSizeControls.getImageSizeControlBlock().hide();
+            }
 
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);

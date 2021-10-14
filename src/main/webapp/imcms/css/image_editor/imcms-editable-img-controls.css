@@ -1,7 +1,7 @@
 .imcms-editable-img-controls {
     display: inline-block;
     overflow: hidden;
-    padding-left: 42px;
+    padding-left: 20px;
     width: 74%;
 }
 
@@ -63,7 +63,6 @@
 .imcms-image-crop-proportions-info {
     display: inline-block;
     padding-left: 15px;
-    line-height: 65px;
 }
 
 .percentage-image-info {
@@ -82,9 +81,11 @@
 
 .select-image-button {
     display: flex;
+    width: 26%;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
-    padding: 12px 30px;
-    width: 26%;
+    place-self: center;
+}
+.select-image-button .imcms-button{
+    margin: 0;
 }

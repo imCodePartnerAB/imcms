@@ -4,21 +4,17 @@
     justify-content: center;
 }
 
-.imcms-edit-image .imcms-button {
+.imcms-editable-img-controls button{
     margin-left: 15px;
 }
 
-.imcms-edit-image__button {
-    display: inline-block;
-    margin-right: 5px;
+.imcms-image-toolbar__toolbar > button:first-child{
+    margin-left: 0;
+    margin-right: 15px;
 }
 
 .imcms-edit-image__button:hover {
     border-color: #0b94d8;
-}
-
-.imcms-edit-image__button:last-child {
-    margin-right: 0;
 }
 
 .imcms-image-toolbar__toolbar {
@@ -26,4 +22,12 @@
     align-items: center;
     height: 100%;
     margin-right: auto;
+}
+
+.imcms-edit-image__proportions{
+    text-align: -webkit-center;
+}
+
+.imcms-edit-image__proportions .imcms-button{
+    margin: 0;
 }

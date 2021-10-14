@@ -21,13 +21,12 @@ define(
                 getShowImageRotationControls(),
                 getRevertButton(),
                 getCroppingButton(),
-                imageProportionsLocker.getProportionsButton(),
-                imageProportionsLocker.getProportionsText(),
+                getProportionButtonAndText()
             )
             .show(
                 getZoomPlusButton(),
-                getZoomMinusButton(),
                 getPercentageRatio(),
+                getZoomMinusButton(),
                 getZoomResetButton(),
                 getFitButton()
             )
@@ -43,9 +42,6 @@ define(
                 toggleImageAreaToolbarViewBuilder.buildEditorElement();
                 imageEditSizeControls.getImageSizeControlBlock().show();
 
-                $exifInfoButton.css({
-                    'display': 'none'
-                });
 
                 $editableArea.css({
                     "z-index": "10",
@@ -64,7 +60,6 @@ define(
                 imageEditSizeControls.setHeight(height, true);
                 toggleImageAreaToolbarViewBuilder.build();
                 imageEditSizeControls.getImageSizeControlBlock().hide();
-                $exifInfoButton.show();
                 if (imageData.path !== '') {
                     if (imageData.exifInfo && imageData.exifInfo.length !== 0) {
                         $exifInfoButton.removeAttr('disabled').removeClass('imcms-button--disabled');
@@ -85,9 +80,11 @@ define(
                     'display': "block"
                 });
             }
-
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
+
+            const $advancedBtn = $('#imcms-image-advanced-button').last();
+            if($advancedBtn.attr("data-state") === "true")  $advancedBtn.click();
 
             imageZoom.updateZoomGradeValue();
 	        imageZoom.updateImageToCoverContainerEditor();
@@ -215,6 +212,7 @@ define(
                     getRevertButton(),
                     getCroppingButton(),
                     getSwitchViewControls(),
+                    getImageLibraryButton()
                 )
                 .show(
                     getCancelChangesButton(),
@@ -293,6 +291,7 @@ define(
             $revertToOriginalCropBtn = components.buttons.negativeButton({
                 text: texts.buttons.revertCropping,
                 style: 'display: none;',
+                "class": 'imcms-image-editor--revert-to-original',
                 click: function () {
                     imageData.cropRegion = {
                         cropX1: 0,
@@ -320,6 +319,20 @@ define(
             components.overlays.defaultTooltip($showImageRotationControls, texts.buttons.rotationTitle);
 
             return $showImageRotationControls;
+        }
+
+        let $proportionButtonAndText;
+
+        function getProportionButtonAndText(){
+            if ($proportionButtonAndText) {
+                return $proportionButtonAndText;
+            }
+
+            $proportionButtonAndText = $("<div>");
+            $proportionButtonAndText.append(imageProportionsLocker.getProportionsButton());
+            $proportionButtonAndText.append(imageProportionsLocker.getProportionsText());
+
+            return $proportionButtonAndText;
         }
 
         let $zoomPlusButton;
@@ -441,7 +454,8 @@ define(
                     getZoomMinusButton(),
                     getZoomPlusButton(),
                     getFitButton(),
-                    getZoomResetButton()
+                    getZoomResetButton(),
+                    getImageLibraryButton()
                 )
                 .show(
                     getCancelChangesButton(),
@@ -498,15 +512,14 @@ define(
                         imageEditSizeControls.getOriginSizeControls(),
                     ],
                     'proportions':[
-                        imageProportionsLocker.getProportionsButton(),
-                        imageProportionsLocker.getProportionsText()
+                        getProportionButtonAndText()
                     ],
                     'button': [
                         getRemoveCroppingButton(),
                         getRevertToOriginCropButton(),
                         getZoomPlusButton(),
-                        getZoomMinusButton(),
                         getPercentageRatio(),
+                        getZoomMinusButton(),
                         getFitButton(),
                         getShowImageRotationControls(),
                         getRotateLeftButton(),
@@ -585,15 +598,14 @@ define(
                     imageEditSizeControls.getImageSizeControlBlock(),
                     imageEditSizeControls.getOriginSizeControls(),
                     getCancelChangesButton(),
-                    imageProportionsLocker.getProportionsButton(),
-                    imageProportionsLocker.getProportionsText(),
+                    getProportionButtonAndText(),
                     getApplyChangesButton(),
                     getRemoveCroppingButton(),
                     getRevertToOriginCropButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
-                    getPercentageRatio(),
                     getZoomPlusButton(),
+                    getPercentageRatio(),
                     getZoomMinusButton(),
                     getZoomResetButton(),
                     getFitButton(),

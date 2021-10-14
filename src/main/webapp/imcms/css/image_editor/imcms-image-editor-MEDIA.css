@@ -1,3 +1,9 @@
+@media screen and (max-width: 1300px) {
+    .imcms-image-toolbar button:not(.imcms-button--switch-on){
+        padding: 15px;
+    }
+}
+
 @media screen and (max-width: 1200px) {
     .imcms-image_editor {
         overflow: hidden;
@@ -23,104 +29,132 @@
 
     .imcms-image-toolbar__button {
         display: block;
+        width: 8%;
+        min-width: 105px;
+        padding: 0 !important;
     }
 
     .imcms-originally-img-area {
         height: 100%;
     }
-}
 
-@media screen and (max-width: 790px) {
-    .imcms-editable-img-controls {
-        padding: 0 20px;
-        height: 215px;
-        bottom: -215px;
+    .select-image-button {
+        width: 15%;
     }
 
-    .imcms-editable-img-controls__control-size,
-    .imcms-editable-img-controls__control-scale-n-rotate,
-    .imcms-editable-img-controls__control-view {
+    .imcms-editable-img-controls{
+        width: 100%;
+    }
+
+    .imcms-image-toolbar .select-image-button .imcms-button .imcms-button--positive__icon{
+        display: none;
+    }
+
+    .imcms-image-toolbar .select-image-button .imcms-button{
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+}
+
+@media screen and (max-width: 965px) {
+        .percentage-image-info,
+        .select-image-button,
+        .imcms-editable-img-controls button {
+            margin-left: 10px;
+        }
+
+        .imcms-image-crop-proportions-info{
+            padding-left: 10px;
+        }
+
+        .imcms-image-toolbar__toolbar > button:first-child {
+         margin-right: 10px;
+        }
+
+        .imcms-edit-image .imcms-button--negative{
+            padding: 15px 10px !important;
+        }
+}
+
+@media screen and (max-width: 912px) {
+    .imcms-edit-image .imcms-button--negative{
+        padding: 10px !important;
+    }
+
+    .imcms-image-toolbar .select-image-button .imcms-button .imcms-button--positive__icon{
         display: block;
-        float: none;
-        margin: 5px auto;
-        overflow: hidden;
-        width: 100%;
-        height: auto;
     }
 
-    .imcms-edit-image,
-    .imcms-editable-img-control-tabs {
-        padding-top: 0;
+    .imcms-image-toolbar .select-image-button .imcms-button .imcms-button--positive__button{
+        display: none;
     }
 
-    .imcms-edit-size {
-        text-align: center;
+    .imcms-image-toolbar .select-image-button .imcms-button{
+        padding: 10px 15px;
     }
 
-    .imcms-edit-size__button,
-    .imcms-edit-size__number {
-        float: none;
-        display: inline-block;
-        overflow: hidden;
+    .select-image-button {
+        width: 10%;
+        margin-right: 5px;
     }
 
-    .imcms-edit-size__button {
-        margin: 0 10px;
-    }
-
-    .imcms-edit-size .imcms-number-box__input {
-        padding: 7px 15px;
+    .imcms-editable-img-control-tabs__tab{
+        line-height: 16px;
     }
 }
 
-@media screen and (max-width: 735px) {
-    .imcms-image_editor__image-characteristics {
-        padding-top: 30px;
-        position: relative;
-        height: 120px;
+@media screen and (max-width: 900px) {
+    .common-info-image {
+        width: auto;
     }
 
-    .imcms-image-characteristic {
-        line-height: 25px;
-        float: none;
+    .image-editor-info {
+        width: calc(90% - 420px);
+    }
+}
+
+@media screen and (max-width: 715px) {
+    .percentage-image-info,
+    .select-image-button,
+    .imcms-editable-img-controls button {
+        margin-left: 5px;
     }
 
-    .imcms-image-characteristic__origin-size {
-        line-height: 25px;
-        display: inline-block;
-        float: none;
+    .imcms-image-toolbar__toolbar,
+    .imcms-image-crop-proportions-info {
+        padding-left: 5px;
     }
 
-    .imcms-image-characteristics__button {
+    .imcms-image-toolbar__toolbar > button:first-child {
+        margin-right: 5px;
+    }
+
+    .imcms-editable-img-controls .imcms-resolution-inputs__number .imcms-number-box__input{
+        width: 60px;
+        line-height: 20px;
+        padding: 0 0 0 10px;
+    }
+
+    .imcms-editable-img-control-tabs{
         margin: 0;
+    }
+}
+
+@media screen and (max-width: 680px) {
+    .imcms-image-toolbar button:not(.imcms-button--switch-on) {
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 645px) {
+    .imcms-image-editor--revert-to-original{
         position: absolute;
-        top: 5px;
+        top: -9999px;
+        left: -9999px;
     }
 
-    .imcms-image-characteristics__button--toolbar {
-        left: 20px;
-    }
-
-    .imcms-image-characteristics__button--right-panel {
-        right: 20px;
-    }
-
-    .imcms-image_editor__left-side {
-        height: 82.6%;
-        height: -webkit-calc(100% - 162px);
-        height: -moz-calc(100% - 162px);
-        height: -o-calc(100% - 162px);
-        height: calc(100% - 162px);
-    }
-
-    .imcms-image_editor__right-side {
-        top: 162px;
-        right: -100%;
-        width: 100%;
-        height: 82.6%;
-        height: -webkit-calc(100% - 162px);
-        height: -moz-calc(100% - 162px);
-        height: -o-calc(100% - 162px);
-        height: calc(100% - 162px);
+    .imcms-editable-img-control-tabs__tab {
+        line-height: 12px;
+        padding-top: 3px;
     }
 }
