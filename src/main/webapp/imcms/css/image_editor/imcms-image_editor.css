@@ -5,8 +5,6 @@
 }
 
 .image-editor-info {
-    width: 45%;
-    margin-right: 5%;
     display: inline-flex;
     text-transform: lowercase;
     justify-content: flex-end;
