@@ -4,13 +4,7 @@ import com.imcode.imcms.api.EditLink;
 import com.imcode.imcms.api.ValidationLink;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.DocumentUrlService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.LinkValidationService;
-import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.DocumentURL;
@@ -21,13 +15,7 @@ import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -237,11 +225,10 @@ public class DefaultLinkValidationService implements LinkValidationService {
         Set<ValidationLink> links = new HashSet<>();
         try {
             ValidationLink cloneLink = (ValidationLink) link.clone();
-
-            link.setUrl(PROTOCOL_HTTP + link.getUrl());
+			link.setUrl(PROTOCOL_HTTP + InetAddress.getLoopbackAddress().getHostName() + link.getUrl());
             links.add(verifyValidationLink(link));
 
-            cloneLink.setUrl(PROTOCOL_HTTPS + cloneLink.getUrl());
+	        cloneLink.setUrl(PROTOCOL_HTTPS + InetAddress.getLoopbackAddress().getHostName() + cloneLink.getUrl());
             links.add(verifyValidationLink(cloneLink));
         } catch (CloneNotSupportedException e) {
             log.error(e.getMessage());
