@@ -1,5 +1,4 @@
 .imcms-image-characteristic {
-    line-height: 64px;
     padding: 0 5px;
 }
 
@@ -39,7 +38,6 @@
 }
 
 .imcms-image-toolbar__button {
-    line-height: 64px;
     display: none;
 }
 
@@ -48,8 +46,3 @@
     margin-right: 2%;
 }
 
-@media screen and (max-width: 790px) {
-    .imcms-image-toolbar__img-origin-size {
-        margin-right: 1%;
-    }
-}

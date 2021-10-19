@@ -19,6 +19,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direct Text Editor</title>
+    <link rel="stylesheet" href="${contextPath}/imcms/css/tinymce/skins/white/skin.ie7.min.css">
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>

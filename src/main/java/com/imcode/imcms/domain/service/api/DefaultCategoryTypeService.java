@@ -8,11 +8,12 @@ import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
-import imcode.util.Utility;
+import org.apache.commons.lang.CharEncoding;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         if (saveMe.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
-        saveMe.setName(Utility.escapeValue(saveMe.getName()));
+        saveMe.setName(HtmlUtils.htmlEscape(saveMe.getName(), CharEncoding.UTF_8));
         final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(
                 modelMapper.map(saveMe, CategoryTypeJPA.class)
         );
@@ -66,7 +67,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     public CategoryType update(CategoryType updateMe) {
         final CategoryType receivedCategoryType = categoryTypeRepository.findOne(updateMe.getId());
         receivedCategoryType.setId(updateMe.getId());
-        receivedCategoryType.setName(Utility.escapeValue(updateMe.getName()));
+        receivedCategoryType.setName(HtmlUtils.htmlEscape(updateMe.getName(), CharEncoding.UTF_8));
         receivedCategoryType.setInherited(updateMe.isInherited());
         receivedCategoryType.setMultiSelect(updateMe.isMultiSelect());
         receivedCategoryType.setVisible(updateMe.isVisible());

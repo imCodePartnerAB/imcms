@@ -2,7 +2,7 @@
     border-bottom: 2px solid #d3d8de;
     display: block;
     overflow: hidden;
-    padding: 26px 25px;
+    padding: 25px 25px;
     width: 100%;
 }
 
@@ -13,7 +13,6 @@
 .imcms-folder__controls {
     display: none;
     float: right;
-    padding: 26px 0;
     position: relative;
 }
 
@@ -64,6 +63,16 @@
 
 .imcms-panel-named__button:hover {
     color: #0b94d8;
+}
+
+.imcms-panel-named__control-close{
+    display: inline-block !important;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.imcms-panel-named__close:hover {
+    background-image: url("/imcms/images/controls/icon_folder_controll_remove_hover.png");
 }
 
 .imcms-main-folders-controls__name {

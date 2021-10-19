@@ -564,6 +564,7 @@ const texts = {
                 fileFormat: "Filformat",
                 alignment: "Textjustering",
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
+                cancelAndClose: "Avbryt och stäng",
                 removeAndClose: "Ta bort och stäng",
                 saveAndClose: "Spara och stäng",
                 restrictedStyle: 'Begränsad stil:',
@@ -877,11 +878,12 @@ const texts = {
                 error: {
                     invalidName: 'Tomt namn är oacceptabelt! Vänligen välj ett annat namn!',
                     category: {
-                        loadFailed: 'Misslyckades med att hämta kategori. Försök igen'
+                        loadFailed: 'Misslyckades med att hämta kategori. Försök igen',
+                        removeFailed: 'Denna kategori har dokument!'
                     },
                     categoryType: {
                         loadFailed: 'Misslyckades med att hämta kategorierna. Försök igen',
-                        removeFailed: 'Misslyckades med att ta bort kategoritypen. Försök igen'
+                        removeFailed: 'Denna kategorityp har kategorier!'
                     }
                 }
             },
@@ -1551,6 +1553,7 @@ const texts = {
                 fileFormat: "File format",
                 alignment: "Text alignment",
                 altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
+                cancelAndClose: "Cancel and close",
                 removeAndClose: "Remove and close",
                 saveAndClose: "Save and close",
                 restrictedStyle: 'Restricted style:',
@@ -1864,11 +1867,12 @@ const texts = {
                 error: {
                     invalidName: 'This is name is unacceptable! Please choose a different name!',
                     category: {
-                        loadFailed: 'Failed to fetch category. Try again'
+                        loadFailed: 'Failed to fetch category. Try again',
+                        removeFailed: 'This category has documents!'
                     },
                     categoryType: {
                         loadFailed: 'Failed to fetch categories types. Try again',
-                        removeFailed: 'Failed to remove category type. Try again'
+                        removeFailed: 'This category type has categories!'
                     }
                 }
             },

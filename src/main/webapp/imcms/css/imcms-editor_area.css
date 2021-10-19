@@ -108,7 +108,7 @@
     top: -47px;
     left: -46px;
     width: 130px;
-    z-index: 25;
+    z-index: 1;
 }
 
 .imcms-editor-area__control-title:before {
@@ -166,8 +166,4 @@
 
 .imcms-editor-area--loop {
     margin-top: 30px;
-}
-
-.imcms-editor-area--loop .imcms-editor-area__text-label {
-    z-index: 999;
 }

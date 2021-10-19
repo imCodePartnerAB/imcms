@@ -169,7 +169,6 @@ a[class^="imcms"].imcms-button--neutral:hover {
     background: url("/imcms/images/window/icon_window_close.png") no-repeat center;
     width: 15px;
     height: 15px;
-    opacity: 0.5;
     padding: 0;
 }
 

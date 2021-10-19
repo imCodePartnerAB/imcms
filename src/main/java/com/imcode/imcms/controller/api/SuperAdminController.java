@@ -7,6 +7,7 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
+import static imcode.server.ImcmsConstants.SWE_CODE;
 
 /**
  * Controller for super-admin functionality. Provides possibility to go to any
@@ -76,15 +80,14 @@ class SuperAdminController {
         mav.setViewName("EditText");
 
 
-        final String language = (langCode == null) ? Imcms.getUser().getLanguage() : langCode;
+        final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
 
         addObjectModelViewData(mav, metaId);
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("language", language);
         addCommonModelData(metaId, index, returnUrl, request, mav);
-        mav.addObject("userLanguage", language);
-
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
     }
 
@@ -95,7 +98,6 @@ class SuperAdminController {
         mav.addObject("isAdmin", user.isSuperAdmin());
         mav.addObject("editOptions", userEditPermission);
         mav.addObject("isEditMode", true);
-        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId));
 
     }
 
@@ -116,7 +118,7 @@ class SuperAdminController {
             loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
         }
 
-        final String language = (langCode == null) ? Imcms.getUser().getLanguage() : langCode;
+        final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
 
         mav.setViewName("EditImage");
 
@@ -124,7 +126,7 @@ class SuperAdminController {
         mav.addObject("langCode", language);
         mav.addObject("imagesPath", imagesPath);
         addCommonModelData(metaId, index, returnUrl, request, mav);
-        mav.addObject("userLanguage", language);
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
     }
 
@@ -139,6 +141,7 @@ class SuperAdminController {
         mav.setViewName("EditMenu");
         addObjectModelViewData(mav, metaId);
         addCommonModelData(metaId, index, returnUrl, request, mav);
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId));
 
         return mav;
     }
@@ -221,4 +224,10 @@ class SuperAdminController {
         mav.addObject("documentationLink", documentationLink);
     }
 
+    private String getUserLanguage(Cookie[] cookies){
+        for(Cookie cookie: cookies){
+            if(cookie.getName().equals(ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME)) return cookie.getValue();
+        }
+        return SWE_CODE;
+    }
 }

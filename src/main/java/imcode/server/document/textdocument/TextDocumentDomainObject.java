@@ -74,8 +74,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 
     public TextDocumentDomainObject(int documentId) {
+        this(documentId, Imcms.getUser().getLanguage());
+    }
+
+    public TextDocumentDomainObject(int documentId, String langCode) {
         setId(documentId);
-        setLanguage(DocumentLanguage.builder().code(Imcms.getUser().getLanguage()).build());
+        setLanguage(DocumentLanguage.builder().code(langCode).build());
     }
 
     @Override

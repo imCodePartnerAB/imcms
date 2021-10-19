@@ -75,9 +75,7 @@ function getCompressButton() {
 }
 
 function getExplainText(text){
-    return components.texts.infoText('<div>', text, {
-        style: 'line-height: 35px; vertical-align: top;'
-    });
+    return components.texts.infoText('<div>', text);
 }
 
 module.exports = {

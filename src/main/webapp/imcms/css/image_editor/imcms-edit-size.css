@@ -1,11 +1,11 @@
 .imcms-resolution-inputs {
     display: flex;
     align-items: center;
+    place-content: center;
 }
 
 .imcms-original-size {
     display: inline-block;
-    min-width: 300px;
     height: 100%;
 }
 
@@ -27,6 +27,7 @@
     display: block;
     width: 100%;
     line-height: 28px;
+    text-align: center;
 }
 
 .imcms-resolution-inputs__block-x {
