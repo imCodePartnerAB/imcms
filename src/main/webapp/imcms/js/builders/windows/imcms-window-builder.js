@@ -7,6 +7,7 @@ const windowComponents = require('imcms-window-components-builder');
 const windowKeysController = require('imcms-window-keys-controller');
 const $ = require('jquery');
 const cookies = require('imcms-cookies');
+const topPanelVisibilityInitiator = require('imcms-top-panel-visibility-initiator');
 
 const windowAutoSizeClassName = 'imcms-modal-size--auto';
 const windowMaximizeSizeClassName = 'imcms-modal-size--maximize';
@@ -23,7 +24,6 @@ function setBodyScrollingRule(overflowValue) {
 
 function enableBackgroundPageScrolling(pageOverflow, scrollTop) {
     setBodyScrollingRule(pageOverflow);
-    $(window).scrollTop(scrollTop);
 }
 
 function getScrollTopAndDisable() {
@@ -116,21 +116,21 @@ module.exports = class WindowBuilder {
 
     buildWindow(windowInitData) {
         try {
-            this._scrollTop = getScrollTopAndDisable();
             this._pageOverflow = $("body").css("overflow") || "auto";
-            setBodyScrollingRule("hidden");
+	        setBodyScrollingRule("hidden");
 
 
-            this.$editor = this.factory.apply(null, arguments).appendTo("body");
+	        this.$editor = this.factory.apply(null, arguments).appendTo("body");
 
-            this.loadDataStrategy && setTimeout(() => this.loadDataStrategy.apply(null, arguments));
-            this.$editor.css("display", "block");
+	        this.loadDataStrategy && setTimeout(() => this.loadDataStrategy.apply(null, arguments));
+	        this.$editor.css("display", "block");
 
-            refreshWindowSizeFromCookie(this.$editor);
+	        refreshWindowSizeFromCookie(this.$editor);
 
-            this.disableKeyBindings || windowKeysController.registerWindow(
-                this.onEscKeyPressed, this.onEnterKeyPressed
-            );
+	        this.disableKeyBindings || windowKeysController.registerWindow(
+		        this.onEscKeyPressed, this.onEnterKeyPressed
+	        );
+	        topPanelVisibilityInitiator.disableEventListeners();
         } catch (e) {
             console.error(e);
             alert("Error in window builder! Stacktrace in console.");
@@ -164,6 +164,7 @@ module.exports = class WindowBuilder {
                     console.error(e);
                 }
             }
+	        topPanelVisibilityInitiator.setEventListeners();
         } catch (e) {
             console.error(e);
             alert("Error in window builder! Stacktrace in console.");

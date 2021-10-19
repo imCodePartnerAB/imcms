@@ -81,23 +81,30 @@ define(
 
             $(document).click(event => {
                 if (!$(event.target).closest(".admin-panel-settings-list").length
-                    && !$(event.target).closest(".imcms-panel__item--settings").length)
-                {
-                    panelSettings.hideSettings();
+	                && !$(event.target).closest(".imcms-panel__item--settings").length) {
+	                panelSettings.hideSettings();
                 }
 
-                if (panelState.isPanelAppearanceDisabled || $(event.target).closest(".imcms-admin").length) return;
+	            if (panelState.isPanelAppearanceDisabled || $(event.target).closest(".imcms-admin").length) return;
 
-                hidePanels();
+	            hidePanels();
             });
         }
 
-        return {
-            refreshBodyTop: onPanelsShown,
-            setShowHidePanelRules: $panel => {
-                panels$.push($panel);
-                listenersNotSet && setEventListeners();
-            }
-        };
+	    function disableEventListeners() {
+		    listenersNotSet = true;
+		    $(document).off('mousemove');
+		    $(document).off('click');
+	    }
+
+	    return {
+		    refreshBodyTop: onPanelsShown,
+		    setShowHidePanelRules: $panel => {
+			    panels$.push($panel);
+			    listenersNotSet && setEventListeners();
+		    },
+		    setEventListeners: setEventListeners,
+		    disableEventListeners: disableEventListeners,
+	    };
     }
 );
