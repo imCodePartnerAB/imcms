@@ -5,7 +5,6 @@ define(
     function (BEM, components, texts, $, PageInfoTab, imcms, allDataDocumentRestApi, modal) {
 
         localization = texts.pageInfo.allData;
-        const docId = imcms.document.id;
 
         let $documentTextDataContainer = $('<div>', {
             'class': 'imcms-all-data-text-container'
@@ -23,17 +22,18 @@ define(
             'class': 'imcms-all-data-image-container'
         });
 
-        function buildDataList() {
+        function buildDataList(docId) {
 
-           allDataDocumentRestApi.getAllDataDocument(docId).done(dataDocumentDTO => {
-               buildTextList(dataDocumentDTO.textsDTO);
-               buildMenuList(dataDocumentDTO.menusDTO);
-               buildCategoryList(dataDocumentDTO.categoriesDTO);
-               buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
-               buildImageList(dataDocumentDTO.imagesDTO);
-           }).fail(() => modal.buildErrorWindow(localization.errorGettingData));
-            function buildTextList(textsData) {
-                $documentTextDataContainer.append(buildTextTitle(localization.text.title));
+	        allDataDocumentRestApi.getAllDataDocument(docId).done(dataDocumentDTO => {
+		        buildTextList(dataDocumentDTO.textsDTO);
+		        buildMenuList(dataDocumentDTO.menusDTO);
+		        buildCategoryList(dataDocumentDTO.categoriesDTO);
+		        buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
+		        buildImageList(dataDocumentDTO.imagesDTO);
+	        }).fail(() => modal.buildErrorWindow(localization.errorGettingData));
+
+	        function buildTextList(textsData) {
+		        $documentTextDataContainer.append(buildTextTitle(localization.text.title));
 
                 if (textsData === undefined || textsData === null || textsData.length === 0){
                     $documentTextDataContainer.append(buildTextInfo(localization.noData));
@@ -338,26 +338,26 @@ define(
             PageInfoTab.call(this, name);
         };
 
-        AllDataTab.prototype = Object.create(PageInfoTab.prototype);
+	    AllDataTab.prototype = Object.create(PageInfoTab.prototype);
 
-        AllDataTab.prototype.isDocumentTypeSupported = () => {
-            return true; // all supported
-        };
-        AllDataTab.prototype.fillTabDataFromDocument = document => {
+	    AllDataTab.prototype.isDocumentTypeSupported = () => {
+		    return true; // all supported
+	    };
+	    AllDataTab.prototype.fillTabDataFromDocument = document => {
 
-        }
+	    }
 
-        AllDataTab.prototype.tabElementsFactory = () => [
-            buildDataList()
-        ];
+	    AllDataTab.prototype.tabElementsFactory = (index, docId) => [
+		    buildDataList(docId)
+	    ];
 
-        AllDataTab.prototype.clearTabData = () => {
-            $documentTextDataContainer.empty();
-            $documentMenuDataContainer.empty();
-            $documentCategoryDataContainer.empty();
-            $documentLoopDataContainer.empty();
-            $documentImageDataContainer.empty();
-        };
+	    AllDataTab.prototype.clearTabData = () => {
+		    $documentTextDataContainer.empty();
+		    $documentMenuDataContainer.empty();
+		    $documentCategoryDataContainer.empty();
+		    $documentLoopDataContainer.empty();
+		    $documentImageDataContainer.empty();
+	    };
 
         return new AllDataTab(localization.name);
         }
