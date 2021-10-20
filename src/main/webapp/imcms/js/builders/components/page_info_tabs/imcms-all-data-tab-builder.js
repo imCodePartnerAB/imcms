@@ -24,13 +24,18 @@ define(
 
         function buildDataList(docId) {
 
-	        allDataDocumentRestApi.getAllDataDocument(docId).done(dataDocumentDTO => {
-		        buildTextList(dataDocumentDTO.textsDTO);
-		        buildMenuList(dataDocumentDTO.menusDTO);
-		        buildCategoryList(dataDocumentDTO.categoriesDTO);
-		        buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
-		        buildImageList(dataDocumentDTO.imagesDTO);
-	        }).fail(() => modal.buildErrorWindow(localization.errorGettingData));
+	        allDataDocumentRestApi.getAllDataDocument(docId)
+		        .fail(() => {
+			        if (docId !== null)
+				        modal.buildErrorWindow(localization.errorGettingData)
+		        })
+		      .always((dataDocumentDTO) => {
+			    buildTextList(dataDocumentDTO.textsDTO);
+			    buildMenuList(dataDocumentDTO.menusDTO);
+			    buildCategoryList(dataDocumentDTO.categoriesDTO);
+				buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
+			    buildImageList(dataDocumentDTO.imagesDTO);
+		     });
 
 	        function buildTextList(textsData) {
 		        $documentTextDataContainer.append(buildTextTitle(localization.text.title));
