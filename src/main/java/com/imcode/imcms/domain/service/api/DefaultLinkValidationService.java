@@ -225,12 +225,12 @@ public class DefaultLinkValidationService implements LinkValidationService {
         Set<ValidationLink> links = new HashSet<>();
         try {
             ValidationLink cloneLink = (ValidationLink) link.clone();
-			link.setUrl(PROTOCOL_HTTP + InetAddress.getLoopbackAddress().getHostName() + link.getUrl());
+	        link.setUrl(PROTOCOL_HTTP + InetAddress.getLocalHost().getHostName() + link.getUrl());
             links.add(verifyValidationLink(link));
 
-	        cloneLink.setUrl(PROTOCOL_HTTPS + InetAddress.getLoopbackAddress().getHostName() + cloneLink.getUrl());
+	        cloneLink.setUrl(PROTOCOL_HTTPS + InetAddress.getLocalHost().getHostName() + cloneLink.getUrl());
             links.add(verifyValidationLink(cloneLink));
-        } catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException | UnknownHostException e) {
             log.error(e.getMessage());
         }
         return links;
