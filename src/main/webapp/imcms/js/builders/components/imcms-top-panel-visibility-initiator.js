@@ -10,6 +10,7 @@ define(
         const panelSensitivePixels = 15;
         const panels$ = [];
         let listenersNotSet = true;
+	    const body = 'body';
 
         function showPanels() {
             $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
@@ -68,7 +69,7 @@ define(
         function setEventListeners() {
             listenersNotSet = false;
 
-            $(document).mousemove(event => {
+	        $(body).mousemove(event => {
 
                 const isPanelDisabledOrMouseNotInSensitiveArea = panelState.isPanelAppearanceDisabled
                     || (event.clientY < 0)
@@ -79,7 +80,7 @@ define(
                 showPanels();
             });
 
-            $(document).click(event => {
+	        $(body).click(event => {
                 if (!$(event.target).closest(".admin-panel-settings-list").length
 	                && !$(event.target).closest(".imcms-panel__item--settings").length) {
 	                panelSettings.hideSettings();
@@ -93,8 +94,8 @@ define(
 
 	    function disableEventListeners() {
 		    listenersNotSet = true;
-		    $(document).off('mousemove');
-		    $(document).off('click');
+		    $(body).off('mousemove');
+		    $(body).off('click');
 	    }
 
 	    return {
