@@ -33,4 +33,5 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
 
     Text filter(Text text);
 
+	List<Text> getLoopTexts(int docId, String langCode, int loopIndex);
 }

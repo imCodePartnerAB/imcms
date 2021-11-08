@@ -6,7 +6,9 @@ define("imcms-texts-rest-api", ["imcms-rest-api"], function (rest) {
     const apiPath = "/texts";
     const api = new rest.API(apiPath);
 
-    // custom non-json POST call
+	api.getLoopTexts = rest.ajax.bind({url: apiPath + '/loop', type: "GET", json: false});
+
+	// custom non-json POST call
     api.create = rest.ajax.bind({url: apiPath, type: "POST", json: false});
 
     api.filter = rest.ajax.bind({url: apiPath + '/filter', type: "POST", json: false});

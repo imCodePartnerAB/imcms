@@ -59,4 +59,7 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer>, Version
     @Modifying
     @Query(value = "DELETE FROM imcms_text_doc_texts WHERE doc_id = ?1", nativeQuery = true)
     void deleteByDocId(Integer docId);
+
+	@Query("SELECT i FROM TextJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef.loopIndex = ?3 ")
+	List<TextJPA> findByVersionAndLanguageAndLoopIndex(Version version, LanguageJPA language, int loopIndex);
 }

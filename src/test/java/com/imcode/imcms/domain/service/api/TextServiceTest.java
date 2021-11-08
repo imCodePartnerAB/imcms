@@ -10,11 +10,7 @@ import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
@@ -26,11 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.HTML;
@@ -334,6 +326,79 @@ public class TextServiceTest extends WebAppSpringTestConfig {
             assertEquals(savedText, textDTO);
         }
     }
+
+	@Test
+	public void getLoopTexts_When_LoopIndexPresent_Expected_EqualResult() {
+		final int loopIndex = 1;
+
+		final LanguageJPA languageJPA = languageRepository.findByCode("en");
+
+		final LoopEntryRefJPA loopEntryRef1 = new LoopEntryRefJPA(loopIndex, 1);
+		final LoopEntryRefJPA loopEntryRef2 = new LoopEntryRefJPA(loopIndex, 2);
+
+		final TextJPA text1 = textDataInitializer.createText(1, languageJPA, workingVersion, "test", loopEntryRef1);
+		final TextJPA text2 = textDataInitializer.createText(2, languageJPA, workingVersion, "test", loopEntryRef2);
+
+
+		final TextDTO textDTO1 = Optional.of(text1).map(TextDTO::new).get();
+		final TextDTO textDTO2 = Optional.of(text2).map(TextDTO::new).get();
+
+		final List<Text> resultTexts = textService.getLoopTexts(DOC_ID, "en", loopIndex);
+
+		assertFalse(resultTexts.isEmpty());
+		assertEquals(2, resultTexts.size());
+		assertEquals(textDTO1, resultTexts.get(0));
+		assertEquals(textDTO2, resultTexts.get(1));
+	}
+
+	@Test
+	public void getLoopTexts_When_ImagesNotInLoop_EmptyResult() {
+		final int loopIndex = 1;
+
+		final LanguageJPA languageJPA = languageRepository.findByCode("en");
+
+		textDataInitializer.createText(1, languageJPA, workingVersion, "test",null);
+		textDataInitializer.createText(2, languageJPA, workingVersion, "test", null);
+
+		final List<Text> resultTexts = textService.getLoopTexts(DOC_ID, "en", loopIndex);
+
+		assertTrue(resultTexts.isEmpty());
+	}
+
+	@Test
+	public void getLoopTexts_When_LoopIndexPresent_And_IncorrectLangCode_Expected_CorrectResult() {
+		final int loopIndex = 1;
+
+		final LanguageJPA languageJPA1 = languageRepository.findByCode("en");
+		final LanguageJPA languageJPA2 = languageRepository.findByCode("sv");
+
+		final Version version = versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+
+		final LoopEntryRefJPA loopEntryRef1 = new LoopEntryRefJPA(loopIndex, 1);
+		final LoopEntryRefJPA loopEntryRef2 = new LoopEntryRefJPA(loopIndex, 2);
+
+		final TextJPA text1FromLoop1 = textDataInitializer.createText(1, languageJPA1, version,"test", loopEntryRef1);
+		final TextJPA text2FromLoop1 = textDataInitializer.createText(2, languageJPA1, version, "test", loopEntryRef2);
+
+		final TextDTO textDTO1FromLoop1 = Optional.of(text1FromLoop1).map(TextDTO::new).get();
+		final TextDTO textDTO2FromLoop1 = Optional.of(text2FromLoop1).map(TextDTO::new).get();
+
+		final TextJPA text1FromLoop2 = textDataInitializer.createText(1, languageJPA2, version,"test", loopEntryRef1);
+		final TextJPA text2FromLoop2 = textDataInitializer.createText(2, languageJPA2, version, "test", loopEntryRef2);
+
+		final TextDTO textDTO1FromLoop2 = Optional.of(text1FromLoop2).map(TextDTO::new).get();
+		final TextDTO textDTO2FromLoop2 = Optional.of(text2FromLoop2).map(TextDTO::new).get();
+
+		final List<Text> resultTexts = textService.getLoopTexts(DOC_ID, "sv", loopIndex);
+
+		assertFalse(resultTexts.isEmpty());
+
+		assertNotEquals(textDTO1FromLoop1, resultTexts.get(0));
+		assertNotEquals(textDTO2FromLoop1, resultTexts.get(1));
+
+		assertEquals(textDTO1FromLoop2, resultTexts.get(0));
+		assertEquals(textDTO2FromLoop2, resultTexts.get(1));
+	}
 
     @Test
     public void saveText_When_NotInLoop_Expect_CorrectDTO() {

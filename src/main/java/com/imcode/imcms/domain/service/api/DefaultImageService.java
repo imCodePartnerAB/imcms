@@ -89,7 +89,17 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
-    @Override
+	@Override
+	public List<ImageDTO> getLoopImages(int docId, String langCode, int loopIndex) {
+		final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(langCode));
+
+		return repository.findByVersionAndLanguageAndLoopIndex(versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
+				.stream()
+				.map(imageJPAToImageDTO)
+				.collect(Collectors.toList());
+	}
+
+	@Override
     public List<ImageJPA> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
         List<ImageJPA> plainImageFound = repository.findByUrl(imageURL);
 

@@ -1,11 +1,13 @@
 .imcms-loop-item {
+	height: 6%;
     cursor: pointer;
-    display: block;
+    display: flex;
     overflow: hidden;
-    padding-left: 70px;
-    padding-right: 35px;
+	padding: 0;
     position: relative;
     width: 100%;
+	flex-shrink: 0;
+	margin: 0.1% 0 0.1% 0;
 }
 
 .imcms-loop-item__info {
@@ -15,6 +17,32 @@
     text-transform: none;
     text-align: left;
     float: left;
+	padding: 0 0 0 1%;
+	font-weight: normal;
+}
+.imcms-loop-item__info--id {
+	width: 5%;
+	text-align: right;
+}
+
+.imcms-loop-item__info--image-container {
+	width: 10%;
+	text-align: center;
+}
+.imcms-loop-item__info--image {
+	width: 35%;
+	height: 100%;
+}
+
+.imcms-loop-item__info--content {
+	width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.imcms-loop-item__info--control {
+	width: 5%;
 }
 
 .imcms-loop-item__controls {

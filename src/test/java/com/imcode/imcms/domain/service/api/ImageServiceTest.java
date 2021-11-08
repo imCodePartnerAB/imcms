@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -201,6 +202,77 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(image, resultImages.get(0));
     }
+
+	@Test
+	public void getLoopImages_When_LoopIndexPresent_Expected_EqualResult() {
+		final Integer createdDocId = documentDataInitializer.createData().getId();
+		final int loopIndex = 1;
+
+		final LoopEntryRefJPA loopEntryRef1 = new LoopEntryRefJPA(loopIndex, 1);
+		final LoopEntryRefJPA loopEntryRef2 = new LoopEntryRefJPA(loopIndex, 2);
+
+		final ImageJPA image1 = imageDataInitializer.createData(1, createdDocId, VERSION_INDEX, loopEntryRef1);
+		final ImageJPA image2 = imageDataInitializer.createData(2, createdDocId, VERSION_INDEX, loopEntryRef2);
+
+		final ImageDTO imageDTO1= Optional.of(image1).map(imageJPAToImageDTO).get();
+		final ImageDTO imageDTO2= Optional.of(image2).map(imageJPAToImageDTO).get();
+
+		final List<ImageDTO> resultImages = imageService.getLoopImages(createdDocId, "en", loopIndex);
+
+		assertFalse(resultImages.isEmpty());
+		assertEquals(2, resultImages.size());
+		assertEquals(imageDTO1, resultImages.get(0));
+		assertEquals(imageDTO2, resultImages.get(1));
+	}
+
+	@Test
+	public void getLoopImages_When_ImagesNotInLoop_EmptyResult() {
+		final Integer createdDocId = documentDataInitializer.createData().getId();
+		final int loopIndex = 1;
+
+		imageDataInitializer.createData(1, createdDocId, VERSION_INDEX, null);
+		imageDataInitializer.createData(2, createdDocId, VERSION_INDEX, null);
+
+		final List<ImageDTO> resultImages = imageService.getLoopImages(createdDocId, "en", loopIndex);
+
+		assertTrue(resultImages.isEmpty());
+	}
+
+	@Test
+	public void getLoopImages_When_LoopIndexPresent_And_IncorrectLangCode_Expected_CorrectResult() {
+		final Integer createdDocId = documentDataInitializer.createData().getId();
+		final int loopIndex = 1;
+
+		final LanguageJPA languageJPA1 = languageRepository.findByCode("en");
+		final LanguageJPA languageJPA2 = languageRepository.findByCode("sv");
+
+		final Version version = versionDataInitializer.createData(VERSION_INDEX, createdDocId);
+
+		final LoopEntryRefJPA loopEntryRef1 = new LoopEntryRefJPA(loopIndex, 1);
+		final LoopEntryRefJPA loopEntryRef2 = new LoopEntryRefJPA(loopIndex, 2);
+
+		final ImageJPA image1FromLoop1 = imageDataInitializer.generateImage(1, languageJPA1, version, loopEntryRef1);
+		final ImageJPA image2FromLoop1 = imageDataInitializer.generateImage(2, languageJPA1, version, loopEntryRef2);
+
+		final ImageDTO imageDTO1FromLoop1 = Optional.of(image1FromLoop1).map(imageJPAToImageDTO).get();
+		final ImageDTO imageDTO2FromLoop1 = Optional.of(image2FromLoop1).map(imageJPAToImageDTO).get();
+
+		final ImageJPA image1FromLoop2 = imageDataInitializer.generateImage(1, languageJPA2, version, loopEntryRef1);
+		final ImageJPA image2FromLoop2 = imageDataInitializer.generateImage(2, languageJPA2, version, loopEntryRef2);
+
+		final ImageDTO imageDTO1FromLoop2 = Optional.of(image1FromLoop2).map(imageJPAToImageDTO).get();
+		final ImageDTO imageDTO2FromLoop2 = Optional.of(image2FromLoop2).map(imageJPAToImageDTO).get();
+
+		final List<ImageDTO> resultImages = imageService.getLoopImages(createdDocId, "sv", loopIndex);
+
+		assertFalse(resultImages.isEmpty());
+
+		assertNotEquals(imageDTO1FromLoop1, resultImages.get(0));
+		assertNotEquals(imageDTO2FromLoop1, resultImages.get(1));
+
+		assertEquals(imageDTO1FromLoop2, resultImages.get(0));
+		assertEquals(imageDTO2FromLoop2, resultImages.get(1));
+	}
 
     @Test
     public void saveImage_When_LoopEntryRefIsNull_Expect_EqualResult() {

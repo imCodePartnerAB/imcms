@@ -5,29 +5,34 @@
 define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
-        "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder", "imcms-jquery-element-reload"
+        "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder", "imcms-jquery-element-reload", "imcms-images-rest-api",
+	    'imcms-texts-rest-api', 'imcms-cookies'
     ],
-    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal, reloadElement) {
+    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal, reloadElement, imagesRestApi, textsRestApi, cookies) {
         let $title, $body, $listItems;
 
         texts = texts.editors.loop;
 
         const modifiers = {
             ID: ["id"],
+	        IMAGE_CONTAINER: ["image-container"],
+	        IMAGE: ["image"],
             CONTENT: ["content"],
             CONTROLS: ["control"]
         };
 
+	    const MISSING_ICON_IMAGE = "/imcms/images/icon_missing_image.png";
+
         let currentLoop;
 
-        const LOOP_ITEM_CLASS = "imcms-document-item";
+        const LOOP_ITEM_CLASS = "imcms-loop-item";
 
         const itemsBEM = new BEM({
-            block: "imcms-document-items-list",
+            block: "imcms-document-list__items imcms-loop-items-list",
             elements: {
-                "document-item": LOOP_ITEM_CLASS
+                "item": LOOP_ITEM_CLASS
             }
-        });
+        }, );
 
         const bodyBEM = new BEM({
             block: "imcms-loop-editor-body",
@@ -42,7 +47,7 @@ define("imcms-loop-editor-builder",
                 .map(listItem => {
                     const $listItem = $(listItem);
 
-                    const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                    const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[0]);
                     const entryIndex = +($listItem.find(loopItemIdClass).text());
 
                     const loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
@@ -74,12 +79,82 @@ define("imcms-loop-editor-builder",
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
 
-        function buildEditor() {
+		function onResetSorting() {
+			const defaultSortedListItems = $listItems.children()
+				.toArray()
+				.sort((listItem1, listItem2) => {
+					const $listItem1 = $(listItem1);
+					const $listItem2 = $(listItem2);
+
+					const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[0]);
+
+					const entryIndex1 = +($listItem1.find(loopItemIdClass).text());
+					const entryIndex2 = +($listItem2.find(loopItemIdClass).text());
+
+					return entryIndex1 - entryIndex2;
+				});
+			$listItems.append(defaultSortedListItems)
+		}
+
+	    function enableDragging() {
+		    const container = document.querySelector(".imcms-loop-list__items")
+		    $listItems.children().toArray().forEach(entry => {
+			    $(entry).off('dragstart dragend drag').on({
+				    'dragstart': function () {
+					    $(this).addClass('imcms-loop-items-list__item-dragging')
+				    },
+				    'dragend': function () {
+					    $(this).removeClass('imcms-loop-items-list__item-dragging')
+				    },
+				    'drag': enableAutoScrollOnDrag
+			    })
+		    })
+		    $(container).off('dragover').on('dragover', e => {
+			    e.preventDefault()
+			    const afterElement = getDragAfterElement(container, e.clientY)
+			    const draggable = document.querySelector('.imcms-loop-items-list__item-dragging')
+			    if (afterElement == null) {
+				    container.appendChild(draggable)
+			    } else {
+				    container.insertBefore(draggable, afterElement)
+			    }
+		    })
+	    }
+
+	    function getDragAfterElement(container, y) {
+		    const draggableElements = [...container.querySelectorAll('.imcms-loop-items-list__item:not(.imcms-loop-items-list__item-dragging)')]
+
+		    return draggableElements.reduce((closest, child) => {
+			    const box = child.getBoundingClientRect()
+			    const offset = y - box.top - box.height / 2
+			    if (offset < 0 && offset > closest.offset) {
+				    return {offset: offset, element: child}
+			    } else {
+				    return closest
+			    }
+		    }, {offset: Number.NEGATIVE_INFINITY}).element
+	    }
+
+	    function enableAutoScrollOnDrag(event) {
+		    if(event.originalEvent.clientY <= 150)
+			    autoScroll(-5);
+		    if(event.originalEvent.clientY >= ($listItems.height() - 30))
+			    autoScroll(5);
+	    }
+
+	    function autoScroll(step) {
+		    const scrollY = $listItems.scrollTop();
+		    $listItems.scrollTop(scrollY + step);
+	    }
+
+        function buildEditor(opts) {
+			addHeadData(opts);
+
             function getMaxLoopItemID() {
                 return $listItems.children()
                     .toArray()
                     .map(listItem => {
-                        const loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                        const loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[0]);
                         return +($(listItem).find("." + loopItemIdClass).text());
                     })
                     .sort((a, b) => (a - b))
@@ -89,15 +164,17 @@ define("imcms-loop-editor-builder",
             function onCreateNewClicked() {
                 const newLoopEntry = {
                     index: getMaxLoopItemID() + 1,
-                    content: "",
+	                image: MISSING_ICON_IMAGE,
+	                content: "",
                     enabled: true
                 };
 
                 $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
+				enableDragging()
             }
 
-            const $head = loopWindowBuilder.buildHead(texts.title);
-            $title = $head.find(".imcms-title");
+            const $head = loopWindowBuilder.buildHead(`${texts.title} - ${texts.page} ${opts.docId}, ${texts.loopTitle} ${opts.index} - ${texts.teaser} : `);
+            $head.find(".imcms-title").append($title);
 
             const $footer = WindowBuilder.buildFooter([
                 components.buttons.positiveButton({
@@ -107,7 +184,11 @@ define("imcms-loop-editor-builder",
                 components.buttons.saveButton({
                     text: texts.saveAndClose,
                     click: onSaveAndCloseClicked
-                })
+                }),
+	            components.buttons.negativeButton({
+		            text: texts.resetSorting,
+		            click: onResetSorting
+	            })
             ]);
 
             return new BEM({
@@ -123,26 +204,28 @@ define("imcms-loop-editor-builder",
         function buildTitles() {
             const $id = $("<div>", {
                 text: texts.id,
-                class: "imcms-grid-col-18",
             });
             $id.modifiers = modifiers.ID;
 
+	        const $imageContainer = $("<div>", {
+		        text: texts.image,
+	        });
+	        $imageContainer.modifiers = modifiers.IMAGE_CONTAINER;
+
             const $content = $("<div>", {
                 text: texts.content,
-                class: "imcms-flex--flex-1",
             });
             $content.modifiers = modifiers.CONTENT;
 
             const $isEnabled = $("<div>", {
                 text: texts.isEnabled,
-                class: "imcms-grid-col-1",
             });
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
-                block: "imcms-document-list-titles",
+                block: "imcms-loop-list-titles",
                 elements: {
-                    "title": [$id, $content, $isEnabled]
+                    "title": [$id, $imageContainer, $content, $isEnabled]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -156,31 +239,39 @@ define("imcms-loop-editor-builder",
         }
 
         function buildItem(loopEntry) {
-            const $no = components.texts.titleText("<div>", loopEntry.index, {
-                class: "imcms-grid-col-18",
+	        const $no = components.texts.titleText("<div>", loopEntry.index, {
             });
             $no.modifiers = modifiers.ID;
 
-            // todo: get content from the page!
-            const $content = components.texts.titleText("<div>", loopEntry.content, {
-                class: "imcms-flex--flex-1",
-            });
+			const $imageContainer= $("<div>").attr({
+		        src: loopEntry.image,
+			});
+	        $imageContainer.modifiers = modifiers.IMAGE_CONTAINER;
+			const $image = $("<img>").attr({
+		        src: loopEntry.image,
+		        class: "imcms-loop-item__info--image",
+				draggable: false
+			})
+	        $image.modifiers = modifiers.IMAGE;
+
+	        $imageContainer.append($image)
+
+            const $content = components.texts.titleText("<div>", loopEntry.content);
             $content.modifiers = modifiers.CONTENT;
 
             const $isEnabled = $("<div>").append(components.checkboxes.imcmsCheckbox("<div>", {
                 name: "isEnabled" + loopEntry.no,
                 checked: loopEntry.enabled ? "checked" : undefined,
             }));
-            $isEnabled.addClass("imcms-grid-col-1 imcms-flex--d-flex imcms-flex--justify-content-center");
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
                 block: LOOP_ITEM_CLASS,
                 elements: {
-                    "info": [$no, $content, $isEnabled],
+                    "info": [$no, $imageContainer, $content, $isEnabled],
                     "controls": buildControls()
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {draggable: true});
         }
 
         function buildItems(loop) {
@@ -191,7 +282,7 @@ define("imcms-loop-editor-builder",
 
         function buildLoopList(loop) {
             return new BEM({
-                block: "imcms-document-list",
+                block: "imcms-loop-list",
                 elements: {
                     "titles": buildTitles(),
                     "items": $listItems = buildItems(loop)
@@ -202,15 +293,62 @@ define("imcms-loop-editor-builder",
         function buildData(loop) {
             currentLoop = loop;
 
-            addHeadData(loop);
-
             const $list = bodyBEM.makeBlockElement("list", buildLoopList(loop));
             $body.append($list);
+
+	        enableDragging()
         }
 
-        function addHeadData(loop) {
-            $title.append(": " + loop.docId + "-" + loop.index);
-        }
+	    function displayImages(images) {
+		    $listItems.children()
+			    .toArray()
+			    .map(listItem => {
+				    const $listItem = $(listItem);
+
+				    const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[0]);
+				    const entryIndex = +($listItem.find(loopItemIdClass).text());
+
+					const loopItemImageClass=BEM.buildClassSelector(LOOP_ITEM_CLASS,"info", modifiers.IMAGE[0]);
+
+				    const entryImage = $listItem.find(loopItemImageClass)[0];
+
+				    let imageToShow = images.find(image => entryIndex === image.loopEntryRef.loopEntryIndex);
+
+				    entryImage.src = imageToShow ? imageToShow.generatedFilePath : MISSING_ICON_IMAGE;
+			    })
+	    }
+
+		function displayTextsContent(texts) {
+			$listItems.children()
+				.toArray()
+				.map(listItem => {
+					const $listItem = $(listItem);
+
+					const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[0]);
+					const entryIndex = +($listItem.find(loopItemIdClass).text());
+
+					const loopItemContentClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTENT[0]);
+					const entryContent = $listItem.find(loopItemContentClass)[0];
+
+					let textToDisplay = texts.find(text => text.loopEntryRef.loopEntryIndex === entryIndex);
+					entryContent.append(textToDisplay ? textToDisplay.text : "");
+				})
+		}
+
+	    function addHeadData(opts) {
+		    $title = $('<a>');
+
+		    let linkData = "/api/admin/loop?meta-id="
+			    + opts.docId
+			    + "&index=" + opts.index;
+
+		    $title.text(linkData).css({
+			    'text-transform': 'lowercase',
+			    'color': '#fff2f9'
+		    });
+
+		    $title.attr('href', linkData)
+	    }
 
         function clearData() {
             events.trigger("loop editor closed");
@@ -218,13 +356,22 @@ define("imcms-loop-editor-builder",
             $body.empty();
         }
 
-        function loadData(opts) {
-            loopREST.read(opts)
-                .done(buildData)
-                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+	    function loadData(opts) {
+		    const requestDTO = {
+			    docId: opts.docId,
+			    index: opts.index,
+			    langCode: cookies.getCookie("userLanguage"),
+		    }
+		    requestDTO["loopEntryRef.loopIndex"] = opts.index;
+
+		    loopREST.read(opts).done(loop => {
+			    buildData(loop);
+			    imagesRestApi.getLoopImages(requestDTO).done(displayImages).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+			    textsRestApi.getLoopTexts(requestDTO).done(displayTextsContent).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+		    }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
-        var loopWindowBuilder = new WindowBuilder({
+        const loopWindowBuilder = new WindowBuilder({
             factory: buildEditor,
             loadDataStrategy: loadData,
             clearDataStrategy: clearData,

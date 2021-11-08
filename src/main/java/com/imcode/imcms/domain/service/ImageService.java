@@ -16,6 +16,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
 
     ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
+	List<ImageDTO> getLoopImages(int docId, String langCode, int loopIndex);
+
     List<ImageJPA> getUsedImagesInWorkingAndLatestVersions(String imageURL);
 
     List<ImageJPA> getByDocId(Integer docId);

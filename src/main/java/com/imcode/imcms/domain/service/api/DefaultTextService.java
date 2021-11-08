@@ -2,22 +2,12 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.TextHistoryService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.enums.SaveMode;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.Imcms;
@@ -276,4 +266,14 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         return text;
     }
+
+	@Override
+	public List<Text> getLoopTexts(int docId, String langCode, int loopIndex) {
+		final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(langCode));
+
+		return repository.findByVersionAndLanguageAndLoopIndex(versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
+				.stream()
+				.map(TextDTO::new)
+				.collect(Collectors.toList());
+	}
 }

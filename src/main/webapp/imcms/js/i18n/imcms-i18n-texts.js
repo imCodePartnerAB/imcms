@@ -441,10 +441,15 @@ const texts = {
             },
             loop: {
                 title: "Redaktörslinga",
+	            teaser: "Teaser-menyn ",
+	            page: "sida ",
+	            loopTitle: "ögla ",
                 createNew: "Skapa ny",
                 saveAndClose: "Spara och stäng",
+	            resetSorting: "återställ sorteringen",
                 id: "ID",
                 content: "innehåll",
+	            image: "bild",
                 isEnabled: "är aktiverad",
                 error: {
                     createFailed: 'Misslyckades med att skapa loop. Försök igen',
@@ -1430,10 +1435,15 @@ const texts = {
             },
             loop: {
                 title: "Loop Editor",
+	            teaser:"Teaser menu ",
+	            page:"page ",
+	            loopTitle: "loop ",
                 createNew: "Create New",
                 saveAndClose: "Save and close",
+	            resetSorting: "Reset sorting",
                 id: "ID",
                 content: "text content",
+	            image: "image",
                 isEnabled: "is enabled",
                 error: {
                     createFailed: 'Failed to create loop. Try again',
