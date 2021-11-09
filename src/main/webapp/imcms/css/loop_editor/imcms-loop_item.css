@@ -21,33 +21,29 @@
 	font-weight: normal;
 }
 .imcms-loop-item__info--id {
-	width: 5%;
 	text-align: right;
 }
 
 .imcms-loop-item__info--image-container {
-	width: 10%;
 	text-align: center;
 }
 .imcms-loop-item__info--image {
-	width: 35%;
 	height: 100%;
 }
 
 .imcms-loop-item__info--content {
-	width: 80%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .imcms-loop-item__info--control {
-	width: 5%;
+
 }
 
 .imcms-loop-item__controls {
     display: none;
-    padding: 14px 0;
+	margin-top:  17px;
     position: absolute;
     top: 0;
     right: 27px;
@@ -70,4 +66,8 @@
 
 .imcms-loop-item__info.imcms-checkbox .imcms-checkbox__label:before {
     top: 15px;
+}
+
+.imcms-label.imcms-checkbox__label{
+	margin-bottom: 10px;
 }

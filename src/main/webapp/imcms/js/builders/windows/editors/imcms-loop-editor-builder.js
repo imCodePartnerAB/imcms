@@ -344,7 +344,10 @@ define("imcms-loop-editor-builder",
 
 		    $title.text(linkData).css({
 			    'text-transform': 'lowercase',
-			    'color': '#fff2f9'
+			    'color': '#fff2f9',
+			    'overflow':'hidden',
+			    'white-space':'nowrap',
+				'text-overflow':'ellipsis'
 		    });
 
 		    $title.attr('href', linkData)

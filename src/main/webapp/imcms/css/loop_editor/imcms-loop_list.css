@@ -31,22 +31,6 @@
 	justify-content: space-between;
 }
 
-.imcms-loop-list-titles__title--id {
-	width: 5%;
-}
-
-.imcms-loop-list-titles__title--image-container {
-	width: 10%;
-}
-
-.imcms-loop-list-titles__title--content {
-	width: 80%;
-}
-
-.imcms-loop-list-titles__title--control {
-	width: 5%;
-}
-
 .imcms-loop-list-titles__title {
 	background: rgba(56, 158, 207, 0.2);
 	color: #2e3f47;
