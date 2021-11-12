@@ -12,7 +12,7 @@ public class LocalizedMessageFormat extends LocalizedMessage {
     }
 
     public String toLocalizedString(String languageIso639_2) {
-        return new MessageFormat(super.toLocalizedString(languageIso639_2)).format(arguments);
+        return new MessageFormat(super.toLocalizedStringByIso639_2(languageIso639_2)).format(arguments);
 
     }
 }

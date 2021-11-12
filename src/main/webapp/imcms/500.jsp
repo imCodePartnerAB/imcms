@@ -1,9 +1,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <html>
+
+<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<fmt:setBundle basename="imcms" var="resource_property"/>
+
+<html>
     <head>
-        <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1"/></title>
+        <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1" bundle="${resource_property}"/></title>
         <link rel="stylesheet" type="text/css"
               href="${pageContext.servletContext.contextPath}/imcms/css/imcms_admin.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -19,7 +24,7 @@
     <body bgcolor="#FFFFFF">
     <ui:imcms_gui_outer_start/>
     <c:set var="heading">
-        <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/2"/>
+        <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/2" bundle="${resource_property}"/>
     </c:set>
     <ui:imcms_gui_head heading="${heading}"/>
     <table border="0" cellspacing="0" cellpadding="0">
@@ -28,7 +33,7 @@
                 <table border="0" cellpadding="0" cellspacing="0">
                     <form action="${pageContext.servletContext.contextPath}">
                         <tr>
-                            <td><input type="Submit" value="<fmt:message key="templates/Startpage"/>" class="imcmsFormBtn"></td>
+                            <td><input type="Submit" value="<fmt:message key="templates/Startpage" bundle="${resource_property}"/>" class="imcmsFormBtn"></td>
                         </tr>
                     </form>
                 </table>
@@ -38,7 +43,7 @@
                 <table border="0" cellpadding="0" cellspacing="0">
                     <form action="${pageContext.servletContext.contextPath}/servlet/BackDoc">
                         <tr>
-                            <td><input type="Submit" value="<fmt:message key="templates/Back"/>" class="imcmsFormBtn"></td>
+                            <td><input type="Submit" value="<fmt:message key="templates/Back" bundle="${resource_property}"/>" class="imcmsFormBtn"></td>
                         </tr>
                     </form>
                 </table>
@@ -49,26 +54,26 @@
     <table border="0" cellspacing="0" cellpadding="2">
         <tr>
             <td align="left" class="imcmsAdmText">
-                <p><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/3"/></p>
-                <p><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/4"/></p>
+                <p><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/3" bundle="${resource_property}"/></p>
+                <p><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/4" bundle="${resource_property}"/></p>
             </td>
         </tr>
     </table>
-    <h2><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/6"/>
+    <h2><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/6" bundle="${resource_property}"/>
         ${errorId}
     </h2>
     <button id="hide-show-btn" class="imcmsFormBtn">
-        <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/9"/>
+        <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/9" bundle="${resource_property}"/>
     </button>
     <div id="detail-info" style="display: none;">
         <br/>
-        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/10"/></strong>
+        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/10" bundle="${resource_property}"/></strong>
         <pre>${errorUrl}</pre>
-        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/11"/></strong>
+        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/11" bundle="${resource_property}"/></strong>
         <pre>${message}</pre>
-        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/12"/></strong>
+        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/12" bundle="${resource_property}"/></strong>
         <pre>${cause}</pre>
-        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/13"/></strong>
+        <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/13" bundle="${resource_property}"/></strong>
         <pre>${stackTrace}</pre>
     </div>
     <ui:imcms_gui_bottom/>

@@ -13,12 +13,13 @@
 <div class="imcms-modal-admin-body">
 	<div class="imcms-field">
 		<div class="imcms-title">
-			<%= confirmation.toLocalizedString(request) %>
+			<%= confirmation.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage")) %>
 		</div>
 	</div>
 	<div class="imcms-field">
 		<div class="imcms-title">
-			<a class="imcms-button imcms-button--neutral imcms-info-body__button" href="${contextPath}/login"><%= lnkLoginPage.toLocalizedString(request) %>
+			<a class="imcms-button imcms-button--neutral imcms-info-body__button" href="${contextPath}/login">
+				<%= lnkLoginPage.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage")) %>
 			</a>
 		</div>
 	</div>

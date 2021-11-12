@@ -1,6 +1,7 @@
 package com.imcode.imcms.util.l10n;
 
 import imcode.server.Imcms;
+import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.NullArgumentException;
@@ -32,16 +33,21 @@ public class LocalizedMessage implements Serializable {
     }
 
     public final String toLocalizedString(UserDomainObject user) {
-        return toLocalizedString(user.getLanguageIso639_2());
+        return toLocalizedStringByIso639_2(user.getLanguageIso639_2());
     }
 
-    public String toLocalizedString(String languageIso639_2) {
+    public String toLocalizedStringByIso639_2(String languageIso639_2) {
         LocalizedMessageProvider localProvider = provider;
         if (null == localProvider) {
             localProvider = Imcms.getServices().getLocalizedMessageProvider();
         }
         return StringUtils.defaultString(localProvider.getResourceBundle(languageIso639_2).getString(languageKey));
     }
+
+	public String toLocalizedStringByIso639_1(String languageIso639_1) {
+		String languageIso639_2 = LanguageMapper.convert639_1to639_2(languageIso639_1);
+		return toLocalizedStringByIso639_2(languageIso639_2);
+	}
 
     public String getLanguageKey() {
         return languageKey;

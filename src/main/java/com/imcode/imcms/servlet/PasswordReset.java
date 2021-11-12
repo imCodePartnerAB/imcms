@@ -48,11 +48,9 @@ public class PasswordReset extends HttpServlet {
 
         if (view == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else if (view.equals(password_reset_form_view)){
-	        UserDomainObject user = getUserByPasswordResetId(request);
-			request.setAttribute("userLanguage", user.getLanguage());
+        } else {
+	        request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
         }
-	    request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
     }
 
     private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {
@@ -92,7 +90,7 @@ public class PasswordReset extends HttpServlet {
             String identity = StringUtils.trimToEmpty(request.getParameter(REQUEST_USER_IDENTITY));
 
             if (identity.isEmpty()) {
-                setValidationErrors(request, validationErrorMissingUserId.toLocalizedString(request));
+	            request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, validationErrorMissingUserId);
                 view = identity_form_view;
             } else {
                 UserIdentity userAndEmail = createPasswordReset(identity);
@@ -117,7 +115,7 @@ public class PasswordReset extends HttpServlet {
                 LocalizedMessage errorMsg = UserEditorPage.validatePassword(user.getLoginName(), password, passwordCheck);
 
                 if (errorMsg != null) {
-                    setValidationErrors(request, errorMsg.toLocalizedString(user));
+	                request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errorMsg);
                     view = password_reset_form_view;
                 } else {
                     user.setPassword(password);
