@@ -265,22 +265,22 @@ define('imcms-document-editor-builder',
             });
 
             const $newDocButtonContainer = toolBEM.buildBlock('<div>', [{'button': buildNewDocButton()}]);
-            $newDocButtonContainer.modifiers = ['grid-col-2'];
+            $newDocButtonContainer.modifiers = ['grid-col-1'];
 
             const $searchContainer = toolBEM.buildBlock('<div>', [{'search': buildSearchDocField()}]);
-            $searchContainer.modifiers = ['grid-col-4'];
+            $searchContainer.modifiers = ['grid-col-3'];
 
             const $usersFilter = toolBEM.buildBlock('<div>', [{'select': buildUsersFilterSelect()}]);
-            $usersFilter.modifiers = ['grid-col-3'];
+            $usersFilter.modifiers = ['grid-col-4'];
 
             const $categoriesFilter = toolBEM.buildBlock('<div>', [{'select': buildCategoriesFilterSelect()}]);
-            $categoriesFilter.modifiers = ['grid-col-3'];
+            $categoriesFilter.modifiers = ['grid-col-4'];
 
             const $loadingAnimation = toolBEM.buildBlock('<div>', [{'load': buildLoadCopyAnimation()}]);
             $loadingAnimation.modifiers = ['grid-col-1'];
 
             const $multiRemoveDocs = toolBEM.buildBlock('<div>', [{'remove': buildSwitchesOffOnButtons()}]);
-            $multiRemoveDocs.modifiers = ['grid-col-19'];
+            $multiRemoveDocs.modifiers = ['grid-col-1'];
 
             return new BEM({
                 block: 'imcms-document-editor-head-tools',
@@ -705,11 +705,13 @@ define('imcms-document-editor-builder',
             if (opts.copyEnable) {
                 function onConfirm() {
                     const $animationBlock = $('.imcms-document-editor-head-tool__load');
-                    $animationBlock.css('display', 'inline-table');
+	                $animationBlock.css({
+		                'visibility': 'visible',
+					});
                     docCopyRestApi.copy(document.id)
                         .done(copiedDocument => {
                             addDocumentToList(copiedDocument);
-                            $animationBlock.css('display', 'none');
+                            $animationBlock.css('visibility', 'hidden');
                         })
                         .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
                 }

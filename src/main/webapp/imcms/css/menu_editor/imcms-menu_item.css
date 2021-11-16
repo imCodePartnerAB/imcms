@@ -1,6 +1,5 @@
 .imcms-menu-items .imcms-menu-item {
-    padding-left: 50px;
-    padding-right: 88px;
+	padding-right: 88px;
 }
 
 .imcms-document-item__sort-order input {
@@ -44,7 +43,7 @@
     height: 10px;
     position: absolute;
     top: calc(50% - 5px);
-    left: 35px;
+    left: 20px;
 }
 
 .imcms-document-item__btn--open {

@@ -43,7 +43,7 @@
 
 .imcms-loop-item__controls {
     display: none;
-	margin-top:  17px;
+	margin-top:  13px;
     position: absolute;
     top: 0;
     right: 27px;
@@ -69,5 +69,4 @@
 }
 
 .imcms-label.imcms-checkbox__label{
-	margin-bottom: 10px;
 }

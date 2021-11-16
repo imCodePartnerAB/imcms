@@ -47,3 +47,7 @@
 .imcms-form__field .imcms-field__item.imcms-field__item--short {
     width: 60px;
 }
+
+input#searchText::placeholder{
+	margin-right: 25px;
+}
