@@ -533,7 +533,8 @@ define('imcms-document-editor-builder',
         }
 
         function buildRemoveButton() {
-            $removeButton = components.buttons.positiveButton({
+            $removeButton = components.buttons.errorButton({
+	            class:'imcms-document-list-titles__title--remove',
                 text: texts.controls.removeButton,
                 click: removeEnabledMenuItems,
                 style: 'display:none;'

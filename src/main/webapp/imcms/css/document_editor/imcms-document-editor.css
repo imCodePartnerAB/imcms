@@ -257,11 +257,11 @@
 }
 
 .imcms-menu-editor__body .imcms-document-list__items {
-    height: -webkit-calc(87%);
-    height: -moz-calc(87%);
-    height: -ms-calc(87%);
-    height: -o-calc(87%);
-    height: calc(87%);
+    height: -webkit-calc(100% - 47px);
+    height: -moz-calc(100% - 47px);
+    height: -ms-calc(100% - 47px);
+    height: -o-calc(100% - 47px);
+    height: calc(100% - 47px);
 }
 
 .imcms-document-editor .imcms-document-list__items {

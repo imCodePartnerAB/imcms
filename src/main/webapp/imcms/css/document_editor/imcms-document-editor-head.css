@@ -34,6 +34,9 @@
 
 .imcms-document-editor-head-tool__remove{
 	margin-top: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: end;
 }
 
 .animation-copying__text {
@@ -57,9 +60,19 @@
     margin-bottom: 5px;
 }
 
+@media screen and (max-width: 1800px){
+	.imcms-document-editor-head-tool__remove{
+		align-items: start;
+		flex-direction: column;
+	}
+}
+
 @media screen and (max-width: 1500px){
 	.imcms-document-editor-head__tools {
 		margin-bottom: 0;
+	}
+	.imcms-document-editor-head-tools__tool {
+		margin-left: 2%;
 	}
 }
 @media screen and (max-width: 900px){

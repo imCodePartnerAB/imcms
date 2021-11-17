@@ -1182,7 +1182,7 @@ define("imcms-menu-editor-builder",
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
-                $removeButton = components.buttons.positiveButton({
+                $removeButton = components.buttons.errorButton({
 	                class:'imcms-menu-list-titles__title--remove',
                     text: texts.multiRemove,
                     click: removeEnabledMenuItems
