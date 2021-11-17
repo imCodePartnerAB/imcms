@@ -171,14 +171,15 @@ ${"-->"}
                         <input id="phone-type-selected" type="hidden" value="<%=PhoneTypes.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
                             <div class="imcms-drop-down-list__select-item">
-                                <span class="imcms-drop-down-list__select-item-value"><%=PhoneTypes.OTHER.getName()%></span>
+                                <span class="imcms-drop-down-list__select-item-value"><fmt:message key="templates/sv/AdminUserResp.htm/32/0" bundle="${resource_property}"/></span>
                                 <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
                                         type="button"></button>
                             </div>
                             <div class="imcms-drop-down-list__items">
                                 <c:forEach var="phoneType" items="<%=PhoneTypes.values()%>">
-                                    <div class="imcms-drop-down-list__item"
-                                         data-value="${phoneType.id}">${phoneType.name}</div>
+                                    <div class="imcms-drop-down-list__item" data-value="${phoneType.id}">
+		                                    <fmt:message key="templates/sv/AdminUserResp.htm/32/${phoneType.id}" bundle="${resource_property}"/>
+                                    </div>
                                 </c:forEach>
                             </div>
                         </div>

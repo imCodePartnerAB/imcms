@@ -199,11 +199,13 @@ ${"-->"}
                                     <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
                                             type="button"></button>
                                 </div>
-                                <div class="imcms-drop-down-list__items"><c:forEach var="phoneType"
-                                                                                    items="<%=PhoneTypes.values()%>">
-                                    <div class="imcms-drop-down-list__item"
-                                         data-value="${phoneType.id}">${phoneType.name}</div>
-                                </c:forEach></div>
+	                            <div class="imcms-drop-down-list__items">
+		                            <c:forEach var="phoneType" items="<%=PhoneTypes.values()%>">
+			                            <div class="imcms-drop-down-list__item" data-value="${phoneType.id}">
+				                            <fmt:message key="templates/sv/AdminUserResp.htm/32/${phoneType.id}" bundle="${resource_property}"/>
+			                            </div>
+		                            </c:forEach>
+	                            </div>
                             </div>
                         </div>
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
