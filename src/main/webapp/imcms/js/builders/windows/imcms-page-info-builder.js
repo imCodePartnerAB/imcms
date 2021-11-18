@@ -15,7 +15,7 @@ define("imcms-page-info-builder",
 
         const TAB_INDEX_ATTRIBUTE = 'data-window-id';
 
-        let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn;
+        let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
         let $title = $('<a>');
 
         function buildPageInfoHead() {
@@ -44,6 +44,7 @@ define("imcms-page-info-builder",
             documentDTO.modified = {id: ""};
 			const alias = documentDTO.alias;
 
+	        $loadingAnimation.show();
 	        documentsRestApi.create(documentDTO)
                 .done((savedDoc) => {
 
@@ -60,17 +61,18 @@ define("imcms-page-info-builder",
 	                    documentDTO.id = savedDoc.id;
                     }
 
-	                if (onDocumentSavedCallback) {
-		                onDocumentSavedCallback(savedDoc);
-	                }
-
 	                if (alias !== savedDoc.alias && alias !== "") {
 		                documentDTO = savedDoc;
+		                $loadingAnimation.hide();
 		                modal.buildErrorWindow(texts.error.duplicateAlias)
 	                } else {
+		                $loadingAnimation.hide();
 		                pageInfoWindowBuilder.closeWindow();
+		                if (onDocumentSavedCallback) {
+			                onDocumentSavedCallback(savedDoc);
+		                }
 		                onDocumentSaved(savedDoc, true);
-	                }
+					}
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));
         }
@@ -143,7 +145,9 @@ define("imcms-page-info-builder",
                 style: "display: none;"
             });
 
-            const buttons = [$cancelBtn, $saveBtn, $nextBtn];
+			$loadingAnimation =$('<div>').addClass('pageInfo loading-animation').css("display", "none");
+
+	        const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation];
 
             if (imcms.isAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);
