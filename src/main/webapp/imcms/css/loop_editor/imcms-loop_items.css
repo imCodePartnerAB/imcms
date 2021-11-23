@@ -20,6 +20,7 @@
 }
 .imcms-loop-items-list__item{
 	display: flex;
+	min-height: 45px;
 }
 .imcms-loop-items-list__item-dragging{
 	opacity: .3;

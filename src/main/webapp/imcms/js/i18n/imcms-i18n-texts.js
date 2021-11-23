@@ -901,17 +901,17 @@ const texts = {
                 warnCancelMessage: 'Vill du verkligen avbryta?',
                 cancel: "Avbryt",
                 titleTextName: 'Namn',
-                titleTextDocName: 'Dokumentnamn',
+                titleTextDocName: 'Dokument id/alias',
                 createNewProfile: {
                     titleTextName: 'Namn',
-                    titleTextDocName: 'Dokumentnamn',
+                    titleTextDocName: 'Dokument id/alias',
                     textFieldName: 'Textnamn',
-                    textFieldDocName: 'Text doc namn',
+                    textFieldDocName: 'Text doc id/alias',
                     buttonSave: 'Save'
                 },
                 editProfile: {
                     name: "Namn",
-                    docName: 'Dokumentnamn',
+                    docName: 'Dokument id/alias',
                     buttonEdit: 'Redigera profil',
                     buttonDelete: 'Radera profil'
                 },
@@ -953,7 +953,10 @@ const texts = {
                         descriptionByEmail: "Webmaster E-postbeskrivning",
                         inputName: "Inmatning av webbnamn",
                         inputEmail: "Webmaster e-postinmatning"
-                    }
+                    },
+	                error: {
+		                incorrectEmail: "Felaktig e-post"
+	                }
                 },
                 changeButton: "Spara",
                 error: {
@@ -1895,17 +1898,17 @@ const texts = {
                 warnCancelMessage: 'Do you want to really cancel?',
                 cancel: 'Cancel',
                 titleTextName: 'Name',
-                titleTextDocName: 'Document name',
+                titleTextDocName: 'Document id/alias',
                 createNewProfile: {
                     titleTextName: 'Name',
-                    titleTextDocName: 'Document name',
+                    titleTextDocName: 'Document id/alias',
                     textFieldName: 'Input name',
-                    textFieldDocName: 'Input document name',
+                    textFieldDocName: 'Input document id/alias',
                     buttonSave: 'Save'
                 },
                 editProfile: {
                     name: 'Name',
-                    docName: 'Document Name',
+                    docName: 'Document id/alias',
                     buttonEdit: 'Edit profile',
                     buttonDelete: 'Delete profile'
                 },
@@ -1947,7 +1950,10 @@ const texts = {
                         descriptionByEmail: "Web master Email description",
                         inputName: "Web master name input",
                         inputEmail: "Web master email input"
-                    }
+                    },
+	                error: {
+		                incorrectEmail: "Incorrect email"
+	                }
                 },
                 changeButton: "Change",
                 error: {

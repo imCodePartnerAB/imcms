@@ -71,6 +71,7 @@ define("imcms-page-info-builder",
 		                if (onDocumentSavedCallback) {
 			                onDocumentSavedCallback(savedDoc);
 		                }
+						if (onDocumentSaved)
 		                onDocumentSaved(savedDoc, true);
 					}
                 })
