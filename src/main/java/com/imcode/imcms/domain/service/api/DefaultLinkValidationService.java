@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -95,6 +96,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
         boolean isPageFound;
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+			httpConnection.setRequestMethod(HttpMethod.HEAD);
+			httpConnection.setInstanceFollowRedirects(false);
+
             try (AutoCloseable autoCloseable = httpConnection::disconnect) {
                 isPageFound = HttpURLConnection.HTTP_OK == httpConnection.getResponseCode();
             }
