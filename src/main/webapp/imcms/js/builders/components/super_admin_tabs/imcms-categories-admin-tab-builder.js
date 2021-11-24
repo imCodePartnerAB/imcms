@@ -195,15 +195,24 @@ define(
                 if (!confirmed) return;
 
                 typesRestApi.remove(currentCategoryType)
-                    .done(() => {
-                        categoryTypeSelected.deleteOption(currentCategoryType.id);
-                        currentCategoryType = null;
-                        categoryTypeSelected.selectFirst();
-                        hideCategoriesContainer();
-                        $categoryTypeCreateContainer.slideUp();
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeFailed));
+                    .done(() => afterDeleteCategoryType(currentCategoryType.id))
+                    .fail(() => modal.buildConfirmWindow(texts.error.categoryType.removeFailed,
+                        () => deleteForceCategoryType(currentCategoryType)));
             });
+        }
+
+        function deleteForceCategoryType(currentCategoryType){
+            typesRestApi.removeForce(currentCategoryType)
+                .done(() => afterDeleteCategoryType(currentCategoryType.id))
+                .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeForceFailed));
+        }
+
+        function afterDeleteCategoryType(currentCategoryTypeId){
+            categoryTypeSelected.deleteOption(currentCategoryTypeId);
+            currentCategoryType = null;
+            categoryTypeSelected.selectFirst();
+            hideCategoriesContainer();
+            $categoryTypeCreateContainer.slideUp();
         }
 
         function onSaveCategoryType() {
@@ -419,6 +428,7 @@ define(
                         categorySelected.find(`[data-value='${savedCategory.id}']`).remove();
 
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, onCategorySelected());
+                        categorySelected.selectLast();
 
                     })
                     .fail(() => {
@@ -436,7 +446,8 @@ define(
 
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, onCategorySelected());
                         categorySelected.selectLast();
-                        categoryCreateContainer.slideUp();
+
+                        categorySaveButtons.find('.imcms-button--error').slideDown();
 
                     })
                     .fail(() => {
@@ -476,15 +487,23 @@ define(
                     if (!confirmed) return;
 
                     categoriesRestApi.remove(currentCategory)
-                        .done(() => {
-
-                            categorySelected.deleteOption(currentCategory.id);
-                            currentCategory = null;
-                            categorySelected.selectFirst();
-                            categoryCreateContainer.slideUp();
-                        })
-                        .fail(() => modal.buildErrorWindow(texts.error.category.removeFailed));
+                        .done(() => afterRemoveCategory(currentCategory.id))
+                        .fail(() => modal.buildConfirmWindow(texts.error.category.removeFailed,
+                            () => removeForceCategory(currentCategory)));
                 });
+            }
+
+            function removeForceCategory(currentCategory){
+                categoriesRestApi.removeForce(currentCategory)
+                    .done(() => afterRemoveCategory(currentCategory.id))
+                    .fail(() => modal.buildErrorWindow(texts.error.category.removeForceFailed));
+            }
+
+            function afterRemoveCategory(currentCategoryId){
+                categorySelected.deleteOption(currentCategoryId);
+                currentCategory = null;
+                categorySelected.selectFirst();
+                categoryCreateContainer.slideUp();
             }
 
             function buildEditCategoryButtonContainer() {

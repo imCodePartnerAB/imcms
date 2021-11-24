@@ -5,6 +5,8 @@ define("imcms-categories-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.remove = category => rest.ajax.call({url: `${url}/${category.id}`, type: 'DELETE', json: true});
 
+    api.removeForce = category => rest.ajax.call({url: `${url}/force/${category.id}`, type: 'DELETE', json: true});
+
     api.getById = categoryId => rest.ajax.call({url: `${url}/${categoryId}`, type: 'GET', json: true});
 
     api.getCategoriesByCategoryTypeId = categoryTypeId => rest.ajax.call({
