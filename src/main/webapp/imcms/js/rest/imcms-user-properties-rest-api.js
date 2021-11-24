@@ -17,6 +17,8 @@ define(
             json: false
         });
 
+        api.updateAll = properties => rest.ajax.call({url: `${url}/update`, type: 'POST', json: true}, properties);
+
         return api;
     }
 );

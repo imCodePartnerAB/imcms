@@ -75,18 +75,19 @@ function onSubmit(e) {
 }
 
 let properties = {};
-let lastIndexExistProp = 0;
+let createProperties = {};
+let editProperties = {};
+let removeProperties = {};
+
+const $horizontalLine = $('<hr/>');
 let $propertiesContainer = $('<div>', {
     class: 'user-properties'
 });
 
 
-function addRow(values) {
-    const key = Symbol();
+function addRow(key, values) {
     properties[key] = {values};
     const $row = buildRow(key);
-    const propValues = properties[key].values;
-    addWidthToRow(propValues, $row);
     $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row));
 }
 
@@ -94,11 +95,11 @@ function buildInputs(values) {
     const key = values[0];
     const value = values[1];
     const $inputs = [components.texts.textBox('<div>', {
-        name: 'userProperties',
+        name: 'userKeyProperties',
         value: key
     }),
         components.texts.textBox('<div>', {
-            name: 'userProperties',
+            name: 'userValueProperties',
             value: value
         })
     ];
@@ -109,16 +110,14 @@ function buildInputs(values) {
 }
 
 function removeRow(key) {
-    const propertyId = properties[key].values[2].id;
-
     modal.buildModalWindow(texts.userProperties.deleteConfirm, onConfirm => {
         if (onConfirm) {
-            delete properties[key];
-            lastIndexExistProp--;
-            userPropertiesRestAPI.remove(propertyId).done(() => {
-            }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
-        }
+            if(!!properties[key].values[2]) removeProperties[key] = properties[key];
 
+            delete properties[key];
+            delete editProperties[key];
+            delete createProperties[key];
+        }
         renderRows();
     });
 }
@@ -129,20 +128,37 @@ function activeEditPropertiesInputs(key, $saveUpdateButton, $editBtn) {
     properties[key].$inputs.map(input => input.$input.removeAttr('disabled'));
 }
 
-function updateRowProperties(key, $saveUpdateBtn, $editBtn) {
-    updateValuesOnProperties();
-    const toUpdateProperty = mapToPropertyDTO(properties[key].values);
+function updateRowProperties(key, $propertyRow) {
+    const keyProperty = $propertyRow.find("input[name='userKeyProperties']").val();
+    const valueProperty = $propertyRow.find("input[name='userValueProperties']").val();
 
-    userPropertiesRestAPI.replace(toUpdateProperty).done(updatedProp => {
-        $saveUpdateBtn.hide();
-        $editBtn.show();
+    if(keyProperty.replace(/\s/g,"") === "" || valueProperty.replace(/\s/g,"") === ""){
+        alert(texts.userProperties.emptyValueError);
+        return;
+    }
+
+    let isDuplicateKey = Object.getOwnPropertySymbols(properties)
+        .filter((propertyKey) => propertyKey !== key)
+        .some((key) => properties[key].values[0] === keyProperty);
+
+    if (!isDuplicateKey) {
+        const previousPropertyValues = properties[key].values;
+        if(previousPropertyValues[0] !== keyProperty || previousPropertyValues[1] !== valueProperty){
+            properties[key].values = [keyProperty, valueProperty, previousPropertyValues[2]];
+
+            if(!!previousPropertyValues[2]){
+                editProperties[key] = properties[key];
+            }else{
+                createProperties[key] = properties[key];
+            }
+        }
+
+        $propertyRow.find(".imcms-field__save-btn").hide();
+        $propertyRow.find(".imcms-field__update-btn").show();
         renderRows();
-
-    }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
-}
-
-function existPropertyId(prop) {
-    return !!prop[2];
+    } else {
+        alert(texts.userProperties.wrongKeyError);
+    }
 }
 
 function buildRow(key) {
@@ -150,23 +166,13 @@ function buildRow(key) {
     const $inputs = buildInputs(propValues);
     properties[key].$inputs = $inputs;
 
-    const $removeButton = $(components.controls.remove(() => removeRow(key))).addClass('imcms-flex--w-10');
-    const $saveUpdateButton = components.buttons.positiveButton({
-        text: texts.userProperties.save,
-        click: function () {
-            updateRowProperties(key, $(this), $('.imcms-field__update-btn')).addClass('imcms-flex--w-10')
-        }
-    });
-
-    const $editButton = $(components.controls.edit(function () {
+    const $removeButton = $(components.controls.remove(() => removeRow(key)));
+    const $saveUpdateButton = $(components.controls.check(function () {
+        updateRowProperties(key, $(this).parent())
+    }));
+    const $editButton = $(components.controls.edit(function (){
         activeEditPropertiesInputs(key, $saveUpdateButton, $(this))
-    })).addClass('imcms-flex--w-10');
-
-
-    if (!existPropertyId(propValues)) {
-        $removeButton.css('display', 'none');
-        $editButton.css('display', 'none');
-    }
+    }));
 
     return new BEM({
         block: 'imcms-field',
@@ -184,18 +190,8 @@ function buildRow(key) {
 function renderRows() {
     $propertiesContainer.children().remove();
     Object.getOwnPropertySymbols(properties)
-        .map((key) => {
-            const $row = buildRow(key);
-            addWidthToRow(properties[key].values, $row);
-            return $row;
-        })
+        .map((key) => buildRow(key))
         .forEach(($row) => $('.imcms-create-properties-modal-window__modal-body').append($propertiesContainer.append($row)));
-}
-
-function addWidthToRow(propValues, $row) {
-    if (!existPropertyId(propValues)) {
-        $row.css('width', '84%');
-    }
 }
 
 function buildRowForNewUserProperty() {
@@ -213,14 +209,23 @@ function buildRowForNewUserProperty() {
         click: () => {
             const keysProperties = getAllExistPropertyKeys();
             const inputKeyVal = $keyInput.getValue();
+            const inputValueVal = $valueInput.getValue();
 
-            if (keysProperties.includes(inputKeyVal)) {
-                alert(texts.userProperties.wrongKeyError);
-                cleanInputs();
+            if(inputKeyVal.replace(/\s/g,"") === "" || inputValueVal.replace(/\s/g,"") === ""){
+                alert(texts.userProperties.emptyValueError);
                 return;
             }
 
-            addRow([inputKeyVal, $valueInput.getValue(), null]);
+            if (keysProperties.includes(inputKeyVal)) {
+                alert(texts.userProperties.wrongKeyError);
+                return;
+            }
+
+            const key = Symbol();
+            const values = [inputKeyVal, inputValueVal, null];
+            addRow(key, values);
+            createProperties[key] = {values};
+
             cleanInputs();
         },
     });
@@ -261,14 +266,13 @@ function onViewUserProperties() {
     properties = {};
 
     userPropertiesRestAPI.getPropertiesByUserId(editedUserId).done(props => {
-        lastIndexExistProp = props.length;
         props.forEach(prop => {
-            const key = prop.keyName;
-            const value = prop.value;
+            const key = Symbol();
+            const keyProp = prop.keyName;
+            const valueProp = prop.value;
             const id = {id: prop.id};
-            addRow([key, value, id]);
+            addRow(key, [keyProp, valueProp, id]);
         });
-
     }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
 
     function buildPropertiesContainer() {
@@ -276,31 +280,47 @@ function onViewUserProperties() {
             block: 'user-properties-content',
             elements: {
                 'items': buildRowForNewUserProperty(),
+                'line': $horizontalLine,
                 'properties': $propertiesContainer
             },
         }).buildBlockStructure('<div>');
     }
 
+    setBodyScrollingRule("hidden");
     return modal.buildCreatePropertiesKeyValueModalWindow(buildPropertiesContainer(), confirmed => {
         if (confirmed) {
-            const userProperties = mapPropertiesToUserProperties();
-            const propertiesToSave = userProperties.slice(lastIndexExistProp);
+            const removeUserProperties = mapPropertiesToUserProperties(removeProperties);
+            const editUserProperties = mapPropertiesToUserProperties(editProperties);
+            const createUserProperties = mapPropertiesToUserProperties(createProperties);
 
-            if (propertiesToSave.length > 0) {
-                userPropertiesRestAPI.create(propertiesToSave).done(() => {
+            let aaa = {
+                deletedProperties: removeUserProperties,
+                editedProperties: editUserProperties,
+                createdProperties: createUserProperties
+            }
+
+            if(removeProperties.length > 0 || editUserProperties.length > 0 || createUserProperties.length > 0) {
+                userPropertiesRestAPI.updateAll(aaa).done(() => {
                     alert(texts.userProperties.savedSuccess);
                 }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
             }
         }
+
+        setBodyScrollingRule("auto");
     });
 
-    function mapPropertiesToUserProperties() {
-        return Object.getOwnPropertySymbols(properties)
-            .map((key) => {
-                const propKey = properties[key].values[0];
-                const propValue = properties[key].values[1];
+    function setBodyScrollingRule(overflowValue) {
+        $("body").css("overflow", overflowValue);
+    }
 
+    function mapPropertiesToUserProperties(propertiesArray) {
+        return Object.getOwnPropertySymbols(propertiesArray)
+            .map((key) => {
+                const propKey = propertiesArray[key].values[0];
+                const propValue = propertiesArray[key].values[1];
+                const id = !!propertiesArray[key].values[2] ? propertiesArray[key].values[2].id : null;
                 return {
+                    id: id,
                     userId: editedUserId,
                     keyName: propKey,
                     value: propValue
