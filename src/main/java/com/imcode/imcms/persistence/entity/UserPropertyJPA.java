@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_properties")
+@Table(name = "user_properties", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "key_name" }))
 @EqualsAndHashCode(callSuper = true)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserPropertyJPA extends UserProperty {

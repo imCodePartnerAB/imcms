@@ -168,6 +168,7 @@
         <url-pattern>/api/properties/*</url-pattern>
         <url-pattern>/api/users/admins/*</url-pattern>
         <url-pattern>/api/users/*</url-pattern>
+        <url-pattern>/api/user/properties/*</url-pattern>
         <url-pattern>/api/roles/*</url-pattern>
         <url-pattern>/api/ip-rules/*</url-pattern>
         <url-pattern>/api/profiles/*</url-pattern>

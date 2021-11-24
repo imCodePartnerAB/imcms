@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -41,13 +42,21 @@ public class UserPropertyController {
     }
 
     @PostMapping
-    public void create(@RequestBody List<UserPropertyDTO> userProperties) {
-        userPropertyService.create(userProperties);
+    public void create(@RequestBody UserPropertyDTO userProperty) {
+        userPropertyService.create(userProperty);
     }
 
     @PutMapping
     public UserProperty update(@RequestBody UserPropertyDTO userProperty) {
         return userPropertyService.update(userProperty);
+    }
+
+    @PostMapping("/update")
+    public void update(@RequestBody HashMap<String, List<UserPropertyDTO>> data) {
+        List<UserPropertyDTO> deletedProperties = data.get("deletedProperties");
+        List<UserPropertyDTO> editedProperties = data.get("editedProperties");
+        List<UserPropertyDTO> createdProperties = data.get("createdProperties");
+        userPropertyService.update(deletedProperties, editedProperties, createdProperties);
     }
 
     @DeleteMapping("/{id}")

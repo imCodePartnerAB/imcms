@@ -13,9 +13,11 @@ public interface UserPropertyService {
 
     UserProperty getByUserIdAndKeyName(Integer userId, String keyName);
 
-    void create(List<UserPropertyDTO> userProperties);
+    void create(UserPropertyDTO userProperty);
 
     UserProperty update(UserProperty userProperty);
+
+    void update(List<UserPropertyDTO> deletedProperties, List<UserPropertyDTO> editedProperties, List<UserPropertyDTO> createdProperties);
 
     void deleteById(Integer id);
 
