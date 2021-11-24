@@ -1,4 +1,5 @@
 @import url("imcms-info-page.css");
+@import url("imcms-user-properties.css");
 
 * {
     font-family: 'Source Sans Pro', sans-serif;
@@ -19,14 +20,21 @@
     }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1050px) {
     .imcms-info-page__edit-user {
         left: 10%;
         width: 80%;
     }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 945px) {
+    .imcms-info-page__edit-user {
+        left: 5%;
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 845px) {
     .imcms-info-page__edit-user {
         left: 1%;
         width: 98%;
@@ -49,7 +57,7 @@
 }
 
 .imcms-text-box .imcms-text-box__input,
-.imcms-select .imcms-select__drop-down-list {
+#languages-select-container .imcms-select .imcms-select__drop-down-list{
     display: inline-block;
     width: 79%;
     float: right;
@@ -61,12 +69,32 @@
 
 .imcms-field--phone .imcms-select--phone-type {
     width: 15%;
+    min-width: 100px;
     padding-left: 5px;
 }
 
 .imcms-field--phone .imcms-input--phone {
     width: 47%;
     float: none;
+    margin-left: 1%;
+}
+
+@media screen and (max-width: 1175px) {
+    .imcms-field--phone .imcms-input--phone {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 775px) {
+    .imcms-field--phone .imcms-input--phone {
+        width: 40%;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .imcms-field--phone .imcms-input--phone {
+        width: 33%;
+    }
 }
 
 .imcms-field--phone .imcms-button {

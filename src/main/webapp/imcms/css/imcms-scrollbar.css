@@ -18,6 +18,7 @@
     background-color: transparent;
 }
 
+.user-properties-content__properties::-webkit-scrollbar,
 .imcms-left-side::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
@@ -31,6 +32,7 @@
 .second-sub-files::-webkit-scrollbar-track,
 .templates-data::-webkit-scrollbar-track,
 .documents-data::-webkit-scrollbar-track,
+.user-properties-content__properties::-webkit-scrollbar-track,
 .imcms-modal-body__optional-box::-webkit-scrollbar-track,
 .imcms-modal-body__view-box::-webkit-scrollbar-track {
     background-color: transparent;
@@ -40,6 +42,7 @@
 .second-sub-files::-webkit-scrollbar,
 .templates-data::-webkit-scrollbar,
 .documents-data::-webkit-scrollbar,
+.user-properties-content__properties::-webkit-scrollbar,
 .imcms-modal-body__optional-box::-webkit-scrollbar,
 .imcms-modal-body__view-box::-webkit-scrollbar {
     background-color: transparent;
@@ -51,6 +54,7 @@
 .second-sub-files::-webkit-scrollbar-thumb,
 .templates-data::-webkit-scrollbar-thumb,
 .documents-data::-webkit-scrollbar-thumb,
+.user-properties-content__properties::-webkit-scrollbar-thumb,
 .imcms-modal-body__optional-box::-webkit-scrollbar-thumb,
 .imcms-modal-body__view-box::-webkit-scrollbar-thumb {
     background-color: #abacad;

@@ -45,6 +45,10 @@
     background-image: url("/imcms/images/controls/icon_folder_controll_check.svg");
 }
 
+.user-properties .imcms-control--check{
+    background-image: url("/imcms/images/controls/icon_folder_controll_reverse_check.png");
+}
+
 .imcms-control--check:hover {
     background-image: url("/imcms/images/controls/icon_folder_controll_check_hover.svg");
 }
@@ -116,7 +120,7 @@
     background-image: url("/imcms/images/controls/icon_folder_controll_edit.png");
 }
 
-.imcms-panel-named__control-close .imcms-control--remove,
+.imcms-panel-named__control-close,
 .imcms-folder__controls .imcms-control--remove {
     background-image: url("/imcms/images/controls/icon_folder_controll_remove.png");
 }
