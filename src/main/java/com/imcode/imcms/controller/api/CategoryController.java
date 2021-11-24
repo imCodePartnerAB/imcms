@@ -57,4 +57,9 @@ public class CategoryController {
     public void deleteById(@PathVariable Integer id) {
         categoryService.delete(id);
     }
+
+    @DeleteMapping("/force/{id}")
+    public void deleteForceById(@PathVariable Integer id) {
+        categoryService.deleteForce(id);
+    }
 }

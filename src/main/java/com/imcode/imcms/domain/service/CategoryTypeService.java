@@ -17,4 +17,5 @@ public interface CategoryTypeService {
 
     void delete(int id);
 
+    void deleteForce(int id);
 }

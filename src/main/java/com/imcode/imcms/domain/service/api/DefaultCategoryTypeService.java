@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
@@ -24,17 +25,20 @@ import java.util.stream.Collectors;
 class DefaultCategoryTypeService implements CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
-
     private final CategoryRepository categoryRepository;
+
+    private final DocumentsCache documentsCache;
 
     private final ModelMapper modelMapper;
 
     @Autowired
     DefaultCategoryTypeService(CategoryTypeRepository categoryTypeRepository,
                                CategoryRepository categoryRepository,
+                               DocumentsCache documentsCache,
                                ModelMapper modelMapper) {
         this.categoryTypeRepository = categoryTypeRepository;
         this.categoryRepository = categoryRepository;
+        this.documentsCache = documentsCache;
         this.modelMapper = modelMapper;
     }
 
@@ -80,13 +84,20 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public void delete(int id) {
-        List<CategoryJPA> categories = categoryRepository.findAll();
-        for (CategoryJPA category : categories) {
-            if (category.getType().equals(categoryTypeRepository.findOne(id))) {
-                throw new CategoryTypeHasCategoryException("CategoryType has categories!");
-            }
+        if (!categoryRepository.findByType(categoryTypeRepository.findOne(id)).isEmpty()) {
+            throw new CategoryTypeHasCategoryException("CategoryType has categories!");
         }
         categoryTypeRepository.delete(id);
+    }
+
+    @Override
+    public void deleteForce(int id){
+        for(CategoryJPA categoryJPA: categoryRepository.findByType(categoryTypeRepository.findOne(id))){
+            categoryRepository.deleteDocumentCategory(categoryJPA.getId());
+            categoryRepository.delete(categoryJPA.getId());
+        }
+        categoryTypeRepository.delete(id);
+        documentsCache.invalidateCache();   //categories can control what is displayed on the docs, so we must invalidate cache
     }
 
 }

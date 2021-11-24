@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.DataUseCategoryException;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
@@ -24,13 +25,16 @@ class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    private final DocumentsCache documentsCache;
+
     private final ModelMapper modelMapper;
+
     private Logger logger = Logger.getLogger(DefaultCategoryService.class);
 
     @Autowired
-    DefaultCategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
-
+    DefaultCategoryService(CategoryRepository categoryRepository, DocumentsCache documentsCache, ModelMapper modelMapper) {
         this.categoryRepository = categoryRepository;
+        this.documentsCache = documentsCache;
         this.modelMapper = modelMapper;
     }
 
@@ -72,6 +76,13 @@ class DefaultCategoryService implements CategoryService {
         } else {
             throw new DataUseCategoryException("Category has documents!");
         }
+    }
+
+    @Override
+    public void deleteForce(int id){
+        categoryRepository.deleteDocumentCategory(id);
+        categoryRepository.delete(id);
+        documentsCache.invalidateCache();   //categories can control what is displayed on the docs, so we must invalidate cache
     }
 
     @Override
