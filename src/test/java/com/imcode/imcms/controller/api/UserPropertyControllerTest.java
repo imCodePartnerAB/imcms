@@ -11,7 +11,6 @@ import com.imcode.imcms.model.UserProperty;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,19 +83,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getAll_When_UserNotSuperAdmin_Expected_CorrectException() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        setCommonUser();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
-    }
-
-
-    @Test
     public void getById_When_UserPropertyExist_Expected_OkAndCorrectResult() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
         userPropertyDataInitializer.createData(userId, keyName, value);
@@ -114,17 +101,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + userId);
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userPropertyList));
-    }
-
-    @Test
-    public void getById_When_UserNotSuperAdmin_Expected_CorrectException() throws Exception {
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        setCommonUser();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + userId);
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
     }
 
     @Test
@@ -147,22 +123,11 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getByIdAndKeyName_When_UserNotSuperAdmin_Expected_CorrectException() throws Exception {
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        setCommonUser();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/name").param("id", userId+"").param("keyName", keyName);
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
-    }
-
-    @Test
     public void createEntity_When_UserPropertyCorrect_Expected_OkAndCreatedCorrectData() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
 
         final UserPropertyDTO userProperty = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, keyName, value));
-        performPostWithContentExpectOk(Collections.singletonList(userProperty));
+        performPostWithContentExpectOk(userProperty);
 
         final List<UserProperty> userPropertyList = userPropertyService.getAll();
         assertEquals(1, userPropertyList.size());
@@ -178,16 +143,7 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         assertTrue(userPropertyService.getAll().isEmpty());
 
         final UserPropertyDTO userPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, "", ""));
-        performPostWithContentExpectException(Collections.singletonList(userPropertyDTO), DataIsNotValidException.class);
-    }
-
-    @Test
-    public void createEntity_When_UserNotSuperAdmin_CorrectException() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-        setCommonUser();
-
-        final UserPropertyDTO userPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(null, userId, keyName, value));
-        performPostWithContentExpectException(Collections.singletonList(userPropertyDTO), AccessDeniedException.class);
+        performPostWithContentExpectException(userPropertyDTO, DataIsNotValidException.class);
     }
 
     @Test
@@ -222,18 +178,55 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void update_When_UserNotSuperAdmin_Expected_CorrectException() throws Exception {
+    public void updateAll_When_UserPropertyExist_Expected_CorrectData() throws Exception {
         assertTrue(userPropertyService.getAll().isEmpty());
-        UserPropertyDTO userPropertyDTO = (UserPropertyDTO) userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
 
-        setCommonUser();
+        final String editedKeyName = "keyName3";
 
-        userPropertyDTO.setKeyName("keyName2");
-        userPropertyDTO.setValue("value2");
+        final UserPropertyDTO deleteUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, keyName, value));
+        final UserPropertyDTO editUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, "keyName2", value));
+        editUserPropertyDTO.setKeyName(editedKeyName);
+        editUserPropertyDTO.setValue("value2");
+        final UserPropertyDTO createUserPropertyDTO = new UserPropertyDTO(null, userId, keyName, value);
 
-        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(userPropertyDTO);
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
+        final HashMap<String, List<UserPropertyDTO>> data = new HashMap<>();
+        data.put("deletedProperties", Collections.singletonList(deleteUserPropertyDTO));
+        data.put("editedProperties", Collections.singletonList(editUserPropertyDTO));
+        data.put("createdProperties", Collections.singletonList(createUserPropertyDTO));
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "/update");
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        final List<UserProperty> userProperties = userPropertyService.getByUserId(userId);
+        assertEquals(2, userProperties.size());
+        final UserPropertyDTO receivedEditUserPropertyDTO = new UserPropertyDTO(userProperties.stream()
+                .filter(userProperty -> editedKeyName.equals(userProperty.getKeyName()))
+                .findAny().get());
+        final UserPropertyDTO receivedCreateUserPropertyDTO = new UserPropertyDTO(userProperties.stream()
+                .filter(userProperty -> keyName.equals(userProperty.getKeyName()))
+                .peek(userProperty -> userProperty.setId(null))
+                .findAny().get());
+        assertEquals(editUserPropertyDTO, receivedEditUserPropertyDTO);
+        assertEquals(createUserPropertyDTO, receivedCreateUserPropertyDTO);
+    }
+
+    @Test
+    public void updateAll_When_KeyNameOrValueIsEmpty_Expected_CorrectException() throws Exception {
+        assertTrue(userPropertyService.getAll().isEmpty());
+
+        final UserPropertyDTO deleteUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, keyName, value));
+        final UserPropertyDTO editUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, "keyName2", value));
+        editUserPropertyDTO.setKeyName("");
+        editUserPropertyDTO.setValue("value2");
+        final UserPropertyDTO createUserPropertyDTO = new UserPropertyDTO(null, userId, "", value);
+
+        final HashMap<String, List<UserPropertyDTO>> data = new HashMap<>();
+        data.put("deletedProperties", Collections.singletonList(deleteUserPropertyDTO));
+        data.put("editedProperties", Collections.singletonList(editUserPropertyDTO));
+        data.put("createdProperties", Collections.singletonList(createUserPropertyDTO));
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "/update");
+        performRequestBuilderExpectException(DataIsNotValidException.class, requestBuilder);
     }
 
     @Test
@@ -253,24 +246,5 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         int nonExistenceId = 1000;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + nonExistenceId);
         performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
-    }
-
-    @Test
-    public void delete_When_UserPropertyExistNotSuperAdmin_Expected_CorrectException() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-        UserPropertyDTO userProperty = (UserPropertyDTO) userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        setCommonUser();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + userProperty.getId());
-        performRequestBuilderExpectException(AccessDeniedException.class, requestBuilder);
-    }
-
-    private void setCommonUser() {
-        final UserDomainObject commonUser = new UserDomainObject(2);
-        commonUser.setLanguageIso639_2("eng");
-        commonUser.addRoleId(Roles.USER.getId());
-        Imcms.setUser(commonUser);
     }
 }

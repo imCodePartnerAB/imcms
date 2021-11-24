@@ -12,6 +12,7 @@ public class UserPropertyDataInitializer extends TestDataCleaner{
     private final UserPropertyRepository userPropertyRepository;
 
     public UserPropertyDataInitializer(UserPropertyRepository userPropertyRepository){
+        super(userPropertyRepository);
         this.userPropertyRepository = userPropertyRepository;
     }
 
