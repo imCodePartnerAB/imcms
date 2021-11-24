@@ -5,6 +5,7 @@ import com.imcode.imcms.api.exception.DataUseCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
@@ -19,15 +20,19 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @see CategoryService
@@ -37,23 +42,26 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     private static int COUNT_DATA = 4;
 
-    @Autowired
     private CategoryService categoryService;
 
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
-
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
-
+    @Autowired
+    private CategoryTypeDataInitializer categoryTypeDataInitializer;
     @Autowired
     private DocumentService<DocumentDTO> documentService;
 
-    @Autowired
-    private CategoryTypeDataInitializer categoryTypeDataInitializer;
+    @PostConstruct
+    private void init() {
+        categoryService = new DefaultCategoryService(categoryRepository, mock(DocumentsCache.class), modelMapper);
+    }
 
     @BeforeEach
     public void cleanData() {
@@ -213,5 +221,36 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertTrue(categoryDocIds.contains(docId));
 
         assertThrows(DataUseCategoryException.class, () -> categoryService.delete(categoryId));
+    }
+
+    @Test
+    public void deleteForce_When_DocumentsUsingCategory_Expected_DeleteDocumentCategoryAndCategory() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+        categoryDataInitializer.createData(COUNT_DATA);
+
+        final DocumentDTO doc = documentDataInitializer.createData();
+
+        final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
+        final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
+        assertNotNull(doc);
+
+        doc.setCategories(new HashSet<>(Collections.singleton(firstCategoryDTO)));
+        final DocumentDTO savedDoc = documentService.save(doc);
+        assertNotNull(savedDoc);
+        final Integer docId = savedDoc.getId();
+        final Integer categoryId = firstCategoryDTO.getId();
+        final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(categoryId);
+
+        assertNotNull(categoryDocIds);
+        assertFalse(categoryDocIds.isEmpty());
+        assertTrue(categoryDocIds.contains(docId));
+
+        categoryService.deleteForce(categoryId);
+
+        final List<Integer> categoryDocIdsAfterDeleting = categoryRepository.findCategoryDocIds(categoryId);
+        assertTrue(categoryDocIdsAfterDeleting.isEmpty());
+        assertFalse(categoryService.getById(categoryId).isPresent());
     }
 }

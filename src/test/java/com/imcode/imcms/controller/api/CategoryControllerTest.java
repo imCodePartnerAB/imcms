@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
@@ -17,6 +18,7 @@ import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import net.sf.ehcache.CacheManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -250,5 +253,40 @@ public class CategoryControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectedOk(requestBuilder);
 
         assertEquals(categories.size() - 1, categoryController.getCategories().size());
+    }
+
+    @Test
+    public void deleteForce_WhenDocumentsUsingCategory_Expected_OkAndDeleteDocumentCategoryAndCategoryEntities() throws Exception {
+        Imcms.getServices().getManagedBean(DocumentsCache.class).setCache(CacheManager.create().getEhcache(PUBLIC_CACHE_NAME)); //prevent NullPointerException
+
+        assertTrue(categoryController.getCategories().isEmpty());
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final DocumentDTO doc = documentService.get(1001);
+        assertNotNull(doc);
+
+        final Category firstCategory = categories.get(0);
+        assertNotNull(firstCategory);
+
+        doc.setCategories(new HashSet<>(Collections.singleton(firstCategory)));
+        final DocumentDTO savedDoc = documentService.save(doc);
+        assertNotNull(savedDoc);
+
+        final int id = firstCategory.getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
+                controllerPath() + "/force/" + id
+        );
+
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(categories.size() - 1, categoryController.getCategories().size());
+        documentService.get(doc.getId()).getCategories();
     }
 }

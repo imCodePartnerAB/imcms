@@ -4,9 +4,12 @@ import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import imcode.server.Imcms;
+import net.sf.ehcache.CacheManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -165,6 +169,25 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                 controllerPath() + "/" + firstCategoryType.getId()
         );
+
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(categoryTypes.size() - 1, categoryTypeController.getCategoryTypes().size());
+    }
+
+    @Test
+    public void deleteForce_WhenCategoryTypeHasCategories_Expected_OkAndDeleted() throws Exception {
+        Imcms.getServices().getManagedBean(DocumentsCache.class).setCache(CacheManager.create().getEhcache(PUBLIC_CACHE_NAME)); //prevent NullPointerException
+
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
+        categoryDataInitializer.createData(2);
+
+        final List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
+
+        final CategoryType firstCategoryType = categoryTypes.get(0);
+        final int id = firstCategoryType.getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/force/" + id);
 
         performRequestBuilderExpectedOk(requestBuilder);
 

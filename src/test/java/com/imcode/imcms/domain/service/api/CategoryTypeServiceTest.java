@@ -2,45 +2,73 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
-import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
+import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.repository.CategoryRepository;
+import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 @Transactional
 public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     private static int COUNT_DATA = 3;
 
-    @Autowired
     private CategoryTypeService categoryTypeService;
 
     @Autowired
-    private CategoryService categoryService;
+    private CategoryTypeRepository categoryTypeRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private DocumentService<DocumentDTO> documentService;
 
     @Autowired
     private CategoryTypeDataInitializer categoryTypeDataInitializer;
+    @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
+
+    @PostConstruct
+    private void init() {
+        categoryTypeService = new DefaultCategoryTypeService(categoryTypeRepository, categoryRepository, mock(DocumentsCache.class), modelMapper);
+    }
 
     @BeforeEach
     public void cleanUp() {
+        categoryDataInitializer.cleanRepositories();
         categoryTypeDataInitializer.cleanRepositories();
     }
 
@@ -148,10 +176,39 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         assertThrows(CategoryTypeHasCategoryException.class, () -> categoryTypeService.delete(firstCategoryType.getId()));
     }
 
+    @Test
+    public void deleteForce_When_CategoriesExists_Expected_DeletedCategoriesInDocumentAndCategoriesAndCategoryType() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final List<CategoryTypeDTO> categoryTypesAsDTO = categoryTypeDataInitializer.getCategoryTypesAsDTO();
+        assertEquals(typesData.size(), categoryTypesAsDTO.size());
+
+        final CategoryTypeDTO firstCategoryType = categoryTypesAsDTO.get(0);
+        final Category category = createCategory(firstCategoryType);
+        final int categoryTypeId = firstCategoryType.getId();
+        final int categoryId = category.getId();
+
+        final DocumentDTO doc = documentService.get(1001);
+        assertTrue(doc.getCategories().isEmpty());
+        doc.setCategories(new HashSet<>(Collections.singleton(category)));
+        final DocumentDTO savedDoc = documentService.save(doc);
+        assertNotNull(savedDoc);
+        assertFalse(savedDoc.getCategories().isEmpty());
+
+        categoryTypeService.deleteForce(categoryTypeId);
+
+        assertNull(categoryRepository.findOne(categoryId));
+        assertTrue(documentService.get(savedDoc.getId()).getCategories().isEmpty());
+        assertFalse(categoryTypeService.get(categoryId).isPresent());
+    }
+
     private Category createCategory(CategoryTypeDTO categoryTypeDTO) {
-        final CategoryDTO categoryDTO = new CategoryDTO(
-                null, "name", "description", categoryTypeDTO
+        return categoryRepository.save(
+                new CategoryJPA(null, "name", "description", modelMapper.map(categoryTypeDTO, CategoryTypeJPA.class))
         );
-        return categoryService.save(categoryDTO);
     }
 }
