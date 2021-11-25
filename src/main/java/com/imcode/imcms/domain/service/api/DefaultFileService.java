@@ -3,23 +3,19 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
+import com.imcode.imcms.domain.exception.TemplateFileException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
-import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
-import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
-import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.util.FileUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +25,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import static java.nio.file.StandardOpenOption.CREATE;
 import static ucar.httpservices.HTTPAuthStore.log;
 
 @Service
@@ -37,12 +32,6 @@ import static ucar.httpservices.HTTPAuthStore.log;
 public class DefaultFileService implements FileService {
 
     private final DocumentService<DocumentDTO> documentService;
-
-    private final TemplateRepository templateRepository; //todo maybe use only repo or service?
-
-    private final TemplateGroupRepository templateGroupRepository;
-
-    private final ModelMapper modelMapper;
 
     private final TemplateService templateService;
 
@@ -56,75 +45,64 @@ public class DefaultFileService implements FileService {
 
     @Autowired
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
-                              TemplateRepository templateRepository,
-                              TemplateGroupRepository templateGroupRepository,
-                              ModelMapper modelMapper,
                               TemplateService templateService,
                               BiFunction<Path, Boolean, SourceFile> fileToSourceFile) {
         this.documentService = documentService;
-        this.templateRepository = templateRepository;
-        this.templateGroupRepository = templateGroupRepository;
-        this.modelMapper = modelMapper;
         this.templateService = templateService;
         this.fileToSourceFile = fileToSourceFile;
     }
 
-    private boolean isAllowableToAccess(Path path) {
+    private void checkAccessAllowable(Path path) {
         String normalizedPath = path.normalize().toString();
         final String finalNormalize = StringUtils.isBlank(normalizedPath)
                 ? rootPath.toString()
                 : normalizedPath;
-        long countMatches = 0;
+
+        boolean access = false;
         for (Path pathRoot : rootPaths) {
             try {
-                countMatches += Files.walk(pathRoot)
-                        .filter(pathWalk -> Paths.get(finalNormalize).startsWith(pathWalk))
-                        .count();
+                access = Files.walk(pathRoot).anyMatch(pathWalk -> Paths.get(finalNormalize).startsWith(pathWalk));
+                if (access) break;
             } catch (IOException e) {
-                e.getMessage();
-                continue;
+                log.warn("There is no such file in the project. Got path: " + pathRoot);
             }
         }
 
-        final Template receivedByTemplate = templateRepository.findByName(normalizedPath);
-        if (countMatches > 0 || receivedByTemplate != null) {
-            return true;
-        } else {
-            log.error("File access denied ! Got path: " + path);
+        if (!access) {
+            log.error("File access denied! Got path: " + path);
             throw new FileAccessDeniedException("File access denied!");
         }
-    }
-
-    private String getPathWithoutExtension(String fileName) {
-        return FilenameUtils.removeExtension(fileName);
     }
 
     @Override
     public List<SourceFile> getRootFiles() {
         return rootPaths.stream()
-                .filter(path -> Files.exists(Paths.get(path.toString())))
+                .filter(Files::exists)
                 .map(path -> fileToSourceFile.apply(path, false))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<SourceFile> getFiles(Path path) throws IOException {
-        List<Path> paths;
-        if (isAllowableToAccess(path) && Files.isDirectory(path)) {
-            paths = Files.list(path)
-                    .collect(Collectors.toList());
-        } else {
-            paths = Collections.EMPTY_LIST;
-        }
+        checkAccessAllowable(path);
+
+        List<Path> paths = Files.isDirectory(path) ? Files.list(path).sorted().collect(Collectors.toList()) : Collections.EMPTY_LIST;
         return paths.stream()
-                .map(filePath -> fileToSourceFile.apply(filePath, false))
+                .map(filePath -> {
+                    final SourceFile sourceFile = fileToSourceFile.apply(filePath, false);
+                    if (isTemplatePath(filePath) && !Files.isDirectory(filePath)) {
+                        sourceFile.setNumberOfDocuments(getDocumentsByTemplatePath(filePath).size());
+                    }
+                    return sourceFile;
+                })
                 .sorted(Comparator.comparing(SourceFile::getFileType))
                 .collect(Collectors.toList());
     }
 
     @Override
     public SourceFile getFile(Path file) throws IOException {
-        if (isAllowableToAccess(file) && Files.exists(file)) {
+        checkAccessAllowable(file);
+        if (Files.exists(file)) {
             return fileToSourceFile.apply(file, true);
         } else {
             log.error("File doesn't exist: " + file);
@@ -133,79 +111,62 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
-        final String templateName = template.getFileName().toString();
-        final Template receivedTemplate = templateRepository.findByName(templateName);
-        if (receivedTemplate != null && template.getParent() == null) {
-            return documentService.getDocumentsByTemplateName(templateName);
-        } else if (isAllowableToAccess(template) && Files.exists(template)) {
-            final String originalTemplateName = getPathWithoutExtension(templateName);
-            return documentService.getDocumentsByTemplateName(originalTemplateName);
-        } else {
-            log.error("Template file doesn't exist: " + template);
-            throw new NoSuchFileException("File is not exist!");
-        }
+    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) {
+        return documentService.getDocumentsByTemplateName(FilenameUtils.removeExtension(template.getFileName().toString()));
     }
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        if (isAllowableToAccess(file) && Files.isDirectory(file)) {
+        checkAccessAllowable(file);
+
+        if (Files.isDirectory(file)) {
+            if(isTemplatePath(file)) throwTemplateException("Folder with templates can't be deleted!  Got path:" + file);
+
             Files.list(file)
                     .map(Path::toFile)
                     .forEach(FileUtils::deleteRecursive);
-
             Files.delete(file);
         } else {
-            final String orgTemplateName = getPathWithoutExtension(file.getFileName().toString());
-            final Optional<Template> receivedTemplate = templateService.get(orgTemplateName);
-            receivedTemplate.ifPresent(template -> {
-                final Path pathInTemplateDir = templateService.getPhysicalPath(template.getName());
-                if (pathInTemplateDir != null && pathInTemplateDir.equals(file)) {
-                    templateService.delete(template.getId());
-                }
-            });
+            if(isTemplatePath(file)) deleteTemplate(file);
+
             Files.delete(file);
         }
     }
 
     @Override
     public List<SourceFile> moveFile(List<Path> src, Path target) throws IOException {
+        src.forEach(this::checkAccessAllowable);
+        src.forEach(path -> {
+            if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be moved! Got path: " + path);
+        });
+        checkAccessAllowable(target);
+        if(isTemplatePath(target)) throwTemplateException("Files cannot be moved to the folder with templates! Got path: " + target);
+
         final List<SourceFile> files = new ArrayList<>();
         for (Path srcPath : src) {
-            if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
-                files.add(fileToSourceFile.apply(
-                        Files.move(srcPath, target.resolve(srcPath.getFileName())), false
-                ));
-            }
+            files.add(fileToSourceFile.apply(Files.move(srcPath, target.resolve(srcPath.getFileName())), false));
         }
         return files;
     }
 
-
     @Override
-    public SourceFile moveFile(Path src, Path target) throws IOException {
-        final String targetFileName = target.getFileName().toString();
-        final String srcFileName = src.getFileName().toString();
-        final String originalSrcName = getPathWithoutExtension(srcFileName);
-        final String originalTargetName = getPathWithoutExtension(targetFileName);
-        final Template receivedTemplate = templateRepository.findByName(originalSrcName);
-        final Path physicalTemplatePath = templateService.getPhysicalPath(originalSrcName);
-        if (isAllowableToAccess(src) && isAllowableToAccess(target) && StringUtils.isNotBlank(targetFileName)) {
-            if (null != receivedTemplate && src.equals(physicalTemplatePath)) {
-                TemplateGroup gotTemplateGroup = receivedTemplate.getTemplateGroup();
-                if (gotTemplateGroup != null) {
-                    gotTemplateGroup.setTemplates(Collections.EMPTY_SET); // in order to avoid recursive error
-                }
-                receivedTemplate.setId(receivedTemplate.getId());
-                receivedTemplate.setName(originalTargetName);
-                receivedTemplate.setHidden(receivedTemplate.isHidden());
-                receivedTemplate.setTemplateGroup(gotTemplateGroup);
-                templateRepository.saveAndFlush(modelMapper.map(receivedTemplate, TemplateJPA.class));
+    public SourceFile renameFile(Path src, String newName) throws IOException {
+        checkAccessAllowable(src);
+
+        if (StringUtils.isNotBlank(src.toString()) && StringUtils.isNotBlank(newName)) {
+            final Path path = Files.move(src, Paths.get(src.getParent().toString(), newName));
+
+            try{
+                if(Files.isDirectory(path) && isTemplatePath(src)) throwTemplateException("Folder with templates can't be deleted!");
+                if(isTemplatePath(src)) renameTemplate(src, newName);
+            }catch(TemplateFileException e){
+                Files.move(path, src);
+                throw e;
             }
-            final Path path = Files.move(src, target);
+
             return fileToSourceFile.apply(path, false);
         } else {
-            final String errorMessage = "File couldn't has empty Name !";
+            final String errorMessage = "Filepath or filename is empty!";
             log.error(errorMessage);
             throw new EmptyFileNameException(errorMessage);
         }
@@ -213,89 +174,102 @@ public class DefaultFileService implements FileService {
 
     @Override
     public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException {
+        src.forEach(this::checkAccessAllowable);
+        src.forEach(path -> {
+            if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be copied! Got path: " + path);
+        });
+        checkAccessAllowable(target);
+        if(isTemplatePath(target)) throwTemplateException("Files cannot be copied to the folder with templates! Got path: " + target);
+
         final List<SourceFile> files = new ArrayList<>();
         for (Path srcPath : src) {
-            if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
-                files.add(fileToSourceFile.apply(
-                        Files.copy(srcPath, target.resolve(srcPath.getFileName())), false
-                ));
-            }
+            files.add(fileToSourceFile.apply(
+                    Files.copy(srcPath, target.resolve(srcPath.getFileName())), false));
         }
         return files;
     }
 
     @Override
     public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
-        Path writeFilePath;
-        if (isAllowableToAccess(location)) {
-            if (null == writeMode) {
-                writeFilePath = Files.write(location, content);
-            } else {
-                writeFilePath = Files.write(location, content, writeMode);
-            }
+        checkAccessAllowable(location);
+
+        if (StringUtils.isNotBlank(location.toString())) {
+            Path writeFilePath = writeMode == null ? Files.write(location, content) : Files.write(location, content, writeMode);
+
+            if(isTemplatePath(location) && Files.exists(location)) createAndSaveTemplate(location);
+
             return fileToSourceFile.apply(writeFilePath, true);
         } else {
-            final String errorMessage = "File name is empty! Can't save empty file name!";
+            final String errorMessage = "Filepath is empty!";
             log.error(errorMessage);
             throw new EmptyFileNameException(errorMessage);
         }
     }
-
-    @Override
-    public Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException {
-        final String templateName = template.getFileName().normalize().toString();
-        final String originalTemplateName = getPathWithoutExtension(templateName);
-        if (isAllowableToAccess(template) && StringUtils.isNotBlank(templateName)) {
-            final TemplateJPA receivedTemplate = templateRepository.findByName(originalTemplateName);
-            final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findByName(templateGroupName);
-            byte[] contentTemplate = Files.readAllBytes(template);
-            if (receivedTemplateGroup != null)
-                receivedTemplateGroup.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
-            if (receivedTemplate != null) {
-                receivedTemplate.setTemplateGroup(receivedTemplateGroup);
-                templateService.saveTemplateFile(receivedTemplate, contentTemplate, CREATE);
-                return new TemplateDTO(templateRepository.save(receivedTemplate));
-            } else {
-                TemplateJPA newTemplateJPA = new TemplateJPA();
-                newTemplateJPA.setName(originalTemplateName);
-                newTemplateJPA.setHidden(false);
-                newTemplateJPA.setTemplateGroup(receivedTemplateGroup);
-                templateService.saveTemplateFile(newTemplateJPA, contentTemplate, CREATE);
-                return new TemplateDTO(templateRepository.saveAndFlush(newTemplateJPA));
-            }
-        } else {
-            final String errorMessage = "File name is empty! Can't save empty file name template in group!";
-            log.error(errorMessage);
-            throw new EmptyFileNameException(errorMessage);
-        }
-    }
-
 
     @Override
     public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
         final Path filePath = Paths.get(file.getFullPath());
-        final String fileName = FilenameUtils.removeExtension(filePath.getFileName().normalize().toString());
+        if (StringUtils.isNotBlank(file.getFileName())) {
+            checkAccessAllowable(filePath);
 
-        if (isAllowableToAccess(filePath) && StringUtils.isNotBlank(fileName)) {
             Path newSrcFilePath;
             if (isDirectory) {
+                if(isTemplatePath(filePath)) throwTemplateException("Folder cannot be created in the folder with templates");
                 newSrcFilePath = Files.createDirectory(filePath);
             } else {
                 newSrcFilePath = Files.createFile(filePath);
+                if(isTemplatePath(filePath) && Files.exists(newSrcFilePath)) createAndSaveTemplate(filePath);
             }
+
             return fileToSourceFile.apply(newSrcFilePath, false);
         } else {
-            final String errorMessage = "File name is empty! Can't create empty file name!";
+            final String errorMessage = "Filename is empty!";
             log.error(errorMessage);
             throw new EmptyFileNameException(errorMessage);
         }
     }
 
-    @Override
-    public void replaceDocsOnNewTemplate(Path oldTemplate, Path newTemplate) {
-        if (isAllowableToAccess(oldTemplate) && isAllowableToAccess(newTemplate)) {
-            templateService.replaceTemplateFile(oldTemplate, newTemplate);
+    private boolean isTemplatePath(Path path) {
+        return path.startsWith(templateService.getTemplateDirectory().toPath());
+    }
+
+    private void createAndSaveTemplate(Path path) throws IOException {
+        if(templateService.isValidName(path.getFileName().toString())){
+            final String templateName = FilenameUtils.removeExtension(path.getFileName().normalize().toString());
+            final TemplateJPA templateJPA = new TemplateJPA();
+            templateJPA.setName(templateName);
+            templateJPA.setHidden(false);
+
+            try{
+                templateService.save(templateJPA);
+            }catch (DataIntegrityViolationException e){
+                Files.delete(path);
+                throwTemplateException("Template with the same name already exists!");
+            }
         }
     }
-}
 
+    private void renameTemplate(Path path, String newName){
+        if(templateService.isValidName(newName)){
+            final String oldTemplateName = FilenameUtils.removeExtension(path.getFileName().normalize().toString());
+            templateService.renameTemplate(oldTemplateName, FilenameUtils.removeExtension(newName));
+        }else{
+            deleteTemplate(path);
+        }
+    }
+
+    private void deleteTemplate(Path path){
+        final String orgTemplateName = FilenameUtils.removeExtension(path.getFileName().toString());
+        if(documentService.getDocumentsByTemplateName(orgTemplateName).isEmpty()){
+            final Template template = templateService.get(orgTemplateName);
+            if(template != null) templateService.delete(template.getId());
+        }else{
+            throwTemplateException("Template is used in documents, cannot be deleted! Got path: " + path);
+        }
+    }
+
+    private void throwTemplateException(String errorMessage){
+        log.error(errorMessage);
+        throw new TemplateFileException(errorMessage);
+    }
+}

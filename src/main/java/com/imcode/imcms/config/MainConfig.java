@@ -16,8 +16,6 @@ import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
 import com.imcode.imcms.mapping.*;
-import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
-import com.imcode.imcms.persistence.repository.TemplateRepository;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -33,7 +31,6 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -209,13 +206,9 @@ public class MainConfig {
 
     @Bean
     public DefaultFileService fileService(DocumentService<DocumentDTO> documentService,
-                                          TemplateRepository templateRepository,
-                                          TemplateGroupRepository templateGroupRepository,
-                                          ModelMapper modelMapper,
                                           TemplateService templateService,
                                           BiFunction<Path, Boolean, SourceFile> fileToSourceFile) {
-        return new DefaultFileService(documentService, templateRepository,
-                templateGroupRepository, modelMapper, templateService, fileToSourceFile);
+        return new DefaultFileService(documentService, templateService, fileToSourceFile);
     }
 
     @Bean

@@ -160,9 +160,7 @@ public class TextDocument extends Document {
 
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
-        return contentManagementSystem.getTemplateService()
-                .get(templateName)
-                .orElse(null);
+        return contentManagementSystem.getTemplateService().get(templateName);
     }
 
     public void setTemplate(Template template) {

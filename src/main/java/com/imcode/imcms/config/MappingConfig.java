@@ -544,7 +544,7 @@ class MappingConfig {
             }
             final String size = getFileSize(path.toFile());
 
-            return new SourceFile(path.getFileName().toString(), physicalPath, path.toString(), fileType, contents, size);
+            return new SourceFile(path.getFileName().toString(), physicalPath, path.toString(), fileType, contents, size, 0);
         };
     }
 
