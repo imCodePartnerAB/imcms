@@ -3,16 +3,10 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.TemplateGroupDTO;
 import com.imcode.imcms.domain.service.TemplateGroupService;
 import com.imcode.imcms.model.TemplateGroup;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Properties;
 
 @RestController
 @RequestMapping("/template-group")
@@ -44,6 +38,20 @@ public class TemplateGroupController {
     @PutMapping
     public TemplateGroup edit(@RequestBody TemplateGroupDTO templateGroup) {
         return templateGroupService.edit(templateGroup);
+    }
+
+    @PutMapping("/add-template")
+    public void addTemplateToGroup(@RequestBody Properties data) {
+        final String templateName =  data.getProperty("templateName");
+        final Integer groupId = Integer.valueOf(data.getProperty("templateGroupId"));
+        templateGroupService.addTemplate(templateName, groupId);
+    }
+
+    @PatchMapping("/delete-template")
+    public void deleteGroup(@RequestBody Properties data){
+        final String templateName = data.getProperty("templateName");
+        final Integer groupId = Integer.valueOf(data.getProperty("templateGroupId"));
+        templateGroupService.deleteTemplate(templateName, groupId);
     }
 
     @DeleteMapping("/{id}")

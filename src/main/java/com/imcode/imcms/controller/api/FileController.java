@@ -3,17 +3,9 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.FileService;
-import com.imcode.imcms.model.Template;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -149,20 +141,6 @@ public class FileController {
         return defaultFileService.saveFile(path, newContent, null);
     }
 
-    @PutMapping("/template/replace")
-    public void replaceTemplate(@RequestBody Properties data) {
-        final String oldTemplate = data.getProperty("oldTemplate");
-        final String newTemplate = data.getProperty("newTemplate");
-        defaultFileService.replaceDocsOnNewTemplate(Paths.get(oldTemplate), Paths.get(newTemplate));
-    }
-
-    @PostMapping("/template/**")
-    public Template saveTemplateInGroup(@RequestBody Properties data) throws IOException {
-        final Path templatePath = Paths.get(data.getProperty("templatePath"));
-        final String templateGroupName = data.getProperty("templateGroupName");
-        return defaultFileService.saveTemplateInGroup(templatePath, templateGroupName);
-    }
-
     @PutMapping("/move/**")
     public List<SourceFile> moveFile(@RequestBody Properties pathParam) throws IOException {
         final List<Path> src = Arrays.stream(pathParam.getProperty("src").split(","))
@@ -175,8 +153,8 @@ public class FileController {
     @PutMapping("/rename/**")
     public SourceFile renameFile(@RequestBody Properties pathParam) throws IOException {
         final Path src = Paths.get(pathParam.getProperty("src"));
-        final Path target = Paths.get(pathParam.getProperty("target"));
-        return defaultFileService.moveFile(src, target);
+        final String newName = pathParam.getProperty("newName");
+        return defaultFileService.renameFile(src, newName);
     }
 
     @DeleteMapping("/**")
