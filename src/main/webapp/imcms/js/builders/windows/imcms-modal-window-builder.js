@@ -237,11 +237,11 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function CreateCreateFileModalWindow(textField, checkBoxIsDir, onConfirmed, onDeclined) {
+        function CreateCreateFileModalWindow(title, textField, checkBoxIsDir, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-create-modal-window",
                 elements: {
-                    "modal-head": buildHead(texts.createFileOrDirectory),
+                    "modal-head": buildHead(title),
                     "modal-body": buildCreateFileBody(textField, checkBoxIsDir),
                     "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
                 }
@@ -256,7 +256,10 @@ define(
                     "modal-body": $userPropertiesData,
                     "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {
+                'class': 'imcms-pop-up-modal',
+                style: 'display: block'
+            });
         }
 
         function CreateEditFileModalWindow(textField, textarea, editCheckBox, onConfirmed, onDeclined) {
@@ -341,10 +344,10 @@ define(
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
-        const CreateFileModalWindow = function (textField, checkBoxIsDir, callback) {
+        const CreateFileModalWindow = function (title, textField, checkBoxIsDir, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = CreateCreateFileModalWindow(textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
+            this.$modal = CreateCreateFileModalWindow(title, textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
         };
 
         const UserPropertiesModalWindow = function ($userPropertiesData, callback) {
@@ -457,8 +460,8 @@ define(
                 .appendTo($("body"));
         }
 
-        function buildCreateFileModalWindow(textField, checkBoxIsDir, callback) {
-            return new CreateFileModalWindow(textField, checkBoxIsDir, callback)
+        function buildCreateFileModalWindow(title, textField, checkBoxIsDir, callback) {
+            return new CreateFileModalWindow(title, textField, checkBoxIsDir, callback)
                 .addShadow()
                 .appendTo($("body"));
         }

@@ -170,13 +170,19 @@ define(
             });
         }
 
+        function buildMoveCopyFilesContainer(){
+            let $moveCopyFilesContainer = $("<div>", {id: "move-copy-files"});
+            $moveCopyFilesContainer.append(buildTitleMove());
+            $moveCopyFilesContainer.append(buildMoveButtons());
+            $moveCopyFilesContainer.append(buildTitleCopy());
+            $moveCopyFilesContainer.append(buildCopyButtons());
+            return $moveCopyFilesContainer;
+        }
+
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),
             buildButtonsActionContainer(),
-            buildTitleMove(),
-            buildMoveButtons(),
-            buildTitleCopy(),
-            buildCopyButtons(),
+            buildMoveCopyFilesContainer(),
             buildDocumentsContainer()
         ]);
     }

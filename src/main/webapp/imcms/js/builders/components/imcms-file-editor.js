@@ -64,12 +64,12 @@ define(
         }
 
         function getDirPathByIndex(index) {
-            return getPathRowByIndex(index).attr('full-path');
+            return getPathRowByIndex(index).find('.path-row__path').attr('full-path');
         }
 
         function createBackDir(fullPath, physicalPath) {
             return {
-                fileName: '/..',
+                fileName: '../',
                 fullPath: getDirPathFromFullPath(fullPath, physicalPath),
                 physicalPath: getDirPathFromFullPath(physicalPath),
                 fileType: 'DIRECTORY'
@@ -172,15 +172,17 @@ define(
                 $templateGroupDefaultButtons.slideUp();
                 $templateGroupEditButtons.slideDown();
 
-                $templateGroupNameTextField.$input.removeAttr('disabled').focus();
+                $templateGroupSelect.hide();
+                $templateGroupNameTextField.show();
             } else {
-                $templateGroupDefaultButtons.slideUp();
+                $templateGroupDefaultButtons.slideDown();
                 $templateGroupEditButtons.slideUp();
-                $templateGroupNameTextField.slideUp();
-                $templatesTableTitle.hide();
-                $templatesTable.hide();
 
-                $templateGroupNameTextField.$input.attr('disabled', 'disabled');
+                $templateGroupNameTextField.hide();
+                $templateGroupSelect.show();
+
+                $templatesTableTitle.show();
+                $templatesTable.show();
             }
         }
 
@@ -218,10 +220,14 @@ define(
             selectedValueBeforeSaving = $templateGroupSelect.getSelectedValue();
         }
 
+        const $templateGroupTitle = $('<div>', {
+            text: texts.groupData.title,
+            class: 'imcms-label'
+        });
+
         const $templateGroupSelect = components.selects.imcmsSelect('<div>', {
             id: 'template-group',
-            name: 'template-group',
-            text: texts.groupData.title
+            name: 'template-group'
         });
 
         function onSelectTemplateGroup() {
@@ -231,7 +237,6 @@ define(
                 const templateName = $templateGroupSelect.selectedText();
                 fillTemplatesTableByTemplateGroup(templateName);
                 $templateGroupNameTextField.setValue(templateName);
-                $templateGroupNameTextField.slideDown();
                 $templateGroupDefaultButtons.slideDown();
             }
         }
@@ -272,6 +277,9 @@ define(
                     $templateGroupSelect.deleteOption(id);
                     $templateGroupSelect.selectFirst();
                     setEnabledEditMode(false);
+                    $templatesTableTitle.hide();
+                    $templatesTable.hide();
+                    $templateGroupDefaultButtons.slideUp();
                 }).fail(() => modal.buildErrorWindow(texts.error.deleteGroup));
             });
         }
@@ -360,13 +368,22 @@ define(
                 $templatesTableTitle.show();
                 $templatesTable.show();
                 $templatesTable.children().remove();
-                group.templates.forEach(template => $templatesTable.append(templateToRow(template)));
+
+                group.templates.sort((template1, template2) => {
+                    if (template1.name < template2.name)
+                        return -1;
+                    if (template1.name > template2.name)
+                        return 1;
+                    return 0;
+                })
+                    .forEach(template => $templatesTable.append(templateToRow(template)));
+
             }).fail(() => modal.buildErrorWindow(texts.error.loadGroup));
         }
 
         function templateToRow(template) {
             const $removeButton = components.controls
-                .remove(onClickDeleteTemplate.bind({template}))
+                .remove(onClickDeleteTemplateFromGroup.bind({template}))
                 .attr("title", texts.title.delete);
 
             return new BEM({
@@ -378,24 +395,37 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        function onClickDeleteTemplate() {
-            const templateName = {
-                template: this.template.name
-            };
-
-            fileRestApi.getDocuments(templateName).done(documents => {
-                if (documents.length === 0) {
-                    deleteTemplate(this.template.id);
-                } else {
-                    confirmDeleteTemplate(() => showDeleteTemplateModalWindow(this.template));
-                }
-            }).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
-        }
-
         function deleteTemplate(id) {
             templatesRestApi.delete(id).done(() => {
                 fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
             }).fail(() => modal.buildErrorWindow(texts.error.deleteTemplate));
+        }
+
+        function onClickDeleteTemplateFromGroup(){
+
+            const templateGroupId = $templateGroupSelect.getSelectedValue();
+
+            const transferData = {
+                templateGroupId,
+                templateName: this.template.name,
+            };
+
+            groupsRestApi.deleteTemplate(transferData).done(() => {
+                fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
+            }).fail(() => modal.buildErrorWindow(texts.error.deleteGroupFromTemplate));
+        }
+
+        function onClickDeleteTemplate(templatePath, sourceFile) {
+            const templateName = {
+                template: templatePath
+            };
+            fileRestApi.getDocuments(templateName).done(documents => {
+                if (documents.length > 0) {
+                    confirmDeleteTemplate(() => showDeleteTemplateModalWindow(sourceFile));
+                }else{
+                    deleteFileRequest(sourceFile);
+                }
+            }).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
         }
 
         function confirmDeleteTemplate(onConfirm) {
@@ -406,8 +436,13 @@ define(
             });
         }
 
-        function showDeleteTemplateModalWindow(template) {
+        function showDeleteTemplateModalWindow(sourceFile) {
             templatesRestApi.read().done(templates => {
+
+                //to find the needed a template object
+                let fileTemplateName = sourceFile.fileName;
+                let i = getIndexOfTemplateInArrayByName(templates, fileTemplateName.substring(0, fileTemplateName.lastIndexOf('.')));       //to delete an extension
+                let template = templates[i];
 
                 deleteTemplateFromArrayById(templates, template.id);
                 const templatesRadioButtons = templates
@@ -423,7 +458,7 @@ define(
                     class: 'templates-radios-container'
                 });
 
-                templatesRadioButtons[0].setChecked(true); // todo: if templates array is empty?
+                templatesRadioButtons[0].setChecked(true);                                                              // todo: if templates array is empty?
 
                 modal.buildOptionalModalWindow(texts.title.replaceTemplate, $templatesRadioButtonsContainer, confirmed => {
                     if (confirmed) {
@@ -432,8 +467,8 @@ define(
                             newTemplate: getTemplateFromArrayById(templates, templatesRadioButtonsGroup.getCheckedValue()).name
                         };
 
-                        fileRestApi.replaceTemplateOnDoc(transferData).done(() => {
-                            deleteTemplate(template.id);
+                        templatesRestApi.replaceOnDoc(transferData).done(() => {
+                            deleteFileRequest(sourceFile);
                         }).fail(() => modal.buildErrorWindow(texts.error.replaceTemplate));
                     }
                 });
@@ -442,6 +477,10 @@ define(
 
         function getIndexOfTemplateInArrayById(array, id) {
             return array.findIndex(template => template.id == id);
+        }
+
+        function getIndexOfTemplateInArrayByName(array, name) {
+            return array.findIndex(template => template.name == name);
         }
 
         function getTemplateFromArrayById(array, id) {
@@ -457,6 +496,7 @@ define(
             block: 'group-editor',
             elements: {
                 'create-button': $templateGroupCreateButton,
+                'template-group-title': $templateGroupTitle,
                 'select': $templateGroupSelect,
                 'name-row': $templateGroupNameTextField,
                 'default-buttons': $templateGroupDefaultButtons,
@@ -467,7 +507,6 @@ define(
         }).buildBlockStructure('<div>', {});
 
         function getTemplateGroupEditor() {
-            $templateGroupNameTextField.$input.attr('disabled', 'disabled');
             $templateGroupNameTextField.css('display', 'none');
 
             $templateGroupEditor.hide();
@@ -507,18 +546,9 @@ define(
             currentFile = file;
             $fileSourceRow = $fileRow;
 
-            if (file.fileType === 'DIRECTORY') {
+            if (file.fileType === 'DIRECTORY' && isDblClick) {
                 updateHighlightingForDir($fileSourceRow);
                 deleteAllHighlightingInSubFilesContainer(getSubFilesContainerByChildRow($fileSourceRow), selectedDirHighlightingClassName);
-            }
-            if (file.fileType === 'DIRECTORY' && isDblClick) {
-                if (file.physicalPath.startsWith(TEMPLATE_ROOT_PATH)) {
-                    $templateGroupEditor.show();
-                } else {
-                    $templateGroupEditor.hide();
-                    $docsNumberLabel.hide();
-                    $documentsContainer.find('.documents-data').remove();
-                }
 
                 onDirectoryDblClick.call(this, $fileRow, file);
             } else if (file.fileType === 'FILE' && isDblClick) {
@@ -539,15 +569,37 @@ define(
 
             fileRestApi.get(path).done(files => {
                 const $subFilesContainer = $('<div>').addClass(this.subFilesClassName);
-                    const $filesContainer = $('.' + this.columnClassName);
-                    $filesContainer.find('.' + this.subFilesClassName).remove();
-                    $filesContainer.append($subFilesContainer);
+                const $filesContainer = $('.' + this.columnClassName);
+                $filesContainer.find('.' + this.subFilesClassName).remove();
+                $filesContainer.append($subFilesContainer);
 
                 const index = getIndexOfSubFilesContainer($subFilesContainer);
 
                 const pathRow = getPathRowByIndex(index);
-                pathRow.text(file.physicalPath);
-                pathRow.attr('full-path', path);
+                pathRow.empty();
+                pathRow.append($('<div>', {
+                    text: file.physicalPath,
+                    'full-path': path,
+                    'class': 'path-row__path'
+                }));
+                pathRow.append($('<div>', {
+                    text: "[" + files.length + "]",
+                    'class': 'path-row__count'
+                }));
+
+                const dirPath1 = getDirPathByIndex(0);
+                const dirPath2 = getDirPathByIndex(1);
+                if(dirPath1 && dirPath1.endsWith(TEMPLATE_ROOT_PATH) || (dirPath2 && dirPath2.endsWith(TEMPLATE_ROOT_PATH))) {
+                    $templateGroupEditor.show();
+
+                    $('#move-copy-files').hide();
+                } else {
+                    $templateGroupEditor.hide();
+                    $docsNumberLabel.hide();
+                    $documentsContainer.find('.documents-data').remove();
+
+                    $('#move-copy-files').show();
+                }
 
                 const transformFileToRow = fileToRow.transformFileToRow.bind({subFilesContainerIndex: index});
                 $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
@@ -641,7 +693,7 @@ define(
             ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
         }
 
-        const newFileNameField = buildFileNameField(texts.title.createFileName);
+        let newFileNameField;
         const editDirectoryNameField = buildFileNameField(texts.title.directoryName);
         const editFileNameField = buildFileNameField(texts.title.fileName);
         const checkBoxIsDirectory = buildIsDirectoryCheckBox();
@@ -730,12 +782,10 @@ define(
             if (!name) return;
 
             const targetSubFilesContainer = this.getTargetSubFilesContainer();
-            const targetDirectoryPath = getDirPathBySubFilesContainer(targetSubFilesContainer);
 
-            const targetPath = targetDirectoryPath + "/" + name;
             const fileToSave = {
                 src: currentFile.fullPath,
-                target: targetPath,
+                newName: name,
             };
 
             fileRestApi.rename(fileToSave).done(file => {
@@ -754,15 +804,24 @@ define(
                     fullPath: file.fullPath
                 };
 
-                fileRestApi.deleteFile(sourceFile).done(() => {
-                    $documentsContainer.remove();
-                    $fileSourceRow.remove();
+                if(isTemplate(file)){
+                    onClickDeleteTemplate(file.physicalPath, sourceFile);
+                    return;
+                }
 
-                    if ($templatesTable.css('display') !== 'none') {
-                        fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
-                    }
-                }).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
+                deleteFileRequest(sourceFile);
             });
+        }
+
+        function deleteFileRequest(sourceFile){
+            fileRestApi.deleteFile(sourceFile).done(() => {
+                $documentsContainer.hide();
+                $fileSourceRow.remove();
+
+                if ($templatesTable.css('display') !== 'none') {
+                    fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
+                }
+            }).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
         }
 
         function buildFileNameField(label) {
@@ -792,11 +851,23 @@ define(
             });
         }
 
-        function confirmAddFile(onConfirm) {
-            newFileNameField.setValue('');
+        function confirmAddFile(currentPath, onConfirm) {
             checkBoxIsDirectory.$input.removeAttr('disabled');
+
+            let title;
+            let checkBox;
+            if(currentPath.endsWith(TEMPLATE_ROOT_PATH)){
+                newFileNameField = buildFileNameField(texts.title.createFileName);
+                checkBox = "";
+                title = texts.title.createFile;
+            }else{
+                newFileNameField = buildFileNameField(texts.title.createFileOrDirectoryName);
+                checkBox = checkBoxIsDirectory;
+                title = texts.title.createFileOrDirectory;
+            }
+
             return modal.buildCreateFileModalWindow(
-                newFileNameField, checkBoxIsDirectory, confirmed => {
+                title, newFileNameField, checkBox, confirmed => {
                     if (confirmed) {
                         onConfirm();
                     }
@@ -918,14 +989,15 @@ define(
             modal.buildModalWindow(texts.groupData.addToGroupConfirm, confirmed => {
                 if (!confirmed) return;
 
+                const templateGroupId = $templateGroupSelect.getSelectedValue();
                 const templateGroupName = $templateGroupSelect.selectedText();
 
                 const transferData = {
-                    templateGroupName,
-                    templatePath: currentFile.fullPath,
+                    templateGroupId,
+                    templateName: currentFile.fileName,
                 };
 
-                fileRestApi.addTemplateToGroup(transferData).done(template => {
+                groupsRestApi.addTemplate(transferData).done(() => {
                     if ($templatesTable.css('display') !== 'none') {
                         fillTemplatesTableByTemplateGroup(templateGroupName);
                     }
@@ -958,7 +1030,7 @@ define(
 
         function bindAddFile(subFilesContainerIndex) {
             const saveFile = onSaveFile.bind(buildBoundData(subFilesContainerIndex));
-            return () => confirmAddFile(saveFile);
+            return () => confirmAddFile(getDirPathByIndex(subFilesContainerIndex), saveFile);
         }
 
         function bindEditFile(subFilesContainerIndex) {

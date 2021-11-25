@@ -43,6 +43,7 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
+                            'amount-docs': $('<div>', {text: '[' + file.numberOfDocuments + ']'}),
                             'file-size': $('<div>', {text: file.size}),
                             'add-to-group': components.controls.plus(withClick(fileEditor.addTemplateToGroup)).attr("title", texts.addToGroup),
                             'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),
@@ -61,7 +62,7 @@ define(
                             'delete': components.controls.remove(withClick(() => fileEditor.deleteFile(file))).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
-                } else if (file.fileType === 'DIRECTORY' && file.fileName === "/..") {
+                } else if (file.fileType === 'DIRECTORY' && file.fileName === "../") {
                     return new BEM({
                         block: "directory-row",
                         elements: {
@@ -90,7 +91,7 @@ define(
                 return new BEM({
                     block: 'root-directory-row',
                     elements: {
-                        'file-name': $('<div>', {text: file.fileName + '/'}),
+                        'file-name': $('<div>', {text: file.physicalPath.substring(1) + '/'}),
                         'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                     },
                 }).buildBlockStructure("<div>", infoRowAttributes);
