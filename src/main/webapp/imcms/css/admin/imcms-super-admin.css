@@ -5,7 +5,6 @@
 }
 
 .imcms-info-page {
-    position: absolute;
     margin: 0;
     left: 15%;
     width: 70%;
@@ -40,7 +39,7 @@
 }
 
 .imcms-pop-up-super-admin-modal {
-    height: 905px;
+    height: 96%;
 }
 
 .category-admin .imcms-buttons,
@@ -308,12 +307,16 @@
 .templates-table {
     width: 100%;
     display: inline-flex;
-    height: 400px;
+    margin-top: 15px;
 }
 
 .files-table > *,
 .templates-table > * {
     width: 50%;
+}
+
+.files-table__first-instance{
+    border-right: 1px solid #abacad;
 }
 
 .group-editor > *:not(.group-editor__create-button) {
@@ -336,11 +339,11 @@
 }
 
 .templates-data {
-    height: 140px;
+    height: 150px;
 }
 
 .documents-data {
-    height: 400px;
+    height: 322px;
 }
 
 .doc-info-row,
@@ -355,6 +358,14 @@
     font-weight: 600;
     margin-bottom: 10px;
     padding: 5px;
+}
+
+.group-editor__name-row{
+    padding: 0;
+}
+
+.group-editor__template-group-title{
+    margin-bottom: 10px;
 }
 
 .group-editor__templates-data-title {
@@ -398,10 +409,24 @@
     padding: 5px;
     cursor: pointer;
     display: flex;
+    place-items: center;
 }
 
 .path-row {
-    background-color: #ffffe0;
+    background-color: #ffffad;
+    border-top: 1px solid #abacad;
+    border-bottom: 1px solid #abacad;
+}
+
+.path-row__path{
+    word-break: break-all;
+    margin-right: auto;
+}
+
+.path-row__count {
+    margin-right: 1%;
+    min-width: 33px;
+    text-align: right;
 }
 
 .files-table__directory-row--selected,
@@ -426,26 +451,45 @@
 
 .root-directory-row__delete {
     margin-right: 1%;
+    min-width: 16px;
 }
 
 .file-row *,
 .root-directory-row *,
 .directory-row * {
-    width: 6%;
+    place-self: center;
+}
+
+.file-row__add-to-group,
+.file-row__download,
+.file-row__edit,
+.file-row__file-size,
+.file-row__amount-docs,
+.directory-row__edit{
+    margin-right: 1%;
+    min-width: 20px;
+    text-align: right;
+}
+
+.directory-row__delete,
+.file-row__delete{
+    min-width: 20px;
+}
+
+.file-row__file-size{
+    min-width: 40px !important;
+}
+
+.file-row__amount-docs{
+    min-width: 35px !important;
 }
 
 .directory-row__file-name,
 .file-row__file-name,
 .template-info-row__template-name,
 .root-directory-row__file-name {
-    width: auto;
     margin-right: auto;
     word-break: break-all;
-}
-
-.file-row__file-size {
-    width: auto;
-    margin-right: 10px;
 }
 
 .files-table__file-row--selected,
