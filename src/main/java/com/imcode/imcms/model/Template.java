@@ -3,6 +3,7 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @NoArgsConstructor
 public abstract class Template implements Serializable {
@@ -13,7 +14,6 @@ public abstract class Template implements Serializable {
         setId(templateFrom.getId());
         setName(templateFrom.getName());
         setHidden(templateFrom.isHidden());
-        setTemplateGroup(templateFrom.getTemplateGroup());
     }
 
     public abstract Integer getId();
@@ -27,9 +27,5 @@ public abstract class Template implements Serializable {
     public abstract boolean isHidden();
 
     public abstract void setHidden(boolean isHidden);
-
-    public abstract TemplateGroup getTemplateGroup();
-
-    public abstract void setTemplateGroup(TemplateGroup template);
 
 }

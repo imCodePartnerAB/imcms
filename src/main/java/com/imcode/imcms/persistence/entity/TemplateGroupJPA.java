@@ -7,18 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,8 +32,12 @@ public class TemplateGroupJPA extends TemplateGroup {
     @Column(name = "group_name", unique = true, nullable = false)
     private String name;
 
-    @NotFound(action = NotFoundAction.IGNORE)
-    @OneToMany(mappedBy = "templateGroup", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(
+            name = "template_template_group",
+            joinColumns = { @JoinColumn(name = "group_id") },
+            inverseJoinColumns = { @JoinColumn(name = "template_id") }
+    )
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<TemplateJPA> templates;
 
@@ -52,21 +47,7 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public Set<Template> getTemplates() {
-        Set<Template> temp = new HashSet<>();
-        if (templates == null) {
-            return null;
-        } else {
-            templates.stream().forEach(templateJPA -> {
-                if (templateJPA.getTemplateGroup() == null) {
-                    temp.add(templateJPA);
-                } else {
-                    if (this.getId().equals(templateJPA.getTemplateGroup().getId())) {
-                        temp.add(templateJPA);
-                    }
-                }
-            });
-        }
-        return temp;
+        return (templates == null) ? Collections.EMPTY_SET : new HashSet<>(templates);
     }
 
     @Override

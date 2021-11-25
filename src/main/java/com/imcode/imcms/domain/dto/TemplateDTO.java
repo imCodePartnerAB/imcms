@@ -26,15 +26,7 @@ public class TemplateDTO extends Template {
 
     private boolean hidden;
 
-    private TemplateGroup templateGroup;
-
     public TemplateDTO(Template templateFrom) {
         super(templateFrom);
-    }
-
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    public TemplateGroup getTemplateGroup() {
-        return templateGroup;
     }
 }
