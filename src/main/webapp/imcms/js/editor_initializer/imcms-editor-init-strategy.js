@@ -28,6 +28,7 @@ define("imcms-editor-init-strategy", ["jquery", 'imcms-modal-window-builder'], f
 
             const $controls = $(editorInitData.EDIT_AREA_SELECTOR)
                 .find(editorInitData.CONTROL_SELECTOR)
+	            .off('click')
                 .click(openEditor);
 
             $controls.each(function () {

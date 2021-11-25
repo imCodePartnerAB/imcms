@@ -69,4 +69,7 @@ public interface ImageRepository extends JpaRepository<ImageJPA, Integer>, Versi
 
     @Query(value = "SELECT MIN(img.index) FROM imcms_text_doc_images img WHERE img.doc_id=?1", nativeQuery = true)
     Integer findMinIndexByVersion(int docId);
+
+	@Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef.loopIndex = ?3 ")
+	List<ImageJPA> findByVersionAndLanguageAndLoopIndex(Version version, LanguageJPA language, int loopIndex);
 }

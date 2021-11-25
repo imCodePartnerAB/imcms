@@ -104,18 +104,13 @@ class DefaultUserLockValidator implements UserLockValidator {
     }
 
     @Override
-    public String getRemainingWaitTime(UserDomainObject user) {
+    public long getRemainingWaitTime(UserDomainObject user) {
         final Calendar dateTime = Calendar.getInstance();
         final long millisTimeBlocked = timeBlocking * 60 * 1000;
 
         dateTime.setTimeInMillis(user.getBlockedDate().getTime() + millisTimeBlocked);
 
-        long timeRemained = dateTime.getTimeInMillis() - System.currentTimeMillis();
-
-        long minutes = (timeRemained / 1000) / 60;
-        long seconds = (timeRemained / 1000) % 60;
-
-        return String.format("%d min : %d sec", minutes, seconds);
+	    return dateTime.getTimeInMillis() - System.currentTimeMillis();
     }
 
     @Override

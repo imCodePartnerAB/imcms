@@ -4,6 +4,11 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 05.09.17
  */
-const API = require('imcms-rest-api').API;
+define('imcms-images-rest-api', ['imcms-rest-api'], function (rest) {
+	let url = '/images';
+	let api = new rest.API(url);
 
-module.exports = new API('/images');
+	api.getLoopImages = (requestDTO) => rest.ajax.call({url: `${url}/loop`, type: 'GET', json: false}, requestDTO)
+
+	return api;
+})

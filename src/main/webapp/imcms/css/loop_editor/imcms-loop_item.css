@@ -1,11 +1,13 @@
 .imcms-loop-item {
+	height: 6%;
     cursor: pointer;
-    display: block;
+    display: flex;
     overflow: hidden;
-    padding-left: 70px;
-    padding-right: 35px;
+	padding: 0;
     position: relative;
     width: 100%;
+	flex-shrink: 0;
+	margin: 0.1% 0 0.1% 0;
 }
 
 .imcms-loop-item__info {
@@ -15,11 +17,33 @@
     text-transform: none;
     text-align: left;
     float: left;
+	padding: 0 0 0 1%;
+	font-weight: normal;
+}
+.imcms-loop-item__info--id {
+	text-align: right;
+}
+
+.imcms-loop-item__info--image-container {
+	text-align: center;
+}
+.imcms-loop-item__info--image {
+	height: 100%;
+}
+
+.imcms-loop-item__info--content {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.imcms-loop-item__info--control {
+
 }
 
 .imcms-loop-item__controls {
     display: none;
-    padding: 14px 0;
+	margin-top:  13px;
     position: absolute;
     top: 0;
     right: 27px;
@@ -42,4 +66,7 @@
 
 .imcms-loop-item__info.imcms-checkbox .imcms-checkbox__label:before {
     top: 15px;
+}
+
+.imcms-label.imcms-checkbox__label{
 }

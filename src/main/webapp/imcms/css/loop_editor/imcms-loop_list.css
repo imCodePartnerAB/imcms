@@ -24,3 +24,22 @@
     width: 100%;
     height: 100%;
 }
+.imcms-loop-list__titles {
+	display: flex;
+	width: 100%;
+	padding: 0 1% 0 1%;
+	justify-content: space-between;
+}
+
+.imcms-loop-list-titles__title {
+	background: rgba(56, 158, 207, 0.2);
+	color: #2e3f47;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 24px;
+	text-transform: uppercase;
+	align-items: center;
+	padding: 0 5px;
+	margin: 0 1px;
+}

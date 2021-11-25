@@ -5,9 +5,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
+<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<fmt:setBundle basename="imcms" var="resource_property"/>
+
 <html>
 <head>
-    <title><fmt:message key="templates/sv/no_page.html/1"/></title>
+    <title><fmt:message key="templates/sv/no_page.html/1" bundle="${resource_property}"/></title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
@@ -18,7 +22,7 @@
 <div class="imcms-page-error">
     <div class="imcms-page-error-head">
         <a href="http://www.imcms.net/" class="imcms-login__logo"></a>
-        <div class="imcms-title imcms-head__title"><fmt:message key="templates/sv/no_page.html/1"/></div>
+        <div class="imcms-title imcms-head__title"><fmt:message key="templates/sv/no_page.html/1" bundle="${resource_property}"/></div>
     </div>
     <div class="imcms-page-error-body">
         <div class="imcms-field">
@@ -27,20 +31,20 @@
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button"
                         onClick="top.location='${contextPath}';">
-                    <fmt:message key="templates/Startpage"/>
+                    <fmt:message key="templates/Startpage" bundle="${resource_property}"/>
                 </button>
             </form>
             <form class="imcms-page-error-body__form"
                   action="${contextPath}/servlet/BackDoc">
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button">
-                    <fmt:message key="templates/Back"/>
+                    <fmt:message key="templates/Back" bundle="${resource_property}"/>
                 </button>
             </form>
         </div>
         <div class="imcms-field" style="margin-top: 30px">
             <div class="imcms-title">
-                <fmt:message key="templates/sv/no_page.html/2">
+                <fmt:message key="templates/sv/no_page.html/2" bundle="${resource_property}">
                     <fmt:param value="<%= Imcms.getServices().getSystemData().getServerMasterAddress() %>"/>
                 </fmt:message>
             </div>

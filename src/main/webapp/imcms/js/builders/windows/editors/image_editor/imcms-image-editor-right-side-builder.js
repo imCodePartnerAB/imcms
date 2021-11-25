@@ -538,7 +538,7 @@ define(
                 function setHrefAttribute($image, imageDTO) {
                     let linkUrl = imageDTO.linkUrl;
                     if (linkUrl) {
-                        if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
+                        if (!linkUrl.startsWith("/") && !linkUrl.startsWith("http")) {
                             linkUrl = "//" + linkUrl;
                         }
 

@@ -13,7 +13,7 @@ public interface UserLockValidator {
     Integer increaseAttempts(UserDomainObject user);
     void resetAttempts(Integer userId);
     void unLockDateTimeBlocked(Integer userId);
-    String getRemainingWaitTime(UserDomainObject user);
+    long getRemainingWaitTime(UserDomainObject user);
     Integer getRemainAttemptsLoggedIn(UserDomainObject user);
 
 }

@@ -27,7 +27,7 @@ public class Mail {
             mail.setFrom(fromAddress);
         } catch (EmailException e) {
             LocalizedMessage errorMessage = new LocalizedMessage("error/missing_email_fromAdress");
-            throw new UnhandledException(errorMessage.toLocalizedString("eng"), e);
+            throw new UnhandledException(errorMessage.toLocalizedStringByIso639_2("eng"), e);
         }
     }
 

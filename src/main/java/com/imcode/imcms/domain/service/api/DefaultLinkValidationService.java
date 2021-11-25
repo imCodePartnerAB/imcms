@@ -13,7 +13,10 @@ import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -31,9 +34,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
     private static final String LINK_VALIDATION_REGEX = "(http.?:\\/\\/)?(.*)";
     private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = "<a\\s+(?:[^>]*?\\s+)?href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
-    private static final String PROTOCOL_HTTP = "http://";
-    private static final String PROTOCOL_HTTPS = "https://";
-    private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
+    private static final String PROTOCOL_HTTP = "http";
+    private static final String PROTOCOL_HTTPS = "https";
+	private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
     private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocRepository docRepository;
@@ -93,6 +96,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
         boolean isPageFound;
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+			httpConnection.setRequestMethod(HttpMethod.HEAD);
+			httpConnection.setInstanceFollowRedirects(false);
+
             try (AutoCloseable autoCloseable = httpConnection::disconnect) {
                 isPageFound = HttpURLConnection.HTTP_OK == httpConnection.getResponseCode();
             }
@@ -222,15 +228,17 @@ public class DefaultLinkValidationService implements LinkValidationService {
     }
 
     private Set<ValidationLink> checkRelativeLink(ValidationLink link) {
+	    final UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri().replacePath(link.getUrl());
+
         Set<ValidationLink> links = new HashSet<>();
         try {
             ValidationLink cloneLink = (ValidationLink) link.clone();
-	        link.setUrl(PROTOCOL_HTTP + InetAddress.getLocalHost().getHostName() + link.getUrl());
+	        link.setUrl(uriBuilder.scheme(PROTOCOL_HTTP).toUriString());
             links.add(verifyValidationLink(link));
 
-	        cloneLink.setUrl(PROTOCOL_HTTPS + InetAddress.getLocalHost().getHostName() + cloneLink.getUrl());
+	        cloneLink.setUrl(uriBuilder.scheme(PROTOCOL_HTTPS).toUriString());
             links.add(verifyValidationLink(cloneLink));
-        } catch (CloneNotSupportedException | UnknownHostException e) {
+        } catch (CloneNotSupportedException e) {
             log.error(e.getMessage());
         }
         return links;

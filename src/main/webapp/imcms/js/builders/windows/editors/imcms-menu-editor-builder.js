@@ -1176,13 +1176,14 @@ define("imcms-menu-editor-builder",
 
             function buildMenuTitlesRow() {
                 $sortOrderColumnHead = $("<div>", {
-                    class: "imcms-grid-col-1",
+					class:'imcms-menu-list-titles__title--sort-order',
                     text: texts.order,
                     click: clickReOrderMenuItemsBySortNumbers,
                 });
                 $sortOrderColumnHead.modifiers = ["sort-order"];
                 $numberingTypeSortFlag.isChecked() ? $sortOrderColumnHead.show() : $sortOrderColumnHead.hide();
-                $removeButton = components.buttons.positiveButton({
+                $removeButton = components.buttons.errorButton({
+	                class:'imcms-menu-list-titles__title--remove',
                     text: texts.multiRemove,
                     click: removeEnabledMenuItems
                 });
@@ -1443,7 +1444,6 @@ define("imcms-menu-editor-builder",
 
             $typesSortSelect = components.selects.selectContainer('<div>', {
                 id: 'type-sort',
-                class: 'imcms-flex--w-40',
                 emptySelect: false,
                 onSelected: buildOnSelectedTypeSort
             });
@@ -1476,7 +1476,6 @@ define("imcms-menu-editor-builder",
                     'type-sort-numbering': $numberingTypeSortFlag
                 }
             }).buildBlockStructure('<div>', {
-                class: 'imcms-flex--flex-1',
             });
         }
 
@@ -1623,7 +1622,10 @@ define("imcms-menu-editor-builder",
 
             $title.text(linkData).css({
                 'text-transform': 'lowercase',
-                'color': '#fff2f9'
+                'color': '#fff2f9',
+	            'overflow':'hidden',
+	            'white-space':'nowrap',
+	            'text-overflow':'ellipsis'
             });
 
             $title.attr('href', linkData)

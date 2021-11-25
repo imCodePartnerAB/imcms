@@ -442,10 +442,15 @@ const texts = {
             },
             loop: {
                 title: "Redaktörslinga",
+	            teaser: "Teaser-menyn ",
+	            page: "sida ",
+	            loopTitle: "ögla ",
                 createNew: "Skapa ny",
                 saveAndClose: "Spara och stäng",
+	            resetSorting: "återställ sorteringen",
                 id: "ID",
                 content: "innehåll",
+	            image: "bild",
                 isEnabled: "är aktiverad",
                 error: {
                     createFailed: 'Misslyckades med att skapa loop. Försök igen',
@@ -905,17 +910,17 @@ const texts = {
                 warnCancelMessage: 'Vill du verkligen avbryta?',
                 cancel: "Avbryt",
                 titleTextName: 'Namn',
-                titleTextDocName: 'Dokumentnamn',
+                titleTextDocName: 'Dokument id/alias',
                 createNewProfile: {
                     titleTextName: 'Namn',
-                    titleTextDocName: 'Dokumentnamn',
+                    titleTextDocName: 'Dokument id/alias',
                     textFieldName: 'Textnamn',
-                    textFieldDocName: 'Text doc namn',
+                    textFieldDocName: 'Text doc id/alias',
                     buttonSave: 'Save'
                 },
                 editProfile: {
                     name: "Namn",
-                    docName: 'Dokumentnamn',
+                    docName: 'Dokument id/alias',
                     buttonEdit: 'Redigera profil',
                     buttonDelete: 'Radera profil'
                 },
@@ -957,7 +962,10 @@ const texts = {
                         descriptionByEmail: "Webmaster E-postbeskrivning",
                         inputName: "Inmatning av webbnamn",
                         inputEmail: "Webmaster e-postinmatning"
-                    }
+                    },
+	                error: {
+		                incorrectEmail: "Felaktig e-post"
+	                }
                 },
                 changeButton: "Spara",
                 error: {
@@ -1438,10 +1446,15 @@ const texts = {
             },
             loop: {
                 title: "Loop Editor",
+	            teaser:"Teaser menu ",
+	            page:"page ",
+	            loopTitle: "loop ",
                 createNew: "Create New",
                 saveAndClose: "Save and close",
+	            resetSorting: "Reset sorting",
                 id: "ID",
                 content: "text content",
+	            image: "image",
                 isEnabled: "is enabled",
                 error: {
                     createFailed: 'Failed to create loop. Try again',
@@ -1901,17 +1914,17 @@ const texts = {
                 warnCancelMessage: 'Do you want to really cancel?',
                 cancel: 'Cancel',
                 titleTextName: 'Name',
-                titleTextDocName: 'Document name',
+                titleTextDocName: 'Document id/alias',
                 createNewProfile: {
                     titleTextName: 'Name',
-                    titleTextDocName: 'Document name',
+                    titleTextDocName: 'Document id/alias',
                     textFieldName: 'Input name',
-                    textFieldDocName: 'Input document name',
+                    textFieldDocName: 'Input document id/alias',
                     buttonSave: 'Save'
                 },
                 editProfile: {
                     name: 'Name',
-                    docName: 'Document Name',
+                    docName: 'Document id/alias',
                     buttonEdit: 'Edit profile',
                     buttonDelete: 'Delete profile'
                 },
@@ -1953,7 +1966,10 @@ const texts = {
                         descriptionByEmail: "Web master Email description",
                         inputName: "Web master name input",
                         inputEmail: "Web master email input"
-                    }
+                    },
+	                error: {
+		                incorrectEmail: "Incorrect email"
+	                }
                 },
                 changeButton: "Change",
                 error: {

@@ -51,7 +51,6 @@ define(
             $profileEditButtons.slideDown();
 
             $profileNameRow.$input.focus();
-            $profileDocNameRow.$input.focus();
         }
 
         function onDeleteProfile() {
@@ -76,7 +75,6 @@ define(
 
             if (!name && !docName) {
                 $profileNameRow.$input.focus();
-                $profileDocNameRow.$input.focus();
                 return;
             }
 
@@ -93,6 +91,7 @@ define(
                     $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
+	                $container.slideUp();
                 }).fail(() => {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
@@ -105,6 +104,7 @@ define(
 
                         onProfileView = onProfileSimpleView;
                         prepareProfileView();
+						$container.slideUp();
                     })
                     .fail(() => {
                         errorMsg.css('display', 'inline-block').slideDown();

@@ -150,7 +150,7 @@ module.exports = class WindowBuilder {
                 this._scrollTop = 0;
             }
 
-            this.$editor && this.$editor.css("display", "none");
+            this.$editor && this.$editor.detach();
 
             if (this.shadowBuilder) {
                 setTimeout(() => this.shadowBuilder.closeWindow({skipScrollFix: true}));

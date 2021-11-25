@@ -10,7 +10,8 @@ ${"-->"}
 
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
 
-<fmt:setLocale value="${cookie['userLanguage'].value}"/>
+<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
+<fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
 <html>
@@ -37,8 +38,9 @@ ${"-->"}
         <div id="login-providers" class="imcms-info-body__providers">
             <div id="default-login-provider" class="login-provider login-provider--active">
                 <c:if test="${requestScope['error'] ne null}">
-                    <div class="imcms-field">
-                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)} ${requestScope['time_error']}</div>
+                    <div class="imcms-field" id="imcms-login-errors">
+                        <div class="imcms-error-msg imcms-login__error-msg"
+                             data-remaining-time="${requestScope['time_error']}">${requestScope['error'].toLocalizedStringByIso639_1(userLanguage)}</div>
                     </div>
                 </c:if>
                 <div class="imcms-field info-block">

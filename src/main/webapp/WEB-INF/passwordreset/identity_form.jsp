@@ -14,9 +14,12 @@
 %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
+<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<fmt:setBundle basename="imcms" var="resource_property"/>
 <html>
 <head>
-    <title><fmt:message key="passwordreset.title"/></title>
+    <title><fmt:message key="passwordreset.title" bundle="${resource_property}"/></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/modal_window/imcms-modal-admin.css">
@@ -26,22 +29,22 @@
 <div class="imcms-modal-admin">
     <div class="imcms-modal-admin-head">
         <a href="https://imcode.com" class="imcms-login__logo"></a>
-        <div class="imcms-title imcms-head__title"><fmt:message key="passwordreset.title"/></div>
+        <div class="imcms-title imcms-head__title"><fmt:message key="passwordreset.title" bundle="${resource_property}"/></div>
     </div>
     <div class="imcms-modal-admin-body">
-        <% List<String> errors = (List<String>) request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
-            if (errors != null) { %>
+        <% LocalizedMessage error = (LocalizedMessage) request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
+            if (error != null) { %>
         <div class="imcms-field">
             <div class="imcms-error-msg imcms-modal-admin__error-msg">
-                <fmt:message key="passwordreset.title.validation_errors"/>
+                <fmt:message key="passwordreset.title.validation_errors" bundle="${resource_property}"/>
             </div>
-            <div class="imcms-error-msg imcms-modal-admin__error-msg"><%= errors.get(0) %>
+            <div class="imcms-error-msg imcms-modal-admin__error-msg"><%= error.toLocalizedStringByIso639_1( (String)pageContext.getAttribute("userLanguage") ) %>
             </div>
         </div>
         <% } %>
         <div class="imcms-field">
             <div class="imcms-title">
-                <%= formInfo.toLocalizedString(request) %>
+	            <%= formInfo.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage")) %>
             </div>
         </div>
         <div class="imcms-field">
@@ -52,7 +55,7 @@
                     <div class="imcms-text-box">
                         <label for="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                class="imcms-label imcms-text-box__label">
-                            <%=formLabelEmail.toLocalizedString(request)%>
+	                        <%=formLabelEmail.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
                         </label>
                         <input id="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                name="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
@@ -68,7 +71,7 @@
         <button type="submit"
                 form="PasswordReset"
                 class="imcms-button imcms-button--positive imcms-modal-admin-footer__button">
-            <%=formSubmit.toLocalizedString(request)%>
+	        <%=formSubmit.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
         </button>
     </div>
 </div>

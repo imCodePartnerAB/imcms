@@ -75,7 +75,7 @@
             </c:when>
             <c:otherwise>
                 <c:choose>
-                    <c:when test="${fn:startsWith(image.linkUrl, '//') || fn:startsWith(image.linkUrl, 'http')}">
+                    <c:when test="${fn:startsWith(image.linkUrl, '/') || fn:startsWith(image.linkUrl, 'http')}">
                         <c:set var="href" value="${' href=\"'.concat(image.linkUrl).concat('\"')}"/>
                     </c:when>
                     <c:otherwise>
@@ -89,7 +89,7 @@
             <c:when test="${not empty imgPath}">
                 ${pre}
                 <c:if test="${not empty href}">
-                    <a${href}>
+                    <a${href} target="_blank">
                 </c:if>
                     <img src="${contextPath}${imgPath}"${classes}${alt}/>
                 <c:if test="${not empty href}">

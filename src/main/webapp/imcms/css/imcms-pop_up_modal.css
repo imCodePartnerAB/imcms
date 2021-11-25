@@ -51,6 +51,14 @@
         height: 700px;
         width: 670px;
     }
+
+	.pageInfo.loading-animation::before{
+		left: -28px;
+		top: -8px;
+		width: 50%;
+		height: 50%;
+		border-width: 3px;
+	}
 }
 
 @media screen and (max-width: 675px) {

@@ -1,19 +1,27 @@
 .imcms-menu-editor__body .imcms-loop-list__items {
-    height: -webkit-calc(100% - 25px);
-    height: -moz-calc(100% - 25px);
-    height: -ms-calc(100% - 25px);
-    height: -o-calc(100% - 25px);
-    height: calc(100% - 25px);
+	height: -webkit-calc(100% - 25px);
+	height: -moz-calc(100% - 25px);
+	height: -ms-calc(100% - 25px);
+	height: -o-calc(100% - 25px);
+	height: calc(100% - 25px);
 }
 
-.imcms-loop-editor .imcms-document-list__items {
-    height: -webkit-calc(100% - 80px);
-    height: -moz-calc(100% - 80px);
-    height: -ms-calc(100% - 80px);
-    height: -o-calc(100% - 80px);
-    height: calc(100% - 80px);
+.imcms-loop-list__items {
+	height: -webkit-calc(100% - 25px);
+	height: -moz-calc(100% - 25px);
+	height: -ms-calc(100% - 25px);
+	height: -o-calc(100% - 25px);
+	height: calc(100% - 25px);
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	overflow: auto;
+	flex-shrink: 0;
 }
-
-.imcms-loop-editor .imcms-document-item .imcms-checkbox label:before {
-    top: 15px;
+.imcms-loop-items-list__item{
+	display: flex;
+	min-height: 45px;
+}
+.imcms-loop-items-list__item-dragging{
+	opacity: .3;
 }

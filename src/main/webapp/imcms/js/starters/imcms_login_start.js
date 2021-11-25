@@ -8,6 +8,7 @@ const auth = require('imcms-authentication');
 const components = require('imcms-components-builder');
 const BEM = require('imcms-bem-builder');
 const modal = require("imcms-modal-window-builder");
+const cookies = require('imcms-cookies');
 let texts = require("imcms-i18n-texts");
 
 $(function () {
@@ -61,4 +62,36 @@ $(function () {
         .fail(() => modal.buildErrorWindow(texts.error.loadProvidersFailed));
 
     $('#username').focus();
+
+	displayRemainingTime();
 });
+
+function displayRemainingTime() {
+	const $errorMsgElement = $('.imcms-login__error-msg');
+	const errorMsg = $errorMsgElement.html();
+	const remainingTimeMilliSeconds = $errorMsgElement.attr('data-remaining-time');
+
+	if (remainingTimeMilliSeconds) {
+		const date = new Date(Number.parseInt(remainingTimeMilliSeconds));
+		$errorMsgElement.html(errorMsg + getRemainingTime(date));
+
+		const timer = setInterval(function () {
+			if (date.getMinutes() === 0 && date.getSeconds() === 0) {
+				clearInterval(timer);
+				$('#imcms-login-errors').slideUp();
+			} else {
+				$errorMsgElement.html(errorMsg + getRemainingTime(date));
+			}
+		}, 1000)
+	}
+}
+
+function getRemainingTime(date) {
+	const userCookieLanguage = cookies.getCookie('userLanguage');
+
+	date.setSeconds(date.getSeconds() - 1);
+	return date.toLocaleTimeString(userCookieLanguage, {
+		minute: "2-digit",
+		second: "2-digit"
+	});
+}

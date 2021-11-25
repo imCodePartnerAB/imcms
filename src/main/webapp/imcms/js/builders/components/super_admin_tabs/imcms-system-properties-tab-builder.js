@@ -20,6 +20,10 @@ define(
         let systemMessage;
 
         function buildPageRow() {
+	        const $success = $('<div>', {
+		        class: 'page-number success-animation',
+		        style: 'display: none',
+	        });
 
             function buildCreateFiledInputNumberPage() {
                 let $pageNumberBox = components.texts.textBox('<div>', {
@@ -37,7 +41,7 @@ define(
                     click: () => {
                         let propertyId = inputNumberPage.data('id');
                         let propertyValue = inputNumberPage.val();
-                        updateProperty({id: propertyId, value: propertyValue});
+                        updateProperty({id: propertyId, value: propertyValue}, $success);
                     }
                 });
 
@@ -49,14 +53,17 @@ define(
                 elements: {
                     'settings-input': buildCreateFiledInputNumberPage(),
                     'settings-button': buildPageNumberButton(),
+	                'success': $success
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-settings-row'
             });
         }
 
-        function updateProperty(property) {
-            propertyRestApi.update({id: property.id, value: property.value});
+        function updateProperty(property, $success) {
+			$success.hide();
+            propertyRestApi.update({id: property.id, value: property.value})
+	            .done($success.show(500));
         }
 
         propertyRestApi.getAllProperties()
@@ -93,6 +100,10 @@ define(
             .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         function buildSystemMessageRow() {
+	        const $success = $('<div>', {
+		        class: 'system-message success-animation',
+		        style: 'display: none',
+	        });
 
             function buildCreateSystemMessageInput() {
                 let $fieldForSystemMessage = components.texts.textArea('<div>', {
@@ -112,7 +123,7 @@ define(
                     click: () => {
                         let propertyId = systemMessage.data('id');
                         let propertyValue = systemMessage.val();
-                        updateProperty({id: propertyId, value: propertyValue});
+                        updateProperty({id: propertyId, value: propertyValue}, $success);
                     }
                 });
 
@@ -124,6 +135,7 @@ define(
                 elements: {
                     'settings-input': buildCreateSystemMessageInput(),
                     'settings-button': buildCreateSystemMessageButton(),
+	                'success':$success
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-settings-row'
@@ -131,6 +143,10 @@ define(
         }
 
         function buildServerMasterRow() {
+	        const $success = $('<div>', {
+		        class: 'server-master-data success-animation',
+		        style: 'display: none',
+	        });
 
             function buildServerMasterTitle() {
                 return $('<div>', {
@@ -172,8 +188,10 @@ define(
                         let serverMasterNameProperty = {id: propertyIdForName, value: propertyValueForName};
                         let serverMasterEmailProperty = {id: propertyIdForEmail, value: propertyValueForEmail};
 
-                        updateProperty(serverMasterNameProperty);
-                        updateProperty(serverMasterEmailProperty);
+	                    if (validateEmail(serverMasterEmailProperty.value)) {
+		                    updateProperty(serverMasterNameProperty, $success);
+		                    updateProperty(serverMasterEmailProperty, $success);
+	                    }else modal.buildErrorWindow(texts.sections.error.incorrectEmail)
                     }
                 });
 
@@ -187,6 +205,7 @@ define(
                     'settings-input-name': buildServerMasterNameInput(),
                     'settings-input-email': buildServerMasterEmailInput(),
                     'settings-button': buildCreateServerMasterButton(),
+	                'success':$success
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-settings-row'
@@ -194,6 +213,10 @@ define(
         }
 
         function buildWebMasterRow() {
+	        const $success = $('<div>', {
+		        class: 'web-master-data success-animation',
+		        style: 'display: none',
+	        });
 
             function buildWebMasterTitle() {
                 return $('<div>', {
@@ -236,8 +259,10 @@ define(
                         let webMasterNameProperty = {id: propertyIdForWebName, value: propertyValueForWebName};
                         let webMasterEmailProperty = {id: propertyIdForWebEmail, value: propertyValueForWebEmail};
 
-                        updateProperty(webMasterNameProperty);
-                        updateProperty(webMasterEmailProperty);
+	                    if (validateEmail(webMasterEmailProperty.value)) {
+		                    updateProperty(webMasterNameProperty, $success);
+		                    updateProperty(webMasterEmailProperty, $success);
+	                    }else modal.buildErrorWindow(texts.sections.error.incorrectEmail)
                     }
                 });
 
@@ -251,11 +276,17 @@ define(
                     'settings-input-name': buildCreateInputWebMasterName(),
                     'settings-input-email': buildCreateInputWebMasterEmail(),
                     'settings-button': buildCreateMasterWebButton(),
+	                'success':$success
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-settings-row'
             });
         }
+
+	    function validateEmail(email) {
+		    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+		    return email === '' ? true : emailRegex.test(email);
+	    }
 
         return new SuperAdminTab(texts.name, [
             buildPageRow(),
