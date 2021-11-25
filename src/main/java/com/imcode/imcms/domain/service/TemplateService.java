@@ -3,10 +3,8 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.model.Template;
 
 import java.io.File;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for work with templates in relation to template files.
@@ -15,11 +13,9 @@ public interface TemplateService {
 
     List<Template> getAll();
 
-    void save(Template saveMe);
-
     File getTemplateDirectory();
 
-    Optional<Template> get(String name);
+    Template get(String name);
 
     Path getTemplateAdminPath(String templateName);
 
@@ -27,17 +23,17 @@ public interface TemplateService {
 
     Path getPhysicalPath(String name);
 
-    Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode);
+    boolean isValidName(String name);
 
-    void delete(Integer id);
+    void save(Template saveMe);
 
     /**
-     * replaceTemplateFile provide replace all documents which uses old template on newTemplate!
-     * If template exists only one in db, it will throw exception, because we can not delete
-     * existing last template!
-     *
-     * @param oldTemplate - file template or data template which will delete
-     * @param newTemplate - file template or data template which will replace on
+     * replaceTemplateFile provide replace all documents which uses old template on new template!
+     * If new template exists only one in db, it will throw exception!
      */
-    void replaceTemplateFile(Path oldTemplate, Path newTemplate);
+    void replaceTemplateFile(String oldTemplateName, String newTemplateName);
+
+    void renameTemplate(String oldTemplateName, String newTemplateName);
+
+    void delete(Integer id);
 }

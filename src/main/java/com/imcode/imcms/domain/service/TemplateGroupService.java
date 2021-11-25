@@ -5,12 +5,15 @@ import com.imcode.imcms.model.TemplateGroup;
 import java.util.List;
 
 public interface TemplateGroupService {
-    //TODO Drop get by id. After switch to work on folder based model
     List<TemplateGroup> getAll();
 
     TemplateGroup save(TemplateGroup templateGroup);
 
     TemplateGroup edit(TemplateGroup templateGroup);
+
+    void addTemplate(String templateFilename, Integer groupId);
+
+    void deleteTemplate(String templateName, Integer groupId);
 
     TemplateGroup get(String name);
 

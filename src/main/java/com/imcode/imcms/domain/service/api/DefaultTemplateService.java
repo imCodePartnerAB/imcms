@@ -16,15 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ucar.httpservices.HTTPAuthStore.log;
@@ -34,19 +27,55 @@ import static ucar.httpservices.HTTPAuthStore.log;
 public class DefaultTemplateService implements TemplateService {
 
     private final TemplateRepository templateRepository;
+
+    private final TextDocumentTemplateService textDocumentTemplateService;
+
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
-    private final TextDocumentTemplateService textDocumentTemplateService;
     private final Path templateAdminPath;
 
-    DefaultTemplateService(TemplateRepository templateRepository,
-                           @Value("WEB-INF/templates/text") File templateDirectory,
-                           TextDocumentTemplateService textDocumentTemplateService, @Value("${TemplatePath}") Path templateAdminPath) {
+    DefaultTemplateService(TemplateRepository templateRepository, TextDocumentTemplateService textDocumentTemplateService,
+                           @Value("WEB-INF/templates/text") File templateDirectory, @Value("${TemplatePath}") Path templateAdminPath) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.templateAdminPath = templateAdminPath.resolve("admin");
+    }
+
+    /**
+     * Will save/delete to DB all templates if not yet for files in directory.
+     */
+    @PostConstruct
+    private void saveTemplatesInFolder() {
+        final Set<String> savedTemplateNames = templateRepository.findAll()
+                .stream()
+                .map(Template::getName)
+                .collect(Collectors.toSet());
+
+        final String[] templateNames = templateDirectory.list(
+                (dir, name) -> templateExtensions.contains(FilenameUtils.getExtension(name)));
+
+        if(templateNames == null) return;
+
+        final List<String> templateNamesToBeSaved = Arrays.stream(templateNames)
+                .filter(templateName -> !savedTemplateNames.contains(FilenameUtils.getBaseName(templateName))).collect(Collectors.toList());
+
+        templateNamesToBeSaved.stream()
+                .map(FilenameUtils::getBaseName)
+                .map(templateName -> new TemplateJPA(null, templateName, false))
+                .forEach(templateRepository::save);
+
+        //delete templates from db that were manually deleted
+        final List<TemplateJPA> allTemplates = templateRepository.findAll();
+        if (allTemplates.size() > templateNames.length) {
+            final List<String> templateNamesList = Arrays.stream(templateNames)
+                    .map(FilenameUtils::getBaseName).collect(Collectors.toList());
+
+            allTemplates.stream()
+                    .filter(template -> !templateNamesList.contains(template.getName()))
+                    .forEach(template -> delete(template.getId()));
+        }
     }
 
     @Override
@@ -66,13 +95,8 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public Optional<Template> get(String templateName) {
-        if (isTemplateFileExist(templateName)) {
-            final Template template = templateRepository.findByName(templateName);
-            return Optional.ofNullable(template).map(TemplateDTO::new);
-        }
-
-        return Optional.empty();
+    public Template get(String templateName) {
+        return templateRepository.findByName(templateName);
     }
 
     @Override
@@ -91,22 +115,10 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode) {
-        final File templateFile = new File(templateDirectory, template.getName() + ".jsp");
-
-        try {
-            Files.write(templateFile.toPath(), content, writeMode);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return templateFile.toPath();
-    }
-
-    @Override
     public void delete(Integer id) {
         List<TemplateJPA> allTemplates = templateRepository.findAll();
         if (allTemplates.size() > 1) {
+            templateRepository.deleteTemplateGroupByTemplateId(id);
             templateRepository.delete(id);
         } else {
             String errorMessage = "Templates less then 1 count in db!";
@@ -116,63 +128,43 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public void replaceTemplateFile(Path oldTemplate, Path newTemplate) {
-        final String deleteTemplateName = oldTemplate.getFileName().toString();
-        final String orgDeleteTemplateName = getPathWithoutExtension(deleteTemplateName);
-        final String newTemplateName = newTemplate.getFileName().toString();
-        final String orgNewTemplateName = getPathWithoutExtension(newTemplateName);
-        final Template deletedTemplate = templateRepository.findByName(orgDeleteTemplateName);
-        final Template replaceReceivedTemplate = templateRepository.findByName(orgNewTemplateName);
-        if (deletedTemplate != null && replaceReceivedTemplate != null) {
-            List<TextDocumentTemplateDTO> docsDeletedTemplate = textDocumentTemplateService.getByTemplateName(deleteTemplateName);
+    public void replaceTemplateFile(String oldTemplateName, String newTemplateName) {
+        if (templateRepository.findByName(newTemplateName) != null) {
+            List<TextDocumentTemplateDTO> docsDeletedTemplate = textDocumentTemplateService.getByTemplateName(oldTemplateName);
 
             docsDeletedTemplate.forEach(textDoc -> {
-                textDoc.setTemplateName(orgNewTemplateName);
-                textDoc.setChildrenTemplateName(orgNewTemplateName);
+                textDoc.setTemplateName(newTemplateName);
+                textDoc.setChildrenTemplateName(newTemplateName);
                 textDocumentTemplateService.save(textDoc);
             });
 
         } else {
-            final String errorMessage = "Template not exist " + orgDeleteTemplateName + " " + orgNewTemplateName;
+            final String errorMessage = "Template not exist " + oldTemplateName + " " + newTemplateName;
             log.error(errorMessage);
             throw new EmptyResultDataAccessException(errorMessage, -1);
         }
     }
 
-    public File getTemplateDirectory() {
-        return templateDirectory;
+    @Override
+    public void renameTemplate(String oldTemplateName, String newTemplateName) {
+        templateRepository.updateTemplateName(oldTemplateName, newTemplateName);
+
+        textDocumentTemplateService.getByTemplateName(oldTemplateName).forEach(textDoc -> {
+            textDoc.setTemplateName(newTemplateName);
+            textDoc.setChildrenTemplateName(newTemplateName);
+            textDocumentTemplateService.save(textDoc);
+        });
     }
 
-    /**
-     * Will save to DB all templates if not yet for files in directory.
-     */
-    @PostConstruct
-    private void saveTemplatesInFolder() {
-        final Set<String> savedTemplateNames = templateRepository.findAll()
-                .stream()
-                .map(Template::getName)
-                .collect(Collectors.toSet());
+    @Override
+    public boolean isValidName(String name) {
+        final String extension = FilenameUtils.getExtension(name);
+        return templateExtensions.contains(extension);
+    }
 
-        final String[] templateNamesToBeSaved = templateDirectory.list((dir, name) -> {
-            final String extension = FilenameUtils.getExtension(name);
-
-            if (!templateExtensions.contains(extension)) {
-                return false;
-            }
-
-            final String templateName = FilenameUtils.getBaseName(name);
-            return !savedTemplateNames.contains(templateName);
-        });
-
-        if (templateNamesToBeSaved == null) {
-            return; // strange situation, should not happen at all
-        }
-
-        Arrays.stream(templateNamesToBeSaved)
-                .map(FilenameUtils::getBaseName)
-                // TODO: 26.04.19 Check if template already assigned to group at DB
-                .map(templateName -> new TemplateJPA(null, templateName, false, null))
-                .forEach(templateRepository::save);
+    @Override
+    public File getTemplateDirectory() {
+        return templateDirectory;
     }
 
     private boolean isTemplateFileExist(String templateName) {
@@ -200,9 +192,4 @@ public class DefaultTemplateService implements TemplateService {
 
         return null;
     }
-
-    private String getPathWithoutExtension(String fileName) {
-        return FilenameUtils.removeExtension(fileName);
-    }
-
 }

@@ -11,10 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TemplateRepository extends JpaRepository<TemplateJPA, Integer> {
 
     @Transactional
-    @Modifying
-    @Query(value = "UPDATE template SET template_name = ?1 WHERE template_name = ?2", nativeQuery = true)
-    void updateTemplateName(String newTemplateName, String oldTemplateName);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value = "UPDATE template SET template_name = ?2 WHERE template_name = ?1", nativeQuery = true)
+    void updateTemplateName(String oldTemplateName, String newTemplateName);
 
     TemplateJPA findByName(String name);
 
+    /**
+     * Note: method will delete template-&gt; template group relation but not the template itself
+     */
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value = "DELETE FROM template_template_group WHERE template_id = ?1", nativeQuery = true)
+    void deleteTemplateGroupByTemplateId(int templateId);
 }
