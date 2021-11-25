@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Transactional
 public class TemplateControllerTest extends AbstractControllerTest {
@@ -41,7 +41,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getTemplatesTest() throws Exception {
+    public void getAll_When_TemplatesExist_Expected_ReturnedTemplates() throws Exception {
         final String templatesJson = asJson(templatesExpected);
         getAllExpectedOkAndJsonContentEquals(templatesJson);
     }
@@ -53,7 +53,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                 controllerPath() + "/" + template.getId());
         performRequestBuilderExpectedOk(requestBuilder);
-        assertFalse(templateService.get(template.getName()).isPresent());
+        assertNull(templateService.get(template.getName()));
         assertEquals(4, templateService.getAll().size());
     }
 
@@ -68,7 +68,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteTemplate_When_InGroupOneTemplate_Expected_CorrectException() throws Exception {
+    public void deleteTemplate_When_OnlyOneTemplate_Expected_CorrectException() throws Exception {
         dataInitializer.cleanRepositories();
         final List<Template> template = dataInitializer.createData(1);
         assertEquals(1, templateService.getAll().size());

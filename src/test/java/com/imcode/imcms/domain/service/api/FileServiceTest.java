@@ -6,12 +6,9 @@ import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
+import com.imcode.imcms.domain.exception.TemplateFileException;
 import com.imcode.imcms.domain.service.FileService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -21,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -39,37 +35,33 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class FileServiceTest extends WebAppSpringTestConfig {
 
-    private final String testFileName = "fileName.jsp";
-    private final String testFileName2 = "fileName2.txt";
+    private final String testFileName = "fileNameTest.jsp";
+    private final String testFileName2 = "fileNameTest2.txt";
     private final String testTemplateName = "templateTest";
-    private final String testDirectoryName = "dirName";
+    private final String testDirectoryName = "dirNameTest";
     private final String testDirectoryName2 = testDirectoryName + "two";
     private final String testDirectoryName3 = testDirectoryName + "three";
+    private final String newName = "newNameTest.jsp";
+    private final String notValidNewTemplateName = "newNameTest.txt";
 
     @Autowired
     private FileService fileService;
 
     @Autowired
-    private TemplateDataInitializer templateDataInitializer;
+    private TemplateRepository templateRepository;
 
+    @Autowired
+    private TemplateDataInitializer templateDataInitializer;
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
-
-    @Autowired
-    private TextDocumentTemplateService documentTemplateService;
-
-    @Autowired
-    private TemplateRepository templateRepository;
 
     @Autowired
     private BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
-
     @Value("WEB-INF/templates/text")
     private Path templateDirectory;
-
     @Value("${rootPath}")
     private Path rootPath;
 
@@ -78,8 +70,15 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     public void setUp() throws IOException {
         templateDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
-        testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
-        Files.deleteIfExists(templateDirectory.resolve(testFileName));
+
+        testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileUtils::deleteRecursive);
+        deleteFilesInTemplateDirectory(testFileName, testFileName2, testTemplateName, newName, notValidNewTemplateName);
+    }
+
+    private void deleteFilesInTemplateDirectory(String... names) throws IOException {
+        for(String name: names){
+            Files.deleteIfExists(templateDirectory.resolve(name));
+        }
     }
 
     @Test
@@ -107,7 +106,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
         assertTrue(documents.isEmpty());
-        assertEquals(0, documents.size());
     }
 
     @Test
@@ -118,22 +116,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName));
         assertEquals(1, documents.size());
-    }
-
-    @Test
-    public void getDocumentsByTemplateName_When_TemplateNotFileButNameNotExists_Expected_CorrectException() {
-        final String testTemplateName = "fakeTest";
-        assertThrows(FileAccessDeniedException.class, () -> fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)));
-    }
-
-    @Test
-    public void getDocumentsByTemplateName_When_TemplateToOutSideRootDir_Expected_CorrectException() {
-        final Path pathOutSide = testRootPaths.get(0).resolve(testTemplateName);
-        final String templateName = pathOutSide.getFileName().toString();
-        DocumentDTO document = documentDataInitializer.createData();
-        templateDataInitializer.createData(document.getId(), templateName, templateName);
-
-        assertThrows(FileAccessDeniedException.class, () -> fileService.getDocumentsByTemplatePath(pathOutSide));
     }
 
     @Test
@@ -151,11 +133,13 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     public void getRootPaths_When_PathsCorrect_Expected_CorrectSourceFiles() throws IOException {
         final Path firstRootDir = testRootPaths.get(0);
         final Path secondRootDir = testRootPaths.get(1);
+        final Path thirdRootDir = testRootPaths.get(2);
         Files.createDirectory(firstRootDir);
         Files.createDirectory(secondRootDir);
         final List<SourceFile> files = Arrays.asList(
                 fileToSourceFile.apply(firstRootDir, false),
-                fileToSourceFile.apply(secondRootDir, false)
+                fileToSourceFile.apply(secondRootDir, false),
+                fileToSourceFile.apply(thirdRootDir, false)
         );
 
         assertEquals(files.size(), fileService.getRootFiles().size());
@@ -211,6 +195,24 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getFiles_When_FilesInTemplateTextDir_Expected_ListWithCorrectValuesNumberOfDocuments() throws IOException {
+        final Path pathFile = templateDirectory.resolve(testFileName);
+        Files.createFile(pathFile);
+
+        final String testTemplateName = FilenameUtils.removeExtension(testFileName);
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), testTemplateName, testTemplateName);
+
+        final SourceFile expectedSourceFile = fileToSourceFile.apply(pathFile, false);
+        expectedSourceFile.setNumberOfDocuments(fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
+        final SourceFile sourceFile = fileService.getFiles(templateDirectory).stream()
+                .filter(source -> source.getFullPath().equals(pathFile.toString()))
+                .findAny().get();
+
+        assertEquals(expectedSourceFile.getNumberOfDocuments(), sourceFile.getNumberOfDocuments());
+    }
+
+    @Test
     public void createFile_WhenFileNameEmpty_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -260,6 +262,40 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void createFile_When_TemplateTextDir_And_TemplateNameIsValid_Expected_AddedTemplateEntity() throws IOException {
+        assertTrue(templateRepository.findAll().isEmpty());
+
+        final Path pathNewFile = templateDirectory.resolve(testFileName);
+        final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
+        final SourceFile createdFile = fileService.createFile(newFile, false);
+        assertTrue(Files.exists(pathNewFile));
+
+        final List<TemplateJPA> templates = templateRepository.findAll();
+        assertEquals(1, templates.size());
+        assertEquals(FilenameUtils.removeExtension(createdFile.getFileName()), templates.get(0).getName());
+    }
+
+    @Test
+    public void createFile_When_TemplateTextDir_And_TemplateNameIsNotValid_Expected_NotAddedTemplateEntity() throws IOException {
+        assertTrue(templateRepository.findAll().isEmpty());
+
+        final Path pathNewFile = templateDirectory.resolve(testFileName2);
+        final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
+        final SourceFile createdFile = fileService.createFile(newFile, false);
+        assertTrue(Files.exists(pathNewFile));
+
+        assertTrue(templateRepository.findAll().isEmpty());
+    }
+
+    @Test
+    public void createDir_When_PathToTemplateTextDir_Expected_CorrectException() {
+        final Path pathNewFile = templateDirectory.resolve(testDirectoryName);
+        final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
+        assertThrows(TemplateFileException.class, () -> fileService.createFile(newFile, true));
+        assertFalse(Files.exists(pathNewFile));
+    }
+
+    @Test
     public void saveFile_When_FileExistAndOverWrite_Expected_SavedFile() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -292,6 +328,32 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final String testText = "bla-bla-bla";
         assertThrows(FileAlreadyExistsException.class, () -> fileService.saveFile(
                 pathFile2, testText.getBytes(), StandardOpenOption.CREATE_NEW));
+    }
+
+    @Test
+    public void saveFile_When_PathToTemplateTextDir_And_TemplateNameIsValid_Expected_SavedTemplateEntity() throws IOException {
+        final Path pathFile = templateDirectory.resolve(testFileName);
+
+        assertTrue(templateRepository.findAll().isEmpty());
+
+        final String testText = "bla-bla-bla";
+        final SourceFile saved = fileService.saveFile(pathFile, testText.getBytes(), null);
+
+        assertTrue(Files.exists(Paths.get(saved.getFullPath())));
+        assertEquals(1, templateRepository.findAll().size());
+    }
+
+    @Test
+    public void saveFile_When_PathToTemplateTextDir_And_TemplateNameIsNotValid_Expected_NotSavedTemplateEntity() throws IOException {
+        final Path pathFile = templateDirectory.resolve(testFileName2);
+
+        assertTrue(templateRepository.findAll().isEmpty());
+
+        final String testText = "bla-bla-bla";
+        final SourceFile saved = fileService.saveFile(pathFile, testText.getBytes(), null);
+
+        assertTrue(Files.exists(Paths.get(saved.getFullPath())));
+        assertTrue(templateRepository.findAll().isEmpty());
     }
 
     @Test
@@ -420,6 +482,41 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(0, Files.list(firstRootPath).count());
     }
 
+    @Test
+    public void deleteFile_When_FileInTemplateTextDir_And_TemplateIsNotUsedDocuments_Expected_Deleted() throws IOException {
+        final Path template = templateDirectory.resolve(testTemplateName);
+        Files.createFile(template);
+        assertTrue(Files.exists(template));
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
+        assertTrue(documents.isEmpty());
+
+        fileService.deleteFile(template);
+        assertFalse(Files.exists(template));
+    }
+
+    @Test
+    public void deleteFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_Expected_CorrectException() throws IOException {
+        final Path template = templateDirectory.resolve(testTemplateName);
+        final String templateName = template.getFileName().toString();
+        Files.createFile(template);
+        assertTrue(Files.exists(template));
+
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), templateName, templateName);
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
+        assertEquals(1, documents.size());
+        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateDirectory));
+        assertTrue(Files.exists(template));
+    }
+
+    @Test
+    public void deleteDir_When_DirIsTemplateTextDir_Expected_CorrectException() {
+        assertTrue(Files.exists(templateDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateDirectory));
+    }
+
 
     @Test
     public void copyFile_When_SrcFileExists_Expected_CopyFile() throws IOException {
@@ -481,6 +578,36 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void copyFile_When_FileInTemplateTextDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(pathFile), templateDirectory));
+    }
+
+    @Test
+    public void copyFile_When_FileFromTemplateTextDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path templateFile = templateDirectory.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(templateFile);
+
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateFile), firstRootPath));
+    }
+
+    @Test
+    public void copyDir_When_DirIsTemplateTextDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        Files.createDirectory(firstRootPath);
+
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateDirectory), firstRootPath));
+    }
+
+    @Test
     public void moveFiles_When_FilesExist_Expected_MoveFiles() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -529,31 +656,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void moveFile_When_FileExist_Expected_RenameFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFileByDir = firstRootPath.resolve(testFileName);
-        final Path pathFile2ByDir = pathDir.resolve(testFileName2);
-
-        assertFalse(Files.exists(pathDir));
-
-        Files.createDirectories(pathDir);
-        Files.createFile(pathFileByDir);
-
-
-        assertEquals(2, fileService.getFiles(firstRootPath).size());
-        assertEquals(0, fileService.getFiles(pathDir).size());
-
-        SourceFile moved = fileService.moveFile(pathFileByDir, pathFile2ByDir);
-
-        assertFalse(Files.exists(pathFileByDir));
-        assertEquals(1, fileService.getFiles(firstRootPath).size());
-        assertEquals(1, fileService.getFiles(pathDir).size());
-        assertNotEquals(pathFileByDir.getFileName(), moved.getFileName());
-
-    }
-
-    @Test
     public void moveFile_When_FilesMoveToOutSideRootDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -578,49 +680,31 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void moveFile_When_FileMoveToOutSideRootDir_Expected_CorrectException() throws IOException {
+    public void moveFile_When_FileInTemplateTextDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeDir = Paths.get("outSideDir");
-        final Path pathFakeFile2 = pathFakeDir.resolve(testRootPaths.get(0).getFileName());
-
-        Files.createDirectories(pathDir);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+        Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
-
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
-
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(pathFakeFile2, pathFile));
-
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
+        assertThrows(TemplateFileException.class, () -> fileService.moveFile(Collections.singletonList(pathFile), templateDirectory));
     }
 
     @Test
-    public void moveFile_When_FileRenameToOutSideRootDir_Expected_CorrectException() throws IOException {
+    public void moveFile_When_FileFromTemplateTextDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeDir = Paths.get("outSideDir");
-        final Path pathFakeFile2 = pathFakeDir.resolve(testRootPaths.get(0).getFileName());
-        assertFalse(Files.exists(pathDir));
+        final Path templateFile = templateDirectory.resolve(testFileName);
+        Files.createDirectory(firstRootPath);
+        Files.createFile(templateFile);
 
-        Files.createDirectories(pathDir);
-        Files.createFile(pathFile);
+        assertThrows(TemplateFileException.class, () -> fileService.moveFile(Collections.singletonList(templateFile), firstRootPath));
+    }
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
+    @Test
+    public void moveDir_When_DirIsTemplateTextDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        Files.createDirectory(firstRootPath);
 
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
-
-        assertThrows(FileAccessDeniedException.class,
-                () -> fileService.moveFile(pathFakeFile2, pathFile));
-
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateDirectory), firstRootPath));
     }
 
     @Test
@@ -647,7 +731,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getFiles_When_OrderNotCorrect_Expected_CorrectOrder() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-
         Files.createDirectory(firstRootPath);
 
         final Path file1 = firstRootPath.resolve(testFileName);
@@ -714,7 +797,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void moveDirectory_When_DirectoryNotEmpty_Expected_moveCorrectDirectory() throws IOException {
-
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2ByDir = pathDir.resolve(testDirectoryName3);
@@ -788,222 +870,114 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void renameFile_When_FileNameEmpty_Expected_CorrectException() throws IOException {
+    public void renameFile_When_FileExistsAndNewNameIsNotEmpty_Expected_RenameFile() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTest = firstRootPath.resolve(testDirectoryName);
-        final Path pathTarget = firstRootPath.resolve(" ");
-
-        Files.createDirectories(pathTest);
-
-        assertThrows(EmptyFileNameException.class, () -> fileService.moveFile(pathTest, pathTarget));
-
-        assertFalse(Files.exists(pathTarget));
-
-    }
-
-    @Test
-    public void renameTemplateFile_When_TemplateUseDocumentsButLocatedNotDirTemplate_Expected_RenameFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTest = firstRootPath.resolve(testDirectoryName);
-        final Path pathTarget = firstRootPath.resolve(testDirectoryName2);
-        final String namePathTest = pathTest.getFileName().toString();
-        final String namePathTarget = pathTarget.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-
-        templateDataInitializer.createData(document.getId(), namePathTest, namePathTest);
-
-        Files.createDirectories(pathTest);
-
-        fileService.moveFile(pathTest, pathTarget);
-
-        final List<TextDocumentTemplateDTO> docsByTemplNameTarget = documentTemplateService.getByTemplateName(namePathTarget);
-        final List<TextDocumentTemplateDTO> docsByTemplateSrc = documentTemplateService.getByTemplateName(namePathTest);
-        assertFalse(documentTemplateService.getByTemplateName(namePathTest).isEmpty());
-        assertTrue(docsByTemplNameTarget.isEmpty());
-        assertEquals(1, docsByTemplateSrc.size());
-        assertFalse(Files.exists(pathTest));
-    }
-
-    @Test
-    public void saveTemplateFileInGroup_When_templateFileNotExistsInGroup_Expected_ChangeTemplateGroup() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+        final Path pathFile = firstRootPath.resolve(testFileName);
 
         Files.createDirectory(firstRootPath);
-        Files.createFile(pathFileByRoot);
+        Files.createFile(pathFile);
+        assertTrue(Files.exists(pathFile));
 
-        final String originalFileName = FilenameUtils.removeExtension(pathFileByRoot.getFileName().toString());
-
-        Template template = templateDataInitializer.createData(originalFileName);
-        TemplateGroup testGroup = templateDataInitializer.createData("testGroup", 2, false);
-
-        assertNull(template.getTemplateGroup());
-
-        Template savedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, testGroup.getName());
-
-        assertNotNull(savedTemplate.getTemplateGroup());
-        assertEquals(testGroup.getName(), savedTemplate.getTemplateGroup().getName());
-
+        final Path expectedPathFile = firstRootPath.resolve(newName);
+        fileService.renameFile(pathFile, newName);
+        assertFalse(Files.exists(pathFile));
+        assertTrue(Files.exists(expectedPathFile));
     }
 
     @Test
-    public void saveTemplateFileInGroup_When_templateFileExistsInGroup_Expected_ChangeTemplateGroup() throws IOException {
+    public void renameFile_When_FileDoesNotExist_Expected_CorrectException() {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+        final Path nonExistentPath = firstRootPath.resolve(testFileName);
+
+        assertFalse(Files.exists(nonExistentPath));
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(nonExistentPath, newName));
+    }
+
+    @Test
+    public void renameFile_When_NewNameIsEmpty_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testFileName);
 
         Files.createDirectory(firstRootPath);
-        Files.createFile(pathFileByRoot);
+        Files.createFile(pathFile);
+        assertTrue(Files.exists(pathFile));
 
-        final String originalFileName = FilenameUtils.removeExtension(pathFileByRoot.getFileName().toString());
-
-        TemplateJPA template = new TemplateJPA(templateDataInitializer.createData(originalFileName));
-        List<TemplateGroup> testGroups = templateDataInitializer.createTemplateGroups(2);
-        TemplateGroup testTemplateGroup = testGroups.get(0);
-        template.setTemplateGroup(testTemplateGroup);
-        TemplateJPA saved = templateRepository.save(template);
-
-        assertNotNull(saved.getTemplateGroup());
-        assertEquals(testTemplateGroup.getName(), saved.getTemplateGroup().getName());
-
-        final TemplateGroup expectedTemplateGroup = testGroups.get(1);
-        final Template changedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, expectedTemplateGroup.getName());
-
-        assertNotNull(changedTemplate.getTemplateGroup());
-        assertNotEquals(testTemplateGroup.getName(), changedTemplate.getTemplateGroup().getName());
+        final String newName = "";
+        assertThrows(EmptyFileNameException.class, () -> fileService.renameFile(pathFile, newName));
     }
 
     @Test
-    public void saveTemplateFileInGroup_When_templateFileNameEmpty_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path emptyFileName = firstRootPath.resolve(" ");
-        Files.createDirectory(firstRootPath);
-        final TemplateGroup testGroup = templateDataInitializer.createData(
-                "testGroup", 2, false);
+    public void renameFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_And_TemplateNameIsValid_Expected_RenameFileAndEntity() throws IOException {
+        final Path templatePath = templateDirectory.resolve(testFileName);
+        final String templateName = FilenameUtils.removeExtension(templatePath.getFileName().toString());
+        Files.createFile(templatePath);
+        assertTrue(Files.exists(templatePath));
 
-        assertThrows(EmptyFileNameException.class, () -> fileService.saveTemplateInGroup(emptyFileName, testGroup.getName()));
-        assertEquals(2, testGroup.getTemplates().size());
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), templateName, templateName);
+        assertNotNull(templateRepository.findByName(templateName));
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(templatePath);
+        assertEquals(1, documents.size());
+
+        fileService.renameFile(templatePath, newName);
+        assertNull(templateRepository.findByName(testFileName));
+        assertNotNull(templateRepository.findByName(FilenameUtils.removeExtension(newName)));
+
+        final Path expectedTemplatePath = templateDirectory.resolve(newName);
+        assertTrue(Files.exists(expectedTemplatePath));
+        assertFalse(Files.exists(templatePath));
+
+        documents = fileService.getDocumentsByTemplatePath(templatePath);
+        assertTrue(documents.isEmpty());
+        List<DocumentDTO> expectedDocuments = fileService.getDocumentsByTemplatePath(expectedTemplatePath);
+        assertEquals(1, expectedDocuments.size());
     }
 
     @Test
-    public void saveTemplateFileInGroup_When_templateFileInOutSideRoot_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTemplateFile = firstRootPath.getParent().resolve(testFileName);
+    public void renameFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_And_TemplateNameIsNotValid_Expected_CorrectException() throws IOException {
+        final Path templatePath = templateDirectory.resolve(testFileName);
+        final String templateName = FilenameUtils.removeExtension(templatePath.getFileName().toString());
+        Files.createFile(templatePath);
+        assertTrue(Files.exists(templatePath));
 
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathTemplateFile);
-        final TemplateGroup testGroup = templateDataInitializer.createData(
-                "testGroup", 2, false);
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), templateName, templateName);
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(templatePath);
+        assertEquals(1, documents.size());
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.saveTemplateInGroup(pathTemplateFile, testGroup.getName()));
-        Files.delete(pathTemplateFile);
+        assertThrows(TemplateFileException.class, () -> fileService.renameFile(templatePath, notValidNewTemplateName));
+
+        assertTrue(Files.exists(templatePath));
+        documents = fileService.getDocumentsByTemplatePath(templatePath);
+        assertEquals(1, documents.size());
     }
 
     @Test
-    public void replaceTemplate_When_oldTemplateFileNameExists_Expected_ReplacedTemplateAndPathExist() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path oldTemplatePath = firstRootPath.resolve(testTemplateName);
-        final Path newTemplatePath = firstRootPath.resolve(testTemplateName + "2");
-        final String oldTemplateName = oldTemplatePath.getFileName().toString();
-        final String replaceTemplateName = newTemplatePath.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-        Files.createDirectory(firstRootPath);
-        Files.createFile(oldTemplatePath);
-        Files.createFile(newTemplatePath);
+    public void renameFile_When_FileInTemplateTextDir_And_TemplateIsNotUsedDocuments_And_TemplateNameIsNotValid_Expected_RenameFile_And_DeleteTemplateEntity() throws IOException {
+        final Path templatePath = templateDirectory.resolve(testFileName);
+        Files.createFile(templatePath);
+        assertTrue(Files.exists(templatePath));
 
-        templateDataInitializer.createData(replaceTemplateName);
-        templateDataInitializer.createData(document.getId(), oldTemplateName, oldTemplateName);
+        final String templateName = FilenameUtils.removeExtension(templatePath.getFileName().toString());
+        templateRepository.save(new TemplateJPA(null, templateName, true));
+        templateRepository.save(new TemplateJPA(null, templateName + "2", true));     //Prevent a single template deletion exception
 
-        assertEquals(1, fileService.getDocumentsByTemplatePath(oldTemplatePath).size());
-        assertEquals(0, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(templatePath);
+        assertTrue(documents.isEmpty());
 
-        fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath);
-        assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
-        assertNotNull(templateRepository.findByName(oldTemplateName));
-        assertTrue(Files.exists(oldTemplatePath));
+        final Path expectedFilePath = templateDirectory.resolve(notValidNewTemplateName);
+        fileService.renameFile(templatePath, notValidNewTemplateName);
+        assertTrue(Files.exists(expectedFilePath));
+        assertFalse(Files.exists(templatePath));
+
+        assertNull(templateRepository.findByName(templateName));
     }
 
     @Test
-    public void replaceTemplate_When_oldTemplateNotFileButNameExists_Expected_ReplacedTemplate() throws IOException {
-        final Template newTemplate = templateDataInitializer.createData(testTemplateName + "2");
-        final DocumentDTO document = documentDataInitializer.createData();
-
-        templateDataInitializer.createData(document.getId(), testTemplateName, testTemplateName);
-        final Path oldTemplatePath = Paths.get(testTemplateName);
-        final Path newTemplatePath = Paths.get(newTemplate.getName());
-        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
-        assertEquals(0, fileService.getDocumentsByTemplatePath(Paths.get(newTemplate.getName())).size());
-
-        fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath);
-        assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
-        assertNotNull(templateRepository.findByName(testTemplateName));
+    public void renameFile_When_FileIsTemplateTextDir_Expected_CorrectException() {
+        assertTrue(Files.exists(templateDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.renameFile(templateDirectory, "newDirectoryName"));
     }
-
-    @Test
-    public void replaceTemplate_When_oldTemplateFileInOutSideRoot_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path oldTemplatePath = firstRootPath.getParent().resolve(testTemplateName);
-        final Path newTemplatePath = firstRootPath.resolve(testTemplateName + "2");
-        final String oldTemplateName = oldTemplatePath.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-        Files.createDirectory(firstRootPath);
-        Files.createFile(oldTemplatePath);
-        Files.createFile(newTemplatePath);
-        templateDataInitializer.createData(document.getId(), oldTemplateName, oldTemplateName);
-
-        assertThrows(FileAccessDeniedException.class, () -> fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath));
-        Files.delete(oldTemplatePath);
-    }
-
-    @Test
-    public void replaceTemplate_When_newTemplateFileInOutSideRoot_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path oldTemplatePath = firstRootPath.resolve(testTemplateName);
-        final Path newTemplatePath = firstRootPath.getParent().resolve(testTemplateName + "2");
-        final String replaceTemplateName = newTemplatePath.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-        Files.createDirectory(firstRootPath);
-        Files.createFile(oldTemplatePath);
-        Files.createFile(newTemplatePath);
-        templateDataInitializer.createData(document.getId(), replaceTemplateName, replaceTemplateName);
-
-        assertThrows(FileAccessDeniedException.class, () -> fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath));
-        Files.delete(newTemplatePath);
-    }
-
-    @Test
-    public void replaceTemplate_When_oldTemplateFileButNameNotExists_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path oldTemplatePath = firstRootPath.resolve("fakeTest");
-        final Path newTemplatePath = firstRootPath.resolve(testTemplateName);
-        final String replaceTemplateName = newTemplatePath.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(newTemplatePath);
-        templateDataInitializer.createData("testTemplateName");
-        templateDataInitializer.createData(document.getId(), replaceTemplateName, replaceTemplateName);
-
-        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath));
-    }
-
-    @Test
-    public void replaceTemplate_When_newTemplateFileButNameNotExists_Expected_Exception() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path oldTemplatePath = firstRootPath.resolve("fakeTest");
-        final Path newTemplatePath = firstRootPath.resolve(testTemplateName);
-        final String oldTemplateName = oldTemplatePath.getFileName().toString();
-        final DocumentDTO document = documentDataInitializer.createData();
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(oldTemplatePath);
-        templateDataInitializer.createData("testTemplateName");
-        templateDataInitializer.createData(document.getId(), oldTemplateName, oldTemplateName);
-
-        assertEquals(1, fileService.getDocumentsByTemplatePath(oldTemplatePath).size());
-
-        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceDocsOnNewTemplate(oldTemplatePath, newTemplatePath));
-
-        assertEquals(1, fileService.getDocumentsByTemplatePath(oldTemplatePath).size());
-    }
-
 }

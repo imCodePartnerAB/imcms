@@ -3,15 +3,8 @@ package com.imcode.imcms.controller.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
-import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.exception.EmptyFileNameException;
-import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
-import com.imcode.imcms.persistence.entity.TemplateJPA;
-import com.imcode.imcms.persistence.repository.TemplateRepository;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -47,7 +40,6 @@ public class FileControllerTest extends AbstractControllerTest {
 
     private final String testFileName = "fileName.txt";
     private final String testFileName2 = "fileName2.txt";
-    private final String testTemplateName = "fileName.jsp";
     private final String testDirectoryName = "dirName";
     private final String testDirectoryName2 = testDirectoryName + "two";
 
@@ -67,23 +59,12 @@ public class FileControllerTest extends AbstractControllerTest {
     private FileController fileController;
 
     @Autowired
-    private TemplateService templateService;
-
-    @Autowired
-    private TemplateRepository templateRepository;
-
-    @Autowired
-    private TemplateDataInitializer templateDataInitializer;
-
-    @Autowired
     private BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
 
     @BeforeEach
     @AfterEach
     public void setUp() throws IOException {
-        templateDataInitializer.cleanRepositories();
-        testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
-        Files.deleteIfExists(templateDirectory.resolve(testTemplateName));
+        testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileUtils::deleteRecursive);
     }
 
     @Override
@@ -123,7 +104,7 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getFiles_When_FilesExist_Expected_HttpStatusOk() throws Exception {
+    public void getFiles_When_FilesExist_Expected_HttpStatusOk_And_CorrectSize() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
@@ -136,6 +117,14 @@ public class FileControllerTest extends AbstractControllerTest {
                 controllerPath() + pathDir);
 
         performRequestBuilderExpectedOk(requestBuilder);
+
+        final String jsonResponse = getJsonResponse(requestBuilder);
+        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
+        });
+
+        assertNotNull(files);
+        assertFalse(files.isEmpty());
+        assertEquals(1, files.size());
     }
 
     @Test
@@ -170,27 +159,6 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getFiles_When_FilesExist_Expected_CorrectSize() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-
-        Files.createDirectories(pathDir);
-        Files.createFile(pathFile);
-
-        final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + pathDir);
-
-        final String jsonResponse = getJsonResponse(requestBuilder);
-        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
-        });
-
-        assertNotNull(files);
-        assertFalse(files.isEmpty());
-        assertEquals(1, files.size());
-    }
-
-    @Test
     public void getFiles_When_FileHasNotFiles_Expected_OkAndEmptyList() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -209,7 +177,6 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertNotNull(files);
         assertTrue(files.isEmpty());
-        assertEquals(0, files.size());
         performRequestBuilderExpectedOk(requestBuilder);
     }
 
@@ -239,6 +206,19 @@ public class FileControllerTest extends AbstractControllerTest {
         assertEquals(DIRECTORY, receivedFiles.get(1).getFileType());
         assertEquals(FILE, receivedFiles.get(2).getFileType());
         assertEquals(FILE, receivedFiles.get(3).getFileType());
+    }
+
+    @Test
+    public void getFiles_When_PathIsNull_Expected_Ok_And_ListWithRootFiles() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = get(
+                controllerPath() + StringUtils.EMPTY);
+
+        List<SourceFile> expectedList = testRootPaths.stream()
+                .filter(path -> Files.exists(Paths.get(path.toString())))
+                .map(path -> fileToSourceFile.apply(path, false))
+                .collect(Collectors.toList());
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(expectedList));
     }
 
     @Test
@@ -399,7 +379,7 @@ public class FileControllerTest extends AbstractControllerTest {
     public void renameFile_When_FileExists_Expected_OkAndReNameFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
-        final Path pathFile2 = firstRootPath.resolve(testFileName2);
+        final String newFileName = testFileName2;
 
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
@@ -409,16 +389,16 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Properties properties = new Properties();
         properties.setProperty("src", pathFile.toString());
-        properties.setProperty("target", pathFile2.toString());
+        properties.setProperty("newName", newFileName);
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, "rename");
 
         performRequestBuilderExpectedOk(requestBuilder);
         final String renamedPath = fileController.getFiles(request).get(0).getFullPath();
         assertNotNull(renamedPath);
-        assertTrue(Files.exists(pathFile.getParent().resolve(pathFile2.getFileName())));
+        assertTrue(Files.exists(pathFile.getParent().resolve(newFileName)));
         assertFalse(Files.exists(pathFile));
-        assertEquals(pathFile2.getFileName(), Paths.get(renamedPath).getFileName());
+        assertEquals(newFileName, Paths.get(renamedPath).getFileName().toString());
     }
 
     @Test
@@ -452,111 +432,4 @@ public class FileControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectedOk(fileUploadRequestBuilder);
         assertTrue(Files.exists(firstRootPath.resolve(file.getName())));
     }
-
-    @Test
-    public void saveTemplateFileInGroup_When_templateFileNotExistsInGroup_Expected_OkAndChangeTemplateGroup() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTemplateFile = firstRootPath.resolve(testTemplateName);
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathTemplateFile);
-
-        final TemplateGroup testGroup = templateDataInitializer.createData("testGroup", 2, false);
-
-        final Properties data = new Properties();
-        data.setProperty("templatePath", pathTemplateFile.toString());
-        data.setProperty("templateGroupName", testGroup.getName());
-
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "template");
-        performRequestBuilderExpectedOk(requestBuilder);
-
-        final String originalFileName = FilenameUtils.removeExtension(pathTemplateFile.getFileName().toString());
-        final Optional<Template> received = templateService.get(originalFileName);
-        assertTrue(received.isPresent());
-
-        assertNotNull(received.get().getTemplateGroup());
-        assertEquals(testGroup.getName(), received.get().getTemplateGroup().getName());
-    }
-
-    @Test
-    public void saveTemplateFileInGroup_When_templateFileExistsInGroup_Expected_ChangeTemplateGroup() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTemplateFile = firstRootPath.resolve(testTemplateName);
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathTemplateFile);
-
-        List<TemplateGroup> testGroups = templateDataInitializer.createTemplateGroups(2);
-
-        final String originalFileName = FilenameUtils.removeExtension(pathTemplateFile.getFileName().toString());
-        final TemplateGroup defaultGroup = testGroups.get(0);
-
-        final TemplateJPA template = new TemplateJPA(templateDataInitializer.createData(originalFileName));
-
-        assertNull(template.getTemplateGroup());
-
-        template.setTemplateGroup(defaultGroup);
-        final TemplateJPA savedTemplate = templateRepository.save(template);
-
-        assertNotNull(savedTemplate.getTemplateGroup());
-        assertEquals(defaultGroup.getName(), savedTemplate.getTemplateGroup().getName());
-
-        final TemplateGroup newGroup = testGroups.get(1);
-
-        final Properties data = new Properties();
-        data.setProperty("templatePath", pathTemplateFile.toString());
-        data.setProperty("templateGroupName", newGroup.getName());
-
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "template");
-        performRequestBuilderExpectedOk(requestBuilder);
-
-        final Optional<Template> receivedTemplate = templateService.get(originalFileName);
-        assertTrue(receivedTemplate.isPresent());
-
-        assertNotNull(receivedTemplate.get().getTemplateGroup());
-        assertEquals(newGroup.getName(), receivedTemplate.get().getTemplateGroup().getName());
-    }
-
-    @Test
-    public void saveTemplateFileInGroup_When_templateFileNameEmpty_Expected_CorrectException() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path emptyFileName = firstRootPath.resolve(" ");
-
-        Files.createDirectory(firstRootPath);
-
-        final TemplateGroup testGroup = templateDataInitializer.createData(
-                "testGroup", 2, false
-        );
-
-        final Properties data = new Properties();
-        data.setProperty("templatePath", emptyFileName.toString());
-        data.setProperty("templateGroupName", testGroup.getName());
-
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "template");
-        performRequestBuilderExpectException(EmptyFileNameException.class, requestBuilder);
-
-        assertEquals(2, testGroup.getTemplates().size());
-    }
-
-    @Test
-    public void saveTemplateFileInGroup_When_templateFileInOutSideRoot_Expected_CorrectException() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathTemplateFile = firstRootPath.getParent().resolve(testFileName);
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathTemplateFile);
-
-        final TemplateGroup testGroup = templateDataInitializer.createData(
-                "testGroup", 2, false);
-
-        final Properties data = new Properties();
-        data.setProperty("templatePath", pathTemplateFile.toString());
-        data.setProperty("templateGroupName", testGroup.getName());
-
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "template");
-        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
-
-        Files.delete(pathTemplateFile);
-    }
-
 }

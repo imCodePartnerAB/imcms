@@ -245,7 +245,7 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
         try {
             assertTrue(templateFile.createNewFile());
 
-            final TemplateDTO template = new TemplateDTO(null, templateName, false, null);
+            final TemplateDTO template = new TemplateDTO(null, templateName, false);
             templateService.save(template);
 
             final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);

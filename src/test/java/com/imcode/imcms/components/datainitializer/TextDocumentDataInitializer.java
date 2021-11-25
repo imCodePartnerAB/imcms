@@ -29,20 +29,22 @@ public class TextDocumentDataInitializer extends DocumentDataInitializer {
         this.templateDataInitializer = templateDataInitializer;
     }
 
-    public TextDocumentDTO createTextDocument() {
-        templateDataInitializer.cleanRepositories();
+    public TextDocumentDTO createTextDocument(String templateName) {
         final DocumentDTO documentDTO = createData(Meta.DocumentType.TEXT);
-        final TextDocumentTemplateJPA template = templateDataInitializer.createData(
-                documentDTO.getId(), "demo", "demo"
+        final TextDocumentTemplateJPA textDocumentTemplate = templateDataInitializer.createData(
+                documentDTO.getId(), templateName, templateName
         );
         final TextDocumentDTO textDocumentDTO = new TextDocumentDTO(documentDTO);
-        textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(template));
+        textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(textDocumentTemplate));
 
         return textDocumentDTO;
     }
 
+    public TextDocumentDTO createTextDocument() {
+        return createTextDocument("demo");
+    }
+
     public List<TextDocumentDTO> createTextDocuments(Integer count) {
-        templateDataInitializer.cleanRepositories();
         List<TextDocumentDTO> textDocuments = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             textDocuments.add(createTextDocument());

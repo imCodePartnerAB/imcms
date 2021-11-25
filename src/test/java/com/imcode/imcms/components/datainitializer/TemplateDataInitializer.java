@@ -29,7 +29,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
                                    TemplateRepository templateRepository,
                                    TemplateGroupRepository templateGroupRepository) {
 
-        super(templateRepository, textDocumentTemplateRepository);
+        super(templateRepository, textDocumentTemplateRepository, templateGroupRepository);
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.templateRepository = templateRepository;
         this.templateGroupRepository = templateGroupRepository;
@@ -96,5 +96,14 @@ public class TemplateDataInitializer extends TestDataCleaner {
         if (receivedGroup != null) {
             templateGroupRepository.delete(id);
         }
+    }
+
+    @Override
+    public void cleanRepositories() {
+        templateGroupRepository.findAll().forEach(templateGroup -> {
+            templateGroupRepository.deleteTemplateGroupByGroupId(templateGroup.getId());
+        });
+
+        super.cleanRepositories();
     }
 }
