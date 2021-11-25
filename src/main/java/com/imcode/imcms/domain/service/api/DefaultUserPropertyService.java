@@ -73,5 +73,6 @@ public class DefaultUserPropertyService implements UserPropertyService {
     @Override
     public void deleteById(Integer id) {
         userPropertyRepository.delete(id);
+        userPropertyRepository.flush();
     }
 }
