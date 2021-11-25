@@ -211,22 +211,23 @@ define(
                         components.buttons.negativeButton({
                             text: texts.advanced,
                             "data-state": "false",
-                            "id": "imcms-image-advanced-button",
+                            "class": "imcms-image-advanced-button",
                             click: function () {
                                 const $btn = $(this);
 
                                 if ($btn.attr("data-state") === "false") {
                                     $advancedControls.css("display", "block");
                                     $btn.attr("data-state", "true").text(texts.simple);
+
+                                    let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
+                                    let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
+                                    let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight();
+                                    $(".imcms-editable-controls-area").css("height","calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)");
                                 } else {
                                     $advancedControls.css("display", "none");
                                     $btn.attr("data-state", "false").text(texts.advanced);
+                                    $(".imcms-editable-controls-area").css("height","auto");
                                 }
-
-                                let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
-                                let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
-                                let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight();
-                                $(".imcms-editable-controls-area").css("height","calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)");
                             }
                         })
                     ]);

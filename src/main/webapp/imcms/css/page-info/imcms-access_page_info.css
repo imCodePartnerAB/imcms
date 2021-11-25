@@ -18,18 +18,19 @@
 }
 
 .imcms-access-role__row {
-    display: block;
+    display: flex;
+    place-items: center;
     overflow: hidden;
     padding: 3px 0;
     width: 100%;
 }
 
-.imcms-access-role__row:hover {
-    background-color: #d0e9f9;
-}
-
 .imcms-access-role__body{
 	overflow-wrap: anywhere;
+}
+
+.imcms-access-role__body .imcms-access-role__row:hover {
+    background-color: #d0e9f9;
 }
 
 .imcms-access-role__body .imcms-access-role__column,
@@ -69,7 +70,7 @@
 }
 
 .imcms-access-addrole {
-    /*overflow: hidden;*/
+    display: flex;
 }
 
 .imcms-access-addrole .imcms-access-addrole__select {

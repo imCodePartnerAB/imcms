@@ -156,7 +156,7 @@ define(
                 timeLeft.getLabel().hide();
 
                 const $button = components.buttons.warningButton({
-                    'class': 'imcms-buttons imcms-form__field',
+                    'class': 'imcms-buttons imcms-form__field imcms-super-admin-index-cache-button',
                     text: texts.initIndexing,
                     click: () => reindexRequest($button, $loading, $success, lastUpdate, timeLeft),
                 });

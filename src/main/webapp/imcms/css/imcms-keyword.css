@@ -14,7 +14,6 @@
 
 .imcms-keyword__keywords {
     display: none;
-    margin-top: 11px;
 }
 
 .imcms-keyword__keyword {
@@ -29,7 +28,9 @@
     line-height: 15px;
     display: inline-block;
     margin-right: 5px;
+    margin-top: 10px;
     padding: 6px 14px;
+    text-align: -webkit-center;
 }
 
 .imcms-keyword__keyword:last-child {

@@ -22,7 +22,7 @@
 .imcms-right-side {
     display: block;
     float: left;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding: 0 27px;
     width: 75%;
     height: 80%;

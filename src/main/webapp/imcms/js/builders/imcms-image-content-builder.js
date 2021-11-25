@@ -307,6 +307,7 @@ define("imcms-image-content-builder",
                 }
             });
             const $closeBtn = components.controls.remove(() => $(`#${FOLDER_CREATION_BLOCK_ID}`).remove());
+            components.controls.create($closeBtn.attr("title", texts.createFolderImage));
 
             const $folderCreationBlock = new BEM({
                 block: "imcms-panel-named",

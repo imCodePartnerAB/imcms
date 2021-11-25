@@ -83,8 +83,8 @@ define(
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
 
-            const $advancedBtn = $('#imcms-image-advanced-button').last();
-            if($advancedBtn.attr("data-state") === "true")  $advancedBtn.click();
+            const $advancedBtn = $('.imcms-image-advanced-button').last();
+            if($advancedBtn.attr("data-state") === "true") $advancedBtn.click();
 
             imageZoom.updateZoomGradeValue();
 	        imageZoom.updateImageToCoverContainerEditor();

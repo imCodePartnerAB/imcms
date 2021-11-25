@@ -805,6 +805,10 @@
     vertical-align: top;
 }
 
+.profiles-editor__profile-name-row {
+    margin-bottom: 20px;
+}
+
 .imcms-buttons.profiles-editor__profile-button-edit {
     padding: 10px;
     display: flex;
@@ -814,6 +818,10 @@
 .imcms-settings-row {
     margin-top: 25px;
     width: 400px;
+}
+
+.imcms-settings-row:first-child{
+    margin-top: 10px;
 }
 
 .imcms-settings-row > .imcms-buttons {
@@ -850,12 +858,20 @@
     margin-top: 25px;
 }
 
+.imcms-content-action-row:first-child {
+    margin-top: 10px;
+}
+
 .imcms-content-action-row > .imcms-title {
 }
 
 .imcms-content-action-row__actions {
     height: 50px;
     display: flex;
+}
+
+.imcms-content-action-row button{
+    min-width: 136px;
 }
 
 .actions__date,

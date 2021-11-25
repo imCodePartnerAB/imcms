@@ -64,6 +64,7 @@
     background-color: #6c7383;
 }
 
+.imcms-drop-down-list__items::-webkit-scrollbar-track
 .imcms-text-area__input::-webkit-scrollbar-track {
     background-color: transparent;
     -webkit-border-radius: 5px;
@@ -71,6 +72,7 @@
     border-radius: 5px;
 }
 
+.imcms-drop-down-list__items::-webkit-scrollbar,
 .imcms-text-area__input::-webkit-scrollbar {
     background-color: transparent;
     -webkit-border-radius: 5px;
@@ -79,6 +81,7 @@
     width: 6px;
 }
 
+.imcms-drop-down-list__items::-webkit-scrollbar-thumb,
 .imcms-text-area__input::-webkit-scrollbar-thumb {
     background-color: #abacad;
     -webkit-border-radius: 5px;
