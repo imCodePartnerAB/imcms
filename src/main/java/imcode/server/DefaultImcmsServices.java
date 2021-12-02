@@ -394,6 +394,10 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.systemData = sd;
     }
 
+    public void reloadSystemData() {
+        initSysData();
+    }
+
     public CategoryMapper getCategoryMapper() {
         return documentMapper.getCategoryMapper();
     }
@@ -742,7 +746,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         String startDocument = getDatabase().execute(new SqlQueryCommand<>(
                 "SELECT value FROM sys_data WHERE type_id = 0", new String[0], Utility.SINGLE_STRING_HANDLER
         ));
-        sd.setStartDocument(startDocument == null ? ImcmsConstants.DEFAULT_START_DOC_ID : Integer.parseInt(startDocument));
+        sd.setStartDocument(StringUtils.isBlank(startDocument) ? ImcmsConstants.DEFAULT_START_DOC_ID : Integer.parseInt(startDocument));
 
         String systemMessage = getDatabase().execute(new SqlQueryCommand<>(
                 "SELECT value FROM sys_data WHERE type_id = 3", new String[0], Utility.SINGLE_STRING_HANDLER

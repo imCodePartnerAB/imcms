@@ -70,7 +70,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
             if (documentId.endsWith("/")) documentId = documentId.substring(0, documentId.length() - 1);
             if (documentId.contains("/")) documentId = StringUtils.substringAfterLast(documentId, "/");
-            if ("".equals(documentId)) documentId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+            if ("".equals(documentId)) documentId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
         }
 
         return documentId;

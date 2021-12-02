@@ -56,6 +56,8 @@ public interface ImcmsServices {
 
     void setSystemData(SystemData sd);
 
+    void reloadSystemData();
+
     int getSessionCounter();
 
     // set session counter
