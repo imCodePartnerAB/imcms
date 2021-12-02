@@ -49,10 +49,4 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
         return savedProperty;
     }
 
-    @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void deleteById(Integer id) {
-        systemPropertyRepository.delete(id);
-        Imcms.getServices().reloadSystemData();
-    }
 }

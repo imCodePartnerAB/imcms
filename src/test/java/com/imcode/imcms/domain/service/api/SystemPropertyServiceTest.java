@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.service.SystemPropertyService;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -58,21 +57,6 @@ public class SystemPropertyServiceTest extends WebAppSpringTestConfig {
         assertNotNull(systemProperty);
         systemProperty.setName(newName);
         assertEquals(systemProperty, properties.get(0));
-    }
-
-    @Test
-    public void deleteById_When_PropertyExist_Expect_CorrectDeleteById() {
-        int id = 2;
-        assertNotNull(systemPropertyService.findById(id));
-        systemPropertyService.deleteById(id);
-
-    }
-
-    @Test
-    public void deleteById_When_PropertyNotExist_Expect_EmptyResult() {
-        int idIsNotExist = 10;
-        assertThrows(DataAccessException.class,
-                () -> systemPropertyService.deleteById(idIsNotExist));
     }
 
 }

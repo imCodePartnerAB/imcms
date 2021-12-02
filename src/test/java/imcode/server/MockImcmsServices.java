@@ -75,6 +75,9 @@ public class MockImcmsServices implements ImcmsServices {
     public void setSystemData(SystemData sd) {
     }
 
+    public void reloadSystemData() {
+    }
+
     public int getSessionCounter() {
         return 0;
     }

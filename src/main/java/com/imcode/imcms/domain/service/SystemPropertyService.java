@@ -6,14 +6,12 @@ import java.util.List;
 
 public interface SystemPropertyService {
 
+    SystemProperty findById(Integer id);
+
     List<SystemProperty> findAll();
 
     SystemProperty findByName(String name);
 
     SystemProperty update(SystemProperty systemProperty);
-
-    void deleteById(Integer id);
-
-    SystemProperty findById(Integer id);
 
 }

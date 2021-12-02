@@ -37,10 +37,4 @@ public class SystemPropertyController {
         return systemPropertyService.update(systemProperty);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Integer id) {
-        systemPropertyService.deleteById(id);
-    }
-
-
 }
