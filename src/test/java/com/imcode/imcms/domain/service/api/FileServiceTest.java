@@ -128,24 +128,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertTrue(fileService.getDocumentsByTemplatePath(imagePath).isEmpty());
     }
 
-
-    @Test
-    public void getRootPaths_When_PathsCorrect_Expected_CorrectSourceFiles() throws IOException {
-        final Path firstRootDir = testRootPaths.get(0);
-        final Path secondRootDir = testRootPaths.get(1);
-        final Path thirdRootDir = testRootPaths.get(2);
-        Files.createDirectory(firstRootDir);
-        Files.createDirectory(secondRootDir);
-        final List<SourceFile> files = Arrays.asList(
-                fileToSourceFile.apply(firstRootDir, false),
-                fileToSourceFile.apply(secondRootDir, false),
-                fileToSourceFile.apply(thirdRootDir, false)
-        );
-
-        assertEquals(files.size(), fileService.getRootFiles().size());
-        assertEquals(files, fileService.getRootFiles());
-    }
-
     @Test
     public void getFiles_When_FilesInDirectoryExist_Expected_CorrectFiles() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);

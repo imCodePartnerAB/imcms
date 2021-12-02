@@ -75,15 +75,45 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<SourceFile> getRootFiles() {
-        return rootPaths.stream()
+    public List<SourceFile> getRootFolders() {
+        final List<Path> filteredRootPaths = rootPaths.stream()
                 .filter(Files::exists)
-                .map(path -> fileToSourceFile.apply(path, false))
+                .collect(Collectors.toList());
+
+        final List<Path> uniqueParentPaths = getUniqueParentsRelativeToPath(filteredRootPaths, rootPath);
+
+        return uniqueParentPaths.stream()
+                .map(parentPath -> {
+                    SourceFile sourceFile = fileToSourceFile.apply(parentPath, false);
+                    if(!rootPaths.contains(parentPath)) sourceFile.setEditable(false);
+                    return sourceFile;
+                })
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Check access (in the server.properties), return available folders and files
+     *
+     * If the path is the root folder which is part of the available paths (in the properties), we return the next available folders.
+     * For example: We have WEB-INF/templates/text, WEB-INF/logs in properties. If required path is WEB-INF, method return WEB-INF/templates and WEB-INF/logs.
+     */
     @Override
     public List<SourceFile> getFiles(Path path) throws IOException {
+        final List<Path> filteredRootPaths = rootPaths.stream()
+                .filter(filteredRootPath -> filteredRootPath.startsWith(path) && !filteredRootPath.equals(path) && Files.exists(filteredRootPath))
+                .collect(Collectors.toList());
+        if(!filteredRootPaths.isEmpty() && !path.equals(rootPath)){
+            final List<Path> uniqueParentPaths = getUniqueParentsRelativeToPath(filteredRootPaths, path);
+
+            return uniqueParentPaths.stream()
+                    .map(parentPath -> {
+                        SourceFile sourceFile = fileToSourceFile.apply(parentPath, false);
+                        if(!rootPaths.contains(parentPath)) sourceFile.setEditable(false);
+                        return sourceFile;
+                    })
+                    .collect(Collectors.toList());
+        }
+
         checkAccessAllowable(path);
 
         List<Path> paths = Files.isDirectory(path) ? Files.list(path).sorted().collect(Collectors.toList()) : Collections.EMPTY_LIST;
@@ -97,6 +127,20 @@ public class DefaultFileService implements FileService {
                 })
                 .sorted(Comparator.comparing(SourceFile::getFileType))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Filter folders and return root folders (relative to the path).
+     */
+    private List<Path> getUniqueParentsRelativeToPath(List<Path> paths, Path relativePath){
+        List<Path> uniqueParentPaths = new ArrayList<>();
+
+        for(Path path: paths){
+            final Path topParent = relativePath.relativize(path).getName(0);
+            if(!uniqueParentPaths.contains(topParent)) uniqueParentPaths.add(topParent);
+        }
+
+        return uniqueParentPaths.stream().map(relativePath::resolve).collect(Collectors.toList());
     }
 
     @Override

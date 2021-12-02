@@ -69,7 +69,7 @@ public class FileController {
         String fileURI = getFileName(request.getRequestURI(), "");
         List<SourceFile> files;
         if (null == fileURI || fileURI.isEmpty()) {
-            files = defaultFileService.getRootFiles();
+            files = defaultFileService.getRootFolders();
         } else {
             files = defaultFileService.getFiles(Paths.get(fileURI));
         }

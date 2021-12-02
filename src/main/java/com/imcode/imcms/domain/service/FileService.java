@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface FileService {
 
-    List<SourceFile> getRootFiles();
+    List<SourceFile> getRootFolders();
 
     List<SourceFile> getFiles(Path file) throws IOException;
 

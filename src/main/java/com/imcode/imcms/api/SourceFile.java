@@ -17,6 +17,7 @@ public class SourceFile implements Cloneable, Serializable {
     private FileType fileType;
     private byte[] contents;
     private String size;
+    private boolean editable;
     private int numberOfDocuments;  //if this file is a template, the number of documents based on it
 
     public Object clone() throws CloneNotSupportedException {
