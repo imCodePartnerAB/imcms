@@ -289,8 +289,6 @@
 
 .files-table {
     width: 100%;
-    background-color: ghostwhite;
-    border: 1px solid gainsboro;
     display: inline-flex;
     justify-content: space-between;
 }
@@ -313,10 +311,6 @@
 .files-table > *,
 .templates-table > * {
     width: 50%;
-}
-
-.files-table__first-instance{
-    border-right: 1px solid #abacad;
 }
 
 .group-editor > *:not(.group-editor__create-button) {
@@ -389,16 +383,23 @@
     height: 100%;
 }
 
-.first-sub-files,
-.second-sub-files {
-    height: 200px;
-    overflow-y: auto;
-    border: 1px solid gainsboro;
-    justify-content: space-between;
+.first-files .root-dir,
+.first-sub-files{
+    border: 1px solid #abacad;
+}
+
+.second-files .root-dir,
+.second-sub-files{
+    border-color: #abacad;
+    border-style: solid;
+    border-width: 1px 1px 1px 0;
 }
 
 .first-sub-files,
 .second-sub-files {
+    height: 200px;
+    overflow-y: auto;
+    justify-content: space-between;
     background-color: #dcdada;
 }
 
@@ -412,10 +413,16 @@
     place-items: center;
 }
 
-.path-row {
+.path-row{
+    margin-top: 30px;
     background-color: #ffffad;
-    border-top: 1px solid #abacad;
-    border-bottom: 1px solid #abacad;
+    border-color: #abacad;
+    border-style: solid;
+    border-width: 1px 1px 0 1px;
+}
+
+.second-files .path-row{
+    border-width: 1px 1px 0 0;
 }
 
 .path-row__path{

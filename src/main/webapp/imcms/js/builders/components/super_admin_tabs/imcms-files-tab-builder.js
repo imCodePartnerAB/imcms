@@ -53,8 +53,18 @@ define(
                 'class': 'first-files'
             });
 
+            const $fileRootContainer = $('<div>', {
+                'class': 'root-dir'
+            });
+
+            const $subFilesContainer = $('<div>', {
+                'class': 'first-sub-files'
+            });
+
             firstFilesLoader.whenFilesLoaded(files => {
-                $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                $fileContainer.append($fileRootContainer);
+
+                $fileRootContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 0}, file, fileEditor))
                 );
 
@@ -62,6 +72,8 @@ define(
                     class: 'path-row',
                     text: '/'
                 }));
+
+                $fileContainer.append($subFilesContainer);
             });
 
             return $fileContainer;
@@ -72,8 +84,18 @@ define(
                 'class': 'second-files'
             });
 
+            const $fileRootContainer = $('<div>', {
+                'class': 'root-dir'
+            });
+
+            const $subFilesContainer = $('<div>', {
+                'class': 'second-sub-files'
+            });
+
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                $fileContainer.append($fileRootContainer);
+
+                $fileRootContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 1}, file, fileEditor))
                 );
 
@@ -81,6 +103,8 @@ define(
                     class: 'path-row',
                     text: '/'
                 }));
+
+                $fileContainer.append($subFilesContainer);
             });
 
             return $fileContainer;

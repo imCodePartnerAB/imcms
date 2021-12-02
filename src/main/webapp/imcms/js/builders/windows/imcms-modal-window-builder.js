@@ -281,7 +281,9 @@ define(
                     "modal-body": buildEditDirectoryBody(textField),
                     "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {
+                'class': 'imcms-edit-directory-window'
+            });
         }
 
         function createModalOptionalWindow(message, optionalBox, onConfirmed, onDeclined) {

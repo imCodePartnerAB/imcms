@@ -43,7 +43,8 @@
     width: 260px;
 }
 
-.imcms-create-modal-window {
+.imcms-edit-directory-window.imcms-edit-directory-window,
+.imcms-create-modal-window{
     top: -webkit-calc(50% - 250px);
     top: -moz-calc(50% - 250px);
     top: -ms-calc(50% - 250px);
@@ -56,6 +57,11 @@
     left: calc(50% - 180px);
     height: 200px;
     width: 360px;
+}
+
+.imcms-create-modal-window .imcms-modal-body,
+.imcms-create-modal-window .imcms-modal-footer {
+    background-color: #d9edf7;
 }
 
 .imcms-edit-modal-window {

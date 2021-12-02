@@ -27,22 +27,12 @@ define(
             return $('.imcms-form').find('.files-table');
         }
 
-        function getSubFilesContainerByChildRow(childRow) {
-            const parent = childRow.parent();
-
-            if (parent.parent().hasClass(getMainContainer().attr('class'))) {
-                return $(childRow.get(-1));
-            }
-            return getSubFilesContainerByChildRow(parent);
-        }
-
         function getAllSubFilesContainers() {
             const columns = Array.from(getMainContainer().children());
             return columns
                 .map(column => $(column))
                 .flatMap(column => column.children().get(-1))
-                .map(container => $(container))
-                .filter(container => !container.hasClass('root-directory-row'));
+                .map(container => $(container));
         }
 
         function getSubFilesContainerByIndex(index) {
@@ -65,6 +55,10 @@ define(
 
         function getDirPathByIndex(index) {
             return getPathRowByIndex(index).find('.path-row__path').attr('full-path');
+        }
+
+        function isRootDir(physicalPath){
+            return physicalPath.lastIndexOf("/") > 0;
         }
 
         function createBackDir(fullPath, physicalPath) {
@@ -548,7 +542,6 @@ define(
 
             if (file.fileType === 'DIRECTORY' && isDblClick) {
                 updateHighlightingForDir($fileSourceRow);
-                deleteAllHighlightingInSubFilesContainer(getSubFilesContainerByChildRow($fileSourceRow), selectedDirHighlightingClassName);
 
                 onDirectoryDblClick.call(this, $fileRow, file);
             } else if (file.fileType === 'FILE' && isDblClick) {
@@ -602,9 +595,10 @@ define(
                 }
 
                 const transformFileToRow = fileToRow.transformFileToRow.bind({subFilesContainerIndex: index});
-                $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
 
-                    files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
+                if(isRootDir(file.physicalPath)) $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
+
+                 files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
