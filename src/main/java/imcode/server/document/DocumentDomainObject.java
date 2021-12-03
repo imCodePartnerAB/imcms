@@ -5,11 +5,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocGetterCallback;
-import com.imcode.imcms.mapping.DocumentCommonContent;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentMeta;
+import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.model.Category;
@@ -23,11 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -487,7 +479,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getName() {
-        return StringUtils.defaultString(getAlias(), getId() + "");
+        return StringUtils.defaultIfBlank(getAlias(), getId() + "");
     }
 
     public DocumentMeta getMeta() {
