@@ -58,8 +58,10 @@ define("imcms-templates-tab-builder",
                 return documentDTO;
             }
 
-            documentDTO.template.templateName = tabData.$templateSelect.getSelectedValue();
-            documentDTO.template.childrenTemplateName = tabData.$defaultChildTemplateSelect.getSelectedValue();
+            documentDTO.template = {
+                templateName: tabData.$templateSelect.getSelectedValue(),
+                childrenTemplateName: tabData.$defaultChildTemplateSelect.getSelectedValue()
+            };
 
             return documentDTO;
         };

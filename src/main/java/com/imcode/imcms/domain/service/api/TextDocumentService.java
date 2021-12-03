@@ -74,7 +74,6 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         final int savedDocId = savedDoc.getId();
 
         if (isNew) {
-            oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(savedDocId));
             for (CommonContent content : savedDoc.getCommonContents()) {
                 final Text text = textService.getText(savedDocId, 1, content.getLanguage().getCode(), null);
                 text.setText(content.getHeadline());
@@ -82,7 +81,10 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
             }
         }
 
-        oTemplate.ifPresent(textDocumentTemplateService::save);
+        oTemplate.ifPresent(textDocumentTemplateDTO -> {
+            textDocumentTemplateDTO.setDocId(savedDocId);
+            textDocumentTemplateService.save(textDocumentTemplateDTO);
+        });
 
         return saveMe;
     }
