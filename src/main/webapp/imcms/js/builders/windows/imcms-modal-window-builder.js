@@ -202,7 +202,7 @@ define(
             return new BEM({
                 block: 'imcms-modal-body',
                 elements: {
-                    'text': components.texts.infoText("<div>", message),
+                    'text': components.texts.titleText("<div>", message),
                     'optional-box': optionalBox
                 }
             }).buildBlockStructure("<div>");
@@ -290,9 +290,9 @@ define(
             return new BEM({
                 block: 'imcms-modal-optional-window',
                 elements: {
-                    "modal-head": buildHead(texts.title),
-                    "modal-body": buildOptionalBody(message, optionalBox),
-                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                    "modal-head": buildHead(message),
+                    "modal-body": buildOptionalBody("", optionalBox),
+                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
         }

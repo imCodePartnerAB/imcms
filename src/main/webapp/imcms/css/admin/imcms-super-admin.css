@@ -372,6 +372,8 @@
 
 .templates-radios-container {
     padding: 5px 10px;
+    margin: 5px 15px;
+    border: none;
 }
 
 .text-preview {

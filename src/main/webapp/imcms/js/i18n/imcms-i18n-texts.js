@@ -808,6 +808,7 @@ const texts = {
                     deleteTemplate: 'Det gick inte att ta bort mallen!',
                     deleteGroupFromTemplate: 'Det gick inte att ta bort gruppen från mallen!',
                     replaceTemplate: 'Det gick inte att ersätta mallen!',
+                    noOtherTemplates: 'Inga andra mallar',
                     loadTemplates: 'Det gick inte att ladda mallar!'
                 },
                 documentData: {
@@ -1812,6 +1813,7 @@ const texts = {
                     deleteTemplate: 'Failed to delete template!',
                     deleteGroupFromTemplate: 'Failed to delete group from template!',
                     replaceTemplate: 'Failed to replace template!',
+                    noOtherTemplates: 'No other templates!',
                     loadTemplates: 'Failed to load templates!'
                 },
                 documentData: {

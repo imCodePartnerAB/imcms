@@ -331,3 +331,11 @@
     margin: 15px 10px;
     padding: 10px 18px;
 }
+
+.imcms-modal-optional-window .imcms-title{
+    width: 100%;
+}
+
+.imcms-modal-optional-window__modal-footer{
+    float: right;
+}

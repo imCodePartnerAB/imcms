@@ -433,6 +433,11 @@ define(
         function showDeleteTemplateModalWindow(sourceFile) {
             templatesRestApi.read().done(templates => {
 
+                if(templates.length < 2){
+                    modal.buildWarningWindow(texts.error.noOtherTemplates);
+                    return;
+                }
+
                 //to find the needed a template object
                 let fileTemplateName = sourceFile.fileName;
                 let i = getIndexOfTemplateInArrayByName(templates, fileTemplateName.substring(0, fileTemplateName.lastIndexOf('.')));       //to delete an extension
@@ -452,7 +457,7 @@ define(
                     class: 'templates-radios-container'
                 });
 
-                templatesRadioButtons[0].setChecked(true);                                                              // todo: if templates array is empty?
+                templatesRadioButtons[0].setChecked(true);
 
                 modal.buildOptionalModalWindow(texts.title.replaceTemplate, $templatesRadioButtonsContainer, confirmed => {
                     if (confirmed) {
