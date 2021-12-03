@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface TemplateService {
 
+    void checkTemplates();
+
     List<Template> getAll();
 
     File getTemplateDirectory();

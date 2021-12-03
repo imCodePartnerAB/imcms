@@ -62,10 +62,9 @@ class WebConfig implements WebMvcConfigurer {
     @Bean
     public Imcms imcms(ServletContext servletContext,
                        ImcmsServices imcmsServices,
-                       ImageService imageService,
                        Properties imcmsProperties) {
 
-        return new Imcms(servletContext, imcmsServices, imcmsProperties, imageService);
+        return new Imcms(servletContext, imcmsServices, imcmsProperties);
     }
 
     @Bean

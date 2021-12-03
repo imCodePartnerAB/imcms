@@ -278,8 +278,11 @@ public class DefaultFileService implements FileService {
     }
 
     private void createAndSaveTemplate(Path path) throws IOException {
+        final String templateName = FilenameUtils.removeExtension(path.getFileName().normalize().toString());
+
+        if(templateService.get(templateName) != null) return;
+
         if(templateService.isValidName(path.getFileName().toString())){
-            final String templateName = FilenameUtils.removeExtension(path.getFileName().normalize().toString());
             final TemplateJPA templateJPA = new TemplateJPA();
             templateJPA.setName(templateName);
             templateJPA.setHidden(false);

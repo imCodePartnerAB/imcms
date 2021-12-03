@@ -14,7 +14,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
@@ -44,12 +43,11 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     /**
-     * Will save/delete to DB all templates if not yet for files in directory.
+     * Check template files and save/delete in the DB
      */
-    @PostConstruct
-    private void saveTemplatesInFolder() {
-        final Set<String> savedTemplateNames = templateRepository.findAll()
-                .stream()
+    @Override
+    public void checkTemplates() {
+        final Set<String> savedTemplateNames = templateRepository.findAll().stream()
                 .map(Template::getName)
                 .collect(Collectors.toSet());
 
@@ -58,22 +56,17 @@ public class DefaultTemplateService implements TemplateService {
 
         if(templateNames == null) return;
 
-        final List<String> templateNamesToBeSaved = Arrays.stream(templateNames)
-                .filter(templateName -> !savedTemplateNames.contains(FilenameUtils.getBaseName(templateName))).collect(Collectors.toList());
-
-        templateNamesToBeSaved.stream()
-                .map(FilenameUtils::getBaseName)
-                .map(templateName -> new TemplateJPA(null, templateName, false))
+        //add templates missing in the db
+        Arrays.stream(templateNames)
+                .filter(templateName -> !savedTemplateNames.contains(FilenameUtils.getBaseName(templateName)))
+                .map(filename -> new TemplateJPA(null, FilenameUtils.getBaseName(filename), false))
                 .forEach(templateRepository::save);
 
         //delete templates from db that were manually deleted
-        final List<TemplateJPA> allTemplates = templateRepository.findAll();
+        final Set<TemplateDTO> allTemplates = templateRepository.findAll().stream().map(TemplateDTO::new).collect(Collectors.toSet());
         if (allTemplates.size() > templateNames.length) {
-            final List<String> templateNamesList = Arrays.stream(templateNames)
-                    .map(FilenameUtils::getBaseName).collect(Collectors.toList());
-
-            allTemplates.stream()
-                    .filter(template -> !templateNamesList.contains(template.getName()))
+            final Set<String> templateNamesList = Arrays.stream(templateNames).map(FilenameUtils::getBaseName).collect(Collectors.toSet());
+            allTemplates.stream().filter(template -> !templateNamesList.contains(template.getName()))
                     .forEach(template -> delete(template.getId()));
         }
     }
