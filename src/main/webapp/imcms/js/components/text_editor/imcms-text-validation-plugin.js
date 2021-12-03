@@ -43,7 +43,7 @@ define(
             const content = activeTextEditor.getContent();
             const $button = activeTextEditor.$().parent().find('.html-validation-button__icon');
 
-            $button.addClass('imcms-w3c-text-validation-processing-icon');
+            $button.removeClass('imcms-w3c-text-validation-valid-icon imcms-w3c-text-validation-invalid-icon').toggleClass('imcms-w3c-text-validation-processing-icon');
 
             textValidationAPI.validate({content: content})
                 .done(validationResult => {
@@ -51,7 +51,7 @@ define(
                         ? 'imcms-w3c-text-validation-valid-icon'
                         : 'imcms-w3c-text-validation-invalid-icon';
 
-                    $button.removeClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
+                    $button.toggleClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
 
                     if (!validationResult.valid) {
                         textValidationBuilder.buildTextValidationFailWindow(validationResult);
