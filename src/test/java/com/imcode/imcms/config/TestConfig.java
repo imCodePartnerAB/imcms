@@ -96,7 +96,7 @@ public class TestConfig {
 
     @PreDestroy
     private void destroy() throws IOException {
-        assertTrue(FileUtility.forceDelete(defaultTestSolrFolder));
+        assertTrue(FileUtility.forceDelete(defaultTestSolrFolder.getParentFile()));
     }
 
 }
