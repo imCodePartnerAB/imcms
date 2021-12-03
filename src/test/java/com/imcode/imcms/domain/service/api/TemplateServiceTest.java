@@ -12,6 +12,7 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void replaceTemplateFile_When_TemplateIsUsedByDocuments_Expected_ReplacedTemplateInTextDocuments() throws IOException {
+    public void replaceTemplateFile_When_TemplateIsUsedByDocuments_Expected_ReplacedTemplateInTextDocuments() {
         final String replacedTemplateName = "replacedTemplateName";
         final String templateName = "templateName";
         final Template replacedTemplate = templateDataInitializer.createData(replacedTemplateName);
@@ -180,5 +181,30 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         templateService.delete(template.getId());
         assertNull(templateRepository.findOne(template.getId()));
         assertTrue(templateGroupService.get(templateGroup.getId()).getTemplates().isEmpty());
+    }
+
+    @Test
+    public void checkTemplates_When_EntityExists_But_TemplateFileDoesNotExist_Expected_DeleteEntity() {
+        templateDataInitializer.cleanRepositories();
+
+        final String templateName = "nonexistentTemplateFileName";
+        templateDataInitializer.createData(templateName);
+        assertNotNull(templateRepository.findByName(templateName));
+
+        templateService.checkTemplates();
+
+        assertNull(templateRepository.findByName(templateName));
+    }
+
+    @Test
+    public void checkTemplates_When_EntityDoesNotExist_But_TemplateFileExists_Expected_AddEntity() throws IOException {
+        templateDataInitializer.cleanRepositories();
+        assertTrue(templateRepository.findAll().isEmpty());
+
+        assertTrue(defaultTemplateFile.createNewFile());
+
+        templateService.checkTemplates();
+
+        assertNotNull(templateRepository.findByName(FilenameUtils.getBaseName(defaultTemplateFile.getName())));
     }
 }
