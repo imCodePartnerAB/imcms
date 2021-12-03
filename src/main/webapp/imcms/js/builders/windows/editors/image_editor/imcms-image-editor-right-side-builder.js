@@ -542,7 +542,10 @@ define(
                             linkUrl = "//" + linkUrl;
                         }
 
-                        $image.parent().attr("href", linkUrl);
+	                    $image.parent().attr({
+		                    "href": linkUrl,
+		                    "target": "_blank"
+	                    });
                     }
                 }
 
