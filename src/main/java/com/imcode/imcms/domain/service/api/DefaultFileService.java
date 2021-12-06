@@ -99,6 +99,8 @@ public class DefaultFileService implements FileService {
      */
     @Override
     public List<SourceFile> getFiles(Path path) throws IOException {
+        if(path == null) return getRootFolders();
+
         final List<Path> filteredRootPaths = rootPaths.stream()
                 .filter(filteredRootPath -> filteredRootPath.startsWith(path) && !filteredRootPath.equals(path) && Files.exists(filteredRootPath))
                 .collect(Collectors.toList());
