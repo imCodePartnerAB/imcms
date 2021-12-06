@@ -184,7 +184,7 @@ height: 10%;
     .imcms-menu-editor .imcms-document-item__info--type,
     .imcms-menu-editor .imcms-document-list-titles__title--type {
     }
-	.imcms-controls__control{
+	.imcms-document-item .imcms-controls__control{
 		margin-left: 0;
 	}
 	.imcms-document-list-titles__multi-remove{
