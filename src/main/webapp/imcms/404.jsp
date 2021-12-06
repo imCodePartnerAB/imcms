@@ -28,19 +28,20 @@
         <div class="imcms-field">
             <form class="imcms-page-error-body__form"
                   action="${contextPath}">
+                <a type="Submit"
+                        class="imcms-button imcms-button--neutral imcms-page-error-body__button"
+                        href="${contextPath}/">
+                    <fmt:message key="templates/Startpage" bundle="${resource_property}"/>
+                </a>
+            </form>
+            <div class="imcms-page-error-body__form">
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button"
-                        onClick="top.location='${contextPath}';">
-                    <fmt:message key="templates/Startpage" bundle="${resource_property}"/>
-                </button>
-            </form>
-            <form class="imcms-page-error-body__form"
-                  action="${contextPath}/servlet/BackDoc">
-                <button type="Submit"
-                        class="imcms-button imcms-button--neutral imcms-page-error-body__button">
+                        id="backBtn"
+                        style="display: none;">
                     <fmt:message key="templates/Back" bundle="${resource_property}"/>
                 </button>
-            </form>
+            </div>
         </div>
         <div class="imcms-field" style="margin-top: 30px">
             <div class="imcms-title">
@@ -52,5 +53,15 @@
     </div>
 </div>
 
+<script>
+	window.onload = function () {
+		const history = window.history;
+		const backBtn = document.getElementById('backBtn');
+		//need to check whether is first page in history is ours
+		if (history.length > 2)
+			backBtn.style.display = "inline";
+		backBtn.addEventListener('click', () => history.back());
+	}
+</script>
 </body>
 </html>

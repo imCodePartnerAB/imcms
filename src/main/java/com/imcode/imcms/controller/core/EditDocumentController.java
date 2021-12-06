@@ -3,7 +3,6 @@ package com.imcode.imcms.controller.core;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Document;
-import com.imcode.imcms.servlet.DocumentHistory;
 import imcode.util.Utility;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +39,6 @@ public class EditDocumentController {
         }
 
         Utility.setDefaultHtmlContentType(response);                        // not sure it's still needed
-        DocumentHistory.from(request.getSession()).pushIfNotYet(metaId);    // not sure it's still needed
 
         final Document document = documentService.get(metaId);
 
