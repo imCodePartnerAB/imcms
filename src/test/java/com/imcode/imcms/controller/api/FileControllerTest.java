@@ -209,19 +209,6 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getFiles_When_PathIsNull_Expected_Ok_And_ListWithRootFiles() throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + StringUtils.EMPTY);
-
-        List<SourceFile> expectedList = testRootPaths.stream()
-                .filter(path -> Files.exists(Paths.get(path.toString())))
-                .map(path -> fileToSourceFile.apply(path, false))
-                .collect(Collectors.toList());
-
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(expectedList));
-    }
-
-    @Test
     public void createFile_When_FileNotExists_Expected_OkAndCreatedFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
