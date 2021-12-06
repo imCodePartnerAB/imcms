@@ -139,7 +139,7 @@ public class ViewDocumentController {
         final List<CommonContent> enabledCommonContents =
                 commonContentService.getOrCreateCommonContents(docId, latestDocVersion.getNo())
                         .stream()
-                        .filter(CommonContent::isEnabled)
+		                .filter(commonContent -> isEditMode || commonContent.isEnabled())
                         .collect(Collectors.toList());
 
         if (enabledCommonContents.size() == 0) {

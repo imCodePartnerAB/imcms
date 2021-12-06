@@ -22,7 +22,7 @@
     <tr>
         <td>
             <table border="0" cellpadding="0" cellspacing="0">
-                <form action="${contextPath}">
+                <form action="${contextPath}/">
                     <tr>
                         <td><input type="Submit" value="<? templates/sv/no_active_document.html/3 ?>"
                                    class="imcmsFormBtn"></td>
@@ -33,12 +33,12 @@
         <td>&nbsp;</td>
         <td>
             <table border="0" cellpadding="0" cellspacing="0">
-                <form action="${contextPath}/servlet/BackDoc">
+                <div>
                     <tr>
-                        <td><input type="Submit" value="<? templates/sv/no_active_document.html/4 ?>"
-                                   class="imcmsFormBtn"></td>
+                        <td><button type="Submit" id="backBtn" style="display: none;"
+                                    class="imcmsFormBtn"><fmt:message key="templates/sv/no_active_document.html/4"/></button></td>
                     </tr>
-                </form>
+                </div>
             </table>
         </td>
     </tr>
@@ -64,6 +64,16 @@
         }
     }
     //-->
+</script>
+<script>
+	window.onload = function () {
+		const history = window.history;
+		const backBtn = document.getElementById('backBtn');
+		//need to check whether is first page in history is ours
+		if (history.length > 2)
+			backBtn.style.display = "inline";
+		backBtn.addEventListener('click', () => history.back());
+	}
 </script>
 
 </body>

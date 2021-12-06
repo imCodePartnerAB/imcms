@@ -245,11 +245,6 @@
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.BackDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.BackDoc</servlet-class>
-    </servlet>
-
     <!--
     fixme: remove???
     -->
@@ -452,11 +447,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-name>
         <url-pattern>/servlet/AdminUser</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.BackDoc</servlet-name>
-        <url-pattern>/servlet/BackDoc</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

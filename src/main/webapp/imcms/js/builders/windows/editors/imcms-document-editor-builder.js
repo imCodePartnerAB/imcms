@@ -547,7 +547,8 @@ define('imcms-document-editor-builder',
                 original = $this.closest('.imcms-document-items'),
                 $frame = original.clone(),
                 $frameLayout = $('<div>'),
-                frameItem = $frame.find('.imcms-document-item')
+                frameItem = $frame.find('.imcms-document-item'),
+	            $menuEditor = $(".imcms-menu-editor")
             ;
 
             $menuArea = get$menuItemsList();
@@ -563,7 +564,7 @@ define('imcms-document-editor-builder',
                     // 'opacity': 0,
                     'z-index': 10101
                 });
-            $frameLayout.appendTo($('body'));
+            $frameLayout.appendTo($menuEditor);
 
             original.addClass('imcms-document-items--is-drag');
 
@@ -581,15 +582,17 @@ define('imcms-document-editor-builder',
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            frameItem.attr('data-id', frameItem.find('.imcms-document-item__info--id').text());
-            frameItem.attr('data-title', frameItem.find('.imcms-document-item__info--title').text());
-            frameItem.attr('data-is-shown-title', !frameItem.find('.imcms-document-item__info--notShownTitle').length);
-            frameItem.attr('data-publishedDate', frameItem.find('.imcms-document-item__info--publishedDate').text());
-            frameItem.attr('data-modifiedDate', frameItem.find('.imcms-document-item__info--modifiedDate').text());
-            frameItem.attr('data-type', frameItem.find('.imcms-document-item__info--type').text());
-            frameItem.attr('data-status', frameItem.find('.imcms-document-item__info--status').text());
-            frameItem.attr('data-original-status', frameItem.find('.imcms-document-item__info--originalStatus').text());
-            frameItem.attr('data-current-version', frameItem.find('.imcms-document-item__info--currentVersion').children().attr('value'));
+	        frameItem.attr({
+		        'data-id': frameItem.find('.imcms-document-item__info--id').text(),
+		        'data-title': frameItem.find('.imcms-document-item__info--title').text(),
+		        'data-is-shown-title': !frameItem.find('.imcms-document-item__info--notShownTitle').length,
+		        'data-publishedDate': frameItem.find('.imcms-document-item__info--publishedDate').text(),
+		        'data-modifiedDate': frameItem.find('.imcms-document-item__info--modifiedDate').text(),
+		        'data-type': frameItem.find('.imcms-document-item__info--type').text(),
+		        'data-status': frameItem.find('.imcms-document-item__info--status').text(),
+		        'data-original-status': frameItem.find('.imcms-document-item__info--originalStatus').text(),
+		        'data-current-version': frameItem.find('.imcms-document-item__info--currentVersion').children().attr('value'),
+	        });
 
             $frame.addClass('imcms-document-items--frame');
             $frame.css({
@@ -598,7 +601,7 @@ define('imcms-document-editor-builder',
             });
 
             toggleUserSelect(true);
-            $frame.appendTo('body');
+            $frame.appendTo($menuEditor);
         }
 
         $(document).on('mousemove', event => {
@@ -786,7 +789,10 @@ define('imcms-document-editor-builder',
         }
 
         function detectTargetArea(event) {
-            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+            return (event.clientY > menuAreaProp.top) &&
+	            (event.clientY < menuAreaProp.bottom) &&
+	            (event.clientX > menuAreaProp.left) &&
+	            (event.clientX < menuAreaProp.right);
         }
 
         function getMenuDocByObjId(obj) {
@@ -928,28 +934,35 @@ define('imcms-document-editor-builder',
             const typeSort = document.getElementById('type-sort').value;
 
             if (typeSort !== TREE_SORT && insertedParent.parent !== null) {
-                dataInput.attr('data-parent-id', insertedParent.parent.attr('data-document-id'));
-                dataInput.attr('data-insert-place', '');
+	            dataInput.attr({
+		            'data-parent-id': insertedParent.parent.attr('data-document-id'),
+		            'data-insert-place': ''
+	            });
             } else {
                 if (insertedParent.parent !== null) {
-                    dataInput.attr('data-parent-id', insertedParent.parent.attr('data-document-id'));
-                    dataInput.attr('data-insert-place', insertedParent.status);
+                    dataInput.attr({
+	                    'data-parent-id': insertedParent.parent.attr('data-document-id'),
+	                    'data-insert-place': insertedParent.status
+                    });
                 } else {
-                    dataInput.attr('data-parent-id', '');
-                    dataInput.attr('data-insert-place', '');
+	                dataInput.attr({
+		                'data-parent-id': '',
+		                'data-insert-place': ''
+	                });
                 }
             }
-
-            dataInput.attr('data-id', frameItem.attr('data-id'));
-            dataInput.attr('data-type-sort', typeSort);
-            dataInput.attr('data-type', frameItem.attr('data-type'));
-            dataInput.attr('data-status', frameItem.attr('data-status'));
-            dataInput.attr('data-original-status', frameItem.attr('data-original-status'));
-            dataInput.attr('data-publishedDate', frameItem.attr('data-publishedDate'));
-            dataInput.attr('data-modifiedDate', frameItem.attr('data-modifiedDate'));
-            dataInput.attr('data-is-shown-title', frameItem.attr('data-is-shown-title'));
-            dataInput.attr('data-frame-top', insertedParent.frameTopPos);
-            dataInput.attr('data-current-version', frameItem.attr('data-current-version'))
+	        dataInput.attr({
+		        'data-id': frameItem.attr('data-id'),
+		        'data-type-sort': typeSort,
+		        'data-type': frameItem.attr('data-type'),
+		        'data-status': frameItem.attr('data-status'),
+		        'data-original-status': frameItem.attr('data-original-status'),
+		        'data-publishedDate': frameItem.attr('data-publishedDate'),
+		        'data-modifiedDate': frameItem.attr('data-modifiedDate'),
+		        'data-is-shown-title': frameItem.attr('data-is-shown-title'),
+		        'data-frame-top': insertedParent.frameTopPos,
+		        'data-current-version': frameItem.attr('data-current-version'),
+	        });
             dataInput.attr('data-title', frameItem.attr('data-title')).trigger('change');
         }
 
@@ -974,7 +987,7 @@ define('imcms-document-editor-builder',
             if ($frame.length === 0) {
                 return;
             }
-
+	        const $menuItemsList = get$menuItemsList();
             if (detectTargetArea(event)) {
                 const $menuItemsList = get$menuItemsList();
 
@@ -992,6 +1005,8 @@ define('imcms-document-editor-builder',
 
             toggleUserSelect(false);
 
+	        $menuItemsList.find('.imcms-doc-item-copy').remove();
+			refreshDocumentInList(getDocumentById(frameItem.attr('data-id')),false);
             $frame.remove();
             isMouseDown = false;
             const $sortOrder = $('.imcms-document-list-titles__title--sort-order');

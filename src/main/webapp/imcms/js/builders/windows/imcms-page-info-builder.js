@@ -75,7 +75,10 @@ define("imcms-page-info-builder",
 		                onDocumentSaved(savedDoc, true);
 					}
                 })
-                .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));
+                .fail(() => {
+					modal.buildErrorWindow(texts.error.createDocumentFailed)
+					$loadingAnimation.hide();
+				});
         }
 
         function saveAndPublish() {

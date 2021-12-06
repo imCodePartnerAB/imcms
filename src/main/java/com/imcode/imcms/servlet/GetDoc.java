@@ -1,16 +1,8 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.DocumentRequest;
-import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
-import imcode.server.ImcmsServices;
-import imcode.server.Revisits;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.*;
+import imcode.server.document.*;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
-import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.kerberos.KerberosLoginResult;
 import imcode.server.kerberos.KerberosLoginStatus;
 import imcode.server.user.UserDomainObject;
@@ -22,11 +14,7 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,11 +69,6 @@ public class GetDoc extends HttpServlet {
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
-        }
-
-        if (Utility.isTextDocument(document)) {
-            final Integer docId = document.getId();
-            DocumentHistory.from(req.getSession(true)).pushIfNotYet(docId);
         }
 
         final ImcmsServices imcmsServices = Imcms.getServices();

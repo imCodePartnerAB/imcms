@@ -31,7 +31,7 @@
         <tr>
             <td>
                 <table border="0" cellpadding="0" cellspacing="0">
-                    <form action="${pageContext.servletContext.contextPath}">
+                    <form action="${pageContext.servletContext.contextPath}/">
                         <tr>
                             <td><input type="Submit" value="<fmt:message key="templates/Startpage" bundle="${resource_property}"/>" class="imcmsFormBtn"></td>
                         </tr>
@@ -41,11 +41,15 @@
             <td>&nbsp;</td>
             <td>
                 <table border="0" cellpadding="0" cellspacing="0">
-                    <form action="${pageContext.servletContext.contextPath}/servlet/BackDoc">
+                    <div>
                         <tr>
-                            <td><input type="Submit" value="<fmt:message key="templates/Back" bundle="${resource_property}"/>" class="imcmsFormBtn"></td>
+	                        <td>
+		                        <button class="imcmsFormBtn" id="backBtn" style="display: none;">
+			                        <fmt:message key="templates/Back" bundle="${resource_property}"/>
+		                        </button>
+	                        </td>
                         </tr>
-                    </form>
+                    </div>
                 </table>
             </td>
         </tr>
@@ -78,5 +82,15 @@
     </div>
     <ui:imcms_gui_bottom/>
     <ui:imcms_gui_outer_end/>
+    <script>
+	    window.onload = function () {
+		    const history = window.history;
+		    const backBtn = document.getElementById('backBtn');
+		    //need to check whether is first page in history is ours
+		    if (history.length > 2)
+			    backBtn.style.display = "inline";
+		    backBtn.addEventListener('click', () => history.back());
+	    }
+    </script>
     </body>
     </html>

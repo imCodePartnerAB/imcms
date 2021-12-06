@@ -215,10 +215,10 @@ define("imcms-menu-editor-builder",
         }
 
         function detectTargetArea(event) {
-            return (event.pageY > menuAreaProp.top) &&
-                (event.pageY < menuAreaProp.bottom) &&
-                (event.pageX > menuAreaProp.left) &&
-                (event.pageX < menuAreaProp.right);
+	        return (event.clientY > menuAreaProp.top) &&
+                (event.clientY < menuAreaProp.bottom) &&
+                (event.clientX > menuAreaProp.left) &&
+                (event.clientX < menuAreaProp.right);
         }
 
         function toggleUserSelect(flag) {
@@ -253,8 +253,8 @@ define("imcms-menu-editor-builder",
             menuDocs.each(function () {
                 if (!$(this).closest(".imcms-menu-items").hasClass("imcms-menu-items--is-drag")) {
                     allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
-                        top: $(this).offset().top,
-                        bottom: $(this).offset().top + $(this).outerHeight()
+                        top: this.getBoundingClientRect().top,
+                        bottom: this.getBoundingClientRect().bottom
                     };
                 }
             });
@@ -268,7 +268,6 @@ define("imcms-menu-editor-builder",
         }
 
         function highlightMenuDoc() {
-            disableHighlightingMenuDoc();
             $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
                 'border': '1px dashed red'
             });
@@ -356,12 +355,13 @@ define("imcms-menu-editor-builder",
                 changeDataLevelTheTopDoc($origin, 0, null)
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
-                    slideUpMenuDocIfItClose(menuDoc);
-                    menuDoc.append($origin);
+	                placeStatus ? menuDoc.append($origin) : menuDoc.prepend($origin);
+	                slideUpMenuDocIfItClose(menuDoc);
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-                    menuDoc.before($origin);
+	                if (placeStatus)
+                    menuDoc.after($origin);
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                 }
             }
@@ -404,13 +404,13 @@ define("imcms-menu-editor-builder",
 
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
-                    menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = false;
+	                placeStatus = false;
+	                menuDoc = getMenuDocByObjId(obj);
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
-                if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
-                    menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = true;
+                if (frameTop >= ((param.bottom + param.top) / 2) && frameTop <= param.bottom) {
+	                placeStatus = true;
+	                menuDoc = getMenuDocByObjId(obj);
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
             });
@@ -446,7 +446,6 @@ define("imcms-menu-editor-builder",
                     detectPasteArea($frame);
                 } else {
                     disableDrag($frame);
-                    disableHighlightingMenuDoc();
                 }
             }
 
@@ -463,7 +462,8 @@ define("imcms-menu-editor-builder",
         function dragMenuItem(event) {
             const $this = $(this);
             const $originItem = $this.closest(".imcms-menu-items"),
-                originItemLvl = parseInt($originItem.attr("data-menu-items-lvl"))
+                originItemLvl = parseInt($originItem.attr("data-menu-items-lvl")),
+	            $menuEditorArea = $(".imcms-menu-editor")
             ;
 
             if (originItemLvl === 1 && $("[data-menu-items-lvl='1']").length === 1) {
@@ -484,7 +484,7 @@ define("imcms-menu-editor-builder",
                     "background": "transparent",
                     "z-index": 10101
                 });
-            $frameLayout.appendTo($("body"));
+            $frameLayout.appendTo($menuEditorArea);
 
             $originItem.addClass("imcms-menu-items--is-drag");
 
@@ -516,7 +516,7 @@ define("imcms-menu-editor-builder",
             $frame.addClass("imcms-document-items-list__document-items");
             $frame.addClass("imcms-menu-items--frame");
 
-            $frame.appendTo("body");
+            $frame.appendTo($menuEditorArea);
 
             closeSubItems($frame);
             toggleUserSelect(true);
@@ -996,7 +996,7 @@ define("imcms-menu-editor-builder",
                 reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId);
             });
 
-            sortType === MANUAL ? $numberingTypeSortFlag.show() : $numberingTypeSortFlag.hide();
+	        (sortType === MANUAL || sortType === TREE_SORT) ? $numberingTypeSortFlag.show() : $numberingTypeSortFlag.hide();
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
@@ -1545,6 +1545,8 @@ define("imcms-menu-editor-builder",
                     buildMenuItemsBySelectedType(menuData);
                     toggleSortingCheckboxViewAndTurnOffIfNeededBySortType(type);
                 }
+	            if (isMultiRemoveModeEnabled())
+		            $('.imcms-switch-block__button').click();
             };
         }
 
