@@ -63,16 +63,10 @@ define(
 
             firstFilesLoader.whenFilesLoaded(files => {
                 $fileContainer.append($fileRootContainer);
-
                 $fileRootContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 0}, file, fileEditor))
                 );
-
-                $fileContainer.append($('<div>', {
-                    class: 'path-row',
-                    text: '/'
-                }));
-
+                $fileContainer.append(buildPathRow());
                 $fileContainer.append($subFilesContainer);
             });
 
@@ -94,20 +88,24 @@ define(
 
             secondFilesLoader.whenFilesLoaded(files => {
                 $fileContainer.append($fileRootContainer);
-
                 $fileRootContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 1}, file, fileEditor))
                 );
-
-                $fileContainer.append($('<div>', {
-                    class: 'path-row',
-                    text: '/'
-                }));
-
+                $fileContainer.append(buildPathRow());
                 $fileContainer.append($subFilesContainer);
             });
 
             return $fileContainer;
+        }
+
+        function buildPathRow(){
+            return new BEM({
+                block: 'path-row',
+                elements: {
+                    'path': $('<div>', {text:"/"}),
+                    'count': $('<div>', {"count": ""})
+                }
+            }).buildBlockStructure('<div>');
         }
 
         function buildDocumentsContainer() {

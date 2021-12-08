@@ -39,11 +39,12 @@ define(
                 };
 
                 if (file.fileType === 'FILE' && fileEditor.isTemplate(file)) {
+                    infoRowAttributes.name = file.fileName.substring(0, file.fileName.lastIndexOf('.'));
                     return new BEM({
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
-                            'amount-docs': $('<div>', {text: '[' + file.numberOfDocuments + ']'}),
+                            'amount-docs': $('<div>', {text: '[' + file.numberOfDocuments + ']', "amount": file.numberOfDocuments}),
                             'file-size': $('<div>', {text: file.size}),
                             'add-to-group': components.controls.plus(withClick(fileEditor.addTemplateToGroup)).attr("title", texts.addToGroup),
                             'download': components.controls.download(withClick(() => fileEditor.downloadFile(file))).attr('title', texts.download),

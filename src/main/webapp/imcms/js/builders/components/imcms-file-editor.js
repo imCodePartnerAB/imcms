@@ -64,7 +64,7 @@ define(
         function createBackDir(fullPath, physicalPath) {
             return {
                 fileName: '../',
-                fullPath: getDirPathFromFullPath(fullPath, physicalPath),
+                fullPath: getDirPathFromFullPath(fullPath),
                 physicalPath: getDirPathFromFullPath(physicalPath),
                 fileType: 'DIRECTORY'
             }
@@ -467,11 +467,28 @@ define(
                         };
 
                         templatesRestApi.replaceOnDoc(transferData).done(() => {
+                            changeTemplateAmountOfDocuments(transferData.oldTemplate, -1);
+                            changeTemplateAmountOfDocuments(transferData.newTemplate, 1);
+
                             deleteFileRequest(sourceFile);
                         }).fail(() => modal.buildErrorWindow(texts.error.replaceTemplate));
                     }
                 });
             }).fail(() => modal.buildErrorWindow(texts.error.loadTemplates));
+        }
+
+        function changeTemplateAmountOfDocuments(name, number){
+            let $amount = $fileSourceRow.parent().find("[name='" + name + "']").find(".file-row__amount-docs");
+            let amount = Number.parseInt($amount.attr("amount")) + number;
+            $amount.attr("amount", amount);
+            $amount.text("[" + amount + "]");
+        }
+
+        function changeCountFiles(index, number){
+            const $pathRowCount = getPathRowByIndex(index).find(".path-row__count");
+            const count = Number.parseInt($pathRowCount.attr("count")) + number;
+            $pathRowCount.attr("count", count);
+            $pathRowCount.text("[" + count + "]");
         }
 
         function getIndexOfTemplateInArrayById(array, id) {
@@ -573,17 +590,15 @@ define(
 
                 const index = getIndexOfSubFilesContainer($subFilesContainer);
 
-                const pathRow = getPathRowByIndex(index);
-                pathRow.empty();
-                pathRow.append($('<div>', {
-                    text: file.physicalPath,
-                    'full-path': path,
-                    'class': 'path-row__path'
-                }));
-                pathRow.append($('<div>', {
-                    text: "[" + files.length + "]",
-                    'class': 'path-row__count'
-                }));
+                const $pathRow = getPathRowByIndex(index);
+
+                const $pathRowPath = $pathRow.find(".path-row__path");
+                $pathRowPath.text(file.physicalPath);
+                $pathRowPath.attr("full-path", path);
+
+                const $pathRowAmount = $pathRow.find(".path-row__count");
+                $pathRowAmount.text("[" + files.length + "]");
+                $pathRowAmount.attr("count", files.length);
 
                 const dirPath1 = getDirPathByIndex(0);
                 const dirPath2 = getDirPathByIndex(1);
@@ -814,12 +829,16 @@ define(
 
         function deleteFileRequest(sourceFile){
             fileRestApi.deleteFile(sourceFile).done(() => {
-                $documentsContainer.hide();
-                $fileSourceRow.remove();
+
+                const index = $fileSourceRow.parent().hasClass('first-sub-files') ? 0 : 1;
+                changeCountFiles(index, -1);
 
                 if ($templatesTable.css('display') !== 'none') {
                     fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
                 }
+
+                $documentsContainer.hide();
+                $fileSourceRow.remove();
             }).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
         }
 
@@ -890,6 +909,8 @@ define(
             };
 
             fileRestApi.create(fileToSave).done(newFile => {
+                changeCountFiles(this.targetSubFilesContainerIndex, 1);
+
                 currentFile = newFile;
                 $fileSourceRow = integrateFileInContainerAsRow(newFile, targetSubFilesContainer, this.transformFileToRow);
                 $fileSourceRow.addClass(newFileHighlightingClassName);
@@ -917,6 +938,8 @@ define(
                 formData.append("targetDirectory", targetDirectoryPath);
 
                 fileRestApi.upload(formData).done(uploadedFiles => {
+                    changeCountFiles(this.targetSubFilesContainerIndex, uploadedFiles.length);
+
                     uploadedFiles.forEach(file => {
                         currentFile = file;
                         $fileSourceRow = integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow);
@@ -935,6 +958,9 @@ define(
             };
 
             fileRestApi.move(paths).done(files => {
+                changeCountFiles(this.targetSubFilesContainerIndex, files.length);
+                changeCountFiles(this.targetSubFilesContainerIndex === 0 ? 1 : 0, 0-files.length);
+
                 selectedFiles = files;
 
                 const allSubFilesContainers = getAllSubFilesContainers();
@@ -966,6 +992,8 @@ define(
             };
 
             fileRestApi.copy(paths).done(newFiles => {
+                changeCountFiles(this.targetSubFilesContainerIndex, newFiles.length);
+
                 selectedFiles = newFiles;
                 selectedFilesRows = [];
 
@@ -1007,7 +1035,8 @@ define(
         function buildBoundData(targetSubFilesContainerIndex) {
             return {
                 getTargetSubFilesContainer: () => getSubFilesContainerByIndex(targetSubFilesContainerIndex),
-                transformFileToRow: bindTransformFileToRow(targetSubFilesContainerIndex)
+                transformFileToRow: bindTransformFileToRow(targetSubFilesContainerIndex),
+                targetSubFilesContainerIndex: targetSubFilesContainerIndex
             }
         }
 
