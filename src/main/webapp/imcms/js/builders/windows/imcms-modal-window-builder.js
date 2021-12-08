@@ -254,7 +254,7 @@ define(
                 elements: {
                     "modal-head": buildHead(texts.userProperties),
                     "modal-body": $userPropertiesData,
-                    "modal-footer": buildCreateFooter(onConfirmed, onDeclined)
+                    "modal-footer": buildSaveFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>", {
                 'class': 'imcms-pop-up-modal',

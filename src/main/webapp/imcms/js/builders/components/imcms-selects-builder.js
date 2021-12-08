@@ -5,8 +5,8 @@
 const logger = require('imcms-logger');
 
 define("imcms-selects-builder",
-    ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery", "imcms-checkboxes-builder"],
-    function (BEM, primitives, buttons, $, checkboxesBuilder) {
+    ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery", "imcms-checkboxes-builder", "imcms-i18n-texts"],
+    function (BEM, primitives, buttons, $, checkboxesBuilder, texts) {
 
         const SELECT__CLASS = "imcms-select",
             SELECT__CLASS_$ = "." + SELECT__CLASS,
@@ -153,7 +153,7 @@ define("imcms-selects-builder",
             const $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton());
 
             const $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
-                text: (options[0] && options[0].text) || "None"
+                text: (options[0] && options[0].text) || texts.none
             });
             const $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {click: toggleSelect})
                 .append($selectedValue, $button);
@@ -207,6 +207,7 @@ define("imcms-selects-builder",
                 return $resultImcmsSelect;
 
             } else {
+                $resultImcmsSelect.find(".imcms-drop-down-list__select-item-value").html(texts.none)
                 logger.log("%c Select is empty, nothing to choose", "color: red;");
                 logger.log($resultImcmsSelect[0]);
             }
@@ -295,7 +296,7 @@ define("imcms-selects-builder",
 
                 if (attributes.emptySelect) {
                     options.unshift({
-                        text: "None",
+                        text: texts.none,
                         "data-value": null
                     });
                 }

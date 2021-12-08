@@ -15,6 +15,7 @@ define('imcms-document-editor-builder',
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
               docProfileSelectBuilder, docCopyRestApi, modal) {
 
+        const textNone = texts.none;
         texts = texts.editors.document;
 
         const classButtonOn = 'imcms-button--switch-on';
@@ -1428,7 +1429,7 @@ define('imcms-document-editor-builder',
             $textField.$input.val('');
 
             $.find('.imcms-drop-down-list__select-item-value').forEach(selectItemValue => {
-                $(selectItemValue).text('None');
+                $(selectItemValue).text(textNone);
             });
 
             $editorBody.remove();

@@ -1013,6 +1013,7 @@ const texts = {
             yearMonthDay: 'åååå-mm-dd',
             hourMinute: 'tt:mm',
         },
+        none: 'Ingen'
     },
     "en": {
         panel: {
@@ -2018,6 +2019,7 @@ const texts = {
             yearMonthDay: 'yyyy-mm-dd',
             hourMinute: 'hh:mm',
         },
+        none: 'None'
     }
 };
 
