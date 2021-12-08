@@ -92,14 +92,6 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteById_When_PropertyNotExist_Expect_CorrectException() throws Exception {
-        int fakeId = 40;
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + fakeId);
-        performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
-
-    }
-
-    @Test
     public void findAll_When_PropertiesExist_Expect_Ok() throws Exception {
         List<SystemProperty> properties = systemPropertyService.findAll();
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
