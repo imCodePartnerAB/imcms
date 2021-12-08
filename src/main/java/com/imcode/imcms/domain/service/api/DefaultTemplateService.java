@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
@@ -29,15 +30,19 @@ public class DefaultTemplateService implements TemplateService {
 
     private final TextDocumentTemplateService textDocumentTemplateService;
 
+    private final DocumentMapper documentMapper;
+
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
     private final Path templateAdminPath;
 
     DefaultTemplateService(TemplateRepository templateRepository, TextDocumentTemplateService textDocumentTemplateService,
+                           DocumentMapper documentMapper,
                            @Value("WEB-INF/templates/text") File templateDirectory, @Value("${TemplatePath}") Path templateAdminPath) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
+        this.documentMapper = documentMapper;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.templateAdminPath = templateAdminPath.resolve("admin");
     }
@@ -129,6 +134,8 @@ public class DefaultTemplateService implements TemplateService {
                 textDoc.setTemplateName(newTemplateName);
                 textDoc.setChildrenTemplateName(newTemplateName);
                 textDocumentTemplateService.save(textDoc);
+
+                documentMapper.invalidateDocument(textDoc.getDocId());
             });
 
         } else {
