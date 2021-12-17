@@ -237,7 +237,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__META_ID, docId);
         indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, currentVersionDocNo);
         indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
-        indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode());
+        indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode().name());
 
         for (CommonContent commonContent : doc.getCommonContents()) {
             String headline = StringUtils.defaultString(commonContent.getHeadline());

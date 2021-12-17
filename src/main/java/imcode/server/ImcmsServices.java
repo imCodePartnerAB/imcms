@@ -131,5 +131,7 @@ public interface ImcmsServices {
 
     DocumentDataService getDocumentDataService();
 
+    SearchDocumentService getSearchDocumentService();
+
     UserLockValidator getUserLockValidator();
 }

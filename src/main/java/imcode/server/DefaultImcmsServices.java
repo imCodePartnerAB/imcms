@@ -10,23 +10,7 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.dto.UserFormData;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.AuthenticationProvidersService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
-import com.imcode.imcms.domain.service.DocumentDataService;
-import com.imcode.imcms.domain.service.DocumentRolesService;
-import com.imcode.imcms.domain.service.DocumentUrlService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.UserPropertyService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -175,6 +159,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     @Autowired
     private DocumentDataService documentDataService;
+
+    @Getter
+    @Autowired
+    private SearchDocumentService searchDocumentService;
 
     @Getter
     @Autowired

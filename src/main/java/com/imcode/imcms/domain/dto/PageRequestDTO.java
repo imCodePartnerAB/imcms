@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 
 public class PageRequestDTO {
 
-    public static final int DEFAULT_PAGE_SIZE_FOR_UI = 100;
+    public static final int DEFAULT_PAGE_SIZE_FOR_UI = Integer.MAX_VALUE;
     private static final int DEFAULT_PAGE_NUMBER = 0;
 
     private PageRequest pageRequest;
@@ -26,6 +26,15 @@ public class PageRequestDTO {
         this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, defaultPageSize);
         this.property = DocumentIndex.FIELD__MODIFIED_DATETIME;
         this.direction = Sort.Direction.DESC;
+    }
+
+    public PageRequestDTO(String property, Sort.Direction direction, int skip, int size) {
+        this.property = property;
+        this.direction = direction;
+        this.skip = skip;
+
+        final Sort sort = new Sort(new Sort.Order(direction, property));
+        this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, size, sort);
     }
 
     public int getSize() {
