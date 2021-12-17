@@ -260,6 +260,11 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     @Override
+    public SearchDocumentService getSearchDocumentService(){
+        return null;
+    }
+
+    @Override
     public UserLockValidator getUserLockValidator() {
         return null;
     }

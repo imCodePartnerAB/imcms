@@ -78,10 +78,9 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD,
                 DocumentIndex.FIELD__TEXT,
-                DocumentIndex.FIELD__VERSION_NO,
                 DocumentIndex.FIELD__ALIAS,
                 DocumentIndex.FIELD__URL})
-                .map(field -> String.format("%s:*%s*", field, term))
+                .map(field -> String.format("%s:(*%s*)", field, term))
                 .collect(Collectors.joining(" "));
 
         assertThat(solrQuery.get(CommonParams.Q), is(expected));
@@ -102,22 +101,35 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD,
                 DocumentIndex.FIELD__TEXT,
-                DocumentIndex.FIELD__VERSION_NO,
                 DocumentIndex.FIELD__ALIAS,
                 DocumentIndex.FIELD__URL})
-                .map(field -> String.format("%s:*%s*", field, term).replaceAll("\\s+", "?"))
+                .map(field -> String.format("%s:(*test* *test2*)", field))
                 .collect(Collectors.joining(" "));
 
         assertThat(solrQuery.get(CommonParams.Q), is(expected));
     }
 
     @Test
-    public void convert_When_QueryIsExist_Expect_SearchBySpecifiedSimpleQuery() {
-        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
-                "+status:" + Document.PublicationStatus.APPROVED;
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query);
+    public void convert_When_TermIsQuote_Expect_SearchBySpecifiedFieldsWithTerm() {
+        final String term = "\"test test2\"";
 
-        assertThat(solrQuery.get(CommonParams.Q), is(query));
+        searchQueryDTO.setTerm(term);
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        final String expected = Arrays.stream(new String[]{
+                        DocumentIndex.FIELD__META_ID,
+                        DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
+                        DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
+                        DocumentIndex.FIELD__META_TEXT,
+                        DocumentIndex.FIELD__KEYWORD,
+                        DocumentIndex.FIELD__TEXT,
+                        DocumentIndex.FIELD__ALIAS,
+                        DocumentIndex.FIELD__URL})
+                .map(field -> String.format("%s:(\"test test2\")", field))
+                .collect(Collectors.joining(" "));
+
+        assertThat(solrQuery.get(CommonParams.Q), is(expected));
     }
 
     @Test
@@ -260,5 +272,36 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
         assertThat(solrQuery.get(CommonParams.Q), is(expectedQuery));
+    }
+
+    @Test
+    public void convert_When_QueryIsExist_Expect_SearchBySpecifiedSimpleQuery() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query);
+
+        assertThat(solrQuery.get(CommonParams.Q), is(query));
+    }
+
+    @Test
+    public void convert_When_QueryAndPageRequestAreExist_Expect_SearchBySpecifiedSimpleQueryAndPageRequest() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final String property = DocumentIndex.FIELD__META_HEADLINE;
+        final int skip = 45;
+        final int size = 100;
+
+        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, skip, size);
+        final String expectedSort = String.format("sort=%s+%s", property, Sort.Direction.ASC.toString().toLowerCase());
+        final String expectedStart = "start=" + skip;
+        final String expectedRows = "rows=" + size;
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page);
+        assertThat(solrQuery.get(CommonParams.Q), is(query));
+
+        final String receivedQuery = solrQuery.toString();
+        assertTrue(receivedQuery.contains(expectedSort));
+        assertTrue(receivedQuery.contains(expectedStart));
+        assertTrue(receivedQuery.contains(expectedRows));
     }
 }
