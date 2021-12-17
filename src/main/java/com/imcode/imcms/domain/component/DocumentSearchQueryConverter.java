@@ -20,29 +20,11 @@ import static org.springframework.data.domain.Sort.Order;
 @Component
 public class DocumentSearchQueryConverter {
 
-    private static final Integer DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
-
     public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery) {
         final UserDomainObject searchingUser = Imcms.getUser();
         final StringBuilder indexQuery = new StringBuilder();
 
-        indexQuery.append(
-                StringUtils.isNotBlank(searchQuery.getTerm())
-                        ? Arrays.stream(new String[]{
-                        DocumentIndex.FIELD__META_ID,
-                        DocumentIndex.FIELD_META_HEADLINE + "_" + searchingUser.getLanguage(),
-                        DocumentIndex.FIELD__META_HEADLINE + "_" + searchingUser.getLanguage(),
-                        DocumentIndex.FIELD__META_TEXT,
-                        DocumentIndex.FIELD__KEYWORD,
-                        DocumentIndex.FIELD__TEXT,
-                        DocumentIndex.FIELD__VERSION_NO,
-                        DocumentIndex.FIELD__ALIAS,
-                        DocumentIndex.FIELD__URL})
-                        .map(field -> String.format("%s:*%s*", field,
-                                searchQuery.getTerm().replaceAll("\\s+", "?")))
-                        .collect(Collectors.joining(" "))
-                        : "*:*"
-        );
+        indexQuery.append(termToDefaultQuery(searchQuery.getTerm(), searchingUser.getLanguage()));
 
         if (searchQuery.getCategoriesId() != null) {
             final String categoriesIdStringValues = searchQuery.getCategoriesId()
@@ -71,12 +53,48 @@ public class DocumentSearchQueryConverter {
     }
 
     public SolrQuery convertToSolrQuery(String searchQuery) {
+        return convertToSolrQuery(searchQuery, null);
+    }
+
+    public SolrQuery convertToSolrQuery(String searchQuery, PageRequestDTO page) {
         final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
-        prepareSolrQueryPaging(new SearchQueryDTO(null), solrQuery);
+
+        final SearchQueryDTO searchQueryDTO = new SearchQueryDTO(null);
+        searchQueryDTO.setPage(page);
+        prepareSolrQueryPaging(searchQueryDTO, solrQuery);
+
         prepareSolrIsSuperAdminQuery(user, solrQuery);
 
         return solrQuery;
+    }
+
+    private String termToDefaultQuery(String term, String language){
+        if(StringUtils.isBlank(term)) return "*:*";
+
+        if(!term.startsWith("\"") && !term.endsWith("\"")){
+            String[] splits = term.split("\\s+");
+
+            StringBuilder termBuilder = new StringBuilder();
+            for(String split: splits){
+                termBuilder.append(String.format("*%s* ", split));
+            }
+
+            term = termBuilder.toString().trim();
+        }
+
+        final String finalTerm = term;
+        return Arrays.stream(new String[]{
+                                DocumentIndex.FIELD__META_ID,
+                                DocumentIndex.FIELD_META_HEADLINE + "_" + language,
+                                DocumentIndex.FIELD__META_HEADLINE + "_" + language,
+                                DocumentIndex.FIELD__META_TEXT,
+                                DocumentIndex.FIELD__KEYWORD,
+                                DocumentIndex.FIELD__TEXT,
+                                DocumentIndex.FIELD__ALIAS,
+                                DocumentIndex.FIELD__URL})
+                        .map(field -> String.format("%s:(%s)", field, finalTerm))
+                        .collect(Collectors.joining(" "));
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
@@ -84,10 +102,6 @@ public class DocumentSearchQueryConverter {
 
         if (page == null) {
             page = new PageRequestDTO();
-        }
-
-        if (StringUtils.isBlank(searchQuery.getTerm()) && page.getSize() == PageRequestDTO.DEFAULT_PAGE_SIZE_FOR_UI) {
-            page.setSize(DEFAULT_MAX_SIZE);
         }
 
         solrQuery.setStart(page.getSkip());

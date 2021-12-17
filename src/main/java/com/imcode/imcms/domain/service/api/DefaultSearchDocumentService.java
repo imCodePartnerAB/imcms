@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.api.exception.RoleNotFoundException;
 import com.imcode.imcms.domain.dto.DocumentRoles;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
+import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.domain.service.RoleService;
@@ -10,6 +11,7 @@ import com.imcode.imcms.domain.service.SearchDocumentService;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.DocumentRole;
 import imcode.server.Imcms;
+import imcode.server.document.index.IndexSearchResult;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -47,16 +49,17 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
             return searchDocumentsBySelectedRole(searchQuery, searchingUser, selectedRole);
         }
 
-        return searchDocuments(searchQuery, searchingUser);
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(searchQuery, searchingUser));
     }
 
     @Override
-    public List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery) {
-        return documentIndex.search(searchQuery, Imcms.getUser())
-                .documentStoredFieldsList()
-                .stream()
-                .map(DocumentStoredFieldsDTO::new)
-                .collect(Collectors.toList());
+    public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery) {
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, Imcms.getUser()));
+    }
+
+    @Override
+    public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page) {
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, page, Imcms.getUser()));
     }
 
     private boolean isDocumentRolesHavePermissionAndContainsRole(DocumentRoles documentRoles, Role selectedRole) {
@@ -84,9 +87,8 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
                 .collect(Collectors.toList());
     }
 
-    private List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery, UserDomainObject searchingUser) {
-        return documentIndex.search(searchQuery, searchingUser)
-                .documentStoredFieldsList()
+    private List<DocumentStoredFieldsDTO> mapToDocumentStoredFieldsDTO(IndexSearchResult result){
+        return result.documentStoredFieldsList()
                 .stream()
                 .map(DocumentStoredFieldsDTO::new)
                 .collect(Collectors.toList());
