@@ -266,6 +266,31 @@
     padding: 0 20px 5px 20px;
 }
 
+.imcms-edit-modal-window .edit-image-file{
+    background-color: white;
+    background-image: linear-gradient(45deg, #b0b0b0 25%, transparent 25%),
+                      linear-gradient(-45deg, #b0b0b0 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #b0b0b0 75%),
+                      linear-gradient(-45deg, transparent 75%, #b0b0b0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+
+    position: relative;
+    height: 550px;
+}
+
+.imcms-edit-modal-window .edit-image-file img{
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    max-width: 95%;
+    max-height: 95%;
+}
+
 .imcms-create-properties-modal-window__modal-head{
     display: block;
 }

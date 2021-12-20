@@ -618,7 +618,11 @@ define(
 
                 if(isRootDir(file.physicalPath)) $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
 
-                 files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
+                 files.sort((file1, file2) =>{
+                     if(file1.editable === file2.editable) return 0;
+                     return file1.editable ? -1 : 1;
+                 }).forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
+
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
@@ -642,7 +646,7 @@ define(
         }
 
         function isImage(fileName) {
-            const pattern = new RegExp('.(GIF|JPE?G|PNG)$', 'gi');
+            const pattern = new RegExp('.(GIF|JPE?G|PNG|SVG)$', 'gi');
             return pattern.test(fileName);
         }
 
@@ -715,10 +719,12 @@ define(
         let editCheckBox;
 
         function setEnableEditContent() {
-            const isImage = new RegExp('.(GIF|JPE?G|PNG|PDF)$', 'gi');
             contentTextArea.show();
-            if (isImage.test(currentFile.fullPath) || checkBoxIsDirectory.isChecked()) {
+
+            const isEditable = new RegExp('.(GIF|JPE?G|PNG|PDF|MP4)$', 'gi');
+            if (isEditable.test(currentFile.fullPath) || checkBoxIsDirectory.isChecked()) {
                 editCheckBox.$input.attr('disabled', 'disabled');
+                editCheckBox.hide();
                 contentTextArea.hide();
             }
             if (editCheckBox.isChecked()) {
@@ -752,13 +758,16 @@ define(
         }
 
         function confirmEdit(onRenameFile, onEditFileContent) {
-            return currentFile.fileType === 'DIRECTORY'
-                ? modal.buildEditDirectoryModalWindow(editDirectoryNameField, confirmed => {
+            if (currentFile.fileType === 'DIRECTORY') {
+                return modal.buildEditDirectoryModalWindow(editDirectoryNameField, confirmed => {
                     if (confirmed) {
                         onRenameFile();
                     }
-                })
-                : modal.buildEditFileModalWindow(editFileNameField, contentTextArea, editCheckBox, confirmed => {
+                });
+            } else {
+                const modalBody = isImage(currentFile.fileName) && !new RegExp('.(SVG)$', 'gi').test(currentFile.fileName)
+                    ? buildImageContent() : contentTextArea;
+                return modal.buildEditFileModalWindow(editFileNameField, modalBody, editCheckBox, confirmed => {
                     if (confirmed && !editCheckBox.isChecked()) {
                         onRenameFile()
                     }
@@ -766,6 +775,7 @@ define(
                         onEditFileContent()
                     }
                 });
+            }
         }
 
         function onEditFileContent() {
@@ -856,6 +866,28 @@ define(
             })
         }
 
+        function buildImageContent(){
+            const $imageContent = $('<div>');
+
+            const $image = fileToImgElement(currentFile);
+            const $imageContainer = $('<div>', {class: 'edit-image-file'});
+            $imageContainer.append($image);
+
+            $imageContent.append($imageContainer);
+            $image.load(function() {
+                const infoText = components.texts.titleText("<div>", `(${$(this).width()} x ${$(this).height()})  ${currentFile.size}  `);
+                infoText.append(components.texts.infoText('<a>', currentFile.physicalPath, {
+                    href: currentFile.physicalPath,
+                    target: '_blank',
+                    style: 'text-decoration: underline'})
+                );
+
+                $imageContent.prepend(infoText);
+            });
+
+            return $imageContent;
+        }
+
         function buildIsEditCheckBox() {
             return components.checkboxes.imcmsCheckbox('<div>', {
                 text: texts.title.titleEditContent,
@@ -920,7 +952,8 @@ define(
         function uploadFile() {
             let $fileInput = $('<input>', {
                 type: 'file',
-                multiple: ''
+                multiple: '',
+                accept: ".jsp, .jspx, .html, .css, .js, .txt, .pdf, .mp4, image/*"
             });
             $fileInput.click();
 
