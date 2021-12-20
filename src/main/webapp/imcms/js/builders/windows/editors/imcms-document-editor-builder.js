@@ -44,6 +44,7 @@ define('imcms-document-editor-builder',
         let $documentsContainer, $editorBody, $documentsList;
 
         let currentDocumentNumber = 0;
+        const defaultPageSize = 100;
 
         const term = 'term';
         const userId = 'userId';
@@ -65,6 +66,7 @@ define('imcms-document-editor-builder',
             'userId': null,
             'categoriesId': {},
             'page.skip': currentDocumentNumber,
+            'page.size': defaultPageSize,
             'roleId': null
         };
 
@@ -89,7 +91,9 @@ define('imcms-document-editor-builder',
 
         function buildErrorBlock() {
             errorMsg = components.texts.errorText('<div>', texts.error.searchFailed, {style: 'display: none;'});
-            return errorMsg;
+            const errorMsgContainer = $('<div>');
+            errorMsgContainer.append(errorMsg);
+            return errorMsgContainer;
         }
 
         function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {

@@ -203,7 +203,6 @@
 
 .imcms-document-list__items {
     display: block;
-    padding-top: 12px;
     overflow: auto;
     width: 100%;
 }
@@ -265,11 +264,11 @@
 }
 
 .imcms-document-editor .imcms-document-list__items {
-    height: -webkit-calc(100% - 118px);
-    height: -moz-calc(100% - 118px);
-    height: -ms-calc(100% - 118px);
-    height: -o-calc(100% - 118px);
-    height: calc(100% - 118px);
+    height: -webkit-calc(100% - 135px);
+    height: -moz-calc(100% - 135px);
+    height: -ms-calc(100% - 135px);
+    height: -o-calc(100% - 135px);
+    height: calc(100% - 135px);
 }
 
 .imcms-document-editor__footer {
