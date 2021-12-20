@@ -69,7 +69,7 @@ private static String getFileContent(File file, String encoding) {
 
 request.setCharacterEncoding("UTF-8");
 
-    UserDomainObject user = Utility.getLoggedOnUser( request );
+UserDomainObject user = Utility.getLoggedOnUser( request );
 if (!user.isSuperAdmin()) {
     return ;
 }
@@ -80,9 +80,9 @@ if (!user.isSuperAdmin()) {
 
 String ren = "(\\.[\\d]+)?" ;
 
-String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$/i" ;
+String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+" + ren + "$/i" ;
 String acceptedExtPatternReadonly = "/" +
-	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|PROPERTIES)+" + ren + "$)" +
+	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+" + ren + "$)" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
@@ -102,6 +102,8 @@ boolean doSave     = "POST".equalsIgnoreCase(request.getMethod()) && fileSrc != 
 boolean isReadonly = request.getParameter("readonly") != null ;
 
 String theSearchString = (request.getParameter("searchString") != null) ? request.getParameter("searchString") : "" ;
+
+if(file != null && file.contains("../")) return;
 
 /* reset file ? */
 

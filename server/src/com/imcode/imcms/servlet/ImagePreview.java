@@ -57,7 +57,7 @@ public class ImagePreview extends HttpServlet {
         }
 
         String path = StringUtils.trimToNull(request.getParameter("path"));
-        if (path == null) {
+        if (path == null || path.contains("../")) {
             log.error("No path specified");
             send404(response);
 

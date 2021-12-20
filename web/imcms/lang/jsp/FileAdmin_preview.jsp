@@ -40,6 +40,8 @@ String thisPage = cp + request.getServletPath();
 String zoom       = "" ;
 String defZoom    = "1.0" ;
 
+if(file != null && file.contains("../")) return;
+
 if (request.getParameter("zoom") != null) {
 	zoom            = " style=\"zoom:" + request.getParameter("zoom") + "\"" ;
 	session.setAttribute("zoom", request.getParameter("zoom")) ;
