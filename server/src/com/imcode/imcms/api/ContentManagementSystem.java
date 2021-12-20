@@ -63,9 +63,7 @@ public abstract class ContentManagementSystem {
             cms.getUserService().updateUserRememberCd(user);
         }
 
-        Utility.setUserToken(request, response, user);
-
-        Utility.makeUserLoggedIn(request, user);
+        Utility.makeUserLoggedIn(request, response, user);
 
         return cms;
     }

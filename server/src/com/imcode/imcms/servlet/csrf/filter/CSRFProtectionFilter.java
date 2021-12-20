@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.methods.HttpGet;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,6 @@ import java.io.IOException;
 public class CSRFProtectionFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(CSRFProtectionFilter.class);
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -30,18 +30,16 @@ public class CSRFProtectionFilter implements Filter {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         final CsrfTokenManager csrfTokenManager = new CSRFTokenManagerImpl();
 
-        if (user != null) {
-            if (!user.isDefaultUser()) {
-                if (!csrfTokenManager.isCorrectTokenForCurrentUser(user, request)) {
-                    Utility.makeUserLoggedOut(request);
-                    log.error("Potential CSRF detected on user login name: " + user.getLoginName());
-                    //add default user for system
-                    Utility.makeUserLoggedIn(request, Imcms.getServices().verifyUserByIpOrDefault(request.getRemoteAddr()));
-                    throw new ServletException("Potential CSRF detected!! Inform a scary sysadmin ASAP!");
-                }else{
-                    if(request.getMethod().equals("POST")){
-                        Utility.setUserToken(request, response, user);
-                    }
+        if (user != null && !user.isDefaultUser()) {
+            if (!csrfTokenManager.isCorrectTokenForCurrentUser(user, request)) {
+                Utility.makeUserLoggedOut(request);
+                log.error("Potential CSRF detected on user login name: " + user.getLoginName());
+                //add default user for system
+                Utility.makeUserLoggedIn(request, response, Imcms.getServices().verifyUserByIpOrDefault(request.getRemoteAddr()));
+                throw new ServletException("Potential CSRF detected!! Inform a scary sysadmin ASAP!");
+            } else {
+                if (!request.getMethod().equals(HttpGet.METHOD_NAME) && csrfTokenManager.isTimeExpired(request)) {
+                    Utility.setUserToken(request, response, user);
                 }
             }
         }

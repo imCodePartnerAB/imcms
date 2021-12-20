@@ -33,7 +33,7 @@ public class ProcessAuthResponseServlet extends HttpServlet {
                 .getUserService()
                 .saveExternalUser(provider.getUser(request));
 
-        Utility.makeUserLoggedIn(request, user);
+        Utility.makeUserLoggedIn(request, response, user);
         response.sendRedirect(nextURL);
     }
 }

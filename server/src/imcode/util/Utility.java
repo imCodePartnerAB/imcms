@@ -61,6 +61,7 @@ public class Utility {
     public static final ResultSetHandler<List<Integer>> INTEGER_LIST_HANDLER = new IntegerListResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     public static final String IM_TOKEN = "im_token";
+    public static final String IM_TOKEN_DATE = "im_token_date";
 
     private final static Logger log = Logger.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
@@ -414,7 +415,7 @@ public class Utility {
         }
     }
 
-    public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
+    public static void makeUserLoggedIn(HttpServletRequest req, HttpServletResponse res, UserDomainObject user) {
 
         if (null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired()) {
             return;
@@ -430,9 +431,9 @@ public class Utility {
         sessionInfoDTO.setIp(req.getRemoteAddr());
         sessionInfoDTO.setLoginDate(loginDate);
         sessionInfoDTO.setExpireDate(DateUtils.addSeconds(loginDate, req.getSession().getMaxInactiveInterval()));
-
-
         sessions.put(currentSession.getId(), sessionInfoDTO);
+
+        setUserToken(req, res, user);
 
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
@@ -444,6 +445,7 @@ public class Utility {
         HttpSession session = req.getSession();
         sessions.remove(session.getId());
         session.removeAttribute(LOGGED_IN_USER);
+        removeTokenSession(req);
         session.invalidate();
     }
 
@@ -484,20 +486,26 @@ public class Utility {
     }
 
     public static void setUserToken(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) {
-        String token = getContentManagementSystemFromRequest(request).getUserService().generateNewRememberCd(user);
-        Utility.setTokenToSession(request, token);
-        Utility.setRememberCdCookie(request, response, token);
+        if(!user.isDefaultUser()){
+            String token = getContentManagementSystemFromRequest(request).getUserService().generateNewRememberCd(user);
+            Utility.setTokenToSession(request, token);
+            Utility.setRememberCdCookie(request, response, token);
+        }
     }
 
-    public static void setTokenToSession(HttpServletRequest request, String token) {
-        request.getSession().setAttribute(IM_TOKEN, token);
+    private static void setTokenToSession(HttpServletRequest request, String token) {
+        final HttpSession currentSession = request.getSession();
+        currentSession.setAttribute(IM_TOKEN, token);
+        currentSession.setAttribute(IM_TOKEN_DATE, System.currentTimeMillis());
     }
 
-    public static void removeTokenSession(HttpServletRequest request) {
-        request.getSession().setAttribute(IM_TOKEN, "");
+    private static void removeTokenSession(HttpServletRequest request) {
+        final HttpSession currentSession = request.getSession();
+        currentSession.setAttribute(IM_TOKEN, "");
+        currentSession.setAttribute(IM_TOKEN_DATE, "");
     }
 
-    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String token) {
+    private static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String token) {
         Cookie cookie = new Cookie(IM_TOKEN, token);
         cookie.setMaxAge(60 * 60 * 2);
         cookie.setPath("/");

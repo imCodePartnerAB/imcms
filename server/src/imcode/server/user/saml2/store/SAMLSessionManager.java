@@ -86,8 +86,8 @@ public class SAMLSessionManager {
         if (StringUtils.isEmpty(rememberCd)) {
             cms.getUserService().updateUserRememberCd(user);
         }
-        Utility.setUserToken(request, response, user);
-        Utility.makeUserLoggedIn(request, user);
+
+        Utility.makeUserLoggedIn(request, response, user);
     }
 
     private String getSamlSessionIndex(Collection<Assertion> assertions) {

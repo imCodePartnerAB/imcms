@@ -9,4 +9,6 @@ public interface CsrfTokenManager {
     boolean isExistTokenInCookies(HttpServletRequest request);
 
     boolean isCorrectTokenForCurrentUser(UserDomainObject user, HttpServletRequest request);
+
+    boolean isTimeExpired(HttpServletRequest request);
 }

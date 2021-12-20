@@ -222,7 +222,7 @@ public class KerberosLoginService {
             cms.getUserService().updateUserSession(currentUser);
         }
 
-        Utility.makeUserLoggedIn(request, user);
+        Utility.makeUserLoggedIn(request, response, user);
 
         KerberosLoginResult loginResult = new KerberosLoginResult(KerberosLoginStatus.SUCCESS);
         loginResult.setContentManagementSystem(cms);

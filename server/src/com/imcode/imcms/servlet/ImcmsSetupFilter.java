@@ -74,7 +74,7 @@ public class ImcmsSetupFilter implements Filter {
                 return;
             }
 
-            Utility.makeUserLoggedIn(request, user);
+            Utility.makeUserLoggedIn(request, (HttpServletResponse) response, user);
         } else {
 
             if (user.isImcmsExternal()) {
