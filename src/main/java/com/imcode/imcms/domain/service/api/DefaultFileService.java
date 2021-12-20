@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
+import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.util.FileUtils;
@@ -43,6 +44,8 @@ public class DefaultFileService implements FileService {
     @Value("${rootPath}")
     private Path rootPath;
 
+    private final Set<String> changeableExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html", "css", "js", "txt", "pdf", "mp4"));
+
     @Autowired
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
                               TemplateService templateService,
@@ -50,28 +53,6 @@ public class DefaultFileService implements FileService {
         this.documentService = documentService;
         this.templateService = templateService;
         this.fileToSourceFile = fileToSourceFile;
-    }
-
-    private void checkAccessAllowable(Path path) {
-        String normalizedPath = path.normalize().toString();
-        final String finalNormalize = StringUtils.isBlank(normalizedPath)
-                ? rootPath.toString()
-                : normalizedPath;
-
-        boolean access = false;
-        for (Path pathRoot : rootPaths) {
-            try {
-                access = Files.walk(pathRoot).anyMatch(pathWalk -> Paths.get(finalNormalize).startsWith(pathWalk));
-                if (access) break;
-            } catch (IOException e) {
-                log.warn("There is no such file in the project. Got path: " + pathRoot);
-            }
-        }
-
-        if (!access) {
-            log.error("File access denied! Got path: " + path);
-            throw new FileAccessDeniedException("File access denied!");
-        }
     }
 
     @Override
@@ -116,7 +97,7 @@ public class DefaultFileService implements FileService {
                     .collect(Collectors.toList());
         }
 
-        checkAccessAllowable(path);
+        checkAccessAllowed(path, false);
 
         List<Path> paths = Files.isDirectory(path) ? Files.list(path).sorted().collect(Collectors.toList()) : Collections.EMPTY_LIST;
         return paths.stream()
@@ -125,6 +106,7 @@ public class DefaultFileService implements FileService {
                     if (isTemplatePath(filePath) && !Files.isDirectory(filePath)) {
                         sourceFile.setNumberOfDocuments(getDocumentsByTemplatePath(filePath).size());
                     }
+                    if(!checkExtensionAllowed(filePath)) sourceFile.setEditable(false);
                     return sourceFile;
                 })
                 .sorted(Comparator.comparing(SourceFile::getFileType))
@@ -147,7 +129,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile getFile(Path file) throws IOException {
-        checkAccessAllowable(file);
+        checkAccessAllowed(file, false);
         if (Files.exists(file)) {
             return fileToSourceFile.apply(file, true);
         } else {
@@ -163,7 +145,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        checkAccessAllowable(file);
+        checkActionsAllowed(file, false);
 
         if (Files.isDirectory(file)) {
             if(isTemplatePath(file)) throwTemplateException("Folder with templates can't be deleted!  Got path:" + file);
@@ -181,11 +163,11 @@ public class DefaultFileService implements FileService {
 
     @Override
     public List<SourceFile> moveFile(List<Path> src, Path target) throws IOException {
-        src.forEach(this::checkAccessAllowable);
+        src.forEach(path -> checkActionsAllowed(path, true));
         src.forEach(path -> {
             if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be moved! Got path: " + path);
         });
-        checkAccessAllowable(target);
+        checkAccessAllowed(target, false);
         if(isTemplatePath(target)) throwTemplateException("Files cannot be moved to the folder with templates! Got path: " + target);
 
         final List<SourceFile> files = new ArrayList<>();
@@ -197,7 +179,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile renameFile(Path src, String newName) throws IOException {
-        checkAccessAllowable(src);
+        checkActionsAllowed(src, true);
 
         if (StringUtils.isNotBlank(src.toString()) && StringUtils.isNotBlank(newName)) {
             final Path path = Files.move(src, Paths.get(src.getParent().toString(), newName));
@@ -220,11 +202,11 @@ public class DefaultFileService implements FileService {
 
     @Override
     public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException {
-        src.forEach(this::checkAccessAllowable);
+        src.forEach(path -> checkActionsAllowed(path, false));
         src.forEach(path -> {
             if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be copied! Got path: " + path);
         });
-        checkAccessAllowable(target);
+        checkAccessAllowed(target, false);
         if(isTemplatePath(target)) throwTemplateException("Files cannot be copied to the folder with templates! Got path: " + target);
 
         final List<SourceFile> files = new ArrayList<>();
@@ -237,7 +219,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
-        checkAccessAllowable(location);
+        checkActionsAllowed(location, false);
 
         if (StringUtils.isNotBlank(location.toString())) {
             Path writeFilePath = writeMode == null ? Files.write(location, content) : Files.write(location, content, writeMode);
@@ -256,13 +238,13 @@ public class DefaultFileService implements FileService {
     public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
         final Path filePath = Paths.get(file.getFullPath());
         if (StringUtils.isNotBlank(file.getFileName())) {
-            checkAccessAllowable(filePath);
-
             Path newSrcFilePath;
             if (isDirectory) {
+                checkAccessAllowed(filePath, false);
                 if(isTemplatePath(filePath)) throwTemplateException("Folder cannot be created in the folder with templates");
                 newSrcFilePath = Files.createDirectory(filePath);
             } else {
+                checkActionsAllowed(filePath, false);
                 newSrcFilePath = Files.createFile(filePath);
                 if(isTemplatePath(filePath) && Files.exists(newSrcFilePath)) createAndSaveTemplate(filePath);
             }
@@ -274,6 +256,46 @@ public class DefaultFileService implements FileService {
             throw new EmptyFileNameException(errorMessage);
         }
     }
+
+    /**
+     *  Restrict read-only files
+     */
+    private void checkActionsAllowed(Path path, boolean excludeRoot){
+        checkAccessAllowed(path, excludeRoot);
+        if(!checkExtensionAllowed(path)){
+            log.error("File access denied! Got path: " + path);
+            throw new FileAccessDeniedException("File access denied!");
+        }
+    }
+    
+    private void checkAccessAllowed(Path path, boolean excludeRoot) {
+        String normalizedPath = path.normalize().toString();
+        final String finalNormalize = StringUtils.isBlank(normalizedPath)
+                ? rootPath.toString()
+                : normalizedPath;
+
+        boolean access = false;
+        for (Path pathRoot : rootPaths) {
+            try {
+                access = Files.walk(pathRoot)
+                        .anyMatch(pathWalk -> !(excludeRoot && pathWalk.toString().equals(pathRoot.toString())) && Paths.get(finalNormalize).startsWith(pathWalk));
+                if (access) break;
+            } catch (IOException e) {
+                log.warn("There is no such file in the project. Got path: " + pathRoot);
+            }
+        }
+
+        if (!access) {
+            log.error("Access to the file with this extension is denied! Got path: " + path);
+            throw new FileAccessDeniedException("Access to the file with this extension is denied!");
+        }
+    }
+
+    private boolean checkExtensionAllowed(Path path){
+        final String extension = FilenameUtils.getExtension(path.toString());
+        return Files.isDirectory(path) || changeableExtensions.contains(extension) || Format.isImage(extension);
+    }
+    
 
     private boolean isTemplatePath(Path path) {
         return path.startsWith(templateService.getTemplateDirectory().toPath());

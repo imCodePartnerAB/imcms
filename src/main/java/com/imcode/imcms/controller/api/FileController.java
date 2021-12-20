@@ -91,7 +91,7 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
-                .header(HttpHeaders.CONTENT_TYPE, new MimetypesFileTypeMap().getContentType(sourceFile.getFullPath()))
+                .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(pathFile))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + sourceFile.getFileName())
                 .body(content);
     }
