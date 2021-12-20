@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TemplateServiceTest extends WebAppSpringTestConfig {
 
     @Value("WEB-INF/templates/text")
-    private File templateDirectory;
+    private File templateTextDirectory;
 
     @Autowired
     private TemplateRepository templateRepository;
@@ -54,7 +54,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() {
         defaultTemplate = new TemplateDTO(null, "testttt123", false);
-        defaultTemplateFile = new File(templateDirectory, defaultTemplate.getName() + ".jsp");
+        defaultTemplateFile = new File(templateTextDirectory, defaultTemplate.getName() + ".jsp");
 
         defaultTemplateFile.delete();
 

@@ -37,12 +37,16 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     private final String testFileName = "fileNameTest.jsp";
     private final String testFileName2 = "fileNameTest2.txt";
-    private final String testTemplateName = "templateTest";
+    private final String testTemplateName = "templateTest.jsp";
     private final String testDirectoryName = "dirNameTest";
     private final String testDirectoryName2 = testDirectoryName + "two";
     private final String testDirectoryName3 = testDirectoryName + "three";
-    private final String newName = "newNameTest.jsp";
+    private final String newNameFile = "newNameTest.jsp";
+    private final String newNameDirectory = "newNameDirectory";
+
     private final String notValidNewTemplateName = "newNameTest.txt";
+    private final String notAllowedExtensionFile = "notAllowedExtensionFile.xml";
+    private final Path outsideFilePath = Paths.get(testFileName);
 
     @Autowired
     private FileService fileService;
@@ -60,8 +64,10 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
+    @Value("WEB-INF/templates")
+    private Path templateDirectoryFromProperties;
     @Value("WEB-INF/templates/text")
-    private Path templateDirectory;
+    private Path templateTextDirectory;
     @Value("${rootPath}")
     private Path rootPath;
 
@@ -71,13 +77,18 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         templateDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
 
-        testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileUtils::deleteRecursive);
-        deleteFilesInTemplateDirectory(testFileName, testFileName2, testTemplateName, newName, notValidNewTemplateName);
+        Files.deleteIfExists(outsideFilePath);
+        testRootPaths.stream()
+                .filter(path -> !path.toString().contains(templateDirectoryFromProperties.toString()))
+                .map(Path::toFile)
+                .forEach(FileUtils::deleteRecursive);
+        deleteFilesInTemplateDirectory(testFileName, testFileName2, testTemplateName, newNameFile, notValidNewTemplateName);
+        Files.createDirectories(templateTextDirectory);
     }
 
     private void deleteFilesInTemplateDirectory(String... names) throws IOException {
         for(String name: names){
-            Files.deleteIfExists(templateDirectory.resolve(name));
+            Files.deleteIfExists(templateTextDirectory.resolve(name));
         }
     }
 
@@ -85,7 +96,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     public void getDocumentsByTemplateName_When_TemplateHasDocuments_Expected_CorrectSize() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path template = firstRootPath.resolve(testTemplateName);
-        final String templateName = template.getFileName().toString();
+        final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
         DocumentDTO document = documentDataInitializer.createData();
         Files.createDirectory(firstRootPath);
         Files.createFile(template);
@@ -178,7 +189,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getFiles_When_FilesInTemplateTextDir_Expected_ListWithCorrectValuesNumberOfDocuments() throws IOException {
-        final Path pathFile = templateDirectory.resolve(testFileName);
+        final Path pathFile = templateTextDirectory.resolve(testFileName);
         Files.createFile(pathFile);
 
         final String testTemplateName = FilenameUtils.removeExtension(testFileName);
@@ -187,7 +198,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         final SourceFile expectedSourceFile = fileToSourceFile.apply(pathFile, false);
         expectedSourceFile.setNumberOfDocuments(fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
-        final SourceFile sourceFile = fileService.getFiles(templateDirectory).stream()
+        final SourceFile sourceFile = fileService.getFiles(templateTextDirectory).stream()
                 .filter(source -> source.getFullPath().equals(pathFile.toString()))
                 .findAny().get();
 
@@ -226,28 +237,36 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
 
     @Test
-    public void createFile_When_FileCreateToOutSideRootDir_Expected_CorrectException() throws IOException {
-        Files.createDirectory(testRootPaths.get(0));
-        final Path pathFile = Paths.get(testFileName);
-        final Path pathDir = Paths.get(testFileName);
+    public void createFile_When_FileAndDirCreateToOutSideRootDir_And_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException {
+        final Path rootDir = Files.createDirectory(testRootPaths.get(0));
+        final Path rootDirParent = rootDir.getParent();
 
-        assertFalse(Files.exists(pathFile));
+        final Path outSidePathDir = rootDirParent.resolve(testDirectoryName);
+        final Path outSidePathFile = rootDirParent.resolve(testFileName);
+        final Path notAllowedExtension = rootDir.resolve(notAllowedExtensionFile);
 
-        final SourceFile newFile = fileToSourceFile.apply(pathFile, false);
-        final SourceFile newDir = fileToSourceFile.apply(pathDir, false);
+        assertFalse(Files.exists(outSidePathDir));
+        assertFalse(Files.exists(outSidePathFile));
+        assertFalse(Files.exists(notAllowedExtension));
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newFile, false));
-        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newDir, true));
+        final SourceFile outSideNewDir = fileToSourceFile.apply(outSidePathDir, false);
+        final SourceFile outSideNewFile = fileToSourceFile.apply(outSidePathFile, false);
+        final SourceFile notAllowedExtensionNewFile = fileToSourceFile.apply(notAllowedExtension, false);
 
-        assertFalse(Files.exists(pathFile));
-        assertFalse(Files.exists(pathDir));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(outSideNewDir, true));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(outSideNewFile, false));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(notAllowedExtensionNewFile, false));
+
+        assertFalse(Files.exists(outSidePathDir));
+        assertFalse(Files.exists(outSidePathFile));
+        assertFalse(Files.exists(notAllowedExtension));
     }
 
     @Test
     public void createFile_When_TemplateTextDir_And_TemplateNameIsValid_Expected_AddedTemplateEntity() throws IOException {
         assertTrue(templateRepository.findAll().isEmpty());
 
-        final Path pathNewFile = templateDirectory.resolve(testFileName);
+        final Path pathNewFile = templateTextDirectory.resolve(testFileName);
         final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
         final SourceFile createdFile = fileService.createFile(newFile, false);
         assertTrue(Files.exists(pathNewFile));
@@ -261,7 +280,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     public void createFile_When_TemplateTextDir_And_TemplateNameIsNotValid_Expected_NotAddedTemplateEntity() throws IOException {
         assertTrue(templateRepository.findAll().isEmpty());
 
-        final Path pathNewFile = templateDirectory.resolve(testFileName2);
+        final Path pathNewFile = templateTextDirectory.resolve(testFileName2);
         final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
         final SourceFile createdFile = fileService.createFile(newFile, false);
         assertTrue(Files.exists(pathNewFile));
@@ -271,10 +290,28 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void createDir_When_PathToTemplateTextDir_Expected_CorrectException() {
-        final Path pathNewFile = templateDirectory.resolve(testDirectoryName);
+        final Path pathNewFile = templateTextDirectory.resolve(testDirectoryName);
         final SourceFile newFile = fileToSourceFile.apply(pathNewFile, false);
         assertThrows(TemplateFileException.class, () -> fileService.createFile(newFile, true));
         assertFalse(Files.exists(pathNewFile));
+    }
+
+    @Test
+    public void saveFile_When_FileDoesNotExist_Expected_CreatedAndSavedFile() throws IOException{
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile = pathDir.resolve(testFileName);
+
+        Files.createDirectories(pathDir);
+        assertFalse(Files.exists(pathFile));
+
+        final String testText = "bla-bla-bla";
+        final SourceFile saved = fileService.saveFile(pathFile, testText.getBytes(), null);
+
+        assertNotNull(saved);
+        assertTrue(Files.exists(Paths.get(saved.getFullPath())));
+        String savedContent = new String(saved.getContents()).trim();
+        assertEquals(testText, savedContent);
     }
 
     @Test
@@ -313,8 +350,25 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void saveFile_When_FileToOutsideRootDir_Expected_CorrectException(){
+        final String testText = "bla-bla-bla";
+        assertThrows(FileAccessDeniedException.class, () ->
+                fileService.saveFile(outsideFilePath, testText.getBytes(), null));
+    }
+
+    @Test
+    public void saveFile_When_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        Files.createDirectories(firstRootPath);
+
+        final String testText = "bla-bla-bla";
+        assertThrows(FileAccessDeniedException.class, () ->
+                fileService.saveFile(firstRootPath.resolve(notAllowedExtensionFile), testText.getBytes(), null));
+    }
+
+    @Test
     public void saveFile_When_PathToTemplateTextDir_And_TemplateNameIsValid_Expected_SavedTemplateEntity() throws IOException {
-        final Path pathFile = templateDirectory.resolve(testFileName);
+        final Path pathFile = templateTextDirectory.resolve(testFileName);
 
         assertTrue(templateRepository.findAll().isEmpty());
 
@@ -327,7 +381,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveFile_When_PathToTemplateTextDir_And_TemplateNameIsNotValid_Expected_NotSavedTemplateEntity() throws IOException {
-        final Path pathFile = templateDirectory.resolve(testFileName2);
+        final Path pathFile = templateTextDirectory.resolve(testFileName2);
 
         assertTrue(templateRepository.findAll().isEmpty());
 
@@ -404,6 +458,17 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getFile_When_FileWithNotAllowedExtension_Expected_NoException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path notAllowedExtensionPath = firstRootPath.resolve(notAllowedExtensionFile);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(notAllowedExtensionPath);
+
+        assertDoesNotThrow(() -> fileService.getFile(notAllowedExtensionPath));
+    }
+
+    @Test
     public void deleteFile_When_FileExists_Expected_Delete() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -466,7 +531,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteFile_When_FileInTemplateTextDir_And_TemplateIsNotUsedDocuments_Expected_Deleted() throws IOException {
-        final Path template = templateDirectory.resolve(testTemplateName);
+        final Path template = templateTextDirectory.resolve(testTemplateName);
         Files.createFile(template);
         assertTrue(Files.exists(template));
 
@@ -479,8 +544,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_Expected_CorrectException() throws IOException {
-        final Path template = templateDirectory.resolve(testTemplateName);
-        final String templateName = template.getFileName().toString();
+        final Path template = templateTextDirectory.resolve(testTemplateName);
+        final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
         Files.createFile(template);
         assertTrue(Files.exists(template));
 
@@ -489,16 +554,39 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
         assertEquals(1, documents.size());
-        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateTextDirectory));
         assertTrue(Files.exists(template));
     }
 
     @Test
     public void deleteDir_When_DirIsTemplateTextDir_Expected_CorrectException() {
-        assertTrue(Files.exists(templateDirectory));
-        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateDirectory));
+        assertTrue(Files.exists(templateTextDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.deleteFile(templateTextDirectory));
     }
 
+    @Test
+    public void deleteFile_When_FileFromOutsideRootDir_Expected_CorrectException() {
+        assertThrows(FileAccessDeniedException.class, () -> fileService.deleteFile(outsideFilePath));
+    }
+
+    @Test
+    public void deleteDir_When_DirFromOutsideRootDir_Expected_CorrectException() throws IOException{
+        final Path firstRootPath = testRootPaths.get(0);
+        Files.createDirectories(firstRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.deleteFile(firstRootPath.getParent()));
+    }
+
+    @Test
+    public void deleteFile_When_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException{
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path notAllowedExtensionFilePath = firstRootPath.resolve(notAllowedExtensionFile);
+
+        Files.createDirectories(firstRootPath);
+        Files.createFile(notAllowedExtensionFilePath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.deleteFile(notAllowedExtensionFilePath));
+    }
 
     @Test
     public void copyFile_When_SrcFileExists_Expected_CopyFile() throws IOException {
@@ -542,21 +630,45 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void copyFile_When_FileCopyToOutSideRootDir_Expected_CorrectException() throws IOException {
+    public void copyFile_When_FileCopyToAndFromOutSideRootDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeFile2 = Paths.get("test");
-        assertFalse(Files.exists(pathDir));
+        final Path outsideRootPath = firstRootPath.getParent();
+        final Path fileInRootPath = firstRootPath.resolve(testFileName2);
 
         Files.createDirectory(firstRootPath);
-        Files.createDirectory(pathDir);
-        Files.createFile(pathFile);
+        Files.createFile(fileInRootPath);
+        Files.createFile(outsideFilePath);
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(
-                Collections.singletonList(pathFile), pathFakeFile2));
+                Collections.singletonList(outsideFilePath), firstRootPath));
         assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(Collections.singletonList(
-                pathFakeFile2), pathFile));
+                fileInRootPath), outsideRootPath));
+    }
+
+    @Test
+    public void copyFile_When_DirCopyToAndFromOutSideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path secondOutsideRootPath = testRootPaths.get(1).getParent();
+
+        Files.createDirectory(firstRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(
+                Collections.singletonList(firstRootPath), secondOutsideRootPath));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(Collections.singletonList(
+                secondOutsideRootPath), firstRootPath));
+    }
+
+    @Test
+    public void copyFile_When_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path secondRootPath = testRootPaths.get(1);
+        final Path notAllowedExtensionFilePath = firstRootPath.resolve(notAllowedExtensionFile);
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(secondRootPath);
+        Files.createFile(notAllowedExtensionFilePath);
+
+        assertThrows(FileAccessDeniedException.class,
+                () -> fileService.copyFile(Collections.singletonList(notAllowedExtensionFilePath), secondRootPath));
     }
 
     @Test
@@ -567,13 +679,13 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(pathFile), templateDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(pathFile), templateTextDirectory));
     }
 
     @Test
     public void copyFile_When_FileFromTemplateTextDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path templateFile = templateDirectory.resolve(testFileName);
+        final Path templateFile = templateTextDirectory.resolve(testFileName);
 
         Files.createDirectory(firstRootPath);
         Files.createFile(templateFile);
@@ -586,7 +698,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final Path firstRootPath = testRootPaths.get(0);
         Files.createDirectory(firstRootPath);
 
-        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateDirectory), firstRootPath));
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateTextDirectory), firstRootPath));
     }
 
     @Test
@@ -638,27 +750,57 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void moveFile_When_FilesMoveToOutSideRootDir_Expected_CorrectException() throws IOException {
+    public void moveFile_When_FilesMoveToFromOutSideRootDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeDir = Paths.get("outSideDir");
-        final Path pathFakeFile2 = pathFakeDir.resolve(testRootPaths.get(0).getFileName());
-        assertFalse(Files.exists(pathDir));
+        final Path outsideRootPath = firstRootPath.getParent();
+        final Path fileInRootPath = firstRootPath.resolve(testFileName2);
 
-        Files.createDirectories(pathDir);
-        List<Path> paths = Collections.singletonList(Files.createFile(pathFile));
+        Files.createDirectory(firstRootPath);
+        Files.createFile(fileInRootPath);
+        Files.createFile(outsideFilePath);
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(paths, pathFakeFile2));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(
+                Collections.singletonList(outsideFilePath), firstRootPath));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(Collections.singletonList(
+                fileInRootPath), outsideRootPath));
+    }
 
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
+    @Test
+    public void moveFile_When_FileIsRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path secondRootPath = testRootPaths.get(1);
+
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(secondRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(
+                Collections.singletonList(secondRootPath), firstRootPath));
+    }
+
+    @Test
+    public void moveFile_When_DirMoveToFromOutSideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path secondOutsideRootPath = testRootPaths.get(1).getParent();
+
+        Files.createDirectory(firstRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(
+                Collections.singletonList(firstRootPath), secondOutsideRootPath));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(Collections.singletonList(
+                secondOutsideRootPath), firstRootPath));
+    }
+
+    @Test
+    public void moveFile_When_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path secondRootPath = testRootPaths.get(1);
+        final Path notAllowedExtensionFilePath = firstRootPath.resolve(notAllowedExtensionFile);
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(secondRootPath);
+        Files.createFile(notAllowedExtensionFilePath);
 
         assertThrows(FileAccessDeniedException.class,
-                () -> fileService.moveFile(Collections.singletonList(pathFakeFile2), pathFile));
-
-        assertTrue(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFakeFile2));
+                () -> fileService.moveFile(Collections.singletonList(notAllowedExtensionFilePath), secondRootPath));
     }
 
     @Test
@@ -668,13 +810,13 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        assertThrows(TemplateFileException.class, () -> fileService.moveFile(Collections.singletonList(pathFile), templateDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.moveFile(Collections.singletonList(pathFile), templateTextDirectory));
     }
 
     @Test
     public void moveFile_When_FileFromTemplateTextDir_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path templateFile = templateDirectory.resolve(testFileName);
+        final Path templateFile = templateTextDirectory.resolve(testFileName);
         Files.createDirectory(firstRootPath);
         Files.createFile(templateFile);
 
@@ -686,7 +828,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final Path firstRootPath = testRootPaths.get(0);
         Files.createDirectory(firstRootPath);
 
-        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateDirectory), firstRootPath));
+        assertThrows(TemplateFileException.class, () -> fileService.copyFile(Collections.singletonList(templateTextDirectory), firstRootPath));
     }
 
     @Test
@@ -860,8 +1002,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
         assertTrue(Files.exists(pathFile));
 
-        final Path expectedPathFile = firstRootPath.resolve(newName);
-        fileService.renameFile(pathFile, newName);
+        final Path expectedPathFile = firstRootPath.resolve(newNameFile);
+        fileService.renameFile(pathFile, newNameFile);
         assertFalse(Files.exists(pathFile));
         assertTrue(Files.exists(expectedPathFile));
     }
@@ -873,7 +1015,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(Files.exists(nonExistentPath));
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(nonExistentPath, newName));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(nonExistentPath, newNameFile));
     }
 
     @Test
@@ -890,8 +1032,30 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void renameFile_When_FileFromOutsideRootDir_Expected_CorrectException() {
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(outsideFilePath, newNameFile));
+    }
+
+    @Test
+    public void renameFile_When_DirIsRootDir_And_DirFromOutsideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootDir = testRootPaths.get(0);
+        Files.createDirectory(firstRootDir);
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(firstRootDir, newNameDirectory));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(firstRootDir.getParent(), newNameDirectory));
+    }
+
+    @Test
+    public void renameFile_When_FileWithNotAllowedExtension_Expected_CorrectException() throws IOException {
+        final Path firstRootDir = testRootPaths.get(0);
+        final Path notAllowedExtensionFilePath = firstRootDir.resolve(notAllowedExtensionFile);
+        Files.createDirectory(firstRootDir);
+        Files.createFile(notAllowedExtensionFilePath);
+        assertThrows(FileAccessDeniedException.class, () -> fileService.renameFile(notAllowedExtensionFilePath, newNameFile));
+    }
+
+    @Test
     public void renameFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_And_TemplateNameIsValid_Expected_RenameFileAndEntity() throws IOException {
-        final Path templatePath = templateDirectory.resolve(testFileName);
+        final Path templatePath = templateTextDirectory.resolve(testFileName);
         final String templateName = FilenameUtils.removeExtension(templatePath.getFileName().toString());
         Files.createFile(templatePath);
         assertTrue(Files.exists(templatePath));
@@ -903,11 +1067,11 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(templatePath);
         assertEquals(1, documents.size());
 
-        fileService.renameFile(templatePath, newName);
+        fileService.renameFile(templatePath, newNameFile);
         assertNull(templateRepository.findByName(testFileName));
-        assertNotNull(templateRepository.findByName(FilenameUtils.removeExtension(newName)));
+        assertNotNull(templateRepository.findByName(FilenameUtils.removeExtension(newNameFile)));
 
-        final Path expectedTemplatePath = templateDirectory.resolve(newName);
+        final Path expectedTemplatePath = templateTextDirectory.resolve(newNameFile);
         assertTrue(Files.exists(expectedTemplatePath));
         assertFalse(Files.exists(templatePath));
 
@@ -919,7 +1083,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void renameFile_When_FileInTemplateTextDir_And_TemplateIsUsedByDocuments_And_TemplateNameIsNotValid_Expected_CorrectException() throws IOException {
-        final Path templatePath = templateDirectory.resolve(testFileName);
+        final Path templatePath = templateTextDirectory.resolve(testFileName);
         final String templateName = FilenameUtils.removeExtension(templatePath.getFileName().toString());
         Files.createFile(templatePath);
         assertTrue(Files.exists(templatePath));
@@ -938,7 +1102,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void renameFile_When_FileInTemplateTextDir_And_TemplateIsNotUsedDocuments_And_TemplateNameIsNotValid_Expected_RenameFile_And_DeleteTemplateEntity() throws IOException {
-        final Path templatePath = templateDirectory.resolve(testFileName);
+        final Path templatePath = templateTextDirectory.resolve(testFileName);
         Files.createFile(templatePath);
         assertTrue(Files.exists(templatePath));
 
@@ -949,7 +1113,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(templatePath);
         assertTrue(documents.isEmpty());
 
-        final Path expectedFilePath = templateDirectory.resolve(notValidNewTemplateName);
+        final Path expectedFilePath = templateTextDirectory.resolve(notValidNewTemplateName);
         fileService.renameFile(templatePath, notValidNewTemplateName);
         assertTrue(Files.exists(expectedFilePath));
         assertFalse(Files.exists(templatePath));
@@ -959,7 +1123,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void renameFile_When_FileIsTemplateTextDir_Expected_CorrectException() {
-        assertTrue(Files.exists(templateDirectory));
-        assertThrows(TemplateFileException.class, () -> fileService.renameFile(templateDirectory, "newDirectoryName"));
+        assertTrue(Files.exists(templateTextDirectory));
+        assertThrows(TemplateFileException.class, () -> fileService.renameFile(templateTextDirectory, "newDirectoryName"));
     }
 }
