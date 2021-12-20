@@ -812,9 +812,9 @@ const texts = {
                     loadTemplates: 'Det gick inte att ladda mallar!'
                 },
                 documentData: {
-                    docId: 'Dokument-id',
-                    docType: 'Dokumenttyp',
                     docsNumber: 'Antal dokument: ',
+                    docView: 'SE',
+                    docEdit: 'EDERA',
                 },
                 groupData: {
                     title: 'Mallgrupp',
@@ -1818,9 +1818,9 @@ const texts = {
                     loadTemplates: 'Failed to load templates!'
                 },
                 documentData: {
-                    docId: 'Document id',
-                    docType: 'Document Type',
                     docsNumber: 'Number of documents: ',
+                    docView: 'VIEW',
+                    docEdit: 'EDIT',
                 },
                 groupData: {
                     title: 'Template group',

@@ -451,11 +451,13 @@
     background-color: #dfedff;
 }
 
-.doc-info-row__document-id,
-.doc-info-row__document-type,
-.title-doc-row__doc-id,
-.title-doc-row__doc-type {
-    width: 50%;
+.doc-info-row{
+    justify-content: space-around;
+}
+
+.doc-info-row__document-view,
+.doc-info-row__document-edit{
+    font-size: 15px;
 }
 
 .root-directory-row__delete {

@@ -541,16 +541,6 @@ define(
             });
         }
 
-        function buildTitleRow() {
-            return new BEM({
-                block: 'title-doc-row',
-                elements: {
-                    'doc-id': $('<div>', {text: texts.documentData.docId}),
-                    'doc-type': $('<div>', {text: texts.documentData.docType})
-                }
-            }).buildBlockStructure('<div>');
-        }
-
         function updateHighlightingForDir(elem) {
             elem.parent()
                 .find('.' + selectedDirHighlightingClassName)
@@ -696,7 +686,6 @@ define(
                         $docsNumberLabel.text(texts.documentData.docsNumber + documents.length);
 
                         const $documentsData = $('<div>').addClass('documents-data');
-                        $documentsData.append(buildTitleRow());
 
                         const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
                         $documentsData.append(documentsRows);
