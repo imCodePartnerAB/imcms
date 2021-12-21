@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
@@ -18,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -28,15 +32,17 @@ import java.util.stream.Collectors;
 class DefaultImageFileService implements ImageFileService {
 
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
+	private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
     private final ImageService imageService;
     private final ImageCacheMapper imageCacheMapper;
     @Value("${ImagePath}")
     private File imagesPath;
 
     DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO,
-                            ImageService imageService, ImageCacheMapper imageCacheMapper) {
+                            Function<ImageJPA, ImageDTO> imageJPAToImageDTO, ImageService imageService, ImageCacheMapper imageCacheMapper) {
         this.fileToImageFileDTO = fileToImageFileDTO;
-        this.imageService = imageService;
+	    this.imageJPAToImageDTO = imageJPAToImageDTO;
+	    this.imageService = imageService;
         this.imageCacheMapper = imageCacheMapper;
     }
 
@@ -126,4 +132,21 @@ class DefaultImageFileService implements ImageFileService {
         }
         return usages;
     }
+
+	@Override
+	public ImageFileDTO moveImageFile(final String destinationFolder, final String filePath) throws IOException {
+		final List<ImageJPA> imagesJpa = imageService.getImagesByUrl(filePath);
+		final Path imageFilePath = Paths.get(imagesPath.getPath(), filePath);
+		final Path destinationImageFilePath = Paths.get(imagesPath.getPath(), destinationFolder);
+
+		final Path result = Files.move(imageFilePath, destinationImageFilePath);
+		final Path relativePath = imagesPath.toPath().relativize(result);
+
+		imagesJpa.forEach(imageJPA -> {
+			imageJPA.setUrl(relativePath.toString());
+			imageService.saveImage(imageJPAToImageDTO.apply(imageJPA));
+		});
+
+		return fileToImageFileDTO.apply(result.toFile());
+	}
 }

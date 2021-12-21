@@ -5,6 +5,7 @@
     padding: 25px 35px 25px 70px;
     position: relative;
     width: 100%;
+	border: 2px transparent solid;
 }
 
 .imcms-folder__btn {
@@ -49,6 +50,10 @@
     text-transform: uppercase;
     text-align: left;
     float: left;
+}
+
+.imcms-folders .imcms-folder .imcms-folder__name{
+	user-select: none;
 }
 
 .imcms-main-folders-controls:hover,

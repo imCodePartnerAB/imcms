@@ -77,9 +77,13 @@
 
 .imcms-content-manager__footer {
     background-color: #f3f3fc;
-    margin-top: -42px;
-    padding-top: 42px;
+    margin-top: 0;
+    padding-top: 0;
     position: relative;
+}
+
+.imcms-content-manager .imcms-footer{
+	padding: 10px;
 }
 
 .imcms-content-manager__footer .imcms-footer__buttons {
@@ -121,53 +125,75 @@
     .imcms-content-manager__footer {
         width: 65%;
     }
+
+	.imcms-toolbar-images-select__sorting{
+		width: 20%;
+	}
 }
 
-@media screen and (max-width: 1000px) {
-    .imcms-content-manager {
-        position: relative;
-        overflow-x: hidden;
-    }
+@media screen and (max-width: 1200px) {
+	.imcms-content-manager .imcms-right-side,
+	.imcms-content-manager__footer {
+		width: 60%;
+	}
 
-    .imcms-content-manager__left-side {
-        position: absolute;
-        width: 400px;
-        height: 100%;
-        top: 42px;
-        left: -400px;
-    }
+	.imcms-content-manager__left-side {
+		width: 40%;
+	}
 
-    .imcms-content-manager__right-side,
-    .imcms-content-manager__footer {
-        position: relative;
-        width: 100%;
-    }
-
-    .imcms-content-manager__right-side {
-        height: 85%;
-    }
-
-    .imcms-content-manager__footer {
-        height: 15%;
-    }
-
-    .imcms-content-manager__footer .imcms-button--neutral {
-        display: block;
-    }
+	.imcms-toolbar-images-select__sorting {
+		width: 25%;
+	}
 }
 
+@media screen and (max-width: 1100px) {
+	.imcms-toolbar-images-select__sorting {
+		width: 30%;
+	}
+}
+
+@media screen and (max-width: 819px) {
+	.imcms-content-manager .imcms-right-side,
+	.imcms-content-manager__footer {
+		width: 45%;
+	}
+	.imcms-content-manager__left-side{
+		width: 55%;
+	}
+
+	.imcms-toolbar-images-select__sorting{
+		width: 45%;
+	}
+	.imcms-content-manager .imcms-right-side{
+		height: 75%;
+	}
+	.imcms-right-side__images-container{height: 85%}
+	.imcms-content-manager .imcms-footer{
+		height: 25%;
+	}
+
+	.imcms-content-manager__footer .imcms-button{
+		margin-top: 10px;
+	}
+	.imcms-content-manager__footer .imcms-footer__buttons{
+		display: flex;
+		float: none;
+		margin: 0 auto;
+		flex-direction: column;
+		width: 70%;
+		height: 80%;
+	}
+}
+
+@media screen and (max-width: 655px) {
+	.imcms-content-manager__footer .imcms-footer__buttons{
+		width: 85%;
+	}
+}
 @media screen and (max-width: 550px) {
-    .imcms-content-manager__left-side {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 42px;
-        left: -100%;
-    }
-
-    .imcms-content-manager__left-side .imcms-button--close {
-        display: block;
-    }
+	.imcms-content-manager__footer .imcms-footer__buttons{
+		width: 90%;
+	}
 }
 
 @media screen and (max-width: 450px) {

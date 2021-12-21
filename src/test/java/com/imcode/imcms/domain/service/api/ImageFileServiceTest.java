@@ -31,6 +31,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -135,6 +139,62 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
 
         assertThrows(FolderNotExistException.class, () -> imageFileService.saveNewImageFiles(nonExistingFolder, files));
     }
+
+	@Test
+	public void moveImageFile_When_ImageFileNotUsed_Expect_SuccessfulResults() throws IOException {
+		final String destinationFolderName = "test-folder";
+		final String testImageName = testImageFile.getName();
+		final String testImageNewPath = destinationFolderName + separator + testImageName;
+		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
+
+		Files.createDirectory(destinationFolderPath);
+
+		ImageFileDTO result = imageFileService.moveImageFile(testImageNewPath, testImageName);
+
+		assertEquals(result.getName(), testImageName);
+		assertEquals(result.getPath(), separator + testImageNewPath);
+
+		Files.move(Paths.get(imagesPath.getPath(), result.getPath()), Paths.get(imagesPath.getPath(), result.getName()));
+		Files.delete(destinationFolderPath);
+	}
+
+	@Test
+	public void moveImageFile_When_ImageInUse_Expect_SuccessfulResults() throws IOException {
+		final String destinationFolderName = "test-folder";
+		final String testImageName = testImageFile.getName();
+		final String testImageNewPath = separator+ destinationFolderName + separator + testImageName;
+		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
+
+		final int workingDocId = documentDataInitializer.createData().getId();
+		final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
+
+		final ImageJPA image = imageDataInitializer.createData(1, testImageName, testImageName, workingVersion);
+
+		Files.createDirectory(destinationFolderPath);
+
+		ImageFileDTO result = imageFileService.moveImageFile(testImageNewPath, testImageName);
+
+		final ImageDTO updatedImageDTO = imageService.getImage(image.getVersion().getDocId(), image.getIndex(), image.getLanguage().getCode(), image.getLoopEntryRef());
+
+		assertEquals(result.getName(), testImageName);
+		assertEquals(result.getPath(), testImageNewPath);
+		assertEquals(separator+ updatedImageDTO.getPath(), result.getPath());
+
+		Files.move(Paths.get(imagesPath.getPath(), result.getPath()), Paths.get(imagesPath.getPath(), result.getName()));
+		Files.delete(destinationFolderPath);
+	}
+
+	@Test
+	public void moveImageFile_When_ImageFileDoesNotExist_Expect_NoSuchFileException() throws IOException {
+		final String destinationFolderName = "test-folder";
+		final String testImageName = "lalala.jpg";
+		final String testImageNewPath = destinationFolderName + separator + testImageName;
+		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
+
+		Files.createDirectory(destinationFolderPath);
+		assertThrows(NoSuchFileException.class, () -> imageFileService.moveImageFile(testImageNewPath, testImageName));
+		Files.delete(destinationFolderPath);
+	}
 
     @Test
     public void deleteImage_When_ImageExist_Expect_EmptyList() throws IOException {

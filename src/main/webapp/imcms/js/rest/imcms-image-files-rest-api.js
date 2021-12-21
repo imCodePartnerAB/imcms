@@ -4,4 +4,9 @@
  */
 const rest = require('imcms-rest-api');
 
-module.exports = new rest.API("/images/files");
+const url = "/images/files"
+let api = new rest.API(url);
+
+api.moveImageFile = rest.ajax.bind({url: url + '/moveImageFile', type: "POST", json: true})
+
+module.exports = api;

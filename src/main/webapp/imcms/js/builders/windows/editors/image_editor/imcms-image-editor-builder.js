@@ -9,11 +9,11 @@ define(
         "imcms-image-editor-factory", 'imcms-originally-image', 'imcms-image-editor-body-head-builder',
         'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts",
         'imcms-preview-image-area', 'imcms-bem-builder',
-        'imcms-components-builder', 'imcms-image-zoom'
+        'imcms-components-builder', 'imcms-image-zoom', 'imcms-image-content-builder'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, originalImage,
               bodyHeadBuilder, imageResize, editSizeControls, modal, texts, prevImageArea, BEM, components,
-              imageZoom) {
+              imageZoom, imageContentBuilder) {
 
         texts = texts.editors.image;
 
@@ -169,8 +169,7 @@ define(
             if (!image) return;
 
             bodyHeadBuilder.showPreviewImageArea();
-
-            $.extend(imageData, image);
+	        imageContentBuilder.isSelectedImageMoved() ? imageData.path = image.path : $.extend(imageData, image);
 
             if (imageData.inText) $tag.attr("data-index", imageData.index);
 
