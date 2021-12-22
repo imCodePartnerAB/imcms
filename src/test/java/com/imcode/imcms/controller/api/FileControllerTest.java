@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import org.apache.commons.lang.StringUtils;
+import com.imcode.imcms.domain.service.FileService;
+import imcode.server.Imcms;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -64,6 +65,8 @@ public class FileControllerTest extends AbstractControllerTest {
     @BeforeEach
     @AfterEach
     public void setUp() throws IOException {
+        ReflectionTestUtils.setField(Imcms.getServices().getManagedBean(FileService.class), "rootPaths", testRootPaths);  //nonexistent paths are removed when creating the service
+
         testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileUtils::deleteRecursive);
     }
 
@@ -408,7 +411,7 @@ public class FileControllerTest extends AbstractControllerTest {
     public void uploadFile_When_FileExistsAndUploadInRoot_Expected_OkAndUploadFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
-        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final MockMultipartFile file = new MockMultipartFile("file.jpg", "img1-test.jpg", null, imageFileBytes);
         Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)

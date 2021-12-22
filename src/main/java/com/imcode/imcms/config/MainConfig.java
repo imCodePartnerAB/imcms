@@ -205,13 +205,6 @@ public class MainConfig {
     }
 
     @Bean
-    public DefaultFileService fileService(DocumentService<DocumentDTO> documentService,
-                                          TemplateService templateService,
-                                          BiFunction<Path, Boolean, SourceFile> fileToSourceFile) {
-        return new DefaultFileService(documentService, templateService, fileToSourceFile);
-    }
-
-    @Bean
     public LanguageMapper languageMapper(Database database, LanguageService languageService, Config config) {
         return new LanguageMapper(database, config.getDefaultLanguage(), languageService);
     }

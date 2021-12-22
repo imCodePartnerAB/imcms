@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.FileService;
+import org.apache.tika.Tika;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,7 +92,7 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
-                .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(pathFile))
+                .header(HttpHeaders.CONTENT_TYPE, new Tika().detect(pathFile))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + sourceFile.getFileName())
                 .body(content);
     }

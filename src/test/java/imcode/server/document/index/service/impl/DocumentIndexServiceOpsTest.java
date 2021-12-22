@@ -386,30 +386,13 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         solrInputDocument.addField(titleField, headLine);
         indexDocument(id, solrInputDocument);
 
-        searchQueryDTO.setTerm(headLine);
+        searchQueryDTO.setTerm(String.format("\"%s\"",headLine));    //looking for a quote
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(1, solrDocumentList.size());
 
         then(documentIndexer).should().index(getDocId(id));
-    }
-
-    @Test
-    public void getDocument_When_HeadLineHasUnderLineBetweenWord_Expect_EmptyResult() throws Exception {
-        final int id = ++documentSize;
-        final String headLine = "headLine__test";
-        final String inputTest = "headLine test";
-        final SolrInputDocument solrInputDocument = addRequiredFields(id);
-        solrInputDocument.addField(titleField, headLine);
-        indexDocument(id, solrInputDocument);
-
-        searchQueryDTO.setTerm(inputTest);
-
-        final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
-
-        assertEquals(solrDocumentList.size(), 0);
-        assertTrue(solrDocumentList.isEmpty());
     }
 
     @Test
