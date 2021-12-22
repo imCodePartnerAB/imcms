@@ -256,11 +256,11 @@
 }
 
 .imcms-menu-editor__body .imcms-document-list__items {
-	height: -webkit-calc(100% - 104px);
-	height: -moz-calc(100% - 104px);
-	height: -ms-calc(100% - 104px);
-	height: -o-calc(100% - 104px);
-	height: calc(100% - 104px);
+	height: -webkit-calc(100% - 130px);
+	height: -moz-calc(100% - 130px);
+	height: -ms-calc(100% - 130px);
+	height: -o-calc(100% - 130px);
+	height: calc(100% - 130px);
 }
 
 .imcms-document-editor .imcms-document-list__items {

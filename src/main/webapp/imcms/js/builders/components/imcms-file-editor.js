@@ -661,7 +661,7 @@ define(
             };
             fileRestApi.getFile(pathFile).done(file => {
                 $textArea.addClass('text-preview');
-                $textArea.setValue(window.atob(file.contents));
+                $textArea.setValue(decodeURIComponent(escape(window.atob(file.contents))));
             }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
             return $textArea;
         }

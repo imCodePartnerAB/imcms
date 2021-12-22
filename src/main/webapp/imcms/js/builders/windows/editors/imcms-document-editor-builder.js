@@ -121,7 +121,6 @@ define('imcms-document-editor-builder',
                         errorMsg.slideUp();
                     }
                     incrementDocumentNumber(documentList.length);
-                    $documentsList.empty();
                     pushDocumentsInArray(documentList);
                     documentList.forEach(document => {
                         $documentsList.append(buildDocument(document, currentEditorOptions, false));
