@@ -5,7 +5,6 @@ import com.imcode.imcms.api.exception.DataUseCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
@@ -20,19 +19,17 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * @see CategoryService
@@ -42,12 +39,11 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     private static int COUNT_DATA = 4;
 
+    @Autowired
     private CategoryService categoryService;
 
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
@@ -57,11 +53,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     private CategoryTypeDataInitializer categoryTypeDataInitializer;
     @Autowired
     private DocumentService<DocumentDTO> documentService;
-
-    @PostConstruct
-    private void init() {
-        categoryService = new DefaultCategoryService(categoryRepository, mock(DocumentsCache.class), modelMapper);
-    }
 
     @BeforeEach
     public void cleanData() {
@@ -89,7 +80,8 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getCategoriesByType_When_CategoriesUsingCategoryType_Expected_CorrectEntity() {
-        final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
+        final List<Category> categories = categoryDataInitializer.createData(1)
+                .stream().map(CategoryDTO::new).collect(Collectors.toList());
         assertEquals(categories, categoryService.getCategoriesByCategoryType(categories.get(0).getType().getId()));
     }
 
@@ -97,11 +89,10 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     public void getCategoriesByType_When_CategoriesNotUsingCategoryType_Expected_EmptyReslt() {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
         assertNotNull(typesData);
-        final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
-        final List<CategoryJPA> categoriesByCategoryType = categoryService.getCategoriesByCategoryType(typesData.get(0).getId());
 
-        assertEquals(0, categoriesByCategoryType.size());
-        assertNotEquals(categories, categoriesByCategoryType.size());
+        categoryDataInitializer.createData(1);
+        final List<Category> categoriesByCategoryType = categoryService.getCategoriesByCategoryType(typesData.get(0).getId());
+
         assertTrue(categoriesByCategoryType.isEmpty());
     }
 

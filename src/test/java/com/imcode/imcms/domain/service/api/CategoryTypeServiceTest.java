@@ -4,7 +4,6 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
@@ -15,7 +14,6 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
-import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -37,17 +34,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 @Transactional
 public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     private static int COUNT_DATA = 3;
 
+    @Autowired
     private CategoryTypeService categoryTypeService;
 
-    @Autowired
-    private CategoryTypeRepository categoryTypeRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -60,11 +55,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     private CategoryTypeDataInitializer categoryTypeDataInitializer;
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
-
-    @PostConstruct
-    private void init() {
-        categoryTypeService = new DefaultCategoryTypeService(categoryTypeRepository, categoryRepository, mock(DocumentsCache.class), modelMapper);
-    }
 
     @BeforeEach
     public void cleanUp() {

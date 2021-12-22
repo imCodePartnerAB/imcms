@@ -24,10 +24,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
-
     @Autowired
     private MetaRepository metaRepository;
 
@@ -76,7 +74,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(firstCategoryDTO);
 
-        final List<CategoryJPA> foundCategories = categoryRepository.findByType(firstCategoryDTO.getType());
+        final List<CategoryJPA> foundCategories = categoryRepository.findByTypeId(firstCategoryDTO.getType().getId());
 
         assertEquals(1, foundCategories.size());
         assertEquals(firstCategoryDTO.getName(), foundCategories.get(0).getName());
@@ -102,7 +100,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void findByCategoryTypeId_When_CategoriesUsingCategoryType_Expected_CorrectEntity() {
         final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
-        assertEquals(categories, categoryRepository.findById(categories.get(0).getType().getId()));
+        assertEquals(categories, categoryRepository.findByTypeId(categories.get(0).getType().getId()));
     }
 
     @Test
@@ -112,8 +110,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
                 null, "name1", false, true, true
         );
         final CategoryTypeJPA saved = categoryTypeRepository.save(categoryType);
-        assertNotEquals(categories, categoryRepository.findById(saved.getId()));
-        assertTrue(categoryRepository.findById(saved.getId()).isEmpty());
+        assertNotEquals(categories, categoryRepository.findByTypeId(saved.getId()));
+        assertTrue(categoryRepository.findByTypeId(saved.getId()).isEmpty());
 
     }
 

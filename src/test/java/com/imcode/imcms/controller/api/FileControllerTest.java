@@ -49,7 +49,7 @@ public class FileControllerTest extends AbstractControllerTest {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
-    @Value("WEB-INF/templates/text")
+    @Value("WEB-INF/templates")
     private Path templateDirectory;
 
     @Value("${rootPath}")
