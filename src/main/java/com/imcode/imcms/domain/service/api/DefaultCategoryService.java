@@ -1,9 +1,9 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.DataUseCategoryException;
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
@@ -25,16 +25,16 @@ class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final DocumentsCache documentsCache;
+    private final DocumentMapper documentMapper;
 
     private final ModelMapper modelMapper;
 
     private Logger logger = Logger.getLogger(DefaultCategoryService.class);
 
     @Autowired
-    DefaultCategoryService(CategoryRepository categoryRepository, DocumentsCache documentsCache, ModelMapper modelMapper) {
+    DefaultCategoryService(CategoryRepository categoryRepository, DocumentMapper documentMapper, ModelMapper modelMapper) {
         this.categoryRepository = categoryRepository;
-        this.documentsCache = documentsCache;
+        this.documentMapper = documentMapper;
         this.modelMapper = modelMapper;
     }
 
@@ -80,13 +80,15 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public void deleteForce(int id){
+        final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
         categoryRepository.deleteDocumentCategory(id);
         categoryRepository.delete(id);
-        documentsCache.invalidateCache();   //categories can control what is displayed on the docs, so we must invalidate cache
+
+        categoryDocIds.forEach(documentMapper::invalidateDocument); //categories can control what is displayed on the docs, so we must invalidate cache and reindex
     }
 
     @Override
-    public List<CategoryJPA> getCategoriesByCategoryType(Integer id) {
-        return categoryRepository.findById(id);
+    public List<Category> getCategoriesByCategoryType(Integer id) {
+        return categoryRepository.findByTypeId(id).stream().map(CategoryDTO::new).collect(Collectors.toList());
     }
 }

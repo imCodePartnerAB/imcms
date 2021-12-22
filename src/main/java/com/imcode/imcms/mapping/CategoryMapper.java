@@ -32,8 +32,7 @@ public class CategoryMapper {
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
-        List<CategoryJPA> categoryList = categoryRepository.findByType(docCategoryType);
+        List<CategoryJPA> categoryList = categoryRepository.findByTypeId(categoryType.getId());
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
         for (CategoryJPA category : categoryList) {

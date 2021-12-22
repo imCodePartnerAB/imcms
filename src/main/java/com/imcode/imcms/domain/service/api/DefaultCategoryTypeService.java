@@ -1,13 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
+import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
-import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.apache.commons.lang.CharEncoding;
 import org.modelmapper.ModelMapper;
@@ -25,20 +23,17 @@ import java.util.stream.Collectors;
 class DefaultCategoryTypeService implements CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
-    private final CategoryRepository categoryRepository;
 
-    private final DocumentsCache documentsCache;
+    private final CategoryService categoryService;
 
     private final ModelMapper modelMapper;
 
     @Autowired
     DefaultCategoryTypeService(CategoryTypeRepository categoryTypeRepository,
-                               CategoryRepository categoryRepository,
-                               DocumentsCache documentsCache,
+                               CategoryService categoryService,
                                ModelMapper modelMapper) {
         this.categoryTypeRepository = categoryTypeRepository;
-        this.categoryRepository = categoryRepository;
-        this.documentsCache = documentsCache;
+        this.categoryService = categoryService;
         this.modelMapper = modelMapper;
     }
 
@@ -84,7 +79,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public void delete(int id) {
-        if (!categoryRepository.findByType(categoryTypeRepository.findOne(id)).isEmpty()) {
+        if (!categoryService.getCategoriesByCategoryType(id).isEmpty()) {
             throw new CategoryTypeHasCategoryException("CategoryType has categories!");
         }
         categoryTypeRepository.delete(id);
@@ -92,12 +87,8 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public void deleteForce(int id){
-        for(CategoryJPA categoryJPA: categoryRepository.findByType(categoryTypeRepository.findOne(id))){
-            categoryRepository.deleteDocumentCategory(categoryJPA.getId());
-            categoryRepository.delete(categoryJPA.getId());
-        }
+        categoryService.getCategoriesByCategoryType(id).forEach(category -> categoryService.deleteForce(category.getId()));
         categoryTypeRepository.delete(id);
-        documentsCache.invalidateCache();   //categories can control what is displayed on the docs, so we must invalidate cache
     }
 
 }

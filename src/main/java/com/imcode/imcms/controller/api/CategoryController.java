@@ -34,7 +34,7 @@ public class CategoryController {
     }
 
     @GetMapping("/category-type/{id}")
-    public List<CategoryJPA> getCategoriesByCategoryTypeId(@PathVariable Integer id) {
+    public List<Category> getCategoriesByCategoryTypeId(@PathVariable Integer id) {
         return categoryService.getCategoriesByCategoryType(id);
     }
 

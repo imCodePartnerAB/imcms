@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +19,5 @@ public interface CategoryService {
 
     void deleteForce(int id);
 
-    List<CategoryJPA> getCategoriesByCategoryType(Integer id);
-
+    List<Category> getCategoriesByCategoryType(Integer id);
 }
