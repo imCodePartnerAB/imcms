@@ -20,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -33,14 +34,12 @@ import static ucar.httpservices.HTTPAuthStore.log;
 public class DefaultFileService implements FileService {
 
     private final DocumentService<DocumentDTO> documentService;
-
     private final TemplateService templateService;
 
     private final BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
-
     @Value("${rootPath}")
     private Path rootPath;
 
@@ -53,6 +52,11 @@ public class DefaultFileService implements FileService {
         this.documentService = documentService;
         this.templateService = templateService;
         this.fileToSourceFile = fileToSourceFile;
+    }
+
+    @PostConstruct
+    private void init() {
+        this.rootPaths = rootPaths.stream().filter(Files::exists).collect(Collectors.toList());
     }
 
     @Override
@@ -83,7 +87,7 @@ public class DefaultFileService implements FileService {
         if(path == null) return getRootFolders();
 
         final List<Path> filteredRootPaths = rootPaths.stream()
-                .filter(filteredRootPath -> filteredRootPath.startsWith(path) && !filteredRootPath.equals(path) && Files.exists(filteredRootPath))
+                .filter(filteredRootPath -> filteredRootPath.startsWith(path) && !filteredRootPath.equals(path))
                 .collect(Collectors.toList());
         if(!filteredRootPaths.isEmpty() && !path.equals(rootPath)){
             final List<Path> uniqueParentPaths = getUniqueParentsRelativeToPath(filteredRootPaths, path);
@@ -99,12 +103,13 @@ public class DefaultFileService implements FileService {
 
         checkAccessAllowed(path, false);
 
-        List<Path> paths = Files.isDirectory(path) ? Files.list(path).sorted().collect(Collectors.toList()) : Collections.EMPTY_LIST;
-        return paths.stream()
+        if(!Files.isDirectory(path)) return Collections.EMPTY_LIST;
+
+        return Files.list(path).sorted()
                 .map(filePath -> {
                     final SourceFile sourceFile = fileToSourceFile.apply(filePath, false);
                     if (isTemplatePath(filePath) && !Files.isDirectory(filePath)) {
-                        sourceFile.setNumberOfDocuments(getDocumentsByTemplatePath(filePath).size());
+                        sourceFile.setNumberOfDocuments(countDocumentsByTemplateName(filePath));
                     }
                     if(!checkExtensionAllowed(filePath)) sourceFile.setEditable(false);
                     return sourceFile;
@@ -210,9 +215,17 @@ public class DefaultFileService implements FileService {
         if(isTemplatePath(target)) throwTemplateException("Files cannot be copied to the folder with templates! Got path: " + target);
 
         final List<SourceFile> files = new ArrayList<>();
+        Path targetPath;
         for (Path srcPath : src) {
-            files.add(fileToSourceFile.apply(
-                    Files.copy(srcPath, target.resolve(srcPath.getFileName())), false));
+            targetPath = target.resolve(srcPath.getFileName());
+
+            if(Files.isDirectory(srcPath)){
+                org.apache.commons.io.FileUtils.copyDirectory(srcPath.toFile(), targetPath.toFile());
+            }else{
+                Files.copy(srcPath, target.resolve(srcPath.getFileName()));
+            }
+
+            files.add(fileToSourceFile.apply(targetPath, false));
         }
         return files;
     }
@@ -337,6 +350,10 @@ public class DefaultFileService implements FileService {
         }else{
             throwTemplateException("Template is used in documents, cannot be deleted! Got path: " + path);
         }
+    }
+
+    private int countDocumentsByTemplateName(Path template){
+        return documentService.countDocumentsByTemplateName(FilenameUtils.removeExtension(template.getFileName().toString()));
     }
 
     private void throwTemplateException(String errorMessage){
