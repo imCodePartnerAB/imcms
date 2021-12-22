@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
 
@@ -23,7 +24,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             id: ${empty currentDocument.id ? targetDocId+'' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
             hasNewerVersion: ${hasNewerVersion or false},
-            headline: "${currentDocument.headline}",
+            headline: "${StringEscapeUtils.escapeEcmaScript(currentDocument.headline)}",
             alias: "${currentDocument.alias}"
         },
         language: {
