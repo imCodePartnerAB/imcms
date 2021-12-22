@@ -5,12 +5,7 @@ import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.security.CheckAccess;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +35,12 @@ public class ImageFileController {
                                                 @RequestParam List<MultipartFile> files) throws IOException {
         return imageFileService.saveNewImageFiles(folder, files);
     }
+
+	@PostMapping("moveImageFile")
+	@CheckAccess
+	public ImageFileDTO moveImageFile(@RequestBody ImageFileDTO imageFileDTO) throws IOException {
+		return imageFileService.moveImageFile(imageFileDTO.getPath(), imageFileDTO.getName());
+	}
 
     @DeleteMapping
     @CheckAccess

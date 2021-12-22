@@ -1,4 +1,6 @@
 .imcms-main-folders-controls {
+    cursor: pointer;
+	border: 2px transparent solid;
     border-bottom: 2px solid #d3d8de;
     display: block;
     overflow: hidden;
@@ -82,4 +84,8 @@
     text-transform: uppercase;
     text-align: left;
     float: left;
+}
+
+.imcms-main-folders-controls .imcms-main-folders-controls__name{
+	user-select: none;
 }

@@ -114,7 +114,7 @@ define(
                     click: closeWindow
                 });
 
-                const footerElements$ = [$showHideFoldersButton, $fileInput, $cancelBtn];
+                const footerElements$ = [$fileInput, $cancelBtn];
 
                 if (!imcms.disableContentManagerSaveButton) {
                     $saveAndCloseBtn = components.buttons.saveButton({
@@ -152,14 +152,20 @@ define(
         }
 
         function saveAndCloseWindow() {
-            showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
-            imageResize.enableSelectedImageFlag();
-            closeWindow();
+	        showImageStrategyHandler(true);
+	        contentManagerWindowBuilder.closeWindow();
         }
 
         function closeWindow() {
-            contentManagerWindowBuilder.closeWindow();
+			if (imageContentBuilder.isSelectedImageMoved())
+				showImageStrategyHandler(false);
+	        contentManagerWindowBuilder.closeWindow();
         }
+
+		function showImageStrategyHandler(enableSelectedImageFlag) {
+			showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
+			enableSelectedImageFlag ? imageResize.enableSelectedImageFlag() : '';
+		}
 
         function clearData() {
             $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');

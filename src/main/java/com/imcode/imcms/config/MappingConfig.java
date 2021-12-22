@@ -500,6 +500,8 @@ class MappingConfig {
                     return imageFolderDTO;
                 }
 
+	            Arrays.sort(files, Comparator.comparing(File::getName));
+
                 for (File file : files) {
                     if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
                         subFolders.add(this.apply(file, false));

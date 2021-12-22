@@ -142,6 +142,11 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return repository.findByVersionAndLanguage(version, new LanguageJPA(language));
     }
 
+	@Override
+	public List<ImageJPA> getImagesByUrl(String url) {
+		return repository.findByUrl(url);
+	}
+
 	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
     @Override
     public void saveImage(ImageDTO imageDTO) {

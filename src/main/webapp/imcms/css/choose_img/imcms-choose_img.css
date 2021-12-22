@@ -8,6 +8,7 @@
     margin-right: .75%;
     padding: 14px;
     max-height: 290px;
+	border: 2px transparent solid;
 }
 
 .imcms-choose-img {
