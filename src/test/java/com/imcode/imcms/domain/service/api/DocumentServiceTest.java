@@ -996,6 +996,25 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         assertEquals(Collections.emptyList(), documentService.getDocumentsByTemplateName(fakeName));
     }
 
+    @Test
+    public void countDocumentsByTemplateName_When_TemplateNameExist_Expected_CountDocs() {
+        final DocumentDTO document = documentDataInitializer.createData();
+
+        TextDocumentTemplate saved = new TextDocumentTemplateDTO(
+                templateDataInitializer.createData(document.getId(), "test", "test")
+        );
+
+        List<Document> listWithExpectedDocument = Collections.singletonList(document);
+
+        assertEquals(listWithExpectedDocument.size(), documentService.countDocumentsByTemplateName(saved.getTemplateName()));
+    }
+
+    @Test
+    public void countDocumentsByTemplateName_When_TemplateNameUnknown_Expected_EmptyCountDocs() {
+        final String fakeName = "unknown";
+        assertEquals(0, documentService.countDocumentsByTemplateName(fakeName));
+    }
+
     private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);

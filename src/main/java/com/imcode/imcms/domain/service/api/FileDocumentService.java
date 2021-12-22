@@ -176,6 +176,11 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     @Override
+    public int countDocumentsByTemplateName(String templateName) {
+        return 0;
+    }
+
+    @Override
     public String getUniqueAlias(String alias) {
         return defaultDocumentService.getUniqueAlias(alias);
     }

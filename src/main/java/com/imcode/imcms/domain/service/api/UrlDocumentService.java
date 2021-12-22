@@ -102,6 +102,11 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
+    public int countDocumentsByTemplateName(String templateName) {
+        return 0;
+    }
+
+    @Override
     public String getUniqueAlias(String alias) {
         return defaultDocumentService.getUniqueAlias(alias);
     }

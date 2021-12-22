@@ -8,4 +8,5 @@ public interface DocumentSearcher<D extends Document> {
 
     List<D> getDocumentsByTemplateName(String templateName);
 
+    int countDocumentsByTemplateName(String templateName);
 }

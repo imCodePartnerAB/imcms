@@ -342,6 +342,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
+    public int countDocumentsByTemplateName(String templateName) {
+        return textDocumentTemplateRepository.countDocByTemplateName(templateName);
+    }
+
+    @Override
     public String getUniqueAlias(String alias) {
         if (!propertyService.existsByAlias(alias)) {
             return alias;

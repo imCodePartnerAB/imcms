@@ -55,6 +55,23 @@ public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void countDocByTemplateName_When_DocumentsExist_Expected_CountDocs() {
+        String templateName = "demo";
+
+        List<Integer> docIds = saved.stream()
+                .map(TextDocumentTemplate::getDocId)
+                .collect(Collectors.toList());
+
+        assertEquals(docIds.size(), repository.countDocByTemplateName(templateName));
+    }
+
+    @Test
+    public void countDocByTemplateName_When_NameUnknown_Expected_EmptyCountDocs(){
+        final String templateName = "testttt123";
+        assertEquals(0, repository.countDocByTemplateName(templateName));
+    }
+
+    @Test
     public void findTextDocumentTemplateByTemplateName_When_TemplateNameExist_Expected_CorrectSize() {
         final TextDocumentTemplate template = saved.get(0);
         final List<TextDocumentTemplateJPA> textDocumentsByName = repository.findTextDocumentTemplateByTemplateName(template.getTemplateName());
