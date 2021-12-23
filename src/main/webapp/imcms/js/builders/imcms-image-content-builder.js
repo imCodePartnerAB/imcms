@@ -64,7 +64,8 @@ define("imcms-image-content-builder",
                 const newFolder = {
                     name: this.name,
                     path: this.path,
-                    $images: []
+                    $images: [],
+	                files:[]
                 };
 
                 newFolder.$folder = buildSubFolder(newFolder, this.parentLevel + 1, "")
@@ -472,6 +473,8 @@ define("imcms-image-content-builder",
 		    event.preventDefault();
 	    }
 
+	    const $loadingAnimation = $("<div class='loading-animation'></div>");
+
 	    function onDropFolderHandler(event, subfolder) {
 		    if (!isTargetFolderTheSameAsCurrent(event.target)) {
 			    const imageFileName = dragged.imageData.name;
@@ -481,21 +484,22 @@ define("imcms-image-content-builder",
 			    dragged.imageData.name = imageFileFolder.substring(1); //file path
 			    dragged.imageData.path = destinationFolder + "/" + imageFileName; //destination path
 
+			    showLoadingAnimation(dragged.imageElement);
 			    imageFilesREST.moveImageFile(dragged.imageData)
 				    .done((imageFile) => {
 					    selectedImageMoved = false;
 					    dragged.folderData.files = removeElementFromArray(dragged.folderData.files, dragged.imageData);
 					    dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
 
-                        if(subfolder !== null) subfolder.files.push(imageFile);
+					    subfolder.files.push(imageFile);
 					    subfolder.$images.push(buildImage(imageFile, subfolder));
 
 					    refreshOnFolderDoubleClickListener(dragged.folderData);
 					    refreshOnFolderDoubleClickListener(subfolder);
 
 					    dragged.imageElement.remove();
-
-					    if (selectedFullImagePath === dragged.imageData.name) {
+					    selectedFullImagePath = selectedFullImagePath.startsWith('/') ? selectedFullImagePath.substring(1) : selectedFullImagePath;
+						if (selectedFullImagePath === dragged.imageData.name) {
 						    selectedFullImagePath = imageFile.path;
 						    selectedImage = imageFile;
 						    selectedImageMoved = true;
@@ -505,6 +509,10 @@ define("imcms-image-content-builder",
 				    }).fail(()=>modal.buildErrorWindow("Error occurred"))
 		    }
 	    }
+
+		function showLoadingAnimation(imageElement) {
+			$(imageElement).find('.imcms-choose-img-description').append($loadingAnimation);
+		}
 
 	    function refreshOnFolderDoubleClickListener(folder) {
 		    $(folder.$folder.children()[0]).off('dblclick').on('dblclick', function () {

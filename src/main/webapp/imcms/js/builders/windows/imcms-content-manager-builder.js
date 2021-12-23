@@ -157,10 +157,14 @@ define(
         }
 
         function closeWindow() {
+	        onCloseWindow();
+	        contentManagerWindowBuilder.closeWindow();
+		}
+
+		function onCloseWindow() {
 			if (imageContentBuilder.isSelectedImageMoved())
 				showImageStrategyHandler(false);
-	        contentManagerWindowBuilder.closeWindow();
-        }
+		}
 
 		function showImageStrategyHandler(enableSelectedImageFlag) {
 			showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
@@ -168,6 +172,7 @@ define(
 		}
 
         function clearData() {
+	        onCloseWindow();
             $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
             events.trigger("content manager closed");
             imageContentBuilder.clearContent();

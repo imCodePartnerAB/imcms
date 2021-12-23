@@ -7,6 +7,7 @@
     margin-left: .75%;
     margin-right: .75%;
     padding: 14px;
+	min-height: 41%;
     max-height: 290px;
 	border: 2px transparent solid;
 }
@@ -22,7 +23,7 @@
     padding: 7px;
     position: relative;
     width: 100%;
-    margin-bottom: 50px;
+    margin-bottom: 0;
     max-height: 100px;
 }
 
@@ -39,12 +40,13 @@
 .imcms-choose-img-description__button {
     display: none;
     position: absolute;
-    top: 10px;
+    top: 8px;
     right: -5px;
 }
 
 .imcms-choose-img-description .imcms-control--warning {
-    right: -5px;
+    right: 5px;
+	top: 67px;
     position: absolute;
 }
 
@@ -132,4 +134,19 @@
     border: none;
     border-radius: 0;
     background-color: transparent;
+}
+
+ .imcms-choose-img-description .loading-animation{
+	left: 103px;
+	top: 25px;
+	width: 20px;
+	height: 20px;
+}
+
+ .imcms-choose-img-description .loading-animation:before{
+	width: 50%;
+	height: 50%;
+	border-width: 3px;
+	border-radius: 50%;
+
 }

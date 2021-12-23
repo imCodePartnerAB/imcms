@@ -104,6 +104,11 @@
 .imcms-content-manager__footer .imcms-button--positive {
     float: left;
 }
+@media screen and (max-width: 1900px) {
+	.imcms-choose-img-wrap .imcms-choose-img-description .imcms-control--warning{
+		top: 84px;
+	}
+}
 
 @media screen and (max-width: 1600px) {
     .imcms-content-manager__left-side {
