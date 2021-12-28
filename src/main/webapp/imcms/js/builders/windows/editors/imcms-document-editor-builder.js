@@ -656,15 +656,12 @@ define('imcms-document-editor-builder',
 
             function switchButtonAction() {
                 const $switchButton = $('.imcms-remove-switch-block__button');
-                const $switchActiveInfoBlock = $('.imcms-remove-switch-block__active-info');
 
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOff);
                     $removeButton.css('display', 'none');
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
-                    $switchActiveInfoBlock.text(texts.controls.multiRemoveInfoOn);
                     $removeButton.css('display', 'block');
                 }
 
@@ -674,7 +671,7 @@ define('imcms-document-editor-builder',
             return new BEM({
                 block: 'imcms-remove-switch-block',
                 elements: {
-                    'active-info': components.texts.infoText('<div>', texts.controls.multiRemoveInfoOff),
+                    'active-info': components.texts.infoText('<div>', texts.controls.multiRemoveInfo),
                     'button': components.buttons.switchOffButton({
                         click: switchButtonAction
                     }),

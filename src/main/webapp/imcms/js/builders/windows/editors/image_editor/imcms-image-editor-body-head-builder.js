@@ -615,6 +615,7 @@ define(
                 $('.imcms-image-crop-proportions-info').remove();
 
                 getSwitchViewControls().show();
+                getImageLibraryButton().show();
 
                 previewImageArea.clearData();
 
