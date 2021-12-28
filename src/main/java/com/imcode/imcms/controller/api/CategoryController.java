@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -22,10 +23,12 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final DocumentMapper documentMapper;
 
     @Autowired
-    CategoryController(CategoryService categoryService) {
+    CategoryController(CategoryService categoryService, DocumentMapper documentMapper) {
         this.categoryService = categoryService;
+        this.documentMapper = documentMapper;
     }
 
     @GetMapping
@@ -60,6 +63,7 @@ public class CategoryController {
 
     @DeleteMapping("/force/{id}")
     public void deleteForceById(@PathVariable Integer id) {
-        categoryService.deleteForce(id);
+        final Collection<Integer> docIds = categoryService.deleteForce(id);
+        docIds.forEach(documentMapper::invalidateDocument); //categories can control what is displayed on the docs, so we must invalidate cache and reindex
     }
 }

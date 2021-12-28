@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,9 +85,16 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     }
 
     @Override
-    public void deleteForce(int id){
-        categoryService.getCategoriesByCategoryType(id).forEach(category -> categoryService.deleteForce(category.getId()));
+    public Collection<Integer> deleteForce(int id){
+        final Set<Integer> docIds = new HashSet<>();
+
+        categoryService.getCategoriesByCategoryType(id).forEach(category -> {
+            final Collection<Integer> docs = categoryService.deleteForce(category.getId());
+            docIds.addAll(docs);
+        });
         categoryTypeRepository.delete(id);
+
+        return docIds;
     }
 
 }
