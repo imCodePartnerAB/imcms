@@ -133,3 +133,8 @@
     display: inline-block;
     vertical-align: top;
 }
+
+.imcms-roles-checkboxes{
+    display: inline-table;
+    width: 79%;
+}

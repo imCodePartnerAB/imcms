@@ -309,8 +309,7 @@ const texts = {
                     },
                     question: 'Vill du ta bort de här dokumenten? Detta kan inte göras ogjort!',
                     question2: 'Du kan inte ångra detta dokument! Ta bort?',
-                    multiRemoveInfoOff: 'Multi-remove inaktiverad',
-                    multiRemoveInfoOn: 'Multi-remove aktiverat',
+                    multiRemoveInfo: 'Multi-remove',
                     removeButton: 'Ta bort',
                     copy: {
                         title: "Kopiera",
@@ -436,8 +435,7 @@ const texts = {
                     modifiedDateDesc: 'Ändrade (gamla först)',
 
                 },
-                multiRemoveInfoOn: 'Flera borttagna aktiverade ',
-                multiRemoveInfoOff: 'Flera borttagna inaktiverade ',
+                multiRemoveInfo: 'Flera borttagna',
                 multiRemove: 'Avlägsna',
             },
             loop: {
@@ -1316,8 +1314,7 @@ const texts = {
                     },
                     question: 'Are you sure want to delete this documents? This can not be undone!',
                     question2: 'You can not revert this document! Remove?',
-                    multiRemoveInfoOff: 'Multi-remove disabled',
-                    multiRemoveInfoOn: 'Multi-remove enabled',
+                    multiRemoveInfo: 'Multi-remove',
                     removeButton: 'Remove',
                     copy: {
                         title: "Copy",
@@ -1442,8 +1439,7 @@ const texts = {
                     modifiedDateDesc: 'Changed (old first)',
 
                 },
-                multiRemoveInfoOn: 'Multi-remove enabled ',
-                multiRemoveInfoOff: 'Multi-remove disabled ',
+                multiRemoveInfo: 'Multi-remove',
                 multiRemove: 'Remove',
             },
             loop: {

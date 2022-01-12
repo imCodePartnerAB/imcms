@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,12 +80,13 @@ class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public void deleteForce(int id){
-        final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
+    public Collection<Integer> deleteForce(int id){
+        final Collection<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
+
         categoryRepository.deleteDocumentCategory(id);
         categoryRepository.delete(id);
 
-        categoryDocIds.forEach(documentMapper::invalidateDocument); //categories can control what is displayed on the docs, so we must invalidate cache and reindex
+        return categoryDocIds;
     }
 
     @Override

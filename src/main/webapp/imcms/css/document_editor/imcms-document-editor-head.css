@@ -1,9 +1,6 @@
 .imcms-document-editor-head {
     width: 100%;
-}
-
-.imcms-document-editor-head__tools {
-	margin-bottom: 10px;
+	height: 11%;
 }
 
 .imcms-document-editor-head-tools__tool {
@@ -30,13 +27,20 @@
     display: inline-table;
 	visibility: hidden;
 	margin-top: 10px;
+	text-align: -webkit-center;
+}
+
+.imcms-document-editor-head-tool__load .loading-animation{
+	left: 0;
+	width: 25px;
+	height: 25px;
 }
 
 .imcms-document-editor-head-tool__remove{
-	margin-top: 10px;
-	display: flex;
-	flex-direction: row;
-	align-items: end;
+	max-width: 60px;
+	margin-top: 8px;
+	float: right;
+	text-align: -webkit-center;
 }
 
 .animation-copying__text {
