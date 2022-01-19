@@ -1,9 +1,9 @@
     define('imcms-properties-tab-builder',
     [
-        'imcms-bem-builder', 'imcms-components-builder', 'imcms-users-rest-api', 'imcms', 'imcms-i18n-texts',
+        'imcms-bem-builder', 'imcms-components-builder', 'imcms', 'imcms-i18n-texts',
         'imcms-page-info-tab', 'jquery', 'js-utils',
     ],
-    function (BEM, components, usersRestApi, imcms, i18Texts, PageInfoTab, $, jsUtils) {
+    function (BEM, components, imcms, i18Texts, PageInfoTab, $, jsUtils) {
 
         const texts = i18Texts.pageInfo.properties;
 

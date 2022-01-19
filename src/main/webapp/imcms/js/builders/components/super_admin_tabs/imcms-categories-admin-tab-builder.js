@@ -7,9 +7,9 @@ define(
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-field-wrapper',
         'imcms-bem-builder', 'jquery', 'imcms-category-types-rest-api', 'imcms-categories-rest-api',
-        'imcms-category-types-editor', 'imcms-modal-window-builder'
+        'imcms-modal-window-builder'
     ],
-    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor,
+    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi,
               modal) {
 
         texts = texts.superAdmin.categories;
