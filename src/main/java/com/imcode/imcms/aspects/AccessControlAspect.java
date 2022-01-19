@@ -1,12 +1,14 @@
 package com.imcode.imcms.aspects;
 
+import com.imcode.imcms.api.exception.NoPermissionException;
 import com.imcode.imcms.domain.dto.Documentable;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.model.Document;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.model.RolePermissions;
+import com.imcode.imcms.security.AccessContentType;
+import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,62 +31,75 @@ public class AccessControlAspect {
         this.accessService = accessService;
     }
 
-    /**
-     * Checks current user for access to specified ImCMS' content.
-     */
     @Before("@annotation(access)")
     public void checkAccess(JoinPoint jp, CheckAccess access) {
         final UserDomainObject user = Imcms.getUser();
 
-        if (user.isSuperAdmin()) {
-            return; // super admin can do everything
+        if (user.isSuperAdmin()) return; // super admin can do everything
+
+        boolean hasAccess = false;
+
+        final AccessRoleType[] roles = access.role();
+        if(roles.length > 0) hasAccess = checkRole(roles, user);
+
+        final AccessContentType[] permissions = access.docPermission();
+        if(!hasAccess && permissions.length > 0) hasAccess = checkPermission(jp.getArgs(), permissions, user);
+
+        if (!hasAccess) {
+            throw new NoPermissionException("User do not has the necessary permission");
+        }
+    }
+
+    /**
+     * Checks current user for a specific role permission.
+     */
+    private boolean checkRole(AccessRoleType[] accessRoleTypes, UserDomainObject user){
+        boolean hasAccess = false;
+
+        final RolePermissions rolePermissionsByUser = accessService.getTotalRolePermissionsByUser(user);
+        for (AccessRoleType accessRoleType : accessRoleTypes) {
+            switch (accessRoleType) {
+                case DOCUMENT_EDITOR:
+                    hasAccess = rolePermissionsByUser.isAccessToDocumentEditor();
+                    break;
+                case ADMIN_PAGES:
+                    hasAccess = rolePermissionsByUser.isAccessToAdminPages();
+                    break;
+            }
+
+            if (hasAccess) break;
         }
 
-        final Object[] args = jp.getArgs();
+        return hasAccess;
+    }
 
-        if (args.length != 0) {
-            final AccessType accessType = access.value();
-            boolean hasAccess = true;
+    /**
+     * Checks current user for a permission of a specific document.
+     */
+    private boolean checkPermission(Object[] args, AccessContentType[] accessContentTypes, UserDomainObject user){
+        boolean hasAccess = false;
+
+        if(args.length > 0){
             Integer docId = null;
 
-            switch (accessType) {
-                case ALL:
-                    hasAccess = false; // only super admin allowed here, and checking was already done
-                    break;
-
-                case DOC_INFO:
-                    if (args[0] instanceof Document) {
-                        docId = ((Document) args[0]).getId();
-
-                    } else if (args[0] instanceof Integer) {
-                        docId = (Integer) args[0];
-                    }
-                    break;
-
-                case IMAGE:
-                case TEXT:
-                case MENU:
-                case LOOP:
-                    if (args[0] instanceof Documentable) {
-                        docId = ((Documentable) args[0]).getDocId();
-
-                    } else if (args[0] instanceof Integer) {
-                        docId = (Integer) args[0];
-                    }
-                    break;
-                case DOCUMENT_EDITOR:
-                    hasAccess = accessService.hasUserAccessToDocumentEditor(user);
-                    break;
+            Object value = args[0];
+            if (value instanceof Document) {
+                docId = ((Document) value).getId();
+            } else if (value instanceof Documentable) {
+                docId = ((Documentable) value).getDocId();
+            } else if (value instanceof Integer) {
+                docId = (Integer) value;
             }
 
-            if (docId != null) {
-                hasAccess = accessService.hasUserEditAccess(user, docId, accessType);
-            }
-
-            if (!hasAccess) {
-                throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
+            if (docId != null){
+                for(AccessContentType accessContentType : accessContentTypes){
+                    hasAccess = accessService.hasUserEditAccess(user, docId, accessContentType);
+                    if (hasAccess) break;
+                }
             }
         }
+
+        return hasAccess;
     }
 
 }

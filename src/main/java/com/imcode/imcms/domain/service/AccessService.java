@@ -1,7 +1,8 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.model.RolePermissions;
+import com.imcode.imcms.security.AccessContentType;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -11,9 +12,9 @@ import imcode.server.user.UserDomainObject;
  * 13.02.18.
  */
 public interface AccessService {
-    boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType);
+    boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessContentType accessContentType);
 
     RestrictedPermission getPermission(UserDomainObject user, int documentId);
 
-    boolean hasUserAccessToDocumentEditor(UserDomainObject user);
+    RolePermissions getTotalRolePermissionsByUser(UserDomainObject user);
 }

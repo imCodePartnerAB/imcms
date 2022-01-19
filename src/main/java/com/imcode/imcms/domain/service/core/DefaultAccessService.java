@@ -2,23 +2,22 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.DocumentRoles;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
+import com.imcode.imcms.domain.dto.RolePermissionsDTO;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.util.Value;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
-    public boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType) {
+    public boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessContentType accessContentType) {
         final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, user);
 
         if (documentRoles.hasNoRoles()) {
@@ -76,7 +75,7 @@ public class DefaultAccessService implements AccessService {
                 return false;
             case RESTRICTED_1:
             case RESTRICTED_2:
-                return hasRestrictedEditAccess(accessType, documentRoles.getDocument(), mostPermission);
+                return hasRestrictedEditAccess(accessContentType, documentRoles.getDocument(), mostPermission);
         }
 
         return true;
@@ -106,19 +105,20 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
-    public boolean hasUserAccessToDocumentEditor(UserDomainObject user) {
-        if (user.isDefaultUser()) return false;
+    public RolePermissions getTotalRolePermissionsByUser(UserDomainObject user) {
+        final RolePermissions totalPermissions = new RolePermissionsDTO();
 
-        return getRolePermissionsByUser(user).stream()
-                .anyMatch(RolePermissions::isAccessToDocumentEditor);
-    }
-
-    private List<RolePermissions> getRolePermissionsByUser(UserDomainObject user) {
-        return user.getRoleIds().stream()
+        user.getRoleIds().stream()
                 .map(roleService::getById)
                 .filter(Objects::nonNull)
-                .map(Role::getPermissions)
-                .collect(Collectors.toList());
+                .forEach(role -> {
+                    RolePermissions permissions = role.getPermissions();
+                    if(permissions.isGetPasswordByEmail()) totalPermissions.setGetPasswordByEmail(true);
+                    if(permissions.isAccessToAdminPages()) totalPermissions.setAccessToAdminPages(true);
+                    if(permissions.isAccessToDocumentEditor()) totalPermissions.setAccessToDocumentEditor(true);
+                });
+
+        return totalPermissions;
     }
 
     private RestrictedPermission getRestrictedPermissionForUser(Set<Permission> userPermissions,
@@ -173,17 +173,17 @@ public class DefaultAccessService implements AccessService {
         return restrictedPermission;
     }
 
-    private boolean hasRestrictedEditAccess(AccessType accessType, Meta meta, Permission permission) {
+    private boolean hasRestrictedEditAccess(AccessContentType accessContentType, Meta meta, Permission permission) {
         return meta.getRestrictedPermissions()
                 .stream()
                 .filter(restrictedPermission -> restrictedPermission.getPermission().equals(permission))
                 .findFirst() // should be one or zero!
-                .filter(restrictedPermissionJPA -> hasRestrictedEditAccess(restrictedPermissionJPA, accessType))
+                .filter(restrictedPermissionJPA -> hasRestrictedEditAccess(restrictedPermissionJPA, accessContentType))
                 .isPresent();
     }
 
-    private boolean hasRestrictedEditAccess(RestrictedPermission restrictedPermission, AccessType accessType) {
-        switch (accessType) {
+    private boolean hasRestrictedEditAccess(RestrictedPermission restrictedPermission, AccessContentType accessContentType) {
+        switch (accessContentType) {
             case ALL:
                 return true;
             case DOC_INFO:
