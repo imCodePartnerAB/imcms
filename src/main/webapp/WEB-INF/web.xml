@@ -126,6 +126,16 @@
     </filter>
 
     <filter>
+        <description>
+            Restricts access to mapped resources to users with the "Access to admin pages" permission.
+            Currently API samples only.
+        </description>
+
+        <filter-name>UserAdminFilter</filter-name>
+        <filter-class>com.imcode.imcms.servlet.UserAdminFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
     </filter>
@@ -162,17 +172,20 @@
 
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
-        <url-pattern>/imcms/docs/apisamples/*</url-pattern>
-        <url-pattern>/api/category-types/*</url-pattern>
-        <url-pattern>/api/categories/*</url-pattern>
         <url-pattern>/api/properties/*</url-pattern>
-        <url-pattern>/api/users/admins/*</url-pattern>
-        <url-pattern>/api/users/*</url-pattern>
-        <url-pattern>/api/user/properties/*</url-pattern>
-        <url-pattern>/api/roles/*</url-pattern>
         <url-pattern>/api/ip-rules/*</url-pattern>
-        <url-pattern>/api/profiles/*</url-pattern>
         <url-pattern>/api/files/*</url-pattern>
+        <url-pattern>/api/template-group/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>UserAdminFilter</filter-name>
+        <url-pattern>/api/category-types/*</url-pattern>
+        <url-pattern>/api/images/files/*</url-pattern>
+        <url-pattern>/api/links/*</url-pattern>
+        <url-pattern>/api/temporal-data/*</url-pattern>
+        <url-pattern>/api/user/*</url-pattern>
+        <url-pattern>/api/version/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

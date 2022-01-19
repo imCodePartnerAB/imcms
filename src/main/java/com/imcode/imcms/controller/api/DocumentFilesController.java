@@ -2,6 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.model.DocumentFile;
+import com.imcode.imcms.security.AccessContentType;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +33,8 @@ public class DocumentFilesController {
     }
 
     @PostMapping
-    public void saveDocFiles(@RequestParam List<MultipartFile> files, @RequestParam int docId) {
+    @CheckAccess(docPermission = AccessContentType.DOC_INFO)
+    public void saveDocFiles(@RequestParam int docId, @RequestParam List<MultipartFile> files) {
 
         final Map<String, Queue<MultipartFile>> fileNameToFiles = files.stream()
                 .collect(Collectors.toMap(

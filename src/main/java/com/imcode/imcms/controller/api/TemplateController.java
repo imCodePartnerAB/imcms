@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class TemplateController {
     }
 
     @PutMapping("/replace")
+    @CheckAccess
     public void replaceTemplate(@RequestBody Properties data) {
         final String oldTemplateName = data.getProperty("oldTemplate");
         final String newTemplateName = data.getProperty("newTemplate");
@@ -30,6 +32,7 @@ public class TemplateController {
     }
 
     @DeleteMapping("/{id}")
+    @CheckAccess
     public void delete(@PathVariable Integer id) {
         templateService.delete(id);
     }

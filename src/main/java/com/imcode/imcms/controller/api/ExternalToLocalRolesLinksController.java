@@ -3,6 +3,8 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.security.AccessRoleType;
+import com.imcode.imcms.security.CheckAccess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +33,7 @@ class ExternalToLocalRolesLinksController {
     }
 
     @PutMapping
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public void saveLinkedLocalRoles(@RequestBody ExternalRoleLinks externalRoleLinks) {
         externalToLocalRoleLinkService.setLinkedRoles(externalRoleLinks.externalRole, externalRoleLinks.localRolesId);
     }

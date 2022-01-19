@@ -3,7 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,7 @@ public class MenuController {
     }
 
     @GetMapping
+    @CheckAccess(docPermission = AccessContentType.MENU)
     public MenuDTO getMenu(@ModelAttribute MenuDTO menu) {
         return menuService.getMenuDTO(
                 menu.getDocId(),
@@ -39,12 +40,13 @@ public class MenuController {
     }
 
     @PutMapping("/sorting")
+    @CheckAccess(docPermission = AccessContentType.MENU)
     public List<MenuItemDTO> getSortedMenuItems(@RequestBody MenuDTO menuDTO) {
         return menuService.getSortedMenuItems(menuDTO, Imcms.getLanguage().getCode());
     }
 
     @PostMapping
-    @CheckAccess(AccessType.MENU)
+    @CheckAccess(docPermission = AccessContentType.MENU)
     public MenuDTO saveMenu(@RequestBody MenuDTO menu) {
         return menuService.saveFrom(menu);
     }

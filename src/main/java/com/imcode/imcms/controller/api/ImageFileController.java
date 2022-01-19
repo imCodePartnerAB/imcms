@@ -3,7 +3,6 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.service.ImageFileService;
-import com.imcode.imcms.security.CheckAccess;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,20 +29,17 @@ public class ImageFileController {
     }
 
     @PostMapping
-    @CheckAccess
     public List<ImageFileDTO> saveNewImageFiles(@RequestParam(required = false) String folder,
                                                 @RequestParam List<MultipartFile> files) throws IOException {
         return imageFileService.saveNewImageFiles(folder, files);
     }
 
 	@PostMapping("moveImageFile")
-	@CheckAccess
 	public ImageFileDTO moveImageFile(@RequestBody ImageFileDTO imageFileDTO) throws IOException {
 		return imageFileService.moveImageFile(imageFileDTO.getPath(), imageFileDTO.getName());
 	}
 
     @DeleteMapping
-    @CheckAccess
     public List<ImageFileUsageDTO> deleteImage(@RequestBody ImageFileDTO imageFileDTO, HttpServletResponse response) throws IOException {
         List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
 

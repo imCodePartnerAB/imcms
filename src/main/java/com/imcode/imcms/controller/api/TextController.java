@@ -3,7 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +22,19 @@ public class TextController {
     }
 
 	@GetMapping("/loop")
+    @CheckAccess(docPermission = AccessContentType.LOOP)
 	public List<Text> getLoopTexts(@ModelAttribute TextDTO textDTO){
 		return textService.getLoopTexts(textDTO.getDocId(), textDTO.getLangCode(), textDTO.getLoopEntryRef().getLoopIndex());
 	}
 
     @PostMapping
-    @CheckAccess(AccessType.TEXT)
+    @CheckAccess(docPermission = AccessContentType.TEXT)
     public TextDTO saveText(@ModelAttribute TextDTO textDTO) {
         return new TextDTO(textService.save(textDTO));
     }
 
     @PostMapping("/filter")
+    @CheckAccess(docPermission = AccessContentType.TEXT)
     public TextDTO filter(@ModelAttribute TextDTO textDTO) {
         return new TextDTO(textService.filter(textDTO));
     }

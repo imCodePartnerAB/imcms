@@ -3,6 +3,8 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.model.Profile;
+import com.imcode.imcms.security.AccessRoleType;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,26 +28,31 @@ public class ProfilesController {
     }
 
     @GetMapping
+    @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public List<Profile> getAll() {
         return profileService.getAll();
     }
 
     @GetMapping("/{id}")
+    @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public Profile getById(@PathVariable Integer id) {
         return profileService.getById(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
     @PostMapping
+    @CheckAccess
     public Profile create(@RequestBody ProfileDTO profile) {
         return profileService.create(profile);
     }
 
     @PutMapping
+    @CheckAccess
     public Profile update(@RequestBody ProfileDTO profile) {
         return profileService.update(profile);
     }
 
     @DeleteMapping("/{id}")
+    @CheckAccess
     public void deleteById(@PathVariable Integer id) {
         profileService.deleteById(id);
     }

@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,31 +43,31 @@ public class ImageFolderController {
     }
 
     @GetMapping("/check")
-    @CheckAccess
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public List<ImageFolderItemUsageDTO> checkImageUsages(ImageFolderDTO folderToCheck) {
         return imageFolderService.checkFolder(folderToCheck);
     }
 
     @PostMapping("/can-delete")
-    @CheckAccess
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public boolean canBeDeleted(@RequestBody ImageFolderDTO folderToCheck) throws IOException {
         return imageFolderService.canBeDeleted(folderToCheck);
     }
 
     @PostMapping
-    @CheckAccess
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
         return imageFolderService.createImageFolder(folderToCreate);
     }
 
     @PutMapping
-    @CheckAccess
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
         return imageFolderService.renameFolder(folderToRename);
     }
 
     @DeleteMapping
-    @CheckAccess
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
         return imageFolderService.deleteFolder(folderToDelete);
     }
