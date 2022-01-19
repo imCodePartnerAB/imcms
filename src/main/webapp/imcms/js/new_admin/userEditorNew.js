@@ -15,30 +15,10 @@ const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
 const BEM = require('imcms-bem-builder');
 const userPropertiesRestAPI = require('imcms-user-properties-rest-api');
-const cookies = require('imcms-cookies');
 
-function activateUserAdminRoles() {
-    texts = texts.languageFlags;
-    const $form = $('#user-edit-form');
-    const $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
+const superAdminRoleId = 1;
 
-    const onUserAdminRoleClicked = function () {
-        const $checkbox = $(this);
-
-        if ($checkbox.is(':checked')) {
-            $userAdminRoleIds.removeAttr('disabled');
-
-        } else {
-            $userAdminRoleIds.removeAttr('checked');
-            $userAdminRoleIds.attr('disabled', 'disabled');
-        }
-    };
-
-    const $userAdminRole = $form.find('#role-1');
-    $userAdminRole.click(onUserAdminRoleClicked);
-
-    onUserAdminRoleClicked.call($userAdminRole);
-}
+texts = texts.languageFlags;
 
 function unBlockingUser() {
     const $form = $('#user-edit-form');
@@ -293,14 +273,14 @@ function onViewUserProperties() {
             const editUserProperties = mapPropertiesToUserProperties(editProperties);
             const createUserProperties = mapPropertiesToUserProperties(createProperties);
 
-            let aaa = {
+            let totalProperties = {
                 deletedProperties: removeUserProperties,
                 editedProperties: editUserProperties,
                 createdProperties: createUserProperties
             }
 
             if(removeProperties.length > 0 || editUserProperties.length > 0 || createUserProperties.length > 0) {
-                userPropertiesRestAPI.updateAll(aaa).done(() => {
+                userPropertiesRestAPI.updateAll(totalProperties).done(() => {
                     alert(texts.userProperties.savedSuccess);
                 }).fail(() => modal.buildErrorWindow(texts.userProperties.errorMessage));
             }
@@ -431,7 +411,7 @@ function addPhone(e) {
     const $saveButton = components.buttons.saveButton({
         style: 'display: none;',
         click: bindOnSaveClick($newRow),
-        text: 'Save'
+        type: 'button'
     });
 
     $newRow.find('.imcms-label')
@@ -474,7 +454,6 @@ function filterNonDigits(e) {
 
 $(function () {
     $('input[name=login]').focus();
-    activateUserAdminRoles();
     loadLanguages();
     unBlockingUser();
 
@@ -487,6 +466,8 @@ $(function () {
     $('#edit-user-cancel').click(onRedirectSuperAdminPage);
     $('#edit-user-properties').click(onViewUserProperties);
     $('#button-add-phone').click(addPhone);
+
+    if(!imcms.isSuperAdmin) $(`#role-${superAdminRoleId}`).attr("disabled", true);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();

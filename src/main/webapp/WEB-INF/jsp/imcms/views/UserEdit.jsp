@@ -24,12 +24,10 @@ ${"-->"}
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1" bundle="${resource_property}"/></title>
-    <imcms:ifAdmin>
         <script>
             <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
         </script>
         <script src="${contextPath}/dist/userEditorNew.js"></script>
-    </imcms:ifAdmin>
 </head>
 <body>
 <div class="imcms-info-page imcms-info-page__edit-user">
@@ -289,48 +287,27 @@ ${"-->"}
             </div>
 
             <div class="imcms-field">
-                <div class="imcms-title"><fmt:message
-                        key="templates/sv/AdminUserResp_superadmin_part.htm/3/1" bundle="${resource_property}"/></div>
-            </div>
-            <div class="imcms-field">
-                <div class="imcms-checkboxes imcms-field__checkboxes">
-                    <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001" bundle="${resource_property}"/></div>
-                    <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10" bundle="${resource_property}"/></span>
-                    <c:forEach var="role" items="${imcms:getNewUserRoles(editedUser)}">
-                        <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                            <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
-                                   class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                            <label for="role-${role.id}"
-                                   class="imcms-label imcms-checkbox__label">${role.name}</label>
-                        </div>
-                    </c:forEach>
-                </div>
-                <div class="imcms-checkboxes imcms-field__checkboxes">
-                    <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/8" bundle="${resource_property}"/></div>
-                    <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11" bundle="${resource_property}"/></span>
-                    <c:forEach var="role" items="${imcms:getNewUserAdministratedRoles(editedUser)}">
-                        <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                            <input type="checkbox" name="userAdminRoleIds" id="admin-role-${role.id}"
-                                   value="${role.id}"
-                                   class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                            <label for="admin-role-${role.id}"
-                                   class="imcms-label imcms-checkbox__label">${role.name}</label>
-                        </div>
-                    </c:forEach>
+                <div class="imcms-text-box">
+                    <label class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001" bundle="${resource_property}"/></label>
+                    <div class="imcms-roles-checkboxes">
+                        <c:forEach var="role" items="${imcms:getNewUserRoles(editedUser)}">
+                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
+                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                <label for="role-${role.id}"
+                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
+                            </div>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
         </form>
         <div class="imcms-info-footer imcms-info-footer__user-edit">
             <button id="edit-user-cancel" class="imcms-button imcms-button--negative imcms-info-footer__button">
                 <fmt:message key="templates/sv/AdminUserResp.htm/2009" bundle="${resource_property}"/></button>
-            <imcms:ifAdmin>
-
-                <button id="edit-user-properties" class="imcms-button imcms-button--positive imcms-info-footer__button">
-                    <fmt:message key="templates/sv/AdminUserResp.htm/2010" bundle="${resource_property}"/></button>
-
-            </imcms:ifAdmin>
+            <button id="edit-user-properties" class="imcms-button imcms-button--positive imcms-info-footer__button">
+                <fmt:message key="templates/sv/AdminUserResp.htm/2010" bundle="${resource_property}"/></button>
             <button id="edit-user-reset" class="imcms-button imcms-button--positive imcms-info-footer__button">
                 <fmt:message key="templates/sv/AdminUserResp.htm/2008" bundle="${resource_property}"/></button>
             <button id="edit-user-submit-button" type="submit" form="user-edit-form"

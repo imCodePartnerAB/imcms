@@ -14,27 +14,7 @@ const imcms = require('imcms');
 const modal = require('imcms-modal-window-builder');
 let texts = require('imcms-i18n-texts');
 
-function activateUserAdminRoles() {
-    texts = texts.languageFlags;
-    const $form = $('#user-edit-form');
-    const $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
-
-    if (!$userAdminRoleIds.length) return;
-
-    $userAdminRoleIds.attr('disabled', 'disabled');
-
-    const isUserAdminSelected = $form.find('input[name=role_ids]')
-        .find("option")
-        .filter(function () {
-            const $option = $(this);
-            return ($option.text() === 'Useradmin' && $option.is(':selected'));
-        })
-        .length;
-
-    if (isUserAdminSelected) {
-        $userAdminRoleIds.removeAttr('disabled');
-    }
-}
+texts = texts.languageFlags;
 
 function onCancel() {
     window.history.back()
@@ -145,7 +125,8 @@ function addPhone(e) {
     const $saveButton = components.buttons.saveButton({
         style: 'display: none;',
         click: bindOnSaveClick($newRow),
-        text: 'Save'
+        text: 'Save',
+        type: 'button'
     });
 
     $newRow.find('.imcms-label')
@@ -188,12 +169,10 @@ function filterNonDigits(e) {
 
 $(function () {
     $('input[name=login_name]').focus();
-    activateUserAdminRoles();
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
-    $('#select-role-ids').change(activateUserAdminRoles);
     $('#edit-user-cancel').click(onCancel);
     $('#edit-user-reset').click(onReset);
     $('#edit-user-submit-button').click(onSubmit);

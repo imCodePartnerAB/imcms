@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -45,8 +44,7 @@ public class UserEditorPage extends OkCancelPage {
     private static final String REQUEST_PARAMETER__LANGUAGE = "lang_id";
     private static final String REQUEST_PARAMETER__ACTIVE = "active";
     private static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
-    private static final String REQUEST_PARAMETER__ROLE_IDS = "role_ids";
-    private static final String REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS = "user_admin_role_ids";
+    private static final String REQUEST_PARAMETER__ROLE_IDS = "roleIds";
     private static final String REQUEST_PARAMETER__ADD_PHONE_NUMBER = "add_phone_number";
     private static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
     private static final String REQUEST_PARAMETER__REMOVE_PHONE_NUMBER = "delete_phone_number";
@@ -107,19 +105,14 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setZip(request.getParameter(REQUEST_PARAMETER__ZIP));
         editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
         editedUser.setProvince(request.getParameter(REQUEST_PARAMETER__DISTRICT));
-        editedUser.setEmailAddress(StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAMETER__EMAIL)));
+        editedUser.setEmailAddress(StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__EMAIL)));
         editedUser.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE)));
 
         updateUserRefFromRequest(request);
         updateUserPhones(request);
         updateUserRolesFromRequest(request);
-        updateUserAdminRolesFromRequest(request);
         updateUserPasswordFromRequest(editedUser, request);
         updateUserActiveFromRequest(request);
-
-        if (getErrorMessage() == null) {
-            setErrorMessage(validateUserEmail());
-        }
     }
 
     private void updateUserRefFromRequest(HttpServletRequest request){
@@ -132,12 +125,12 @@ public class UserEditorPage extends OkCancelPage {
         final String[] userPhoneNumbers = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER);
         final String[] userPhoneNumberTypes = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER_TYPE);
 
-        if ((userPhoneNumbers == null)
-                || (userPhoneNumberTypes == null)
-                || (userPhoneNumbers.length <= 0)
-                || (userPhoneNumberTypes.length <= 0)
-                || (userPhoneNumbers.length != userPhoneNumberTypes.length))
+        if (userPhoneNumbers == null && userPhoneNumberTypes == null) {
+            editedUser.removePhoneNumbers();
             return;
+        }
+
+        if (userPhoneNumbers.length != userPhoneNumberTypes.length) return;
 
         editedUser.removePhoneNumbers();
 
@@ -173,22 +166,10 @@ public class UserEditorPage extends OkCancelPage {
         return msg;
     }
 
-    private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
-        if (Utility.getLoggedOnUser(request).isSuperAdmin() || editedUser.isUserAdmin()) {
-            editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request));
-            editedUser.removeUserAdminRoleId(Roles.SUPER_ADMIN.getId());
-            editedUser.removeUserAdminRoleId(Roles.USER_ADMIN.getId());
-        }
-    }
-
     private void updateUserActiveFromRequest(HttpServletRequest request){
         if(editedUser.isSuperAdmin()){
             editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
         }
-    }
-
-    private Set<Integer> getRoleIdsFromRequestParameterValues(HttpServletRequest request) {
-        return getRoleIdsSetFromRequestParameterValues(request, UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS);
     }
 
     private Set<Integer> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
@@ -205,22 +186,8 @@ public class UserEditorPage extends OkCancelPage {
 
     private void updateUserRolesFromRequest(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-
-        if (loggedOnUser.canEditRolesFor(uneditedUser)) {
-            Set<Integer> roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
-            Set<Integer> userRoleIdsArray;
-
-            if (loggedOnUser.isUserAdminAndNotSuperAdmin()) {
-                Set<Integer> userAdminRoleIds = loggedOnUser.getUserAdminRoleIds();
-                roleIdsSetFromRequest.retainAll(userAdminRoleIds);
-
-                userRoleIdsArray = editedUser.getRoleIds();
-                userRoleIdsArray.removeAll(userAdminRoleIds);
-                userRoleIdsArray.addAll(roleIdsSetFromRequest);
-            } else {
-                userRoleIdsArray = roleIdsSetFromRequest;
-            }
-            editedUser.setRoleIds(userRoleIdsArray);
+        if (loggedOnUser.isSuperAdmin()) {
+            editedUser.setRoleIds(getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS));
         }
     }
 
@@ -275,10 +242,7 @@ public class UserEditorPage extends OkCancelPage {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else {
                 boolean editedUserHasOnlyTheUsersRole = (1 == editedUser.getRoleIds().size());
-                UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-                if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
-                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser))
-                {
+                if (editedUserHasOnlyTheUsersRole) {
                     errorMessage = ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE;
                 } else {
                     super.dispatchOk(request, response);
@@ -352,12 +316,11 @@ public class UserEditorPage extends OkCancelPage {
 
         request.setAttribute("editedUser", editedUser);
         request.setAttribute("uneditedUser", uneditedUser);
-        request.setAttribute("isAdmin", loggedOnUser.isSuperAdmin());
+        request.setAttribute("isSuperAdmin", loggedOnUser.isSuperAdmin());
         request.setAttribute("userEditorPage", this);
         request.setAttribute("loggedOnUser", loggedOnUser);
         request.setAttribute("errorMessage", errorMessage);
         request.setAttribute("userLanguage", Imcms.getUser().getLanguage());
-        request.setAttribute("isEditorUserPage", true);
         super.forward(request, response);
     }
 

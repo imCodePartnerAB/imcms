@@ -16,33 +16,31 @@
 <%--@elvariable id="userEditorPage" type="com.imcode.imcms.servlet.superadmin.UserEditorPage"--%>
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
 
+<fmt:setLocale value="${userLanguage}"/>
+<fmt:setBundle basename="imcms" var="resource_property"/>
+
 <html>
 <head>
-    <title><fmt:message key="templates/sv/AdminUserResp.htm/1"/></title>
+    <title><fmt:message key="templates/sv/AdminUserResp.htm/1" bundle="${resource_property}"/></title>
     <script src="${contextPath}/dist/imcms_admin.js"></script>
-    <imcms:ifAdmin>
-        <script>
-            <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
-        </script>
-        <script src="${contextPath}/dist/userEditorOld.js"></script>
-    </imcms:ifAdmin>
+    <script><jsp:include page="/imcms/js/imcms_config.js.jsp"/></script>
+    <script src="${contextPath}/dist/userEditorOld.js"></script>
 </head>
 <body>
 <div class="imcms-info-page imcms-info-page__edit-user">
-
     <input type="hidden" id="must-fill-mandatory-fields-text"
-           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/1"/>"/>
+           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/1" bundle="${resource_property}"/>"/>
     <input type="hidden" id="pass-verification-failed-text"
-           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/2"/>"/>
+           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/2" bundle="${resource_property}"/>"/>
 
     <div class="imcms-info-head">
         <a href="https://www.imcms.net/" class="imcms-info__logo"></a>
-        <div class="imcms-title imcms-head__title"><fmt:message key="global/imcms_administration"/></div>
+        <div class="imcms-title imcms-head__title"><fmt:message key="global/imcms_administration" bundle="${resource_property}"/></div>
     </div>
     <div class="imcms-info-body">
         <div class="imcms-field">
             <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
-                    key="templates/sv/AdminUserResp.htm/2001"/></a>
+                    key="templates/sv/AdminUserResp.htm/2001" bundle="${resource_property}"/></a>
         </div>
         <c:if test="${errorMessage ne null}">
             <div class="imcms-field">
@@ -52,14 +50,14 @@
         <form id="user-edit-form" method="post" action="${contextPath}/servlet/PageDispatcher">
             ${userEditorPage.htmlHidden(pageContext.request)}
             <div class="imcms-field">
-                <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
+                <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1" bundle="${resource_property}"/></div>
             </div>
-            <div><fmt:message key="templates/sv/AdminUserResp.htm/6"/></div>
+            <div><fmt:message key="templates/sv/AdminUserResp.htm/6" bundle="${resource_property}"/></div>
 
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/8"/></label>
+                            key="templates/sv/AdminUserResp.htm/8" bundle="${resource_property}"/></label>
                     <input id="login-name" type="text" name="login_name" class="imcms-input imcms-text-box__input"
                            maxlength="250" value="<c:out value='${editedUser.loginName}'/>">
                 </div>
@@ -67,15 +65,15 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="password1" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/10"/></label>
+                            key="templates/sv/AdminUserResp.htm/10" bundle="${resource_property}"/></label>
                     <input id="password1" type="password" name="password1" class="imcms-input imcms-text-box__input"
-                           maxlength="250" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>">
+                           maxlength="250" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11" bundle="${resource_property}"/>">
                 </div>
             </div>
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="password2" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/1001"/></label>
+                            key="templates/sv/AdminUserResp.htm/1001" bundle="${resource_property}"/></label>
                     <input id="password2" type="password" name="password2" class="imcms-input imcms-text-box__input"
                            maxlength="250">
                 </div>
@@ -83,7 +81,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="first-name" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/14"/></label>
+                            key="templates/sv/AdminUserResp.htm/14" bundle="${resource_property}"/></label>
                     <input id="first-name" class="imcms-input imcms-text-box__input" type="text" name="first_name"
                            maxlength="50" value="<c:out value='${editedUser.firstName}'/>">
                 </div>
@@ -91,7 +89,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="last-name" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/16"/></label>
+                            key="templates/sv/AdminUserResp.htm/16" bundle="${resource_property}"/></label>
                     <input id="last-name" class="imcms-input imcms-text-box__input" type="text" name="last_name"
                            maxlength="50" value="<c:out value='${editedUser.lastName}'/>">
                 </div>
@@ -99,7 +97,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="title" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/18"/></label>
+                            key="templates/sv/AdminUserResp.htm/18" bundle="${resource_property}"/></label>
                     <input id="title" class="imcms-input imcms-text-box__input" type="text" name="title"
                            maxlength="50" value="<c:out value='${editedUser.title}'/>">
                 </div>
@@ -107,7 +105,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="company" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/20"/></label>
+                            key="templates/sv/AdminUserResp.htm/20" bundle="${resource_property}"/></label>
                     <input id="company" class="imcms-input imcms-text-box__input" type="text" name="company"
                            maxlength="50" value="<c:out value='${editedUser.company}'/>">
                 </div>
@@ -115,7 +113,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="address" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/22"/></label>
+                            key="templates/sv/AdminUserResp.htm/22" bundle="${resource_property}"/></label>
                     <input id="address" class="imcms-input imcms-text-box__input" type="text" name="address"
                            maxlength="50" value="<c:out value='${editedUser.address}'/>">
                 </div>
@@ -123,7 +121,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="zip" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/24"/></label>
+                            key="templates/sv/AdminUserResp.htm/24" bundle="${resource_property}"/></label>
                     <input id="zip" class="imcms-input imcms-text-box__input" type="text" name="zip"
                            maxlength="50" value="<c:out value='${editedUser.zip}'/>">
                 </div>
@@ -131,7 +129,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="city" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/25"/></label>
+                            key="templates/sv/AdminUserResp.htm/25" bundle="${resource_property}"/></label>
                     <input id="city" class="imcms-input imcms-text-box__input" type="text" name="city"
                            maxlength="50" value="<c:out value='${editedUser.city}'/>">
                 </div>
@@ -139,7 +137,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="province" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/27"/></label>
+                            key="templates/sv/AdminUserResp.htm/27" bundle="${resource_property}"/></label>
                     <input id="province" class="imcms-input imcms-text-box__input" type="text" name="county"
                            maxlength="50" value="<c:out value='${editedUser.province}'/>">
                 </div>
@@ -147,19 +145,19 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="country" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/29"/></label>
+                            key="templates/sv/AdminUserResp.htm/29" bundle="${resource_property}"/></label>
                     <input id="country" class="imcms-input imcms-text-box__input" type="text" name="country"
                            maxlength="50" value="<c:out value='${editedUser.country}'/>">
                 </div>
             </div>
 
-            <div id="languages-select-container" data-text="<fmt:message key="templates/sv/AdminUserResp.htm/30"/>"
+            <div id="languages-select-container" data-text="<fmt:message key="templates/sv/AdminUserResp.htm/30" bundle="${resource_property}"/>"
                  class="imcms-field"><%-- content is set via js --%></div>
 
             <div class="imcms-field imcms-field--phone">
                 <div class="imcms-text-box imcms-text-box--phone-box">
                     <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/32"/></label>
+                            key="templates/sv/AdminUserResp.htm/32" bundle="${resource_property}"/></label>
                     <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
                         <input id="phone-type-selected" type="hidden" value="<%=PhoneNumberType.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
@@ -179,13 +177,13 @@
                     <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
                            maxlength="50">
                     <button class="imcms-button imcms-button--positive imcms-button--add-phone"
-                            id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
+                            id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004" bundle="${resource_property}"/></button>
                 </div>
 
                 <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
                     <div class="imcms-text-box imcms-text-box--phone-box imcms-text-box--existing-phone-box">
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
-                                key="templates/sv/AdminUserResp.htm/32"/></label>
+                                key="templates/sv/AdminUserResp.htm/32" bundle="${resource_property}"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
                             <input type="hidden" name="user_phone_number_type" value="${phoneNumber.type.id}">
                             <div class="imcms-drop-down-list imcms-select__drop-down-list">
@@ -215,7 +213,7 @@
             <div class="imcms-field">
                 <div class="imcms-text-box">
                     <label for="email" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/36"/></label>
+                            key="templates/sv/AdminUserResp.htm/36" bundle="${resource_property}"/></label>
                     <input id="email" class="imcms-input imcms-text-box__input" type="text" name="email"
                            maxlength="50" value="<c:out value='${editedUser.emailAddress}'/>">
                 </div>
@@ -234,65 +232,44 @@
                 <div class="imcms-field">
                     <div class="imcms-text-box">
                         <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                                key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/2" bundle="${resource_property}"/></label>
                         <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
                         <c:if test="${editedUser.createDate ne null}">
-                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
+                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12" bundle="${resource_property}"/>
                             &nbsp; <fmt:formatDate value="${editedUser.createDate}"
                                                    pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
                         </c:if>
                     </div>
                 </div>
-            </c:if>
 
-            <c:if test="${loggedOnUser.canEditRolesFor(uneditedUser)}">
                 <div class="imcms-field">
-                    <div class="imcms-title"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
-                </div>
-                <div class="imcms-field">
-                    <div class="imcms-checkboxes imcms-field__checkboxes">
-                        <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                                key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
-                        <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
-                        <c:forEach var="role" items="${imcms:getUserRoles(editedUser)}">
-                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
-                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                                <label for="role-${role.id}"
-                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
-                            </div>
-                        </c:forEach>
-                    </div>
-                    <c:if test="${loggedOnUser.superAdmin}">
-                        <div class="imcms-checkboxes imcms-field__checkboxes">
-                            <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                                    key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
-                            <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
-                            <c:forEach var="role" items="${imcms:getUserAdministratedRoles(editedUser)}">
+                    <div class="imcms-text-box">
+                        <label class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/1001" bundle="${resource_property}"/></label>
+                        <div class="imcms-roles-checkboxes">
+                            <c:forEach var="role" items="${imcms:getUserRoles(editedUser)}">
                                 <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                    <input type="checkbox" name="user_admin_role_ids" id="admin-role-${role.id}"
-                                           value="${role.id}"
+                                    <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
                                            class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                                    <label for="admin-role-${role.id}"
+                                    <label for="role-${role.id}"
                                            class="imcms-label imcms-checkbox__label">${role.name}</label>
                                 </div>
                             </c:forEach>
                         </div>
-                    </c:if>
+                    </div>
                 </div>
             </c:if>
         </form>
         <div class="imcms-info-footer imcms-info-footer__user-edit">
             <button id="edit-user-cancel"
                     class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
-                    key="templates/sv/AdminUserResp.htm/2009"/></button>
+                    key="templates/sv/AdminUserResp.htm/2009" bundle="${resource_property}"/></button>
             <button id="edit-user-reset"
                     class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
-                    key="templates/sv/AdminUserResp.htm/2008"/></button>
+                    key="templates/sv/AdminUserResp.htm/2008" bundle="${resource_property}"/></button>
             <button id="edit-user-submit-button" type="submit" form="user-edit-form" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                     class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
-                    key="templates/sv/AdminUserResp.htm/2007"/></button>
+                    key="templates/sv/AdminUserResp.htm/2007" bundle="${resource_property}"/></button>
         </div>
     </div>
 </div>

@@ -12,31 +12,10 @@ const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
-const cookies = require('imcms-cookies');
 
-function activateUserAdminRoles() {
+const superAdminRoleId = 1;
 
-    texts = texts.languageFlags;
-    const $form = $('#user-edit-form');
-    const $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
-
-    const onUserAdminRoleClicked = function () {
-        const $checkbox = $(this);
-
-        if ($checkbox.is(':checked')) {
-            $userAdminRoleIds.removeAttr('disabled');
-
-        } else {
-            $userAdminRoleIds.removeAttr('checked');
-            $userAdminRoleIds.attr('disabled', 'disabled');
-        }
-    };
-
-    const $userAdminRole = $form.find('#role-1');
-    $userAdminRole.click(onUserAdminRoleClicked);
-
-    onUserAdminRoleClicked.call($userAdminRole);
-}
+texts = texts.languageFlags;
 
 function onSubmit(e) {
     const $form = $('#user-edit-form');
@@ -196,7 +175,6 @@ function filterNonDigits(e) {
 
 $(function () {
     $('input[name=login]').focus();
-    activateUserAdminRoles();
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
@@ -207,6 +185,8 @@ $(function () {
     $('#edit-user-reset').click(onReset);
     $('#edit-user-cancel').click(onRedirectSuperAdminPage);
     $('#button-add-phone').click(addPhone);
+
+    if(!imcms.isSuperAdmin) $(`#role-${superAdminRoleId}`).attr("disabled", true);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();
