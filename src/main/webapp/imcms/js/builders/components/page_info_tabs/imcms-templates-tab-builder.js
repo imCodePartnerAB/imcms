@@ -47,12 +47,20 @@ define("imcms-templates-tab-builder",
                 $defaultChildTemplateSelectContainer
             ];
         };
+
         TemplatesTab.prototype.fillTabDataFromDocument = document => {
             if (document.template) {
-                tabData.$templateSelect.selectValue(document.template.templateName);
-                tabData.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
+                //prevent value selection while building tab
+                const interval = setInterval(() => {
+                    if (tabData.$templateSelect.hasOptions()) {
+                        tabData.$templateSelect.selectValue(document.template.templateName);
+                        tabData.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
+                        clearInterval(interval);
+                    }
+                }, 10);
             }
         };
+
         TemplatesTab.prototype.saveData = function (documentDTO) {
             if (!this.isDocumentTypeSupported(documentDTO.type)) {
                 return documentDTO;

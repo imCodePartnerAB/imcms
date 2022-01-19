@@ -4,9 +4,11 @@
  */
 
 const WindowTabsBuilder = require('imcms-window-tabs-builder');
+const imcms = require('imcms');
 
-module.exports = new WindowTabsBuilder({
-    tabBuilders: [
+let tabBuilders;
+if(imcms.isSuperAdmin){
+    tabBuilders = [
         require('imcms-users-tab-builder'),
         require('imcms-roles-tab-builder'),
         require('imcms-ip-access-tab-builder'),
@@ -20,5 +22,20 @@ module.exports = new WindowTabsBuilder({
         require('imcms-temporal-data-tab-builder'),
         require('imcms-data-version-admin-tab-builder'),
         require('imcms-documentation-tab-builder')
-    ]
-});
+    ];
+}else{
+    tabBuilders = [
+        require('imcms-users-tab-builder'),
+        require('imcms-roles-tab-builder'),
+        require('imcms-delete-docs-tab-builder'),
+        require('imcms-link-validator-tab-builder'),
+        require('imcms-images-tab-builder'),
+        require('imcms-categories-admin-tab-builder'),
+        require('imcms-temporal-data-tab-builder'),
+        require('imcms-data-version-admin-tab-builder')
+    ];
+}
+
+module.exports = new WindowTabsBuilder({
+    tabBuilders: tabBuilders
+})

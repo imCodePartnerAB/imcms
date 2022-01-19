@@ -4,16 +4,19 @@
  */
 define("imcms-page-info-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
-        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types'
+        "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder",
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms",
+        "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api",
+        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types'
     ],
-    (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-     modal, texts, appearanceTab, docTypes) => {
+    (BEM, components, WindowBuilder, pageInfoTabs, $, events, imcms,
+     documentsRestApi, docFilesAjaxApi, rolesRestApi, modal, texts, appearanceTab, docTypes, docPermissionTypes) => {
 
         texts = texts.pageInfo;
 
         const TAB_INDEX_ATTRIBUTE = 'data-window-id';
+
+        let windowPageInfoTabsBuilder;
 
         let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
         let $title = $('<a>');
@@ -26,7 +29,7 @@ define("imcms-page-info-builder",
         }
 
         function buildPageInfoPanels(docId) {
-            return pageInfoTabs.tabBuilders.map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
+            return windowPageInfoTabsBuilder.tabBuilders.map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
         }
 
         function closePageInfo() {
@@ -38,14 +41,14 @@ define("imcms-page-info-builder",
         }
 
         function saveAndClose(onDocumentSavedCallback) {
-            pageInfoTabs.tabBuilders.forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
+            windowPageInfoTabsBuilder.tabBuilders.forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
 
             //Clear modified info before send to API
             documentDTO.modified = {id: ""};
-			const alias = documentDTO.alias;
+            const alias = documentDTO.alias;
 
-	        $loadingAnimation.show();
-	        documentsRestApi.create(documentDTO)
+            $loadingAnimation.show();
+            saveDoc(documentDTO)
                 .done((savedDoc) => {
 
                     if (documentDTO.newFiles) {
@@ -81,6 +84,10 @@ define("imcms-page-info-builder",
 				});
         }
 
+        function saveDoc(document) {
+            return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
+        }
+
         function saveAndPublish() {
             saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
         }
@@ -105,9 +112,9 @@ define("imcms-page-info-builder",
 
         function moveToNextTabOrEnableOthersAndReplaceButton($buttonForReplacing) {
             return function () {
-                const currentTabIndex = parseInt(pageInfoTabs.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
+                const currentTabIndex = parseInt(windowPageInfoTabsBuilder.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
                 const $nextTab = getNextTab(currentTabIndex);
-                const isEnabledNextTab = pageInfoTabs.isEnabledTabByIndex($nextTab.attr(TAB_INDEX_ATTRIBUTE));
+                const isEnabledNextTab = windowPageInfoTabsBuilder.isEnabledTabByIndex($nextTab.attr(TAB_INDEX_ATTRIBUTE));
 
                 if (isEnabledNextTab) {
                     $nextTab.click();
@@ -121,7 +128,7 @@ define("imcms-page-info-builder",
 
         function getNextTab(currentTabIndex) {
             const nextTabIndex = currentTabIndex + 1;
-            const $nextTab = pageInfoTabs.getTabByIndex(nextTabIndex);
+            const $nextTab = windowPageInfoTabsBuilder.getTabByIndex(nextTabIndex);
             return $nextTab.css('display') === 'none' ? getNextTab(nextTabIndex) : $nextTab;
         }
 
@@ -149,11 +156,11 @@ define("imcms-page-info-builder",
                 style: "display: none;"
             });
 
-			$loadingAnimation =$('<div>').addClass('pageInfo loading-animation').css("display", "none");
+            $loadingAnimation = $('<div>').addClass('pageInfo loading-animation').css("display", "none");
 
-	        const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation];
+            const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation];
 
-            if (imcms.isAdmin && imcms.isVersioningAllowed) {
+            if (imcms.isSuperAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);
             }
 
@@ -168,7 +175,7 @@ define("imcms-page-info-builder",
                 block: "imcms-pop-up-modal",
                 elements: {
                     "head": buildPageInfoHead(),
-                    "left-side": pageInfoTabs.buildWindowTabs(panels$),
+                    "left-side": windowPageInfoTabsBuilder.buildWindowTabs(panels$),
                     "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$),
                     "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
                 }
@@ -181,55 +188,41 @@ define("imcms-page-info-builder",
                 $saveAndPublishBtn.css("display", "block");
             }
 
-            const requestData = {
-                docId: docId,
-                parentDocId: parentDocId
-            };
+            const linkData = '/api/admin/page-info?meta-id=' + documentDTO.id;
 
-            if (docType) {
-                requestData.type = docType;
+            const newDocText = documentDTO.type === docTypes.TEXT
+                ? texts.newDocument.text
+                : documentDTO.type === docTypes.URL
+                    ? texts.newDocument.url
+                    : texts.newDocument.file;
+
+            $title.text((documentDTO.id)
+                ? linkData
+                : newDocText).css({'text-transform': 'initial', 'color': '#fff2f9'});
+
+            $title.attr('href', linkData);
+
+            windowPageInfoTabsBuilder.tabBuilders.forEach((tab) => {
+                if (tab.isDocumentTypeSupported(documentDTO.type)) {
+                    tab.fillTabDataFromDocument(documentDTO);
+                    tab.showTab();
+
+                } else {
+                    tab.hideTab();
+                }
+            });
+
+            if (!documentDTO.id && documentDTO.type !== docTypes.TEXT) {
+                setEnabledExcessTabs(false);
             }
 
-            documentsRestApi.read(requestData)
-                .done((document) => {
-                    documentDTO = document;
-                    const linkData = '/api/admin/page-info?meta-id=' + document.id;
-
-                    const newDocText = document.type === docTypes.TEXT
-                        ? texts.newDocument.text
-                        : document.type === docTypes.URL
-                            ? texts.newDocument.url
-                            : texts.newDocument.file;
-
-                    $title.text((document.id)
-                        ? linkData
-                        : newDocText).css({'text-transform': 'initial', 'color': '#fff2f9'});
-
-                    $title.attr('href', linkData);
-
-                    pageInfoTabs.tabBuilders.forEach((tab) => {
-                        if (tab.isDocumentTypeSupported(document.type)) {
-                            tab.fillTabDataFromDocument(document);
-                            tab.showTab();
-
-                        } else {
-                            tab.hideTab();
-                        }
-                    });
-
-                    if (!document.id && document.type !== docTypes.TEXT) {
-                        setEnabledExcessTabs(false);
-                    }
-
-                    document.id || document.type === docTypes.TEXT
-                        ? $saveBtn.show()
-                        : $nextBtn.show();
-                })
-                .fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed));
+            documentDTO.id || documentDTO.type === docTypes.TEXT
+                ? $saveBtn.show()
+                : $nextBtn.show();
         }
 
         function setEnabledExcessTabs(isEnabled) {
-            const tabs = pageInfoTabs.tabBuilders;
+            const tabs = windowPageInfoTabsBuilder.tabBuilders;
 
             tabs.slice(3, tabs.length).forEach(tab => {
                 tab.setEnabled(isEnabled);
@@ -240,7 +233,7 @@ define("imcms-page-info-builder",
             events.trigger("page info closed");
             $saveAndPublishBtn.css("display", "none");
 
-            pageInfoTabs.tabBuilders.forEach((tab) => {
+            windowPageInfoTabsBuilder.tabBuilders.forEach((tab) => {
                 tab.clearTabData();
             });
         }
@@ -252,12 +245,12 @@ define("imcms-page-info-builder",
         }
 
         function selectFirstTab(docType) {
-            const firstTab = pageInfoTabs.tabBuilders.find(tab => tab.isDocumentTypeSupported(docType));
+            const firstTab = windowPageInfoTabsBuilder.tabBuilders.find(tab => tab.isDocumentTypeSupported(docType));
             const indexOfFirstTab = firstTab ? firstTab.tabIndex : 0;
             if (indexOfFirstTab === 0) {
-                pageInfoTabs.setActiveTab(indexOfFirstTab, false);
+                windowPageInfoTabsBuilder.setActiveTab(indexOfFirstTab, false);
             }
-            pageInfoTabs.setActiveTab(indexOfFirstTab, true);
+            windowPageInfoTabsBuilder.setActiveTab(indexOfFirstTab, true);
         }
 
         const pageInfoWindowBuilder = new WindowBuilder({
@@ -273,7 +266,50 @@ define("imcms-page-info-builder",
         return {
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
-                pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
+
+                const requestData = {
+                    docId: docId,
+                    parentDocId: parentDocId
+                };
+                if (docType) requestData.type = docType;
+
+                documentsRestApi.read(requestData).done((document) => {
+                    documentDTO = document;
+
+                    //check document edit or create new one
+                    if(parentDocId){
+                        windowPageInfoTabsBuilder = pageInfoTabs.windowTabsBuilder;
+                        pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
+                    }else{
+                        rolesRestApi.currentUserRoleIds().done((roleIds) => {
+                            const docPermissions = roleIds.map(roleId => documentDTO.roleIdToPermission[roleId]);
+
+                            //check which tabs to display
+                            if (imcms.isSuperAdmin || docPermissions.includes(docPermissionTypes.EDIT)) {
+                                windowPageInfoTabsBuilder = pageInfoTabs.windowTabsBuilder
+                            } else {
+                                windowPageInfoTabsBuilder = pageInfoTabs.limitedWindowTabsBuilder;
+
+                                //check Page Info is available
+                                const restrictedPermissionTypes = [docPermissionTypes.RESTRICTED_1, docPermissionTypes.RESTRICTED_2];
+                                let haveAccess = false;
+                                for (let i = 0; i < restrictedPermissionTypes.length; i++) {
+                                    if (docPermissions.includes(restrictedPermissionTypes[i])) {
+                                        haveAccess = documentDTO.restrictedPermissions[i].editDocInfo
+                                        if (haveAccess) break;
+                                    }
+                                }
+                                if (!haveAccess){
+                                    modal.buildWarningWindow(texts.error.noAccess);
+                                    return;
+                                }
+                            }
+
+                            pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
+                        }).fail(() => modal.buildErrorWindow(texts.error.loadRolesFailed))
+                    }
+
+                }).fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed))
             }
         };
     }
