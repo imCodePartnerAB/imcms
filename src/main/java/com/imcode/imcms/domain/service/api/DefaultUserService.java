@@ -10,7 +10,6 @@ import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.UserAdminRolesService;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.ExternalUser;
@@ -59,7 +58,6 @@ class DefaultUserService implements UserService {
     private final PhoneService phoneService;
     private final UserRolesService userRolesService;
     private final ExternalToLocalRoleLinkService externalToLocalRoleService;
-    private final UserAdminRolesService userAdminRolesService;
     private final UserLockValidator userLockValidator;
     private final LanguageService languageService;
 
@@ -71,7 +69,6 @@ class DefaultUserService implements UserService {
                        PhoneService phoneService,
                        UserRolesService userRolesService,
                        ExternalToLocalRoleLinkService externalToLocalRoleLinkService,
-                       UserAdminRolesService userAdminRolesService,
                        UserLockValidator userLockValidator,
                        LanguageService languageService) {
 
@@ -80,7 +77,6 @@ class DefaultUserService implements UserService {
         this.phoneService = phoneService;
         this.userRolesService = userRolesService;
         this.externalToLocalRoleService = externalToLocalRoleLinkService;
-        this.userAdminRolesService = userAdminRolesService;
         this.userLockValidator = userLockValidator;
         this.languageService = languageService;
     }
@@ -126,7 +122,7 @@ class DefaultUserService implements UserService {
 
     @Override
     public List<UserDTO> getAdminUsers() {
-        return toDTO(userRepository.findUsersWithRoleIds(Roles.USER_ADMIN.getId(), Roles.SUPER_ADMIN.getId()));
+        return toDTO(userRepository.findUsersWithRoleIds(Roles.SUPER_ADMIN.getId()));
     }
 
     @Override
@@ -150,7 +146,6 @@ class DefaultUserService implements UserService {
 
         setUserPhones(userFormData, userId);
         setUserRoles(userFormData, userId);
-        setUserAdminRoles(userFormData, userId);
 
         return userFormData;
     }
@@ -172,11 +167,6 @@ class DefaultUserService implements UserService {
     private void setUserRoles(UserFormData userFormData, int userId) {
         final int[] userRoleIds = toRoleIds(userRolesService.getRolesByUser(userId));
         userFormData.setRoleIds(userRoleIds);
-    }
-
-    private void setUserAdminRoles(UserFormData userFormData, int userId) {
-        final int[] userRoleIds = toRoleIds(userAdminRolesService.getAdminRolesByUser(userId));
-        userFormData.setUserAdminRoleIds(userRoleIds);
     }
 
     private int[] toRoleIds(Collection<Role> roles) {
@@ -242,7 +232,6 @@ class DefaultUserService implements UserService {
     private void updateUserData(UserFormData userData, User user) {
         updateUserPhones(userData, user);
         updateUserRoles(userData, user);
-        updateUserAdminRoles(userData, user);
     }
 
     void updateUserPhones(UserFormData userData, User user) {
@@ -283,11 +272,6 @@ class DefaultUserService implements UserService {
     private void updateUserRoles(UserFormData userData, User user) {
         final List<Role> userRoles = collectRoles(userData.getRoleIds());
         userRolesService.updateUserRoles(userRoles, user);
-    }
-
-    private void updateUserAdminRoles(UserFormData userData, User user) {
-        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
-        userAdminRolesService.updateUserAdminRoles(administrateRoles, user);
     }
 
     List<Role> collectRoles(int[] roleIdsInt) {

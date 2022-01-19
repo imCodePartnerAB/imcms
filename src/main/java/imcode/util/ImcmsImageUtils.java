@@ -19,7 +19,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
@@ -244,15 +243,8 @@ public class ImcmsImageUtils {
             if (document instanceof FileDocumentDomainObject) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
             } else {
-                String imageArchiveImagesUrl = ImageArchiveImageSource.getImagesUrlPath();
                 String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
-                if (imageUrl.startsWith(imageArchiveImagesUrl)) {
-                    imageUrl = imageUrl.substring(imageArchiveImagesUrl.length());
 
-                    if (StringUtils.isNotBlank(imageUrl)) {
-                        imageSource = new ImageArchiveImageSource(imageUrl);
-                    }
-                } else {
                     if (imageUrl.startsWith(imagesPath)) {
                         imageUrl = imageUrl.substring(imagesPath.length());
                     }
@@ -260,7 +252,6 @@ public class ImcmsImageUtils {
                     if (StringUtils.isNotBlank(imageUrl)) {
                         imageSource = new ImagesPathRelativePathImageSource(imageUrl);
                     }
-                }
             }
         }
         return imageSource;
@@ -508,13 +499,8 @@ public class ImcmsImageUtils {
                 throw new IllegalStateException(
                         String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. ImageJPA: %s", image)
                 );
-
             case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
                 return new ImagesPathRelativePathImageSource(url);
-
-            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
-                return new ImageArchiveImageSource(url);
-
             default:
                 return new NullImageSource();
         }

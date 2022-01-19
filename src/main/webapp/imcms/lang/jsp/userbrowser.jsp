@@ -123,7 +123,7 @@
                        style="width:10em">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
-                if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdminAndCanEditAtLeastOneRole())) { %>
+                if (userFinder.isUsersAddable() && (user.isSuperAdmin())) { %>
                 <div><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="3"></div>
                     <input type="submit" class="imcmsFormBtnSmall"
                         name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>"

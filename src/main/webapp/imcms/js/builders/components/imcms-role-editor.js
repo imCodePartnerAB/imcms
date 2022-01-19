@@ -16,8 +16,6 @@ define(
 
         let $getPasswordByEmail;
         let $accessToAdminPages;
-        let $useImagesInImageArchive;
-        let $changeImagesInImageArchive;
         let $accessToDocumentEditor;
 
         let permissionCheckboxes$;
@@ -43,8 +41,6 @@ define(
             permissionCheckboxes$ = [
                 $getPasswordByEmail = createCheckboxWithText(texts.permissions.getPasswordByEmail),
                 $accessToAdminPages = createCheckboxWithText(texts.permissions.accessToAdminPages),
-                $useImagesInImageArchive = createCheckboxWithText(texts.permissions.useImagesInImageArchive),
-                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive),
                 $accessToDocumentEditor = createCheckboxWithText(texts.permissions.accessToDocumentEditor)
             ];
 
@@ -118,9 +114,7 @@ define(
                 permissions: {
                     getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
                     accessToAdminPages: permissionCheckboxes$[1].isChecked(),
-                    useImagesInImageArchive: permissionCheckboxes$[2].isChecked(),
-                    changeImagesInImageArchive: permissionCheckboxes$[3].isChecked(),
-                    accessToDocumentEditor: permissionCheckboxes$[4].isChecked()
+                    accessToDocumentEditor: permissionCheckboxes$[2].isChecked()
                 }
             };
 
@@ -132,8 +126,6 @@ define(
                         $roleRow.text(currentRole.name = savedRole.name);
                         currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
                         currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
-                        currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
-                        currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
                         currentRole.permissions.accessToDocumentEditor = savedRole.permissions.accessToDocumentEditor;
 
                         onRoleView = onRoleSimpleView;
@@ -206,8 +198,6 @@ define(
             const permissions = [
                 currentRole.permissions.getPasswordByEmail,
                 currentRole.permissions.accessToAdminPages,
-                currentRole.permissions.useImagesInImageArchive,
-                currentRole.permissions.changeImagesInImageArchive,
                 currentRole.permissions.accessToDocumentEditor
             ];
 

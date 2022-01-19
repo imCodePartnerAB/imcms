@@ -10,22 +10,18 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
 
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject(1, new LocalizedMessage("role_permission/password_by_email/description"));
     public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject(4, new LocalizedMessage("role_permission/admin_pages_access/desciption"));
-    public static final RolePermissionDomainObject USE_IMAGES_IN_ARCHIVE_PERMISSION = new RolePermissionDomainObject(1 << 22, new LocalizedMessage("role_permission/use_images_from_image_archive/description"));
-    public static final RolePermissionDomainObject CHANGE_IMAGES_IN_ARCHIVE_PERMISSION = new RolePermissionDomainObject(1 << 23, new LocalizedMessage("role_permission/change_images_in_image_archive/description"));
-
+    public static final RolePermissionDomainObject DOCUMENT_EDITOR_PERMISSION = new RolePermissionDomainObject(5, new LocalizedMessage("role_permission/document_editor/desciption"));
 
     private final static RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RolePermissionDomainObject[]{
             PASSWORD_MAIL_PERMISSION,
             ADMIN_PAGES_PERMISSION,
-            USE_IMAGES_IN_ARCHIVE_PERMISSION,
-            CHANGE_IMAGES_IN_ARCHIVE_PERMISSION,
+            DOCUMENT_EDITOR_PERMISSION
     };
 
     private Integer id;
     private String name;
     private int adminRoleId;
     private Set<RolePermissionDomainObject> permissions = new HashSet<>();
-
 
     public RoleDomainObject(String name) {
         this(0, name, 0);

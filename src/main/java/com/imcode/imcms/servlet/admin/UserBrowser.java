@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class UserBrowser extends HttpServlet {
 
@@ -148,30 +147,12 @@ public class UserBrowser extends HttpServlet {
             users = usersList.toArray(new UserDomainObject[0]);
         }
 
-        if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) {
-            users = getUsersWithUseradminPermissibleRoles(loggedOnUser, users);
-        }
-
         UserBrowserPage userBrowserPage = new UserBrowserPage();
         userBrowserPage.setSearchString(searchString);
         userBrowserPage.setUsers(users);
         userBrowserPage.setSelectedRoles(selectedRoles);
         userBrowserPage.setIncludeInactiveUsers(includeInactiveUsers);
         return userBrowserPage;
-    }
-
-    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(UserDomainObject loggedOnUser, UserDomainObject[] users) {
-        List<UserDomainObject> userList = new ArrayList<>();
-        final Set<Integer> userAdminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
-        for (UserDomainObject user : users) {
-            for (Integer userAdminPermissibleRole : userAdminPermissibleRoles) {
-                if (user.hasRoleId(userAdminPermissibleRole)) {
-                    userList.add(user);
-                    break;
-                }
-            }
-        }
-        return userList.toArray(new UserDomainObject[0]);
     }
 
     private UserDomainObject getSelectedUserFromRequest(HttpServletRequest request) {

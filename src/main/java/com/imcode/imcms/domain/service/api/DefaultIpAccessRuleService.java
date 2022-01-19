@@ -88,18 +88,14 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
             if (null != user) {
                 final boolean hasMorePrivilegedSuperAdminRole;
-                final boolean hasMorePrivilegedUserAdminRole;
 
                 if (null != rule.getRoleId()) {
                     hasMorePrivilegedSuperAdminRole = user.isSuperAdmin() && rule.getRoleId() > Roles.SUPER_ADMIN.getId();
-                    hasMorePrivilegedUserAdminRole = user.isUserAdmin() && rule.getRoleId() > Roles.USER_ADMIN.getId();
                 } else {
                     hasMorePrivilegedSuperAdminRole = false;
-                    hasMorePrivilegedUserAdminRole = false;
                 }
 
-                isUserRoleRestricted = (user.hasRoleId(rule.getRoleId()))
-                        && (!(hasMorePrivilegedSuperAdminRole || hasMorePrivilegedUserAdminRole));
+                isUserRoleRestricted = (user.hasRoleId(rule.getRoleId())) && (!hasMorePrivilegedSuperAdminRole);
 
                 isUserRestricted = Objects.equals(rule.getUserId(), user.getId());
 

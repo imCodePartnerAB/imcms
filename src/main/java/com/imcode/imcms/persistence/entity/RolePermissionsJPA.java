@@ -72,25 +72,6 @@ public class RolePermissionsJPA extends RolePermissions {
     }
 
     @Column(
-            name = "use_images_in_image_archive",
-            nullable = false,
-            columnDefinition = "tinyint"
-    )
-    public boolean isUseImagesInImageArchive() {
-        return useImagesInImageArchive;
-    }
-
-    @Column(
-            name = "change_images_in_image_archive",
-            nullable = false,
-            columnDefinition = "tinyint"
-    )
-    public boolean isChangeImagesInImageArchive() {
-        return changeImagesInImageArchive;
-    }
-
-
-    @Column(
             name = "access_to_document_editor",
             nullable = false,
             columnDefinition = "tinyint"

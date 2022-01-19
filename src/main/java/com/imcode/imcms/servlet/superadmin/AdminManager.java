@@ -58,7 +58,6 @@ public class AdminManager extends HttpServlet {
     public static final String REQUEST_PARAMETER__ACTION__COPY = "copy";
     public static final String PAGE_SEARCH = "search";
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
-    private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
     private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage("error/servlet/AdminManager/no_create_permission");
     private static final LocalizedMessage ERROR_MESSAGE__NO_PARENT_ID = new LocalizedMessage("error/servlet/AdminManager/no_parent_id");
     private static final LocalizedMessage ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT = new LocalizedMessage("error/servlet/AdminManager/parent_must_be_text_document");
@@ -107,7 +106,7 @@ public class AdminManager extends HttpServlet {
         if (null != whichButton) {
 
             String url = getAdminTaskUrl(whichButton, request);
-            if (!user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole()) {
+            if (!user.isSuperAdmin()) {
                 Utility.forwardToLogin(request, response);
                 return;
             }
@@ -118,7 +117,7 @@ public class AdminManager extends HttpServlet {
             }
         }
 
-        if (!user.canAccessAdminPages()) {
+        if (!user.isSuperAdmin()) {
             Utility.forwardToLogin(request, response);
             return;
         }
@@ -176,8 +175,6 @@ public class AdminManager extends HttpServlet {
         if (loggedOnUser.isSuperAdmin()) {
             html_admin_part = Utility.getAdminContents(HTML_ADMINTASK, request, response);
 
-        } else if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) { //if user is useradmin
-            html_admin_part = Utility.getAdminContents(HTML_USERADMINTASK, request, response);
         }
 
         DocumentIndex index = documentMapper.getDocumentIndex();

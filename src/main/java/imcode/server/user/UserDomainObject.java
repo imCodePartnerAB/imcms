@@ -31,7 +31,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     private static final long serialVersionUID = -9176465092502055012L;
     private final DocGetterCallback docGetterCallback = new DocGetterCallback(this);
     protected volatile int id;
-    protected volatile Set<Integer> userAdminRoleIds = new HashSet<>();
     private volatile String loginName = "";
 
     @Getter
@@ -110,7 +109,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
         try {
             UserDomainObject clone = (UserDomainObject) super.clone();
             clone.roleIds = new HashSet<>(roleIds);
-            clone.userAdminRoleIds = new HashSet<>(userAdminRoleIds);
             clone.phoneNumbers = (HashSet<PhoneNumber>) phoneNumbers.clone();
 
             return clone;
@@ -292,10 +290,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
         return hasRoleId(Roles.SUPER_ADMIN.getId());
     }
 
-    public boolean isUserAdminAndCanEditAtLeastOneRole() {
-        return isUserAdmin() && !userAdminRoleIds.isEmpty();
-    }
-
     public boolean canEdit(DocumentDomainObject document) {
         return hasAtLeastPermissionSetIdOn(Permission.RESTRICTED_2, document);
     }
@@ -372,11 +366,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
         return usersDocumentPermissionSetType.isAtLeastAsPrivilegedAs(leastPrivilegedPermissionSetIdWanted);
     }
 
-    public boolean canAccessAdminPages() {
-        RolePermissionDomainObject rolePermissionToAccessAdminPages = RoleDomainObject.ADMIN_PAGES_PERMISSION;
-        return isSuperAdmin() || isUserAdminAndCanEditAtLeastOneRole() || hasRoleWithPermission(rolePermissionToAccessAdminPages);
-    }
-
     public boolean hasRoleWithPermission(RolePermissionDomainObject rolePermission) {
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         for (Integer roleId : roleIds) {
@@ -395,54 +384,12 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
         return Collections.unmodifiableSet(phoneNumbers);
     }
 
-    /**
-     * @return roles this user can administrate if he is Useradmin.
-     */
-    public Set<Integer> getUserAdminRoleIds() {
-        return new HashSet<>(userAdminRoleIds);
-    }
-
-    /**
-     * @param userAdminRoleReferences roles this user can administrate if he is Useradmin.
-     */
-    public void setUserAdminRolesIds(Set<Integer> userAdminRoleReferences) {
-        userAdminRoleIds = userAdminRoleReferences;
-    }
-
-    public boolean isUserAdminAndNotSuperAdmin() {
-        return isUserAdmin() && !isSuperAdmin();
-    }
-
-    public boolean canEditRolesFor(UserDomainObject editedUser) {
-        return isSuperAdmin() || canEditAsUserAdmin(editedUser) && !equals(editedUser);
-    }
-
-    public void removeUserAdminRoleId(Integer roleId) {
-        userAdminRoleIds.remove(roleId);
-    }
-
     public boolean canEdit(UserDomainObject editedUser) {
-        return equals(editedUser) || isSuperAdmin() || canEditAsUserAdmin(editedUser);
-    }
-
-    public boolean canEditAsUserAdmin(UserDomainObject editedUser) {
-        return isUserAdminAndNotSuperAdmin() && (editedUser.isNew() || canEditRolesAccordingToUserAdminRoles(editedUser));
-    }
-
-    public boolean canEditRolesAccordingToUserAdminRoles(UserDomainObject editedUser) {
-        return CollectionUtils.containsAny(editedUser.roleIds, userAdminRoleIds);
-    }
-
-    public boolean isUserAdmin() {
-        return hasRoleId(Roles.USER_ADMIN.getId());
+        return equals(editedUser) || isSuperAdmin();
     }
 
     public boolean isNew() {
         return 0 == id;
-    }
-
-    public boolean hasAdminPanelForDocument(DocumentDomainObject document) {
-        return !(null == document || !(canEdit(document) || isUserAdminAndCanEditAtLeastOneRole() || canAccessAdminPages()));
     }
 
     public boolean hasUserAccessToDoc(Meta meta) {
@@ -500,10 +447,6 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
      */
     void setPasswordReset(String resetId, long time) {
         this.passwordReset = new PasswordResetDTO(resetId, time);
-    }
-
-    public boolean isAdmin() {
-        return isSuperAdmin() || isUserAdmin();
     }
 
     @Override

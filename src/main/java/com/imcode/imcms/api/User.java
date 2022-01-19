@@ -236,10 +236,6 @@ public class User {
         return internalUser.isSuperAdmin();
     }
 
-    public boolean isUserAdmin() {
-        return internalUser.isUserAdmin();
-    }
-
     public boolean canEdit(Document document) {
         return internalUser.canEdit(document.getInternal());
     }

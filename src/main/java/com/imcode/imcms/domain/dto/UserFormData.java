@@ -41,7 +41,6 @@ public class UserFormData extends UserData {
     private Integer[] userPhoneNumberType;
     private String[] userPhoneNumber;
     private int[] roleIds;
-    private int[] userAdminRoleIds;
     private boolean external;
     private Date blockedDate; //date when user was blocked
     private Integer attempts;

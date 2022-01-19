@@ -269,18 +269,4 @@
         <function-class>imcode.util.Html</function-class>
         <function-signature>java.util.List getUserRoles(com.imcode.imcms.domain.dto.UserFormData)</function-signature>
     </function>
-
-    <function>
-        <name>getUserAdministratedRoles</name>
-        <function-class>imcode.util.Html</function-class>
-        <function-signature>java.util.List getUserAdministratedRoles(imcode.server.user.UserDomainObject)
-        </function-signature>
-    </function>
-
-    <function>
-        <name>getNewUserAdministratedRoles</name>
-        <function-class>imcode.util.Html</function-class>
-        <function-signature>java.util.List getUserAdministratedRoles(com.imcode.imcms.domain.dto.UserFormData)
-        </function-signature>
-    </function>
 </taglib>
