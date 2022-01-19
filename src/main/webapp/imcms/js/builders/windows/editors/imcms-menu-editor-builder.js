@@ -813,11 +813,16 @@ define("imcms-menu-editor-builder",
             });
             components.overlays.defaultTooltip($controlCopy, texts.copy);
 
+            const controls = [$controlRemove, $controlCopy, $controlEdit];
+            controls.push($controlRemove);
+            if(imcms.accessToDocumentEditor) controls.push($controlCopy);
+            controls.push($controlEdit);
+
             return enabledMultiRemoveMode
-                ? components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit], {
+                ? components.controls.buildControlsBlock("<div>", controls, {
                     'class': multiRemoveControlClass
                 })
-                : components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
+                : components.controls.buildControlsBlock("<div>", controls);
         }
 
         function showHideSubmenu() {

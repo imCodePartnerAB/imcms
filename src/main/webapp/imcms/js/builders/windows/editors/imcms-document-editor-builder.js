@@ -291,7 +291,7 @@ define('imcms-document-editor-builder',
                 block: 'imcms-document-editor-head-tools',
                 elements: {
                     'tool': [
-                        $newDocButtonContainer,
+                        (opts.inMenu && !imcms.accessToDocumentEditor) ||$newDocButtonContainer,
                         $searchContainer,
                         $usersFilter,
                         $categoriesFilter,

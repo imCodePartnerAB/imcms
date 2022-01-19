@@ -1,17 +1,17 @@
 define(
     "imcms-permissions-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-page-info-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-document-permission-types", "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, docTypes, texts, PageInfoTab) {
+    function (BEM, components, docTypes, docPermissionTypes, texts, PageInfoTab) {
 
         texts = texts.pageInfo.permissions;
 
         function getDefaultPermissions() {
             return [{
-                permission: "RESTRICTED_1"
+                permission: docPermissionTypes.RESTRICTED_1
             }, {
-                permission: "RESTRICTED_2"
+                permission: docPermissionTypes.RESTRICTED_2
             }];
         }
 

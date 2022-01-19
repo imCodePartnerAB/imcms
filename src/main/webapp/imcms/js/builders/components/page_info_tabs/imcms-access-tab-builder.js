@@ -1,9 +1,10 @@
 define("imcms-access-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator",
-        "jquery", "imcms-i18n-texts", "imcms-page-info-tab", "imcms-modal-window-builder"
+        "jquery", "imcms-i18n-texts", "imcms-page-info-tab", "imcms-modal-window-builder", "imcms-document-permission-types",
     ],
-    function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab, modal) {
+    function (BEM, components, rolesRestApi, uuidGenerator,
+              $, texts, PageInfoTab, modal, docPermissionTypes) {
 
         texts = texts.pageInfo.access;
 
@@ -61,10 +62,10 @@ define("imcms-access-tab-builder",
 
             var $roleTitle = rolesBEM.buildBlockElement("column-title", "<div>", mapRoleOnSelectOption(role)),
                 radioName = uuidGenerator.generateUUID(),
-                $roleView = buildRole("VIEW", role, radioName),
-                $roleEdit = buildRole("EDIT", role, radioName),
-                $roleRestricted1 = buildRole("RESTRICTED_1", role, radioName),
-                $roleRestricted2 = buildRole("RESTRICTED_2", role, radioName),
+                $roleView = buildRole(docPermissionTypes.VIEW, role, radioName),
+                $roleEdit = buildRole(docPermissionTypes.EDIT, role, radioName),
+                $roleRestricted1 = buildRole(docPermissionTypes.RESTRICTED_1, role, radioName),
+                $roleRestricted2 = buildRole(docPermissionTypes.RESTRICTED_2, role, radioName),
                 $row = rolesBEM.buildBlockElement("row", "<div>", {"data-role-id": role.id}),
                 onDeleteRoleClick = () => {
                     components.selects.addOptionsToSelect([mapRoleOnSelectOption(role)], $addRoleSelect);
@@ -119,6 +120,7 @@ define("imcms-access-tab-builder",
 
                 storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null)
                     .done(roles => {
+                        roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin');
                         storeRoles(roles);
                         mapRoles(roles);
                     })
@@ -258,6 +260,7 @@ define("imcms-access-tab-builder",
 
             (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null)
                 .done(roles => {
+                    roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin');
                     storeRoles(roles);
                     buildRolesRows(roles);
                 })

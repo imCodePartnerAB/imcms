@@ -76,6 +76,7 @@ module.exports = {
                     '': [
                         'imcms-logger',
                         'imcms-authentication',
+                        'imcms-document-permission-types',
                         'imcms-document-types',
                         'imcms-document-status',
                         'imcms-calendar',
@@ -198,7 +199,6 @@ module.exports = {
                             'imcms-rule-editor',
                             'imcms-rule-to-row-transformer',
                             'imcms-field-wrapper',
-                            'imcms-category-types-editor',
                             'imcms-overlays-builder',
                         ]
                     },

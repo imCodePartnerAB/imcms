@@ -54,8 +54,7 @@ define(
                 permissions: {
                     getPasswordByEmail: false,
                     accessToAdminPages: false,
-                    useImagesInImageArchive: false,
-                    changeImagesInImageArchive: false
+                    accessToDocumentEditor: false
                 }
             });
         }

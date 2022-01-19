@@ -242,8 +242,9 @@ const texts = {
             },
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
-	            loadDocumentFailed: 'Misslyckades att ladda. Försök igen',
-	            duplicateAlias: 'Aliaset används redan på ett annat dokument.'
+	            loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
+	            duplicateAlias: 'Aliaset används redan på ett annat dokument',
+                noAccess: "Ingen tillgång till sidinformation"
             },
             allData:{
                 name: 'All Data',
@@ -684,8 +685,6 @@ const texts = {
                     title: 'Rollbehörigheter',
                     getPasswordByEmail: 'Få lösenord via e-post',
                     accessToAdminPages: 'Tillgång till admin sidor',
-                    useImagesInImageArchive: 'Använd bilder i bildarkivet',
-                    changeImagesInImageArchive: 'Ändra bilder i bildarkivet',
                     accessToDocumentEditor: 'Tillgång till dokumentredigerare'
                 },
                 deleteConfirm: 'Vill du verkligen ta bort den här rollen?',
@@ -1248,8 +1247,10 @@ const texts = {
             },
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
-	            loadDocumentFailed: 'Failed to load. Try again',
-	            duplicateAlias: 'The alias is already in use on another document.'
+	            loadDocumentFailed: 'Failed to load. Maybe you do not have access',
+	            duplicateAlias: 'The alias is already in use on another document',
+                loadRolesFailed: "Failed to fetch roles",
+                noAccess: "No access to page info"
             },
             allData:{
                 name: 'All Data',
@@ -1688,8 +1689,6 @@ const texts = {
                     title: 'Role permissions',
                     getPasswordByEmail: 'Get password by email',
                     accessToAdminPages: 'Access to admin pages',
-                    useImagesInImageArchive: 'Use images in image archive',
-                    changeImagesInImageArchive: 'Change images in image archive',
                     accessToDocumentEditor: 'Access to document editor'
                 },
                 deleteConfirm: 'Do you really want to delete this role?',
