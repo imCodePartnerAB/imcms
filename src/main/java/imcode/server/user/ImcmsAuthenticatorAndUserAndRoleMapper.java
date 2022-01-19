@@ -44,13 +44,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE = SQL_SELECT_ALL_ROLES
             + " WHERE roles.role_id != " + Roles.USER.getId();
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
-    private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
     private final ImcmsServices services;
     private final UserService userService;
     private final IpAccessRuleService ipAccessRuleService;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     /**
      * @since 4.0.7
@@ -111,6 +110,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 ? "default"
                 : user.isImcmsExternal()
                 ? "external"
+                : !services.getAccessService().getTotalRolePermissionsByUser(user).isGetPasswordByEmail()
+                ? "common"
                 : user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()
                 ? "superuser"
                 : null;
@@ -211,7 +212,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
         initUserRoles(userDO);
         initUserPhoneNumbers(userDO);
-        initUserUserAdminRoles(userDO);
 
         return userDO;
     }
@@ -315,23 +315,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             }));
         }
         services.getDatabase().execute(updateUserRolesCommand);
-        sqlUpdateUserUserAdminRoles(newUser);
-    }
-
-    private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
-        final CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(
-                new DeleteWhereColumnsEqualDatabaseCommand(
-                        TABLE__USERADMIN_ROLE_CROSSREF, "user_id", "" + user.getId()
-                )
-        );
-
-        for (Integer userAdminRoleId : user.getUserAdminRoleIds()) {
-            updateUserAdminRolesCommand.add(new InsertIntoTableDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, new String[][]{
-                    {"user_id", "" + user.getId()},
-                    {"role_id", "" + userAdminRoleId}
-            }));
-        }
-        services.getDatabase().execute(updateUserAdminRolesCommand);
     }
 
     private String getSafeTrimmedString(String notSafeString) {
@@ -658,10 +641,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public void initUserRoles(UserDomainObject user) {
         user.setRoleIds(getRoleReferencesForUser(user));
-    }
-
-    public void initUserUserAdminRoles(UserDomainObject user) {
-        user.setUserAdminRolesIds(getUserAdminRolesReferencesForUser(user));
     }
 
     public void saveRole(RoleDomainObject role) throws NameTooLongException, RoleAlreadyExistsException {

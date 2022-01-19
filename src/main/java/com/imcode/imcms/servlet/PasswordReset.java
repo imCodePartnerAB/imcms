@@ -39,7 +39,8 @@ public class PasswordReset extends HttpServlet {
             identity_form_view = "identity_form.jsp",
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
             password_reset_form_view = "password_reset_form.jsp",
-            password_changed_confirmation_view = "password_changed_confirmation.jsp";
+            password_changed_confirmation_view = "password_changed_confirmation.jsp",
+            no_email_permission_view = "no_email_permission.jsp";
     private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
     private ExecutorService emailSender = Executors.newSingleThreadExecutor();
 
@@ -101,9 +102,11 @@ public class PasswordReset extends HttpServlet {
                             REQUEST_PARAM_RESET_ID, userAndEmail.user().getPasswordReset().getId());
 
                     asyncSendPasswordResetURL(userAndEmail, request.getServerName(), url);
-                }
 
-                view = email_sent_confirmation_view;
+                    view = email_sent_confirmation_view;
+                }else{
+                    view = no_email_permission_view;
+                }
             }
         } else if (op == Op.SAVE_NEW_PASSWORD) {
             UserDomainObject user = getUserByPasswordResetId(request);
@@ -160,7 +163,7 @@ public class PasswordReset extends HttpServlet {
             if (identityIsValidEmail) {
                 userIdToUserIdentity.put(userByLogin.getId(), UserIdentity.of(userByLogin, identity));
             } else {
-                String email = userByLogin.getEmailAddress().trim();
+                String email = StringUtils.trimToNull(userByLogin.getEmailAddress());
                 if (Utility.isValidEmail(email)) {
                     userIdToUserIdentity.put(userByLogin.getId(), UserIdentity.of(userByLogin, email));
                     // check if user's e-mail is valid and unique
