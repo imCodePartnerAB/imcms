@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.RestrictedPermission;
+import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -77,7 +78,7 @@ public class ViewDocumentController {
 
     @RequestMapping({"", "/"})
     public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
-            throws ServletException, IOException {
+            throws IOException {
 
         final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
         final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
@@ -100,13 +101,11 @@ public class ViewDocumentController {
     private ModelAndView processDocView(TextDocumentDomainObject textDocument,
                                         HttpServletRequest request,
                                         HttpServletResponse response,
-                                        ModelAndView mav) throws ServletException, IOException {
+                                        ModelAndView mav) throws IOException {
 
         final UserDomainObject user = Imcms.getUser();
 
-        if (user.isDefaultUser() && !textDocument.isPublished()
-                || !user.isAdmin() && textDocument.hasDisapprovedStatus()) {
-
+        if (user.isDefaultUser() && !textDocument.isPublished()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
@@ -114,8 +113,8 @@ public class ViewDocumentController {
         final int docId = textDocument.getId();
         final String alias = textDocument.getAlias();
 
-        final RestrictedPermission userPermission = accessService.getPermission(user, docId);
-        final boolean isAccessToDocumentEditor = accessService.hasUserAccessToDocumentEditor(user);
+        final RestrictedPermission userContentPermission = accessService.getPermission(user, docId);
+        final RolePermissions rolePermissions = accessService.getTotalRolePermissionsByUser(user);
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
@@ -127,7 +126,7 @@ public class ViewDocumentController {
             publicDocumentsCache.invalidateDoc(docId, alias);
         }
 
-        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userPermission)) || !hasUserViewAccess(userPermission)) {
+        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission)) || !hasUserViewAccess(userContentPermission)) {
             response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             return null;
         }
@@ -167,7 +166,7 @@ public class ViewDocumentController {
         mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
         mav.addObject("language", language);
-        mav.addObject("isAdmin", user.isSuperAdmin());
+        mav.addObject("isSuperAdmin", user.isSuperAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
@@ -175,9 +174,10 @@ public class ViewDocumentController {
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
-        mav.addObject("editOptions", userPermission);
+        mav.addObject("editOptions", userContentPermission);
         mav.addObject("isDocNew", textDocument.hasNewStatus());
-        mav.addObject("accessToDocumentEditor", isAccessToDocumentEditor);
+        mav.addObject("accessToAdminPages", rolePermissions.isAccessToAdminPages());
+        mav.addObject("accessToDocumentEditor", rolePermissions.isAccessToDocumentEditor());
 
         return mav;
     }

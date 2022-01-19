@@ -5,7 +5,8 @@ import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.AccessContentType;
+import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
@@ -50,18 +51,19 @@ class SuperAdminController {
         this.documentationLink = documentationLink;
     }
 
-    @CheckAccess
     @RequestMapping("/manager")
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public ModelAndView goToSuperAdminPage(HttpServletRequest request, ModelAndView mav) {
 
         mav.setViewName("AdminManager");
         addMinimumModelData(request, mav);
         mav.addObject("imagesPath", imagesPath);
+        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
         return mav;
     }
 
     @RequestMapping("/text")
-    @CheckAccess(AccessType.TEXT)
+    @CheckAccess(docPermission = AccessContentType.TEXT)
     public ModelAndView editText(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
                                  @RequestParam(value = "lang", required = false) String langCode,
@@ -95,14 +97,14 @@ class SuperAdminController {
         final UserDomainObject user = Imcms.getUser();
         final RestrictedPermission userEditPermission = accessService.getPermission(user, metaId);
 
-        mav.addObject("isAdmin", user.isSuperAdmin());
+        mav.addObject("isSuperAdmin", user.isSuperAdmin());
         mav.addObject("editOptions", userEditPermission);
         mav.addObject("isEditMode", true);
 
     }
 
     @RequestMapping("/image")
-    @CheckAccess(AccessType.IMAGE)
+    @CheckAccess(docPermission = AccessContentType.IMAGE)
     public ModelAndView editImage(@RequestParam("meta-id") int metaId,
                                   @RequestParam int index,
                                   @RequestParam(value = "lang", required = false) String langCode,
@@ -131,7 +133,7 @@ class SuperAdminController {
     }
 
     @RequestMapping("/menu")
-    @CheckAccess(AccessType.MENU)
+    @CheckAccess(docPermission = AccessContentType.MENU)
     public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
                                  @RequestParam(value = "return", required = false) String returnUrl,
@@ -147,7 +149,7 @@ class SuperAdminController {
     }
 
     @RequestMapping("/loop")
-    @CheckAccess(AccessType.LOOP)
+    @CheckAccess(docPermission = AccessContentType.LOOP)
     public ModelAndView editLoop(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
                                  @RequestParam(value = "return", required = false) String returnUrl,
@@ -161,32 +163,32 @@ class SuperAdminController {
     }
 
     @RequestMapping("/page-info")
-    @CheckAccess(AccessType.DOC_INFO)
+    @CheckAccess(docPermission = AccessContentType.DOC_INFO)
     public ModelAndView editDocInfo(@RequestParam("meta-id") int metaId,
                                     @RequestParam(value = "return", required = false) String returnUrl,
                                     HttpServletRequest request, ModelAndView mav) {
 
         mav.setViewName("EditDocInfo");
         addCommonModelData(metaId, returnUrl, request, mav);
-
+        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
         return mav;
     }
 
-    @CheckAccess(AccessType.DOCUMENT_EDITOR)
     @RequestMapping("/documents")
+    @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public ModelAndView editDocuments(HttpServletRequest request,
                                       @RequestParam(value = "return", required = false) String returnUrl,
                                       ModelAndView mav) {
 
         mav.setViewName("EditDocuments");
-        mav.addObject("accessToDocumentEditor", accessService.hasUserAccessToDocumentEditor(Imcms.getUser()));
+        mav.addObject("accessToDocumentEditor", accessService.getTotalRolePermissionsByUser(Imcms.getUser()).isAccessToDocumentEditor());
         addCommonModelData(returnUrl, request, mav);
 
         return mav;
     }
 
-    @CheckAccess
     @RequestMapping("/content")
+    @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public ModelAndView editContent(HttpServletRequest request,
                                     @RequestParam(value = "return", required = false) String returnUrl,
                                     ModelAndView mav) {

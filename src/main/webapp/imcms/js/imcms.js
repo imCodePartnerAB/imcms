@@ -20,12 +20,14 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     isEditMode: Imcms.isEditMode,
     isPreviewMode: Imcms.isPreviewMode,
     isVersioningAllowed: Imcms.isVersioningAllowed,
-    isAdmin: Imcms.isAdmin,
+    isSuperAdmin: Imcms.isSuperAdmin,
     documentationLink: Imcms.documentationLink,
     editOptions: {
         isEditDocInfo: Imcms.editOptions.isEditDocInfo,
         isEditContent: Imcms.editOptions.isEditContent,
+        permission: Imcms.editOptions.permission
     },
+    accessToAdminPages: Imcms.accessToAdminPages,
     accessToDocumentEditor: Imcms.accessToDocumentEditor,
     document: {
         id: Imcms.document.id,
@@ -41,6 +43,5 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     },
     browserInfo: {
         isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
-    },
-    isEditorUserPage: Imcms.isEditorUserPage
+    }
 };

@@ -11,14 +11,16 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         isEditMode: ${isEditMode or false},
         isPreviewMode: ${isPreviewMode or false},
         isVersioningAllowed: ${isVersioningAllowed or false},
-        isAdmin: ${isAdmin or false},
+        isSuperAdmin: ${isSuperAdmin or false},
         documentationLink: "${documentationLink}",
         editOptions: {
             isEditDocInfo: ${editOptions.editDocInfo or false},
             isEditContent: ${
                     editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop
-            }
+            },
+            permission: "${editOptions.permission}"
         },
+        accessToAdminPages: ${accessToAdminPages or false},
         accessToDocumentEditor: ${accessToDocumentEditor or false},
         document: {
             id: ${empty currentDocument.id ? targetDocId+'' : currentDocument.id},
@@ -31,8 +33,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
-        },
-        isEditorUserPage: ${isEditorUserPage or false}
+        }
     };
 
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
@@ -44,8 +45,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
     <%--@elvariable id="documentationLink" type="java.lang.String"--%>
-    <%--@elvariable id="isAdmin" type="boolean"--%>
+    <%--@elvariable id="isSuperAdmin" type="boolean"--%>
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
+    <%--@elvariable id="accessToAdminPages" type="boolean"--%>
     <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>
-    <%--@elvariable id="isEditorUserPage" type="boolean"--%>
     <%--@elvariable id="targetDocId" type="int"--%>
