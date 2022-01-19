@@ -13,7 +13,6 @@ import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -152,20 +151,5 @@ public class TextControllerTest extends AbstractControllerTest {
             assertEquals(savedText, textDTO);
         }
 
-    }
-
-    @Test
-    public void saveText_When_UserIsNotAdmin_Expect_CorrectException() throws Exception {
-        final UserDomainObject user = new UserDomainObject(2);
-        Imcms.setUser(user); // current user is not admin now
-
-        final MockHttpServletRequestBuilder requestBuilder = post(controllerPath())
-                .param("docId", "" + DOC_ID)
-                .param("index", "1")
-                .param("langCode", ENG_CODE)
-                .param("type", TEXT.name())
-                .param("text", "testestest");
-
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 }

@@ -25,7 +25,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -594,27 +593,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         metaRepository.flush();
 
         docIds.forEach(docId -> assertThrows(DocumentNotExistException.class, () -> documentService.get(docId)));
-    }
-
-    @Test
-    public void deleteByIds_When_UserNotAdmin_Expect_AccessDeniedException() {
-        final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(Roles.USER.getId());
-        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        Imcms.setUser(user); // means current user is user now
-
-        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2, true, true);
-
-        assertEquals(2, createdDocuments.size());
-        assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
-
-        final List<Integer> docIds = createdDocuments.stream()
-                .map(DocumentDTO::getId)
-                .collect(Collectors.toList());
-
-        docIds.forEach(id -> assertNotNull(documentService.get(id)));
-
-        assertThrows(AccessDeniedException.class, () -> documentService.deleteByIds(docIds));
     }
 
     @Test

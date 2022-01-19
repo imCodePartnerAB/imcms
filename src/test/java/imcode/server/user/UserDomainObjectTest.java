@@ -10,13 +10,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class UserDomainObjectTest {
 
     private UserDomainObject user;
     private Meta meta;
+
+    private final int roleEditId = 10;
 
     @Before
     public void setUp() {
@@ -26,8 +29,8 @@ public class UserDomainObjectTest {
         final HashMap<Integer, Meta.Permission> roleRights = new HashMap<>();
 
         roleRights.put(Roles.USER.getId(), Meta.Permission.NONE);
-        roleRights.put(Roles.USER_ADMIN.getId(), Meta.Permission.EDIT);
         roleRights.put(Roles.SUPER_ADMIN.getId(), Meta.Permission.EDIT);
+        roleRights.put(roleEditId, Meta.Permission.EDIT);
 
         meta.setRoleIdToPermission(roleRights);
 
@@ -63,7 +66,7 @@ public class UserDomainObjectTest {
         meta.setLinkedForUnauthorizedUsers(false);
 
         user.addRoleId(Roles.USER.getId());
-        user.addRoleId(Roles.USER_ADMIN.getId());
+        user.addRoleId(roleEditId);
 
         assertTrue(user.hasUserAccessToDoc(meta));
     }

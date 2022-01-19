@@ -16,7 +16,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -149,15 +148,6 @@ public class ImageControllerTest extends AbstractControllerTest {
                 .param("langCode", imageDTO.getLangCode());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
-    }
-
-    @Test
-    public void postImage_When_UserIsNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
-        final UserDomainObject user = new UserDomainObject(2);
-        user.setLanguageIso639_2("eng"); // user lang should exist in common content
-        Imcms.setUser(user); // means current user is default user
-
-        performPostWithContentExpectException(testImageDto, NoPermissionToEditDocumentException.class);
     }
 
     @Test

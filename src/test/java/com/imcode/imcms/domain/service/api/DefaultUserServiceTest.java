@@ -7,7 +7,6 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.UserAdminRolesService;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneTypes;
@@ -40,8 +39,6 @@ class DefaultUserServiceTest {
     private PhoneService phoneService;
     @Mock
     private UserRolesService userRolesService;
-    @Mock
-    private UserAdminRolesService userAdminRolesService;
 
     @Mock
     private LanguageService languageService;
@@ -139,7 +136,6 @@ class DefaultUserServiceTest {
         then(userRepository).should().save(any(User.class));
         then(phoneService).should().updateUserPhones(anyList(), eq(userId));
         then(userRolesService).should().updateUserRoles(anyList(), eq(user));
-        then(userAdminRolesService).should().updateUserAdminRoles(anyList(), eq(user));
     }
 
     @Test

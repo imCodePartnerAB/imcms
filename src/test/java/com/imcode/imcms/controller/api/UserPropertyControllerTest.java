@@ -15,17 +15,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class UserPropertyControllerTest extends AbstractControllerTest {
@@ -39,7 +39,7 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     @Autowired
     private UserPropertyDataInitializer userPropertyDataInitializer;
 
-    private User user;
+    private final int superAdminUserId = 1;
     private int userId;
     private final String keyName = "keyName";
     private final String value = "value";
@@ -49,10 +49,10 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         userDataInitializer.cleanRepositories();
         userPropertyDataInitializer.cleanRepositories();
 
-        user = userDataInitializer.createData("test");
+        User user = userDataInitializer.createData("test");
         userId = user.getId();
 
-        final UserDomainObject userSuperAdmin = new UserDomainObject(1);
+        final UserDomainObject userSuperAdmin = new UserDomainObject(superAdminUserId);
         userSuperAdmin.setLanguageIso639_2("eng");
         userSuperAdmin.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(userSuperAdmin);
@@ -61,25 +61,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
     @Override
     protected String controllerPath() {
         return "/user/properties";
-    }
-
-    @Test
-    public void getAll_When_UserPropertyExists_Expected_OkAndCorrectResult() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        final List<UserProperty> userPropertyList = userPropertyService.getAll();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userPropertyList.toArray()));
-
-    }
-
-    @Test
-    public void getAll_When_UserPropertyNotExists_Expected_OkAndEmptyResult() throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
     }
 
     @Test
@@ -101,25 +82,6 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + userId);
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userPropertyList));
-    }
-
-    @Test
-    public void getByUserIdAndKeyName_When_UserPropertyExist_Expected_OkAndCorrectResult() throws Exception {
-        userPropertyDataInitializer.createData(userId, keyName, value);
-        assertFalse(userPropertyService.getAll().isEmpty());
-
-        final UserProperty userProperty = userPropertyService.getByUserIdAndKeyName(userId, keyName);
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/name").param("id", userId+"").param("keyName", keyName);
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(userProperty));
-    }
-
-    @Test
-    public void getByIdAndKeyName_When_UserPropertyNotExist_Expected_OkAndEmptyResult() throws Exception {
-        assertTrue(userPropertyService.getAll().isEmpty());
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/name").param("id", userId+"").param("keyName", keyName);
-        performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
     }
 
     @Test
@@ -227,6 +189,35 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "/update");
         performRequestBuilderExpectException(DataIsNotValidException.class, requestBuilder);
+    }
+
+    @Test
+    public void updateAll_When_UserIsNotSuperAdmin_And_PropertyBelongSuperAdmin_Expected_Forbidden() throws Exception {
+        Imcms.setUser(new UserDomainObject());
+
+        assertTrue(userPropertyService.getAll().isEmpty());
+
+        final String editedKeyName = "keyName3";
+
+        final UserPropertyDTO deleteUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, keyName, value));
+
+        final UserPropertyDTO editUserPropertyDTO = new UserPropertyDTO(userPropertyDataInitializer.createData(userId, "keyName2", value));
+        editUserPropertyDTO.setKeyName(editedKeyName);
+        editUserPropertyDTO.setValue("value2");
+
+        final UserPropertyDTO editUserPropertyDTO2 = new UserPropertyDTO(userPropertyDataInitializer.createData(superAdminUserId, "keyName3", value));  // SuperAdmin property
+        editUserPropertyDTO2.setKeyName(editedKeyName);
+        editUserPropertyDTO2.setValue("value3");
+
+        final UserPropertyDTO createUserPropertyDTO = new UserPropertyDTO(null, userId, keyName, value);
+
+        final HashMap<String, List<UserPropertyDTO>> data = new HashMap<>();
+        data.put("deletedProperties", Collections.singletonList(deleteUserPropertyDTO));
+        data.put("editedProperties", Arrays.asList(editUserPropertyDTO, editUserPropertyDTO2));
+        data.put("createdProperties", Collections.singletonList(createUserPropertyDTO));
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(data, "/update");
+        performRequestBuilderExpectedStatus(requestBuilder, HttpStatus.FORBIDDEN.value());
     }
 
     @Test

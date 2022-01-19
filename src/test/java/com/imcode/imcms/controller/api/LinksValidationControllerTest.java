@@ -1,13 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.api.ValidationLink;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
-import com.imcode.imcms.components.datainitializer.TextDataInitializer;
-import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
@@ -23,6 +17,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -33,9 +28,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @Transactional
@@ -82,6 +75,11 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         m.find();
         String extractedLink = m.group(1);
         return extractedLink;
+    }
+
+    @BeforeEach
+    public void setUp(){
+        Imcms.setUser(new UserDomainObject(1));
     }
 
     @AfterEach
@@ -220,8 +218,6 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXT_URL);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-        final UserDomainObject user = new UserDomainObject(1);
-        Imcms.setUser(user);
         urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
         urlDocumentService.save(urlDocumentDTO);
 
@@ -246,8 +242,6 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXTS);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-        final UserDomainObject user = new UserDomainObject(1);
-        Imcms.setUser(user);
         urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
         urlDocumentService.save(urlDocumentDTO);
 

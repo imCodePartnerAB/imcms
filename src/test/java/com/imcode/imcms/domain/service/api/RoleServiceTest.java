@@ -26,8 +26,7 @@ public class RoleServiceTest extends WebAppSpringTestConfig {
     public void getAllTest() {
         final List<Role> roles = roleService.getAll();
         assertLike(Roles.SUPER_ADMIN, roles.get(0));
-        assertLike(Roles.USER_ADMIN, roles.get(1));
-        assertLike(Roles.USER, roles.get(2));
+        assertLike(Roles.USER, roles.get(1));
     }
 
     private void assertLike(Role roleA, Role roleB) {
@@ -101,7 +100,6 @@ public class RoleServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(permissions.isGetPasswordByEmail(), savedPermissions.isGetPasswordByEmail());
         assertEquals(permissions.isAccessToAdminPages(), savedPermissions.isAccessToAdminPages());
-        assertEquals(permissions.isChangeImagesInImageArchive(), savedPermissions.isChangeImagesInImageArchive());
-        assertEquals(permissions.isUseImagesInImageArchive(), savedPermissions.isUseImagesInImageArchive());
+        assertEquals(permissions.isAccessToDocumentEditor(), savedPermissions.isAccessToDocumentEditor());
     }
 }

@@ -7,13 +7,13 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.enums.TypeSort;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.enums.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -53,6 +53,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
 
         final Language currentLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();

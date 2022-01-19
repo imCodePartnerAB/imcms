@@ -12,12 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,11 +38,9 @@ public class UserRepositoryTest extends WebAppSpringTestConfig {
     public void createUsers() {
         users = new ArrayList<>(12);
         final List<User> superAdmins = userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId());
-        final List<User> admins = userDataInitializer.createData(4, Roles.USER_ADMIN.getId());
         final List<User> defaultUsers = userDataInitializer.createData(3, Roles.USER.getId());
 
         users.addAll(superAdmins);
-        users.addAll(admins);
         users.addAll(defaultUsers);
     }
 
@@ -87,8 +80,8 @@ public class UserRepositoryTest extends WebAppSpringTestConfig {
      */
     @Test
     public void findUsersWithRoleIdsTest() {
-        final List<User> admins = repository.findUsersWithRoleIds(Roles.SUPER_ADMIN.getId(), Roles.USER_ADMIN.getId());
-        assertEquals(9 + 1, admins.size());
+        final List<User> admins = repository.findUsersWithRoleIds(Roles.SUPER_ADMIN.getId());
+        assertEquals(5 + 1, admins.size());
     }
 
     @Test

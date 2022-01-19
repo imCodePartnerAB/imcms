@@ -14,8 +14,9 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import com.imcode.imcms.persistence.repository.MenuRepository;
+import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.RoleRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
@@ -33,9 +34,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
@@ -47,6 +46,9 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     private MetaRepository metaRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
@@ -55,14 +57,10 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
 
-    @Autowired
-    private MenuRepository menuRepository;
-
     private Meta meta;
 
     @BeforeEach
     public void setUp() {
-
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
@@ -78,6 +76,12 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     @AfterEach
     public void tearDown() {
         documentDataInitializer.cleanRepositories();
+
+        roleRepository.findAll().forEach(role -> {
+            if(!role.getId().equals(Roles.SUPER_ADMIN.getId()) && !role.getId().equals(Roles.USER.getId())){
+                roleRepository.delete(role);
+            }
+        });
     }
 
     @Test
@@ -90,9 +94,13 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserHasRights_Expect_True() {
+        RoleJPA roleEdit = new RoleJPA();
+        roleEdit.setName("roleEdit");
+        roleEdit = roleRepository.save(roleEdit);
+
         meta.setLinkedForUnauthorizedUsers(false);
         final HashMap<Integer, Permission> roleIdToPermission = new HashMap<>(Collections.singletonMap(
-                Roles.USER_ADMIN.getId(), Permission.EDIT
+                roleEdit.getId(), Permission.EDIT
         ));
         meta.setRoleIdToPermission(roleIdToPermission);
 
@@ -101,7 +109,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         final UserDomainObject user = Imcms.getUser();
 
         user.addRoleId(Roles.USER.getId());
-        user.addRoleId(Roles.USER_ADMIN.getId());
+        user.addRoleId(roleEdit.getId());
 
         assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), user));
     }

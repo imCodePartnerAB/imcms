@@ -32,10 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class CategoryControllerTest extends AbstractControllerTest {
@@ -59,6 +56,10 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     public void cleanRepos() {
+        UserDomainObject user = new UserDomainObject();
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
         categoryDataInitializer.cleanRepositories();
         categoryTypeDataInitializer.cleanRepositories();
     }

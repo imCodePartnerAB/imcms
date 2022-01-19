@@ -13,7 +13,6 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,13 +30,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import static java.io.File.separator;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Transactional
 public class ImageFolderControllerTest extends AbstractControllerTest {
@@ -163,22 +157,6 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(folder2.canRead());
             assertTrue(folder3.canRead());
         }
-    }
-
-    @Test
-    public void createNewImageFolder_When_UserIsNotAdmin_Expected_CorrectExceptionAndFolderNotCreated() throws Exception {
-        final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(Roles.USER.getId());
-        Imcms.setUser(user); // means current user is not admin now
-
-        final String testFolderName = "test_folder_name";
-        final File folder = new File(imagesPath, testFolderName);
-        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
-
-        assertFalse(folder.exists());
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
-        assertFalse(folder.exists());
     }
 
     @Test
@@ -338,44 +316,6 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void renameImageFolder_When_FolderExistAndUserIsNotAdmin_Expect_CorrectException() throws Exception {
-
-        final String testFolderName = "test_folder_name";
-        final String testFolderNewName = "test_folder_new_name";
-
-        try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, testFolderNewName)) {
-
-            final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
-            final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
-
-            assertFalse(folder.exists());
-
-            imageFolderDTO.setName(testFolderNewName);
-
-            assertFalse(newFolder.exists());
-
-            final String jsonPostResponse = getJsonResponse(requestBuilderPost);
-
-            assertTrue(Boolean.parseBoolean(jsonPostResponse));
-            assertTrue(folder.exists());
-            assertTrue(folder.isDirectory());
-            assertTrue(folder.canRead());
-
-            final UserDomainObject user = new UserDomainObject(2);
-            user.addRoleId(Roles.USER.getId());
-            Imcms.setUser(user); // means current user is not admin now
-
-            final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(asJson(imageFolderDTO));
-
-            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderPut);
-            assertFalse(newFolder.exists());
-        }
-    }
-
-    @Test
     public void deleteFolder_When_FolderExist_Expect_TrueAndFolderDeleted() throws Exception {
         final String testFolderName = "test_folder_name";
 
@@ -420,38 +360,6 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
             performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderDelete);
             assertFalse(folder.exists());
-        }
-    }
-
-    @Test
-    public void deleteFolder_When_FolderExistAndUserIsNotSuperAdmin_Expect_CorrectExceptionAndFolderNotDeleted() throws Exception {
-        final String testFolderName = "test_folder_name";
-
-        try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName)) {
-
-            final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
-            final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
-
-            assertFalse(folder.exists());
-
-            final String jsonResponse = getJsonResponse(requestBuilder);
-
-            assertTrue(Boolean.parseBoolean(jsonResponse));
-            assertTrue(folder.exists());
-            assertTrue(folder.isDirectory());
-            assertTrue(folder.canRead());
-
-            final UserDomainObject user = new UserDomainObject(2);
-            user.addRoleId(Roles.USER.getId());
-            Imcms.setUser(user); // means current user is not admin now
-
-
-            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(asJson(imageFolderDTO));
-
-            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderDelete);
-            assertTrue(folder.exists());
         }
     }
 

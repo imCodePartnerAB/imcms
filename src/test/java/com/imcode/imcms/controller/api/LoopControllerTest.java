@@ -12,7 +12,6 @@ import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,14 +60,6 @@ public class LoopControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(TEST_DOC_ID));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJsonData);
-    }
-
-    @Test
-    public void postLoop_When_UserIsNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
-        final UserDomainObject user = new UserDomainObject(2);
-        Imcms.setUser(user); // means current user is default user
-
-        performPostWithContentExpectException(TEST_LOOP, NoPermissionToEditDocumentException.class);
     }
 
     @Test

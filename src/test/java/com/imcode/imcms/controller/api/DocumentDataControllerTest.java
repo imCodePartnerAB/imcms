@@ -11,7 +11,6 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,18 +96,6 @@ public class DocumentDataControllerTest  extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(url);
         performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
 
-    }
-
-    @Test
-    public void getAllData_When_UserIsNotSuperAdmin_Expected_OkAndCorrectException() throws Exception {
-        int docId = documentDataInitializer.createData().getId();
-        Version version = versionDataInitializer.createData(WORKING_VERSION_INDEX, docId);
-        documentContentDataInitializer.createData(version);
-        String url = controllerPath() + "/" + docId;
-
-        setCommonUser();
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(url);
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 
     private void setCommonUser() {

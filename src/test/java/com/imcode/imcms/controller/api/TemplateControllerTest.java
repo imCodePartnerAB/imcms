@@ -4,7 +4,10 @@ import com.imcode.imcms.api.exception.AloneTemplateException;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.Template;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,10 @@ public class TemplateControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     public void setUp() {
+        final UserDomainObject user = new UserDomainObject();
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);
     }

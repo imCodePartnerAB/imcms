@@ -16,7 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Transactional
 public class UserServiceTest extends WebAppSpringTestConfig {
@@ -34,12 +35,10 @@ public class UserServiceTest extends WebAppSpringTestConfig {
         expectedUsers = new ArrayList<>(9);
 
         final List<UserDTO> superAdmins = toDTO(userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId()));
-        final List<UserDTO> admins = toDTO(userDataInitializer.createData(4, Roles.USER_ADMIN.getId()));
         userDataInitializer.createData(3, Roles.USER.getId());
 
         expectedUsers.add(userService.getUser("admin"));
         expectedUsers.addAll(superAdmins);
-        expectedUsers.addAll(admins);
     }
 
     private List<UserDTO> toDTO(Collection<User> usersToTransform) {

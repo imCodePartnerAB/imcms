@@ -3,11 +3,14 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.controller.MockingControllerTest;
 import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.component.UserValidationResult;
+import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
+import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -19,9 +22,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.RequestBuilder;
 
+import java.util.Collections;
+
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class UserAdministrationControllerTest extends MockingControllerTest {
@@ -30,18 +37,20 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
     @Mock
     private UserCreationService userCreationService;
-
     @Mock
     private UserEditorService userEditorService;
-
     @Mock
     private UserService userService;
+    @Mock
+    private UserRolesService userRolesService;
+    @Mock
+    private UserLockValidator userLockValidator;
 
     @InjectMocks
     private UserAdministrationController controller;
 
-    @Mock
-    private UserLockValidator userLockValidator;
+    final int userId = 1;
+    final Role role = new RoleDTO(10, "test", null);
 
     @Override
     protected Object controllerToMock() {
@@ -49,35 +58,37 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void createUser_When_GoingToCreatePage_And_CurrentUserIsNotSuperAdmin_Expect_StatusIsForbidden() {
+    void createUser_When_CurrentUserIsNotSuperAdmin_And_AddSuperAdminRole_Expect_Forbidden(){
         final UserDomainObject user = mock(UserDomainObject.class);
-        when(user.isSuperAdmin()).thenReturn(false);
         Imcms.setUser(user);
 
-        final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/creation");
-        perform(requestBuilder).andExpect(status().isForbidden());
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create")
+                .param("roleIds", Roles.SUPER_ADMIN.getId()+"");
+        perform(requestBuilder).andExpect(status().is4xxClientError());
     }
 
     @Test
     void createUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() {
-
         final UserDomainObject user = mock(UserDomainObject.class);
         Imcms.setUser(user);
 
-        final UserValidationResult result = mock(UserValidationResult.class);
-
-        @SuppressWarnings("ThrowableNotThrown") final UserValidationException exception = new UserValidationException(result);
+        final UserValidationException exception = new UserValidationException(mock(UserValidationResult.class));
 
         doThrow(exception).when(userCreationService).createUser(any());
 
-        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create")
+                .param("id", userId+"");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
     void createUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() {
-        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create");
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create")
+                .param("id", userId+"");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
@@ -90,7 +101,6 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         when(user.isSuperAdmin()).thenReturn(true);
         Imcms.setUser(user);
 
-        final int userId = 42;
         final UserFormData mockUser = mock(UserFormData.class);
         mockUser.setId(userId);
 
@@ -101,39 +111,74 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void editUser_When_GoingToEditPageWithExistingUserId_And_CurrentUserIsNotSuperAdmin_Expect_StatusIsForbidden() {
+    void editUser_When_GoingToEditPageWithExistingSuperAdminUserId_And_CurrentUserIsNotSuperAdmin_Expect_Forbidden() {
         final UserDomainObject user = mock(UserDomainObject.class);
-        when(user.isSuperAdmin()).thenReturn(false);
         Imcms.setUser(user);
 
-        final int userId = 42;
-        final UserFormData mockUser = mock(UserFormData.class);
-        mockUser.setId(userId);
+        final UserFormData editedUser = new UserFormData();
+        editedUser.setId(userId);
+        editedUser.setRoleIds(new int[]{Roles.SUPER_ADMIN.getId()});
+
+        given(userService.getUserData(userId)).willReturn(editedUser);
 
         final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/edition/" + userId);
-        perform(requestBuilder).andExpect(status().isForbidden());
+        perform(requestBuilder).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void editUser_When_CurrentUserIsNotSuperAdmin_And_AddSuperAdminRole_Expect_Forbidden(){
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        given(userRolesService.getRoleIdsByUser(userId)).willReturn(Collections.singleton(role.getId()));
+
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
+                .param("id", userId+"")
+                .param("roleIds", Roles.SUPER_ADMIN.getId()+"")
+                .param("roleIds", role.getId()+"");
+        perform(requestBuilder).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void editUser_When_CurrentUserIsNotSuperAdmin_And_RemoveSuperAdminRole_Expect_Forbidden(){
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        final Role superAdminRole = new RoleDTO();
+        superAdminRole.setId(Roles.SUPER_ADMIN.getId());
+
+        given(userRolesService.getRoleIdsByUser(userId)).willReturn(Collections.singleton(superAdminRole.getId()));
+
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
+                .param("id", userId+"")
+                .param("roleIds", role.getId()+"");
+        perform(requestBuilder).andExpect(status().is4xxClientError());
     }
 
     @Test
     void editUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() {
-
         final UserDomainObject user = mock(UserDomainObject.class);
         Imcms.setUser(user);
 
         final UserValidationResult result = mock(UserValidationResult.class);
 
-        @SuppressWarnings("ThrowableNotThrown") final UserValidationException exception = new UserValidationException(result);
+        final UserValidationException exception = new UserValidationException(result);
 
         doThrow(exception).when(userEditorService).editUser(any());
 
-        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
+                .param("id", userId+"");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
     void editUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() {
-        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit");
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
+                .param("id", userId+"");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 

@@ -18,7 +18,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -129,19 +128,6 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadImageFile_When_UserIsNotAdmin_Expect_CorrectException() throws Exception {
-        final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(Roles.USER.getId());
-        Imcms.setUser(user); // means current user is not admin now
-
-        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
-        final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
-        final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath()).file(file);
-
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, fileUploadRequestBuilder);
-    }
-
-    @Test
     public void uploadImageFile_When_FolderIsSet_Expect_OkAndCorrectResponse() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
@@ -217,40 +203,6 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         assertThrows(FileNotFoundException.class, () -> getJsonResponse(requestBuilder));
         assertFalse(imageFile.exists());
-    }
-
-    @Test
-    public void deleteImage_When_UserIsNotAdmin_Expect_CorrectExceptionAndFileNotDeleted() throws Exception {
-        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
-        final String originalFilename = "img1-test.jpg";
-        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String folderName = separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
-
-        final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath())
-                .file(file)
-                .param("folder", folderName);
-
-        final String path = folderName + separator + originalFilename;
-
-        try (DeleteOnCloseFile imageFile = new DeleteOnCloseFile(imagesPath, path)) {
-            assertFalse(imageFile.exists());
-            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-            assertTrue(imageFile.exists());
-
-            final UserDomainObject user = new UserDomainObject(2);
-            user.addRoleId(Roles.USER.getId());
-            Imcms.setUser(user); // means current user is not admin now
-
-            final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            imageFileDTO.setPath(path);
-
-            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(asJson(imageFileDTO));
-
-            assertTrue(imageFile.exists());
-            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
-        }
     }
 
     @Test
