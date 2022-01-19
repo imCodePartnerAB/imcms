@@ -9,6 +9,8 @@ public interface UserPropertyService {
 
     List<UserProperty> getAll();
 
+    UserProperty getById(int id);
+
     List<UserProperty> getByUserId(Integer userId);
 
     UserProperty getByUserIdAndKeyName(Integer userId, String keyName);

@@ -33,6 +33,11 @@ public class DefaultUserPropertyService implements UserPropertyService {
     }
 
     @Override
+    public UserProperty getById(int id) {
+        return userPropertyRepository.findOne(id);
+    }
+
+    @Override
     public List<UserProperty> getByUserId(Integer id) {
         return userPropertyRepository.findByUserId(id);
     }

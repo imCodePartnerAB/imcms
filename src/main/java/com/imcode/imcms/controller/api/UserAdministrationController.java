@@ -1,26 +1,29 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
-import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.security.CheckAccess;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/user")
@@ -29,48 +32,54 @@ class UserAdministrationController {
     private final UserCreationService userCreationService;
     private final UserEditorService userEditorService;
     private final UserService userService;
+    private final UserRolesService userRolesService;
     private final UserLockValidator userLockValidator;
 
     @Autowired
     public UserAdministrationController(UserCreationService userCreationService,
                                         UserEditorService userEditorService,
                                         UserService userService,
+                                        UserRolesService userRolesService,
                                         UserLockValidator userLockValidator) {
 
         this.userCreationService = userCreationService;
         this.userEditorService = userEditorService;
         this.userService = userService;
+        this.userRolesService = userRolesService;
         this.userLockValidator = userLockValidator;
     }
 
     @GetMapping("/edition/{userId}")
-    public ModelAndView goToEditUser(@PathVariable("userId") Integer userId, HttpServletResponse response) throws IOException {
+    public ModelAndView goToEditUser(@PathVariable("userId") Integer userId) {
         final UserDomainObject loggedOnUser = Imcms.getUser();
-        if (!loggedOnUser.isSuperAdmin()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return null;
-        }
-        final ModelAndView modelAndView = new ModelAndView("UserEdit");
-
         final UserFormData user = userService.getUserData(userId);
+
+        if(!loggedOnUser.isSuperAdmin() &&
+                IntStream.of(user.getRoleIds()).anyMatch(id -> id == Roles.SUPER_ADMIN.getId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit Superadmin");
+        }
+
+        final ModelAndView modelAndView = new ModelAndView("UserEdit");
         modelAndView.addObject("editedUser", user);
-        modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
+        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
         modelAndView.addObject("isBlockedNow", userLockValidator.isUserBlocked(user));
         return modelAndView;
     }
 
-    @CheckAccess
     @PostMapping("/edit")
     public ModelAndView editUser(@ModelAttribute UserFormData userData,
                                  ModelAndView modelAndView,
                                  HttpServletRequest request) {
+        if(!Imcms.getUser().isSuperAdmin() && !validateRoles(userData)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit Superadmin");
+        }
+
         try {
             userEditorService.editUser(userData);
             final String contextPath = request.getContextPath();
             modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/api/admin/manager" : contextPath));
-
         } catch (UserValidationException e) {
             modelAndView.setViewName("UserEdit");
             setModelStuff(e.validationResult, userData, modelAndView);
@@ -80,31 +89,28 @@ class UserAdministrationController {
     }
 
     @GetMapping("/creation")
-    public ModelAndView goToCreateUser(HttpServletResponse response) throws IOException {
-
+    public ModelAndView goToCreateUser() {
         final UserDomainObject loggedOnUser = Imcms.getUser();
-        if (!loggedOnUser.isSuperAdmin()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return null;
-        }
         final ModelAndView modelAndView = new ModelAndView("UserCreate");
 
-        modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
+        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
         return modelAndView;
     }
 
-    @CheckAccess
     @PostMapping("/create")
     public ModelAndView createUser(@ModelAttribute UserFormData userData,
                                    ModelAndView modelAndView,
                                    HttpServletRequest request) {
+        if(!Imcms.getUser().isSuperAdmin() && !validateRoles(userData)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create Superadmin");
+        }
+
         try {
             userCreationService.createUser(userData);
             final String contextPath = request.getContextPath();
             modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/api/admin/manager" : contextPath));
-
         } catch (UserValidationException e) {
             modelAndView.setViewName("UserCreate");
             setModelStuff(e.validationResult, userData, modelAndView);
@@ -113,12 +119,33 @@ class UserAdministrationController {
         return modelAndView;
     }
 
+    /**
+     * Only Superadmin can editing others Superadmin and add/remove Superadmin role.
+     */
+    private boolean validateRoles(UserFormData userData){
+        boolean valid;
+
+        final Integer userId = userData.getId();
+        final int[] roleIds = userData.getRoleIds() != null ? userData.getRoleIds() : new int[]{};
+        boolean containSuperAdminInForm = Arrays.stream(roleIds).anyMatch(roleId -> Roles.SUPER_ADMIN.getId().equals(roleId));
+
+        if(userId != null){
+            boolean containSuperAdmin = userRolesService.getRoleIdsByUser(userId).stream()
+                    .anyMatch(id -> Roles.SUPER_ADMIN.getId().equals(id));
+            valid = !containSuperAdmin && !containSuperAdminInForm;
+        }else{
+            valid = !containSuperAdminInForm;
+        }
+
+        return valid;
+    }
+
     private void setModelStuff(UserValidationResult validationResult, UserFormData userData, ModelAndView modelAndView) {
         final UserDomainObject loggedOnUser = Imcms.getUser();
 
         modelAndView.addObject("editedUser", userData);
         modelAndView.addObject("errorMessages", extractErrorMessageKeys(validationResult));
-        modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
+        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
     }
