@@ -59,6 +59,9 @@ public interface ImageRepository extends JpaRepository<ImageJPA, Integer>, Versi
 
     List<ImageJPA> findByUrl(String url);
 
+	@Query(value = "SELECT i FROM ImageJPA i WHERE i.url LIKE ?1%")
+	List<ImageJPA> findByFolderInUrl(String folder);
+
     @Modifying
     @Query("DELETE FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2")
     void deleteByVersionAndLanguage(Version version, LanguageJPA language);

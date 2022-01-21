@@ -135,16 +135,16 @@ class DefaultImageFileService implements ImageFileService {
 
 	@Override
 	public ImageFileDTO moveImageFile(final String destinationFolder, final String filePath) throws IOException {
-		final List<ImageJPA> imagesJpa = imageService.getImagesByUrl(filePath);
+		final List<ImageDTO> imagesDTO = imageService.getImagesByUrl(filePath);
 		final Path imageFilePath = Paths.get(imagesPath.getPath(), filePath);
 		final Path destinationImageFilePath = Paths.get(imagesPath.getPath(), destinationFolder);
 
 		final Path result = Files.move(imageFilePath, destinationImageFilePath);
 		final Path relativePath = imagesPath.toPath().relativize(result);
 
-		imagesJpa.forEach(imageJPA -> {
-			imageJPA.setUrl(relativePath.toString());
-			imageService.saveImage(imageJPAToImageDTO.apply(imageJPA));
+		imagesDTO.forEach(imageDTO -> {
+			imageDTO.setPath(relativePath.toString());
+			imageService.updateImage(imageDTO);
 		});
 
 		return fileToImageFileDTO.apply(result.toFile());
