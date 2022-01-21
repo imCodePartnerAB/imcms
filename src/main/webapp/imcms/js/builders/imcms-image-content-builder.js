@@ -18,7 +18,7 @@ define("imcms-image-content-builder",
         texts = texts.editors.content;
 
         let selectedFullImagePath;
-	    let selectedImageMoved = false;
+	    let selectedImageChanged = false;
 
         let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect;
 
@@ -53,6 +53,16 @@ define("imcms-image-content-builder",
                     .text(this.name);
 
                 this.$block.remove();
+
+	            if (selectedImage) {
+		            const newFolderName = this.path;
+		            const lengthToCut = newFolderName.length;
+		            const oldImageFullPath = selectedImage.path;
+
+		            selectedFullImagePath = newFolderName + oldImageFullPath.substring(lengthToCut);
+		            selectedImage.path = selectedFullImagePath;
+		            selectedImageChanged = true;
+	            }
 
             } else {
                 console.error(`Folder ${this.path}/${this.name} not renamed!`)
@@ -388,7 +398,7 @@ define("imcms-image-content-builder",
 
         function onFolderDoubleClick(folder) {
             activeFolder = folder;
-	        selectedImageMoved = false;
+	        selectedImageChanged = false;
             $(`.${ACTIVE_FOLDER_CLASS}`).removeClass(ACTIVE_FOLDER_CLASS);
             $(this).addClass(ACTIVE_FOLDER_CLASS);
 
@@ -487,7 +497,7 @@ define("imcms-image-content-builder",
 			    showLoadingAnimation(dragged.imageElement);
 			    imageFilesREST.moveImageFile(dragged.imageData)
 				    .done((imageFile) => {
-					    selectedImageMoved = false;
+					    selectedImageChanged = false;
 					    dragged.folderData.files = removeElementFromArray(dragged.folderData.files, dragged.imageData);
 					    dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
 
@@ -502,7 +512,7 @@ define("imcms-image-content-builder",
 						if (selectedFullImagePath === dragged.imageData.name) {
 						    selectedFullImagePath = imageFile.path;
 						    selectedImage = imageFile;
-						    selectedImageMoved = true;
+						    selectedImageChanged = true;
 					    }
 
 					    $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled', 'disabled').addClass('imcms-button--disabled');
@@ -689,7 +699,7 @@ define("imcms-image-content-builder",
 
 	    function onMouseDownImageHandler( imageFile) {
 		    selectImage.call($imageContent, imageFile);
-		    selectedImageMoved=false;
+		    selectedImageChanged = false;
 			$imageContent.css({'border': '2px #0b94d8 dotted'}).attr('draggable', true);
 	    }
 
@@ -889,7 +899,7 @@ define("imcms-image-content-builder",
 
         function updateSortedImages() {
 	        if (selectedFullImagePath !== '') {
-		        selectedImageMoved=true;
+		        selectedImageChanged = true;
 		        setUpSelectedImage(activeFolder, getImageNameFromPath(selectedFullImagePath));
 		        // scrollToSelectedImage();
 	        }
@@ -917,7 +927,7 @@ define("imcms-image-content-builder",
         return {
             buildSortingSelect,
             getSelectedImage: () => selectedImage,
-	        isSelectedImageMoved: () => selectedImageMoved,
+	        isSelectedImageChanged: () => selectedImageChanged,
             loadAndBuildContent: options => {
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
@@ -945,7 +955,7 @@ define("imcms-image-content-builder",
             },
             clearContent: () => {
                 activeFolder = selectedImage = null;
-	            selectedImageMoved = false;
+	            selectedImageChanged = false;
 				$imagesContainer.children().remove();
                 $foldersContainer.children().not("#closeFolders").remove();
                 viewModel = {

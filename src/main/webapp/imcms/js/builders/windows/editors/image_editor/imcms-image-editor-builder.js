@@ -169,7 +169,7 @@ define(
             if (!image) return;
 
             bodyHeadBuilder.showPreviewImageArea();
-	        imageContentBuilder.isSelectedImageMoved() ? imageData.path = image.path : $.extend(imageData, image);
+	        imageContentBuilder.isSelectedImageChanged() ? imageData.path = image.path : $.extend(imageData, image);
 
             if (imageData.inText) $tag.attr("data-index", imageData.index);
 
