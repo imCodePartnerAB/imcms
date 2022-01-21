@@ -2,12 +2,7 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.ImageHistoryRepository;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -93,6 +88,7 @@ public class ImageDataInitializer extends TestDataCleaner {
     public ImageJPA generateImage(int index, String fileName, String imgUrl, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
         return Value.with(new ImageJPA(), image -> {
             image.setIndex(index);
+			image.setName(fileName);
             image.setLanguage(language);
             image.setVersion(version);
             image.setLoopEntryRef(loopEntryRef);
