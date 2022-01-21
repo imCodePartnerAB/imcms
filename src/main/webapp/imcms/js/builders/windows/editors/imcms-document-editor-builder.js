@@ -1332,6 +1332,16 @@ define('imcms-document-editor-builder',
             return docs;
         }
 
+        function initMenuDocuments(ids){
+            const allDocIds = docs.map(doc => doc.documentId || doc.id);
+
+            ids.forEach(id => {
+                if(!allDocIds.includes(document.documentId || document.id)){
+                    docSearchRestApi.searchById(id).done(doc => docs.push(doc));
+                }
+            });
+        }
+
         function getDocumentById(documentId) {
             let document = null;
             docs.forEach(doc => {
