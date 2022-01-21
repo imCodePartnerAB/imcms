@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import com.imcode.imcms.domain.service.ImageService;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import lombok.SneakyThrows;
@@ -34,20 +35,22 @@ import static java.util.stream.Collectors.toList;
 @Transactional
 class DefaultImageFolderService implements ImageFolderService {
 
-    private final BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO;
+	private final BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO;
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
     private final ImageFileService imageFileService;
+	private final ImageService imageService;
     private File imagesPath;
 
     @SneakyThrows
     DefaultImageFolderService(BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO,
                               Function<File, ImageFileDTO> fileToImageFileDTO,
-                              @Value("${ImagePath}") Resource imagesPath, ImageFileService imageFileService) {
+                              @Value("${ImagePath}") Resource imagesPath, ImageFileService imageFileService, ImageService imageService) {
 
-        this.fileToImageFolderDTO = fileToImageFolderDTO;
+	    this.fileToImageFolderDTO = fileToImageFolderDTO;
         this.fileToImageFileDTO = fileToImageFileDTO;
         this.imagesPath = imagesPath.getFile();
         this.imageFileService = imageFileService;
+	    this.imageService = imageService;
     }
 
     @Override
@@ -73,8 +76,10 @@ class DefaultImageFolderService implements ImageFolderService {
         final String imageFolderRelativePath = renameMe.getPath();
         final String path = StringUtils.substringBeforeLast(imageFolderRelativePath, File.separator);
 
+	    final String newFolderName = path + File.separator + newName;
+
         final File folder = new File(imagesPath, imageFolderRelativePath);
-        final File newFolder = new File(imagesPath, path + File.separator + newName);
+        final File newFolder = new File(imagesPath, newFolderName);
 
         if (!folder.exists()) {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
@@ -87,6 +92,17 @@ class DefaultImageFolderService implements ImageFolderService {
         if (newFolder.exists()) {
             throw new FolderAlreadyExistException("Folder with path " + path + File.separator + newName + " already exist!");
         }
+
+	    final String folderInUrl = imagesPath.toPath().relativize(folder.toPath()).toString();
+	    final String replacement = imagesPath.toPath().relativize(newFolder.toPath()).toString();
+
+	    imageService.getImagesByFolderInUrl(folderInUrl).forEach(imageDTO -> {
+		    final String oldUrl = imageDTO.getPath();
+		    final String newUrl = StringUtils.replaceOnce(oldUrl, folderInUrl, replacement);
+
+		    imageDTO.setPath(newUrl);
+		    imageService.updateImage(imageDTO);
+	    });
 
         return folder.renameTo(newFolder);
     }

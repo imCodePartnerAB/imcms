@@ -143,8 +143,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     }
 
 	@Override
-	public List<ImageJPA> getImagesByUrl(String url) {
-		return repository.findByUrl(url);
+	public List<ImageDTO> getImagesByUrl(String url) {
+		return repository.findByUrl(url).stream().map(imageJPAToImageDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ImageDTO> getImagesByFolderInUrl(String folder) {
+		return repository.findByFolderInUrl(folder).stream().map(imageJPAToImageDTO).collect(Collectors.toList());
 	}
 
 	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
@@ -199,7 +204,17 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 });
     }
 
-    @CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
+	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
+	@Override
+	public void updateImage(ImageDTO imageDTO) {
+		final Integer docId = imageDTO.getDocId();
+		final Version version = versionService.getDocumentWorkingVersion(docId);
+		final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
+
+		saveImage(imageDTO, language, version);
+	}
+
+	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
     @Override
     public void deleteImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();

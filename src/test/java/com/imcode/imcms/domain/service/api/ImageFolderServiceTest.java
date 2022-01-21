@@ -3,17 +3,22 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
+import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +41,8 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private ImageFolderService imageFolderService;
+	@Autowired
+	private ImageService imageService;
     @Autowired
     private VersionService versionService;
 
@@ -161,16 +169,26 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         }
     }
 
-    @Test
-    public void renameFolder_When_FolderExistsInRootImagesDirectory_Expect_True() {
-        final String newFolderName = "new_test_folder";
-        final String folderNewName = "new_name";
+	@Test
+	public void renameFolder_When_FolderExistsInRootImagesDirectory_Expect_True_And_UpdatedImageUrl() {
+		setUserDomainObject();
 
-        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
-        imageFolderDTO.setName(folderNewName);
+		final String folderName = "test_folder";
+		final String newFolderName = "new_name";
 
-        try (DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, folderNewName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName)) {
+		final String testImageName = "testImage";
+		final String testImagePath = folderName + separator + "testImage";
+		final String newTestImagePath = newFolderName + separator + "testImage";
+
+		final Integer testDocumentId = documentDataInitializer.createData().getId();
+	    final Version version = versionService.create(testDocumentId, 1);
+	    final ImageJPA imageJPA = imageDataInitializer.createData(1, testImageName, testImagePath, version);
+
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(folderName);
+        imageFolderDTO.setName(newFolderName);
+
+        try (DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, newFolderName);
+             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, folderName)) {
             assertFalse(newFolder.exists());
 
             assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
@@ -182,7 +200,12 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(imageFolderService.renameFolder(imageFolderDTO));
             assertTrue(renamedFolder.exists());
             assertFalse(newFolder.exists());
+
+	        final ImageDTO imageDTO = imageService.getImage(testDocumentId, imageJPA.getIndex(), imageJPA.getLanguage().getCode(), imageJPA.getLoopEntryRef());
+	        assertEquals(newTestImagePath, imageDTO.getPath());
         }
+
+		removeUserDomainObject();
     }
 
     @Test
@@ -203,12 +226,22 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void renameFolder_When_FolderExistsNestedInRootImagesDirectory_Expect_True() throws Exception {
+    public void renameFolder_When_FolderExistsNestedInRootImagesDirectory_Expect_True_And_UpdatedImageUrl() throws Exception {
+	    setUserDomainObject();
+
         final String newFolderName = "new_test_folder";
         final String newNestedFolderName = "nested_folder";
         final String path = newFolderName + separator + newNestedFolderName;
         final String nestedFolderNewName = "new_name";
         final String renamedFolderPath = newFolderName + separator + nestedFolderNewName;
+
+	    final String testImageName = "testImage";
+	    final String testImagePath = newFolderName + separator + newNestedFolderName + separator + "testImage";
+	    final String newTestImagePath = renamedFolderPath + separator + "testImage";
+
+	    final Integer testDocumentId = documentDataInitializer.createData().getId();
+	    final Version version = versionService.create(testDocumentId, 1);
+	    final ImageJPA imageJPA = imageDataInitializer.createData(1, testImageName, testImagePath, version);
 
         try (DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName);
              DeleteOnCloseFile newNestedFolder = new DeleteOnCloseFile(imagesPath, path);
@@ -235,7 +268,11 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(renamedFolder.exists());
             assertFalse(newNestedFolder.exists());
             assertTrue(FileUtility.forceDelete(renamedFolder));
+
+	        final ImageDTO imageDTO = imageService.getImage(testDocumentId, imageJPA.getIndex(), imageJPA.getLanguage().getCode(), imageJPA.getLoopEntryRef());
+	        assertEquals(newTestImagePath, imageDTO.getPath());
         }
+	    removeUserDomainObject();
     }
 
     @Test
@@ -637,4 +674,15 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         assertNotNull(usages);
         assertTrue(usages.isEmpty());
     }
+
+	private void setUserDomainObject() {
+		final UserDomainObject user = new UserDomainObject(1);
+		user.setRoleIds(Collections.singleton(Roles.SUPER_ADMIN.getId()));
+		user.setLanguageIso639_2("eng"); // user lang should exist in common content
+		Imcms.setUser(user);
+	}
+
+	private void removeUserDomainObject() {
+		Imcms.removeUser();
+	}
 }

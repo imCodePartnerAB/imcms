@@ -162,7 +162,7 @@ define(
 		}
 
 		function onCloseWindow() {
-			if (imageContentBuilder.isSelectedImageMoved())
+			if (imageContentBuilder.isSelectedImageChanged())
 				showImageStrategyHandler(false);
 		}
 
