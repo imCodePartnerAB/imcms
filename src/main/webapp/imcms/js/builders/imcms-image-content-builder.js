@@ -44,7 +44,7 @@ define("imcms-image-content-builder",
             }
         });
 
-        function onFolderRenamed(response) {
+	    function onFolderRenamed(oldFolderPath, response) {
             if (response) {
                 this.$block.parent().attr("data-folder-name", this.name);
 
@@ -55,11 +55,10 @@ define("imcms-image-content-builder",
                 this.$block.remove();
 
 	            if (selectedImage) {
-		            const newFolderName = this.path;
-		            const lengthToCut = newFolderName.length;
+		            const newFolderPath = this.path;
 		            const oldImageFullPath = selectedImage.path;
 
-		            selectedFullImagePath = newFolderName + oldImageFullPath.substring(lengthToCut);
+		            selectedFullImagePath = oldImageFullPath.replace(oldFolderPath, newFolderPath)
 		            selectedImage.path = selectedFullImagePath;
 		            selectedImageChanged = true;
 	            }
@@ -310,10 +309,12 @@ define("imcms-image-content-builder",
                     onConfirm(dataOnConfirm)
                         .done(response => {
                             if (response) {
-                                if (!isNewFolder) {
+	                            const oldFolderPath = opts.folder.path;
+
+	                            if (!isNewFolder) {
                                     opts.folder.path = contextOnSuccess.path;
                                 }
-                                onSuccess.call(contextOnSuccess, response);
+                                onSuccess.call(contextOnSuccess, oldFolderPath, response);
                             }
                         })
                         .fail(() => modal.buildErrorWindow(texts.error.addFolderFailed));
