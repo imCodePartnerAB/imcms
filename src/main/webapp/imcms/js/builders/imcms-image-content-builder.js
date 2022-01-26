@@ -68,7 +68,7 @@ define("imcms-image-content-builder",
             }
         }
 
-        function onFolderCreated(response) {
+	    function onFolderCreated(oldFolderPath, response) {
             if (response) {
                 const newFolder = {
                     name: this.name,
