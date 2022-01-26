@@ -161,19 +161,23 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
                 $calendar = $btn.parents(".imcms-calendar"),
                 $input = $btn.parents(".imcms-date-picker")
                     .find(".imcms-current-date__input"),
-                curDate = $input
+                date = $input
                     .val()
                     .split("-");
-            let year = curDate[0],
-                month = curDate[1];
-            const date = "01"
-            ;
 
-            if ($input.hasClass("imcms-currrent-date__input--error")) {
-                const currentDate = new Date();
-                year = currentDate.getFullYear().toString();
-                month = (currentDate.getMonth() + 1).toString();
-            } else {
+            const currentDate = new Date();
+            let year = currentDate.getFullYear().toString();
+            let month = (currentDate.getMonth() + 1).toString();
+            const day = "01"
+            if (!$input.hasClass("imcms-currrent-date__input--error")) {
+                if (date.length < 3) {
+                    const currentDate = new Date();
+                    year = currentDate.getFullYear().toString();
+                    month = (currentDate.getMonth() + 1).toString();
+                } else {
+                    year = date[0];
+                    month = date[1];
+                }
                 month = $btn.hasClass("imcms-button--prev") ? +month - 1 : +month + 1;
 
                 if (month > 12) {
@@ -189,9 +193,9 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
                 month = month < 10 ? "0" + month : month.toString();
             }
 
-            if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($input, [year, month, date])) {
-                $input.val(year + "-" + month + "-" + date);
-                buildCalendar(year, month, date, $calendar);
+            if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($input, [year, month, day])) {
+                $input.val(year + "-" + month + "-" + day);
+                buildCalendar(year, month, day, $calendar);
                 selectDate(1, $calendar);
             }
         }

@@ -328,8 +328,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         deleteDocumentContent(docIdToDelete);
 
         metaRepository.delete(docIdToDelete);
-        documentIndex.removeDocument(docIdToDelete);
         documentMapper.invalidateDocument(docIdToDelete);
+        documentIndex.removeDocument(docIdToDelete);
     }
 
     @Override
