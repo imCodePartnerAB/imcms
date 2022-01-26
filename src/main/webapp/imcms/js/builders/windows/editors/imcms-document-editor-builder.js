@@ -80,6 +80,7 @@ define('imcms-document-editor-builder',
 
         const menuItemsListSelector = '.imcms-menu-items-list';
         const menuItemsSelector = '.imcms-menu-items';
+	    const menuDocItemCopy = '.imcms-doc-item-copy';
 
         function get$menuItemsList() {
             return $(menuItemsListSelector);
@@ -759,21 +760,11 @@ define('imcms-document-editor-builder',
                     'left': (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
                 });
 
-                if (detectTargetArea(event)) {
-                    if ($menuArea.css('border-color') !== '#51aeea') {
-                        $menuArea.css({
-                            'border-color': '#51aeea'
-                        });
-                    }
-
-                    getDocumentParent();
-
-                } else {
-                    $menuArea.css({
-                        'border-color': 'transparent'
-                    });
-                    disableHighlightingMenuDoc();
-                }
+	            if (detectTargetArea(event)) {
+		            getDocumentParent();
+	            } else {
+		            $(menuDocItemCopy).remove();
+	            }
 
             }
         }
@@ -791,7 +782,7 @@ define('imcms-document-editor-builder',
 
         function detectTargetArea(event) {
             return (event.clientY > menuAreaProp.top) &&
-	            (event.clientY < menuAreaProp.bottom) &&
+	            (event.clientY < menuAreaProp.bottom + menuAreaProp.top) &&
 	            (event.clientX > menuAreaProp.left) &&
 	            (event.clientX < menuAreaProp.right);
         }
@@ -807,12 +798,6 @@ define('imcms-document-editor-builder',
             });
 
             return menuDoc;
-        }
-
-        function disableHighlightingMenuDoc() {
-            get$menuItemsList().find(menuItemsSelector).css({
-                'border': 'none'
-            });
         }
 
         function removedPreviousItemFrame() {
@@ -838,7 +823,7 @@ define('imcms-document-editor-builder',
 
         function createMenuItemFrame(menuDoc, placeStatus, frameTop) {
             const insertedParent = {
-                    parent: frameTop < topPointMenu ? null : menuDoc,
+		            parent: frameTop < topPointMenu || (frameTop > topPointMenu && frameTop < menuAreaProp.bottom+ menuAreaProp.top) ? null : menuDoc,
                     status: placeStatus,
                     frameTopPos: frameTop
                 },
@@ -864,13 +849,6 @@ define('imcms-document-editor-builder',
             ;
 
             // false -> under parent; true -> in parent; null -> under all
-            function highlightMenuDoc() {
-                disableHighlightingMenuDoc();
-                get$menuItemsList().find('.imcms-doc-item-copy').css({
-                    'border': '1px dashed red'
-                });
-            }
-
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
@@ -890,12 +868,11 @@ define('imcms-document-editor-builder',
                 createMenuItemFrame(menuDoc, placeStatus, frameTop);
             }
 
-            // highlightingMenuDoc
-            if (placeStatus !== null) {
-                highlightMenuDoc();
-            } else {
-                disableHighlightingMenuDoc();
-            }
+			if (frameTop > topPointMenu && frameTop < menuAreaProp.bottom + menuAreaProp.top) {
+				menuDoc = getFirstItemInMenuArea();
+				placeStatus = false;
+				createMenuItemFrame(menuDoc, placeStatus, frameTop)
+			}
 
             return {
                 parent: menuDoc,
@@ -965,6 +942,10 @@ define('imcms-document-editor-builder',
 		        'data-current-version': frameItem.attr('data-current-version'),
 	        });
             dataInput.attr('data-title', frameItem.attr('data-title')).trigger('change');
+
+	        $(menuDocItemCopy).css({
+		        'border': '1px dashed red'
+	        });
         }
 
         function toggleUserSelect(flag) {
@@ -972,7 +953,6 @@ define('imcms-document-editor-builder',
                 $('.imcms-frame-layout').css({'display': 'block'});
             } else {
                 $('.imcms-frame-layout').remove();
-                disableHighlightingMenuDoc();
             }
         }
 
@@ -997,16 +977,12 @@ define('imcms-document-editor-builder',
                     setDataInputParams(insertedParent, frameItem);
                 }
 
-                $menuArea.css({
-                    'border-color': 'transparent'
-                });
-                $menuItemsList.find('.imcms-doc-item-copy').removeClass('imcms-doc-item-copy');
-                disableHighlightingMenuDoc();
+                $menuItemsList.find(menuDocItemCopy).removeClass('imcms-doc-item-copy');
             }
 
             toggleUserSelect(false);
 
-	        $menuItemsList.find('.imcms-doc-item-copy').remove();
+	        $menuItemsList.find(menuDocItemCopy).remove();
 			refreshDocumentInList(getDocumentById(frameItem.attr('data-id')),false);
             $frame.remove();
             isMouseDown = false;
