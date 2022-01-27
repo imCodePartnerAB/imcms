@@ -1,67 +1,21 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
-import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
-import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.component.ImageCacheManager;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
-import com.imcode.imcms.domain.dto.RoleDTO;
-import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.PropertyService;
-import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.model.Language;
-import com.imcode.imcms.model.Loop;
-import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Menu;
-import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.model.*;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
-import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.persistence.repository.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -82,23 +36,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -377,20 +324,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void save_When_CreatedAndModifiedAndArchivedAndPublishedAndDepublishedAttributesSet_Expect_Saved() {
+	    final UserDomainObject currentUser = Imcms.getUser();
 
-        final UserDomainObject currentUser = new UserDomainObject(1);
-        currentUser.addRoleId(Roles.SUPER_ADMIN.getId());
-        currentUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        Imcms.setUser(currentUser); // means current user is admin now
-
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final User user = userDataInitializer.createData("testUser");
-
+	    final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         final Supplier<AuditDTO> auditCreator = () -> {
             final AuditDTO auditDTO = new AuditDTO();
             auditDTO.setDateTime(new Date());
-            auditDTO.setId(user.getId());
-            auditDTO.setBy(user.getLogin());
+	        auditDTO.setId(currentUser.getId());
+	        auditDTO.setBy(currentUser.getLogin());
             return auditDTO;
         };
 

@@ -43,7 +43,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
                                      boolean isEnabledEngContent, boolean isEnabledSweContent) {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
-            meta.setArchiverId(1);
             meta.setCategories(new HashSet<>());
             meta.setCreatedDatetime(new Date());
             meta.setCreatorId(1);
@@ -56,7 +55,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
             meta.setPublicationStatus(status);
-            meta.setPublisherId(1);
             meta.setSearchDisabled(false);
             meta.setTarget("test");
         });

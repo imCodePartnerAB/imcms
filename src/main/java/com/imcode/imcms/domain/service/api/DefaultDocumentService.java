@@ -172,9 +172,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         commonContentService.save(docId, saveMe.getCommonContents());
 
-        saveMe.setModified(auditData(meta.getModifiedDatetime(), currentUser));
-        saveMe.setPublished(auditData(meta.getPublicationStartDatetime(), currentUser));
-
         if (!isNew && (!Imcms.isVersioningAllowed() || Meta.PublicationStatus.APPROVED == saveMe.getPublicationStatus())) {
             documentMapper.invalidateDocument(id);
         }
@@ -213,8 +210,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
 
-        if (publicationStartDatetime == null) publishMe.setPublicationStartDatetime(new Date());
-
+	    if (publicationStartDatetime == null) {
+		    publishMe.setPublisherId(userId);
+		    publishMe.setPublicationStartDatetime(new Date());
+	    }
         metaRepository.save(publishMe);
 
         return true;
