@@ -1009,12 +1009,12 @@ define('imcms-document-editor-builder',
                     tooltip: texts.status.tooltip.disapproved,
                 },
                 ARCHIVED: {
-                    title: texts.status.archived,
-                    tooltip: texts.status.archived,
+                    title: texts.status.title.archived,
+                    tooltip: texts.status.tooltip.archived,
                 },
                 PASSED: {
-                    title: texts.status.passed,
-                    tooltip: texts.status.passed,
+                    title: texts.status.title.passed,
+                    tooltip: texts.status.tooltip.passed,
                 },
             }[documentStatus];
         }
