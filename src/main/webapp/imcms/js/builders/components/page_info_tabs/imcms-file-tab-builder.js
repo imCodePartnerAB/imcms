@@ -32,9 +32,9 @@ define("imcms-file-tab-builder",
             const $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.isDefault});
 
             return filesContainerHeadBEM.buildBlock("<div>", [
-                {"title": $idTitle},
-                {"title": $nameTitle},
-                {"title": $isDefaultFileTitle}
+                {"id": $idTitle},
+                {"name": $nameTitle},
+                {"default": $isDefaultFileTitle}
             ]);
         }
 
@@ -51,7 +51,7 @@ define("imcms-file-tab-builder",
                 block: "file-row",
                 elements: {
                     "id": components.texts.textInput({value: file.fileId}),
-                    "name": $("<div>", {text: file.filename}),
+                    "name": components.texts.infoText("<div>", file.filename),
                     "default": $isDefaultFileRadioBtn,
                     "delete": components.controls.remove(() => {
                         $row.remove();

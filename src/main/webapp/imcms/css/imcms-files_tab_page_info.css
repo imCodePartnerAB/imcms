@@ -1,22 +1,26 @@
-.files-container__head .files-container-head__title:first-child,
-.files-container__head .files-container-head__title:nth-child(2) {
-    text-align: left;
-}
-
-.files-container__head .files-container-head__title:last-child {
-    text-align: right;
-}
-
-.files-container__head .files-container-head__title {
+.files-container__head > div {
     text-align: center;
     text-transform: uppercase;
     display: block;
     float: left;
+}
+
+.files-container__head .files-container-head__id {
     width: 30%;
+    text-align: left;
+}
+
+.files-container__head .files-container-head__name {
+    width: 51%;
+    text-align: left;
+}
+
+.files-container__head .files-container-head__default {
+    width: 13%;
 }
 
 .files-container-body__file-row {
-    display: inline-block;
+    display: flex;
     width: 100%;
 }
 
@@ -30,19 +34,21 @@
 }
 
 .files-container-body__file-row .file-row__name {
-    width: 55%;
+    width: 51%;
     text-align: left;
-    margin-left: 2%;
-    line-height: 2;
+    line-height: 1;
+    margin: auto 0 auto 2%;
 }
 
 .files-container-body__file-row .file-row__default {
-    width: auto;
+    display: flex;
+    place-content: center;
+    width: 13%;
     margin-top: 1.5%;
 }
 
 .files-container-body__file-row .file-row__delete {
     width: 16px;
     margin-top: 1.5%;
-    margin-left: 7%;
+    margin-left: auto;
 }
