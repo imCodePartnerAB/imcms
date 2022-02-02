@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="inc_header.jsp" flush="true"/>
 
-<div>
+<div class="imcms-title" style="word-break: break-word">
     <fmt:message key="passwordreset.confirmation.email_sent" bundle="${requestScope['resource_property']}">
         <fmt:param value="<%=request.getParameter(PasswordReset.REQUEST_USER_IDENTITY)%>"/>
         <fmt:param value="<%=Imcms.getServices().getSystemData().getServerMasterAddress()%>"/>

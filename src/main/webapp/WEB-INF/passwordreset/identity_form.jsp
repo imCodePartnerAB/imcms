@@ -43,8 +43,8 @@
         </div>
         <% } %>
         <div class="imcms-field">
-            <div class="imcms-title">
-	            <%= formInfo.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage")) %>
+            <div class="imcms-title" style="word-break: break-word">
+                <%= formInfo.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage")) %>
             </div>
         </div>
         <div class="imcms-field">
@@ -55,7 +55,7 @@
                     <div class="imcms-text-box">
                         <label for="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                class="imcms-label imcms-text-box__label">
-	                        <%=formLabelEmail.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
+                            <%=formLabelEmail.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
                         </label>
                         <input id="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                name="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
@@ -71,7 +71,7 @@
         <button type="submit"
                 form="PasswordReset"
                 class="imcms-button imcms-button--positive imcms-modal-admin-footer__button">
-	        <%=formSubmit.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
+            <%=formSubmit.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
         </button>
     </div>
 </div>

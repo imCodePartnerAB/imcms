@@ -41,7 +41,7 @@
 			<% } %>
 
 		<div class="imcms-field">
-			<div class="imcms-title">
+			<div class="imcms-title" style="word-break: break-word">
 				<fmt:message key="passwordreset.password_reset_form_info" bundle="${resource_property}"/>
 			</div>
 

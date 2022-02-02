@@ -41,4 +41,5 @@
 
 .imcms-document-profile-select-window__body .imcms-document-profile__choose-the-way .new-doc-parent-options__title {
     padding-bottom: 15px;
+    word-break: break-word;
 }
