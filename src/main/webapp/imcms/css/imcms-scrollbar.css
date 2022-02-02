@@ -169,3 +169,17 @@
 .imcms-info-page::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
+
+.rules-table-elements::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.rules-table-elements::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
+.rules-table-elements::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}

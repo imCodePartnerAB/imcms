@@ -955,14 +955,19 @@
 
 .rules-table {
     height: 400px;
-    overflow-y: auto;
     background-color: #ececec;
     border: solid 1px #d1d2c6;
     word-break: break-word;
 }
 
 .rule-title-row {
-    margin-top: 20px;
+    height: 12%;
+    border-bottom: solid 1px #d1d2c6;
+}
+
+.rules-table-elements{
+    overflow-y: scroll;
+    height: 88%;
 }
 
 .rule-title-row__rule-enabled,
@@ -971,6 +976,11 @@
 .rule-title-row__rule-role,
 .rule-title-row__rule-user {
     text-align: center;
+}
+
+.rule-row{
+    min-height: 35px;
+    cursor: pointer;
 }
 
 .rule-row__rule-enabled,
@@ -1004,6 +1014,10 @@
     width: 0;
 }
 
+.rule-row .imcms-checkbox {
+    margin: 0;
+}
+
 .rule-row__rule-ip-range,
 .rule-title-row__rule-ip-range {
     width: 47%;
@@ -1035,6 +1049,11 @@
 .rules-editor__rule-user-row,
 .rules-editor__rule-role-row {
     width: 49%;
+}
+
+.ip-range__ip-range1,
+.ip-range__ip-range2{
+    min-height: 90px;
 }
 
 .rules-editor__rule-range-row > div {

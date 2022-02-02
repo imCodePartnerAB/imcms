@@ -89,6 +89,10 @@ define(
                     event.target.checkValidity();
                 })
                 .attr('pattern', '^$|((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))');
+
+            $ruleRange1Error = components.texts.errorText("<div>", texts.error.invalidIP, {style: 'display: none;'});
+            $ruleRange1Row.append($ruleRange1Error);
+
             return $ruleRange1Row;
 
         }
@@ -102,6 +106,10 @@ define(
                     event.target.checkValidity();
                 })
                 .attr('pattern', '^$|((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))');
+
+            $ruleRange2Error = components.texts.errorText("<div>", texts.error.invalidIP, {style: 'display: none;'});
+            $ruleRange2Row.append($ruleRange2Error);
+
             return $ruleRange2Row;
         }
 
@@ -235,11 +243,18 @@ define(
                     rulesAPI.replace(saveMe)
                         .done(savedRule => {
                             currentRule = savedRule;
-                            $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
-                            $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
+
+                            const role = receivedRoles.find(role => role.id === currentRule.roleId);
+                            const user = receivedUsers.find(user => user.id === currentRule.userId);
+
+                            $ruleRow.find('.rule-row__rule-enabled > :input').prop("checked", currentRule.enabled);
+                            $ruleRow.find('.rule-row__rule-restricted > :input').prop("checked", currentRule.restricted);
                             $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
-                            $ruleRow.find('.rule-row__rule-role').text(receivedRoles[currentRule.roleId].name);
-                            $ruleRow.find('.rule-row__rule-user').text(receivedUsers[currentRule.userId].login);
+
+                            $ruleRow.find('.rule-row__rule-role').text(role ? role.name : "");
+                            $ruleRow.find('.rule-row__rule-role').data("id", role ? role.id : "");
+                            $ruleRow.find('.rule-row__rule-user').text(user ? user.login : "");
+                            $ruleRow.find('.rule-row__rule-user').data("id", user ? user.id : "");
 
                             onRuleView = onRuleSimpleView;
                             prepareRuleView();
@@ -249,7 +264,7 @@ define(
                     rulesAPI.create(saveMe)
                         .done(rule => {
                             $ruleRow = ruleToRow.transform((currentRule = rule), ruleEditor);
-                            $container.parent().find('.rules-table').append($ruleRow);
+                            $container.parent().find('.rules-table-elements').append($ruleRow);
 
                             onRuleView = onRuleSimpleView;
                             prepareRuleView();
@@ -301,10 +316,10 @@ define(
             onEditDelegate = onSimpleEdit;
 
             $ruleRow.parent()
-                .find('.rules-table__rule-row--active')
-                .removeClass('rules-table__rule-row--active');
+                .find('.rules-table-elements__rule-row--active')
+                .removeClass('rules-table-elements__rule-row--active');
 
-            $ruleRow.addClass('rules-table__rule-row--active');
+            $ruleRow.addClass('rules-table-elements__rule__rule-row--active');
 
             $ruleEditButtons.slideDown();
 
@@ -313,8 +328,9 @@ define(
             $ruleRange2Row.setValue(ipRange[1]);
             $enableRuleCheckbox.setChecked(currentRule.enabled);
             $restrictRuleCheckbox.setChecked(currentRule.restricted);
-            $userSelect.selectValue(currentRule.userId);
-            $userRoleSelect.selectValue(currentRule.roleId);
+
+            currentRule.userId ? $userSelect.selectValue(currentRule.userId) : $userSelect.selectFirst();
+            currentRule.roleId ? $userRoleSelect.selectValue(currentRule.roleId) : $userRoleSelect.selectFirst();
 
             $container.css('display', 'inline-block');
         }
@@ -337,7 +353,6 @@ define(
                 elements: {
                     'rule-modifiers': buildRuleModifiers(),
                     'rule-range-row': buildRuleRangeRow(),
-                    'rule-range-error-row': buildRuleRangeErrorsRow(),
                     'rule-user-row': buildRuleUserRow(),
                     'rule-role-row': buildRuleRoleRow(),
                     'rule-edit-buttons': buildRuleEditButtons()

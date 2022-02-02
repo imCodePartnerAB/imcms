@@ -43,15 +43,15 @@ define(
                 .fail(() => modal.buildErrorWindow(texts.error.loadFailed))
         }
 
-        let $rulesContainer;
+        let $ruleElementsContainer;
 
         function buildTabTitle() {
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title));
         }
 
         function onCreateNewRule() {
-            $rulesContainer.find('.rules-table__rule-row--active')
-                .removeClass('rules-table__rule-row--active');
+            $ruleElementsContainer.find('.rules-table-elements__rule-row--active')
+                .removeClass('rules-table-elements__rule-row--active');
 
             ruleEditor.editRule($('<div>'), {
                 id: null,
@@ -71,13 +71,18 @@ define(
         }
 
         function buildRulesContainer() {
-            $rulesContainer = $('<div>', {
+            const $rulesContainer = $('<div>', {
                 'class': 'rules-table'
             });
 
+            $ruleElementsContainer = $('<div>', {
+                'class': 'rules-table-elements'
+            });
+
             ruleLoader.whenRulesLoaded(rules => {
+                $ruleElementsContainer.append(rules.map(rule => ruleToRow.transform(rule, ruleEditor)));
                 $rulesContainer.append(prepareTitleRow());
-                $rulesContainer.append(rules.map(rule => ruleToRow.transform(rule, ruleEditor)));
+                $rulesContainer.append($ruleElementsContainer);
             });
 
             return fieldWrapper.wrap([ruleEditor.buildContainer(), $rulesContainer]);
@@ -91,8 +96,8 @@ define(
                     'rule-enabled': $('<div>', {text: texts.fields.enabled}),
                     'rule-restricted': $('<div>', {text: texts.fields.restricted}),
                     'rule-ip-range': $('<div>', {text: texts.fields.ipRange}),
-                    'rule-role': $('<div>', {text: texts.fields.role}),
                     'rule-user': $('<div>', {text: texts.fields.user}),
+                    'rule-role': $('<div>', {text: texts.fields.role}),
                     'rule-actions': $('<div>', {})
                 }
             }).buildBlockStructure('<div>', {

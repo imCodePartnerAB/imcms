@@ -6,9 +6,18 @@ define('imcms-rule-to-row-transformer',
     ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
     function (BEM, $, components) {
 
-        function getOnRuleClicked(rule, ruleEditor) {
+        function getOnRuleClicked(ruleId, ruleEditor) {
             return function () {
                 let $this = $(this);
+
+                const rule = {
+                    enabled: $this.find('.rule-row__rule-enabled > :input').is(':checked'),
+                    id: ruleId,
+                    ipRange: $this.find('.rule-row__rule-ip-range').text(),
+                    restricted: $this.find('.rule-row__rule-restricted > :input').is(':checked'),
+                    roleId: $this.find('.rule-row__rule-role').data('id'),
+                    userId: $this.find('.rule-row__rule-user').data('id'),
+                }
 
                 if ($this.hasClass('rule-row--active')) {
                     return;
@@ -24,7 +33,7 @@ define('imcms-rule-to-row-transformer',
 
                 let ruleRowAttributes = {
                     id: `rule-id-${rule.id}`,
-                    click: getOnRuleClicked(rule, ruleEditor)
+                    click: getOnRuleClicked(rule.id, ruleEditor)
                 };
 
                 let userLogin = users.find((user) => user.id === rule.userId);
@@ -44,11 +53,13 @@ define('imcms-rule-to-row-transformer',
                         "rule-ip-range": $('<div>', {
                             text: rule.ipRange
                         }),
-                        "rule-role": $('<div>', {
-                            text: roleName ? roleName.name : ''
-                        }),
                         "rule-user": $('<div>', {
+                            'data-id': rule.userId,
                             text: userLogin ? userLogin.login : ''
+                        }),
+                        "rule-role": $('<div>', {
+                            'data-id': rule.roleId,
+                            text: roleName ? roleName.name : ''
                         }),
                         'rule-delete': components.controls.remove(ruleEditor.deleteRule)
                     },
