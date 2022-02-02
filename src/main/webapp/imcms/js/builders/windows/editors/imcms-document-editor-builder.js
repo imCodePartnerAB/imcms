@@ -9,11 +9,11 @@ define('imcms-document-editor-builder',
         'imcms-categories-rest-api', 'imcms-window-builder', 'jquery', 'imcms', 'imcms-modal-window-builder',
         'imcms-document-type-select-window-builder', 'imcms-i18n-texts', 'imcms-events',
         'imcms-document-profile-select-window-builder', 'imcms-document-copy-rest-api',
-        'imcms-modal-window-builder'
+        'imcms-document-status', 'imcms-modal-window-builder'
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, modal) {
+              docProfileSelectBuilder, docCopyRestApi, docStatus, modal) {
 
         const textNone = texts.none;
         texts = texts.editors.document;
@@ -990,35 +990,6 @@ define('imcms-document-editor-builder',
             $sortOrder.click();
         });
 
-        function getDocumentStatusTexts(documentStatus, publishedDate) {
-            return {
-                PUBLISHED: {
-                    title: texts.status.title.published,
-                    tooltip: texts.status.tooltip.published + ' ' + publishedDate,
-                },
-                PUBLISHED_WAITING: {
-                    title: texts.status.title.publishedWaiting,
-                    tooltip: texts.status.tooltip.publishedWaiting,
-                },
-                IN_PROCESS: {
-                    title: texts.status.title.inProcess,
-                    tooltip: texts.status.tooltip.inProcess,
-                },
-                DISAPPROVED: {
-                    title: texts.status.title.disapproved,
-                    tooltip: texts.status.tooltip.disapproved,
-                },
-                ARCHIVED: {
-                    title: texts.status.title.archived,
-                    tooltip: texts.status.tooltip.archived,
-                },
-                PASSED: {
-                    title: texts.status.title.passed,
-                    tooltip: texts.status.tooltip.passed,
-                },
-            }[documentStatus];
-        }
-
         function getDocumentVersionTexts(hasNewerVersion) {
             return hasNewerVersion
                 ? {tooltip: texts.version.tooltip.hasNewerVersion}
@@ -1138,7 +1109,7 @@ define('imcms-document-editor-builder',
             });
             $docItemType.modifiers = ['type'];
 
-            const docStatusTexts = getDocumentStatusTexts(document.documentStatus, docPublishedDate);
+            const docStatusTexts = docStatus.getDocumentStatusTexts(document.documentStatus, docPublishedDate);
             const $docStatus = components.texts.titleText('<div>', docStatusTexts.title, {
                 class: 'imcms-grid-col-1',
             });
@@ -1440,7 +1411,6 @@ define('imcms-document-editor-builder',
             incrementDocumentNumber,
             initMenuDocuments,
             addDocumentToList,
-            getDocumentStatusTexts,
             getDocumentVersionTexts,
             getIdTooltipText,
             getModifiedDateTooltipText,

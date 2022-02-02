@@ -348,24 +348,6 @@ const texts = {
                         noWorkingVersion: 'Dokumentet har ingen arbetsversion',
                     },
                 },
-                status: {
-                    title: {
-                        published: "Publicerad",
-                        publishedWaiting: "Godkänd, väntar",
-                        inProcess: "Nytt, u a",
-                        disapproved: "Ej godkänd",
-                        archived: "Arkiverat",
-                        passed: "Avslutad"
-                    },
-                    tooltip: {
-                        published: "Dokumentet är publicerat",
-                        publishedWaiting: "Godkänd, väntar",
-                        inProcess: "Dokumentet är nytt och under arbete",
-                        disapproved: "Ej godkänd",
-                        archived: "Arkiverat",
-                        passed: "Avslutad"
-                    },
-                },
                 error: {
                     searchFailed: 'Inga sökresultat',
                     userLoadFailed: 'Misslyckades med att hämta användare. Försök igen',
@@ -592,6 +574,24 @@ const texts = {
                     filterFailed: 'Det gick inte att filtrera text. Try again',
                 }
             }
+        },
+        status: {
+            title: {
+                published: "Publicerad",
+                publishedWaiting: "Godkänd, väntar",
+                inProcess: "Nytt, u a",
+                disapproved: "Ej godkänd",
+                archived: "Arkiverat",
+                passed: "Avslutad"
+            },
+            tooltip: {
+                published: "Dokumentet är publicerat",
+                publishedWaiting: "Godkänd, väntar",
+                inProcess: "Dokumentet är nytt och under arbete",
+                disapproved: "Ej godkänd",
+                archived: "Arkiverat",
+                passed: "Avslutad"
+            },
         },
         languageFlags: {
             alertInfoLanguage: 'Språket kommer att gälla efter ny inloggning (lang:',
@@ -1353,24 +1353,6 @@ const texts = {
                         noWorkingVersion: 'The document has no working version',
                     },
                 },
-                status: {
-                    title: {
-                        published: "A, p",
-                        publishedWaiting: "A, w",
-                        inProcess: "New, u c",
-                        disapproved: "D",
-                        archived: "Arc",
-                        passed: "P end"
-                    },
-                    tooltip: {
-                        published: "The document is published",
-                        publishedWaiting: "Approved, waiting",
-                        inProcess: "The document is new and under construction",
-                        disapproved: "Disapproved",
-                        archived: "Archived",
-                        passed: "Publication end"
-                    },
-                },
                 error: {
                     searchFailed: 'No search result',
                     userLoadFailed: 'Failed to fetch users. Try again',
@@ -1596,6 +1578,24 @@ const texts = {
                     filterFailed: 'Failed to filter text. Try again',
                 }
             }
+        },
+        status: {
+            title: {
+                published: "A, p",
+                publishedWaiting: "A, w",
+                inProcess: "New, u c",
+                disapproved: "D",
+                archived: "Arc",
+                passed: "P end"
+            },
+            tooltip: {
+                published: "The document is published",
+                publishedWaiting: "Approved, waiting",
+                inProcess: "The document is new and under construction",
+                disapproved: "Disapproved",
+                archived: "Archived",
+                passed: "Publication end"
+            },
         },
         languageFlags: {
             alertInfoLanguage: 'Language will effect after new login (lang: ',

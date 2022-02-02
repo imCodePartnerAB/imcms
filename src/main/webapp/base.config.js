@@ -77,6 +77,7 @@ module.exports = {
                         'imcms-logger',
                         'imcms-authentication',
                         'imcms-document-types',
+                        'imcms-document-status',
                         'imcms-calendar',
                         'imcms-date-picker',
                         'imcms-time-picker',

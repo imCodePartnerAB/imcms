@@ -1,12 +1,30 @@
 define("imcms-status-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-page-info-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-document-status", "imcms-page-info-tab"
     ],
-    function (BEM, components, texts, $, PageInfoTab) {
+    function (BEM, components, texts, $, docStatus, PageInfoTab) {
 
         texts = texts.pageInfo.status;
 
+        let $currentStatus;
         const tabData = {};
+
+        function buildCurrentStatusInfoRow(){
+            $currentStatus = components.texts.infoText('<div>');
+
+            return new BEM({
+                block: "imcms-field",
+                elements: {
+                    "current-status": $currentStatus
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function setCurrentStatus(document){
+            const status = docStatus.getDocumentStatusTexts(document.documentStatus, document.published.date).tooltip;
+
+            $currentStatus.text(status);
+        }
 
         function buildRowBlock($dateTimeField, $doneByInput) {
             $dateTimeField.modifiers = ["col-3", "float-l"];
@@ -90,9 +108,16 @@ define("imcms-status-tab-builder",
             return true; // all supported
         };
 
-        StatusTab.prototype.tabElementsFactory = () => statusRows.map(buildStatusInfoRow);
+        StatusTab.prototype.tabElementsFactory = () => {
+            const tabElements = [];
+            tabElements.push(buildCurrentStatusInfoRow());
+            statusRows.forEach(statusRow => tabElements.push(buildStatusInfoRow(statusRow)));
+
+            return tabElements;
+        }
 
         StatusTab.prototype.fillTabDataFromDocument = document => {
+            setCurrentStatus(document);
             statusRows.forEach(statusTab => {
                 setStatusInfoRowDataFromDocument(statusTab.dataTitle, document);
             });
