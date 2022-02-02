@@ -12,6 +12,9 @@ import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
@@ -147,8 +150,8 @@ class MappingConfig {
     @Bean
     public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath,
                                                            @Value("${rootPath}") Path rootPath) {
-
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
+        final String generatedFolderPath = ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
+        final String generatedImagesPath = imagesPath + generatedFolderPath;
         // Path.SEPARATOR slashes use in everywhere, for different OS
         final Path currentImagesPath = Paths.get(rootPath.toString(), imagesPath);
         return image -> {
@@ -168,7 +171,10 @@ class MappingConfig {
                     && !image.getGeneratedFilename().equals("");
 
             final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
+            final ImageSource imageSource = filenameExists ?
+                    new ImagesPathRelativePathImageSource(generatedFolderPath + image.getGeneratedFilename()) : new NullImageSource();
 
+            dto.setSource(imageSource);
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
             dto.setFormat(image.getFormat());
@@ -197,7 +203,8 @@ class MappingConfig {
 
     @Bean
     public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
+        final String generatedFolderPath = ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
+        final String generatedImagesPath = imagesPath + generatedFolderPath;
         // Path.SEPARATOR slashes use in everywhere, for different OS
 
         return image -> {
@@ -216,7 +223,9 @@ class MappingConfig {
                     && !image.getGeneratedFilename().equals("");
 
             final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
+            final ImageSource imageSource = filenameExists ? new ImagesPathRelativePathImageSource(generatedFolderPath + image.getGeneratedFilename()) : new NullImageSource();
 
+            dto.setSource(imageSource);
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
             dto.setFormat(image.getFormat());
