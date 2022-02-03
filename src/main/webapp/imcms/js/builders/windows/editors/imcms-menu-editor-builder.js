@@ -1049,7 +1049,7 @@ define("imcms-menu-editor-builder",
             );
             $currentVersion.modifiers = ['currentVersion'];
 
-            const documentStatusTexts = documentEditorBuilder.getDocumentStatusTexts(menuElement.documentStatus, menuElement.publishedDate);
+            const documentStatusTexts = docStatus.getDocumentStatusTexts(menuElement.documentStatus, menuElement.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
                 class: 'imcms-grid-col-13'
             });

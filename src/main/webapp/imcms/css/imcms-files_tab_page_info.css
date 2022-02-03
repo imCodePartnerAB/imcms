@@ -6,12 +6,12 @@
 }
 
 .files-container__head .files-container-head__id {
-    width: 30%;
+    width: 13%;
     text-align: left;
 }
 
 .files-container__head .files-container-head__name {
-    width: 51%;
+    width: 70%;
     text-align: left;
 }
 
@@ -22,6 +22,7 @@
 .files-container-body__file-row {
     display: flex;
     width: 100%;
+    margin-top: 10px;
 }
 
 .files-container-body__file-row * {
@@ -30,14 +31,16 @@
 }
 
 .files-container-body__file-row .file-row__id {
-    width: 28%;
+    width: 11%;
+    margin: auto 0;
 }
 
 .files-container-body__file-row .file-row__name {
-    width: 51%;
+    width: 70%;
     text-align: left;
     line-height: 1;
     margin: auto 0 auto 2%;
+    word-break: break-all;
 }
 
 .files-container-body__file-row .file-row__default {
