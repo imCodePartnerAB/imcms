@@ -183,6 +183,7 @@ class SuperAdminController {
         mav.setViewName("EditDocuments");
         mav.addObject("accessToDocumentEditor", accessService.getTotalRolePermissionsByUser(Imcms.getUser()).isAccessToDocumentEditor());
         addCommonModelData(returnUrl, request, mav);
+        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
 
         return mav;
     }

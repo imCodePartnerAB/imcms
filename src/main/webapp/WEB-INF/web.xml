@@ -176,6 +176,7 @@
         <url-pattern>/api/ip-rules/*</url-pattern>
         <url-pattern>/api/files/*</url-pattern>
         <url-pattern>/api/template-group/*</url-pattern>
+        <url-pattern>/api/sessions/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

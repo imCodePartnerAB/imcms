@@ -7,12 +7,11 @@
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 <%--@elvariable id="accessToAdminPages" type="boolean"--%>
 <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>
-<%--@elvariable id="isEditorUserPage" type="boolean"--%>
 
 <c:set var="isEditDocumentContent"
        value="${editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop}"
 />
 
-<c:if test="${isAdmin or isEditDocumentContent or editOptions.editDocInfo or accessToAdminPages or accessToDocumentEditor}">
+<c:if test="${isSuperAdmin or isEditDocumentContent or editOptions.editDocInfo or accessToAdminPages or accessToDocumentEditor}">
     <jsp:doBody/>
 </c:if>
