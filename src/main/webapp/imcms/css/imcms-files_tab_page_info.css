@@ -6,12 +6,12 @@
 }
 
 .files-container__head .files-container-head__id {
-    width: 13%;
+    width: 30%;
     text-align: left;
 }
 
 .files-container__head .files-container-head__name {
-    width: 70%;
+    width: 51%;
     text-align: left;
 }
 
@@ -31,12 +31,11 @@
 }
 
 .files-container-body__file-row .file-row__id {
-    width: 11%;
-    margin: auto 0;
+    width: 28%;
 }
 
 .files-container-body__file-row .file-row__name {
-    width: 70%;
+    width: 51%;
     text-align: left;
     line-height: 1;
     margin: auto 0 auto 2%;

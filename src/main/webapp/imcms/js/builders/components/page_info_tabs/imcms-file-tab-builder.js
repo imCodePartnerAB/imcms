@@ -55,6 +55,11 @@ define("imcms-file-tab-builder",
                     "default": $isDefaultFileRadioBtn,
                     "delete": components.controls.remove(() => {
                         $row.remove();
+
+                        let files;
+                        if($row.find('input:radio').is(':checked') && (files = $filesListContainerBody.children()).length > 0){
+                            $(files[0]).find('input:radio').prop('checked', true);
+                        }
                     })
                 }
             }).buildBlockStructure("<div>", {
