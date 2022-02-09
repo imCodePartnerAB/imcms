@@ -105,8 +105,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
         boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
+		Date publicationStartDatetime = meta.getPublicationStartDatetime();
+	    Date publicationEndDatetime = meta.getPublicationEndDatetime();
 
-        return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
+	    return publicationHasStartedAtTime(meta, date) && statusIsApproved &&
+			    (!publicationHasEndedAtTime(meta, date) || publicationEndDatetime.before(publicationStartDatetime));
     }
 
     private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
@@ -121,6 +124,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
         DocumentMeta meta = doc.getMeta();
+	    Date publicationStartDatetime = meta.getPublicationStartDatetime();
+	    Date publicationEndDatetime = meta.getPublicationEndDatetime();
         LifeCyclePhase lifeCyclePhase;
 
         Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
@@ -129,7 +134,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         } else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
             lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
         } else {
-            if (publicationHasEndedAtTime(meta, time)) {
+	        if (publicationHasEndedAtTime(meta, time) && (publicationHasStartedAtTime(meta, time) && publicationStartDatetime.before(publicationEndDatetime))
+			        || publicationStartDatetime == null) {
                 lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
             } else if (publicationHasStartedAtTime(meta, time)) {
                 if (hasBeenArchivedAtTime(meta, time)) {

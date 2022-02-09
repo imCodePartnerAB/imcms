@@ -118,6 +118,7 @@ define("imcms-date-time-builder",
 
             if (!withCalendar) {
                 attributes.readonly = "readonly";
+	            attributes.disabled = "disabled";
             }
 
             const $dateInput = dateInputContainerBEM.buildElement("input", "<input>", attributes),
@@ -229,6 +230,7 @@ define("imcms-date-time-builder",
 
             if (!withClock) {
                 attributes.readonly = "readonly";
+	            attributes.disabled = "disabled";
             }
 
             const $timeInput = timeInputBEM.buildElement("input", "<input>", attributes),

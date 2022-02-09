@@ -3,6 +3,7 @@ package imcode.server.document;
 import com.imcode.imcms.api.Document;
 import junit.framework.TestCase;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class TestDocumentDomainObject extends TestCase {
@@ -35,23 +36,29 @@ public class TestDocumentDomainObject extends TestCase {
         assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
 
         document.setPublicationEndDatetime(null);
-        assertLifeCyclePhase(LifeCyclePhase.APPROVED);
+        assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
 
         document.setArchivedDatetime(new Date(0));
-        assertLifeCyclePhase(LifeCyclePhase.APPROVED);
+        assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
 
         document.setPublicationStartDatetime(new Date(0));
         assertLifeCyclePhase(LifeCyclePhase.ARCHIVED);
 
+	    document.setPublicationEndDatetime(new Date());
+	    assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
+
+		document.setPublicationEndDatetime(null);
         document.setArchivedDatetime(null);
         assertLifeCyclePhase(LifeCyclePhase.PUBLISHED);
 
         document.setPublicationEndDatetime(new Date(0));
-        assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
+        assertLifeCyclePhase(LifeCyclePhase.PUBLISHED);
     }
 
     private void assertLifeCyclePhase(LifeCyclePhase lifeCyclePhase) {
-        assertEquals(lifeCyclePhase, DocumentDomainObject.getLifeCyclePhaseAtTime(document, new Date(1)));
+	    Calendar date = Calendar.getInstance();
+		date.add(Calendar.DATE, 1);
+	    assertEquals(lifeCyclePhase, DocumentDomainObject.getLifeCyclePhaseAtTime(document, date.getTime()));
     }
 
     public void testGetDocumentProperties() {

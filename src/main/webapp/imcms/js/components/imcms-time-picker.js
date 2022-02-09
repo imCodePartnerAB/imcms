@@ -195,9 +195,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
 
         time[changedPosition] = $selectedTimeUnit.text();
 
-        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($timeInput, time)) {
-            $timeInput.val(time.join(":"));
-        }
+		$timeInput.val(time.join(":"));
     }
 
     function closeTimePickerFunction(e) {
@@ -215,13 +213,6 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
             const $this = $(this);
 
             let time = currentTime.hours + ":" + currentTime.minutes;
-
-            let publishedDateBeforePublicationEndDate = dateTimeValidator
-                .isPublishedDateBeforePublicationEndDate($this, time);
-
-            if (!publishedDateBeforePublicationEndDate) {
-                time = "";
-            }
 
             $this.val(time);
             $this.removeClass(CURRENT_TIME__INPUT__ERROR__CLASS)

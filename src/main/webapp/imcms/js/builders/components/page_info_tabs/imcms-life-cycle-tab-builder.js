@@ -68,12 +68,6 @@ define("imcms-life-cycle-tab-builder",
                     click: () => {
                         $date.setCurrentDate();
                         $time.setCurrentTime();
-
-                        const date = $date.getDate().split("-");
-
-                        if (!dateTimeValidator.isPublishedDateBeforePublicationEndDate($date, date)) {
-                            cleanUpDateAndTime($date, $time);
-                        }
                     }
                 }),
                 $setDateTimeNowContainer = components.buttons.buttonsContainer("<div>", [$setDateTimeNowBtn]),

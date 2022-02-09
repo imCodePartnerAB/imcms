@@ -147,32 +147,25 @@ public abstract class Document implements Serializable {
     public DocumentStatus getDocumentStatus() {
         final PublicationStatus publicationStatus = getPublicationStatus();
 
-        if (PublicationStatus.NEW.equals(publicationStatus)) {
-            return DocumentStatus.IN_PROCESS;
+	    if (PublicationStatus.NEW.equals(publicationStatus)) {
+		    return DocumentStatus.IN_PROCESS;
+	    }
+	    if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
+		    return DocumentStatus.DISAPPROVED;
+	    }
 
-        } else if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
-            return DocumentStatus.DISAPPROVED;
-
-        } else if (isAuditDateInPast(getArchived())) {
-            return DocumentStatus.ARCHIVED;
-
-        } else if (isAuditDateInPast(getPublicationEnd())) {
-            return DocumentStatus.PASSED;
-
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus)) {
-
-            final AuditDTO published = getPublished();
-
-            if (isAuditDateInPast(published)) {
-                return DocumentStatus.PUBLISHED;
-
-            } else if (isAuditDateInFuture(published)) {
-                return DocumentStatus.PUBLISHED_WAITING;
-
-            } else if (isNullAuditDate(published)) {
-                return DocumentStatus.IN_PROCESS;
-            }
-        }
+	    if (isNullAuditDate(getPublished())) {
+		    return DocumentStatus.IN_PROCESS;
+	    }
+	    if (isAuditDateInPast(getPublicationEnd()) && isAuditBefore(getPublished(), getPublicationEnd())) {
+		    return DocumentStatus.PASSED;
+	    }
+	    if (isAuditDateInPast(getArchived()) && !isAuditDateInFuture(getPublished())) {
+		    return DocumentStatus.ARCHIVED;
+	    }
+	    if (isAuditDateInFuture(getPublished())) {
+		    return DocumentStatus.PUBLISHED_WAITING;
+	    }
 
         return DocumentStatus.PUBLISHED;
     }
@@ -189,4 +182,7 @@ public abstract class Document implements Serializable {
         return !isNullAuditDate(auditToCheck) && Utility.isDateInFuture.test(auditToCheck.getFormattedDate());
     }
 
+	private boolean isAuditBefore(AuditDTO audit, AuditDTO other){
+		return !isNullAuditDate(audit) && !isNullAuditDate(other) && audit.getFormattedDate().before(other.getFormattedDate());
+	}
 }
