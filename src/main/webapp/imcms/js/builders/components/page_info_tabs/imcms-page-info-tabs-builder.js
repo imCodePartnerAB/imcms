@@ -14,14 +14,21 @@ const cacheTab =        require('imcms-cache-tab-builder');
 const propertiesTab =   require('imcms-properties-tab-builder');
 const allDataTab =      require('imcms-all-data-tab-builder');
 
-const tabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
+const textTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
     statusTab, cacheTab, propertiesTab, allDataTab];
+
+const urlOrFileTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
+    statusTab, cacheTab, propertiesTab];
 
 const limitedTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, statusTab, cacheTab];
 
 module.exports = {
-    windowTabsBuilder: new WindowTabsBuilder({
-        tabBuilders: tabBuilders
+    textWindowTabsBuilder: new WindowTabsBuilder({
+        tabBuilders: textTabBuilders
+    }),
+
+    urlOrFileWindowTabsBuilder: new WindowTabsBuilder({
+        tabBuilders: urlOrFileTabBuilders
     }),
 
     limitedWindowTabsBuilder: new WindowTabsBuilder({

@@ -278,7 +278,7 @@ define("imcms-page-info-builder",
 
                     //check document edit or create new one
                     if(parentDocId){
-                        windowPageInfoTabsBuilder = pageInfoTabs.windowTabsBuilder;
+                        windowPageInfoTabsBuilder = document.type === docTypes.TEXT ? pageInfoTabs.textWindowTabsBuilder : pageInfoTabs.urlOrFileWindowTabsBuilder;
                         pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
                     }else{
                         rolesRestApi.currentUserRoleIds().done((roleIds) => {
@@ -286,7 +286,8 @@ define("imcms-page-info-builder",
 
                             //check which tabs to display
                             if (imcms.isSuperAdmin || docPermissions.includes(docPermissionTypes.EDIT)) {
-                                windowPageInfoTabsBuilder = pageInfoTabs.windowTabsBuilder
+                                //url and file document types have not the "All Data" tab
+                                windowPageInfoTabsBuilder = document.type === docTypes.TEXT ? pageInfoTabs.textWindowTabsBuilder : pageInfoTabs.urlOrFileWindowTabsBuilder;
                             } else {
                                 windowPageInfoTabsBuilder = pageInfoTabs.limitedWindowTabsBuilder;
 
