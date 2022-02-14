@@ -598,20 +598,20 @@ const texts = {
             alertInfoLanguage: 'Språket kommer att gälla efter ny inloggning (lang:',
             error: {
                 loadFailed: 'Misslyckades med att ladda språk. Försök igen'
-            },
-            userProperties: {
-                key: 'Nyckel',
-                value: 'Värde',
-                add: 'Tillägga',
-                successDelete: 'Lyckades bort!',
-                wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!',
-                emptyValueError : 'Nyckeln och värdet får inte vara tomma!',
-                errorMessage: 'Något händer fel',
-                deleteConfirm: 'Vill du ta bort egendom?',
-                updateMessage: 'Uppdatera fastighets framgång!',
-                savedSuccess: 'Fastigheter framgång sparad!',
-                save: 'Spara'
-            },
+            }
+        },
+        userProperties: {
+            key: 'Nyckel',
+            value: 'Värde',
+            add: 'Tillägga',
+            successDelete: 'Lyckades bort!',
+            wrongKeyError: 'Nyckeln finns, skriv en ny nyckel!',
+            emptyValueError: 'Nyckeln och värdet får inte vara tomma!',
+            errorMessage: 'Något händer fel',
+            deleteConfirm: 'Vill du ta bort egendom?',
+            updateMessage: 'Uppdatera fastighets framgång!',
+            savedSuccess: 'Fastigheter framgång sparad!',
+            save: 'Spara'
         },
         textHistory: {
             title: "Texthistorik",
@@ -1010,6 +1010,7 @@ const texts = {
             yearMonthDay: 'åååå-mm-dd',
             hourMinute: 'tt:mm',
         },
+        save: "Spara",
         none: 'Ingen'
     },
     "en": {
@@ -1602,20 +1603,20 @@ const texts = {
             alertInfoLanguage: 'Language will effect after new login (lang: ',
             error: {
                 loadFailed: 'Failed to load languages. Try again'
-            },
-            userProperties: {
-                key: 'Key',
-                value: 'Value',
-                add: 'Add',
-                successDelete: 'Successed deleted!',
-                wrongKeyError: 'The key exists, please write another key!',
-                emptyValueError : 'The key and value must not be empty!',
-                errorMessage: 'Something happens wrong',
-                deleteConfirm: 'Do you want to remove property?',
-                updateMessage: 'Update property success!',
-                savedSuccess: 'Properties success saved!',
-                save: 'Save'
-            },
+            }
+        },
+        userProperties: {
+            key: 'Key',
+            value: 'Value',
+            add: 'Add',
+            successDelete: 'Successed deleted!',
+            wrongKeyError: 'The key exists, please write another key!',
+            emptyValueError : 'The key and value must not be empty!',
+            errorMessage: 'Something happens wrong',
+            deleteConfirm: 'Do you want to remove property?',
+            updateMessage: 'Update property success!',
+            savedSuccess: 'Properties success saved!',
+            save: 'Save'
         },
         textHistory: {
             title: "Text history",
@@ -2014,6 +2015,7 @@ const texts = {
             yearMonthDay: 'yyyy-mm-dd',
             hourMinute: 'hh:mm',
         },
+        save: "Save",
         none: 'None'
     }
 };

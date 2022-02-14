@@ -14,8 +14,6 @@ const imcms = require('imcms');
 const modal = require('imcms-modal-window-builder');
 let texts = require('imcms-i18n-texts');
 
-texts = texts.languageFlags;
-
 function onCancel() {
     window.history.back()
 }
@@ -68,7 +66,7 @@ function loadLanguages() {
             components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
             $select.selectValue(imcms.userLanguage);
         })
-        .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        .fail(() => modal.buildErrorWindow(texts.languageFlags.error.loadFailed));
 }
 
 function bindOnEditClicked($phoneRow) {
@@ -120,8 +118,12 @@ function addPhone(e) {
 
     $newRow.addClass('imcms-text-box--existing-phone-box');
 
-    const $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
-    const $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
+    const $editContainer = $('<div>', {
+        html: [components.controls.edit(bindOnEditClicked($newRow)),
+            components.controls.remove(bindOnDeleteClicked($newRow))],
+        class: 'imcms-phone-edit-buttons'
+    });
+
     const $saveButton = components.buttons.saveButton({
         style: 'display: none;',
         click: bindOnSaveClick($newRow),
@@ -155,7 +157,7 @@ function addPhone(e) {
         .find('.imcms-text-box')
         .append();
 
-    $newRow.append($saveButton, $deletePhoneButton, $editPhoneButton).insertAfter($phoneTypeContainer);
+    $newRow.append($saveButton, $editContainer).insertAfter($phoneTypeContainer);
 }
 
 function filterNonDigits(e) {

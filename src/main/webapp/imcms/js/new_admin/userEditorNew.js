@@ -18,8 +18,6 @@ const userPropertiesRestAPI = require('imcms-user-properties-rest-api');
 
 const superAdminRoleId = 1;
 
-texts = texts.languageFlags;
-
 function unBlockingUser() {
     const $form = $('#user-edit-form');
     const blockingFlag = $form.find('#flagControlBlocking');
@@ -49,7 +47,7 @@ function onSubmit(e) {
     }
 
     const chooseLang = $('#languages-select-container').find('input[name=langCode]').val();
-    alert(texts.alertInfoLanguage + chooseLang + ')');
+    alert(texts.languageFlags.alertInfoLanguage + chooseLang + ')');
 
     $('[name=userPhoneNumber]').removeAttr('disabled');
 }
@@ -158,9 +156,9 @@ function buildRow(key) {
         block: 'imcms-field',
         elements: {
             'item': $inputs,
-            'button': $removeButton,
             'update-btn': $editButton,
-            'save-btn': $saveUpdateButton
+            'save-btn': $saveUpdateButton,
+            'button': $removeButton
         }
     }).buildBlockStructure('<div>', {
         class: 'imcms-flex--d-flex imcms-flex--align-items-center',
@@ -354,7 +352,7 @@ function loadLanguages() {
             components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
             $select.selectValue(imcms.userLanguage);
         })
-        .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        .fail(() => modal.buildErrorWindow(texts.languageFlags.error.loadFailed));
 }
 
 function bindOnEditClicked($phoneRow) {
@@ -406,11 +404,16 @@ function addPhone(e) {
 
     $newRow.addClass('imcms-text-box--existing-phone-box');
 
-    const $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
-    const $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
+    const $editContainer = $('<div>', {
+            html: [components.controls.edit(bindOnEditClicked($newRow)),
+                components.controls.remove(bindOnDeleteClicked($newRow))],
+            class: 'imcms-phone-edit-buttons'
+        });
+
     const $saveButton = components.buttons.saveButton({
         style: 'display: none;',
         click: bindOnSaveClick($newRow),
+        text: texts.save,
         type: 'button'
     });
 
@@ -440,7 +443,7 @@ function addPhone(e) {
         .find('.imcms-text-box')
         .append();
 
-    $newRow.append($saveButton, $deletePhoneButton, $editPhoneButton).insertAfter($phoneTypeContainer);
+    $newRow.append($saveButton, $editContainer).insertAfter($phoneTypeContainer);
 }
 
 function filterNonDigits(e) {
@@ -467,7 +470,7 @@ $(function () {
     $('#edit-user-properties').click(onViewUserProperties);
     $('#button-add-phone').click(addPhone);
 
-    if(!imcms.isSuperAdmin) $(`#role-${superAdminRoleId}`).attr("disabled", true);
+    if(!imcms.isSuperAdmin) $(`#role-${superAdminRoleId}`).prop("disabled", true);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();

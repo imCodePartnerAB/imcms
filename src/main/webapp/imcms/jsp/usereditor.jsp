@@ -204,8 +204,10 @@
 
                         <button class="imcms-button imcms-button--save" style="display: none;"
                                 type="button"><fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
-                        <div class="imcms-control imcms-control--remove"></div>
-                        <div class="imcms-control imcms-control--edit"></div>
+                        <div class="imcms-phone-edit-buttons">
+                            <div class="imcms-control imcms-control--edit"></div>
+                            <div class="imcms-control imcms-control--remove"></div>
+                        </div>
                     </div>
                 </c:forEach>
             </div>
