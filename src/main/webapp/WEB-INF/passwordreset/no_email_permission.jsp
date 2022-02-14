@@ -6,7 +6,7 @@
 
 <%! static final LocalizedMessage info = new LocalizedMessage("passwordreset.no_email_permission");%>
 
-<div class="imcms-title">
+<div class="imcms-title" style="word-break: break-word">
     <%=info.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage"))%>
 </div>
 
