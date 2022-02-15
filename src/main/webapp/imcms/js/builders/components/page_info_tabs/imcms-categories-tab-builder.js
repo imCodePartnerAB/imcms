@@ -114,7 +114,6 @@ define("imcms-categories-tab-builder",
         };
         CategoriesTab.prototype.tabElementsFactory = function (index, docId) {
             const tabElements = [buildCategoriesContainer()];
-            docId || this.fillTabDataFromDocument(); // when creating new doc without id yet, categories still should be loaded
             return tabElements;
         };
         CategoriesTab.prototype.fillTabDataFromDocument = document => {
