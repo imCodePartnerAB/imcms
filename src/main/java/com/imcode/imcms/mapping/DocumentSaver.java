@@ -6,12 +6,7 @@ import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.mapping.container.MenuContainer;
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
-import com.imcode.imcms.mapping.container.TextDocImagesContainer;
-import com.imcode.imcms.mapping.container.TextDocTextContainer;
-import com.imcode.imcms.mapping.container.TextDocTextsContainer;
-import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.exception.AliasAlreadyExistsInternalException;
 import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
@@ -37,11 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -387,6 +378,7 @@ public class DocumentSaver {
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
         meta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
+        meta.setVisible(metaDO.getVisible());
         meta.setModifiedDatetime(metaDO.getModifiedDatetime());
         meta.setProperties(metaDO.getProperties());
         meta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());

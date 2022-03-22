@@ -48,6 +48,7 @@ public abstract class Document implements Serializable {
         setRoleIdToPermission(from.getRoleIdToPermission());
         setLinkableByOtherUsers(from.isLinkableByOtherUsers());
         setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
+        setVisible(from.isVisible());
         setProperties(from.getProperties());
     }
 
@@ -142,6 +143,10 @@ public abstract class Document implements Serializable {
     public abstract boolean isLinkableForUnauthorizedUsers();
 
     public abstract void setLinkableForUnauthorizedUsers(boolean isLinkableForUnauthorizedUsers);
+
+    public abstract boolean isVisible();
+
+    public abstract void setVisible(boolean isVisible);
 
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {

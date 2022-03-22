@@ -83,8 +83,9 @@
         <field name="version_no" type="int" indexed="true" stored="true" required="true"/>
         <field name="search_enabled" type="boolean" indexed="true" stored="false" required="true"/>
 
-
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
+        <field name="visible" type="boolean" indexed="true" stored="false" required="true"/>
+
         <field name="meta_headline" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="meta_headline_keyword" type="string" indexed="true" stored="false" multiValued="true"/>
         <field name="meta_text" type="string" indexed="true" stored="false" multiValued="true"/>

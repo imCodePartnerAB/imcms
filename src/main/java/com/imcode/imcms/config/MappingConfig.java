@@ -353,6 +353,8 @@ class MappingConfig {
             meta.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
             meta.setLinkedForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
 
+            meta.setVisible(documentDTO.isVisible());
+
             meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
 
             final Set<RestrictedPermissionJPA> restrictedPermissions = documentDTO.getRestrictedPermissions()
@@ -407,6 +409,7 @@ class MappingConfig {
             dto.setType(meta.getDocumentType());
             dto.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
             dto.setLinkableForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+            dto.setVisible(meta.getVisible());
 
             return dto;
         };

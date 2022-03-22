@@ -423,6 +423,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
     }
 
+    public boolean isVisible(){
+        return meta.getVisible();
+    }
+
+    public void setVisible(boolean visible){
+        meta.setVisible(visible);
+    }
+
     public void addCategory(Category category) {
         meta.getCategories().add(category);
     }

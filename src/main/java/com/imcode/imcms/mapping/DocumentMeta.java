@@ -35,6 +35,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Integer documentTypeId;
     private volatile Boolean linkableByOtherUsers;
     private volatile Boolean linkedForUnauthorizedUsers;
+    private volatile Boolean visible;
     /**
      * (Saved) value of modified dt at the time this meta was actually loaded.
      * When loaded from the db its value is set to modifiedDatetime.

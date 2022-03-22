@@ -46,6 +46,7 @@ public class DocumentDTO extends Document implements Cloneable {
     //True is default value
     private boolean linkableByOtherUsers;
     private boolean linkableForUnauthorizedUsers;
+    private boolean visible;
     private Set<CategoryDTO> categories;
     private Set<RestrictedPermissionDTO> restrictedPermissions;
     private Map<String, String> properties;
@@ -134,6 +135,7 @@ public class DocumentDTO extends Document implements Cloneable {
             cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
             cloneDocumentDTO.setLinkableByOtherUsers(cloneDocumentDTO.linkableByOtherUsers);
             cloneDocumentDTO.setLinkableForUnauthorizedUsers(cloneDocumentDTO.linkableForUnauthorizedUsers);
+            cloneDocumentDTO.setVisible(cloneDocumentDTO.visible);
             cloneDocumentDTO.setProperties(new HashMap<>(cloneDocumentDTO.properties));
 
             return cloneDocumentDTO;
