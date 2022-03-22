@@ -126,7 +126,8 @@ public class ViewDocumentController {
             publicDocumentsCache.invalidateDoc(docId, alias);
         }
 
-        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission)) || !hasUserViewAccess(userContentPermission)) {
+        if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
+                || (!hasUserViewAccess(userContentPermission) && !textDocument.isVisible())) {
             response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             return null;
         }
