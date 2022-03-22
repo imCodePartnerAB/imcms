@@ -32,7 +32,7 @@ public class DocumentIndexImpl implements DocumentIndex {
     }
 
     /**
-     * @deprecated use {@link DocumentIndexImpl#search(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)}
+     * @deprecated use {@link DocumentIndexImpl#search(org.apache.solr.client.solrj.SolrQuery)}
      */
     @Override
     @Deprecated
@@ -73,7 +73,7 @@ public class DocumentIndexImpl implements DocumentIndex {
     }
 
     /**
-     * @deprecated use {@link DocumentIndexImpl#search(org.apache.solr.client.solrj.SolrQuery, imcode.server.user.UserDomainObject)}
+     * @deprecated use {@link DocumentIndexImpl#search(org.apache.solr.client.solrj.SolrQuery)}
      */
     @Override
     @Deprecated
