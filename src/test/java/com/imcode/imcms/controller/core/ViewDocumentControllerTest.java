@@ -156,7 +156,11 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocument_whenUserIsUsualAndDocumentHaveNoRoles_Expect_NotFound404Response() {
+    public void getDocument_whenUserIsUsualAndDocumentHaveNoRolesAndDocumentIsNotVisible_Expect_NotFound404Response() {
+        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+        metaDocument.setVisible(false);
+        metaRepository.save(metaDocument);
+
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         user.addRoleId(Roles.USER.getId());
@@ -165,7 +169,24 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocument_whenUserIsSuperAdminAndDocumentHaveNoRoles_Expect_OkResponse() {
+    public void getDocument_whenUserIsUsualAndDocumentHaveNoRolesAndDocumentIsVisible_Expect_NotFound404Response() {
+        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+        metaDocument.setVisible(true);
+        metaRepository.save(metaDocument);
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.USER.getId());
+        Imcms.setUser(user);
+        assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isOk()));
+    }
+
+    @Test
+    public void getDocument_whenUserIsSuperAdminAndDocumentHaveNoRolesAndDocumentIsNotVisible_Expect_OkResponse() {
+        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+        metaDocument.setVisible(false);
+        metaRepository.save(metaDocument);
+
         assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isOk()));
     }
 

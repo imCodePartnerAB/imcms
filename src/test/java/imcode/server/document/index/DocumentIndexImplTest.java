@@ -1,7 +1,6 @@
 package imcode.server.document.index;
 
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -40,7 +39,7 @@ public class DocumentIndexImplTest {
         when(queryResponse.getResults()).thenReturn(solrDocumentList);
         when(solrDocumentList.size()).thenReturn(solrDocumentListSize);
 
-        final IndexSearchResult indexSearchResult = documentIndex.search(solrQuery, new UserDomainObject(1));
+        final IndexSearchResult indexSearchResult = documentIndex.search(solrQuery);
 
         assertNotNull(indexSearchResult);
         assertThat(indexSearchResult.size(), is(solrDocumentListSize));

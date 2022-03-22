@@ -583,6 +583,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         solrInputDocument.addField(DocumentIndex.FIELD__VERSION_NO, 0);
         solrInputDocument.addField(DocumentIndex.FIELD__SEARCH_ENABLED, true);
         solrInputDocument.addField(DocumentIndex.FIELD__ROLE_ID, Roles.USER.getId());
+        solrInputDocument.addField(DocumentIndex.FIELD__VISIBLE, true);
 
         return solrInputDocument;
     }
@@ -620,7 +621,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
     }
 
     private SolrDocumentList getSolrDocumentList(SearchQueryDTO queryDTO) throws SolrServerException, IOException {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(queryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(queryDTO, false);
         final QueryResponse queryResponse = documentIndexServiceOps.query(solrClient, solrQuery);
 
         return queryResponse.getResults();

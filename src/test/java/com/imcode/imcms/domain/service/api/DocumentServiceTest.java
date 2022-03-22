@@ -496,6 +496,22 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void save_When_AccessRuleWithSimpleUser_Expect_RuleNotSaved() {
+        final Map<Integer, Permission> roleIdToPermission = new HashMap<>();
+
+        for (Permission permission : Permission.values()) {
+            roleIdToPermission.put(Roles.USER.getId(), permission);
+        }
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        documentDTO.setRoleIdToPermission(roleIdToPermission);
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertTrue(savedDocumentDTO.getRoleIdToPermission().isEmpty());
+    }
+
+    @Test
     public void save_When_RestrictedPermissionsSet_Expect_Saved() {
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
@@ -984,6 +1000,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         meta.setDocumentType(Meta.DocumentType.URL);
         meta.setLinkableByOtherUsers(true);
         meta.setLinkedForUnauthorizedUsers(true);
+        meta.setVisible(false);
         meta.setTarget("");
         meta.setPublicationStatus(PublicationStatus.NEW);
         return metaRepository.save(meta);

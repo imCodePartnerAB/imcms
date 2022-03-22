@@ -21,13 +21,11 @@ import org.springframework.data.domain.Sort;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
@@ -58,7 +56,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @Test
     public void convert_When_TermIsNull_Expect_SearchByAllFields() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertThat(solrQuery.get(CommonParams.Q), is("*:*"));
     }
@@ -69,7 +67,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setTerm(term);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = Arrays.stream(new String[]{
                 DocumentIndex.FIELD__META_ID,
@@ -92,7 +90,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setTerm(term);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = Arrays.stream(new String[]{
                 DocumentIndex.FIELD__META_ID,
@@ -115,7 +113,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setTerm(term);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = Arrays.stream(new String[]{
                         DocumentIndex.FIELD__META_ID,
@@ -134,7 +132,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @Test
     public void convert_WhenDefaultPageRequestIsSet_Expect_StartEq0AndRowsEqMaxValue() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertThat(solrQuery.get(CommonParams.START), is("0"));
         assertThat(solrQuery.get(CommonParams.ROWS), is(Integer.MAX_VALUE + ""));
@@ -151,7 +149,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setPage(pageRequestDTO);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertThat(solrQuery.get(CommonParams.START), is(String.valueOf(expectedPage * expectedSize)));
         assertThat(solrQuery.get(CommonParams.ROWS), is(String.valueOf(expectedSize)));
@@ -159,7 +157,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @Test
     public void convert_WhenDefaultSortIsSet_Expect_SortByModifiedDatetimeDesc() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = String.format("%s %s", DocumentIndex.FIELD__MODIFIED_DATETIME,
                 Sort.Direction.DESC.toString().toLowerCase());
@@ -178,7 +176,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setPage(pageRequestDTO);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = String.format("%s %s", expectedProperty, expectedDirection.toString().toLowerCase());
 
@@ -187,7 +185,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @Test
     public void convert_When_UserIdIsNull_Expect_CorrespondingFilterNotAdded() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final boolean noUserFilter = Arrays.stream(solrQuery.getFilterQueries())
                 .noneMatch(filterQueryValue -> filterQueryValue.startsWith(DocumentIndex.FIELD__CREATOR_ID));
@@ -199,7 +197,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     public void convert_When_SpecifiedUserIdIsSet_Expect_CorrespondingFilterAdded() {
         searchQueryDTO.setUserId(USER_ID);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final boolean isUserFilter = Arrays.asList(solrQuery.getFilterQueries()).contains(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID);
 
@@ -207,41 +205,38 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void convert_When_UserIsSuperAdmin_Expect_FiltersForSearchEnabledAndRolesIdNotAdded() {
-        final Integer superAdminRoleId = Roles.SUPER_ADMIN.getId();
-
-        Imcms.getUser().addRoleId(superAdminRoleId);
-
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
-
-        Imcms.getUser().removeRoleId(superAdminRoleId);
-
-        final Predicate<String> predicate = filterQueryValue
-                -> filterQueryValue.startsWith(DocumentIndex.FIELD__SEARCH_ENABLED)
-                || filterQueryValue.startsWith(DocumentIndex.FIELD__ROLE_ID);
-
-        boolean noSpecifiedFilters = true;
-        if (solrQuery.getFilterQueries() != null) {
-            noSpecifiedFilters = Arrays.stream(solrQuery.getFilterQueries())
-                    .noneMatch(predicate);
-        }
-
-        assertTrue(noSpecifiedFilters);
-    }
-
-    @Test
-    public void convert_When_UserIsNotSuperAdmin_Expect_FiltersForSearchEnabledAndRolesIdAdded() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
-
+    public void convert_When_UserIsNotSuperAdmin_And_LimitSearchIsTrue_Expect_FiltersAreAdded() {
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
         assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains(DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + ")"));
+        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
+                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+    }
+
+    @Test
+    public void convert_When_UserIsNotSuperAdmin_And_LimitSearchIsFalse_Expect_NoFilter() {
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, false);
+
+        assertNull(solrQuery.getFilterQueries());
+    }
+
+    @Test
+    public void convert_When_RoleIdIsNotNull_And_LimitSearchIsTrue_Expect_FiltersAreAdded(){
+        final int roleId = 100;
+
+        searchQueryDTO.setRoleId(roleId);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
+        final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
+
+        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
+        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
+                DocumentIndex.FIELD__ROLE_ID + ":(" + roleId + "))"));
     }
 
     @Test
     public void convert_When_CategoriesIdIsNotSet_Expect_CategoryIdQueryNotExist() {
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertFalse(solrQuery.get(CommonParams.Q).contains(DocumentIndex.FIELD__CATEGORY_ID));
     }
@@ -254,7 +249,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setCategoriesId(Collections.singletonList(1));
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertThat(solrQuery.get(CommonParams.Q), is(expectedQuery));
     }
@@ -269,7 +264,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         searchQueryDTO.setCategoriesId(Arrays.asList(firstCategoryId, secondCategoryId));
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         assertThat(solrQuery.get(CommonParams.Q), is(expectedQuery));
     }
@@ -278,9 +273,30 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
     public void convert_When_QueryIsExist_Expect_SearchBySpecifiedSimpleQuery() {
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
                 "+status:" + Document.PublicationStatus.APPROVED;
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, true);
 
         assertThat(solrQuery.get(CommonParams.Q), is(query));
+    }
+
+    @Test
+    public void convert_When_QueryIsExist_And_LimitSearchIsTrue_Expect_FiltersAreAdded() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, true);
+        final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
+
+        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
+        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
+                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+    }
+
+    @Test
+    public void convert_When_QueryIsExist_And_LimitSearchIsFalse_Expect_NoFilter() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, false);
+
+        assertNull(solrQuery.getFilterQueries());
     }
 
     @Test
@@ -296,12 +312,37 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final String expectedStart = "start=" + skip;
         final String expectedRows = "rows=" + size;
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, true);
         assertThat(solrQuery.get(CommonParams.Q), is(query));
 
         final String receivedQuery = solrQuery.toString();
         assertTrue(receivedQuery.contains(expectedSort));
         assertTrue(receivedQuery.contains(expectedStart));
         assertTrue(receivedQuery.contains(expectedRows));
+    }
+
+    @Test
+    public void convert_When_QueryAndPageRequestAreExist_And_LimitSearchIsTrue_Expect_FiltersAreAdded() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final String property = DocumentIndex.FIELD__META_HEADLINE;
+        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, 45, 100);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, true);
+        final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
+
+        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
+        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
+                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+    }
+
+    @Test
+    public void convert_When_QueryAndPageRequestAreExist_And_LimitSearchIsFalse_Expect_NoFilter() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final String property = DocumentIndex.FIELD__META_HEADLINE;
+        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, 45, 100);
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, false);
+
+        assertNull(solrQuery.getFilterQueries());
     }
 }

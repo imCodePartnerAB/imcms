@@ -4,6 +4,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
+import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,8 @@ class SearchDocumentServiceTest {
 
         final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
-        given(documentIndex.search(eq(searchQueryDTO), any(UserDomainObject.class)))
+        final boolean limitSearch = true;
+        given(documentIndex.search(eq(searchQueryDTO), eq(limitSearch)))
                 .willReturn(indexSearchResult);
 
         final List<DocumentStoredFields> documentStoredFieldsList = new ArrayList<>();
@@ -87,13 +90,13 @@ class SearchDocumentServiceTest {
 
         given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
 
-        final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO);
+        final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO, limitSearch);
 
         assertEquals(actual.size(), documentNumber);
         assertTrue(actual.containsAll(expected));
         assertTrue(expected.containsAll(actual));
 
-        then(documentIndex).should().search(eq(searchQueryDTO), any(UserDomainObject.class));
+        then(documentIndex).should().search(eq(searchQueryDTO), eq(limitSearch));
         then(indexSearchResult).should().documentStoredFieldsList();
     }
 
@@ -116,11 +119,12 @@ class SearchDocumentServiceTest {
 
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
                 "+status:" + Document.PublicationStatus.APPROVED + " " +
-                "+text" + DocumentIndex.FIELD__TEXT + ":" + PUBLISHED.toString() + " " +
+                "+text" + DocumentIndex.FIELD__TEXT + ":" + PUBLISHED + " " +
                 "+version_no:" + DocumentIndex.FIELD__VERSION_NO +
                 "+(category_id:" + DocumentIndex.FIELD__CATEGORY_ID + " category_id:" + DocumentIndex.FIELD__CATEGORY_ID + ")";
 
-        given(documentIndex.search(eq(query), any(UserDomainObject.class)))
+        final boolean limitSearch = true;
+        given(documentIndex.search(eq(query), eq(limitSearch)))
                 .willReturn(indexSearchResult);
 
         final List<DocumentStoredFields> documentStoredFieldsList = new ArrayList<>();
@@ -139,14 +143,69 @@ class SearchDocumentServiceTest {
 
         given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
 
-        final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(query);
+        final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(query, limitSearch);
 
         assertEquals(actual.size(), documentNumber);
         assertTrue(actual.containsAll(expected));
         assertTrue(expected.containsAll(actual));
 
-        then(documentIndex).should().search(eq(query), any(UserDomainObject.class));
+        then(documentIndex).should().search(eq(query), eq(limitSearch));
         then(indexSearchResult).should().documentStoredFieldsList();
 
+    }
+
+    @Test
+    void getTextDocuments_given_SearchByQueryAndPage_Expect_AllReturned() {
+        final int documentNumber = 5;
+        final List<DocumentStoredFieldsDTO> expected = new ArrayList<>();
+
+        for (int i = 0; i < documentNumber; i++) {
+            final DocumentStoredFieldsDTO docFields = new DocumentStoredFieldsDTO();
+            docFields.setTitle("test_headline" + i);
+            docFields.setId(i);
+            docFields.setType(Meta.DocumentType.TEXT);
+            docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
+            docFields.setAlias("test_alias" + i);
+            docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
+            docFields.setIsShownTitle(false);
+            expected.add(docFields);
+        }
+
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED + " " +
+                "+text" + DocumentIndex.FIELD__TEXT + ":" + PUBLISHED + " " +
+                "+version_no:" + DocumentIndex.FIELD__VERSION_NO +
+                "+(category_id:" + DocumentIndex.FIELD__CATEGORY_ID + " category_id:" + DocumentIndex.FIELD__CATEGORY_ID + ")";
+
+        final PageRequestDTO page = new PageRequestDTO(DocumentIndex.FIELD__META_HEADLINE, Sort.Direction.ASC, 0, 100);
+
+        final boolean limitSearch = true;
+        given(documentIndex.search(eq(query), eq(page), eq(limitSearch)))
+                .willReturn(indexSearchResult);
+
+        final List<DocumentStoredFields> documentStoredFieldsList = new ArrayList<>();
+
+        for (int i = 0; i < documentNumber; i++) {
+            final DocumentStoredFields mock = mock(DocumentStoredFields.class);
+            documentStoredFieldsList.add(mock);
+
+            given(mock.headline()).willReturn(expected.get(i).getTitle());
+            given(mock.id()).willReturn(expected.get(i).getId());
+            given(mock.documentType()).willReturn(expected.get(i).getType());
+            given(mock.documentStatus()).willReturn(expected.get(i).getDocumentStatus());
+            given(mock.alias()).willReturn(expected.get(i).getAlias());
+            given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
+        }
+
+        given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
+
+        final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(query, page, limitSearch);
+
+        assertEquals(actual.size(), documentNumber);
+        assertTrue(actual.containsAll(expected));
+        assertTrue(expected.containsAll(actual));
+
+        then(documentIndex).should().search(eq(query), eq(page), eq(limitSearch));
+        then(indexSearchResult).should().documentStoredFieldsList();
     }
 }
