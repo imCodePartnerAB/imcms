@@ -1,7 +1,9 @@
 package com.imcode.imcms.domain.dto;
 
-import com.jcabi.w3c.ValidationResponse;
 import lombok.Data;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represents text validation result.
@@ -12,13 +14,13 @@ import lombok.Data;
 @Data
 public class TextValidationResult {
 
-    private boolean valid;
-    private String message;
-    private ValidationData data;
+	private boolean valid;
+	private Set<TextValidationDefect> errors;
+	private Set<TextValidationDefect> warnings;
 
-    public TextValidationResult(ValidationResponse response) {
-        this.valid = response.valid();
-        this.message = response.toString();
-        this.data = new ValidationData(response);
-    }
+	public TextValidationResult(ValidationData data) {
+		this.valid = data.getDefects().size() == 0;
+		this.errors = data.getDefects().stream().filter(defect -> defect.getType().contains("error")).collect(Collectors.toSet());
+		this.warnings = data.getDefects().stream().filter(defect -> defect.getType().contains("info")).collect(Collectors.toSet());
+	}
 }

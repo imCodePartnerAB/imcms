@@ -1,11 +1,9 @@
 package com.imcode.imcms.domain.dto;
 
-import com.jcabi.w3c.Defect;
-import com.jcabi.w3c.ValidationResponse;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * Class holds errors and warnings data as text validation result.
@@ -15,16 +13,6 @@ import java.util.stream.Collectors;
  */
 @Data
 public class ValidationData {
-
-    private Set<TextValidationDefect> errors;
-    private Set<TextValidationDefect> warnings;
-
-    ValidationData(ValidationResponse response) {
-        this.errors = transformToTextValidationDefect(response.errors());
-        this.warnings = transformToTextValidationDefect(response.warnings());
-    }
-
-    private Set<TextValidationDefect> transformToTextValidationDefect(Set<Defect> defects) {
-        return defects.stream().map(TextValidationDefect::new).collect(Collectors.toSet());
-    }
+	@JsonProperty("messages")
+	private List<TextValidationDefect> defects;
 }

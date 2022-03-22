@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.jcabi.w3c.Defect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -10,19 +10,16 @@ import lombok.Data;
  * 31.01.18.
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 class TextValidationDefect {
-
-    private String message;
-    private String source;
-    private String explanation;
-    private int column;
-    private int line;
-
-    TextValidationDefect(Defect defect) {
-        this.message = defect.message();
-        this.source = defect.source().replace("&#60;/body&#62;&#60;/html&#62;", ""); // fixme: what's this???
-        this.explanation = defect.explanation();
-        this.column = defect.column();
-        this.line = defect.line();
-    }
+	private String type;
+	private int lastLine;
+	private int firstLine;
+	private int lastColumn;
+	private int firstColumn;
+	private String subType;
+	private String message;
+	private String extract;
+	private int hiliteStart;
+	private int hiliteLength;
 }

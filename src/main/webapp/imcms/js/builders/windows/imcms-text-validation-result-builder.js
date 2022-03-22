@@ -41,33 +41,33 @@ define(
         function loadData(validationResult) {
 
             function appendValidationFailRow(item, pos) {
-                const $container = $("<div>").addClass("imcms-w3c-error"),
-                    $sourceContainer = $("<div>");
+	            const $container = $("<div>").addClass("imcms-w3c-error"),
+		            $sourceContainer = $("<div>");
 
-                const errorMessage = pos + 1 + ". " + item.message;
-                const $errorMessage = $("<div>").text(errorMessage);
+	            const errorMessage = pos + 1 + ". " + item.message;
+	            const $errorMessage = $("<div>").text(errorMessage);
 
-                const $invalidHtml = $("<code>").addClass("language-html")
-	                .html(item.line + ": " + item.source.replace(/[<]/g, "&lt").replace(/[>]/g,"&gt"));
+	            const $invalidHtml = $("<code>").addClass("language-html")
+		            .html(item.lastLine + ": " + item.extract.replace(/[<]/g, "&lt").replace(/[>]/g, "&gt"));
 
-                $sourceContainer.append($invalidHtml);
-                $container.append($errorMessage).append($sourceContainer);
-                $content.append($container);
+	            $sourceContainer.append($invalidHtml);
+	            $container.append($errorMessage).append($sourceContainer);
+	            $content.append($container);
             }
 
-            var $wrapper = $("<div>"),
-                $content = $("<div>").addClass("imcms-w3c-errors"),
-                $errorsTitle = $("<h2>").text(texts.output + validationResult.data.errors.length + texts.errors);
+	        let $wrapper = $("<div>"),
+		        $content = $("<div>").addClass("imcms-w3c-errors"),
+		        $errorsTitle = $("<h2>").text(texts.output + validationResult.errors.length + texts.errors);
 
-            $content.append($errorsTitle);
+	        $content.append($errorsTitle);
 
-            validationResult.data.errors.forEach(appendValidationFailRow);
+	        validationResult.errors.forEach(appendValidationFailRow);
 
-            const $warningsTitle = $("<h2>").text(texts.output + validationResult.data.warnings.length + texts.warnings);
+	        const $warningsTitle = $("<h2>").text(texts.output + validationResult.warnings.length + texts.warnings);
 
-            $content.append($warningsTitle);
+	        $content.append($warningsTitle);
 
-            validationResult.data.warnings.forEach(appendValidationFailRow);
+	        validationResult.warnings.forEach(appendValidationFailRow);
 
             $wrapper.append($content);
             $validationResultContainer.append($wrapper);
