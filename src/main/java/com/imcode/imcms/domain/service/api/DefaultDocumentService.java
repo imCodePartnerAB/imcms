@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -159,6 +161,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 			    documentMapper.invalidateDocument(id);
 		    }
 	    }
+
+        final Map<Integer, Meta.Permission> roleIdToPermission = saveMe.getRoleIdToPermission();
+        roleIdToPermission.remove(Roles.USER.getId());
+        saveMe.setRoleIdToPermission(roleIdToPermission);
 
 	    final Meta meta = documentSaver.apply(saveMe);
         final Integer docId = meta.getId();
@@ -300,6 +306,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         for (Integer roleId : doc.getRoleIdToPermission().keySet()) {
             indexDoc.addField(DocumentIndex.FIELD__ROLE_ID, roleId);
         }
+
+        indexDoc.addField(DocumentIndex.FIELD__VISIBLE, doc.isVisible());
 
         return indexDoc;
     }
