@@ -10,8 +10,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction;
@@ -20,7 +19,7 @@ import static org.springframework.data.domain.Sort.Order;
 @Component
 public class DocumentSearchQueryConverter {
 
-    public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery) {
+    public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery, boolean limitSearch) {
         final UserDomainObject searchingUser = Imcms.getUser();
         final StringBuilder indexQuery = new StringBuilder();
 
@@ -47,16 +46,21 @@ public class DocumentSearchQueryConverter {
 
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
-        prepareSolrIsSuperAdminQuery(searchingUser, solrQuery);
+        if(limitSearch){
+            Integer roleId = searchQuery.getRoleId();
+
+            Set<Integer> roleIds = roleId != null ? Collections.singleton(roleId) : searchingUser.getRoleIds();
+            addFilters(roleIds, solrQuery);
+        }
 
         return solrQuery;
     }
 
-    public SolrQuery convertToSolrQuery(String searchQuery) {
-        return convertToSolrQuery(searchQuery, null);
+    public SolrQuery convertToSolrQuery(String searchQuery, boolean limitSearch) {
+        return convertToSolrQuery(searchQuery, null, limitSearch);
     }
 
-    public SolrQuery convertToSolrQuery(String searchQuery, PageRequestDTO page) {
+    public SolrQuery convertToSolrQuery(String searchQuery, PageRequestDTO page, boolean limitSearch) {
         final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
 
@@ -64,7 +68,7 @@ public class DocumentSearchQueryConverter {
         searchQueryDTO.setPage(page);
         prepareSolrQueryPaging(searchQueryDTO, solrQuery);
 
-        prepareSolrIsSuperAdminQuery(user, solrQuery);
+        if(limitSearch) addFilters(user.getRoleIds(), solrQuery);
 
         return solrQuery;
     }
@@ -115,17 +119,18 @@ public class DocumentSearchQueryConverter {
         solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
     }
 
-    private void prepareSolrIsSuperAdminQuery(UserDomainObject searchingUser, SolrQuery solrQuery) {
+    private void addFilters(Set<Integer> roleIds, SolrQuery solrQuery) {
+            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":" + true);
 
-        if (!searchingUser.isSuperAdmin()) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
+            StringJoiner filterJoiner = new StringJoiner(" || ", "(", ")");
+            filterJoiner.add(DocumentIndex.FIELD__VISIBLE + ":" + true);
 
-            final String userRoleIdsFormatted = searchingUser.getRoleIds()
-                    .stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining(" ", "(", ")"));
+            StringJoiner roleJoiner = new StringJoiner(" || ", "(", ")");
+            for(Integer roleId: roleIds){
+                roleJoiner.add(Integer.toString(roleId));
+            }
+            filterJoiner.add(DocumentIndex.FIELD__ROLE_ID + ":" + roleJoiner);
 
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);
-        }
+            solrQuery.addFilterQuery(filterJoiner.toString());
     }
 }

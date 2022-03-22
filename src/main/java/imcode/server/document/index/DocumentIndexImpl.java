@@ -59,7 +59,7 @@ public class DocumentIndexImpl implements DocumentIndex {
         try {
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-            return search(solrQuery, searchingUser)
+            return search(solrQuery)
                     .documentStoredFieldsList()
                     .stream()
                     .map(DocumentStoredFields::id)
@@ -97,7 +97,7 @@ public class DocumentIndexImpl implements DocumentIndex {
     }
 
     @Override
-    public IndexSearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+    public IndexSearchResult search(SolrQuery solrQuery) throws IndexException {
         val queryResponse = service.query(solrQuery);
         return new IndexSearchResult(solrQuery, queryResponse);
     }

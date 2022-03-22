@@ -23,6 +23,9 @@ public class SearchQueryDTO implements Serializable {
 
     private PageRequestDTO page;
 
+    /**
+     * Restrict search relative to this role.
+     */
     private Integer roleId;
 
     public SearchQueryDTO(String term) {

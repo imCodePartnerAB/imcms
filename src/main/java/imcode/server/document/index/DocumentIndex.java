@@ -8,7 +8,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 
 import java.util.List;
 
-// todo: limit (legacy search) document count (w/o pagination) with 100
 // todo: pagination should return stored docs fields instead of real documents
 public interface DocumentIndex {
 
@@ -40,6 +39,7 @@ public interface DocumentIndex {
     String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
     String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
     String FIELD__ROLE_ID = "role_id";
+    String FIELD__VISIBLE = "visible";
     String FIELD__STATUS = "status";
     String FIELD__URL = "url";
     String FIELD__DISABLED_LANGUAGE_SHOW_MODE = "disabled_language_show_mode";
@@ -92,7 +92,7 @@ public interface DocumentIndex {
     /**
      * @since 6.0
      */
-    IndexSearchResult search(SolrQuery query, UserDomainObject searchingUser) throws IndexException;
+    IndexSearchResult search(SolrQuery query) throws IndexException;
 
     /**
      * Adds default document to index.

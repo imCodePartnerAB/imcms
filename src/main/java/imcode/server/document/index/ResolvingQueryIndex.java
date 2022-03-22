@@ -2,13 +2,12 @@ package imcode.server.document.index;
 
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
-import imcode.server.user.UserDomainObject;
 
 public interface ResolvingQueryIndex extends DocumentIndex {
 
-    IndexSearchResult search(SearchQueryDTO searchQuery, UserDomainObject searchingUser) throws IndexException;
+    IndexSearchResult search(SearchQueryDTO searchQuery, boolean limitSearch) throws IndexException;
 
-    IndexSearchResult search(String searchQuery, UserDomainObject searchingUser) throws IndexException;
+    IndexSearchResult search(String searchQuery, boolean limitSearch) throws IndexException;
 
-    IndexSearchResult search(String searchQuery, PageRequestDTO page, UserDomainObject searchingUser) throws IndexException;
+    IndexSearchResult search(String searchQuery, PageRequestDTO page, boolean limitSearch) throws IndexException;
 }

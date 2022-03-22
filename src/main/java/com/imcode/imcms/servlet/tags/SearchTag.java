@@ -40,7 +40,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
         searchResult = Imcms.getServices()
                 .getDocumentMapper()
                 .getDocumentIndex()
-                .search(createQuery(), Imcms.getUser());
+                .search(createQuery());
 
         if (!searchResult.isEmpty()) {
             currentItemIndex = -1;
