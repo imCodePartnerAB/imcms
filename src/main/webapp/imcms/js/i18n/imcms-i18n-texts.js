@@ -188,6 +188,7 @@ const texts = {
                 addRole: "Lägg till roll",
                 linkableByOtherUsers: "Länkbar av andra användare",
                 linkableForUnauthorizedUsers: "Länkbar för obehöriga användare",
+                visible: "Visible",
                 error: {
                     loadFailed: "Misslyckades med att hämta roller. Vänligen försök igen."
                 }
@@ -1194,6 +1195,7 @@ const texts = {
                 addRole: "Add role",
                 linkableByOtherUsers: "Linkable By Other Users",
                 linkableForUnauthorizedUsers: "Linkable For Unauthorized Users",
+                visible: "Visible",
                 error: {
                     loadFailed: "Failed to fetch roles. Try gain"
                 }

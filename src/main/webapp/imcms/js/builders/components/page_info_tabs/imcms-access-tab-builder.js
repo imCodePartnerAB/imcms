@@ -98,6 +98,14 @@ define("imcms-access-tab-builder",
             ]);
         }
 
+        function setVisible(){
+            if(tabData.$visible.isChecked()){
+                tabData.$titleView.addClass('imcms-enable-visible');
+            }else{
+                tabData.$titleView.removeClass('imcms-enable-visible');
+            }
+        }
+
         const tabData = {};
 
         const AccessTab = function (name) {
@@ -120,7 +128,7 @@ define("imcms-access-tab-builder",
 
                 storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null)
                     .done(roles => {
-                        roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin');
+                        roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin' && role.name.toLowerCase() !== 'users');
                         storeRoles(roles);
                         mapRoles(roles);
                     })
@@ -148,6 +156,7 @@ define("imcms-access-tab-builder",
                 }).buildBlockStructure("<div>")
             ;
 
+            tabData.$titleView = $titleView;
             tabData.$addRoleSelect = $addRoleSelect;
             tabData.$rolesBody = $rolesBody;
             tabData.$rolesField = $rolesField.css("display", "none");
@@ -162,6 +171,13 @@ define("imcms-access-tab-builder",
                 name: 'linkableForUnauthorizedUsers',
                 text: texts.linkableForUnauthorizedUsers,
                 checked: undefined
+            }));
+
+            tabData.$visible = rolesBEM.makeBlockElement("row", components.checkboxes.imcmsCheckbox("<div>", {
+                name: 'visible',
+                text: texts.visible,
+                checked: undefined,
+                change: setVisible
             }));
 
             const $addRoleButton = components.buttons.neutralButton({
@@ -211,7 +227,8 @@ define("imcms-access-tab-builder",
                     block: "imcms-field",
                     elements: {
                         "access-other-users": tabData.$otherUsers,
-                        "access-unauthorized-users": tabData.$unauthorizedUsers
+                        "access-unauthorized-users": tabData.$unauthorizedUsers,
+                        "access-visible": tabData.$visible
                     }
                 }).buildBlockStructure("<div>")
             ;
@@ -257,10 +274,13 @@ define("imcms-access-tab-builder",
 
             tabData.$otherUsers.setChecked(document.linkableByOtherUsers ? "checked" : undefined);
             tabData.$unauthorizedUsers.setChecked(document.linkableForUnauthorizedUsers ? "checked" : undefined);
+            tabData.$visible.setChecked(document.visible ? "checked" : undefined);
+            console.log("tabData.$visible.setChecked");
+            setVisible();
 
             (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null)
                 .done(roles => {
-                    roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin');
+                    roles = roles.filter(role => role.name.toLowerCase() !== 'superadmin' && role.name.toLowerCase() !== 'users');
                     storeRoles(roles);
                     buildRolesRows(roles);
                 })
@@ -287,6 +307,7 @@ define("imcms-access-tab-builder",
 
             documentDTO.linkableByOtherUsers = tabData.$otherUsers.isChecked();
             documentDTO.linkableForUnauthorizedUsers = tabData.$unauthorizedUsers.isChecked();
+            documentDTO.visible = tabData.$visible.isChecked();
 
             return documentDTO;
         };
