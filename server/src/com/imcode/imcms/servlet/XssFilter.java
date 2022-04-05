@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet;
 
+import imcode.server.Imcms;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.servlet.*;
@@ -13,8 +14,14 @@ import java.util.Enumeration;
 
 public final class XssFilter implements Filter {
 
+    public final boolean include = Boolean.parseBoolean(Imcms.getServerProperties().getProperty("xss-include"));
+
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
+        if(!include) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         Enumeration<String> parameterNames =  request.getParameterNames();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
