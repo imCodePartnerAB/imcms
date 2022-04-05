@@ -4,15 +4,11 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageCacheDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +18,7 @@ import java.util.Map.Entry;
 
 
 public class ImageCacheManager {
-    private static final Log log = LogFactory.getLog(ImageCacheManager.class);
+    private static final Logger log = LogManager.getLogger(ImageCacheManager.class);
 
     private static final int CACHE_BUCKETS_COUNT = 40;
 

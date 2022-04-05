@@ -13,8 +13,8 @@ import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,9 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.PROPERTY_NAME_2FA;
-import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.REQUEST_PARAMETER_2FA;
-import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.SESSION_2FA_ATTEMPTS_COUNT;
+import static com.imcode.imcms.domain.services.core.TwoFactorAuthService.*;
 
 public class VerifyUser extends HttpServlet {
 
@@ -42,7 +40,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     public static final String DEFAULT_START_PAGE_URL = "/servlet/StartDoc";
 
-    private static final Log log = LogFactory.getLog(VerifyUser.class);
+    private static final Logger log = LogManager.getLogger(VerifyUser.class);
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 

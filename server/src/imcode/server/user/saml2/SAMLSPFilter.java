@@ -6,12 +6,12 @@ import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.SAMLUtils;
 import imcode.util.Utility;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
  */
 public class SAMLSPFilter implements Filter {
     private static final String SAML_AUTHN_RESPONSE_PARAMETER_NAME = "SAMLResponse";
-    private static Logger log = LoggerFactory.getLogger(SAMLSPFilter.class);
+    private static Logger log = LogManager.getLogger(SAMLSPFilter.class);
     private FilterConfig filterConfig;
     private SAMLResponseVerifier checkSAMLResponse;
     private SAMLRequestSender samlRequestSender;

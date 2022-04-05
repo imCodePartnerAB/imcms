@@ -1,15 +1,15 @@
 package imcode.server.user.saml2.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.xml.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by Shadowgun on 20.11.2014.
  */
 public class OpenSamlBootstrap extends DefaultBootstrap {
-    private static Logger log = LoggerFactory.getLogger(OpenSamlBootstrap.class);
+    private static Logger log = LogManager.getLogger(OpenSamlBootstrap.class);
     private static boolean initialized;
     private static String[] xmlToolingConfigs = {
             "/default-config.xml",

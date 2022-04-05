@@ -21,15 +21,15 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
 
 public class ImcmsImageUtils {
-    private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
+    private static final Logger log = LogManager.getLogger(ImcmsImageUtils.class);
 
     // Set of file paths of images being currently generated.
     private static final Set<String> IMAGES_BEING_GENERATED = Collections.synchronizedSet(new HashSet<>());

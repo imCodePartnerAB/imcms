@@ -11,8 +11,8 @@ import imcode.util.image.Resize;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ import java.io.InputStream;
 public class ImagePreview extends HttpServlet {
     private static final long serialVersionUID = -5206637712530904625L;
 
-    private static final Log log = LogFactory.getLog(ImagePreview.class);
+    private static final Logger log = LogManager.getLogger(ImagePreview.class);
 
     private static CropRegion getCropRegion(HttpServletRequest request) {
         int cropX1 = NumberUtils.toInt(request.getParameter("crop_x1"), -1);

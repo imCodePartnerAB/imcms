@@ -4,14 +4,7 @@ import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.NoPermissionToCreateDocumentException;
-import imcode.server.document.TemplateMapper;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -20,8 +13,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntegerSet;
 import junit.framework.TestCase;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.varia.NullAppender;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -39,7 +30,6 @@ public class TestDocumentMapper extends TestCase {
     private static final Integer ONE = 1;
 
     protected void setUp() throws Exception {
-        BasicConfigurator.configure(new NullAppender());
         super.setUp();
         user = new UserDomainObject(0);
         userRole = new RoleId( 3 );

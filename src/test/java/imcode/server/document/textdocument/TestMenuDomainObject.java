@@ -1,18 +1,15 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.document.DocumentDomainObject;
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.mapping.MapDocumentGetter;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.varia.NullAppender;
 
 import java.util.List;
 import java.util.Set;
-
-import com.imcode.imcms.mapping.MapDocumentGetter;
 
 public class TestMenuDomainObject extends TestCase {
 
@@ -21,7 +18,6 @@ public class TestMenuDomainObject extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        BasicConfigurator.configure(new NullAppender());
         user = new UserDomainObject();
         user.addRoleId( RoleId.SUPERADMIN );
         menu = new MenuDomainObject() ;

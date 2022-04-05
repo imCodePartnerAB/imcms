@@ -3,13 +3,13 @@ package com.imcode.imcms.domain.services.core;
 import imcode.server.Imcms;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +24,7 @@ public class SmsService {
     public static final String SMS_GATEWAY_ORIGIN_ADDRESS = "sms.gateway.originAddress";
     public static final String SMS_GATEWAY_DEFAULT_COUNTRY_CODE = "sms.gateway.defaultCountryCode";
 
-    private static final Log log = LogFactory.getLog(SmsService.class);
+    private static final Logger log = LogManager.getLogger(SmsService.class);
 
     private static SmsService instance = null;
     private final String username;

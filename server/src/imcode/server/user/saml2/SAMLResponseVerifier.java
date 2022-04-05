@@ -2,20 +2,20 @@ package imcode.server.user.saml2;
 
 import imcode.server.user.saml2.store.SAMLRequestStore;
 import imcode.server.user.saml2.utils.SAMLUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by Shadowgun on 20.11.2014.
  */
 public class SAMLResponseVerifier {
-    private static Logger log = LoggerFactory.getLogger(SAMLResponseVerifier.class);
+    private static Logger log = LogManager.getLogger(SAMLResponseVerifier.class);
     private SAMLRequestStore samlRequestStore = SAMLRequestStore.getInstance();
 
     public void verify(SAMLMessageContext<Response, SAMLObject, NameID> samlMessageContext)

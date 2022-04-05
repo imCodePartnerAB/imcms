@@ -9,9 +9,9 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -26,7 +26,7 @@ import java.util.Set;
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
-    private static final Log log = LogFactory.getLog(ImcmsSetupFilter.class);
+    private static final Logger log = LogManager.getLogger(ImcmsSetupFilter.class);
 
     public static String getDocumentIdString(ImcmsServices service, String path) {
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix();

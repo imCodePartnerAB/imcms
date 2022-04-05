@@ -3,35 +3,27 @@ package imcode.server.user.saml2;
 import imcode.server.user.saml2.store.SAMLRequestStore;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.utils.SAMLUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.LogoutRequest;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.SessionIndex;
-import org.opensaml.saml2.core.impl.AuthnRequestBuilder;
-import org.opensaml.saml2.core.impl.IssuerBuilder;
-import org.opensaml.saml2.core.impl.LogoutRequestBuilder;
-import org.opensaml.saml2.core.impl.NameIDBuilder;
-import org.opensaml.saml2.core.impl.SessionIndexBuilder;
+import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.impl.*;
 import org.opensaml.util.URLBuilder;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.http.HTTPTransportUtils;
 import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
 import org.opensaml.xml.util.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public class SAMLRequestSender {
-    private static Logger log = LoggerFactory.getLogger(SAMLRequestSender.class);
+    private static Logger log = LogManager.getLogger(SAMLRequestSender.class);
     private SAMLAuthnRequestBuilder samlAuthnRequestBuilder =
             new SAMLAuthnRequestBuilder();
     private MessageEncoder messageEncoder = new MessageEncoder();

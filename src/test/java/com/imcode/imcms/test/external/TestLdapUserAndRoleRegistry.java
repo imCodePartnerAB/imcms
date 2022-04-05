@@ -4,13 +4,8 @@ import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.SimpleLayout;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -22,12 +17,6 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
     private static final String LDAP_PROPERTIES_SYSTEM_PROPERTY = "test.ldap.properties";
     private static final String DEFAULT_LDAP_PROPERTIES_FILE = "build.properties";
     private LdapUserAndRoleRegistry ldapUserAndRoleRegistry;
-
-    private void initLog4J() throws IOException {
-        String tmpDir = System.getProperty( "java.io.tmpdir" );
-        File tmpFile = new File( tmpDir, "log4joutput.log" );
-        BasicConfigurator.configure( new FileAppender( new SimpleLayout(), tmpFile.toString() ) );
-    }
 
     LdapUserAndRoleRegistry getLdapUserAndRoleRegistry( String[] ldapAttributesMappedToRoles ) throws Exception {
         String propertyFileName = System.getProperty( LDAP_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_LDAP_PROPERTIES_FILE );
@@ -58,7 +47,6 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        initLog4J();
         this.ldapUserAndRoleRegistry = getLdapUserAndRoleRegistry( new String[]{} );
     }
 
