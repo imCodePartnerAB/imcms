@@ -13,7 +13,7 @@
 
     <property name="version" value="" description="Artifact version is written into the WEB-INF/version.txt file. Set from Maven build."/>
     <property name="webroot" value="" description="Generated webapp dir. Set from Maven build."/>
-    <property name="log4j-conf.file" value="" description="Log4j configuration file to use. Set from Maven build."/>
+    <property name="log4j2-conf.file" value="" description="Log4j2 configuration file to use. Set from Maven build."/>
 
     <property name="imcms" value="${webroot}/imcms"/>
     <property name="docs" value="${imcms}/docs"/>
@@ -111,7 +111,7 @@
             <fileset dir="${basedir}/docs"/>
         </copy>
 
-        <copy file="${conf}/${log4j-conf.file}" tofile="${conf}/log4j.xml" overwrite="true"/>
+        <copy file="${conf}/${log4j2-conf.file}" tofile="${conf}/log4j2.xml" overwrite="true"/>
 
         <!--<copy file="${basedir}/server.xml" todir="${conf}" overwrite="true"/>-->
     </target>
@@ -157,9 +157,9 @@
             </then>
         </if>
         <if>
-            <equals arg1="${log4j-conf.file}" arg2=""/>
+            <equals arg1="${log4j2-conf.file}" arg2=""/>
             <then>
-                <fail message="log4j-conf.file property is not set"/>
+                <fail message="log4j2-conf.file property is not set"/>
             </then>
         </if>
     </target>

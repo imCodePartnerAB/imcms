@@ -4,7 +4,7 @@
     :: Build Profiles
        Activating debug profile
        :: forces java compiler to show all warnings.
-       :: selects log4j-debug.xml as a log4j engine configuration file.
+       :: selects log4j2-debug.xml as a log4j2 engine configuration file.
 
     :: WAR plugin ignores empty dirs when builds a webapp (as a war file or an exploded directory form).
        However a number of dirs (such as images, uploads, etc) must always present in the webapp.
@@ -65,7 +65,7 @@
 		<javac.deprecation>false</javac.deprecation>
 		<javac.args/>
 
-		<log4j-conf.file>log4j-nodebug.xml</log4j-conf.file>
+		<log4j2-conf.file>log4j2-nodebug.xml</log4j2-conf.file>
 
 		<slf4j.version>1.7.36</slf4j.version>
 
@@ -91,14 +91,14 @@
 			<properties>
 				<javac.args>-Xlint</javac.args>
 				<javac.deprecation>true</javac.deprecation>
-				<log4j-conf.file>log4j-debug.xml</log4j-conf.file>
+				<log4j2-conf.file>log4j2-debug.xml</log4j2-conf.file>
 			</properties>
 		</profile>
 	</profiles>
 
 	<dependencies>
 		<!--
-			Logging engine configuration - forwards logging to log4j
+			Logging engine configuration - forwards logging to log4j2
 
 			Tika uses slf4j
 			  -added slf4j-log4j12
@@ -106,14 +106,20 @@
 			Most libraries depends on commons-logging:
 			  -replaced common-logging with jcl-over-slf4j
 
-			imCMS uses both commons-logging and log4j directly
-			  -updated log4j
+			imCMS uses both commons-logging and log4j2 directly
+			  -updated log4j2
 		-->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>2.17.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-reload4j</artifactId>
+			<version>1.7.36</version>
 		</dependency>
 
 		<dependency>
@@ -674,13 +680,13 @@
 								<ant antfile="${basedir}/pom-ant.xml" target="web">
 									<property name="version" value="${project.version}"/>
 									<property name="webroot" value="${generated.webapp.dir}"/>
-									<property name="log4j-conf.file" value="${log4j-conf.file}"/>
+									<property name="log4j2-conf.file" value="${log4j2-conf.file}"/>
 								</ant>
 
 								<ant antfile="${basedir}/pom-ant.xml" target="sql">
 									<property name="version" value="${project.version}"/>
 									<property name="webroot" value="${generated.webapp.dir}"/>
-									<property name="log4j-conf.file" value="${log4j-conf.file}"/>
+									<property name="log4j2-conf.file" value="${log4j2-conf.file}"/>
 								</ant>
 							</target>
 						</configuration>

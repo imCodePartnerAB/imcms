@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Start log4j2 configuration -->
-<Configuration status="debug">
+<Configuration status="debug" strict="true">
 	<Appenders>
 		<!-- The accesslog (logs usermovements) -->
 		<RollingFile name="ACCESS"
 		             fileName="${WEB_APP_PATH}/WEB-INF/logs/access.log"
-		             filePattern="${WEB_APP_PATH}/WEB-INF/logs/access-%d{yyyy-MM}.log.gz"
+		             filePattern="${WEB_APP_PATH}/WEB-INF/logs/access-%d{yyyy-MM}.log"
 		             ignoreExceptions="false">
 			<PatternLayout charset="UTF-8" pattern="%d{ISO8601} %m%n"/>
 			<Policies>

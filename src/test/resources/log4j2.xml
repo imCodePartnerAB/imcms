@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Start log4j configuration -->
-<Configuration>
+<Configuration strict="true">
 	<Appenders>
 
 		<!-- The accesslog (logs usermovements) -->

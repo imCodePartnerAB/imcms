@@ -6,7 +6,6 @@ import imcode.util.Prefs;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.servlet.ServletContext;
@@ -64,10 +63,10 @@ public class ContextListener implements ServletContextListener {
     }
 
     private void configureLogging(File root, File configPath) {
-        File configFile = new File(configPath, "log4j.xml");
+	    File configFile = new File(configPath, "log4j2.xml");
 	    updateLog4jConfigFile(root, configFile);
-		Configurator.initialize(null, ConfigurationSource.fromUri(configFile.toURI()));
 
+	    Configurator.reconfigure(configFile.toURI());
         log = LogManager.getLogger(ContextListener.class);
         log.info("Logging started");
     }
