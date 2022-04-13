@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -180,17 +179,7 @@ public class FileAdmin extends HttpServlet {
                 }
             }
         }
-        // New:
-        StringTokenizer st = new StringTokenizer(ImcmsConstants.FILE_ADMIN_ROOT_PATHS_MANDATORY_IF_EXISTS, ":;");
-        int tokenCount = st.countTokens();
-        for (int i = 0; i < tokenCount; i++) {
-            String oneRoot = st.nextToken().trim();
-            File oneRootFile = FileUtility.getFileFromWebappRelativePath(oneRoot);
-            if (oneRootFile.isDirectory() && !rootList.contains(oneRootFile)) {
-                rootList.add(oneRootFile);
-            }
-        }
-        // End new
+
         File[] directoryArray = rootList.toArray(new File[rootList.size()]);
         Arrays.sort(directoryArray, getFileComparator());
         return directoryArray;
