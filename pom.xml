@@ -139,7 +139,7 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
-			<version>1.3</version>
+			<version>1.28</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
@@ -183,6 +183,10 @@
 		        <exclusion>
 			        <groupId>commons-logging</groupId>
 			        <artifactId>commons-logging</artifactId>
+		        </exclusion>
+		        <exclusion>
+			        <artifactId>bcprov-jdk15</artifactId>
+			        <groupId>org.bouncycastle</groupId>
 		        </exclusion>
 	        </exclusions>
         </dependency>
