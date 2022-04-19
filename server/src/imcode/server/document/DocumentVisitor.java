@@ -4,6 +4,8 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentVisitor {
 
+	public final static int SORTED_DOC_VALUES_FIELD_MAX_SIZE = 32766;
+
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
         visitOtherDocument(textDocument);
     }

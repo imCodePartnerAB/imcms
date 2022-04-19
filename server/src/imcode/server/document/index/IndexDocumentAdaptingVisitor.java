@@ -47,7 +47,12 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO));
             indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.NO));
 
-            indexDocument.add(new SortedDocValuesField(DocumentIndex.FIELD__TEXT + textIndex, new BytesRef(htmlStrippedText)));
+	        //to use SortedDocValuesField length of text have to be <= 32766
+	        if (htmlStrippedText.length() > SORTED_DOC_VALUES_FIELD_MAX_SIZE) {
+		        String limitedText = new String(htmlStrippedText.getBytes(), 0, SORTED_DOC_VALUES_FIELD_MAX_SIZE);
+		        indexDocument.add(new SortedDocValuesField(DocumentIndex.FIELD__TEXT + textIndex, new BytesRef(limitedText)));
+			} else
+		        indexDocument.add(new SortedDocValuesField(DocumentIndex.FIELD__TEXT + textIndex, new BytesRef(htmlStrippedText)));
         }
 
         for (MenuDomainObject menu : textDocument.getMenus().values()) {
