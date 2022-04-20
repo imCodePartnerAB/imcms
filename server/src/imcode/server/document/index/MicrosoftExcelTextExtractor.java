@@ -4,6 +4,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +25,7 @@ class MicrosoftExcelTextExtractor implements StreamTextsExtractor {
                 Iterator cellIterator = row.cellIterator();
                 while (cellIterator.hasNext()) {
 	                HSSFCell cell = (HSSFCell) cellIterator.next();
-	                int cellType = cell.getCellType();
-	                if (cellType == HSSFCell.CELL_TYPE_STRING) {
+	                if (cell.getCellType() == CellType.STRING) {
                         texts.add(cell.getStringCellValue());
                     }
                 }
