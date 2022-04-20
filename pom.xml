@@ -188,6 +188,10 @@
 			        <artifactId>bcprov-jdk15</artifactId>
 			        <groupId>org.bouncycastle</groupId>
 		        </exclusion>
+		        <exclusion>
+			        <artifactId>commons-codec</artifactId>
+			        <groupId>commons-codec</groupId>
+		        </exclusion>
 	        </exclusions>
         </dependency>
 
@@ -214,6 +218,12 @@
 			<groupId>com.microsoft.azure</groupId>
 			<artifactId>adal4j</artifactId>
 			<version>1.6.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk -->
@@ -346,6 +356,10 @@
 					<artifactId>commons-logging</artifactId>
 					<groupId>commons-logging</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -357,6 +371,10 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
