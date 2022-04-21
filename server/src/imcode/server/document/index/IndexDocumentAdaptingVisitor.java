@@ -16,6 +16,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
@@ -81,7 +82,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         String string = text.getText();
 
         if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
-            InputStream in = IOUtils.toInputStream(string);
+            InputStream in = IOUtils.toInputStream(string, StandardCharsets.UTF_8);
             try {
                 String stripped = tikaHtml.parseToString(in);
                 log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, stripped));
