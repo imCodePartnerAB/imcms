@@ -47,7 +47,7 @@ public class FileAdmin extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!checkAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -84,7 +84,7 @@ public class FileAdmin extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!checkAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -164,6 +164,25 @@ public class FileAdmin extends HttpServlet {
         String dirParameter = request.getParameter(parameter);
         return new File(webappPath, dirParameter).getCanonicalFile();
     }
+
+	private boolean checkAccess(int userId) {
+		final String allowFileAdmin = Imcms.getServices().getConfig().getAllowFileAdmin();
+		boolean hasAccess = false;
+
+		if (StringUtils.isNotBlank(allowFileAdmin)) {
+			final List<Integer> userIdsAllowedToAccessFileAdmin = new ArrayList<>();
+			final StringTokenizer tokenizer = new StringTokenizer(allowFileAdmin, ",");
+
+			for (int i = 0; i < tokenizer.countTokens(); i++) {
+				String id = tokenizer.nextToken().trim();
+				userIdsAllowedToAccessFileAdmin.add(Integer.parseInt(id));
+			}
+
+			hasAccess = userIdsAllowedToAccessFileAdmin.contains(userId);
+		}
+
+		return hasAccess;
+	}
 
     private File[] getRoots() {
         String rootpaths = Imcms.getServices().getConfig().getFileAdminRootPaths();

@@ -197,3 +197,6 @@ sms.gateway.defaultCountryCode =
 
 #2FA settings
 2fa.cookie.lifetime =
+
+# comma separated user ids allowed to access FileAdmin
+AllowFileAdmin =

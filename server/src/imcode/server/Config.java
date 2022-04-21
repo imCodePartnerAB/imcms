@@ -6,15 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Config {
 
@@ -69,7 +61,7 @@ public class Config {
     private String cgiUserRoleName;
     private String cgiMetadataUrl;
     private String serverName;
-
+	private String allowFileAdmin;
     private static List<RoleId> convertRoleIds(String roleIdsString) {
         String[] ids = StringUtils.split(roleIdsString, ',');
         List<RoleId> roleIds = new ArrayList<>(ids.length);
@@ -511,4 +503,12 @@ public class Config {
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
+
+	public String getAllowFileAdmin() {
+		return allowFileAdmin;
+	}
+
+	public void setAllowFileAdmin(String allowFileAdmin) {
+		this.allowFileAdmin = allowFileAdmin;
+	}
 }
