@@ -47,7 +47,7 @@ public class FileAdmin extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-	    if (!checkAccess(user.getId())) {
+	    if (!hasAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -84,7 +84,7 @@ public class FileAdmin extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-	    if (!checkAccess(user.getId())) {
+	    if (!hasAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -165,7 +165,7 @@ public class FileAdmin extends HttpServlet {
         return new File(webappPath, dirParameter).getCanonicalFile();
     }
 
-	private boolean checkAccess(int userId) {
+	public static boolean hasAccess(int userId) {
 		final String allowFileAdmin = Imcms.getServices().getConfig().getAllowFileAdmin();
 		boolean hasAccess = false;
 

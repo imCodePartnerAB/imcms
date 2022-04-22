@@ -172,7 +172,10 @@ public class AdminManager extends HttpServlet {
         String html_admin_part = "";
 
         if (loggedOnUser.isSuperAdmin()) {
-            html_admin_part = service.getAdminTemplate(HTML_ADMINTASK, loggedOnUser, null); // if superadmin
+	        String hasUserAccessKey = "#hasUserAccess#";
+	        String hasUserAccessValue = FileAdmin.hasAccess(loggedOnUser.getId()) ? "" : "disabled";
+
+	        html_admin_part = service.getAdminTemplate(HTML_ADMINTASK, loggedOnUser, Arrays.asList(hasUserAccessKey, hasUserAccessValue)); // if superadmin
         } else if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) { //if user is useradmin
             html_admin_part = service.getAdminTemplate(HTML_USERADMINTASK, loggedOnUser, null); //if useradmin
         }
