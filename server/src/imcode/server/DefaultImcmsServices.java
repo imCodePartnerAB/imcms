@@ -19,50 +19,27 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DefaultDirectoryIndex;
-import imcode.server.document.index.DefaultReindexingDocumentRepository;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.IndexDocumentFactory;
-import imcode.server.document.index.RebuildingDirectoryIndex;
+import imcode.server.document.index.*;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.MissingLoginDataException;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
-import imcode.util.CachingFileLoader;
-import imcode.util.DateConstants;
-import imcode.util.ImcmsImageUtils;
-import imcode.util.Parser;
-import imcode.util.Utility;
+import imcode.server.user.*;
+import imcode.util.*;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.MethodUtils;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.*;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.WordUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -70,21 +47,13 @@ import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
+import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
     private static final int DEFAULT_STARTDOCUMENT = 1001;
-    private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
-    private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
+    private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
+    private final static Logger log = LogManager.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
@@ -486,8 +455,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public UserDomainObject verifyUser(String login, String password) {
-        NDC.push("verifyUser");
-        try {
+        try(CloseableThreadContext.Instance ignored=CloseableThreadContext.push("verifyUser")) {
             UserDomainObject result = null;
 
             if (login == null || password == null) {
@@ -507,16 +475,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 logUserLoggedIn(user);
             }
             return result;
-        } finally {
-            NDC.pop();
         }
     }
 
     public UserDomainObject verifyUser(String clientPrincipalName) {
         String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
-
-        NDC.push("verifyUser");
-        try {
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("verifyUser")) {
             UserDomainObject result = null;
 
             UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
@@ -529,8 +493,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 logUserLoggedIn(user);
             }
             return result;
-        } finally {
-            NDC.pop();
         }
     }
 

@@ -6,13 +6,14 @@ import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
 public class BackgroundIndexBuilder {
-    private final static Logger log = Logger.getLogger(BackgroundIndexBuilder.class);
+    private final static Logger log = LogManager.getLogger(BackgroundIndexBuilder.class);
 
     private final File indexParentDirectory;
     private final RebuildingDirectoryIndex rebuildingDirectoryIndex;
@@ -35,8 +36,9 @@ public class BackgroundIndexBuilder {
     }
 
     public synchronized void start() {
-        try {
-            NDC.push(ClassUtils.getShortClassName(getClass()) + "-" + Utility.numberToAlphaNumerics(System.identityHashCode(this)));
+	    try (CloseableThreadContext.Instance ignored =
+			         CloseableThreadContext.push(
+					         ClassUtils.getShortClassName(getClass()) + "-" + Utility.numberToAlphaNumerics(System.identityHashCode(this)));) {
 
             touchIndexParentDirectory();
 
@@ -62,8 +64,6 @@ public class BackgroundIndexBuilder {
             } catch (IllegalThreadStateException itse) {
                 throw new ShouldNotBeThrownException(itse);
             }
-        } finally {
-            NDC.pop();
         }
     }
 

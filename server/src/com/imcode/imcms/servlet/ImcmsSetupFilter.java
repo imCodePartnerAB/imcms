@@ -11,7 +11,7 @@ import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -19,6 +19,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -92,14 +93,15 @@ public class ImcmsSetupFilter implements Filter {
 
         Utility.initRequestWithApi(request, user);
 
-        NDC.setMaxDepth(0);
-        String contextPath = request.getContextPath();
-        if (!"".equals(contextPath)) {
-            NDC.push(contextPath);
-        }
-        NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
-        handleDocumentUri(chain, request, response, service, fallbackDecoder);
-        NDC.setMaxDepth(0);
+	    try (CloseableThreadContext.Instance contextStack = CloseableThreadContext.pushAll(Collections.emptyList())) {
+		    String contextPath = request.getContextPath();
+		    if (!"".equals(contextPath)) {
+			    contextStack.push(contextPath);
+		    }
+		    contextStack.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
+		    handleDocumentUri(chain, request, response, service, fallbackDecoder);
+		    contextStack.pushAll(Collections.emptyList());
+	    }
     }
 
     private void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,

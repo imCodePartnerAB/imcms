@@ -11,8 +11,9 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -30,8 +31,8 @@ import java.util.Stack;
 public class GetDoc extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
-    private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
-    private final static Logger LOG = Logger.getLogger(GetDoc.class.getName());
+    private final static Logger TRACK_LOG = LogManager.getLogger(ImcmsConstants.ACCESS_LOG);
+    private final static Logger LOG = LogManager.getLogger(GetDoc.class.getName());
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
 
@@ -49,8 +50,7 @@ public class GetDoc extends HttpServlet {
     }
 
     public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        NDC.push("" + document.getId());
-        try {
+        try(CloseableThreadContext.Instance ignored=CloseableThreadContext.push("" + document.getId());) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
@@ -58,8 +58,6 @@ public class GetDoc extends HttpServlet {
             stopWatch.stop();
             long renderTime = stopWatch.getTime();
             LOG.trace("Rendering document " + document.getId() + " took " + renderTime + "ms.");
-        } finally {
-            NDC.pop();
         }
     }
 

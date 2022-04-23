@@ -3,8 +3,9 @@ package imcode.server.user;
 import com.google.common.collect.Sets;
 import imcode.server.ImcmsConstants;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -18,7 +19,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     private UserAndRoleRegistry externalUserRegistry;
     private String defaultLanguage;
 
-    private Logger log = Logger.getLogger(ExternalizedImcmsAuthenticatorAndUserRegistry.class);
+    private Logger log = LogManager.getLogger(ExternalizedImcmsAuthenticatorAndUserRegistry.class);
 
     public ExternalizedImcmsAuthenticatorAndUserRegistry(ImcmsAuthenticatorAndUserAndRoleMapper imcmsAndRole,
                                                          Authenticator externalAuthenticator,
@@ -42,42 +43,43 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     public boolean authenticate(String loginName, String password) {
-        NDC.push("authenticate");
-        boolean userAuthenticatesInImcms = false;
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("authenticate")) {
 
-        if (password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH) {
-            userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate(loginName, password);
+		    boolean userAuthenticatesInImcms = false;
 
-            if (userAuthenticatesInImcms) {
-                final UserDomainObject user = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
-                user.setLastLoginDate(new Date());
-                imcmsAuthenticatorAndUserMapperAndRole.saveUser(user);
-            }
-        }
+		    if (password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH) {
+			    userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate(loginName, password);
 
-        boolean userAuthenticatesInExternal = false;
-        if (!userAuthenticatesInImcms && null != externalAuthenticator && password.length() > 0) {
-            userAuthenticatesInExternal = externalAuthenticator.authenticate(loginName, password);
-        }
+			    if (userAuthenticatesInImcms) {
+				    final UserDomainObject user = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
+				    user.setLastLoginDate(new Date());
+				    imcmsAuthenticatorAndUserMapperAndRole.saveUser(user);
+			    }
+		    }
 
-        NDC.pop();
-        return userAuthenticatesInImcms || userAuthenticatesInExternal;
+		    boolean userAuthenticatesInExternal = false;
+		    if (!userAuthenticatesInImcms && null != externalAuthenticator && password.length() > 0) {
+			    userAuthenticatesInExternal = externalAuthenticator.authenticate(loginName, password);
+		    }
+
+		    return userAuthenticatesInImcms || userAuthenticatesInExternal;
+	    }
     }
 
     public UserDomainObject getUser(String loginName) {
-        NDC.push("getUser");
-        UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
-        boolean imcmsUserExists = null != imcmsUser;
-        boolean imcmsUserIsInternal = imcmsUserExists && !imcmsUser.isImcmsExternal();
-        UserDomainObject result;
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("getUser")) {
+		    UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
+		    boolean imcmsUserExists = null != imcmsUser;
+		    boolean imcmsUserIsInternal = imcmsUserExists && !imcmsUser.isImcmsExternal();
+		    UserDomainObject result;
 
-        if (imcmsUserIsInternal) {
-            result = imcmsUser;
-        } else {
-            result = getExternalUser(loginName, imcmsUser);
-        }
-        NDC.pop();
-        return result;
+		    if (imcmsUserIsInternal) {
+			    result = imcmsUser;
+		    } else {
+			    result = getExternalUser(loginName, imcmsUser);
+		    }
+		    return result;
+	    }
     }
 
     private UserDomainObject getExternalUser(String loginName, UserDomainObject imcmsUser) {

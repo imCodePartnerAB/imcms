@@ -21,8 +21,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 
 import javax.servlet.RequestDispatcher;
@@ -63,7 +64,7 @@ public class Utility {
     public static final String IM_TOKEN = "im_token";
     public static final String IM_TOKEN_DATE = "im_token_date";
 
-    private final static Logger log = Logger.getLogger(Utility.class.getName());
+    private final static Logger log = LogManager.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
     private static final String LOGGED_IN_USER = "logon.isDone";
@@ -450,12 +451,12 @@ public class Utility {
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
-        NDC.push("initRequestWithApi");
-        ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, Imcms.getApiDataSource());
-        request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
-        NDC.pop();
-        return imcmsSystem;
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("initRequestWithApi")) {
+		    ImcmsServices service = Imcms.getServices();
+		    ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, Imcms.getApiDataSource());
+		    request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
+		    return imcmsSystem;
+	    }
     }
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {

@@ -14,18 +14,10 @@ import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.Perl5Substitution;
-import org.apache.oro.text.regex.Substitution;
-import org.apache.oro.text.regex.Util;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.oro.text.regex.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +32,7 @@ import java.util.Set;
 
 public class TextDocumentParser {
 
-    private final static Logger LOG = Logger.getLogger(TextDocumentParser.class);
+    private final static Logger LOG = LogManager.getLogger(TextDocumentParser.class);
 
     static Pattern hashtagPattern;
     private static Pattern htmlTagPattern;
@@ -119,15 +111,13 @@ public class TextDocumentParser {
 
     public void parsePage(ParserParameters paramsToParse,
                           Writer out) throws IOException {
-        NDC.push("parsePage");
-        try {
+
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("parsePage");) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             untimedParsePage(paramsToParse, out);
             stopWatch.stop();
             LOG.trace("Parsing template took " + stopWatch.getTime() + "ms.");
-        } finally {
-            NDC.pop();
         }
     }
 

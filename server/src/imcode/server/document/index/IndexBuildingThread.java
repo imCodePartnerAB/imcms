@@ -2,8 +2,9 @@ package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 class IndexBuildingThread extends Thread {
 
-    private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
+    private final static Logger log = LogManager.getLogger(IndexBuildingThread.class.getName());
     private final Map<Integer, DocumentDomainObject> idToDocumentsToAddToNewIndex = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<Integer, DocumentDomainObject> idToDocumentsToRemoveFromNewIndex = Collections.synchronizedMap(new LinkedHashMap<>());
     private final BackgroundIndexBuilder backgroundIndexBuilder;
@@ -32,9 +33,8 @@ class IndexBuildingThread extends Thread {
     }
 
     public void run() {
-        NDC.push(Thread.currentThread().getName());
         DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
-        try {
+        try(CloseableThreadContext.Instance ignored=CloseableThreadContext.push(Thread.currentThread().getName());) {
             acceptUpdatesRef.set(true);
             newIndex.rebuild();
             considerDocumentsAddedOrRemovedDuringIndexing(newIndex);
@@ -44,7 +44,6 @@ class IndexBuildingThread extends Thread {
         } finally {
             acceptUpdatesRef.set(false);
             backgroundIndexBuilder.notifyRebuildComplete(newIndex);
-            NDC.pop();
         }
     }
 
