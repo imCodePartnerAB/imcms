@@ -5,16 +5,13 @@ import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.db.DdlUtilsPlatformCommand;
-import com.imcode.imcms.db.refactoring.model.Column;
-import com.imcode.imcms.db.refactoring.model.DdlUtilsDatabaseModel;
-import com.imcode.imcms.db.refactoring.model.DdlUtilsForeignKey;
-import com.imcode.imcms.db.refactoring.model.ForeignKey;
-import com.imcode.imcms.db.refactoring.model.Table;
+import com.imcode.imcms.db.refactoring.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.platform.mssql.MSSqlPlatform;
 import org.apache.ddlutils.platform.mysql.MySqlPlatform;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ import java.util.List;
 
 public abstract class DatabasePlatform {
 
-    private final static Logger LOG = Logger.getLogger(DatabasePlatform.class);
+	private final static Logger LOG = LogManager.getLogger(DatabasePlatform.class);
     private static final String OBJECT_DOES_NOT_EXIST = "42S02";
     protected final Database database;
 

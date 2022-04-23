@@ -2,22 +2,15 @@ package com.imcode.imcms.api;
 
 import com.imcode.util.ChainableReversibleNullComparator;
 import com.imcode.util.CountingIterator;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The base class for all document types, such as {@link TextDocument}, {@link UrlDocument}, {@link FileDocument} etc.
@@ -33,7 +26,7 @@ public class Document implements Serializable {
     private static final int STATUS_PUBLICATION_DISAPPROVED = 1;
     private static final int STATUS_PUBLICATION_APPROVED = 2;
 
-    private final static Logger log = Logger.getLogger(Document.class.getName());
+    private final static Logger log = LogManager.getLogger(Document.class.getName());
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
 

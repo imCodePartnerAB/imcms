@@ -12,18 +12,15 @@ import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ImageCacheMapper {
-    private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
+    private static final Logger log = LogManager.getLogger(ImageCacheMapper.class);
     private static final String SQL__UPDATE_FREQUENCY = "UPDATE images_cache SET frequency = frequency + 1 WHERE " +
             "id = ? AND frequency < ?";
     private Database database;

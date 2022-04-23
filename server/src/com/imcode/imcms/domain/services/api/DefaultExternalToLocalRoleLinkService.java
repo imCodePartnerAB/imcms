@@ -7,7 +7,8 @@ import com.imcode.imcms.domain.services.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.ExternalToLocalRoleLinkModel;
 import imcode.server.Imcms;
 import imcode.server.user.RoleDomainObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkService {
 
-    private final static Logger log = Logger.getLogger(DefaultExternalToLocalRoleLinkService.class);
+    private final static Logger log = LogManager.getLogger(DefaultExternalToLocalRoleLinkService.class);
     private final ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent;
 
     public DefaultExternalToLocalRoleLinkService(ExternalToLocalRoleLinkComponent externalToLocalRoleLinkComponent) {

@@ -9,7 +9,8 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
 
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
-    private final static Logger log = Logger.getLogger(DefaultProcedureExecutor.class.getName());
+    private final static Logger log = LogManager.getLogger(DefaultProcedureExecutor.class.getName());
     private final Database database;
     private final CachingFileLoader fileLoader;
     private Map procedureCache = new HashMap();

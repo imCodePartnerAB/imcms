@@ -9,7 +9,8 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.SectionDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.*;
 import org.apache.tika.Tika;
 import org.apache.tika.detect.Detector;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 public class IndexDocumentFactory {
 
-    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
+    private final static Logger log = LogManager.getLogger(IndexDocumentFactory.class.getName());
     private CategoryMapper categoryMapper;
     private Tika tikaAutodetect;
     private Tika tikaHtml;

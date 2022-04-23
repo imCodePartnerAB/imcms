@@ -11,7 +11,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.w3c.dom.Document;
@@ -26,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class XmlDoc extends HttpServlet {
-    private final static Logger LOG = Logger.getLogger(XmlDoc.class.getName());
+    private final static Logger LOG = LogManager.getLogger(XmlDoc.class.getName());
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

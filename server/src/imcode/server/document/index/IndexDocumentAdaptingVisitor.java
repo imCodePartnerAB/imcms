@@ -8,7 +8,8 @@ import imcode.server.document.textdocument.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.*;
 import org.apache.lucene.util.BytesRef;
 import org.apache.tika.Tika;
@@ -24,7 +25,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //    private static final String MIME_TYPE__POWERPOINT = "application/vnd.ms-powerpoint";
 //    private static final String MIME_TYPE__PDF = "application/pdf";
 
-    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
+    private final static Logger log = LogManager.getLogger(IndexDocumentFactory.class.getName());
     Document indexDocument;
     Tika tikaAutodetect;
     Tika tikaHtml;

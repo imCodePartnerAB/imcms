@@ -10,7 +10,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -23,7 +24,7 @@ import java.util.Vector;
 
 public class AdminSection extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger(AdminSection.class.getName());
+    private final static Logger log = LogManager.getLogger(AdminSection.class.getName());
 
     private final static String ADMIN_TEMPLATE = "sections/admin_section.html";
     private final static String ADD_TEMPLATE = "sections/admin_section_add.html";

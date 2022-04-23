@@ -1,6 +1,8 @@
 package imcode.server.user;
 
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,7 +15,7 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     private Collection<UserAndRoleRegistry> userAndRoleRegistries = new LinkedList<>();
 
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LogManager.getLogger(getClass());
 
     public ChainedLdapUserAndRoleRegistry() {
     }

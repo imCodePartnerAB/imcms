@@ -26,7 +26,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -48,7 +49,7 @@ import java.util.ResourceBundle;
  */
 public class InternalError extends HttpServlet {
 
-    private final static Logger LOGGER = Logger.getLogger(InternalError.class);
+    private final static Logger LOGGER = LogManager.getLogger(InternalError.class);
 
     private final String DEFAULT_RESPONSE = "N/A";
 

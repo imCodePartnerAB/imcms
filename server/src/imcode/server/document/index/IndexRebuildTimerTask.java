@@ -1,13 +1,15 @@
 package imcode.server.document.index;
 
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.TimerTask;
 
 class IndexRebuildTimerTask extends TimerTask {
 
-    private final static Logger log = Logger.getLogger(IndexRebuildTimerTask.class);
+    private final static Logger log = LogManager.getLogger(IndexRebuildTimerTask.class);
 
     private final long indexRebuildSchedulePeriodInMilliseconds;
     private final BackgroundIndexBuilder backgroundIndexBuilder;

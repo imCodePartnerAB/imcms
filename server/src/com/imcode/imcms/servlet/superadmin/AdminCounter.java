@@ -8,7 +8,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 import imcode.util.jscalendar.JSCalendar;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +25,7 @@ import java.util.Properties;
 
 public class AdminCounter extends HttpServlet {
 
-    private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
+    private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
     private final static String JSP_TEMPLATE = "admin_session_counter.jsp";
 
 

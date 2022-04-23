@@ -2,7 +2,8 @@ package com.imcode.imcms.mapping;
 
 import imcode.util.CompositeList;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,7 @@ public class FragmentingDocumentGetter extends DocumentGetterWrapper {
 
     private static final int DOCUMENTS_PER_FRAGMENT = 50;
 
-    private final static Logger log = Logger.getLogger(FragmentingDocumentGetter.class);
+    private final static Logger log = LogManager.getLogger(FragmentingDocumentGetter.class);
 
     public FragmentingDocumentGetter(DocumentGetter documentGetter) {
         super(documentGetter);

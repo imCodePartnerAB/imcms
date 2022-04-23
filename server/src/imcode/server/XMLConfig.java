@@ -4,13 +4,10 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import imcode.server.user.ldap.MappedRole;
 import imcode.server.user.ldap.MappedRoles;
-import imcode.server.user.ldap.jaxb.LdapElement;
-import imcode.server.user.ldap.jaxb.MappedRolesElement;
-import imcode.server.user.ldap.jaxb.RoleToAdGroupElement;
-import imcode.server.user.ldap.jaxb.RoleToAttributeElement;
-import imcode.server.user.ldap.jaxb.ServerElement;
+import imcode.server.user.ldap.jaxb.*;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -27,7 +24,7 @@ public final class XMLConfig {
 
     private final MappedRoles ldapMappedRoles;
 
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private Logger logger = LogManager.getLogger(getClass().getName());
 
     public XMLConfig(String configFilePath) {
         logger.info(String.format("Reading xml based configuration from %s.", configFilePath));

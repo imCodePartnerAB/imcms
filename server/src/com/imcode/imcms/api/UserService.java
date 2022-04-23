@@ -4,7 +4,8 @@ import com.imcode.imcms.model.ExternalUser;
 import imcode.server.Imcms;
 import imcode.server.user.*;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class UserService implements ExternalUserService {
 
-    private static final Logger log = Logger.getLogger(UserService.class);
+    private static final Logger log = LogManager.getLogger(UserService.class);
     private static final SecureRandom RANDOM = new SecureRandom();
     private ContentManagementSystem contentManagementSystem;
 

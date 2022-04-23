@@ -7,7 +7,8 @@ import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
 import imcode.server.Imcms;
 import org.apache.ddlutils.platform.SqlBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private static final String SQL_STATE__MISSING_TABLE = "42S02";
 
-    private final static Logger LOG = Logger.getLogger(StartupDatabaseUpgrade.class);
+    private final static Logger LOG = LogManager.getLogger(StartupDatabaseUpgrade.class);
 
     DatabaseVersionUpgradePair[] upgrades = new DatabaseVersionUpgradePair[]{
             new DatabaseVersionUpgradePair(4, 0, new CreateTableUpgrade(wantedDdl, "database_version")),

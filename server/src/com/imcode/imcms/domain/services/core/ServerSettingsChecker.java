@@ -2,7 +2,8 @@ package com.imcode.imcms.domain.services.core;
 
 import imcode.server.Imcms;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 
@@ -12,7 +13,7 @@ import java.util.Properties;
  */
 public class ServerSettingsChecker {
 
-    private final static Logger LOG = Logger.getLogger(ServerSettingsChecker.class);
+    private final static Logger LOG = LogManager.getLogger(ServerSettingsChecker.class);
 
     private static final String EMPTY_PROPERTY_MESSAGE = "Empty '%s' property! Check server settings!";
 

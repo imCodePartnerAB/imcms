@@ -5,7 +5,8 @@ import com.imcode.imcms.model.ExternalToLocalRoleLinkModel;
 import imcode.server.Imcms;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleId;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -19,7 +20,7 @@ import java.util.Set;
 
 public class ExternalToLocalRoleLinkComponent {
 
-    private final static Logger log = Logger.getLogger(ExternalToLocalRoleLinkComponent.class);
+    private final static Logger log = LogManager.getLogger(ExternalToLocalRoleLinkComponent.class);
     private final Connection connection;
 
 

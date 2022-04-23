@@ -11,7 +11,8 @@ import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
@@ -26,7 +27,7 @@ import java.util.function.Predicate;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
-    private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
+    private static final Logger log = LogManager.getLogger(DefaultDirectoryIndex.class.getName());
     private static final long INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_PER_MINUTE;
 
     private static final Map<String, DocumentRepository> nameToCustomDocRepository = new HashMap<>();

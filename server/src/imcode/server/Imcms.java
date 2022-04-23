@@ -2,11 +2,7 @@ package imcode.server;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
-import com.imcode.imcms.db.DatabaseUpgrade;
-import com.imcode.imcms.db.DatabaseUtils;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
-import com.imcode.imcms.db.ImcmsDatabaseCreator;
-import com.imcode.imcms.db.StartupDatabaseUpgrade;
+import com.imcode.imcms.db.*;
 import com.imcode.imcms.domain.factory.AuthenticationProvidersFactory;
 import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
@@ -20,7 +16,8 @@ import imcode.util.Prefs;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -46,7 +43,7 @@ public class Imcms {
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
     public final static String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
 
-    private final static Logger LOG = Logger.getLogger(Imcms.class.getName());
+    private final static Logger LOG = LogManager.getLogger(Imcms.class.getName());
     private static ImcmsServices services;
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;

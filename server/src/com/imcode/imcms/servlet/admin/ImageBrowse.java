@@ -13,7 +13,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +42,7 @@ public class ImageBrowse extends HttpServlet {
     public static final String REQUEST_PARAMETER__LABEL = "label";
     public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__FILE = "file";
-    private final static Logger LOG = Logger.getLogger(ImageBrowse.class.getName());
+    private final static Logger LOG = LogManager.getLogger(ImageBrowse.class.getName());
     private static final String JSP__IMAGE_BROWSE = "ImageBrowse.jsp";
     private static final LocalizedMessage ERROR_MESSAGE__FILE_EXISTS = new LocalizedMessage("error/servlet/images/image_file_exists");
 

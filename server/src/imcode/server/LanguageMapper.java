@@ -6,7 +6,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class LanguageMapper {
      * {@see <a href="http://www.loc.gov/standards/iso639-2/langhome.html">http://www.loc.gov/standards/iso639-2/langhome.html</a>}
      **/
     public final static String ISO639_2 = "ISO 639-2";
-    private final static Logger log = Logger.getLogger(LanguageMapper.class.getName());
+    private final static Logger log = LogManager.getLogger(LanguageMapper.class.getName());
     private static Map iso639_1to639_2map;
     private static Map iso639_2to639_1map;
     private static String[][] iso6391to6392table = new String[][]{

@@ -1,6 +1,7 @@
 package imcode.server.kerberos;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -10,7 +11,7 @@ import java.security.PrivilegedAction;
 
 
 class EstablishContextAction implements PrivilegedAction<EstablishContextResult> {
-    private static final Logger log = Logger.getLogger(EstablishContextAction.class);
+    private static final Logger log = LogManager.getLogger(EstablishContextAction.class);
 
     private final byte[] requestToken;
 

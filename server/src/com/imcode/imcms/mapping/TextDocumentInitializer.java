@@ -4,37 +4,24 @@ import com.imcode.db.Database;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.CopyableHashMap;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject.TemplateNames;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TextDocumentInitializer {
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
-    private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
+    private final static Logger LOG = LogManager.getLogger(TextDocumentInitializer.class);
     private final Collection<Integer> documentIds;
     private final Database database;
     private final DocumentGetter documentGetter;

@@ -12,7 +12,8 @@ import org.apache.ddlutils.model.Column;
 import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.platform.CreationParameters;
 import org.apache.ddlutils.platform.SqlBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 
 class UnicodeUpgrade extends DatabaseTypeSpecificUpgrade {
 
-    private final static Logger LOG = Logger.getLogger(UnicodeUpgrade.class);
+    private final static Logger LOG = LogManager.getLogger(UnicodeUpgrade.class);
 
     protected UnicodeUpgrade(org.apache.ddlutils.model.Database ddl) {
         super(ddl);

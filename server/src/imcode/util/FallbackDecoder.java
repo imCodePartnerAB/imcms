@@ -1,6 +1,8 @@
 package imcode.util;
 
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -10,7 +12,7 @@ import java.nio.charset.CodingErrorAction;
 
 public class FallbackDecoder {
 
-    private final static Logger LOG = Logger.getLogger(FallbackDecoder.class);
+    private final static Logger LOG = LogManager.getLogger(FallbackDecoder.class);
     private Charset charset;
     private Charset fallbackCharset;
 

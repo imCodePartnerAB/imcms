@@ -22,7 +22,8 @@ import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -46,7 +47,7 @@ import static org.apache.lucene.search.BooleanClause.Occur;
 
 public class GetExistingDoc extends HttpServlet {
 
-    private final static Logger LOG = Logger.getLogger(GetExistingDoc.class.getName());
+    private final static Logger LOG = LogManager.getLogger(GetExistingDoc.class.getName());
     private static final String ONE_SEARCH_HIT = "existing_doc_hit.html";
     private static final String SEARCH_RESULTS = "existing_doc_res.html";
     private static final String ADMIN_TEMPLATE_EXISTING_DOC = "existing_doc.html";

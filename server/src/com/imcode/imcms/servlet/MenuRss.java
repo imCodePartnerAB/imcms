@@ -9,7 +9,8 @@ import com.imcode.imcms.util.rss.RssDocumentFactory;
 import com.imcode.imcms.util.rss.imcms.DocumentMenuChannel;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ import java.io.IOException;
 
 public class MenuRss extends HttpServlet {
 
-    private final static Logger LOG = Logger.getLogger(MenuRss.class);
+    private final static Logger LOG = LogManager.getLogger(MenuRss.class);
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {

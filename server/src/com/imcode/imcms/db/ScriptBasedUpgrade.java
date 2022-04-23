@@ -10,7 +10,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.model.Database;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -19,12 +20,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFunction;
-import javax.xml.xpath.XPathFunctionException;
-import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -37,7 +33,7 @@ import java.util.List;
  */
 public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
 
-    private final static Logger LOG = Logger.getLogger(ScriptBasedUpgrade.class);
+    private final static Logger LOG = LogManager.getLogger(ScriptBasedUpgrade.class);
 
     private DatabaseVersion currentVersion;
 

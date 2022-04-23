@@ -2,7 +2,8 @@ package imcode.util;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class HttpSessionUtils {
 
-    private final static Logger log = Logger.getLogger(HttpSessionUtils.class.getName());
+    private final static Logger log = LogManager.getLogger(HttpSessionUtils.class.getName());
 
     private static final String SESSION_ATTRIBUTE_NAME__SESSION_MAP = HttpSessionUtils.class.getName() + ".sessionMap";
 

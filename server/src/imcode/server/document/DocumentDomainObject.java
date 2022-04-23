@@ -9,21 +9,18 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY = "imcms.document.modified_by";
-    private static Logger log = Logger.getLogger(DocumentDomainObject.class);
+    private static Logger log = LogManager.getLogger(DocumentDomainObject.class);
     protected Attributes attributes = new Attributes();
 
     public static DocumentDomainObject fromDocumentTypeId(int documentTypeId) {

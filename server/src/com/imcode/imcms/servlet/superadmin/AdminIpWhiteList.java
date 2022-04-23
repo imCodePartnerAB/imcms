@@ -14,7 +14,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class AdminIpWhiteList extends HttpServlet {
 
-    private static final Logger log = Logger.getLogger(AdminIpWhiteList.class);
+    private static final Logger log = LogManager.getLogger(AdminIpWhiteList.class);
 
     private static final String WHITE_LIST_TEMPLATE = "AdminIpWhiteList.jsp";
     private static final String WHITE_LIST_ADD_TEMPLATE = "AdminIpWhiteList_Add.jsp";

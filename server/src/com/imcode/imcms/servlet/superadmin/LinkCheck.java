@@ -20,7 +20,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
@@ -51,7 +52,7 @@ public class LinkCheck extends HttpServlet {
     private static final String HTTP_REQUEST_HEADER__USER_AGENT = "user-agent";
     private static final int CONNECTION_TIMEOUT_MILLISECONDS = 10000;
     private static final int READ_TIMEOUT_MILLISECONDS = 10000;
-    private final static Logger log = Logger.getLogger(LinkCheck.class.getName());
+    private final static Logger log = LogManager.getLogger(LinkCheck.class.getName());
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
