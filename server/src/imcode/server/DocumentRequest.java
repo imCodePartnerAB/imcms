@@ -2,6 +2,9 @@ package imcode.server;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.log.DocumentRequestRenderer;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.util.StringBuilderFormattable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * This class exists to store data about requests for documents in.
  **/
-public class DocumentRequest implements Cloneable {
+public class DocumentRequest implements Message, StringBuilderFormattable, Cloneable {
 
     private HttpServletRequest httpServletRequest;
     private HttpServletResponse httpServletResponse;
@@ -84,4 +87,29 @@ public class DocumentRequest implements Cloneable {
     public HttpServletResponse getHttpServletResponse() {
         return httpServletResponse;
     }
+
+	@Override
+	public String getFormattedMessage() {
+		return DocumentRequestRenderer.render(this);
+	}
+
+	@Override
+	public String getFormat() {
+		return getFormattedMessage();
+	}
+
+	@Override
+	public Object[] getParameters() {
+		return new Object[]{this};
+	}
+
+	@Override
+	public Throwable getThrowable() {
+		return null;
+	}
+
+	@Override
+	public void formatTo(final StringBuilder buffer) {
+		buffer.append(getFormattedMessage());
+	}
 }
