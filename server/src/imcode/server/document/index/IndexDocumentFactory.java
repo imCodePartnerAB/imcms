@@ -36,7 +36,6 @@ public class IndexDocumentFactory {
     public IndexDocumentFactory(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
         this.tikaAutodetect = new Tika();
-        this.tikaAutodetect.setMaxStringLength(-1);
 
         HtmlParser parser = new HtmlParser();
         Detector detector = new Detector() {
