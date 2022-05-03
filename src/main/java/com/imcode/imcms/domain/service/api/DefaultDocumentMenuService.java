@@ -3,16 +3,15 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -25,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,42 +36,28 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private final MetaRepository metaRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
+    private final AccessService accessService;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
 
     DefaultDocumentMenuService(MetaRepository metaRepository,
                                VersionService versionService,
                                CommonContentService commonContentService,
+                               AccessService accessService,
                                TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO) {
         this.metaRepository = metaRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
+        this.accessService = accessService;
         this.metaToDocumentDTO = metaToDocumentDTO;
     }
 
-    // it's not adopted to all access rules that could exist
     @Override
     public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
         final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
                 .orElseThrow(() -> new DocumentNotExistException(docId));
 
-        if (meta.getLinkedForUnauthorizedUsers()) {
-            return true;
-        }
-
-        final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
-        boolean hasAccess;
-        if (docPermissions.isEmpty()) {
-            hasAccess = user.isSuperAdmin();
-        } else {
-            hasAccess = user.getRoleIds()
-                    .stream()
-                    .map(docPermissions::get)
-                    .filter(Objects::nonNull)
-                    .anyMatch(permission -> permission.isAtLeastAsPrivilegedAs(Permission.VIEW));
-
-        }
-
-        return hasAccess;
+        return (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers()) ||
+                (!user.isDefaultUser() && meta.getLinkableByOtherUsers());
     }
 
     @Override
@@ -178,7 +161,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
                 && isNotArchivedYet(meta)
                 && isNotUnPublishedYet(meta)
                 && isAlreadyPublished(meta)
-                && isDefaultUserPermittedForView(meta)
+                && meta.getVisible()
         );
     }
 
@@ -199,10 +182,5 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private boolean isAlreadyPublished(Meta meta) {
         final Date publicationStartDatetime = meta.getPublicationStartDatetime();
         return Utility.isDateInPast.test(publicationStartDatetime);
-    }
-
-    private boolean isDefaultUserPermittedForView(Meta meta) {
-        final Permission userPermission = meta.getRoleIdToPermission().get(Roles.USER.getId());
-        return (userPermission == null) || userPermission.isAtLeastAsPrivilegedAs(Permission.VIEW);
     }
 }

@@ -4,19 +4,14 @@ import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.IdDeleterMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.enums.TypeSort;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.enums.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,8 +27,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 
 @Service
 @Slf4j
@@ -313,21 +301,20 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
 
         final List<MenuItemDTO> filteredMenuItems = sortedMenuItems.stream()
-                .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
-                .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
+                .filter(menuItemDTO -> status == MenuItemsStatus.ALL ||
+                        (documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId()) &&
+                                documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(),  user)))
                 .filter(isMenuItemAccessibleForLang(language, versionReceiver))
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
-
                     final List<MenuItemDTO> children = menuItemDTO.getChildren()
                             .stream()
-                            .filter(this::isPublicMenuItem)
+                            .filter(childrenMenuItemDTO -> documentMenuService.isPublicMenuItem(childrenMenuItemDTO.getDocumentId()))
                             .collect(Collectors.toList());
 
                     menuItemDTO.setChildren(children);
                 })
                 .collect(Collectors.toList());
-
 
         final MenuDTO menuDTO = menu.map(menuToMenuDTO).orElse(new MenuDTO());
 

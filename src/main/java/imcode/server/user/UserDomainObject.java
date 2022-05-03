@@ -13,7 +13,8 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.functors.NotPredicate;
@@ -295,7 +296,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     }
 
     public boolean canAccess(DocumentDomainObject document) {
-        return hasAtLeastPermissionSetIdOn(Permission.VIEW, document);
+        return document.isVisible() || hasAtLeastPermissionSetIdOn(Permission.VIEW, document);
     }
 
     public boolean isSuperAdminOrHasFullPermissionOn(DocumentDomainObject document) {
@@ -377,7 +378,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {
-        return document.isLinkedForUnauthorizedUsers() || canAccess(document);
+        return !isDefaultUser() && document.isLinkableByOtherUsers() && canEdit(document);
     }
 
     public Set<PhoneNumber> getPhoneNumbers() {
@@ -395,9 +396,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     public boolean hasUserAccessToDoc(Meta meta) {
         if (meta == null) throw new DocumentNotExistException();
 
-        if (meta.getLinkedForUnauthorizedUsers()) {
-            return true;
-        }
+        if (meta.getVisible()) return true;
 
         final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
 

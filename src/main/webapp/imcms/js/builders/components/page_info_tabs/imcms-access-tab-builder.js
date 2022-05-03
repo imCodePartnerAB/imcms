@@ -98,7 +98,7 @@ define("imcms-access-tab-builder",
             ]);
         }
 
-        function setVisible(){
+        function setViewVisible(){
             if(tabData.$visible.isChecked()){
                 tabData.$titleView.addClass('imcms-enable-visible');
             }else{
@@ -177,7 +177,7 @@ define("imcms-access-tab-builder",
                 name: 'visible',
                 text: texts.visible,
                 checked: undefined,
-                change: setVisible
+                change: setViewVisible
             }));
 
             const $addRoleButton = components.buttons.neutralButton({
@@ -226,9 +226,9 @@ define("imcms-access-tab-builder",
                 $linkAccessContainer = new BEM({
                     block: "imcms-field",
                     elements: {
+                        "access-visible": tabData.$visible,
                         "access-other-users": tabData.$otherUsers,
-                        "access-unauthorized-users": tabData.$unauthorizedUsers,
-                        "access-visible": tabData.$visible
+                        "access-unauthorized-users": tabData.$unauthorizedUsers
                     }
                 }).buildBlockStructure("<div>")
             ;
@@ -271,12 +271,10 @@ define("imcms-access-tab-builder",
                 }
             }
 
-
             tabData.$otherUsers.setChecked(document.linkableByOtherUsers ? "checked" : undefined);
             tabData.$unauthorizedUsers.setChecked(document.linkableForUnauthorizedUsers ? "checked" : undefined);
             tabData.$visible.setChecked(document.visible ? "checked" : undefined);
-            console.log("tabData.$visible.setChecked");
-            setVisible();
+            setViewVisible();
 
             (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null)
                 .done(roles => {
