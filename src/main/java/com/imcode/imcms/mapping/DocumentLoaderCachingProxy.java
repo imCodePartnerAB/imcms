@@ -10,8 +10,11 @@ import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.security.AccessContentType;
 import imcode.server.Config;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,8 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> sortedMenuItems;
+    private final CacheWrapper<MenuCacheKey, String> visibleMenuAsHtml;
+    private final CacheWrapper<MenuCacheKey, String> publicMenuAsHtml;
     private final CacheManager cacheManager = CacheManager.create();
 
     private final List<Ehcache> menuCaches;
@@ -74,10 +79,12 @@ public class DocumentLoaderCachingProxy {
         visibleMenuItems = CacheWrapper.of(cacheConfiguration("visibleMenuItems"));
         publicMenuItems = CacheWrapper.of(cacheConfiguration("publicMenuItems"));
         sortedMenuItems = CacheWrapper.of(cacheConfiguration("sortedMenuItems"));
+        visibleMenuAsHtml = CacheWrapper.of(cacheConfiguration("visibleMenuAsHtml"));
+        publicMenuAsHtml= CacheWrapper.of(cacheConfiguration("publicMenuAsHtml"));
 
         Stream.of(
                 metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases,
-                menuDTO, visibleMenuItems, publicMenuItems, sortedMenuItems
+                menuDTO, visibleMenuItems, publicMenuItems, sortedMenuItems, visibleMenuAsHtml, publicMenuAsHtml
         )
                 .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
 
@@ -85,7 +92,9 @@ public class DocumentLoaderCachingProxy {
                 menuDTO.cache(),
                 visibleMenuItems.cache(),
                 publicMenuItems.cache(),
-                sortedMenuItems.cache()
+                sortedMenuItems.cache(),
+                visibleMenuAsHtml.cache(),
+                publicMenuAsHtml.cache()
         );
     }
 
@@ -242,6 +251,16 @@ public class DocumentLoaderCachingProxy {
         return publicMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
+    public String getVisibleMenuAsHtml(final MenuCacheKey menuCacheKey,
+                                       final Supplier<String> menuHtmlSupplier) {
+        return visibleMenuAsHtml.getOrPut(menuCacheKey, menuHtmlSupplier);
+    }
+
+    public String getPublicMenuAsHtml(final MenuCacheKey menuCacheKey,
+                                                 final Supplier<String> menuHtmlSupplier) {
+        return publicMenuAsHtml.getOrPut(menuCacheKey, menuHtmlSupplier);
+    }
+
     public void invalidateMenuItemsCacheBy(final Menu menu) {
         menuCaches.forEach(cache -> clearCache(cache, menu.getVersion().getDocId(), menu.getNo()));
     }
@@ -289,7 +308,6 @@ public class DocumentLoaderCachingProxy {
     }
 
     @Data
-    @AllArgsConstructor
     public static class MenuCacheKey implements Serializable {
 
         private static final long serialVersionUID = 4026829752411299618L;
@@ -300,18 +318,59 @@ public class DocumentLoaderCachingProxy {
         private String typeSort;
         private List<MenuItemDTO> menuItems;
 
+        private Boolean html;
+        private String attributes;
+        private String treeKey;
+        private String wrap;
+
+        private Boolean admin;
+        private Boolean authorized;
 
         public MenuCacheKey(int menuIndex, int docId, String language, String typeSort) {
+            this(menuIndex, docId, language, typeSort, null, null, null, null, null);
+        }
+
+        public MenuCacheKey(int menuIndex, int docId, String language, String typeSort, List<MenuItemDTO> menuItems) {
+            this(menuIndex, docId, language, typeSort, menuItems, null, null, null, null);
+        }
+
+        public MenuCacheKey(int menuIndex, int docId, String language, Boolean html) {
+            this(menuIndex, docId, language, null, null, html, null, null, null);
+        }
+
+        public MenuCacheKey(int menuIndex, int docId, String language, Boolean html, String attributes, String treeKey, String wrap) {
+            this(menuIndex, docId, language, null, null, html, attributes, treeKey, wrap);
+        }
+
+        public MenuCacheKey(int menuIndex, int docId, String language,
+                            String typeSort, List<MenuItemDTO> menuItems,
+                            Boolean html, String attributes, String treeKey, String wrap) {
+            initUser(docId);
             this.menuIndex = menuIndex;
             this.docId = docId;
             this.language = language;
             this.typeSort = typeSort;
+            this.menuItems = menuItems;
+            this.html = html;
+            this.attributes = attributes;
+            this.treeKey = treeKey;
+            this.wrap = wrap;
         }
 
-        public MenuCacheKey(int menuIndex, int docId, String language) {
-            this.menuIndex = menuIndex;
-            this.docId = docId;
-            this.language = language;
+        public void initUser(int docId) {
+            final UserDomainObject user = Imcms.getUser();
+
+            if(user.isDefaultUser()){
+                this.admin = false;
+                this.authorized = false;
+            }else if(user.isSuperAdmin() ||
+                    Imcms.getServices().getAccessService().hasUserEditAccess(user, docId, AccessContentType.MENU)){
+                this.admin = true;
+                this.authorized = true;
+            }else {
+                this.admin = false;
+                this.authorized = true;
+            }
         }
     }
 }

@@ -67,23 +67,31 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex, String language,
                                        String attributes, String treeKey, String wrap) {
-        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
+        return documentLoaderCachingProxy.getVisibleMenuAsHtml(
+                getKey(menuIndex, docId, language, true, attributes, treeKey, wrap),
+                () -> defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap));
     }
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       String attributes, String treeKey, String wrap) {
-        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
+        return documentLoaderCachingProxy.getPublicMenuAsHtml(
+                getKey(menuIndex, docId, language, true, attributes, treeKey, wrap),
+                () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap));
     }
 
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex) {
-        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex);
+        return documentLoaderCachingProxy.getVisibleMenuAsHtml(
+                getKey(menuIndex, docId, null, true),
+                () -> defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex));
     }
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex) {
-        return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex);
+        return documentLoaderCachingProxy.getPublicMenuAsHtml(
+                getKey(menuIndex, docId, null, true),
+                () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex));
     }
 
     @Override
@@ -124,7 +132,14 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
                                                            final int docId,
                                                            final String language) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language);
+        return getKey(menuIndex, docId, language, false);
+    }
+
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean html) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, html);
     }
 
     private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
@@ -140,5 +155,15 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
                                                            final String typeSort,
                                                            final List<MenuItemDTO> menuItems) {
         return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, typeSort, menuItems);
+    }
+
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean html,
+                                                           final String attributes,
+                                                           final String treeKey,
+                                                           final String wrap) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, html, attributes, treeKey, wrap);
     }
 }
