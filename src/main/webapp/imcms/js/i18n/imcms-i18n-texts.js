@@ -186,8 +186,8 @@ const texts = {
                 restricted_1: "begränsad 1",
                 restricted_2: "begränsad 2",
                 addRole: "Lägg till roll",
-                linkableByOtherUsers: "Länkbar av andra användare",
-                linkableForUnauthorizedUsers: "Länkbar för obehöriga användare",
+                linkableByOtherUsers: "Länkbar på menyn för andra användare",
+                linkableForUnauthorizedUsers: "Länkbar på menyn för obehöriga användare",
                 visible: "Visible",
                 error: {
                     loadFailed: "Misslyckades med att hämta roller. Vänligen försök igen."
@@ -1193,8 +1193,8 @@ const texts = {
                 restricted_1: "restricted 1",
                 restricted_2: "restricted 2",
                 addRole: "Add role",
-                linkableByOtherUsers: "Linkable By Other Users",
-                linkableForUnauthorizedUsers: "Linkable For Unauthorized Users",
+                linkableByOtherUsers: "Linkable In a Menu For Other Users",
+                linkableForUnauthorizedUsers: "Linkable In a Menu For Unauthorized Users",
                 visible: "Visible",
                 error: {
                     loadFailed: "Failed to fetch roles. Try gain"

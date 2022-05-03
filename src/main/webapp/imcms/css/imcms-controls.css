@@ -40,11 +40,11 @@
 .imcms-panel-named {
     background-color: #545c6f;
     display: block;
-    height: 70px;
+    height: 74px;
     width: 100%;
     overflow: hidden;
     padding-left: 70px;
-    padding-top: 16px;
+    padding-top: 18px;
 }
 
 .imcms-panel-named__input {

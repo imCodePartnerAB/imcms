@@ -80,7 +80,7 @@
 }
 
 .select-image-button {
-    display: flex;
+    display: flex !important;
     width: 26%;
     flex-direction: column;
     align-items: center;

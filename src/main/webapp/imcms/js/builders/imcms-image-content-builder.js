@@ -303,6 +303,7 @@ define("imcms-image-content-builder",
                         pathSplitBySeparator[pathSplitBySeparator.length - 1] = folderName;
 
                         dataOnConfirm.path = path;
+                        contextOnSuccess.name = folderName;
                         contextOnSuccess.path = pathSplitBySeparator.join("/");
                     }
 
@@ -312,7 +313,11 @@ define("imcms-image-content-builder",
 	                            const oldFolderPath = opts.folder.path;
 
 	                            if (!isNewFolder) {
+                                    opts.folder.name = contextOnSuccess.name;
                                     opts.folder.path = contextOnSuccess.path;
+
+                                    if(opts.folder.folders) opts.folder.folders.forEach(subFolder =>
+                                        subFolder.path = subFolder.path.replace(oldFolderPath, contextOnSuccess.path));
                                 }
                                 onSuccess.call(contextOnSuccess, oldFolderPath, response);
                             }
@@ -946,11 +951,13 @@ define("imcms-image-content-builder",
                 imageFilesREST.postFiles(saveImageRequestData)
                     .done(uploadedImageFiles => {
                         const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile, activeFolder).css("display", "block"));
+                        $newImages.forEach(highlightLastAddedImage);
                         activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
                         $imagesContainer.prepend($newImages);
                         activeFolder.$images = activeFolder.$images.concat($newImages);
                         viewModel.$images = viewModel.$images.concat($newImages);
                         selectImage.call($newImages[0], uploadedImageFiles[0]);
+                        selectedImageChanged = false;
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.uploadImagesFailed));
             },
