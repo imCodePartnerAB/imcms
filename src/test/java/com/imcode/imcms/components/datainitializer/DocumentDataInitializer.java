@@ -54,7 +54,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setKeywords(new HashSet<>());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
-            meta.setVisible(false);
+            meta.setVisible(true);
             meta.setPublicationStatus(status);
             meta.setSearchDisabled(false);
             meta.setTarget("test");

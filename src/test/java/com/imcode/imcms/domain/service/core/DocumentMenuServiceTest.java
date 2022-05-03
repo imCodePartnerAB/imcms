@@ -14,7 +14,6 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.RoleRepository;
 import imcode.server.Imcms;
@@ -32,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static imcode.server.user.UserDomainObject.DEFAULT_USER_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +59,9 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     private Meta meta;
 
+    final UserDomainObject defaultUser = new UserDomainObject(DEFAULT_USER_ID);
+    final UserDomainObject notDefaultUser = new UserDomainObject(3);
+
     @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
@@ -85,44 +88,37 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void hasUserAccessToDoc_When_MetaLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_True() {
+    public void hasUserAccessToDoc_When_LinkedForUnauthorizedUsersIsTrue_And_UserIsDefault_Expect_True() {
         meta.setLinkedForUnauthorizedUsers(true);
         metaRepository.save(meta);
 
-        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), Imcms.getUser()));
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
     }
 
     @Test
-    public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserHasRights_Expect_True() {
-        RoleJPA roleEdit = new RoleJPA();
-        roleEdit.setName("roleEdit");
-        roleEdit = roleRepository.save(roleEdit);
-
-        meta.setLinkedForUnauthorizedUsers(false);
-        final HashMap<Integer, Permission> roleIdToPermission = new HashMap<>(Collections.singletonMap(
-                roleEdit.getId(), Permission.EDIT
-        ));
-        meta.setRoleIdToPermission(roleIdToPermission);
-
+    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsTrue_And_UserIsNotDefault_Expect_True() {
+        meta.setLinkableByOtherUsers(true);
         metaRepository.saveAndFlush(meta);
 
-        final UserDomainObject user = Imcms.getUser();
-
-        user.addRoleId(Roles.USER.getId());
-        user.addRoleId(roleEdit.getId());
-
-        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), user));
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
     }
 
     @Test
-    public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_False() {
+    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsTrue_And_LinkedForUnauthorizedUsersIsFalse_And_UserIsDefault_Expect_False() {
+        meta.setLinkableByOtherUsers(true);
         meta.setLinkedForUnauthorizedUsers(false);
+        metaRepository.saveAndFlush(meta);
+
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+    }
+
+    @Test
+    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsFalse_And_LinkedForUnauthorizedUsersIsTrue_And_UserIsDefault_Expect_False() {
+        meta.setLinkableByOtherUsers(false);
+        meta.setLinkedForUnauthorizedUsers(true);
         metaRepository.save(meta);
 
-        final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(Roles.USER.getId());
-        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), user));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
     }
 
     @Test
@@ -245,6 +241,14 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
                 Collections.singletonMap(Roles.USER.getId(), Permission.NONE)
         );
         meta.setRoleIdToPermission(roleIdToPermission);
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_VisibleIsFalse_Expect_False() {
+        meta.setVisible(false);
         metaRepository.save(meta);
 
         assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));

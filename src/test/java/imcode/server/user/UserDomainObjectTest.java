@@ -1,11 +1,12 @@
 package imcode.server.user;
 
-import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,19 +23,19 @@ public class UserDomainObjectTest {
     private final int roleEditId = 10;
 
     @Before
+    @AfterEach
     public void setUp() {
         meta = new Meta();
         meta.setId(0);
 
         final HashMap<Integer, Meta.Permission> roleRights = new HashMap<>();
-
         roleRights.put(Roles.USER.getId(), Meta.Permission.NONE);
         roleRights.put(Roles.SUPER_ADMIN.getId(), Meta.Permission.EDIT);
         roleRights.put(roleEditId, Meta.Permission.EDIT);
-
         meta.setRoleIdToPermission(roleRights);
 
         user = new UserDomainObject();
+        user.setRoleIds(Collections.singleton(Roles.USER.getId()));
     }
 
     @Test
@@ -55,31 +56,33 @@ public class UserDomainObjectTest {
     }
 
     @Test
-    public void hasUserAccessToDoc_When_MetaLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_True() {
-        meta.setLinkedForUnauthorizedUsers(true);
-
+    public void hasUserAccessToDoc_When_MetaIsVisible_And_UserIsDefault_Expect_True() {
+        meta.setVisible(true);
         assertTrue(user.hasUserAccessToDoc(meta));
     }
 
     @Test
-    public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserHasRights_Expect_True() {
-        meta.setLinkedForUnauthorizedUsers(false);
-
-        user.addRoleId(Roles.USER.getId());
-        user.addRoleId(roleEditId);
-
-        assertTrue(user.hasUserAccessToDoc(meta));
-    }
-
-    @Test
-    public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_False() {
-        meta.setLinkedForUnauthorizedUsers(false);
+    public void hasUserAccessToDoc_When_MetaIsNotVisible_And_UserIsDefault_Expect_False() {
+        meta.setVisible(false);
         assertFalse(user.hasUserAccessToDoc(meta));
     }
 
-    @Test(expected = DocumentNotExistException.class)
-    public void hasUserAccessToDoc_When_DocIsNull_Expect_DocumentNotExistException() {
-        assertTrue(user.hasUserAccessToDoc(null));
+    @Test
+    public void hasUserAccessToDoc_When_MetaIsNotVisible_And_UserHasNotPermission_Expect_False() {
+        meta.setVisible(false);
+
+        int documentHasNotThisRole = 100;
+        user.setRoleIds(Collections.singleton(documentHasNotThisRole));
+
+        assertFalse(user.hasUserAccessToDoc(meta));
     }
 
+    @Test
+    public void hasUserAccessToDoc_When_MetaIsNotVisible_And_UserHasPermission_Expect_True() {
+        meta.setVisible(false);
+
+        user.setRoleIds(Collections.singleton(roleEditId));
+
+        assertTrue(user.hasUserAccessToDoc(meta));
+    }
 }
