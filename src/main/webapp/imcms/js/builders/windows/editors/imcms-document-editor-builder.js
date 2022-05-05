@@ -597,6 +597,8 @@ define('imcms-document-editor-builder',
 		        'data-status': frameItem.find('.imcms-document-item__info--status').text(),
 		        'data-original-status': frameItem.find('.imcms-document-item__info--originalStatus').text(),
 		        'data-current-version': frameItem.find('.imcms-document-item__info--currentVersion').children().attr('value'),
+		        'data-createdBy': frameItem.find('.imcms-document-item__info--createdBy').text(),
+		        'data-createdDate': frameItem.find('.imcms-document-item__info--createdDate').text(),
 	        });
 
             $frame.addClass('imcms-document-items--frame');
@@ -935,6 +937,8 @@ define('imcms-document-editor-builder',
 		        'data-type': frameItem.attr('data-type'),
 		        'data-status': frameItem.attr('data-status'),
 		        'data-original-status': frameItem.attr('data-original-status'),
+		        'data-createdBy': frameItem.attr('data-createdBy'),
+		        'data-createdDate': frameItem.attr("data-createdDate"),
 		        'data-publishedDate': frameItem.attr('data-publishedDate'),
 		        'data-modifiedDate': frameItem.attr('data-modifiedDate'),
 		        'data-is-shown-title': frameItem.attr('data-is-shown-title'),
@@ -1120,6 +1124,12 @@ define('imcms-document-editor-builder',
             $originalDocStatus.modifiers = ['originalStatus'];
             $originalDocStatus.css({'display': 'none'});
 
+			//required in order to correct build menu items when drag
+	        const $docItemCreatedBy = $("<div hidden>").text(document.createdBy);
+	        $docItemCreatedBy.modifiers=['createdBy'];
+	        const $docItemCreatedDate = $("<div hidden>").text(document.created);
+	        $docItemCreatedDate.modifiers=['createdDate'];
+
             const elements = [
                 {
                     'info': [
@@ -1131,7 +1141,9 @@ define('imcms-document-editor-builder',
                         $currentVersion,
                         $docItemType,
                         $docStatus,
-                        $originalDocStatus
+                        $originalDocStatus,
+	                    $docItemCreatedBy,
+	                    $docItemCreatedDate
                     ]
                 },
                 {'controls': buildDocItemControls(document, opts, isMultiRemoveModeEnabled())}
