@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -36,18 +35,15 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private final MetaRepository metaRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
-    private final AccessService accessService;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
 
     DefaultDocumentMenuService(MetaRepository metaRepository,
                                VersionService versionService,
                                CommonContentService commonContentService,
-                               AccessService accessService,
                                TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO) {
         this.metaRepository = metaRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
-        this.accessService = accessService;
         this.metaToDocumentDTO = metaToDocumentDTO;
     }
 
@@ -161,7 +157,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
                 && isNotArchivedYet(meta)
                 && isNotUnPublishedYet(meta)
                 && isAlreadyPublished(meta)
-                && meta.getVisible()
+                && (meta.getVisible() || Imcms.getUser().hasUserAccessToDoc(meta))
         );
     }
 
