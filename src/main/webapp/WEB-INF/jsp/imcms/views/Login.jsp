@@ -2,6 +2,7 @@ ${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
 ${"-->"}
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
+<%@ page import="imcode.server.Imcms" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -10,7 +11,8 @@ ${"-->"}
 
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
+<c:set var="userLanguage"
+       value="${cookie['userLanguage'].value==null ? Imcms.getLanguage().getCode():cookie['userLanguage'].value}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
@@ -40,7 +42,7 @@ ${"-->"}
                 <c:if test="${requestScope['error'] ne null}">
                     <div class="imcms-field" id="imcms-login-errors">
                         <div class="imcms-error-msg imcms-login__error-msg"
-                             data-remaining-time="${requestScope['time_error']}">${requestScope['error'].toLocalizedStringByIso639_1(userLanguage)}</div>
+                             data-remaining-time="${requestScope[VerifyUser.REQUEST_ATTRIBUTE__WAIT_TIME]}">${requestScope['error'].toLocalizedStringByIso639_1(userLanguage)}</div>
                     </div>
                 </c:if>
                 <div class="imcms-field info-block">
