@@ -365,9 +365,13 @@ define("imcms-menu-editor-builder",
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-					menuDoc.after($origin);
-	                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
-				}
+	                const originalMenuLvl = $frame.attr("data-menu-items-lvl");
+	                const newMenuLvl = menuDoc.attr("data-menu-items-lvl");
+	                if (originalMenuLvl !== newMenuLvl) {
+		                menuDoc.after($origin);
+		                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+	                }
+                }
             }
 
             isPasted = true;
@@ -484,8 +488,6 @@ define("imcms-menu-editor-builder",
             // highlightingMenuDoc
             if (placeStatus !== null) {
                 highlightMenuDoc();
-            } else {
-                disableHighlightingMenuDoc();
             }
         }
 
