@@ -360,19 +360,17 @@ define("imcms-menu-editor-builder",
                 changeDataLevelTheTopDoc($origin, 0, null)
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
-	                placeStatus ? menuDoc.append($origin) : menuDoc.prepend($origin);
 	                slideUpMenuDocIfItClose(menuDoc);
+	                menuDoc.append($origin);
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-	                if (placeStatus)
-		                menuDoc.after($origin);
-                    changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
-                }
+					menuDoc.before($origin);
+	                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+				}
             }
 
             isPasted = true;
-			slideUpMenuDocIfItClose(menuDoc)
         }
 
 	    function sortByDragging(container, enable) {
@@ -391,37 +389,7 @@ define("imcms-menu-editor-builder",
 							disableHighlightingMenuDoc()
 						    slideUpMenuDocIfItClose($(e.target))
 						    sortByDragging(container, false);
-
-						    const $currentInput = $(current).first().find('.imcms-document-item__sort-order').children(),
-							    $nextInput = $(next).first().find('.imcms-document-item__sort-order').children();
-
-						    $currentInput.val($nextInput.val());
-
-						    const currentValue = $currentInput.val(),
-							    currentIndex = $currentInput.attr("id"),
-							    documentId = $currentInput.attr('name'),
-							    parsedIndex = parseIndex(currentIndex),
-							    items = getAllMenuItems();
-
-						    if (currentValue === currentIndex) return;
-
-						    let placementElement = findPlaceMenuElement(items, currentValue);
-
-						    const foundElement = parsedIndex.reduce((acc, value, i) => {
-							    if (parsedIndex.length - 1 === i) {
-								    return Array.isArray(acc) ? acc : acc.children;
-							    } else {
-								    return Array.isArray(acc) ? acc[value] : acc.children[value];
-							    }
-						    }, items);
-
-							//reverse because elements changed their position when drag end
-						    foundElement.reverse()
-						    const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
-
-						    placementElement.push(splicedElem);
-
-						    reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId,false)
+							reorderMenuListBySortNumber(getAllMenuItems())
 					    },
 					    'drag': handleDragWhenSort
 				    }).attr("draggable", true)
@@ -429,7 +397,6 @@ define("imcms-menu-editor-builder",
 		    })
 	    }
 
-	    let current, next;
 	    function handleDragWhenSort(e) {
 		    e.preventDefault();
 		    const selectedItem = e.target,
@@ -446,18 +413,13 @@ define("imcms-menu-editor-builder",
 			    if (list === swapItem.parentNode) {
 				    swapItem = swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
 
+				    const $swapItemSortOrder = $(swapItem).find('.imcms-document-item__sort-order').children().first();
+				    const $selectedItemSortOrder = $(selectedItem).find('.imcms-document-item__sort-order').children().first();
+
+				    $selectedItemSortOrder.val($swapItemSortOrder.val());
+
 				    list.insertBefore(selectedItem, swapItem);
 				    highlightMenuDoc();
-
-				    if (selectedItem !== swapItem) {
-					    if (swapItem) {
-						    current = selectedItem;
-						    next = swapItem;
-					    } else {
-						    current = selectedItem.previousSibling;
-						    next = selectedItem;
-					    }
-				    }
 			    }
 		    }
 		    selectedItem.classList.remove("imcms-menu-items--is-drop");
@@ -502,16 +464,16 @@ define("imcms-menu-editor-builder",
             ;
 
             $.each(allMenuDocObjArray, (obj, param) => {
-                if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
-	                placeStatus = false;
-	                menuDoc = getMenuDocByObjId(obj);
-                    insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-                }
-                if (frameTop >= ((param.bottom + param.top) / 2) && frameTop <= param.bottom) {
-	                placeStatus = true;
-	                menuDoc = getMenuDocByObjId(obj);
-                    insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-                }
+	            if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
+		            menuDoc = getMenuDocByObjId(obj);
+		            placeStatus = false;
+		            insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+	            }
+	            if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+		            menuDoc = getMenuDocByObjId(obj);
+		            placeStatus = true;
+		            insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+	            }
             });
 
             if (frameTop < topPointMenu) {

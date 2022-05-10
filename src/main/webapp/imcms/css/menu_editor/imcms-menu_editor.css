@@ -193,6 +193,9 @@ display: flex;
 	.imcms-menu-editor .imcms-document-list-titles__multi-remove{
 		width: 55px;
 	}
+	.imcms-text-box.imcms-document-item__sort-order>input{
+		padding: 8px 5px;
+	}
 }
 
 @media screen and (max-width: 1400px) {
