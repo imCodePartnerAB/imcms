@@ -55,7 +55,7 @@ define("imcms-menu-editor-builder",
             MODIFIED_DATE_ASC,
             MODIFIED_DATE_DESC
         ];
-        const topPointMenu = 178; // top point menu for set item before item in the top position.
+        const topPointMenu = 170; // top point menu for set item before item in the top position.
         // todo: maybe need use getFirstItemInMenuArea().offset().top - 4 or something like this? Same in doc-editor
 
         // variables for drag
@@ -365,7 +365,7 @@ define("imcms-menu-editor-builder",
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-					menuDoc.before($origin);
+					menuDoc.after($origin);
 	                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
 				}
             }
@@ -466,12 +466,11 @@ define("imcms-menu-editor-builder",
             $.each(allMenuDocObjArray, (obj, param) => {
 	            if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
 		            menuDoc = getMenuDocByObjId(obj);
-		            placeStatus = false;
-		            insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-	            }
-	            if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
-		            menuDoc = getMenuDocByObjId(obj);
 		            placeStatus = true;
+		            insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+	            } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+		            menuDoc = getMenuDocByObjId(obj);
+		            placeStatus = false;
 		            insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
 	            }
             });
