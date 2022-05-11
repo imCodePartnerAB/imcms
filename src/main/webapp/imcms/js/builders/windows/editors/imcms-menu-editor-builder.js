@@ -943,8 +943,10 @@ define("imcms-menu-editor-builder",
                             const parsedValItem1 = parseValue(menuItem1.sortOrder);
                             const parsedValItem2 = parseValue(menuItem2.sortOrder);
 
-                            return parsedValItem1[parsedValItem1.length - 1] - parsedValItem2[parsedValItem2.length - 1];
-                        })
+							if (menuItem1.sortOrder.length===menuItem2.sortOrder) {
+								return parsedValItem1[parsedValItem1.length - 1] - parsedValItem2[parsedValItem2.length - 1];
+							}
+						})
                     }
                     return item;
                 });
