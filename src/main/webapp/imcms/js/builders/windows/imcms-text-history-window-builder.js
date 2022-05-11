@@ -48,35 +48,7 @@ define("imcms-text-history-window-builder",
                     text: texts.writeToText,
                     "style": "display: none;",
                     click: onWriteToTextField
-                })
-            ]);
-        }
-
-        function isClickAllowed(element) {
-            const $element = $(element);
-
-            if ($element.hasClass("imcms-button--disabled")) {
-                return false;
-            }
-
-            textHistoryWindowBuilder.$editor.find(".imcms-button--disabled")
-                .removeClass("imcms-button--disabled");
-
-            $element.addClass("imcms-button--disabled");
-
-            return true;
-        }
-
-        function viewSource() {
-            isClickAllowed(this) && $textHistoryView.text($textHistoryView.html());
-        }
-
-        function viewText() {
-            isClickAllowed(this) && $textHistoryView.html($textHistoryView.text());
-        }
-
-        function buildTextHistoryControlButtons() {
-            return components.buttons.buttonsContainer("<div>", [
+                }),
                 components.buttons.negativeButton({
                     "class": "view-source-button",
                     "style": "display: none;",
@@ -92,12 +64,31 @@ define("imcms-text-history-window-builder",
             ]);
         }
 
+        function viewSource() {
+            textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                .find(".view-text-button").show();
+
+            textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                .find(".view-source-button").hide();
+
+            $textHistoryView.text($textHistoryView.html());
+        }
+
+        function viewText() {
+            textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                .find(".view-source-button").show();
+
+            textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                .find(".view-text-button").hide();
+
+            $textHistoryView.html($textHistoryView.text());
+        }
+
         function buildHistoryView() {
             return new BEM({
                 block: "imcms-right-side",
                 elements: {
-                    "text-history-view": $textHistoryView = $("<div>"),
-                    "buttons": buildTextHistoryControlButtons()
+                    "text-history-view": $textHistoryView = $("<div>")
                 }
             }).buildBlockStructure("<div>");
         }
@@ -151,7 +142,11 @@ define("imcms-text-history-window-builder",
 
             if ((textDTO.type === textTypes.text) || (textDTO.type === textTypes.textFromEditor)) {
                 textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
-                    .find(".imcms-button")
+                    .find(".imcms-text-history-cancel")
+                    .css("display", "block");
+
+                textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                    .find(".imcms-button--save")
                     .css("display", "block");
 
                 return;
@@ -165,7 +160,7 @@ define("imcms-text-history-window-builder",
                 .removeClass("imcms-button--disabled");
 
             textHistoryWindowBuilder.$editor.find(".view-text-button")
-                .addClass("imcms-button--disabled");
+                .css("display", "none");
         }
 
         function buildTextHistoriesForDate(textHistoriesForDate) {

@@ -5,34 +5,29 @@
 .imcms-pop-up-modal.text-history .imcms-pop-up-modal__right-side {
     background-color: #f3f3fc;
     height: 84%;
+    padding: 0 10px;
 }
 
 .imcms-right-side .imcms-right-side__text-history-view {
-    height: 90%;
-    padding-top: 20px;
+    padding-top: 10px;
     overflow: auto;
-}
-
-.imcms-right-side .imcms-right-side__buttons {
-    padding-top: 1%;
-    height: 10%;
 }
 
 .imcms-pop-up-modal.text-history .text-history-list.imcms-pop-up-modal__left-side {
-    padding: 5px 0 5px 5px;
+    padding: 5px 0 5px 0;
     overflow: auto;
-    height: 95%;
+    height: 94%;
 }
 
 .imcms-pop-up-modal.text-history .imcms-pop-up-modal__footer {
     border-top: solid 1px #d3d8de;
-    padding: 15px;
+    padding: 8px;
     height: 10%;
 }
 
 .text-history .text-history-list .text-history-date-unit .text-history-date-unit__date .text-history-date-container__date {
     padding-top: 10px;
-    padding-left: 5px;
+    padding-left: 10px;
     font-weight: bold;
     cursor: default;
 }
@@ -42,8 +37,9 @@
 }
 
 .text-history .text-history-list .text-history-date-unit .text-history-date-unit__unit {
-    padding: 5px 0 5px 10px;
+    padding: 5px 0 5px 15px;
     cursor: pointer;
+    word-break: break-all;
 }
 
 .text-history .text-history-list .text-history-date-unit .text-history-date-unit__unit.text-history-date-unit__unit--active {
@@ -60,4 +56,9 @@
 
 .text-history + .imcms-modal-layout {
     z-index: 65535;
+}
+
+.text-history .view-source-button,
+.text-history .view-text-button{
+    width: 140px;
 }
