@@ -56,19 +56,19 @@ public class ImageFolderController {
 
     @PostMapping
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-    public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
-        return imageFolderService.createImageFolder(folderToCreate);
+    public void createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
+        imageFolderService.createImageFolder(folderToCreate);
     }
 
     @PutMapping
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-    public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
-        return imageFolderService.renameFolder(folderToRename);
+    public void renameFolder(@RequestBody ImageFolderDTO folderToRename) {
+        imageFolderService.renameFolder(folderToRename);
     }
 
     @DeleteMapping
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-    public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
-        return imageFolderService.deleteFolder(folderToDelete);
+    public void deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
+        imageFolderService.deleteFolder(folderToDelete);
     }
 }

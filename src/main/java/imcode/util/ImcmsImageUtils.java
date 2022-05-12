@@ -1,6 +1,7 @@
 package imcode.util;
 
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
@@ -14,20 +15,16 @@ import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
+import imcode.server.document.textdocument.*;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import imcode.util.io.FileUtility;
+import imcode.util.io.InputStreamSource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +46,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class ImcmsImageUtils {
@@ -57,12 +53,11 @@ public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
     private static final int GEN_FILE_LENGTH = 255;
 
-    public static File imagesPath;
+    public static String imagesPath;
     public static String imageMagickPath;
 
     @Value("${ImagePath}")
-    private File imgPath;
-
+    private String imgPath;
     @Value("${ImageMagickPath}")
     private String imgMagickPath;
 
@@ -195,14 +190,14 @@ public class ImcmsImageUtils {
     }
 
     /**
-     * Gets image dimensions for given file
+     * Gets image dimensions for given image input stream
      *
-     * @param imgFile image file
+     * @param imgInputStream input stream
      * @return dimensions of image
      * @see <a href="https://stackoverflow.com/questions/1559253/java-imageio-getting-image-dimensions-without-reading-the-entire-file/1560052#1560052">method source</a>
      */
-    public static Dimension getImageDimension(File imgFile) {
-        try (ImageInputStream in = ImageIO.createImageInputStream(imgFile)) {
+    public static Dimension getImageDimension(InputStream imgInputStream) {
+        try (ImageInputStream in = ImageIO.createImageInputStream(imgInputStream)) {
             final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (readers.hasNext()) {
                 ImageReader reader = readers.next();
@@ -214,23 +209,19 @@ public class ImcmsImageUtils {
                 }
             }
         } catch (IOException e) {
-            log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
+            log.warn("Error reading image dimension", e);
         }
 
         return null;
     }
 
     public static ImageSource getImageSource(String imagePath) {
-        ImageSource imageSource = new NullImageSource();
+        if(StringUtils.isBlank(imagePath)) return new NullImageSource();
 
         if (imagePath.startsWith("/")) {
             imagePath = imagePath.substring(1);
         }
-
-        if (StringUtils.isNotBlank(imagePath)) {
-            imageSource = new ImagesPathRelativePathImageSource(imagePath);
-        }
-        return imageSource;
+        return new FileStorageImageSource(imagePath);
     }
 
     public static ImageSource createImageSourceFromString(String imageUrl) {
@@ -243,14 +234,12 @@ public class ImcmsImageUtils {
             if (document instanceof FileDocumentDomainObject) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
             } else {
-                String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
-
                     if (imageUrl.startsWith(imagesPath)) {
                         imageUrl = imageUrl.substring(imagesPath.length());
                     }
 
                     if (StringUtils.isNotBlank(imageUrl)) {
-                        imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+                        imageSource = new FileStorageImageSource(imageUrl);
                     }
             }
         }
@@ -301,17 +290,11 @@ public class ImcmsImageUtils {
         return operation.processToFile(destFile);
     }
 
-    public static void generateImage(ImageData image, boolean overwrite) {
-        File genFile = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + image.getGeneratedFilename());
-
-        if (!overwrite && genFile.exists()) {
-            return;
-        }
-
+    public static byte[] generateImage(ImageData image) {
         ImageSource source = image.getSource();
 
         if (source instanceof NullImageSource) {
-            return;
+            return null;
         }
 
         InputStream input = null;
@@ -319,18 +302,6 @@ public class ImcmsImageUtils {
         File tempFile = null;
 
         try {
-            String imagePathCanon = imagesPath.getCanonicalPath();
-            String genFileCanon = genFile.getCanonicalPath();
-
-            if (!genFileCanon.startsWith(imagePathCanon)) {
-                return;
-            }
-
-            File parentFile = genFile.getParentFile();
-            if (!parentFile.exists()) {
-                parentFile.mkdir();
-            }
-
             tempFile = File.createTempFile("genimg", null);
 
             input = source.getInputStreamSource().getInputStream();
@@ -339,11 +310,10 @@ public class ImcmsImageUtils {
             IOUtils.copy(input, output);
             IOUtils.closeQuietly(output);
 
-            generateImage(tempFile, genFile, image);
-
+            return generateImage(tempFile, image);
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
-
+            return null;
         } finally {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
@@ -358,8 +328,7 @@ public class ImcmsImageUtils {
         }
     }
 
-    private static void generateImage(File imageFile, File destFile, ImageData image) {
-
+    private static byte[] generateImage(File imageFile, ImageData image) {
         final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
         setCropRegion(image, operation);
@@ -367,11 +336,12 @@ public class ImcmsImageUtils {
         setRotateDirection(image, operation);
         setFormat(image.getFormat(), operation);
         setQuality(image.isCompress(), image.getFormat(), operation);
-        operation.processToFile(destFile);
+
+        return operation.processToByteArray();
     }
 
     private static void setQuality(boolean compress, Format format, ImageOp operation) {
-        if (compress && format == Format.JPEG) {
+        if (compress && (format == Format.JPEG || format == Format.JPG)) {
             operation.quality(75);
         }
     }
@@ -417,44 +387,42 @@ public class ImcmsImageUtils {
         }
     }
 
-    public static List<String> getExifInfo(String imageUrl) {
-        final List<String> exifInfo = new ArrayList<>();
-        final ImageSource imageSource = ImcmsImageUtils.getImageSource(imageUrl);
+    public static List<String> getExifInfo(ImageSource imageSource) {
+        if (imageSource instanceof FileStorageImageSource && !imageSource.isEmpty()) {
+            InputStreamSource inputStreamSource = imageSource.getInputStreamSource();
 
-        if (imageSource instanceof ImagesPathRelativePathImageSource) {
-
-            final boolean exists = ((ImagesPathRelativePathImageSource) imageSource).getFile().exists();
-
-            if (!exists) {
-                return exifInfo;
-            }
-
-            try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
-                final Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
-
-                for (Directory directory : metadata.getDirectories()) {
-
-                    Collection<Tag> tags = directory.getTags();
-                    //remove unnecessary information that takes up a lot of space
-                    if(directory instanceof IccDirectory){
-                        tags = directory.getTags().stream()
-                                .filter(tag -> !unnecessaryExifInfo.contains(tag.getTagType()))
-                                .collect(Collectors.toList());
-                    }
-
-                    for (Tag tag : tags) {
-                        exifInfo.add(tag.toString());
-                    }
-                    for (String error : directory.getErrors()) {
-                        exifInfo.add("ERROR: " + error);
-                    }
-                }
+            try(final InputStream inputStream = inputStreamSource.getInputStream()){
+                return getExifInfo(inputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        return Collections.emptyList();
+    }
+
+    public static List<String> getExifInfo(InputStream inputStream) throws ImageProcessingException, IOException {
+        final List<String> exifInfo = new ArrayList<>();
+
+        final Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                exifInfo.add(tag.toString());
+            }
+            for (String error : directory.getErrors()) {
+                exifInfo.add("ERROR: " + error);
+            }
+        }
+
         return exifInfo;
+    }
+
+    public static long getSize(ImageSource imageSource){
+        try{
+            return imageSource.getInputStreamSource().getSize();
+        }catch (IOException e){
+            return 0;
+        }
     }
 
     public static ImageDomainObject toDomainObject(ImageJPA image) {
@@ -499,8 +467,8 @@ public class ImcmsImageUtils {
                 throw new IllegalStateException(
                         String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. ImageJPA: %s", image)
                 );
-            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
-                return new ImagesPathRelativePathImageSource(url);
+            case ImageSource.IMAGE_TYPE_ID__FILE_STORAGE:
+                return new FileStorageImageSource(url);
             default:
                 return new NullImageSource();
         }

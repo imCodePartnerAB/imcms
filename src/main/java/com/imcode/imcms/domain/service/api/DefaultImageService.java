@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
@@ -12,15 +13,20 @@ import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.ImcmsConstants;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,9 +45,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     private final VersionService versionService;
     private final LanguageService languageService;
     private final ImageHistoryService imageHistoryService;
-    private final TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA;
     private final ImageInTextFactory imageInTextFactory;
+
+    private final TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA;
     private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
+
+    private final StorageClient storageClient;
+
     private final ImageCacheManager imageCacheManager;
 
     DefaultImageService(ImageRepository imageRepository,
@@ -50,15 +60,20 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                         ImageHistoryService imageHistoryService, TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA,
                         ImageInTextFactory imageInTextFactory,
                         Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
+                        @Qualifier("imageStorageClient") StorageClient storageClient,
                         ImageCacheManager imageCacheManager) {
 
         super(imageRepository);
         this.versionService = versionService;
         this.languageService = languageService;
         this.imageHistoryService = imageHistoryService;
-        this.imageDTOToImageJPA = imageDTOToImageJPA;
         this.imageInTextFactory = imageInTextFactory;
+
+        this.imageDTOToImageJPA = imageDTOToImageJPA;
         this.imageJPAToImageDTO = imageJPAToImageDTO;
+
+        this.storageClient = storageClient;
+
         this.imageCacheManager = imageCacheManager;
     }
 
@@ -190,7 +205,6 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         repository.findAllRegenerationCandidates()
                 .forEach((img) -> {
                     final ImageDTO imageDTO = imageJPAToImageDTO.apply(img);
-                    imageDTO.setSource(ImcmsImageUtils.getImageSource(imageDTO.getPath()));
 
                     if (StringUtils.isBlank(imageDTO.getGeneratedFilename())) {
                         final String generatedFilename = ImcmsImageUtils.generateImageFileName(imageDTO);
@@ -200,7 +214,8 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                         repository.save(img);
                     }
 
-                    ImcmsImageUtils.generateImage(imageDTO, false);
+                    byte[] content = ImcmsImageUtils.generateImage(imageDTO);
+                    saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
                 });
     }
 
@@ -280,8 +295,20 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         if (StringUtils.isNotBlank(imagePath)) {
             imageDTO.setSource(ImcmsImageUtils.getImageSource(imagePath));
             imageDTO.setGeneratedFilename(ImcmsImageUtils.generateImageFileName(imageDTO));
-            ImcmsImageUtils.generateImage(imageDTO, true);
+
+            byte[] content = ImcmsImageUtils.generateImage(imageDTO);
+            saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
         }
+    }
+
+    private void saveGeneratedImageFile(String fileName, byte[] content){
+        if(content == null) return;
+
+        StoragePath path = StoragePath.get(SourceFile.FileType.FILE,
+                ImcmsImageUtils.imagesPath,
+                ImcmsConstants.IMAGE_GENERATED_FOLDER,
+                fileName);
+        storageClient.put(path, new ByteArrayInputStream(content));
     }
 
     private ImageJPA getImage(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
