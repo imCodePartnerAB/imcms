@@ -25,6 +25,7 @@
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
 <%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
+<%--@elvariable id="imagesPath" type="java.lang.String"--%>
 
 <c:if test="${!isDocNew || editOptions.editImage}">
     <c:if test="${empty index}">
@@ -91,7 +92,7 @@
                 <c:if test="${not empty href}">
                     <a${href} target="_blank">
                 </c:if>
-                    <img src="${contextPath}${imgPath}"${classes}${alt}/>
+                    <img src="${imagesPath}/${imgPath}"${classes}${alt}/>
                 <c:if test="${not empty href}">
                     </a>
                 </c:if>

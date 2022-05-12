@@ -14,6 +14,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -60,7 +61,7 @@ public class ViewDocumentController {
                            CommonContentService commonContentService,
                            AccessService accessService,
                            PathMatcher pathMatcher,
-                           @Value("${ImagePath}") String imagesPath,
+                           @Qualifier("storageImagePath") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
                            PublicDocumentsCache publicDocumentsCache) {

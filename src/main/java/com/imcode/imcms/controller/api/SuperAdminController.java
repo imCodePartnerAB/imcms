@@ -12,6 +12,7 @@ import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ class SuperAdminController {
     private final String documentationLink;
 
 
-    SuperAdminController(@Value("${ImagePath}") String imagesPath,
+    SuperAdminController(@Qualifier("storageImagePath") String imagesPath,
                          TextService textService,
                          AccessService accessService,
                          @Value("${documentation-host}") String documentationLink) {

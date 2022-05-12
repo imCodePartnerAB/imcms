@@ -607,7 +607,7 @@ define(
 
                     setAltAttribute($image, imageDTO);
                     if (filePath) {
-                        filePath = location.origin + imcms.contextPath + filePath;
+                        filePath = imcms.imagesPath + "/" + filePath;
                         addOrRemoveLinkElementIfNeeded($image, imageDTO);
                         setHrefAttribute($image, imageDTO);
                     } else {
