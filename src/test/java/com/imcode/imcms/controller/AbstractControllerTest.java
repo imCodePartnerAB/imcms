@@ -127,37 +127,37 @@ public abstract class AbstractControllerTest {
 
     protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
     }
 
     protected MockHttpServletRequestBuilder getDeleteRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
     }
 
     protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.put(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
     }
 
     protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content, String path) {
         return MockMvcRequestBuilders.put(controllerPath() + path)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
     }
 
     protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content, String path) {
         return MockMvcRequestBuilders.post(controllerPath() + path)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
     }
 
     private ResultActions performRequestBuilderExpectedStatusAndContentJsonUtf8(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
         return performRequestBuilderExpectedStatus(builder, statusCode)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions performRequestBuilderExpectedStatusAndContentTextPlainValue(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {

@@ -34,7 +34,12 @@ public class MockImcmsServices implements ImcmsServices {
 
     @Override
     public <T> T getManagedBean(Class<T> requiredType) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
+    }
+
+    @Override
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
+        return null;
     }
 
     public UserDomainObject verifyUser(String login, String password) {

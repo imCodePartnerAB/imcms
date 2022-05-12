@@ -91,7 +91,7 @@ class DocumentControllerTest extends MockingControllerTest {
         given(documentService.save(saveMe)).willReturn(saveMe);
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(saveMe));
 
         perform(requestBuilder).andExpectAsJson(saveMe);
@@ -117,7 +117,7 @@ class DocumentControllerTest extends MockingControllerTest {
         given(documentService.get(documentId)).willReturn(savedDocument);
 
         final RequestBuilder requestBuilder = put(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(updateMe));
 
         updateMe.setProperties(savedDocument.getProperties());
@@ -148,7 +148,7 @@ class DocumentControllerTest extends MockingControllerTest {
         given(documentService.get(documentId)).willReturn(savedDocument);
 
         final RequestBuilder requestBuilder = put(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(updateMe));
 
         given(documentService.save(updateMe)).willReturn(updateMe);
@@ -181,7 +181,7 @@ class DocumentControllerTest extends MockingControllerTest {
         given(documentService.get(documentId)).willReturn(savedDocument);
 
         final RequestBuilder requestBuilder = put(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(updateMe));
 
         given(documentService.save(updateMe)).willReturn(updateMe);

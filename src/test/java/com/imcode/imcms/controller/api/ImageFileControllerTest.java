@@ -8,23 +8,25 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
-import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.util.DeleteOnCloseFile;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
+import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
+import com.imcode.imcms.util.DeleteOnCloseStorageFile;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
-import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,11 +35,10 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.io.File.separator;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
@@ -64,11 +65,15 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
+    @Autowired
+    @Qualifier("imageStorageClient")
+    private StorageClient storageClient;
+    
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
     @Value("${ImagePath}")
-    private File imagesPath;
+    private String imagesPath;
 
     @Override
     protected String controllerPath() {
@@ -153,7 +158,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .file(file)
                 .param("folder", separator + "generatedddddd"); // non-existing folder
 
-        performRequestBuilderExpectException(FolderNotExistException.class, fileUploadRequestBuilder);
+        performRequestBuilderExpectException(StorageFileNotFoundException.class, fileUploadRequestBuilder);
     }
 
     @Test
@@ -170,14 +175,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final String path = folderName + separator + originalFilename;
 
-        try (DeleteOnCloseFile imageFile = new DeleteOnCloseFile(imagesPath, path)) {
+        try (DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, path), storageClient)) {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
             imageFileDTO.setPath(path);
 
             assertTrue(imageFile.exists());
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .content(asJson(imageFileDTO));
 
             final String response = getJsonResponse(requestBuilder);
@@ -185,24 +190,6 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             assertEquals("[]", response);
             assertFalse(imageFile.exists());
         }
-    }
-
-    @Test
-    public void deleteImage_When_UserIsAdminAndFileNotExist_Expect_CorrectException() {
-        final String originalFilename = "img1-test.jpg";
-        final String folderName = separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
-        final File imageFile = new File(imagesPath, folderName + separator + originalFilename);
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(folderName + separator + originalFilename);
-
-        assertFalse(imageFile.exists());
-
-        final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(imageFileDTO));
-
-        assertThrows(FileNotFoundException.class, () -> getJsonResponse(requestBuilder));
-        assertFalse(imageFile.exists());
     }
 
     @Test
@@ -218,7 +205,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final String path = folderName + separator + originalFilename;
 
-        try (DeleteOnCloseFile imageFile = new DeleteOnCloseFile(imagesPath, path)) {
+        try (DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, path), storageClient)) {
             assertFalse(imageFile.exists());
             performRequestBuilderExpectedOk(fileUploadRequestBuilder);
             assertTrue(imageFile.exists());
@@ -252,11 +239,11 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             imageService.saveImage(imageDTOWorking);
 
             final MockHttpServletRequestBuilder requestLatestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .content(asJson(imageDTOLatest));
 
             final MockHttpServletRequestBuilder requestWorkingBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .content(asJson(imageDTOWorking));
 
             final String jsonResponseLatest = getJsonResponseWithExpectedStatus(requestLatestBuilder, METHOD_NOT_ALLOWED.value());
@@ -289,7 +276,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final String path = folderName + separator + originalFilename;
 
-        try (DeleteOnCloseFile imageFile = new DeleteOnCloseFile(imagesPath, path)) {
+        try (DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, path), storageClient)) {
             assertFalse(imageFile.exists());
             performRequestBuilderExpectedOk(fileUploadRequestBuilder);
             assertTrue(imageFile.exists());
@@ -300,7 +287,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             assertTrue(imageFile.exists());
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .content(asJson(imageFileDTO));
 
             final String response = getJsonResponse(requestBuilder);
@@ -311,13 +298,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
-        final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
-
-        try {
-            assertTrue(FileUtility.forceDelete(deleteMe));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        final StoragePath deleteMe = StoragePath.get(FILE, imagesPath, imageFileDTO.getPath());
+        storageClient.delete(deleteMe, true);
     }
 
 }
