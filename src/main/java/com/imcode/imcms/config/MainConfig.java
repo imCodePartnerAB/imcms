@@ -2,7 +2,6 @@ package com.imcode.imcms.config;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.components.Validator;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.component.DocumentsCache;
@@ -11,7 +10,6 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.domain.service.api.DefaultFileService;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
@@ -41,11 +39,9 @@ import org.springframework.util.PathMatcher;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.BiFunction;
 
 @Configuration
 @PropertySource(value = {
@@ -54,6 +50,7 @@ import java.util.function.BiFunction;
         name = "imcms.properties", ignoreResourceNotFound = true)
 @Import({
         DBConfig.class,
+        StorageConfig.class,
         ApplicationConfig.class,
         MappingConfig.class,
         WebConfig.class,
