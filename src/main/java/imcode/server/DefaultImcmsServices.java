@@ -394,6 +394,10 @@ public class DefaultImcmsServices implements ImcmsServices {
         return applicationContext.getBean(requiredType);
     }
 
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
+        return applicationContext.getBean(name, requiredType);
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T instantiate(String mapperName) {
         try {

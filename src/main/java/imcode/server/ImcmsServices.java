@@ -97,6 +97,8 @@ public interface ImcmsServices {
 
     <T> T getManagedBean(Class<T> requiredType);
 
+    <T> T getManagedBean(String name, Class<T> requiredType);
+
     DatabaseService getDatabaseService();
 
     MailService getMailService();

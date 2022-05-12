@@ -9,13 +9,14 @@ import java.util.Map;
 public enum Format {
     BMP("BMP", 1, "bmp", "image/bmp", true),
     GIF("GIF", 2, "gif", "image/gif", true),
-    JPEG("JPEG", 3, "jpg", "image/jpeg", true),
-    PNG("PNG", 4, "png", "image/png", true),
-    PSD("PSD", 5, "psd", "image/x-psd", true),
-    SVG("SVG", 6, "svg", "image/svg+xml", false),
-    TIFF("TIFF", 7, "tif", "image/tiff", true),
-    XCF("XCF", 8, "xcf", "image/x-xcf", false),
-    PICT("PICT", 9, "pct", "image/pict", true);
+    JPG("JPG", 3, "jpg", "image/jpeg", true),
+    JPEG("JPEG", 4, "jpeg", "image/jpeg", true),
+    PNG("PNG", 5, "png", "image/png", true),
+    PSD("PSD", 6, "psd", "image/x-psd", true),
+    SVG("SVG", 7, "svg", "image/svg+xml", false),
+    TIFF("TIFF", 8, "tif", "image/tiff", true),
+    XCF("XCF", 9, "xcf", "image/x-xcf", false),
+    PICT("PICT", 10, "pct", "image/pict", true);
 
 
     private static final Map<String, Format> FORMAT_MAP = new HashMap<>(Format.values().length);
