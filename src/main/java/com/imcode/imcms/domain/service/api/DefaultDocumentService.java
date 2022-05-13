@@ -131,7 +131,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                 docId, workingVersion.getNo()
         );
         final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), workingVersion, commonContents
+		        metaRepository.getOne(docId), workingVersion, commonContents
         );
 
         documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
@@ -155,7 +155,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    }
 
 	    if (!isNew) {
-		    final String oldAlias = metaRepository.findOne(id).getAlias();
+		    final String oldAlias = metaRepository.getOne(id).getAlias();
 
 		    if (!Objects.equals(oldAlias, newAlias)) {
 			    documentMapper.invalidateDocument(id);
@@ -203,7 +203,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
 
-        final Meta publishMe = metaRepository.findOne(docId);
+	    final Meta publishMe = metaRepository.getOne(docId);
         documentsCache.invalidateDoc(docId, publishMe.getAlias());
         imageCacheManager.removePublicImagesFromCacheByKey(String.valueOf(docId));
 
@@ -333,8 +333,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
 
-        metaRepository.delete(docIdToDelete);
-        documentMapper.invalidateDocument(docIdToDelete);
+	    metaRepository.deleteById(docIdToDelete);
+	    documentMapper.invalidateDocument(docIdToDelete);
         documentIndex.removeDocument(docIdToDelete);
     }
 

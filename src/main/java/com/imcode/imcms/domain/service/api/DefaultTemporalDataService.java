@@ -192,8 +192,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     private String getFormattedLastDateTime(String nameData) {
         String formattedLastDataTime = null;
-        final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
-        final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
+	    final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.getOne(IDENTIFIER_LAST_DATA_USE);
+	    final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
         final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
@@ -234,8 +234,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
         DataOfTimeLastUseJPA updatedLastDate = new DataOfTimeLastUseJPA();
         final Date currentDate = new Date();
 
-        DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
-        final Integer id = receivedDate.getId();
+	    DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.getOne(IDENTIFIER_LAST_DATA_USE);
+	    final Integer id = receivedDate.getId();
         final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();

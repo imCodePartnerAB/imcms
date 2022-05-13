@@ -299,11 +299,11 @@ public class DocumentSaver {
         });
 
         docRepository.insertPropertyIfNotExists(
-                newDocId,
-                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
-                String.valueOf(newDocId)
+		        newDocId,
+		        DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
+		        String.valueOf(newDocId)
         );
-        log.error("saveNewDocument: find by doc id META - {}", metaRepository.findOne(newDocId).getId());
+	    log.error("saveNewDocument: find by doc id META - {}", metaRepository.getOne(newDocId).getId());
 
 
         Version version = versionService.create(newDocId, user.getId());

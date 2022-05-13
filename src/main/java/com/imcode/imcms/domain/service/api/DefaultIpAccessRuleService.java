@@ -42,9 +42,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public IpAccessRule getById(int id) {
-        final IpAccessRuleJPA rule = ipAccessRuleRepository.findOne(id);
-
-        return (null == rule) ? null : new IpAccessRuleDTO(rule);
+	    return ipAccessRuleRepository.findById(id).map(IpAccessRuleDTO::new).orElse(null);
     }
 
     @Override
@@ -75,7 +73,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public void delete(int ruleId) {
-        ipAccessRuleRepository.delete(ruleId);
+	    ipAccessRuleRepository.deleteById(ruleId);
     }
 
     @Override

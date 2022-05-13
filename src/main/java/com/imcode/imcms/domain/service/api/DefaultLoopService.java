@@ -81,8 +81,8 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
-        repository.delete(repository.findByDocId(docIdToDelete));
-        repository.flush();
+        repository.deleteAll(repository.findByDocId(docIdToDelete));
+	    repository.flush();
     }
 
     @Override

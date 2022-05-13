@@ -39,7 +39,7 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     public DocumentMeta loadMeta(int docId) {
-        return toDomainObject(metaRepository.findOne(docId));
+	    return toDomainObject(metaRepository.findById(docId).orElse(null));
     }
 
     /**

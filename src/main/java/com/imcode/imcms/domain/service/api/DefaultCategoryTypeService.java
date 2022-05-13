@@ -38,7 +38,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public Optional<CategoryType> get(int id) {
-        return Optional.ofNullable(categoryTypeRepository.findOne(id)).map(CategoryTypeDTO::new);
+        return categoryTypeRepository.findById(id).map(CategoryTypeDTO::new);
     }
 
     @Override
@@ -63,7 +63,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public CategoryType update(CategoryType updateMe) {
-        final CategoryType receivedCategoryType = categoryTypeRepository.findOne(updateMe.getId());
+	    final CategoryType receivedCategoryType = categoryTypeRepository.getOne(updateMe.getId());
         receivedCategoryType.setId(updateMe.getId());
         receivedCategoryType.setName(HtmlUtils.htmlEscape(updateMe.getName(), CharEncoding.UTF_8));
         receivedCategoryType.setInherited(updateMe.isInherited());
@@ -81,18 +81,18 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         if (!categoryService.getCategoriesByCategoryType(id).isEmpty()) {
             throw new CategoryTypeHasCategoryException("CategoryType has categories!");
         }
-        categoryTypeRepository.delete(id);
+	    categoryTypeRepository.deleteById(id);
     }
 
     @Override
     public Collection<Integer> deleteForce(int id){
         final Set<Integer> docIds = new HashSet<>();
 
-        categoryService.getCategoriesByCategoryType(id).forEach(category -> {
-            final Collection<Integer> docs = categoryService.deleteForce(category.getId());
-            docIds.addAll(docs);
-        });
-        categoryTypeRepository.delete(id);
+	    categoryService.getCategoriesByCategoryType(id).forEach(category -> {
+		    final Collection<Integer> docs = categoryService.deleteForce(category.getId());
+		    docIds.addAll(docs);
+	    });
+	    categoryTypeRepository.deleteById(id);
 
         return docIds;
     }

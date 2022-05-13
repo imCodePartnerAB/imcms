@@ -49,8 +49,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
-        final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
-                .orElseThrow(() -> new DocumentNotExistException(docId));
+        final Meta meta = metaRepository.findById(docId)
+		        .orElseThrow(() -> new DocumentNotExistException(docId));
 
         return (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers()) ||
                 (!user.isDefaultUser() && meta.getLinkableByOtherUsers());
@@ -58,13 +58,13 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId) {
-        return metaRepository.findOne(documentId).getDisabledLanguageShowMode();
+	    return metaRepository.getOne(documentId).getDisabledLanguageShowMode();
     }
 
     @Override
     public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
-        final Integer docId = menuItem.getDocumentId();
-        final Meta metaDocument = metaRepository.findOne(docId);
+	    final Integer docId = menuItem.getDocumentId();
+	    final Meta metaDocument = metaRepository.getOne(docId);
 
         final Version currentVersion = versionService.getCurrentVersion(docId);
 
@@ -149,9 +149,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public boolean isPublicMenuItem(int docId) {
-        final Meta meta = metaRepository.findOne(docId);
-
-        if (meta == null) throw new DocumentNotExistException(docId);
+	    final Meta meta = metaRepository.findById(docId).orElseThrow(() -> new DocumentNotExistException(docId));
 
         return (isDocumentApproved(meta)
                 && isNotArchivedYet(meta)

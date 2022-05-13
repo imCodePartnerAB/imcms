@@ -13,11 +13,7 @@ import imcode.server.document.DocumentDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
@@ -59,13 +55,13 @@ public class CategoryMapper {
 
 
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
-        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+	    CategoryTypeJPA docCategoryType = categoryTypeRepository.getOne(categoryType.getId());
         return toDomainObject(categoryRepository.findByNameAndType(categoryName, docCategoryType));
     }
 
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        return toDomainObject(categoryRepository.findOne(categoryId));
+	    return toDomainObject(categoryRepository.getOne(categoryId));
     }
 
     public CategoryTypeDomainObject getCategoryTypeByName(String categoryTypeName) {
@@ -73,14 +69,12 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        return toDomainObject(categoryTypeRepository.findOne(categoryTypeId));
+	    return toDomainObject(categoryTypeRepository.getOne(categoryTypeId));
     }
 
 
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
-        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
-
-        if (docCategoryType != null) categoryTypeRepository.delete(docCategoryType);
+	    categoryTypeRepository.deleteById(categoryType.getId());
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(CategoryTypeDomainObject categoryType) {
@@ -108,7 +102,7 @@ public class CategoryMapper {
     }
 
     public void deleteCategoryFromDb(CategoryDomainObject category) {
-        categoryRepository.delete(category.getId());
+	    categoryRepository.deleteById(category.getId());
     }
 
     public List<Integer> getAllDocumentsOfOneCategory(CategoryDomainObject category) {

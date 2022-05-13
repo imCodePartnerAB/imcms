@@ -49,7 +49,7 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Optional<Category> getById(int id) {
-        return Optional.ofNullable(categoryRepository.findOne(id)).map(CategoryDTO::new);
+        return categoryRepository.findById(id).map(CategoryDTO::new);
     }
 
     @Override
@@ -60,7 +60,7 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category update(Category updateMe) {
-        final Category receivedCategory = categoryRepository.findOne(updateMe.getId());
+	    final Category receivedCategory = categoryRepository.getOne(updateMe.getId());
         receivedCategory.setId(updateMe.getId());
         receivedCategory.setName(HtmlUtils.htmlEscape(updateMe.getName(), CharEncoding.UTF_8));
         receivedCategory.setDescription(updateMe.getDescription());
@@ -73,7 +73,7 @@ class DefaultCategoryService implements CategoryService {
     public void delete(int id) {
         List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
         if (categoryDocIds.isEmpty()) {
-            categoryRepository.delete(id);
+	        categoryRepository.deleteById(id);
         } else {
             throw new DataUseCategoryException("Category has documents!");
         }
@@ -83,8 +83,8 @@ class DefaultCategoryService implements CategoryService {
     public Collection<Integer> deleteForce(int id){
         final Collection<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
 
-        categoryRepository.deleteDocumentCategory(id);
-        categoryRepository.delete(id);
+	    categoryRepository.deleteDocumentCategory(id);
+	    categoryRepository.deleteById(id);
 
         return categoryDocIds;
     }

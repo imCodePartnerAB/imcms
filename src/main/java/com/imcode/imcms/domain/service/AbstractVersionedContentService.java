@@ -30,7 +30,7 @@ public abstract class AbstractVersionedContentService<JPA, Repository extends Ve
                 .map(jpa -> removeId(jpa, newVersion))
                 .collect(toList());
 
-        repository.save(forSave);
+        repository.saveAll(forSave);
     }
 
     protected void updateWorkingVersion(int docId) {

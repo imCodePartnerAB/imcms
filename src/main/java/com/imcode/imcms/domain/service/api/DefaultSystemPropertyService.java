@@ -5,7 +5,6 @@ import com.imcode.imcms.mapping.jpa.SystemProperty;
 import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
 
     @Override
     public SystemProperty findById(Integer id) {
-        return systemPropertyRepository.findOne(id);
+        return systemPropertyRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -35,12 +34,12 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
         return systemPropertyRepository.findByName(name);
     }
 
-    @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Override
+	@Transactional
     public SystemProperty update(SystemProperty systemProperty) {
         final Integer id = systemProperty.getId();
 
-        SystemProperty propertyGetById = systemPropertyRepository.findOne(id);
+		SystemProperty propertyGetById = systemPropertyRepository.getOne(id);
         propertyGetById.setValue(systemProperty.getValue());
 
         final SystemProperty savedProperty = systemPropertyRepository.save(propertyGetById);
