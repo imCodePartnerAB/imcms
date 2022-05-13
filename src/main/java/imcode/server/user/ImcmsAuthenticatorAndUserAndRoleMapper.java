@@ -405,6 +405,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @deprecated
      */
+    @Deprecated
     public String[] getRoleNames(UserDomainObject user) {
         try {
             final Object[] parameters = new String[]{"" + user.getId()};

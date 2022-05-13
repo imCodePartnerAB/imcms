@@ -286,6 +286,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #getPublicationStatus} instead.
      */
+    @Deprecated
     public int getStatus() {
         return internalDocument.getPublicationStatus().status;
     }
@@ -293,6 +294,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #setPublicationStatus} instead.
      */
+    @Deprecated
     public void setStatus(int status) {
         internalDocument.setPublicationStatus(new PublicationStatus(status));
     }
@@ -329,6 +331,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #removeCategory} instead.
      */
+    @Deprecated
     public void removeCategory(com.imcode.imcms.api.Category category) {
         internalDocument.removeCategoryId(category.getId());
     }

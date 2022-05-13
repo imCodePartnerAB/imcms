@@ -21,6 +21,7 @@ public class Template {
     /**
      * @deprecated Returns 0, use {@link #getName()} instead. *
      */
+    @Deprecated
     public int getId() {
         return 0;
     }

@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.TextValidationResult;
 import com.imcode.imcms.domain.service.TextValidationService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +16,8 @@ import java.io.IOException;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 31.01.18.
  */
-@RestController("/texts/validate")
+@RestController
+@RequestMapping("/texts/validate")
 public class TextValidationController {
 
     private final TextValidationService textValidationService;
