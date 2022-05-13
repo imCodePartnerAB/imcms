@@ -1,5 +1,6 @@
 package com.imcode.imcms.db;
 
+import com.google.common.base.MoreObjects;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -51,10 +52,10 @@ public final class Diff {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("from", from)
-                .add("to", to)
-                .add("scripts", scripts)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("from", from)
+			    .add("to", to)
+			    .add("scripts", scripts)
+			    .toString();
     }
 }

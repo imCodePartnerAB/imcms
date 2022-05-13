@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -50,13 +52,13 @@ public final class DocumentVersion implements Serializable {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("no", no)
-                .add("createdBy", createdBy)
-                .add("createdDt", createdDt)
-                .add("modifiedBy", modifiedBy)
-                .add("modifiedDt", modifiedDt)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("no", no)
+			    .add("createdBy", createdBy)
+			    .add("createdDt", createdDt)
+			    .add("modifiedBy", modifiedBy)
+			    .add("modifiedDt", modifiedDt)
+			    .toString();
     }
 
     public int getNo() {

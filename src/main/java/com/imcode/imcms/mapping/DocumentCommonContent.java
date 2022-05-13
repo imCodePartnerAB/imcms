@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -64,12 +66,12 @@ public final class DocumentCommonContent implements Serializable {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("headline", headline)
-                .add("menuText", menuText)
-                .add("enabled", enabled)
-                .add("versionNo", versionNo)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("headline", headline)
+			    .add("menuText", menuText)
+			    .add("enabled", enabled)
+			    .add("versionNo", versionNo)
+			    .toString();
     }
 
     public String getHeadline() {

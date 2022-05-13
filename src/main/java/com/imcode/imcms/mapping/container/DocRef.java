@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping.container;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.Objects;
 
 public final class DocRef implements LanguageContainer {
@@ -11,15 +13,15 @@ public final class DocRef implements LanguageContainer {
     private final String cachedToString;
 
     public DocRef(int id, int versionNo, String languageCode) {
-        this.id = id;
-        this.versionNo = versionNo;
-        this.languageCode = Objects.requireNonNull(languageCode);
-        this.cachedHashCode = Objects.hash(id, versionNo);
-        this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
-                .add("id", id)
-                .add("versionNo", versionNo)
-                .add("languageCode", languageCode)
-                .toString();
+	    this.id = id;
+	    this.versionNo = versionNo;
+	    this.languageCode = Objects.requireNonNull(languageCode);
+	    this.cachedHashCode = Objects.hash(id, versionNo);
+	    this.cachedToString = MoreObjects.toStringHelper(this)
+			    .add("id", id)
+			    .add("versionNo", versionNo)
+			    .add("languageCode", languageCode)
+			    .toString();
     }
 
     public static Builder builder() {
