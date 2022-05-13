@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
@@ -79,8 +76,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(COUNT_DATA);
         final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
         assertFalse(categoriesTypes.isEmpty());
-        final CategoryType firstCategoryType = categoriesTypes.get(0);
-        final CategoryTypeJPA categoryType = categoryTypeRepository.findOne(firstCategoryType.getId());
+	    final CategoryType firstCategoryType = categoriesTypes.get(0);
+	    final CategoryTypeJPA categoryType = categoryTypeRepository.getOne(firstCategoryType.getId());
 
         categoryType.setName("time");
 
@@ -97,15 +94,13 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
         assertFalse(categoriesTypes.isEmpty());
 
         final CategoryType firstCategoryType = categoriesTypes.get(0);
-        final Integer id = firstCategoryType.getId();
-        CategoryType foundCategoryType = categoryTypeRepository.findOne(id);
+	    final Integer id = firstCategoryType.getId();
+	    CategoryType foundCategoryType = categoryTypeRepository.getOne(id);
 
         assertNotNull(foundCategoryType);
 
-        categoryTypeRepository.delete(id);
+	    categoryTypeRepository.deleteById(id);
 
-        foundCategoryType = categoryTypeRepository.findOne(firstCategoryType.getId());
-
-        assertNull(foundCategoryType);
+	    assertTrue(categoryTypeRepository.findById(firstCategoryType.getId()).isEmpty());
     }
 }

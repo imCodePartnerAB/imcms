@@ -31,7 +31,7 @@ class LocalUserPhoneServiceTest {
     @Test
     void updateUserPhones_Expect_SaveMethodInRepositoryIsCalledOnce() {
         phoneService.updateUserPhones(Collections.emptyList(), 1);
-        then(phoneRepository).should(times(1)).save(anyCollection());
+	    then(phoneRepository).should(times(1)).saveAll(anyCollection());
     }
 
     @Test
@@ -41,8 +41,8 @@ class LocalUserPhoneServiceTest {
         final int userId = 1;
         phoneService.updateUserPhones(Collections.emptyList(), userId);
 
-        then(phoneRepository).should(inOrder, times(1)).deleteByUserId(userId);
-        then(phoneRepository).should(inOrder, times(1)).save(anyCollection());
+	    then(phoneRepository).should(inOrder, times(1)).deleteByUserId(userId);
+	    then(phoneRepository).should(inOrder, times(1)).saveAll(anyCollection());
     }
 
     @Test

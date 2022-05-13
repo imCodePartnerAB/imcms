@@ -63,7 +63,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         CategoryJPA updateCategory = categoryRepository.save(firstCategoryDTO);
 
         assertNotNull(updateCategory);
-        assertEquals(updateCategory, categoryRepository.findOne(updateCategory.getId()));
+	    assertEquals(updateCategory, categoryRepository.getOne(updateCategory.getId()));
     }
 
     @Test

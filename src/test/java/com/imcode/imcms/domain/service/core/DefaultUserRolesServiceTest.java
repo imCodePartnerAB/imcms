@@ -158,6 +158,6 @@ class DefaultUserRolesServiceTest {
         userRolesService.updateUserRoles(roles, user);
 
         then(userRolesRepository).should().deleteUserRolesByUserId(eq(userId));
-        then(userRolesRepository).should().save(anyCollection());
+	    then(userRolesRepository).should().saveAll(anyCollection());
     }
 }

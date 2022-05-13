@@ -159,7 +159,7 @@ class UserRolesRepositoryTest extends WebAppSpringTestConfig {
         final UserRoles userRole2 = new UserRoles(user, role2);
 
         final List<UserRoles> userRoles = Arrays.asList(userRole1, userRole2);
-        userRolesRepository.save(userRoles);
+        userRolesRepository.saveAll(userRoles);
 
         final List<UserRoles> userRolesByUserId = userRolesRepository.findUserRolesByUserId(user.getId());
 

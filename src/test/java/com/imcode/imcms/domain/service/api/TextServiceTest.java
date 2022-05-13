@@ -554,7 +554,7 @@ public class TextServiceTest extends WebAppSpringTestConfig {
                 .max()
                 .getAsInt();
 
-        final String actualText = textHistoryRepository.findOne(maxTextHistoryId).getText();
+	    final String actualText = textHistoryRepository.getOne(maxTextHistoryId).getText();
 
         assertEquals(newTestValue, actualText);
     }
@@ -579,16 +579,16 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     }
 
     private Set<Text> createTexts() {
-        final ArrayList<TextJPA> texts = new ArrayList<>();
-        for (LanguageJPA language : languages) {
-            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                texts.add(createText(index, language, workingVersion));
-            }
-        }
+	    final ArrayList<TextJPA> texts = new ArrayList<>();
+	    for (LanguageJPA language : languages) {
+		    for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+			    texts.add(createText(index, language, workingVersion));
+		    }
+	    }
 
-        return textRepository.save(texts).stream()
-                .map(TextDTO::new)
-                .collect(Collectors.toSet());
+	    return textRepository.saveAll(texts).stream()
+			    .map(TextDTO::new)
+			    .collect(Collectors.toSet());
     }
 
     private TextJPA createText(int index, LanguageJPA language, Version version) {

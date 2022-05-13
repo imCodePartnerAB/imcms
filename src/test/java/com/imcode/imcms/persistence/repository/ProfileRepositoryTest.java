@@ -60,7 +60,7 @@ public class ProfileRepositoryTest extends WebAppSpringTestConfig {
     public void getById_When_ProfileExist_Expected_CorrectEntity() {
         final List<ProfileJPA> profiles = createTestProfiles();
         int idFirstElement = profiles.get(0).getId();
-        Profile profile = profileRepository.findOne(idFirstElement);
+	    Profile profile = profileRepository.getOne(idFirstElement);
 
         assertNotNull(profile);
         assertEquals(profiles.get(0), profile);
@@ -69,9 +69,7 @@ public class ProfileRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void getById_When_ProfileNotExist_Expected_ResultNull() {
         int fakeId = -1;
-        Profile profile = profileRepository.findOne(fakeId);
-
-        assertNull(profile);
+	    assertTrue(profileRepository.findById(fakeId).isEmpty());
     }
 
     @Test
@@ -87,19 +85,19 @@ public class ProfileRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void deleteById_When_ProfilesNotExist_Expected_CorrectException() {
         int fakeId = -1;
-        assertThrows(EmptyResultDataAccessException.class, () -> profileRepository.delete(fakeId));
+	    assertThrows(EmptyResultDataAccessException.class, () -> profileRepository.deleteById(fakeId));
     }
 
     @Test
     public void deleteById_When_ProfilesExist_Expected_Null() {
-        assertTrue(profileRepository.findAll().isEmpty());
-        List<ProfileJPA> profiles = createTestProfiles();
+	    assertTrue(profileRepository.findAll().isEmpty());
+	    List<ProfileJPA> profiles = createTestProfiles();
 
-        int id = profiles.get(0).getId();
-        profileRepository.delete(id);
+	    int id = profiles.get(0).getId();
+	    profileRepository.deleteById(id);
 
-        assertNull(profileRepository.findOne(id));
-        assertEquals(2, profileRepository.findAll().size());
+	    assertTrue(profileRepository.findById(id).isEmpty());
+	    assertEquals(2, profileRepository.findAll().size());
     }
 
     private List<ProfileJPA> createTestProfiles() {
@@ -108,7 +106,7 @@ public class ProfileRepositoryTest extends WebAppSpringTestConfig {
                 new ProfileJPA(null, "name2", "alias"),
                 new ProfileJPA(null, "name3", "alias2")
         );
-        profileRepository.save(profiles);
+	    profileRepository.saveAll(profiles);
         return profiles;
     }
 }

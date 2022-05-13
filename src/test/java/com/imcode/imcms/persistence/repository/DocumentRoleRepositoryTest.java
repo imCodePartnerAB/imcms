@@ -61,26 +61,26 @@ public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig { //test
 
     @Test
     public void getDocumentRolesByDocIdAndUserId_When_OneExist_Expect_Returned() {
-        final int roleId = Roles.SUPER_ADMIN.getId();
-        final Meta.Permission permission = VIEW;
+	    final int roleId = Roles.SUPER_ADMIN.getId();
+	    final Meta.Permission permission = VIEW;
 
-        final User user = userDataInitializer.createData(1, roleId).get(0);
-        final int userId = user.getId();
+	    final User user = userDataInitializer.createData(1, roleId).get(0);
+	    final int userId = user.getId();
 
-        final TextDocumentDTO textDocument = textDocumentDataInitializer.createTextDocument();
-        final Integer docId = textDocument.getId();
+	    final TextDocumentDTO textDocument = textDocumentDataInitializer.createTextDocument();
+	    final Integer docId = textDocument.getId();
 
-        final Meta meta = metaRepository.findOne(docId);
-        final RoleJPA roleJPA = roleRepository.findOne(roleId);
+	    final Meta meta = metaRepository.getOne(docId);
+	    final RoleJPA roleJPA = roleRepository.getOne(roleId);
 
-        documentRolesRepository.save(new DocumentRole(meta, roleJPA, permission));
+	    documentRolesRepository.save(new DocumentRole(meta, roleJPA, permission));
 
-        final List<DocumentRole> documentRoleList = documentRolesRepository
-                .getDocumentRolesByUserIdAndDocId(userId, docId);
+	    final List<DocumentRole> documentRoleList = documentRolesRepository
+			    .getDocumentRolesByUserIdAndDocId(userId, docId);
 
-        assertThat(documentRoleList, hasSize(1));
+	    assertThat(documentRoleList, hasSize(1));
 
-        final DocumentRole actualDocumentRole = documentRoleList.get(0);
+	    final DocumentRole actualDocumentRole = documentRoleList.get(0);
 
         assertThat(actualDocumentRole.getDocument(), is(meta));
         assertThat(actualDocumentRole.getRole(), is(roleJPA));
@@ -93,28 +93,28 @@ public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig { //test
         final int roleId2 = Roles.USER.getId();
 
         final Meta.Permission permission1 = VIEW;
-        final Meta.Permission permission2 = EDIT;
+	    final Meta.Permission permission2 = EDIT;
 
-        final User user = userDataInitializer.createData(1, roleId1, roleId2).get(0);
-        final int userId = user.getId();
+	    final User user = userDataInitializer.createData(1, roleId1, roleId2).get(0);
+	    final int userId = user.getId();
 
-        final TextDocumentDTO textDocument = textDocumentDataInitializer.createTextDocument();
-        final Integer docId = textDocument.getId();
+	    final TextDocumentDTO textDocument = textDocumentDataInitializer.createTextDocument();
+	    final Integer docId = textDocument.getId();
 
-        final Meta meta = metaRepository.findOne(docId);
+	    final Meta meta = metaRepository.getOne(docId);
 
-        final RoleJPA roleJPA1 = roleRepository.findOne(roleId1);
-        final RoleJPA roleJPA2 = roleRepository.findOne(roleId2);
+	    final RoleJPA roleJPA1 = roleRepository.getOne(roleId1);
+	    final RoleJPA roleJPA2 = roleRepository.getOne(roleId2);
 
-        documentRolesRepository.save(new DocumentRole(meta, roleJPA1, permission1));
-        documentRolesRepository.save(new DocumentRole(meta, roleJPA2, permission2));
+	    documentRolesRepository.save(new DocumentRole(meta, roleJPA1, permission1));
+	    documentRolesRepository.save(new DocumentRole(meta, roleJPA2, permission2));
 
-        final List<DocumentRole> documentRoleList = documentRolesRepository
-                .getDocumentRolesByUserIdAndDocId(userId, docId);
+	    final List<DocumentRole> documentRoleList = documentRolesRepository
+			    .getDocumentRolesByUserIdAndDocId(userId, docId);
 
-        assertThat(documentRoleList, hasSize(2));
+	    assertThat(documentRoleList, hasSize(2));
 
-        final List<Meta> metaList = documentRoleList.stream()
+	    final List<Meta> metaList = documentRoleList.stream()
                 .map(DocumentRole::getDocument)
                 .collect(Collectors.toList());
 
@@ -139,28 +139,28 @@ public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig { //test
         final Meta.Permission permission1 = VIEW;
         final Meta.Permission permission2 = EDIT;
 
-        final TextDocumentDTO textDocument1 = textDocumentDataInitializer.createTextDocument();
-        final Integer docId1 = textDocument1.getId();
+	    final TextDocumentDTO textDocument1 = textDocumentDataInitializer.createTextDocument();
+	    final Integer docId1 = textDocument1.getId();
 
-        final Meta meta1 = metaRepository.findOne(docId1);
+	    final Meta meta1 = metaRepository.getOne(docId1);
 
-        final TextDocumentDTO textDocument2 = textDocumentDataInitializer.createTextDocument();
-        final Integer docId2 = textDocument2.getId();
+	    final TextDocumentDTO textDocument2 = textDocumentDataInitializer.createTextDocument();
+	    final Integer docId2 = textDocument2.getId();
 
-        final Meta meta2 = metaRepository.findOne(docId2);
+	    final Meta meta2 = metaRepository.getOne(docId2);
 
-        final RoleJPA roleJPA1 = roleRepository.findOne(roleId1);
-        final RoleJPA roleJPA2 = roleRepository.findOne(roleId2);
+	    final RoleJPA roleJPA1 = roleRepository.getOne(roleId1);
+	    final RoleJPA roleJPA2 = roleRepository.getOne(roleId2);
 
-        final DocumentRole docRole1 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA1, permission1));
-        final DocumentRole docRole2 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA2, permission2));
-        documentRolesRepository.save(new DocumentRole(meta2, roleJPA2, permission2));
+	    final DocumentRole docRole1 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA1, permission1));
+	    final DocumentRole docRole2 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA2, permission2));
+	    documentRolesRepository.save(new DocumentRole(meta2, roleJPA2, permission2));
 
-        final List<DocumentRole> expectedRoles = Arrays.asList(docRole1, docRole2);
+	    final List<DocumentRole> expectedRoles = Arrays.asList(docRole1, docRole2);
 
-        final Set<DocumentRole> docRoles1 = documentRolesRepository.findByDocument_Id(docId1);
+	    final Set<DocumentRole> docRoles1 = documentRolesRepository.findByDocument_Id(docId1);
 
-        assertTrue(docRoles1.containsAll(expectedRoles));
+	    assertTrue(docRoles1.containsAll(expectedRoles));
         assertTrue(expectedRoles.containsAll(docRoles1));
     }
 }

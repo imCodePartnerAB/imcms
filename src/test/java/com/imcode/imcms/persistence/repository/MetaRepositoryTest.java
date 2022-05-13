@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @Transactional
@@ -123,10 +124,10 @@ public class MetaRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void findType() {
 
-        final Integer createdDocId = documentDataInitializer.createData().getId();
-        final Meta createdMeta = metaRepository.findOne(createdDocId);
+	    final Integer createdDocId = documentDataInitializer.createData().getId();
+	    final Meta createdMeta = metaRepository.getOne(createdDocId);
 
-        assertEquals(createdMeta.getDocumentType(), metaRepository.findType(createdDocId));
+	    assertEquals(createdMeta.getDocumentType(), metaRepository.findType(createdDocId));
 
     }
 }

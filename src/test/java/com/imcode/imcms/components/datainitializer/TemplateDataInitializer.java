@@ -92,10 +92,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
     }
 
     public void clearTemplateGroupRepository(Integer id) {
-        TemplateGroupJPA receivedGroup = templateGroupRepository.findOne(id);
-        if (receivedGroup != null) {
-            templateGroupRepository.delete(id);
-        }
+	    templateGroupRepository.deleteById(id);
     }
 
     @Override

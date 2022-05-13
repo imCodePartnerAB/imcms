@@ -28,12 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
@@ -191,8 +186,8 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         categoryTypeService.deleteForce(categoryTypeId);
 
-        assertNull(categoryRepository.findOne(categoryId));
-        assertTrue(documentService.get(savedDoc.getId()).getCategories().isEmpty());
+	    assertTrue(categoryRepository.findById(categoryId).isEmpty());
+	    assertTrue(documentService.get(savedDoc.getId()).getCategories().isEmpty());
         assertFalse(categoryTypeService.get(categoryId).isPresent());
     }
 

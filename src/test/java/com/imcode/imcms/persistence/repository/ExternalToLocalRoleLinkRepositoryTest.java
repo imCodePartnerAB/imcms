@@ -82,7 +82,7 @@ class ExternalToLocalRoleLinkRepositoryTest extends WebAppSpringTestConfig {
         assertEquals(all.size(), 1);
         assertEquals(all.get(0), link);
 
-        repository.delete(link.getId());
+        repository.deleteById(link.getId());
 
         assertTrue(repository.findAll().isEmpty());
     }
@@ -100,11 +100,11 @@ class ExternalToLocalRoleLinkRepositoryTest extends WebAppSpringTestConfig {
 
         assertFalse(repository.findAll().isEmpty());
 
-        roleRepository.delete(localRole.getId());
-        roleRepository.flush();
+	    roleRepository.deleteById(localRole.getId());
+	    roleRepository.flush();
 
-        assertNull(roleRepository.findOne(localRole.getId()));
-        assertTrue(repository.findAll().isEmpty());
+	    assertTrue(roleRepository.findById(localRole.getId()).isEmpty());
+	    assertTrue(repository.findAll().isEmpty());
     }
 
     @Test
