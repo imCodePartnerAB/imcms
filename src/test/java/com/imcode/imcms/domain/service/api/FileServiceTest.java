@@ -12,7 +12,6 @@ import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -80,12 +80,12 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         templateDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
 
-        Files.deleteIfExists(outsideFilePath);
-        testRootPaths.stream()
-                .filter(path -> !path.toString().contains(templateDirectoryFromProperties.toString()))
-                .map(Path::toFile)
-                .forEach(FileUtils::deleteRecursive);
-        deleteFilesInTemplateDirectory(testFileName, testFileName2, testTemplateName, newNameFile, notValidNewTemplateName);
+	    Files.deleteIfExists(outsideFilePath);
+	    testRootPaths.stream()
+			    .filter(path -> !path.toString().contains(templateDirectoryFromProperties.toString()))
+			    .map(Path::toFile)
+			    .forEach(FileSystemUtils::deleteRecursively);
+	    deleteFilesInTemplateDirectory(testFileName, testFileName2, testTemplateName, newNameFile, notValidNewTemplateName);
         Files.createDirectories(templateTextDirectory);
     }
 
