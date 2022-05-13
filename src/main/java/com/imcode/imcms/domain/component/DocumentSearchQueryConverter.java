@@ -10,10 +10,12 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.domain.Sort.Direction;
 import static org.springframework.data.domain.Sort.Order;
 
 @Component
@@ -102,21 +104,22 @@ public class DocumentSearchQueryConverter {
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
-        PageRequestDTO page = searchQuery.getPage();
+	    PageRequestDTO page = searchQuery.getPage();
 
-        if (page == null) {
-            page = new PageRequestDTO();
-        }
+	    if (page == null) {
+		    page = new PageRequestDTO();
+	    }
 
-        solrQuery.setStart(page.getSkip());
-        solrQuery.setRows(page.getSize());
+	    solrQuery.setStart(page.getSkip());
+	    solrQuery.setRows(page.getSize());
 
-        final Order order = Optional.ofNullable(page.getSort())
-                .orElse(new Sort(new Order(Direction.DESC, DocumentIndex.FIELD__MODIFIED_DATETIME)))
-                .iterator()
-                .next();
+	    Sort sort = page.getSort();
+	    if (sort == Sort.unsorted()) {
+		    sort = Sort.by(Order.desc(DocumentIndex.FIELD__MODIFIED_DATETIME));
+	    }
+	    final Order order = sort.iterator().next();
 
-        solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+	    solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
     }
 
     private void addFilters(Set<Integer> roleIds, SolrQuery solrQuery) {
