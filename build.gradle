@@ -105,7 +105,7 @@ dependencies {
     implementation("org.hibernate:hibernate-ehcache:${hibernateVersion}") {
         exclude(module: "ehcache-core")
     }
-    implementation "org.hibernate.validator:hibernate-validator:6.0.23.Final"
+    implementation 'org.hibernate.validator:hibernate-validator:7.0.4.Final'
     implementation "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.springframework:spring-aop:${springframeworkVersion}"
