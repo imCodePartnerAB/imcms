@@ -2,10 +2,10 @@ package com.imcode.imcms.components.impl;
 
 import com.imcode.imcms.components.Validator;
 import com.imcode.imcms.components.exception.ImcmsPropertiesValidationException;
+import jakarta.validation.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import javax.validation.ValidationException;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

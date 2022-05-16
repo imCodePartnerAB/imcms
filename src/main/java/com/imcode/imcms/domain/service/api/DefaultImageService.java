@@ -18,6 +18,7 @@ import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.ImcmsConstants;
 import imcode.util.ImcmsImageUtils;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,7 +26,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;

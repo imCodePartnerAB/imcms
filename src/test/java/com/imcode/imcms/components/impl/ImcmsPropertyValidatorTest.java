@@ -2,10 +2,10 @@ package com.imcode.imcms.components.impl;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.exception.ImcmsPropertiesValidationException;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.ValidationException;
 import java.util.Properties;
 
 import static com.imcode.imcms.components.impl.ImcmsPropertyValidator.REQUIRED_PROPERTIES;

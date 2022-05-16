@@ -2,13 +2,13 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.SpaceAround;
 import imcode.util.image.Format;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
