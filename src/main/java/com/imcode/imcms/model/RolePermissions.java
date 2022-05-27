@@ -16,11 +16,15 @@ public abstract class RolePermissions implements Serializable {
     protected boolean getPasswordByEmail;
     protected boolean accessToAdminPages;
     protected boolean accessToDocumentEditor;
+    protected boolean publishOwnDocuments;
+    protected boolean publishAllDocuments;
 
     protected RolePermissions(RolePermissions from) {
         setRoleId(from.getRoleId());
         setAccessToAdminPages(from.isAccessToAdminPages());
         setGetPasswordByEmail(from.isGetPasswordByEmail());
         setAccessToDocumentEditor(from.isAccessToDocumentEditor());
+        setPublishOwnDocuments(from.isPublishOwnDocuments());
+        setPublishAllDocuments(from.isPublishAllDocuments());
     }
 }

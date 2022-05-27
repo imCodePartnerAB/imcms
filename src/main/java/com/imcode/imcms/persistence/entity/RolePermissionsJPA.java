@@ -80,6 +80,24 @@ public class RolePermissionsJPA extends RolePermissions {
         return accessToDocumentEditor;
     }
 
+    @Column(
+            name = "publish_own_documents",
+            nullable = false,
+            columnDefinition = "tinyint"
+    )
+    public boolean isPublishOwnDocuments() {
+        return publishOwnDocuments;
+    }
+
+    @Column(
+            name = "publish_all_documents",
+            nullable = false,
+            columnDefinition = "tinyint"
+    )
+    public boolean isPublishAllDocuments() {
+        return publishAllDocuments;
+    }
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn
     public RoleJPA getRole() {
