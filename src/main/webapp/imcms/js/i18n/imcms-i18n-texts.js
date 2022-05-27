@@ -686,7 +686,9 @@ const texts = {
                     title: 'Rollbehörigheter',
                     getPasswordByEmail: 'Få lösenord via e-post',
                     accessToAdminPages: 'Tillgång till admin sidor',
-                    accessToDocumentEditor: 'Tillgång till dokumentredigerare'
+                    accessToDocumentEditor: 'Tillgång till dokumentredigerare',
+                    publishOwnDocuments: 'Publicera egna skapade dokument',
+                    publishAllDocuments: 'Publicera alla dokument (endast med EDIT-tillstånd)'
                 },
                 deleteConfirm: 'Vill du verkligen ta bort den här rollen?',
                 editRole: 'Redigera rollen',
@@ -1692,7 +1694,9 @@ const texts = {
                     title: 'Role permissions',
                     getPasswordByEmail: 'Get password by email',
                     accessToAdminPages: 'Access to admin pages',
-                    accessToDocumentEditor: 'Access to document editor'
+                    accessToDocumentEditor: 'Access to document editor',
+                    publishOwnDocuments: 'Publish own created documents',
+                    publishAllDocuments: 'Publish all documents (only with EDIT-permission)'
                 },
                 deleteConfirm: 'Do you really want to delete this role?',
                 editRole: 'Edit role',

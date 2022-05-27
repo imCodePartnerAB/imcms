@@ -22,6 +22,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         },
         accessToAdminPages: ${accessToAdminPages or false},
         accessToDocumentEditor: ${accessToDocumentEditor or false},
+        accessToPublishCurrentDoc: ${accessToPublishCurrentDoc or false},
         document: {
             id: ${empty currentDocument.id ? targetDocId+'' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
@@ -49,4 +50,5 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
     <%--@elvariable id="accessToAdminPages" type="boolean"--%>
     <%--@elvariable id="accessToDocumentEditor" type="boolean"--%>
+    <%--@elvariable id="accessToPublishCurrentDoc" type="boolean"--%>
     <%--@elvariable id="targetDocId" type="int"--%>

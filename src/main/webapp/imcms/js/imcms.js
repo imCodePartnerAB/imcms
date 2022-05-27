@@ -29,6 +29,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     },
     accessToAdminPages: Imcms.accessToAdminPages,
     accessToDocumentEditor: Imcms.accessToDocumentEditor,
+    accessToPublishCurrentDoc: Imcms.accessToPublishCurrentDoc,
     document: {
         id: Imcms.document.id,
         type: Imcms.document.type,

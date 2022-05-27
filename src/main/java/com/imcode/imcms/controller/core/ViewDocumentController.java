@@ -179,6 +179,7 @@ public class ViewDocumentController {
         mav.addObject("isDocNew", textDocument.hasNewStatus());
         mav.addObject("accessToAdminPages", rolePermissions.isAccessToAdminPages());
         mav.addObject("accessToDocumentEditor", rolePermissions.isAccessToDocumentEditor());
+        mav.addObject("accessToPublishCurrentDoc", accessService.hasUserPublishAccess(user, docId));
 
         return mav;
     }

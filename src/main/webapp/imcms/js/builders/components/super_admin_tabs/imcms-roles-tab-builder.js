@@ -54,7 +54,9 @@ define(
                 permissions: {
                     getPasswordByEmail: false,
                     accessToAdminPages: false,
-                    accessToDocumentEditor: false
+                    accessToDocumentEditor: false,
+                    publishOwnDocuments: false,
+                    publishAllDocuments: false
                 }
             });
         }

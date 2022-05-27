@@ -59,7 +59,7 @@ define("imcms-admin-panel-builder",
 
             const editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
             const editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
-            const publishDisplayProperty = imcms.isSuperAdmin ? "" : "display:none";
+            const publishDisplayProperty = imcms.accessToPublishCurrentDoc || imcms.isSuperAdmin ? "" : "display:none";
             const documentDisplayProperty = imcms.isSuperAdmin || imcms.accessToDocumentEditor ? "" : "display:none";
             const adminDisplayProperty = imcms.isSuperAdmin || imcms.accessToAdminPages ? "" : "display:none";
 

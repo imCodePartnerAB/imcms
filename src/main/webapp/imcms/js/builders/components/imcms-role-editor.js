@@ -17,6 +17,8 @@ define(
         let $getPasswordByEmail;
         let $accessToAdminPages;
         let $accessToDocumentEditor;
+        let $publishOwnDocuments;
+        let $publishAllDocuments;
 
         let permissionCheckboxes$;
 
@@ -41,7 +43,9 @@ define(
             permissionCheckboxes$ = [
                 $getPasswordByEmail = createCheckboxWithText(texts.permissions.getPasswordByEmail),
                 $accessToAdminPages = createCheckboxWithText(texts.permissions.accessToAdminPages),
-                $accessToDocumentEditor = createCheckboxWithText(texts.permissions.accessToDocumentEditor)
+                $accessToDocumentEditor = createCheckboxWithText(texts.permissions.accessToDocumentEditor),
+                $publishOwnDocuments = createCheckboxWithText(texts.permissions.publishOwnDocuments),
+                $publishAllDocuments = createCheckboxWithText(texts.permissions.publishAllDocuments)
             ];
 
             return components.checkboxes.checkboxContainerField(
@@ -114,7 +118,9 @@ define(
                 permissions: {
                     getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
                     accessToAdminPages: permissionCheckboxes$[1].isChecked(),
-                    accessToDocumentEditor: permissionCheckboxes$[2].isChecked()
+                    accessToDocumentEditor: permissionCheckboxes$[2].isChecked(),
+                    publishOwnDocuments: permissionCheckboxes$[3].isChecked(),
+                    publishAllDocuments: permissionCheckboxes$[4].isChecked()
                 }
             };
 
@@ -127,6 +133,8 @@ define(
                         currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
                         currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
                         currentRole.permissions.accessToDocumentEditor = savedRole.permissions.accessToDocumentEditor;
+                        currentRole.permissions.publishOwnDocuments = savedRole.permissions.publishOwnDocuments;
+                        currentRole.permissions.publishAllDocuments = savedRole.permissions.publishAllDocuments;
 
                         onRoleView = onRoleSimpleView;
                         prepareRoleView();
@@ -198,7 +206,9 @@ define(
             const permissions = [
                 currentRole.permissions.getPasswordByEmail,
                 currentRole.permissions.accessToAdminPages,
-                currentRole.permissions.accessToDocumentEditor
+                currentRole.permissions.accessToDocumentEditor,
+                currentRole.permissions.publishOwnDocuments,
+                currentRole.permissions.publishAllDocuments
             ];
 
             permissionCheckboxes$.forEach(($checkbox, i) => {
