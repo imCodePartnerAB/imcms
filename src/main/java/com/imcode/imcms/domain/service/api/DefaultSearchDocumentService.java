@@ -26,13 +26,28 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
     }
 
     @Override
+    public List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery) {
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(searchQuery, true));
+    }
+
+    @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, boolean limitSearch) {
         return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, limitSearch));
     }
 
     @Override
+    public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery) {
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, true));
+    }
+
+    @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page, boolean limitSearch) {
         return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, page, limitSearch));
+    }
+
+    @Override
+    public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page) {
+        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, page, true));
     }
 
     private List<DocumentStoredFieldsDTO> mapToDocumentStoredFieldsDTO(IndexSearchResult result){
