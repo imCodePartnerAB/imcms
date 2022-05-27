@@ -10,7 +10,13 @@ public interface SearchDocumentService {
 
     List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery, boolean limitSearch);
 
+    List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery);
+
     List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, boolean limitSearch);
 
+    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery);
+
     List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, PageRequestDTO page, boolean limitSearch);
+
+    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, PageRequestDTO page);
 }

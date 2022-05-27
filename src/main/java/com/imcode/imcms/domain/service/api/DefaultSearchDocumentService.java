@@ -27,7 +27,7 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
 
     @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery) {
-        return mapToDocumentStoredFieldsDTO(documentIndex.search(searchQuery, true));
+        return searchDocuments(searchQuery, true);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
 
     @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery) {
-        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, true));
+        return searchDocuments(stringSearchQuery, true);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
 
     @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page) {
-        return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, page, true));
+        return searchDocuments(stringSearchQuery, page, true);
     }
 
     private List<DocumentStoredFieldsDTO> mapToDocumentStoredFieldsDTO(IndexSearchResult result){
