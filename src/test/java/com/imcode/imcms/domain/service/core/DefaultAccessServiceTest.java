@@ -1,10 +1,10 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.domain.dto.DocumentRoles;
-import com.imcode.imcms.domain.dto.RoleDTO;
-import com.imcode.imcms.domain.dto.RolePermissionsDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.DocumentRolesService;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.RolePermissions;
@@ -29,6 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,12 +37,14 @@ public class DefaultAccessServiceTest {
 
     private static final int documentId = 1001;
 
-    private static final UserDomainObject USER = new UserDomainObject();
+    private static final UserDomainObject USER = new UserDomainObject(10);
 
     @Mock
     private DocumentRolesService documentRolesService;
     @Mock
     private RoleService roleService;
+    @Mock
+    private DocumentService documentService;
 
     @InjectMocks
     private DefaultAccessService accessService;
@@ -322,6 +325,151 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessContentType.DOC_INFO);
 
         assertTrue(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserIsSuperAdmin_Expect_True(){
+        final UserDomainObject userSuperAdmin = mock(UserDomainObject.class);
+        when(userSuperAdmin.isSuperAdmin()).thenReturn(true);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(userSuperAdmin, documentId);
+        assertTrue(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserIsOwnerAndHasPublishOwnPermission_Expect_True(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishOwnDocuments(true);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        String creatorLogin = "creator";
+        when(user.getLogin()).thenReturn(creatorLogin);
+        AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setBy(creatorLogin);
+
+        Document document = new DocumentDTO();
+        document.setCreated(auditDTO);
+        when(documentService.get(documentId)).thenReturn(document);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertTrue(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserIsOwnerAndHasNotPublishOwnPermission_Expect_False(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishOwnDocuments(true);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        String creatorLogin = "creator";
+        String anotherLogin = "another";
+        when(user.getLogin()).thenReturn(anotherLogin);
+        AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setBy(creatorLogin);
+
+        Document document = new DocumentDTO();
+        document.setCreated(auditDTO);
+        when(documentService.get(documentId)).thenReturn(document);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertFalse(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserIsNotOwnerAndHasPublishOwnPermission_Expect_False(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishOwnDocuments(false);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertFalse(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserHasPublishAllAndEDITPermissions_Expect_True(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishAllDocuments(true);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        final Meta meta = new Meta();
+        meta.setId(documentId);
+
+        final DocumentRole documentRole = new DocumentRole();
+        documentRole.setDocument(meta);
+        documentRole.setPermission(Permission.EDIT);
+
+        final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
+        when(documentRolesService.getDocumentRoles(documentId, user)).thenReturn(documentRoles);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertTrue(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserHasPublishAllAndHasNotEDITPermissions_Expect_False(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishAllDocuments(true);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        final Meta meta = new Meta();
+        meta.setId(documentId);
+
+        final DocumentRole documentRole = new DocumentRole();
+        documentRole.setDocument(meta);
+        documentRole.setPermission(Permission.RESTRICTED_1);
+
+        final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
+        when(documentRolesService.getDocumentRoles(documentId, user)).thenReturn(documentRoles);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertFalse(hasUserEditAccess);
+    }
+
+    @Test
+    public void hasUserPublishAccess_UserHasNotPublishAllAndHasEDITPermissions_Expect_False(){
+        final int roleId = 100;
+        final UserDomainObject user = mock(UserDomainObject.class);
+        when(user.getRoleIds()).thenReturn(Collections.singleton(roleId));
+        RolePermissions rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setPublishAllDocuments(false);
+        Role role = new RoleDTO();
+        role.setPermissions(rolePermissions);
+        when(roleService.getById(roleId)).thenReturn(role);
+
+        final Meta meta = new Meta();
+        meta.setId(documentId);
+
+        final DocumentRole documentRole = new DocumentRole();
+        documentRole.setDocument(meta);
+        documentRole.setPermission(Permission.EDIT);
+
+        final boolean hasUserEditAccess = accessService.hasUserPublishAccess(user, documentId);
+        assertFalse(hasUserEditAccess);
     }
 
     @Test
@@ -712,6 +860,8 @@ public class DefaultAccessServiceTest {
         rolePermissions.setGetPasswordByEmail(false);
         rolePermissions.setAccessToAdminPages(false);
         rolePermissions.setAccessToDocumentEditor(true);
+        rolePermissions.setPublishOwnDocuments(false);
+        rolePermissions.setPublishAllDocuments(false);
 
         final Role role = new RoleDTO(1, "role1");
         role.setPermissions(rolePermissions);
@@ -720,6 +870,8 @@ public class DefaultAccessServiceTest {
         rolePermissions2.setGetPasswordByEmail(true);
         rolePermissions2.setAccessToAdminPages(false);
         rolePermissions2.setAccessToDocumentEditor(false);
+        rolePermissions2.setPublishOwnDocuments(true);
+        rolePermissions2.setPublishAllDocuments(false);
 
         final Role role2 = new RoleDTO(2, "role2");
         role2.setPermissions(rolePermissions2);
@@ -738,5 +890,7 @@ public class DefaultAccessServiceTest {
         assertTrue(totalRolePermissions.isGetPasswordByEmail());
         assertFalse(totalRolePermissions.isAccessToAdminPages());
         assertTrue(totalRolePermissions.isAccessToDocumentEditor());
+        assertTrue(totalRolePermissions.isPublishOwnDocuments());
+        assertFalse(totalRolePermissions.isPublishAllDocuments());
     }
 }
