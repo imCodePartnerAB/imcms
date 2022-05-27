@@ -3,9 +3,8 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.domain.dto.DocumentRoles;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.domain.dto.RolePermissionsDTO;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.DocumentRolesService;
-import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -14,6 +13,7 @@ import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.util.Value;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +51,13 @@ public class DefaultAccessService implements AccessService {
 
     private final DocumentRolesService documentRolesService;
     private final RoleService roleService;
+    private final DocumentService documentService;
 
-    DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService) {
+    DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService,
+                         @Qualifier("defaultDocumentService") DocumentService documentService) {
         this.documentRolesService = documentRolesService;
         this.roleService = roleService;
+        this.documentService = documentService;
     }
 
     @Override
@@ -79,6 +82,15 @@ public class DefaultAccessService implements AccessService {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean hasUserPublishAccess(UserDomainObject user, int docId) {
+        if(user.isSuperAdmin()) return true;
+
+        final RolePermissions rolePermissions = getTotalRolePermissionsByUser(user);
+        return (rolePermissions.isPublishOwnDocuments() && user.getLogin().equals(documentService.get(docId).getCreated().getBy())) ||
+                (rolePermissions.isPublishAllDocuments() && getPermission(user, docId).getPermission() == Permission.EDIT);
     }
 
     @Override
@@ -116,6 +128,8 @@ public class DefaultAccessService implements AccessService {
                     if(permissions.isGetPasswordByEmail()) totalPermissions.setGetPasswordByEmail(true);
                     if(permissions.isAccessToAdminPages()) totalPermissions.setAccessToAdminPages(true);
                     if(permissions.isAccessToDocumentEditor()) totalPermissions.setAccessToDocumentEditor(true);
+                    if(permissions.isPublishOwnDocuments()) totalPermissions.setPublishOwnDocuments(true);
+                    if(permissions.isPublishAllDocuments()) totalPermissions.setPublishAllDocuments(true);
                 });
 
         return totalPermissions;
