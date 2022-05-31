@@ -4,19 +4,18 @@ import imcode.server.DocumentRequest;
 import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import org.apache.log4j.or.ObjectRenderer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class FakeRequestRenderer implements ObjectRenderer {
+public class DocumentRequestRenderer  {
 
     private final static String REDIRECT_PREFIX = "/RD";
 
     /**
      * Render a DocumentRequest as a String.
      */
-    public String doRender(Object o) {
+    public static String render(Object o) {
 
         DocumentRequest docReq = (DocumentRequest) o;
 
@@ -40,7 +39,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         return result.toString();
     }
 
-    private String renderDocument(DocumentDomainObject document) {
+	private static String renderDocument(DocumentDomainObject document) {
 
         int metaId = document.getId();
         int docType = document.getDocumentTypeId();
@@ -65,7 +64,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         return result.toString();
     }
 
-    private String lossyUrlEncode(String url) {
+    private static String lossyUrlEncode(String url) {
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < url.length(); ++i) {
             char c = url.charAt(i);
