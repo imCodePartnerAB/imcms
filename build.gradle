@@ -24,7 +24,6 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven {
         url "https://repo.imcode.com/maven2"
@@ -34,7 +33,8 @@ repositories {
 ext {
     springframeworkVersion = '5.2.22.RELEASE'
     hibernateVersion = '5.4.32.Final'
-    solrVersion = '7.2.1'
+    solrVersion = '9.0.0'
+    log4j2Version = '2.17.2'
     slf4jVersion = '1.7.36'
     junitVersion = '5.8.2'
     lombokVersion = '1.18.24'
@@ -53,7 +53,7 @@ ext {
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "com.drewnoakes:metadata-extractor:2.18.0"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
@@ -69,7 +69,9 @@ dependencies {
         exclude(module: "commons-io")
     }
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation "commons-beanutils:commons-beanutils:1.9.4"
+    implementation("commons-beanutils:commons-beanutils:1.9.4") {
+        exclude(module: "commons-logging")
+    }
     implementation "commons-dbutils:commons-dbutils:1.7"
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation("commons-validator:commons-validator:1.7") {
@@ -94,7 +96,15 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.13") {
         exclude(module: "commons-logging")
     }
-    implementation "org.apache.solr:solr-core:${solrVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4j2Version}"
+    implementation("org.apache.hadoop:hadoop-client:3.3.3") {
+        exclude(module: 'reload4j')
+        exclude(module: 'slf4j-reload4j')
+        exclude(module: "commons-logging")
+    }
+
+    implementation "org.apache.lucene:lucene-queryparser:${solrVersion}"
+    implementation("org.apache.solr:solr-core:${solrVersion}")
     implementation("org.apache.tika:tika-parsers:1.28.2") {
         exclude(module: "commons-logging")
         exclude(module: "asm")
@@ -117,7 +127,9 @@ dependencies {
     implementation "org.springframework.data:spring-data-jpa:2.3.9.RELEASE"
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
-    implementation "com.amazonaws:aws-java-sdk-s3:${awsVersion}"
+    implementation ("com.amazonaws:aws-java-sdk-s3:${awsVersion}"){
+        exclude(module: "commons-logging")
+    }
 
     //Azure AD dependencies
     implementation "com.microsoft.azure:adal4j:1.6.3"
@@ -126,7 +138,6 @@ dependencies {
     implementation "javax.el:javax.el-api:3.0.0"
     implementation "mysql:mysql-connector-java:8.0.29"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
-    testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 
     testImplementation 'com.jayway.jsonpath:json-path-assert:2.7.0'
     testImplementation 'org.dbunit:dbunit:2.7.3'
@@ -150,9 +161,10 @@ final def tmpDir = "${buildDir}/tmp/" //Directory to hold temporary data
 final def localizationLanguages = new HashMap<String, String>() //Translation Languages
 
 task initParams() {
-    mavenProps.setProperty("log4j.threshold", "info")
-    mavenProps.setProperty("log4j.hibernate.level", "error")
-    mavenProps.setProperty("log4j.console-appender.threshold", "off")
+    mavenProps.setProperty("log4j2.configuration.status", "debug")
+    mavenProps.setProperty("log4j2.root.level", "info")
+    mavenProps.setProperty("log4j2.hibernate.level", "error")
+    mavenProps.setProperty("log4j2.console-appender.level", "off")
 
     localizationLanguages.put("", "en")
     localizationLanguages.put("_sv", "sv")
@@ -232,8 +244,9 @@ task webZip(type: Zip) {
 }
 
 tasks.war {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     it.dependsOn initParams
-    it.dependsOn test
+//    it.dependsOn test
     it.dependsOn buildWeb
 }
 
@@ -306,7 +319,7 @@ war {
         include "server.properties"
         include "imcms*.properties"
         include "*.conf"
-        include "log4j.xml"
+        include "log4j2.xml"
         include "*.json"
         into "/WEB-INF/conf"
         filter(ReplaceTokens, tokens: serverProps)
@@ -368,7 +381,7 @@ war {
     webInf {
         final def versionFile = new File("${tmpDir}/version.txt")
         doFirst {
-            versionFile.text = version
+            versionFile.text = archiveVersion
         }
         from versionFile
         into "/WEB-INF/"
