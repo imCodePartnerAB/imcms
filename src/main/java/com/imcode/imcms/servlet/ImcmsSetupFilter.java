@@ -13,7 +13,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -46,7 +47,7 @@ public class ImcmsSetupFilter implements Filter {
     private static final String USER_REMOTE_ADDRESS = "userRemoteAddress";
     private static final String USER_AGENT_BROWSER = "User-Agent";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private FilterDelegate filterDelegate;
 
     public static String getDocumentIdString(ImcmsServices service, String path) {

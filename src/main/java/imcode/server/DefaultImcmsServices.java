@@ -18,14 +18,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -36,7 +29,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -51,18 +45,13 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
 
-    private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
-    private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
+    private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
+    private final static Logger log = LogManager.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
 

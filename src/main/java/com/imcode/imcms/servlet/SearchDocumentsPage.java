@@ -16,7 +16,8 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -62,7 +63,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     public static final String DATE_TYPE__ARCHIVED = "archived";
     public static final String DATE_TYPE__MODIFIED = "modified";
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
-    private final static Logger log = Logger.getLogger(SearchDocumentsPage.class.getName());
+    private final static Logger log = LogManager.getLogger(SearchDocumentsPage.class.getName());
     private String queryString;
     private String[] phases;
     private int[] documentTypeIds;

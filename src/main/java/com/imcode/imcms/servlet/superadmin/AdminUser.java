@@ -7,7 +7,8 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,7 +22,7 @@ import java.util.Properties;
 public class AdminUser extends HttpServlet {
 
     public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
-    private final static Logger log = Logger.getLogger(AdminUser.class.getName());
+    private final static Logger log = LogManager.getLogger(AdminUser.class.getName());
     private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
     private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/2006");
     private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/4/1");

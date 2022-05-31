@@ -19,7 +19,8 @@ import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 @Transactional
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
-    private final Logger LOGGER = Logger.getLogger(DefaultDocumentService.class);
+    private final Logger LOGGER = LogManager.getLogger(DefaultDocumentService.class);
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final MetaRepository metaRepository;

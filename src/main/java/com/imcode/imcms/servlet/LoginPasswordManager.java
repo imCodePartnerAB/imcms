@@ -3,7 +3,8 @@ package com.imcode.imcms.servlet;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -20,7 +21,7 @@ public class LoginPasswordManager {
     private static final int SALT_LENGTH = 16;
 
     private static final String KEY_ALGORITHM = "PBKDF2WithHmacSHA1";
-    private static Logger logger = Logger.getLogger(LoginPasswordManager.class);
+    private static Logger logger = LogManager.getLogger(LoginPasswordManager.class);
     private byte[] sharedSalt;
 
     /**

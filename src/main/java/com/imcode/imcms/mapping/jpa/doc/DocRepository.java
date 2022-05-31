@@ -11,7 +11,8 @@ import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class DocRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
                          HtmlDocContentRepository htmlDocContentRepository,

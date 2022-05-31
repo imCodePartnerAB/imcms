@@ -3,7 +3,8 @@ package imcode.server;
 import com.imcode.imcms.model.Language;
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -21,7 +22,7 @@ public class Imcms {
 
     public static final String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
 
-    private static final Logger logger = Logger.getLogger(Imcms.class);
+    private static final Logger logger = LogManager.getLogger(Imcms.class);
     private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
     private static Properties properties;
     /**

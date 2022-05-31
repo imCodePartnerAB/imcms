@@ -14,7 +14,8 @@ import net.sf.ehcache.constructs.web.Header;
 import net.sf.ehcache.constructs.web.PageInfo;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,7 +44,7 @@ import java.util.function.BooleanSupplier;
  */
 public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
-    private final static Logger logger = Logger.getLogger(PublicDocumentCacheFilter.class);
+    private final static Logger logger = LogManager.getLogger(PublicDocumentCacheFilter.class);
 
     private DocumentsCache documentsCache;
 

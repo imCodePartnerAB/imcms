@@ -13,14 +13,11 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +35,7 @@ public class TextDocument extends Document {
 
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
     private static final long serialVersionUID = -8289218319353617986L;
-    private final static Logger LOGGER = Logger.getLogger(TextDocument.class);
+    private final static Logger LOGGER = LogManager.getLogger(TextDocument.class);
 
     TextDocument(TextDocumentDomainObject textDocument,
                  ContentManagementSystem contentManagementSystem) {

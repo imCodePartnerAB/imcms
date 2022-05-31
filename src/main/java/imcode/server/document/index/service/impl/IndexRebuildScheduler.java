@@ -1,19 +1,15 @@
 package imcode.server.document.index.service.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 // translated from scala...
 public interface IndexRebuildScheduler {
 
-    Logger logger = Logger.getLogger(IndexRebuildScheduler.class);
+    Logger logger = LogManager.getLogger(IndexRebuildScheduler.class);
 
     ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1, runnable -> {
         final Thread thread = new Thread(runnable);

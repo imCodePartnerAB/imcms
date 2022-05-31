@@ -11,7 +11,8 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +34,7 @@ public class PasswordReset extends HttpServlet {
             REQUEST_PARAM_PASSWORD_CHECK = "password_check";
     // Attribute is bounded to List<String> of error messages.
     public static final String REQUEST_ATTR_VALIDATION_ERRORS = "validation_errors";
-    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
+    private static final Logger logger = LogManager.getLogger(PasswordReset.class);
     // Views
     private static final String
             identity_form_view = "identity_form.jsp",

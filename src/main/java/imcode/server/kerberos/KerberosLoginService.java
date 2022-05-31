@@ -9,7 +9,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
@@ -23,7 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class KerberosLoginService {
-    private static final Logger log = Logger.getLogger(KerberosLoginService.class);
+    private static final Logger log = LogManager.getLogger(KerberosLoginService.class);
 
     private static final String NEGOTIATE_PREFIX = "Negotiate ";
 

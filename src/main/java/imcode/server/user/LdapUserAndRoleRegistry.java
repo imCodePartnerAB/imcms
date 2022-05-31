@@ -9,21 +9,14 @@ import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.naming.CommunicationException;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * The documentMapper maps LDAP attributes to Imcms internal user object.
@@ -43,7 +36,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
      * /* Where the loginname is mapped to the attribute attribute
      * /* and the password is ignored
      */
-    private final static Logger LOG = Logger.getLogger(LdapUserAndRoleRegistry.class);
+    private final static Logger LOG = LogManager.getLogger(LdapUserAndRoleRegistry.class);
     /**
      * From person oid=2.5.6.6
      */

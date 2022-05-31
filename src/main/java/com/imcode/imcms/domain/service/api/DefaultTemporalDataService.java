@@ -10,7 +10,8 @@ import com.imcode.imcms.persistence.repository.TemporalTimeLastUseRepository;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,7 +36,7 @@ import static net.sf.ehcache.CacheManager.getCacheManager;
 @Transactional
 public class DefaultTemporalDataService implements TemporalDataService {
 
-    private final static Logger logger = Logger.getLogger(DefaultTemporalDataService.class);
+    private final static Logger logger = LogManager.getLogger(DefaultTemporalDataService.class);
     private final Integer IDENTIFIER_LAST_DATA_USE = 1;
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

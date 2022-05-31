@@ -9,7 +9,8 @@ import imcode.util.CachingFileLoader;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 @Component
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
-    private final static Logger log = Logger.getLogger(DefaultProcedureExecutor.class.getName());
+    private final static Logger log = LogManager.getLogger(DefaultProcedureExecutor.class.getName());
     private final Database database;
     private final CachingFileLoader fileLoader;
     private final Map<String, Procedure> procedureCache = CachingFileLoader.createSynchronizedMapDefaultInitialSize();

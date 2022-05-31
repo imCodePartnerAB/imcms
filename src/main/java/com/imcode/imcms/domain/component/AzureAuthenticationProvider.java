@@ -27,7 +27,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class AzureAuthenticationProvider extends AuthenticationProvider
         implements AuthenticationDataStorage {
 
-    private static final Logger log = Logger.getLogger(AzureAuthenticationProvider.class);
+    private static final Logger log = LogManager.getLogger(AzureAuthenticationProvider.class);
 
     public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     public static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";

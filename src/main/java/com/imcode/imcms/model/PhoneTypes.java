@@ -2,7 +2,8 @@ package com.imcode.imcms.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Getter
 public enum PhoneTypes implements PhoneType {
@@ -12,7 +13,7 @@ public enum PhoneTypes implements PhoneType {
     MOBILE(3, "Mobile"),
     FAX(4, "Fax"),;
 
-    private final static Logger log = Logger.getLogger(PhoneTypes.class);
+    private final static Logger log = LogManager.getLogger(PhoneTypes.class);
     @Setter
     private Integer id;
     @Setter

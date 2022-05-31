@@ -6,7 +6,8 @@ import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +20,7 @@ import java.util.Properties;
 
 public class AdminSystemInfo extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger(AdminSystemInfo.class.getName());
+    private final static Logger log = LogManager.getLogger(AdminSystemInfo.class.getName());
 
     private final static String HTML_TEMPLATE = "AdminSystemMessage.jsp";
 

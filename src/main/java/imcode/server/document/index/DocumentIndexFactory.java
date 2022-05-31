@@ -4,7 +4,8 @@ import imcode.server.Config;
 import imcode.server.document.index.service.SolrClientFactory;
 import imcode.server.document.index.service.impl.DocumentIndexRebuildService;
 import imcode.server.document.index.service.impl.DocumentIndexServiceFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import java.util.function.Function;
 @Component
 public class DocumentIndexFactory {
 
-    private static Logger logger = Logger.getLogger(DocumentIndexFactory.class);
+    private static Logger logger = LogManager.getLogger(DocumentIndexFactory.class);
     private final DocumentIndexServiceFactory documentIndexServiceFactory;
     private final Config config;
 

@@ -13,7 +13,8 @@ import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ import static imcode.server.ImcmsConstants.ENG_CODE;
 @Transactional
 class DefaultUserService implements UserService {
 
-    private final static Logger log = Logger.getLogger(DefaultUserService.class.getName());
+    private final static Logger log = LogManager.getLogger(DefaultUserService.class.getName());
 
     private final UserRepository userRepository;
     private final RoleService roleService;

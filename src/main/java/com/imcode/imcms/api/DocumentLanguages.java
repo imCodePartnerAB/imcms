@@ -3,22 +3,17 @@ package com.imcode.imcms.api;
 import com.google.common.collect.Maps;
 import com.imcode.imcms.api.exception.DocumentLanguageException;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Document language support.
  */
 public class DocumentLanguages {
 
-    public static final Logger LOG = Logger.getLogger(DocumentLanguages.class);
+    public static final Logger LOG = LogManager.getLogger(DocumentLanguages.class);
 
     private final DocumentLanguage defaultLanguage;
 

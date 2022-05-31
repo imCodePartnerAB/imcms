@@ -12,7 +12,8 @@ import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ class DefaultDocumentFileService
         extends AbstractVersionedContentService<DocumentFileJPA, DocumentFileRepository>
         implements DocumentFileService {
 
-    public static final Logger LOG = Logger.getLogger(DefaultDocumentFileService.class);
+    public static final Logger LOG = LogManager.getLogger(DefaultDocumentFileService.class);
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
     private final File filesPath;

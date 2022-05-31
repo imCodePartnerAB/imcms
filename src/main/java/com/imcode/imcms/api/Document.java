@@ -13,14 +13,15 @@ import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleGetter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Document implements Serializable {
 
-    private final static Logger log = Logger.getLogger(Document.class.getName());
+    private final static Logger log = LogManager.getLogger(Document.class.getName());
     private static final long serialVersionUID = -6934849355968513148L;
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;

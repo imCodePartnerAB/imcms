@@ -9,7 +9,8 @@ import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class DefaultIpAccessRuleService implements IpAccessRuleService {
-    private static final Logger LOG = Logger.getLogger(DefaultIpAccessRuleService.class);
+    private static final Logger LOG = LogManager.getLogger(DefaultIpAccessRuleService.class);
 
     private final IpAccessRuleRepository ipAccessRuleRepository;
     private final AccessRuleValidationActionConsumer ruleValidation;

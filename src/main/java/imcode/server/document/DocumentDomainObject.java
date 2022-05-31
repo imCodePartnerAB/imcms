@@ -16,7 +16,8 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
@@ -42,7 +43,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 9196527330127566553L;
 
-    private static Logger log = Logger.getLogger(DocumentDomainObject.class);
+    private static Logger log = LogManager.getLogger(DocumentDomainObject.class);
 
     private volatile DocumentMeta meta = new DocumentMeta();
 

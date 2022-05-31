@@ -28,7 +28,8 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -67,7 +68,7 @@ import java.util.Properties;
 })
 public class MainConfig {
 
-    private static final Logger LOG = Logger.getLogger(MainConfig.class);
+    private static final Logger LOG = LogManager.getLogger(MainConfig.class);
 
     //    Required to be able to access properties file from environment at other configs
     @Bean

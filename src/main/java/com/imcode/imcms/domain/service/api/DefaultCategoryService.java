@@ -8,7 +8,8 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ class DefaultCategoryService implements CategoryService {
 
     private final ModelMapper modelMapper;
 
-    private Logger logger = Logger.getLogger(DefaultCategoryService.class);
+    private final Logger logger = LogManager.getLogger(DefaultCategoryService.class);
 
     @Autowired
     DefaultCategoryService(CategoryRepository categoryRepository, DocumentMapper documentMapper, ModelMapper modelMapper) {
