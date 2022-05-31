@@ -21,7 +21,7 @@
     </context-param>
 
     <listener>
-        <listener-class>com.imcode.imcms.servlet.ImcmsLog4jConfigListener</listener-class>
+        <listener-class>com.imcode.imcms.servlet.ImcmsLog4j2ConfigListener</listener-class>
     </listener>
 
     <listener>
