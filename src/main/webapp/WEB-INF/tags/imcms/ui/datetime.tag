@@ -1,4 +1,5 @@
 <%@ tag import="org.apache.log4j.Logger, java.text.DateFormat, java.text.SimpleDateFormat" %>
+<%@ tag import="org.apache.logging.log4j.LogManager" %>
 <%@attribute name="value" type="java.util.Date" %>
 <%@attribute name="dateid" required="true" %>
 <%@attribute name="timeid" %>
@@ -26,7 +27,7 @@ button : "${dateid}_btn"
 </script>
 <%
     } catch (Exception e) {
-        Logger.getLogger("jsp").error("Exception in datetime.tag.", e);
+        LogManager.getLogger("jsp").error("Exception in datetime.tag.", e);
         throw e;
     }
 %> 

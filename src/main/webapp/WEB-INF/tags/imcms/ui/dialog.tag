@@ -1,4 +1,5 @@
-<%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page, org.apache.log4j.Logger" %>
+<%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page" %>
+<%@ tag import="org.apache.logging.log4j.LogManager" %>
 <%@
         attribute name="titlekey" required="true" %>
 <%@
@@ -70,7 +71,7 @@
 </html>
 <%
     } catch (Exception e) {
-        Logger.getLogger("jsp").error("Exception in dialog.tag.", e);
+        LogManager.getLogger("jsp").error("Exception in dialog.tag.", e);
         throw e;
     }
 %>

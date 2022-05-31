@@ -246,7 +246,7 @@ task webZip(type: Zip) {
 tasks.war {
     duplicatesStrategy = DuplicatesStrategy.WARN
     it.dependsOn initParams
-//    it.dependsOn test
+    it.dependsOn test
     it.dependsOn buildWeb
 }
 

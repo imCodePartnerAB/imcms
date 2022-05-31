@@ -23,8 +23,9 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
@@ -67,7 +68,7 @@ public class Utility {
     public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
     public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
     public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
-    private static final Logger log = Logger.getLogger(Utility.class.getName());
+    private static final Logger log = LogManager.getLogger(Utility.class.getName());
     private static final String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private static final LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
     private static final String LOGGED_IN_USER = "logon.isDone";
@@ -468,12 +469,12 @@ public class Utility {
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
-        NDC.push("initRequestWithApi");
-        ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser);
-        request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
-        NDC.pop();
-        return imcmsSystem;
+	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("initRequestWithApi")) {
+		    ImcmsServices service = Imcms.getServices();
+		    ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser);
+		    request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
+		    return imcmsSystem;
+	    }
     }
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
