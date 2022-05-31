@@ -218,10 +218,10 @@
           These fields support doc values, but they require the field to be
           single-valued and either be required or have a default value.
         -->
-        <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
-        <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
-        <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
-        <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldType name="int" class="solr.IntPointField"/>
+        <fieldType name="float" class="solr.FloatPointField"/>
+        <fieldType name="long" class="solr.LongPointField"/>
+        <fieldType name="double" class="solr.DoublePointField"/>
 
         <!--
          Numeric field types that index each value at various levels of precision
@@ -233,10 +233,10 @@
          indexed per value, slightly larger index size, and faster range queries.
          A precisionStep of 0 disables indexing at different precision levels.
         -->
-        <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
-        <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
-        <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
-        <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+        <fieldType name="tint" class="solr.IntPointField"/>
+        <fieldType name="tfloat" class="solr.FloatPointField"/>
+        <fieldType name="tlong" class="solr.LongPointField"/>
+        <fieldType name="tdouble" class="solr.DoublePointField"/>
 
         <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
              is a more restricted form of the canonical representation of dateTime
@@ -260,10 +260,10 @@
 
              Note: For faster range queries, consider the tdate type
           -->
-        <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldType name="date" class="solr.DatePointField"/>
 
         <!-- A Trie based date field for faster date range queries and date faceting. -->
-        <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+        <fieldType name="tdate" class="solr.DatePointField"/>
 
 
         <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->

@@ -2,7 +2,8 @@ package imcode.server.document.index.service;
 
 import com.imcode.imcms.util.Value;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -11,9 +12,11 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.common.params.CoreAdminParams;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.NodeConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static java.lang.String.format;
 
@@ -21,8 +24,9 @@ public class SolrClientFactory {
 
     public static final String DEFAULT_CORE_NAME = "core";
     public static final String DEFAULT_DATA_DIR_NAME = "data";
+	public static final String DEFAULT_CONFIGURATION_NODE = "configuration_node";
 
-    private static final Logger logger = Logger.getLogger(SolrClientFactory.class);
+    private static final Logger logger = LogManager.getLogger(SolrClientFactory.class);
 
     public static SolrClient createHttpSolrClient(String solrUrl, boolean recreateDataDir) {
         logger.info(
@@ -102,8 +106,8 @@ public class SolrClientFactory {
         }
 
 
-        CoreContainer coreContainer = Value.with(new CoreContainer(solrHome), CoreContainer::load);
-
+	    NodeConfig nodeConfig = new NodeConfig.NodeConfigBuilder(DEFAULT_CONFIGURATION_NODE, Path.of(solrHome)).build();
+	    CoreContainer coreContainer = Value.with(new CoreContainer(nodeConfig), CoreContainer::load);
         return new EmbeddedSolrServer(coreContainer, DEFAULT_CORE_NAME);
     }
 

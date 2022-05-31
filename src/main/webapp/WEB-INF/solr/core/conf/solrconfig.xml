@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-    <luceneMatchVersion>7.2.1</luceneMatchVersion>
+    <luceneMatchVersion>9.0.0</luceneMatchVersion>
 
     <!-- Data Directory
 
@@ -89,7 +89,7 @@
                autowarmCount - the number of entries to prepopulate from
                    and old cache.
           -->
-        <filterCache class="solr.FastLRUCache"
+        <filterCache class="solr.search.CaffeineCache"
                      size="512"
                      initialSize="512"
                      autowarmCount="0"/>
@@ -99,7 +99,7 @@
              Caches results of searches - ordered lists of document ids
              (DocList) based on a query, a sort, and the range of documents requested.
           -->
-        <queryResultCache class="solr.LRUCache"
+        <queryResultCache class="solr.search.CaffeineCache"
                           size="512"
                           initialSize="512"
                           autowarmCount="0"/>
@@ -111,7 +111,7 @@
              document).  Since Lucene internal document ids are transient,
              this cache will not be autowarmed.
           -->
-        <documentCache class="solr.LRUCache"
+        <documentCache class="solr.search.CaffeineCache"
                        size="512"
                        initialSize="512"
                        autowarmCount="0"/>
