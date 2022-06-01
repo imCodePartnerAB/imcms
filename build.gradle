@@ -161,7 +161,7 @@ final def tmpDir = "${buildDir}/tmp/" //Directory to hold temporary data
 final def localizationLanguages = new HashMap<String, String>() //Translation Languages
 
 task initParams() {
-    mavenProps.setProperty("log4j2.configuration.status", "debug")
+    mavenProps.setProperty("log4j2.configuration.status", "info")
     mavenProps.setProperty("log4j2.root.level", "info")
     mavenProps.setProperty("log4j2.hibernate.level", "error")
     mavenProps.setProperty("log4j2.console-appender.level", "off")
@@ -261,8 +261,8 @@ lombok {
 idea {
     module {
         inheritOutputDirs = false
-        outputDir = compileJava.destinationDir
-        testOutputDir = compileTestJava.destinationDir
+        outputDir = compileJava.destinationDirectory.getAsFile().get()
+        testOutputDir = compileTestJava.destinationDirectory.getAsFile().get()
     }
 }
 
@@ -293,8 +293,8 @@ test {
             from "${buildDir}/resources/main"
             into "${buildDir}/classes/java/test"
         }
-        useJUnitPlatform()
     }
+    useJUnitPlatform()
 }
 
 war {

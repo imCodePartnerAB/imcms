@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<Configuration status="${log4j2.configuration.status}">
+<Configuration status="info">
 	<Appenders>
 		<Console name="stdout-appender" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %c{1}: %m%n" charset="UTF-8"/>
@@ -63,12 +63,12 @@
 			<AppenderRef ref="TESTFILE"/>
 		</Logger>
 
-		<Logger name="org.hibernate.type" level="${log4j2.hibernate.level}" additivity="false">
+		<Logger name="org.hibernate.type" level="error" additivity="false">
 			<AppenderRef ref="CONSOLE"/>
 			<AppenderRef ref="TESTFILE"/>
 		</Logger>
 
-		<Logger name="org.hibernate.sql" level="${log4j2.hibernate.level}" additivity="false">
+		<Logger name="org.hibernate.sql" level="error" additivity="false">
 			<AppenderRef ref="CONSOLE"/>
 			<AppenderRef ref="TESTFILE"/>
 		</Logger>
@@ -111,8 +111,8 @@
 			<AppenderRef ref="TESTFILE"/>
 		</Logger>
 
-		<Root level="${log4j2.root.level}">
-			<AppenderRef ref="CONSOLE" level="${log4j2.console-appender.level}"/>
+		<Root level="info">
+			<AppenderRef ref="CONSOLE" level="off"/>
 			<AppenderRef ref="TESTFILE"/>
 		</Root>
 	</Loggers>
