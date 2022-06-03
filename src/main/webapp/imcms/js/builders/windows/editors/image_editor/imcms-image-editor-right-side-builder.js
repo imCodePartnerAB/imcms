@@ -725,18 +725,17 @@ define(
                         });
                 }
 
-                if (resultStyleObj['max-width'] || resultStyleObj['max-height']) {
-                    buildRestrictedWidthStyle('max-width', resultStyleObj['max-width']);
-                    buildRestrictedHeightStyle('max-height', resultStyleObj['max-height']);
+                if (resultStyleObj['max-width'] || resultStyleObj['max-height'] || resultStyleObj.width || resultStyleObj.height) {
                     isRestrictedWHStyles = true;
-                } else {
-                    if (resultStyleObj.width || resultStyleObj.height) {
-                        buildRestrictedWidthStyle('width', resultStyleObj.width);
-                        buildRestrictedHeightStyle('height', resultStyleObj.height);
-                        isRestrictedWHStyles = true;
-                    }
-                }
+                    //init both fields
+                    buildRestrictedWidthStyle();
+                    buildRestrictedHeightStyle();
 
+                    if(resultStyleObj['max-width']) buildRestrictedWidthStyle('max-width', resultStyleObj['max-width']);
+                    if(resultStyleObj.width) buildRestrictedWidthStyle('width', resultStyleObj.width);
+                    if(resultStyleObj['max-height']) buildRestrictedHeightStyle('max-height', resultStyleObj['max-height']);
+                    if(resultStyleObj.height) buildRestrictedHeightStyle('height', resultStyleObj.height);
+                }
 
                 const $restrictStyleInfo = buildRestrictedStyleInfoContainer(isRestrictedWHStyles);
                 const $infoImage = buildInfoSizePathContainer();
