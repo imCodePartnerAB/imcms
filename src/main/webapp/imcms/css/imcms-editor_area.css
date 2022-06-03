@@ -44,12 +44,12 @@
 .imcms-toolbar-label::before {
     content: ' ';
     display: block;
-    width: 35px;
-    height: 17px;
+    width: 36px;
+    height: 14px;
     position: absolute;
     top: 3px;
     left: 3px;
-    background: transparent url(/imcms/images/icon_logo_main.png) 0 0 no-repeat;
+    background: transparent url(/imcms/images/icon_logo_main_white.png) 0 0 no-repeat;
     background-size: cover;
 }
 
@@ -76,6 +76,14 @@
 
 .imcms-editor-area--image {
     width: auto;
+}
+
+.imcms-editor-area--image > .imcms-editor-area__text-label{
+    word-break: break-word;
+}
+
+.imcms-editor-area--image > .imcms-editor-area__text-label + .imcms-editor-area__content{
+    min-width: 130px;
 }
 
 .imcms-editor-area__content-wrap,

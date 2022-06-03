@@ -24,12 +24,12 @@
 }
 
 .imcms-login__logo {
-    background: url(/imcms/images/icon_logo_main.png) no-repeat 0 0;
+    background: url(/imcms/images/icon_logo_main_white.png) no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
     position: absolute;
-    top: 4px;
+    top: 7px;
     left: 20px;
     height: 100%;
     width: 69px;

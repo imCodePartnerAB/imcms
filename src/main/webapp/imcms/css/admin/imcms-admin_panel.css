@@ -38,7 +38,7 @@
 }
 
 .imcms-admin-panel__logo {
-    background: url("/imcms/images/icon_logo_main.png") no-repeat 0 0;
+    background: url("/imcms/images/icon_logo_main_black.png") no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
