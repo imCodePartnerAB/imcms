@@ -20,7 +20,7 @@ public class CategoryTypeDTO extends CategoryType {
 
     private boolean inherited;
 
-    private boolean visible = true; //visible in page info doc, default value true
+    private boolean visible;
 
     public CategoryTypeDTO(CategoryType from) {
         super(from);
