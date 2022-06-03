@@ -485,6 +485,7 @@ const texts = {
                 crop: "Förinställt",
                 activeTitle: 'Aktiv bild:',
                 noSelectedImage: 'Ingen bild vald!',
+                editInNewWindow: 'Redigera i nytt fönster',
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -1493,6 +1494,7 @@ const texts = {
                 crop: "Crop",
                 activeTitle: 'Active image:',
                 noSelectedImage: 'No image selected!',
+                editInNewWindow: 'Edit in new window',
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",

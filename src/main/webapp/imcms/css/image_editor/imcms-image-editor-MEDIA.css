@@ -100,10 +100,6 @@
 }
 
 @media screen and (max-width: 900px) {
-    .common-info-image {
-        width: auto;
-    }
-
     .image-editor-info {
         width: calc(90% - 420px);
     }

@@ -52,24 +52,36 @@ module.exports = {
     },
     updateImageData: ($tag, imageData) => {
         const labelText = $tag.find('.imcms-editor-area__text-label').text();
-        let linkData;
-
-        $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
-        ${texts.imageName}${$tag.attr('data-index')} - 
-        ${texts.teaser} ${labelText}`);
-
-        if ($tag.attr('data-loop-index')) {
-            linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
-                + '&index=' + $tag.attr('data-index')
-                + '&loop-index=' + $tag.attr('data-loop-index')
-                + '&loop-entry-index=' + $tag.attr('data-loop-entry-index');
-        } else {
-            linkData = '/api/admin/image?meta-id='
-                + $tag.attr('data-doc-id')
-                + '&index=' + $tag.attr('data-index');
+        if(labelText){
+            $infoData.text(labelText);
+        }else{
+            $infoData.text(`${texts.title} - ${texts.page} ${$tag.attr('data-doc-id')}, 
+            ${texts.imageName}${$tag.attr('data-index')} - ${texts.teaser}`);
         }
 
-        $imageLinkInfo.text(linkData);
+        let linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
+            + '&index=' + $tag.attr('data-index');
+
+        if ($tag.attr('data-loop-index')) {
+            linkData += '&loop-index=' + $tag.attr('data-loop-index')
+                + '&loop-entry-index=' + $tag.attr('data-loop-entry-index');
+        }
+        if ($tag.data('style')) {
+            const style = $tag.data('style');
+            style.split(';')
+                .map(x => x.trim())
+                .filter(x => !!x)
+                .forEach(x => {
+                    const styleKeyAndValue = x.split(':').map(x => x.trim());
+                    const value = styleKeyAndValue[1].replace(/(?<=\d)px/, ""); //100px -> 100
+                    linkData += '&'+styleKeyAndValue[0]+'='+value;
+                });
+        }
+        if(labelText){
+            linkData += '&label=' + labelText;
+        }
+
+        $imageLinkInfo.text(texts.editInNewWindow);
         $imageLinkInfo.attr('href', linkData);
         $('.imcms-image_editor').find('.image-editor-info__icon-link').attr('href', linkData);
         rightSideBuilder.updateImageData($tag, imageData);

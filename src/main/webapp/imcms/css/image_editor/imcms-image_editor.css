@@ -1,7 +1,7 @@
 .common-info-image {
-    width: 50%;
     padding-left: 95px;
     min-width: 350px;
+    text-transform: none;
 }
 
 .image-editor-info {
@@ -13,6 +13,7 @@
 .image-editor-info__data-link{
     max-width: 100%;
     white-space: nowrap;
+    text-transform: none;
     overflow: hidden;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
@@ -27,6 +28,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: auto;
+}
+
+.imcms-image_editor .imcms-head__title{
+    place-content: space-between;
 }
 
 .imcms-image_editor__image-characteristics {
