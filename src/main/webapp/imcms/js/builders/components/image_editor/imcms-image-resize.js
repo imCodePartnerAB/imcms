@@ -116,7 +116,7 @@ function setWidthProportionally(newWidth, isOriginal) {
 }
 
 function updateWidthProportionally(newHeight, isOriginal) {
-	const proportionalWidth = trimToMaxMinWidth(newHeight * proportionsCoefficient);
+	const proportionalWidth = ~~(newHeight * proportionsCoefficient);
 	const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
 	(fixedWidth === proportionalWidth)
@@ -125,7 +125,7 @@ function updateWidthProportionally(newHeight, isOriginal) {
 }
 
 function updateHeightProportionally(newWidth, isOriginal) {
-	const proportionalHeight = Math.trunc(newWidth / proportionsCoefficient);
+	const proportionalHeight = ~~(newWidth / proportionsCoefficient);
 	const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
 	(fixedHeight === proportionalHeight)
