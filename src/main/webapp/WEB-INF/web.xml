@@ -92,6 +92,12 @@
     </filter>
 
     <filter>
+        <display-name>XSS Protection Filter</display-name>
+        <filter-name>XSSProtectionFilter</filter-name>
+        <filter-class>com.imcode.imcms.filters.xss.XSSProtectionFilter</filter-class>
+    </filter>
+
+    <filter>
         <display-name>Imcms Setup Filter</display-name>
         <filter-name>ImcmsSetupFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
@@ -152,6 +158,11 @@
 
     <filter-mapping>
         <filter-name>OtherContentCacheSupervisor</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CSRFProtectionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
