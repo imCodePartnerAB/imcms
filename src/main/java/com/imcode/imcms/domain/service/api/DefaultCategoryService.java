@@ -7,14 +7,12 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
-import org.apache.commons.lang.CharEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.HtmlUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +53,7 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category save(Category saveMe) {
-        saveMe.setName(HtmlUtils.htmlEscape(saveMe.getName(), CharEncoding.UTF_8));
+        saveMe.setName(saveMe.getName());
         return new CategoryDTO(categoryRepository.save(modelMapper.map(saveMe, CategoryJPA.class)));
     }
 
@@ -63,7 +61,7 @@ class DefaultCategoryService implements CategoryService {
     public Category update(Category updateMe) {
 	    final Category receivedCategory = categoryRepository.getOne(updateMe.getId());
         receivedCategory.setId(updateMe.getId());
-        receivedCategory.setName(HtmlUtils.htmlEscape(updateMe.getName(), CharEncoding.UTF_8));
+        receivedCategory.setName(updateMe.getName());
         receivedCategory.setDescription(updateMe.getDescription());
         receivedCategory.setType(updateMe.getType());
         final Category updatedCategory = categoryRepository.saveAndFlush(modelMapper.map(receivedCategory, CategoryJPA.class));
