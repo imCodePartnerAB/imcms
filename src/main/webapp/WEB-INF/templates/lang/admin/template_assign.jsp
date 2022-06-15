@@ -29,31 +29,8 @@
                        onClick="openHelpW('TemplateAssign')"></td>
         </tr>
     </form>
-    <tr>
-        <td class="imcmsAdmText"><? templates/sv/template_assign.html/3 ?></td>
-    </tr>
     <form name="TemplateAdmin" action="TemplateAdmin" method="post">
         <input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
-        <tr>
-            <td>
-                <input type="submit" class="imcmsFormBtnSub" name="add_template"
-                       value="<? templates/sv/template_assign.html/2001 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="delete_template"
-                       value="<? templates/sv/template_assign.html/2002 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="rename_template"
-                       value="<? templates/sv/template_assign.html/2003 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="get_template"
-                       value="<? templates/sv/template_assign.html/2004 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="edit_template"
-                       value="<? templates/sv/template_assign.html/2005 ?>"><br>
-                <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-                <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate"
-                       value="<? templates/sv/template_assign.html/2006 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="show_templates"
-                       value="<? templates/sv/template_assign.html/2007 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="change_availability_template"
-                       value="<? templates/sv/template_admin.html/2012 ?>"></td>
-        </tr>
         <tr>
             <td class="imcmsAdmText"><? templates/sv/template_assign.html/4 ?></td>
         </tr>
@@ -107,9 +84,6 @@
             <td colspan="2">
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
-                        <td width="45%" class="imcmsAdmText"
-                            align="right"><? templates/sv/template_assign.html/10 ?></td>
-                        <td>&nbsp;</td>
                         <td width="45%" class="imcmsAdmText"><? templates/sv/template_assign.html/11 ?></td>
                     </tr>
                     <tr>

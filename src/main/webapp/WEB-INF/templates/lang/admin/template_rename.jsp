@@ -29,32 +29,8 @@
                        onClick="openHelpW('TemplateName')"></td>
         </tr>
     </form>
-    <tr>
-        <td class="imcmsAdmText"><? templates/sv/template_rename.html/3 ?></td>
-    </tr>
     <form name="TemplateAdmin" action="TemplateAdmin" method="post">
         <input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
-        <tr>
-            <td>
-                <input type="submit" class="imcmsFormBtnSub" name="add_template"
-                       value="<? templates/sv/template_rename.html/2001 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="delete_template"
-                       value="<? templates/sv/template_rename.html/2002 ?>">
-                <input type="submit" class="imcmsFormBtnSubDisabled" name="rename_template"
-                       value="<? templates/sv/template_rename.html/2003 ?>" disabled="disabled">
-                <input type="submit" class="imcmsFormBtnSub" name="get_template"
-                       value="<? templates/sv/template_rename.html/2004 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="edit_template"
-                       value="<? templates/sv/template_rename.html/2005 ?>"><br>
-                <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-                <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate"
-                       value="<? templates/sv/template_rename.html/2006 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="show_templates"
-                       value="<? templates/sv/template_rename.html/2007 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="change_availability_template"
-                       value="<? templates/sv/template_admin.html/2012 ?>">
-            </td>
-        </tr>
         <tr>
             <td class="imcmsAdmText"><? templates/sv/template_rename.html/4 ?></td>
         </tr>

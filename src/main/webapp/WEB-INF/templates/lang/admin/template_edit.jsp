@@ -10,18 +10,6 @@
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 
-    <script language="JavaScript">
-        <!--
-        function editFile() {
-            var f = document.forms.TemplateEdit;
-            var sTemplateUrl = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value;
-            var sTemplateName = f.template.options[f.template.selectedIndex].text;
-            popWinOpen(800, 570, "${contextPath}/imcms/${language}/jsp/FileAdmin_edit.jsp?template=true&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName), "templateEdit", 0, 0);
-        }
-
-        //-->
-    </script>
-
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(2,'template')">
 
@@ -40,31 +28,8 @@
                        onClick="openHelpW('TemplateEdit')"></td>
         </tr>
     </form>
-    <tr>
-        <td class="imcmsAdmText"><b class="white"><? templates/sv/template_edit.html/2 ?></b></td>
-    </tr>
     <form name="TemplateAdmin" action="TemplateAdmin" method="post">
         <input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
-        <tr>
-            <td>
-                <input type="submit" class="imcmsFormBtnSub" name="add_template"
-                       value="<? templates/sv/template_edit.html/2001 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="delete_template"
-                       value="<? templates/sv/template_edit.html/2002 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="rename_template"
-                       value="<? templates/sv/template_edit.html/2003 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="get_template"
-                       value="<? templates/sv/template_edit.html/2004 ?>">
-                <input type="submit" class="imcmsFormBtnSubDisabled" name="edit_template"
-                       value="<? templates/sv/template_edit.html/2005 ?>" disabled="disabled"><br>
-                <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-                <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate"
-                       value="<? templates/sv/template_edit.html/2006 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="show_templates"
-                       value="<? templates/sv/template_edit.html/2007 ?>">
-                <input type="submit" class="imcmsFormBtnSub" name="change_availability_template"
-                       value="<? templates/sv/template_admin.html/2012 ?>"></td>
-        </tr>
         <tr>
             <td class="imcmsAdmText"><b class="white"><? templates/sv/template_edit.html/3 ?></b></td>
         </tr>
@@ -112,8 +77,6 @@
         </tr>
         <tr>
             <td colspan="2" align="right">
-                <input type="button" class="imcmsFormBtn" name="template_edit"
-                       value="<? templates/sv/template_edit.html/2014 ?>" onClick="editFile(); return false">
                 <input type="button" class="imcmsFormBtn" name="back" value="<? templates/sv/template_edit.html/2015 ?>"
                        onClick="document.location = 'TemplateAdmin'; return false"></td>
         </tr>
