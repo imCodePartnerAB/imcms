@@ -50,13 +50,6 @@ public class TemplateChange extends HttpServlet {
         setRequestForChecking(request);
         if (checkNotNull("cancel")) {
             response.sendRedirect("TemplateAdmin");
-        } else if (checkNotNull("template_get")) {
-            downloadTemplate(request, imcref, response);
-        } else if (checkNotNull("template_delete_cancel")) {
-            htmlStr = TemplateAdmin.createDeleteTemplateDialog(templateMapper, user, lang, request, response);
-        } else if (checkNotNull("template_delete")) {
-            deleteTemplate(request, imcref);
-            htmlStr = TemplateAdmin.createDeleteTemplateDialog(templateMapper, user, lang, request, response);
         } else if (checkNotNull("assign")) {
             htmlStr = addTemplatesToGroup(request, templateMapper, lang, response);
         } else if (checkNotNull("deassign")) {
@@ -66,12 +59,6 @@ public class TemplateChange extends HttpServlet {
             TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById(templateGroupId);
             htmlStr = TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper,
                     templateGroup, lang, request, response);
-        } else if (checkNotNull("template_rename")) {
-            htmlStr = renameTemplate(request, templateMapper, lang, user, response);
-        } else if (checkNotNull("change_availability_template")) {
-            htmlStr = changeAvailabilityTemplate(request, templateMapper, lang, user, response);
-        } else if (checkNotNull("template_delete_check")) {
-            htmlStr = deleteTemplateAfterCheckingUsage(request, imcref, lang, user, response);
         } else if (checkNotNull("group_delete_check")) {
             htmlStr = deleteTemplateGroupAfterCheckingUsage(request, response);
         } else if (checkNotNull("group_delete")) {
@@ -83,8 +70,6 @@ public class TemplateChange extends HttpServlet {
             htmlStr = addTemplateGroup(request, response, imcref);
         } else if (checkNotNull("group_rename")) {
             htmlStr = renameTemplateGroup(request, imcref, lang, response);
-        } else if (checkNotNull("list_templates_docs")) {
-            htmlStr = listDocumentsUsingTemplate(request, imcref, lang, response, user);
         } else if (checkNotNull("show_doc")) {
             htmlStr = showDocument(request, response, imcref, lang, user);
         }
@@ -156,17 +141,6 @@ public class TemplateChange extends HttpServlet {
         return Utility.getAdminContents("templategroup_add_name_blank.jsp", request, response);
     }
 
-    private String createDocumentsUsingTemplateDialog(ImcmsServices imcref, UserDomainObject user,
-                                                      TemplateDomainObject template, String lang,
-                                                      HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("template_list", imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
-        if (template != null) {
-            request.setAttribute("templates_docs", TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
-        }
-        request.setAttribute("language", lang);
-        return Utility.getAdminContents("template_list.jsp", request, response);
-    }
-
     private String createRenameNameEmptyErrorDialog(String lang, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("language", lang);
         return Utility.getAdminContents("template_rename_name_blank.jsp", request, response);
@@ -176,6 +150,8 @@ public class TemplateChange extends HttpServlet {
         return Utility.getAdminContents("templategroup_add_exists.jsp", request, response);
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private void deleteTemplate(HttpServletRequest req, ImcmsServices imcref) {
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         String new_temp_id = req.getParameter("new_template");
@@ -187,6 +163,8 @@ public class TemplateChange extends HttpServlet {
         templateMapper.deleteTemplate(template);
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String deleteTemplateAfterCheckingUsage(HttpServletRequest req, ImcmsServices imcref, String lang,
                                                     UserDomainObject user, HttpServletResponse res) throws IOException, ServletException {
         TemplateMapper templateMapper = imcref.getTemplateMapper();
@@ -232,6 +210,8 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private void downloadTemplate(HttpServletRequest req, ImcmsServices imcref, HttpServletResponse res
     ) throws IOException {
         String template_id = req.getParameter("template");
@@ -246,13 +226,8 @@ public class TemplateChange extends HttpServlet {
         out.flush();
     }
 
-    private String listDocumentsUsingTemplate(HttpServletRequest req, ImcmsServices imcref, String lang,
-                                              HttpServletResponse res, UserDomainObject user) throws ServletException, IOException {
-        String templateId = req.getParameter("template");
-        TemplateDomainObject template = imcref.getTemplateMapper().getTemplateByName(templateId);
-        return createDocumentsUsingTemplateDialog(imcref, user, template, lang, req, res);
-    }
-
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String renameTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                   UserDomainObject user, HttpServletResponse res) throws IOException, ServletException {
         String htmlStr;
@@ -271,6 +246,8 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String changeAvailabilityTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                               UserDomainObject user, HttpServletResponse res) throws IOException, ServletException {
         String htmlStr;
@@ -302,14 +279,13 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String showDocument(HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
-                                String lang, UserDomainObject user) throws IOException, ServletException {
+                                String lang, UserDomainObject user) throws IOException {
         String meta_id = req.getParameter("templates_doc");
-        String htmlStr = null;
+        String htmlStr = "AdminDoc?meta_id=" + meta_id;
         if (meta_id != null) {
             res.sendRedirect("AdminDoc?meta_id=" + meta_id);
-        } else {
-            htmlStr = createDocumentsUsingTemplateDialog(imcref, user, null, lang, req, res);
         }
+
         return htmlStr;
     }
 

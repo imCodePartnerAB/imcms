@@ -31,7 +31,6 @@ public class TemplateAdmin extends HttpServlet {
     private static final String ADMIN_TEMPLATE_AVALIABILITY = "template_availability.jsp";
     private static final String TEMPLATE_DELETE = "template_delete.jsp";
     private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_upload.jsp";
-    private static final String TEMPLATE_UPLOAD = "template_upload.jsp";
     private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.jsp";
     private static final String TEMPLATE_ASSIGN = "template_assign.jsp";
     private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.jsp";
@@ -219,20 +218,6 @@ public class TemplateAdmin extends HttpServlet {
         if (req.getParameter("cancel") != null) {
             res.sendRedirect("AdminManager");
             return;
-        } else if (req.getParameter("add_template") != null) {
-            htmlStr = createUploadTemplateDialog(templateMapper, lang, req, res);
-        } else if (req.getParameter("add_demotemplate") != null) {
-            htmlStr = createUploadDemoTemplateDialog(lang, templateMapper, req, res);
-        } else if (req.getParameter("delete_template") != null) {
-            htmlStr = createDeleteTemplateDialog(templateMapper, user, lang, req, res);
-        } else if (req.getParameter("rename_template") != null) {
-            htmlStr = createRenameTemplateDialog(lang, templateMapper, req, res, user, null);
-        } else if (req.getParameter("change_availability_template") != null) {
-            htmlStr = createChangeAvailabilityTemplateDialog(lang, templateMapper, req, res, user, null);
-        } else if (req.getParameter("get_template") != null) {
-            htmlStr = createDownloadTemplateDialog(lang, templateMapper, req, res);
-        } else if (req.getParameter("edit_template") != null) {
-            htmlStr = createEditTemplateDialog(lang, templateMapper, req, res);
         } else if (req.getParameter("add_group") != null) {
             htmlStr = createAddGroupDialog(req, res);
         } else if (req.getParameter("delete_group") != null) {
@@ -241,18 +226,8 @@ public class TemplateAdmin extends HttpServlet {
             htmlStr = createRenameTemplateGroupDialog(templateMapper, req, res);
         } else if (req.getParameter("assign_group") != null) {
             htmlStr = createAssignTemplateGroupDialog(lang, templateMapper, req, res);
-        } else if (req.getParameter("show_templates") != null) {
-            htmlStr = createListTemplatesDialog(templateMapper, user, lang, req, res);
         }
         out.print(htmlStr);
-    }
-
-    private String createListTemplatesDialog(TemplateMapper templateMapper, UserDomainObject user, String lang,
-                                             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String templateList = templateMapper.createHtmlOptionListOfTemplatesWithDocumentCount(user);
-        langTag(lang, request);
-        request.setAttribute("template_list", templateList);
-        return Utility.getAdminContents("template_list.jsp", request, response);
     }
 
     private String createAssignTemplateGroupDialog(String lang, TemplateMapper templateMapper,
@@ -260,18 +235,24 @@ public class TemplateAdmin extends HttpServlet {
         return createAssignTemplatesToGroupDialog(templateMapper, null, lang, req, res);
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String createEditTemplateDialog(String lang, TemplateMapper templateMapper,
                                             HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         createShortTemplateDialog(lang, request, templateMapper);
         return Utility.getAdminContents(ADMIN_TEMPLATE_EDIT, request, response);
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String createDownloadTemplateDialog(String lang, TemplateMapper templateMapper, HttpServletRequest request,
                                                 HttpServletResponse response) throws IOException, ServletException {
         createShortTemplateDialog(lang, request, templateMapper);
         return Utility.getAdminContents("template_get.jsp", request, response);
     }
 
+    //Not used due to IMCMS-634 P1-RB4-security: Arbitrary file upload vulnerability in TemplateAdd
+    @Deprecated
     private String createUploadDemoTemplateDialog(String lang, TemplateMapper templateMapper,
                                                   HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         langTag(lang, request);
@@ -279,13 +260,5 @@ public class TemplateAdmin extends HttpServlet {
         String templatesList = templateMapper.createHtmlOptionListOfTemplates(templates, null);
         request.setAttribute("templates", templatesList);
         return Utility.getAdminContents(TEMPLATE_DEMO_UPLOAD, request, response);
-    }
-
-    private String createUploadTemplateDialog(TemplateMapper templateMapper, String lang, HttpServletRequest request,
-                                              HttpServletResponse response) throws ServletException, IOException {
-        langTag(lang, request);
-        String temps = templateMapper.createHtmlOptionListOfTemplateGroups(null);
-        request.setAttribute("templategroups", temps);
-        return Utility.getAdminContents(TEMPLATE_UPLOAD, request, response);
     }
 }
