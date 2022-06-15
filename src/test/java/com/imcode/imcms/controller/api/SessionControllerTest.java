@@ -7,7 +7,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -24,11 +23,6 @@ class SessionControllerTest extends AbstractControllerTest {
     @Override
     protected String controllerPath() {
         return "/sessions";
-    }
-
-    @AfterEach
-    private void cleanSessionsData() {
-        Utility.clearActiveSessionsData();
     }
 
     @Test

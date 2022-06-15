@@ -155,7 +155,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
                 && isNotArchivedYet(meta)
                 && isNotUnPublishedYet(meta)
                 && isAlreadyPublished(meta)
-                && (meta.getVisible() || Imcms.getUser().hasUserAccessToDoc(meta))
+                && Imcms.getUser().hasUserAccessToDoc(meta)
         );
     }
 

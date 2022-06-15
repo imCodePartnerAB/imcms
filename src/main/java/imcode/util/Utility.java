@@ -464,8 +464,8 @@ public class Utility {
                 .collect(Collectors.toList());
     }
 
-    public static void clearActiveSessionsData() {
-        sessions.clear();
+    public static boolean userHasActiveSession(Integer id){
+        return getActiveSessions().stream().anyMatch(info -> info.getUserId() == id);
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
