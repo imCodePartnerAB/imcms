@@ -381,7 +381,7 @@ war {
     webInf {
         final def versionFile = new File("${tmpDir}/version.txt")
         doFirst {
-            versionFile.text = archiveVersion
+            versionFile.text = project.version
         }
         from versionFile
         into "/WEB-INF/"
