@@ -1,5 +1,5 @@
 <%@ page language="java"
-	
+
 	import="imcode.server.Imcms,
 	        imcode.util.Utility,
 	        org.apache.commons.text.StringEscapeUtils,
@@ -29,6 +29,7 @@ String acceptedExtPattern = "/" +
  ******************************************************************* */
 
 String file       = request.getParameter("file") ;
+if(file != null && file.contains("../")) return;
 
 String frame      = (request.getParameter("frame") != null) ? request.getParameter("frame") : "FRAME" ;
 String thisPage = request.getContextPath() + request.getServletPath();
