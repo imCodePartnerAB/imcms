@@ -2,6 +2,7 @@ package imcode.util;
 
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.components.CSRFTokenManager;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
@@ -65,23 +66,30 @@ public class Utility {
     public static final ResultSetHandler<Boolean> SINGLE_BOOLEAN_HANDLER = new SingleObjectHandler<>(new BooleanFromRowFactory());
     public static final ResultSetHandler<String[]> STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+
     public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
     public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
     public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
+
     private static final Logger log = LogManager.getLogger(Utility.class.getName());
     private static final String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private static final LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
     private static final String LOGGED_IN_USER = "logon.isDone";
+
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
+
     private static final Map<String, SessionInfoDTO> sessions = new HashMap<>();
+
     private static TextContentFilter textContentFilter;
     private static ImcmsServices services;
+    private static CSRFTokenManager csrfTokenManager;
 
-    public Utility(TextContentFilter textContentFilter, ImcmsServices services) {
+    public Utility(TextContentFilter textContentFilter, ImcmsServices services, CSRFTokenManager csrfTokenManager) {
         Utility.textContentFilter = textContentFilter;
         Utility.services = services;
+        Utility.csrfTokenManager = csrfTokenManager;
     }
 
     public static TextContentFilter getTextContentFilter() {
@@ -428,7 +436,7 @@ public class Utility {
         }
     }
 
-    public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
+    public static void makeUserLoggedIn(HttpServletRequest req, HttpServletResponse res, UserDomainObject user) {
         if (null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired()) {
             return;
         }
@@ -443,16 +451,17 @@ public class Utility {
         sessionInfoDTO.setIp(req.getRemoteAddr());
         sessionInfoDTO.setLoginDate(loginDateTime);
         sessionInfoDTO.setExpireDate(loginDateTime.plusSeconds(req.getSession().getMaxInactiveInterval()));
-
         sessions.put(currentSession.getId(), sessionInfoDTO);
 
+        csrfTokenManager.setUserToken(req, res);
         req.getSession().setAttribute(LOGGED_IN_USER, user);
     }
 
-    public static void makeUserLoggedOut(HttpServletRequest req) {
+    public static void makeUserLoggedOut(HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(false);
         if (session != null) {
             sessions.remove(session.getId());
+            csrfTokenManager.deleteUserToken(req, res);
             session.invalidate();
         }
     }
@@ -521,7 +530,7 @@ public class Utility {
         response.addCookie(cookie);
     }
 
-    private static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
         String serverName = request.getServerName();
         if (!IP_PATTERN.matcher(serverName).matches()) {
             Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
