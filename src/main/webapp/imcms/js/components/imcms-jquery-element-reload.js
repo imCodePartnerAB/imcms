@@ -14,10 +14,10 @@ define("imcms-jquery-element-reload", ["imcms-jquery-string-selector"], function
             reloadStringCommand = location.href + " " + elementAsStr + ">*";
 
         if ((callback) && (typeof callback === "function")) {
-            $reloadMe.load(reloadStringCommand, callback);
+            $reloadMe.on("load",reloadStringCommand, callback);
 
         } else {
-            $reloadMe.load(reloadStringCommand);
+            $reloadMe.on("load",reloadStringCommand);
         }
     }
 });

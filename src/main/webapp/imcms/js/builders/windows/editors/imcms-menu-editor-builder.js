@@ -924,7 +924,7 @@ define("imcms-menu-editor-builder",
                 $moveControl = components.controls.vertical_move();
             }
             $moveControl.on("mousedown", dragMenuItem);
-            $numberingTypeSortFlag.isChecked() ? $moveControl.hide() : $moveControl.show();
+            $numberingTypeSortFlag.isChecked() ? $moveControl.css("display", "none") : $moveControl.css("display", "block");
 
             return components.controls.buildControlsBlock("<div>", [$moveControl]);
         }
