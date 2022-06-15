@@ -28,6 +28,7 @@ import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
 
 import javax.servlet.RequestDispatcher;
@@ -409,6 +410,22 @@ public class Utility {
         }
     }
 
+    public static String escapeValue(String value) {
+        return HtmlUtils.htmlEscape(value);
+    }
+
+    public static String escapeValue(String value, String... exceptSymbols) {
+        String escapedValue = HtmlUtils.htmlEscape(value);
+        for(String symbol: exceptSymbols){
+            escapedValue = escapedValue.replace(HtmlUtils.htmlEscape(symbol), symbol);
+        }
+        return escapedValue;
+    }
+
+    public static String unescapeValue(String value) {
+        return HtmlUtils.htmlUnescape(value);
+    }
+
     public static Date addDate(Date date, int i) {
         if (null == date) {
             return null;
@@ -478,12 +495,12 @@ public class Utility {
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
-	    try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("initRequestWithApi")) {
-		    ImcmsServices service = Imcms.getServices();
-		    ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser);
-		    request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
-		    return imcmsSystem;
-	    }
+        try (CloseableThreadContext.Instance ignored = CloseableThreadContext.push("initRequestWithApi")) {
+            ImcmsServices service = Imcms.getServices();
+            ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser);
+            request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
+            return imcmsSystem;
+        }
     }
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
