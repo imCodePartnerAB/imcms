@@ -9,15 +9,12 @@ import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URL;
 import java.util.List;
@@ -80,7 +77,7 @@ class RequestExternalIdentifierController {
 
     @RequestMapping(EXTERNAL_IDENTIFIER_REDIRECT_URI + "/{identifierId}")
     public ModelAndView processExternalAuthResponse(@PathVariable String identifierId,
-                                                    HttpServletRequest request) {
+                                                    HttpServletRequest request, HttpServletResponse response) {
 
         final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(
                 identifierId
@@ -90,7 +87,7 @@ class RequestExternalIdentifierController {
         nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
 
         final ExternalUser user = userService.saveExternalUser(provider.getUser(request));
-        Utility.makeUserLoggedIn(request, user);
+        Utility.makeUserLoggedIn(request, response, user);
 
         return new ModelAndView(new RedirectView(nextURL));
     }

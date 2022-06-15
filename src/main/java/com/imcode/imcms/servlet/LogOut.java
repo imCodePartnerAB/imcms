@@ -23,6 +23,6 @@ public class LogOut extends HttpServlet {
         res.addCookie(cookie);
         req.getRequestDispatcher(ImcmsConstants.LOGOUT_URL).forward(req, res);
 
-        Utility.makeUserLoggedOut(req);
+        Utility.makeUserLoggedOut(req, res);
     }
 }

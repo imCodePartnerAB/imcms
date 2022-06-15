@@ -179,7 +179,7 @@ public class ImcmsSetupFilter implements Filter {
                 user = userAndRoleMapper.getDefaultUser();
                 user.setLanguageIso639_2(languageMapper.getDefaultLanguage());
                 assert user.isActive();
-                Utility.makeUserLoggedIn(request, user);
+                Utility.makeUserLoggedIn(request, response, user);
 
 	            Imcms.setUser(user);
 	            final String userLanguage;

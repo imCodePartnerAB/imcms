@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -48,7 +49,8 @@ class SessionControllerTest extends AbstractControllerTest {
         mockHttpSession1.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest1 = new MockHttpServletRequest();
         mockRequest1.setSession(mockHttpSession1);
-        Utility.makeUserLoggedIn(mockRequest1, user);
+        MockHttpServletResponse mockResponse1 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest1, mockResponse1, user);
 
         final UserDomainObject user2 = new UserDomainObject();
         user2.setId(2);
@@ -59,7 +61,8 @@ class SessionControllerTest extends AbstractControllerTest {
         mockHttpSession2.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest2 = new MockHttpServletRequest();
         mockRequest2.setSession(mockHttpSession2);
-        Utility.makeUserLoggedIn(mockRequest2, user2);
+        MockHttpServletResponse mockResponse2 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest2, mockResponse2, user2);
 
         final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath());
 
@@ -82,7 +85,8 @@ class SessionControllerTest extends AbstractControllerTest {
         mockHttpSession1.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest1 = new MockHttpServletRequest();
         mockRequest1.setSession(mockHttpSession1);
-        Utility.makeUserLoggedIn(mockRequest1, user);
+        MockHttpServletResponse mockResponse1 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest1, mockResponse1, user);
 
         final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath());
         final String jsonResponse = getJsonResponse(requestBuilderGet);

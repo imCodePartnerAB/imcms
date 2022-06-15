@@ -81,7 +81,7 @@ public class VerifyUser extends HttpServlet {
         final UserDomainObject userByLogin = userAndRoleMapper.getUserByLoginIgnoreCase(name);
 
         if (isAllowed) {
-            cms = ContentManagementSystem.login(req, userToCheck);
+            cms = ContentManagementSystem.login(req, res, userToCheck);
         }
 
         if (null != cms) {

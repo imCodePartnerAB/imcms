@@ -10,6 +10,7 @@ import imcode.util.Utility;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.security.KeyStore;
 
@@ -39,11 +40,11 @@ public class ContentManagementSystem implements Cloneable {
      *
      * @return The new ContentManagementSystem, or null if the login failed.
      */
-    public static ContentManagementSystem login(HttpServletRequest request, String username, String password) {
+    public static ContentManagementSystem login(HttpServletRequest request, HttpServletResponse response, String username, String password) {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(username, password);
 
-        return getContentManagementSystemAndLoggedInUser(request, user, services);
+        return getContentManagementSystemAndLoggedInUser(request, response, user, services);
     }
 
     /**
@@ -51,13 +52,14 @@ public class ContentManagementSystem implements Cloneable {
      *
      * @return The new ContentManagementSystem, or null if the login failed.
      */
-    public static ContentManagementSystem login(HttpServletRequest request, UserDomainObject user) {
-        return getContentManagementSystemAndLoggedInUser(request, user, Imcms.getServices());
+    public static ContentManagementSystem login(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) {
+        return getContentManagementSystemAndLoggedInUser(request, response, user, Imcms.getServices());
     }
 
     private static ContentManagementSystem getContentManagementSystemAndLoggedInUser(HttpServletRequest request,
-                                                                              UserDomainObject user,
-                                                                              ImcmsServices services) {
+                                                                                     HttpServletResponse response,
+                                                                                     UserDomainObject user,
+                                                                                     ImcmsServices services) {
         if (null == user || user.isDefaultUser()) {
             return null;
         }
@@ -70,7 +72,7 @@ public class ContentManagementSystem implements Cloneable {
             cms.getUserService().updateUserSession(currentUser);
         }
 
-        Utility.makeUserLoggedIn(request, user);
+        Utility.makeUserLoggedIn(request, response, user);
 
         return cms;
     }
