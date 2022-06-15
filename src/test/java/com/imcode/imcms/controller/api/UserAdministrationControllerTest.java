@@ -77,7 +77,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         doThrow(exception).when(userCreationService).createUser(any());
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create")
-                .param("id", userId+"");
+                .param("id", userId+"")
+                .param("password", "password")
+                .param("password2", "password");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
@@ -88,7 +90,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         Imcms.setUser(user);
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create")
-                .param("id", userId+"");
+                .param("id", userId+"")
+                .param("password", "password")
+                .param("password2", "password");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
@@ -167,7 +171,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         doThrow(exception).when(userEditorService).editUser(any());
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
-                .param("id", userId+"");
+                .param("id", userId+"")
+                .param("password", "password")
+                .param("password2", "password");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
@@ -178,7 +184,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         Imcms.setUser(user);
 
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit")
-                .param("id", userId+"");
+                .param("id", userId+"")
+                .param("password", "password")
+                .param("password2", "password");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
