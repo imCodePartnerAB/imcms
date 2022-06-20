@@ -6,6 +6,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
@@ -156,6 +157,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     @Autowired
     private UserLockValidator userLockValidator;
+
+    @Getter
+    @Autowired
+    private ImageCompressor imageCompressor;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,

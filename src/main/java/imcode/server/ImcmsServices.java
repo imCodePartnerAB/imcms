@@ -4,9 +4,10 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -136,4 +137,6 @@ public interface ImcmsServices {
     SearchDocumentService getSearchDocumentService();
 
     UserLockValidator getUserLockValidator();
+
+    ImageCompressor getImageCompressor();
 }
