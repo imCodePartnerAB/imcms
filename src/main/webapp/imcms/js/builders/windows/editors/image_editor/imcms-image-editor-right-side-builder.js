@@ -92,16 +92,8 @@ define(
             return image.path !== '' && image.width > 0 && image.height > 0;
         }
 
-        function setDisplayCompressionButton(format){
-            if(format == 'JPEG'){
-                $compressionContainer.show();
-            }else $compressionContainer.hide();
-        }
-
         module.exports = {
             updateImageData: ($newTag, newImageData) => {
-
-                setDisplayCompressionButton(newImageData.format);
 
                 $tag = $newTag;
                 imageData = newImageData;
@@ -362,9 +354,7 @@ define(
                     }, {
                         text: "GIF",
                         "data-value": "GIF"
-                    }]).click(() =>{
-                        setDisplayCompressionButton($fileFormat.getSelectedValue());
-                    });
+                    }]);
                 }
 
                 function buildCompressionContainer(){
