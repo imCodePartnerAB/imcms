@@ -6,6 +6,7 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.icc.IccDirectory;
+import com.imcode.imcms.components.exception.CompressionImageException;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -26,6 +27,7 @@ import imcode.util.image.Resize;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -38,14 +40,9 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.*;
+import java.io.*;
 import java.util.List;
+import java.util.*;
 
 @Component
 public class ImcmsImageUtils {
@@ -335,15 +332,44 @@ public class ImcmsImageUtils {
         setSize(image, operation);
         setRotateDirection(image, operation);
         setFormat(image.getFormat(), operation);
-        setQuality(image.isCompress(), image.getFormat(), operation);
 
-        return operation.processToByteArray();
+        byte[] imageContent = operation.processToByteArray();
+
+        if(image.isCompress()){
+            try {
+                imageContent = Imcms.getServices().getImageCompressor().compressImage(imageContent, image.getFormat());
+            } catch (CompressionImageException e) {
+                //Use imageMagick to compress (only JPEG)
+                setQuality(image.getFormat(), operation);
+                imageContent = operation.processToByteArray();
+            }
+        }
+
+        return imageContent;
     }
 
-    private static void setQuality(boolean compress, Format format, ImageOp operation) {
-        if (compress && (format == Format.JPEG || format == Format.JPG)) {
-            operation.quality(75);
+    public static byte[] compressImage(byte[] imageContent, Format format) throws IOException {
+        try {
+            imageContent = Imcms.getServices().getImageCompressor().compressImage(imageContent, format);
+        } catch (CompressionImageException e) {
+            //Use imageMagick to compress (only JPEG)
+            File tempFile = File.createTempFile("compressImg", null);
+            try{
+                FileUtils.writeByteArrayToFile(tempFile, imageContent);
+
+                final ImageOp operation = new ImageOp(imageMagickPath).input(tempFile);
+                setQuality(format, operation);
+                imageContent = operation.processToByteArray();
+            }finally {
+                FileUtility.forceDelete(tempFile);
+            }
         }
+
+        return imageContent;
+    }
+
+    private static void setQuality(Format format, ImageOp operation) {
+        if (format == Format.JPEG || format == Format.JPG) operation.quality(80);
     }
 
     private static void setFormat(Format format, ImageOp operation) {
