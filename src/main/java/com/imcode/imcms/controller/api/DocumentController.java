@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
@@ -24,16 +25,19 @@ import java.util.Map;
 class DocumentController {
 
     private final DelegatingByTypeDocumentService documentService;
+	private final DocumentMapper documentMapper;
 
-    DocumentController(DelegatingByTypeDocumentService documentService) {
+    DocumentController(DelegatingByTypeDocumentService documentService, DocumentMapper documentMapper) {
         this.documentService = documentService;
+	    this.documentMapper = documentMapper;
     }
 
     @GetMapping
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR, docPermission = AccessContentType.DOC_INFO)
-    public Document get(Integer docId, DocumentType type, Integer parentDocId) {
+    public Document get(Integer docId, DocumentType type, String parentDocIdentity) {
         if (docId == null) {
-            return documentService.createNewDocument(type, parentDocId);
+	        final Integer documentId = documentMapper.toDocumentId(parentDocIdentity);
+            return documentService.createNewDocument(type, documentId);
 
         } else {
             return documentService.get(docId);

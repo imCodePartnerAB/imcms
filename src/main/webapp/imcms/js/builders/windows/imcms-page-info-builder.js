@@ -269,7 +269,7 @@ define("imcms-page-info-builder",
 
                 const requestData = {
                     docId: docId,
-                    parentDocId: parentDocId
+	                parentDocIdentity: parentDocId
                 };
                 if (docType) requestData.type = docType;
 

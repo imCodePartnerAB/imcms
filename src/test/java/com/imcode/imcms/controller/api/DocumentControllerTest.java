@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
@@ -34,6 +35,8 @@ class DocumentControllerTest extends MockingControllerTest {
 
     @Mock
     private DelegatingByTypeDocumentService documentService;
+	@Mock
+	private DocumentMapper documentMapper;
 
     @InjectMocks
     private DocumentController documentController;
@@ -44,19 +47,37 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void get_When_DocIdIsNull_Expect_NewDocumentCreated() {
+    void get_When_DocIdIsNullAndParentDocIdAvailable_Expect_NewDocumentCreated() {
         final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
         final int parentDocId = 13;
         final DocumentDTO newDoc = new DocumentDTO();
 
-        given(documentService.createNewDocument(documentType, parentDocId)).willReturn(newDoc);
+	    given(documentMapper.toDocumentId(String.valueOf(parentDocId))).willReturn(parentDocId);
+	    given(documentService.createNewDocument(documentType, parentDocId)).willReturn(newDoc);
 
         final RequestBuilder requestBuilder = get(CONTROLLER_PATH)
                 .param("type", documentType.toString())
-                .param("parentDocId", "" + parentDocId);
+		        .param("parentDocIdentity", "" + parentDocId);
 
         perform(requestBuilder).andExpectAsJson(newDoc);
     }
+
+	@Test
+	void get_When_DocIdIsNullAndParentDocAliasExists_Expect_NewDocumentCreated(){
+		final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
+		final int parentDocId = 13;
+		final String parentDocAlias = "ALIAS";
+		final DocumentDTO newDoc = new DocumentDTO();
+
+		given(documentMapper.toDocumentId(parentDocAlias)).willReturn(parentDocId);
+		given(documentService.createNewDocument(documentType, parentDocId)).willReturn(newDoc);
+
+		final RequestBuilder requestBuilder = get(CONTROLLER_PATH)
+				.param("type", documentType.toString())
+				.param("parentDocIdentity", parentDocAlias);
+
+		perform(requestBuilder).andExpectAsJson(newDoc);
+	}
 
     @Test
     void get_When_DocIdIsNotNull_Expect_DocumentReceivedById() {
