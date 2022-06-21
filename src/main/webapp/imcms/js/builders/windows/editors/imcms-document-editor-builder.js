@@ -1000,8 +1000,11 @@ define('imcms-document-editor-builder',
                 : {tooltip: texts.version.tooltip.noWorkingVersion}
         }
 
-        function getIdTooltipText(id, date, user) {
-            return `${id}. ${texts.id.tooltip.createdOn} ${date} ${texts.by} ${user}`
+        function getIdTooltipText(id, created, createdBy) {
+			if (createdBy)
+                return `${id}. ${texts.id.tooltip.createdOn} ${created} ${texts.by} ${createdBy}`
+            else
+				return `${id}. ${texts.id.tooltip.createdOn} ${created.date} ${texts.by} ${created.by}`
         }
 
         function getModifiedDateTooltipText(date, user) {
