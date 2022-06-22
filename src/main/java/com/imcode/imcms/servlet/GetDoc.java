@@ -165,6 +165,7 @@ public class GetDoc extends HttpServlet {
         res.setContentLength(len);
         res.setContentType(mimeType);
         res.setHeader("Content-Disposition", contentDisposition);
+	    res.setStatus(HttpServletResponse.SC_OK);
     }
 
     // fixme: not sure this crap is needed at all

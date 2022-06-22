@@ -3,11 +3,15 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.mapping.DocumentMeta;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -26,11 +30,11 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static imcode.server.ImcmsConstants.API_PREFIX;
-import static imcode.server.ImcmsConstants.LOGIN_URL;
+import static imcode.server.ImcmsConstants.*;
 
 /**
  * Front filter.
@@ -63,21 +67,22 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
-        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+	    DocGetterCallback docGetterCallback = user.getDocGetterCallback();
 
-        DocumentLanguages dls = services.getDocumentLanguages();
-        DocumentLanguage defaultLanguage = dls.getDefault();
-        String docLangCode = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE));
-        DocumentLanguage preferredLanguage = Optional.ofNullable(dls.getByCode(docLangCode))
-                .orElse(Optional.ofNullable(docGetterCallback.getLanguage())
-                        .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
-                                .orElse(defaultLanguage)));
+	    DocumentLanguages dls = services.getDocumentLanguages();
+	    DocumentLanguage defaultLanguage = dls.getDefault();
+	    String docLangCode = Optional.ofNullable(request.getSession())
+			    .map(httpSession -> StringUtils.trimToEmpty((String) httpSession.getAttribute(REQUEST_PARAM__DOC_LANGUAGE))).orElse("");
+	    DocumentLanguage preferredLanguage = Optional.ofNullable(dls.getByCode(docLangCode))
+			    .orElse(Optional.ofNullable(docGetterCallback.getLanguage())
+					    .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
+							    .orElse(defaultLanguage)));
 
-        docGetterCallback.setLanguage(preferredLanguage);
+	    docGetterCallback.setLanguage(preferredLanguage);
 
-        final String stringDocId = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID));
-        final Integer docId = stringDocId.isEmpty() ? null : Integer.valueOf(stringDocId);
-        String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
+	    final String stringDocId = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID));
+	    final Integer docId = stringDocId.isEmpty() ? null : Integer.valueOf(stringDocId);
+	    String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
 
         if (null != docId && null != versionStr) {
             switch (versionStr.toLowerCase()) {
@@ -228,81 +233,95 @@ public class ImcmsSetupFilter implements Filter {
                 if (!user.isDefaultUser()) {
                     Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
                     cookie.setMaxAge(session.getMaxInactiveInterval());
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
+	                cookie.setPath("/");
+	                response.addCookie(cookie);
                 }
 
 
-                ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-                Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+	            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+	            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-                Imcms.setUser(user);
+	            Imcms.setUser(user);
 
+	            final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, fallbackDecoder));
+	            final String documentId = getDocumentIdString(Imcms.getServices(), path);
 
-                final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-                session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, requestedLangCode);
-                final Object langSession = session.getAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+	            Language aliasLanguage = null;
+	            DocumentDomainObject documentDomainObject = null;
+	            final Integer id = service.getDocumentMapper().toDocumentId(documentId);
+	            if (id != null) {
+		            final Version latestDocVersion = service.getVersionService().getLatestVersion(id);
+		            final List<CommonContent> commonContentList = service.getCommonContentService().getOrCreateCommonContents(id, latestDocVersion.getNo());
+		            documentDomainObject = service.getDocumentMapper().getDefaultDocument(id);
+		            aliasLanguage = commonContentList.stream()
+				            .filter(commonContent -> documentId.equalsIgnoreCase(commonContent.getAlias()))
+				            .map(CommonContent::getLanguage)
+				            .findFirst()
+				            .orElse(null);
+	            }
 
-                final Optional<Cookie> userLanguageCookie;
-                if (langSession != null) {
-                    Imcms.setLanguage(languageMapper.getLanguageByCode(langSession.toString()));
-                    final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
-                    newUserLanguageCookie.setMaxAge(Integer.MAX_VALUE);
-                    newUserLanguageCookie.setPath("/");
+	            final boolean showInDefaultLanguageMode = Optional.ofNullable(documentDomainObject)
+			            .map(document -> document.getDisabledLanguageShowMode().equals(DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE))
+			            .orElse(false);
 
-                    response.addCookie(newUserLanguageCookie);
-                    userLanguageCookie = Optional.of(newUserLanguageCookie);
-                } else {
-                    userLanguageCookie = Arrays.stream(cookies)
-                            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-                            .findFirst();
-                }
+	            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-                if (cookies != null) {
-                    final String langCode;
-
-                    if (userLanguageCookie.isPresent()) {
-                        langCode = (langSession != null) ? langSession.toString() : userLanguageCookie.get().getValue();
-
-                    } else {
-                        final String defaultLanguage = service.getConfig().getDefaultLanguage();
-                        langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
-
-                        final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
-                        newUserLanguageCookie.setMaxAge(Integer.MAX_VALUE);
-                        newUserLanguageCookie.setPath("/");
-
-                        response.addCookie(newUserLanguageCookie);
-                    }
-
-                    final Language language = languageMapper.getLanguageByCode(langCode);
-                    Imcms.setLanguage(language);
-                } else {
-                    Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
-                }
-
+	            if (StringUtils.isNotEmpty(requestedLangCode)) {
+		            writeUserLanguageCookie(response, requestedLangCode);
+		            Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
+		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, requestedLangCode);
+	            } else if (aliasLanguage != null) {
+		            writeUserLanguageCookie(response, aliasLanguage.getCode());
+		            Imcms.setLanguage(languageMapper.getLanguageByCode(aliasLanguage.getCode()));
+		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, aliasLanguage.getCode());
+	            } else if (showInDefaultLanguageMode) {
+		            writeUserLanguageCookie(response, user.getLanguage());
+		            Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, user.getLanguage());
+	            } else if (cookies != null) {
+		            final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+				            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+				            .findFirst();
+		            userLanguageCookie.ifPresent(cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())));
+	            } else {
+		            final String langCode = service.getLanguageService().getDefaultLanguage().getCode();
+		            writeUserLanguageCookie(response, langCode);
+		            Imcms.setLanguage(languageMapper.getLanguageByCode(langCode));
+	            }
             }
 
-            session.removeAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-            ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
+	        ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
 
-            Utility.initRequestWithApi(request, user);
+	        Utility.initRequestWithApi(request, user);
 
-            filterChain.doFilter(request, response);
+	        session.removeAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+
+	        filterChain.doFilter(request, response);
         } finally {
-            Imcms.removeUser();
+	        Imcms.removeUser();
         }
     }
 
-    private boolean redirectToLoginIfRestricted(HttpServletRequest request,
-                                                HttpServletResponse response,
-                                                ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
-                                                UserDomainObject userToCheckAccess) throws ServletException, IOException {
+	private void writeUserLanguageCookie(HttpServletResponse response, String langCode) {
+		if (langCode == null) {
+			return;
+		}
+		final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+		newUserLanguageCookie.setMaxAge(Integer.MAX_VALUE);
+		newUserLanguageCookie.setPath("/");
 
-        //Ugly resource filter.... to show at least login page
-        //auth-providers is allowed api call
-        if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
-            if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
+		response.addCookie(newUserLanguageCookie);
+	}
+
+	private boolean redirectToLoginIfRestricted(HttpServletRequest request,
+	                                            HttpServletResponse response,
+	                                            ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
+	                                            UserDomainObject userToCheckAccess) throws ServletException, IOException {
+
+		//Ugly resource filter.... to show at least login page
+		//auth-providers is allowed api call
+		if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
+			if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
                 Utility.forwardToLogin(request, response);
                 return true;
             }

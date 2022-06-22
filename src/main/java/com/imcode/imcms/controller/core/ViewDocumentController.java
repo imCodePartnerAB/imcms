@@ -112,7 +112,6 @@ public class ViewDocumentController {
         }
 
         final int docId = textDocument.getId();
-        final String alias = textDocument.getAlias();
 
         final RestrictedPermission userContentPermission = accessService.getPermission(user, docId);
         final RolePermissions rolePermissions = accessService.getTotalRolePermissionsByUser(user);
@@ -124,7 +123,7 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         if (!isVersioningAllowed) {
-            publicDocumentsCache.invalidateDoc(docId, alias);
+	        publicDocumentsCache.invalidateDoc(docId, textDocument.getAliases().values());
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
@@ -152,16 +151,16 @@ public class ViewDocumentController {
                 .findFirst();
 
         final String language;
-        if (!optionalCommonContent.isPresent()) {
-            if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-                language = user.getLanguage();
-            } else {
-                response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-                return null;
-            }
-        } else {
-            language = docLangCode;
-        }
+	    if (optionalCommonContent.isEmpty()) {
+		    if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
+			    language = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+		    } else {
+			    response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+			    return null;
+		    }
+	    } else {
+		    language = docLangCode;
+	    }
 
         mav.setViewName(viewName);
 
