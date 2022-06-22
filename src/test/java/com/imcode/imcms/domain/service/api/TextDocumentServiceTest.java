@@ -1,41 +1,15 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
-import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
-import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
-import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.components.datainitializer.TextDataInitializer;
-import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.components.datainitializer.*;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -51,18 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -187,7 +155,6 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
 
         // special things
         assertNull(childDoc.getId());
-        assertEquals(childDoc.getAlias(), "");
         assertEquals(childDoc.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(childDoc.getPublicationEnd(), new AuditDTO());
         assertEquals(childDoc.getPublished(), new AuditDTO());
@@ -205,8 +172,9 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
             final CommonContent commonContent = commonContents.get(i);
 
             assertEquals(childCommonContent.getLanguage(), commonContent.getLanguage());
-            assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
-            assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
+	        assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
+	        assertEquals(childCommonContent.getAlias(), commonContent.getAlias());
+	        assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
 
             assertNull(childCommonContent.getId());
             assertNull(childCommonContent.getDocId());

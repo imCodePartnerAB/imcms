@@ -79,8 +79,8 @@ public class TestConfig {
                     textDocument.getCommonContents().get(0).getHeadline());
 
             solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
-            solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
-            solrDocument.put(DocumentIndex.FIELD__STATUS, textDocument.getPublicationStatus().ordinal());
+	        solrDocument.put(DocumentIndex.FIELD__META_ALIAS + '_' + langCode, textDocument.getCommonContents().get(0).getAlias());
+	        solrDocument.put(DocumentIndex.FIELD__STATUS, textDocument.getPublicationStatus().ordinal());
             solrDocument.put(DocumentIndex.FIELD__VERSION_NO, textDocument.getCurrentVersion().getId());
             solrDocument.put(DocumentIndex.FIELD__LANGUAGE_CODE, null); // I hope we don't need this in tests...
             solrDocument.put(DocumentIndex.FIELD__CREATED_DATETIME, textDocument.getCreated().getFormattedDate());

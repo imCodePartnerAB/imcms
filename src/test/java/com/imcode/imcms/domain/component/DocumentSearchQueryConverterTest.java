@@ -63,25 +63,26 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     @Test
     public void convert_When_TermIsNotNull_Expect_SearchBySpecifiedFieldsWithTerm() {
-        final String term = "test";
+	    final String term = "test";
 
-        searchQueryDTO.setTerm(term);
+	    searchQueryDTO.setTerm(term);
 
-        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
+	    final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
-        final String expected = Arrays.stream(new String[]{
-                DocumentIndex.FIELD__META_ID,
-                DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
-                DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
-                DocumentIndex.FIELD__META_TEXT,
-                DocumentIndex.FIELD__KEYWORD,
-                DocumentIndex.FIELD__TEXT,
-                DocumentIndex.FIELD__ALIAS,
-                DocumentIndex.FIELD__URL})
-                .map(field -> String.format("%s:(*%s*)", field, term))
-                .collect(Collectors.joining(" "));
+	    final String expected = Arrays.stream(new String[]{
+					    DocumentIndex.FIELD__META_ID,
+					    DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
+					    DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
+					    DocumentIndex.FIELD__META_TEXT,
+					    DocumentIndex.FIELD__KEYWORD,
+					    DocumentIndex.FIELD__TEXT,
+					    DocumentIndex.FIELD__META_ALIAS + '_' + LANG_CODE,
+					    DocumentIndex.FIELD_META_ALIAS + '_' + LANG_CODE,
+					    DocumentIndex.FIELD__URL})
+			    .map(field -> String.format("%s:(*%s*)", field, term))
+			    .collect(Collectors.joining(" "));
 
-        assertThat(solrQuery.get(CommonParams.Q), is(expected));
+	    assertThat(solrQuery.get(CommonParams.Q), is(expected));
     }
 
     @Test
@@ -93,14 +94,15 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = Arrays.stream(new String[]{
-                DocumentIndex.FIELD__META_ID,
-                DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
-                DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
-                DocumentIndex.FIELD__META_TEXT,
-                DocumentIndex.FIELD__KEYWORD,
-                DocumentIndex.FIELD__TEXT,
-                DocumentIndex.FIELD__ALIAS,
-                DocumentIndex.FIELD__URL})
+				        DocumentIndex.FIELD__META_ID,
+				        DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
+				        DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
+				        DocumentIndex.FIELD__META_TEXT,
+				        DocumentIndex.FIELD__KEYWORD,
+				        DocumentIndex.FIELD__TEXT,
+				        DocumentIndex.FIELD__META_ALIAS + '_' + LANG_CODE,
+				        DocumentIndex.FIELD_META_ALIAS + '_' + LANG_CODE,
+				        DocumentIndex.FIELD__URL})
                 .map(field -> String.format("%s:(*test* *test2*)", field))
                 .collect(Collectors.joining(" "));
 
@@ -116,14 +118,15 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final String expected = Arrays.stream(new String[]{
-                        DocumentIndex.FIELD__META_ID,
-                        DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
-                        DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
-                        DocumentIndex.FIELD__META_TEXT,
-                        DocumentIndex.FIELD__KEYWORD,
-                        DocumentIndex.FIELD__TEXT,
-                        DocumentIndex.FIELD__ALIAS,
-                        DocumentIndex.FIELD__URL})
+				        DocumentIndex.FIELD__META_ID,
+				        DocumentIndex.FIELD_META_HEADLINE + "_" + LANG_CODE,
+				        DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
+				        DocumentIndex.FIELD__META_TEXT,
+				        DocumentIndex.FIELD__KEYWORD,
+				        DocumentIndex.FIELD__TEXT,
+				        DocumentIndex.FIELD__META_ALIAS + '_' + LANG_CODE,
+				        DocumentIndex.FIELD_META_ALIAS + '_' + LANG_CODE,
+				        DocumentIndex.FIELD__URL})
                 .map(field -> String.format("%s:(\"test test2\")", field))
                 .collect(Collectors.joining(" "));
 

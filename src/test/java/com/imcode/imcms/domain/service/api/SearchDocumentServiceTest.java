@@ -65,7 +65,8 @@ class SearchDocumentServiceTest {
             docFields.setAlias("test_alias" + i);
             docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
             docFields.setIsShownTitle(false);
-            expected.add(docFields);
+	        docFields.setDefaultLanguageAliasEnabled(false);
+	        expected.add(docFields);
         }
 
         final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
@@ -113,8 +114,9 @@ class SearchDocumentServiceTest {
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
             docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
-            docFields.setIsShownTitle(false);
-            expected.add(docFields);
+	        docFields.setIsShownTitle(false);
+	        docFields.setDefaultLanguageAliasEnabled(false);
+	        expected.add(docFields);
         }
 
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
@@ -167,8 +169,9 @@ class SearchDocumentServiceTest {
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
             docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
-            docFields.setIsShownTitle(false);
-            expected.add(docFields);
+	        docFields.setIsShownTitle(false);
+	        docFields.setDefaultLanguageAliasEnabled(false);
+	        expected.add(docFields);
         }
 
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +

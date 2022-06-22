@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -139,24 +140,150 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getMenuItemDTO_When_EmptyAlias_Expect_DocIdInLink() {
-        testMenuItemDTO("");
+	    testMenuItemDTO("");
     }
 
-    @Test
-    public void isPublicMenuItem_When_DocIsNotExist_Expect_DocumentNotExistException() {
-        assertThrows(DocumentNotExistException.class,
-                () -> documentMenuService.isPublicMenuItem(Integer.MAX_VALUE));
-    }
+	@Test
+	public void isPublicMenuItem_When_DocIsNotExist_Expect_DocumentNotExistException() {
+		assertThrows(DocumentNotExistException.class,
+				() -> documentMenuService.isPublicMenuItem(Integer.MAX_VALUE));
+	}
 
-    @Test
-    public void isPublicMenuItem_When_MetaHasStatusNew_Expect_False() {
-        meta.setPublicationStatus(Meta.PublicationStatus.NEW);
-        metaRepository.save(meta);
+	@Test
+	public void getMenuItemDTO_When_AliasIsSetAndDefaultLanguageAliasDisabled_Expect_CorrectAliasInLink() {
+		final String enAlias = "alias-en";
+		final String svAlias = "alias-sv";
+		final Integer docId = meta.getId();
 
-        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
-    }
+		meta.setDefaultLanguageAliasEnabled(false);
 
-    @Test
+		final DocumentDTO documentDTO = documentService.get(docId);
+		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+		final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+
+		commonContentEn.setAlias(enAlias);
+		commonContentSv.setAlias(svAlias);
+
+		documentService.save(documentDTO);
+
+		final MenuItem menuItem = new MenuItem();
+		menuItem.setSortOrder("1");
+		menuItem.setDocumentId(docId);
+
+		final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+		assertThat(menuItemDTO.getDocumentId(), is(docId));
+		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
+		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
+		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
+		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
+		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+	}
+
+	@Test
+	public void getMenuItemDTO_When_AliasIsSetAndDefaultLanguageAliasEnabled_Expect_DefaultLanguageAliasInLink() {
+		final String enAlias = "alias-en";
+		final String svAlias = "alias-sv";
+		final Integer docId = meta.getId();
+
+		meta.setDefaultLanguageAliasEnabled(true);
+
+		final DocumentDTO documentDTO = documentService.get(docId);
+		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+		final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+
+		commonContentEn.setAlias(enAlias);
+		commonContentSv.setAlias(svAlias);
+
+		documentService.save(documentDTO);
+
+		final MenuItem menuItem = new MenuItem();
+		menuItem.setSortOrder("1");
+		menuItem.setDocumentId(docId);
+
+		final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+		assertThat(menuItemDTO.getDocumentId(), is(docId));
+		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
+		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
+		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
+		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
+		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+	}
+
+	@Test
+	public void getMenuItemDTO_When_NoAliasAndDefaultLanguageAliasEnabled_Expect_DocIdInLink() {
+		final Integer docId = meta.getId();
+
+		meta.setDefaultLanguageAliasEnabled(true);
+
+		final DocumentDTO documentDTO = documentService.get(docId);
+		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+
+		commonContentEn.setAlias(null);
+
+		documentService.save(documentDTO);
+
+		final MenuItem menuItem = new MenuItem();
+		menuItem.setSortOrder("1");
+		menuItem.setDocumentId(docId);
+
+		final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+		assertThat(menuItemDTO.getDocumentId(), is(docId));
+		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+		assertThat(menuItemDTO.getLink(), is("/" + docId));
+		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
+		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
+		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
+		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+	}
+
+	@Test
+	public void getMenuItemDTO_When_AliasIsEmptyAndDefaultLanguageAliasEnabled_Expect_DefaultLanguageAliasInLink() {
+		final Integer docId = meta.getId();
+
+		meta.setDefaultLanguageAliasEnabled(true);
+
+		final DocumentDTO documentDTO = documentService.get(docId);
+		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+
+		commonContentEn.setAlias("");
+
+		documentService.save(documentDTO);
+
+		final MenuItem menuItem = new MenuItem();
+		menuItem.setSortOrder("1");
+		menuItem.setDocumentId(docId);
+
+		final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+		assertThat(menuItemDTO.getDocumentId(), is(docId));
+		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+		assertThat(menuItemDTO.getLink(), is("/" + docId));
+		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
+		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
+		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
+		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+	}
+
+	@Test
+	public void isPublicMenuItem_When_MetaHasStatusNew_Expect_False() {
+		meta.setPublicationStatus(Meta.PublicationStatus.NEW);
+		metaRepository.save(meta);
+
+		assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+	}
+
+	@Test
     public void isPublicMenuItem_When_MetaHasStatusDisapproved_Expect_False() {
         meta.setPublicationStatus(Meta.PublicationStatus.DISAPPROVED);
         metaRepository.save(meta);
@@ -255,29 +382,29 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     }
 
     private void testMenuItemDTO(String testAlias) {
-        final Integer docId = meta.getId();
+	    final Integer docId = meta.getId();
 
-        final LanguageDTO language = languageDataInitializer.createData().get(0);
+	    final LanguageDTO language = languageDataInitializer.createData().get(0);
 
-        final DocumentDTO documentDTO = documentService.get(docId);
+	    final DocumentDTO documentDTO = documentService.get(docId);
+	    final CommonContent commonContent = documentDTO.getCommonContents()
+			    .stream()
+			    .filter(content -> content.getLanguage().getCode().equals(language.getCode()))
+			    .findFirst()
+			    .get();
 
-        final String headline = documentDTO.getCommonContents()
-                .stream()
-                .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
-                .findFirst()
-                .get()
-                .getHeadline();
+	    commonContent.setAlias(testAlias);
+	    final String headline = commonContent.getHeadline();
 
-        documentDTO.setAlias(testAlias);
-        documentService.save(documentDTO);
+	    documentService.save(documentDTO);
 
-        final MenuItem menuItem = new MenuItem();
-        menuItem.setSortOrder("1");
-        menuItem.setDocumentId(docId);
+	    final MenuItem menuItem = new MenuItem();
+	    menuItem.setSortOrder("1");
+	    menuItem.setDocumentId(docId);
 
-        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+	    final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
 
-        assertThat(menuItemDTO.getDocumentId(), is(docId));
+	    assertThat(menuItemDTO.getDocumentId(), is(docId));
         assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
         assertThat(menuItemDTO.getTitle(), is(headline));
         assertThat(menuItemDTO.getLink(), is("/" + (StringUtils.isBlank(testAlias) ? docId : testAlias)));

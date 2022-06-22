@@ -104,7 +104,6 @@ class DocumentControllerTest extends MockingControllerTest {
         final int documentId = 1;
         final UberDocumentDTO updateMe = new UberDocumentDTO();
         updateMe.setId(documentId);
-        updateMe.setAlias("alias");
 
         final UberDocumentDTO savedDocument = new UberDocumentDTO();
         savedDocument.setId(documentId);
@@ -135,7 +134,6 @@ class DocumentControllerTest extends MockingControllerTest {
         final int documentId = 1;
         final UberDocumentDTO updateMe = new UberDocumentDTO();
         updateMe.setId(documentId);
-        updateMe.setAlias("alias");
 
         final UberDocumentDTO savedDocument = new UberDocumentDTO();
         savedDocument.setId(documentId);
@@ -165,7 +163,6 @@ class DocumentControllerTest extends MockingControllerTest {
         final int documentId = 1;
         final UberDocumentDTO updateMe = new UberDocumentDTO();
         updateMe.setId(documentId);
-        updateMe.setAlias("alias");
 
         final UberDocumentDTO savedDocument = new UberDocumentDTO();
         savedDocument.setId(documentId);

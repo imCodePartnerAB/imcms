@@ -45,6 +45,7 @@ import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -203,7 +204,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
         // special things
         assertNull(childDoc.getId());
-        assertEquals(childDoc.getAlias(), "");
         assertEquals(childDoc.getPublicationStatus(), PublicationStatus.NEW);
         assertEquals(childDoc.getPublicationEnd(), new AuditDTO());
         assertEquals(childDoc.getPublished(), new AuditDTO());
@@ -220,8 +220,9 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             final CommonContent commonContent = commonContents.get(i);
 
             assertEquals(childCommonContent.getLanguage(), commonContent.getLanguage());
-            assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
-            assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
+	        assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
+	        assertEquals(childCommonContent.getAlias(), commonContent.getAlias());
+	        assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
 
             assertNull(childCommonContent.getId());
             assertNull(childCommonContent.getDocId());
@@ -276,29 +277,58 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void save_When_TargetAndAliasChanged_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final String newTarget = "_blank";
-        final String newAlias = "test-alias";
+	    final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+	    final String newTarget = "_blank";
+	    final String newAlias = "test-alias";
 
-        documentDTO.setTarget(newTarget);
-        documentDTO.setAlias(newAlias);
-        documentService.save(documentDTO);
+	    documentDTO.setTarget(newTarget);
+	    documentDTO.getCommonContents().stream().filter(content -> Objects.equals(content.getLanguage(), Imcms.getLanguage()))
+			    .findAny().ifPresent(content -> content.setAlias(newAlias));
+	    documentService.save(documentDTO);
 
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+	    final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
 
-        assertEquals(savedDocumentDTO.getTarget(), newTarget);
-        assertEquals(savedDocumentDTO.getAlias(), newAlias);
+	    final CommonContent commonContent = savedDocumentDTO.getCommonContents().stream()
+			    .filter(content -> Objects.equals(content.getLanguage(), Imcms.getLanguage()))
+			    .findAny().get();
+
+	    assertEquals(savedDocumentDTO.getTarget(), newTarget);
+	    assertEquals(commonContent.getAlias(), newAlias);
     }
 
-    @Test
-    public void save_When_DifferentPublicationStatusSet_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final PublicationStatus statusApproved = PublicationStatus.APPROVED;
-        final PublicationStatus statusDisapproved = PublicationStatus.DISAPPROVED;
-        final PublicationStatus statusNew = PublicationStatus.NEW;
+	@Test
+	public void save_When_DuplicateAlias_Expect_SavedAndEmptyAlias() {
+		final String newAlias = "test-alias";
+		final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+		final DocumentDTO dto = documentService.createFromParent(documentDTO.getId());
 
-        // approved
-        documentDTO.setPublicationStatus(statusApproved);
+		dto.getCommonContents().stream().filter(content -> Objects.equals(content.getLanguage(), Imcms.getLanguage()))
+				.findAny().ifPresent(content -> content.setAlias(newAlias));
+
+		documentDTO.getCommonContents().stream().filter(content -> Objects.equals(content.getLanguage(), Imcms.getLanguage()))
+				.findAny().ifPresent(content -> content.setAlias(newAlias));
+
+		documentService.save(documentDTO);
+		documentService.save(dto);
+
+		final DocumentDTO savedDocumentDTO = documentService.get(dto.getId());
+
+		final CommonContent commonContent = savedDocumentDTO.getCommonContents().stream()
+				.filter(content -> Objects.equals(content.getLanguage(), Imcms.getLanguage()))
+				.findAny().get();
+
+		assertEquals("", commonContent.getAlias());
+	}
+
+	@Test
+	public void save_When_DifferentPublicationStatusSet_Expect_Saved() {
+		final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+		final PublicationStatus statusApproved = PublicationStatus.APPROVED;
+		final PublicationStatus statusDisapproved = PublicationStatus.DISAPPROVED;
+		final PublicationStatus statusNew = PublicationStatus.NEW;
+
+		// approved
+		documentDTO.setPublicationStatus(statusApproved);
         documentService.save(documentDTO);
 
         DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
@@ -966,9 +996,9 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final Meta meta1 = createAndSaveMeta();
 
         final Property property1 = new Property();
-        property1.setDocId(meta1.getId());
-        property1.setName("imcms.document.alias");
-        property1.setValue(aliasName + 1);
+	    property1.setDocId(meta1.getId());
+	    property1.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
+	    property1.setValue(aliasName + 1);
         propertyRepository.save(property1);
 
         assertEquals(aliasName, documentService.getUniqueAlias(aliasName));
@@ -981,9 +1011,9 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final Meta meta = createAndSaveMeta();
 
         final Property property = new Property();
-        property.setDocId(meta.getId());
-        property.setName("imcms.document.alias");
-        property.setValue(aliasName);
+	    property.setDocId(meta.getId());
+	    property.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
+	    property.setValue(aliasName);
         propertyRepository.save(property);
 
         assertEquals(aliasName + "-1", documentService.getUniqueAlias(aliasName));
@@ -1012,15 +1042,15 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final Meta meta2 = createAndSaveMeta();
 
         final Property property1 = new Property();
-        property1.setDocId(meta1.getId());
-        property1.setName("imcms.document.alias");
-        property1.setValue(aliasName);
+	    property1.setDocId(meta1.getId());
+	    property1.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
+	    property1.setValue(aliasName);
         propertyRepository.save(property1);
 
         final Property property2 = new Property();
-        property2.setDocId(meta2.getId());
-        property2.setName("imcms.document.alias");
-        property2.setValue(aliasName + "-1");
+	    property2.setDocId(meta2.getId());
+	    property2.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
+	    property2.setValue(aliasName + "-1");
         propertyRepository.save(property2);
 
         assertEquals(aliasName + "-2", documentService.getUniqueAlias(aliasName));
