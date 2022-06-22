@@ -17,32 +17,34 @@ public class MenuItemDTO implements Serializable {
 
     private String title;
 
-    private Meta.DocumentType type;
+	private Meta.DocumentType type;
 
-    private Integer documentId;
+	private Integer documentId;
 
-    private String target;
+	private String target;
 
-    private String link;
+	private String link;
 
-    private DocumentStatus documentStatus;
+	private DocumentStatus documentStatus;
 
-    private Boolean isShownTitle;
+	private Boolean isDefaultLanguageAliasEnabled;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date createdDate;
+	private Boolean isShownTitle;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date publishedDate;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+	private Date createdDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date modifiedDate;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+	private Date publishedDate;
 
-    private String createdBy;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+	private Date modifiedDate;
 
-    private String publishedBy;
+	private String createdBy;
 
-    private String modifiedBy;
+	private String publishedBy;
+
+	private String modifiedBy;
 
     private boolean hasNewerVersion;
 

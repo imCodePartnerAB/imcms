@@ -11,24 +11,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class CommonContentDTO extends CommonContent implements Cloneable {
 
-    private static final long serialVersionUID = -8745654157487154505L;
+	private static final long serialVersionUID = -8745654157487154505L;
 
-    private Integer id;
-    private Integer docId;
-    private LanguageDTO language;
-    private String headline;
-    private String menuText;
-    private boolean isEnabled;
-    private Integer versionNo;
+	private Integer id;
+	private Integer docId;
+	private String alias;
+	private LanguageDTO language;
+	private String headline;
+	private String menuText;
+	private boolean isEnabled;
+	private Integer versionNo;
 
-    public CommonContentDTO(CommonContent from) {
-        super(from);
-    }
+	public CommonContentDTO(CommonContent from) {
+		super(from);
+	}
 
-    @Override
+	@Override
     public void setLanguage(Language language) {
         this.language = (language == null) ? null : new LanguageDTO(language);
     }

@@ -467,45 +467,52 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getDocumentType().getId();
     }
 
-    public final LocalizedMessage getDocumentTypeName() {
-        return getDocumentType().getName();
-    }
+	public final LocalizedMessage getDocumentTypeName() {
+		return getDocumentType().getName();
+	}
 
-    public int hashCode() {
-        return getId();
-    }
+	public int hashCode() {
+		return getId();
+	}
 
-    public void removeCategoryId(int categoryId) {
-        meta.getCategories().remove(categoryId);
-    }
+	public void removeCategoryId(int categoryId) {
+		meta.getCategories().remove(categoryId);
+	}
 
-    public abstract void accept(DocumentVisitor documentVisitor);
+	public abstract void accept(DocumentVisitor documentVisitor);
 
-    public LifeCyclePhase getLifeCyclePhase() {
-        return getLifeCyclePhaseAtTime(this, new Date());
-    }
+	public LifeCyclePhase getLifeCyclePhase() {
+		return getLifeCyclePhaseAtTime(this, new Date());
+	}
 
-    public String getAlias() {
-        return meta.getAlias();
-    }
+	public Map<String, String> getAliases() {
+		return meta.getAliases();
+	}
 
-    public void setAlias(String alias) {
-        meta.setAlias(alias);
-    }
+	public String getAlias() {
+		final String defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+		final String alias = isDefaultLanguageAliasEnabled() != null && isDefaultLanguageAliasEnabled() ? meta.getAliases().get(defaultLanguageCode) : commonContent.getAlias();
 
-    public String getName() {
-        return StringUtils.defaultIfBlank(getAlias(), getId() + "");
-    }
+		return StringUtils.defaultIfBlank(alias, null);
+	}
 
-    public DocumentMeta getMeta() {
-        return meta;
-    }
+	public void setAlias(String alias) {
+		setCommonContent(DocumentCommonContent.builder(getCommonContent()).alias(alias).build());
+	}
 
-    public void setMeta(DocumentMeta meta) {
-        Objects.requireNonNull(meta, "meta argument can not be null.");
+	public String getName() {
+		return StringUtils.defaultIfBlank(getAlias(), String.valueOf(getId()));
+	}
 
-        this.meta = meta.clone();
-    }
+	public DocumentMeta getMeta() {
+		return meta;
+	}
+
+	public void setMeta(DocumentMeta meta) {
+		Objects.requireNonNull(meta, "meta argument can not be null.");
+
+		this.meta = meta.clone();
+	}
 
     public DocumentLanguage getLanguage() {
         return language;
@@ -539,26 +546,34 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public String[] getByUsersArr(UserService userService) {
 
-        Integer[] usersIds = new Integer[]{
-                getCreatorId(),
-                getModifierId(),
-                getArchiverId(),
-                getPublisherId(),
-                getDepublisherId(),
-        };
+	    Integer[] usersIds = new Integer[]{
+			    getCreatorId(),
+			    getModifierId(),
+			    getArchiverId(),
+			    getPublisherId(),
+			    getDepublisherId(),
+	    };
 
-        return Stream.of(usersIds)
-                .map(userId -> Optional.ofNullable(userId)
-                        .map(id -> userService.getUser(id).getLoginName())
-                        .orElse("--"))
-                .toArray(String[]::new);
+	    return Stream.of(usersIds)
+			    .map(userId -> Optional.ofNullable(userId)
+					    .map(id -> userService.getUser(id).getLoginName())
+					    .orElse("--"))
+			    .toArray(String[]::new);
     }
 
-    public DocumentMeta.DisabledLanguageShowMode getDisabledLanguageShowMode() {
-        return meta.getDisabledLanguageShowMode();
-    }
+	public Boolean isDefaultLanguageAliasEnabled() {
+		return meta.getDefaultLanguageAliasEnabled();
+	}
 
-    public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
-        meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
-    }
+	public void setDefaultLanguageAlias(boolean enabled) {
+		meta.setDefaultLanguageAliasEnabled(enabled);
+	}
+
+	public DocumentMeta.DisabledLanguageShowMode getDisabledLanguageShowMode() {
+		return meta.getDisabledLanguageShowMode();
+	}
+
+	public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
+		meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
+	}
 }

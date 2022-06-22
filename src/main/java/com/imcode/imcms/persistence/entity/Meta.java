@@ -1,8 +1,11 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.Language;
+import imcode.server.Imcms;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -25,40 +28,43 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Meta implements Serializable {
 
-    private static final long serialVersionUID = 9024338066876530277L;
-    private static final int MAX_TARGET_LENGTH = 10;
+	private static final long serialVersionUID = 9024338066876530277L;
+	private static final int MAX_TARGET_LENGTH = 10;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meta_id")
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "meta_id")
+	private Integer id;
 
-    @Column(name = "default_version_no", nullable = false)
-    private int defaultVersionNo;
+	@Column(name = "default_version_no", nullable = false)
+	private int defaultVersionNo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "disabled_language_show_rule", nullable = false)
-    private DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "disabled_language_show_rule", nullable = false)
+	private DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
 
-    @Column(name = "doc_type", nullable = false, updatable = false)
-    @Enumerated(EnumType.ORDINAL) // todo: change to EnumType.STRING
-    private DocumentType documentType;
+	@Column(name = "default_language_alias_enabled")
+	private boolean defaultLanguageAliasEnabled = false;
 
-    @Column(name = "owner_id", nullable = false)
-    private Integer creatorId;
+	@Column(name = "doc_type", nullable = false, updatable = false)
+	@Enumerated(EnumType.ORDINAL) // todo: change to EnumType.STRING
+	private DocumentType documentType;
 
-    @Column(name = "date_created", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDatetime;
+	@Column(name = "owner_id", nullable = false)
+	private Integer creatorId;
 
-    @Column(name = "modifier_id", nullable = false)
-    private Integer modifierId;
+	@Column(name = "date_created", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDatetime;
 
-    @Column(name = "date_modified", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedDatetime;
+	@Column(name = "modifier_id", nullable = false)
+	private Integer modifierId;
 
-    @Column(name = "archiver_id")
+	@Column(name = "date_modified", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedDatetime;
+
+	@Column(name = "archiver_id")
     private Integer archiverId;
 
     @Column(name = "archived_datetime")
@@ -220,24 +226,36 @@ public class Meta implements Serializable {
             return toString().toLowerCase().replace('_', ' ');
         }
 
-        public boolean isMorePrivilegedThan(Permission type) {
-            return ordinal() < type.ordinal();
-        }
+	    public boolean isMorePrivilegedThan(Permission type) {
+		    return ordinal() < type.ordinal();
+	    }
 
-        public boolean isAtLeastAsPrivilegedAs(Permission type) {
-            return ordinal() <= type.ordinal();
-        }
+	    public boolean isAtLeastAsPrivilegedAs(Permission type) {
+		    return ordinal() <= type.ordinal();
+	    }
     }
 
-    public Set<Category> getCategories() {
-        return new HashSet<>(this.categories);
-    }
+	public Set<Category> getCategories() {
+		return new HashSet<>(this.categories);
+	}
 
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
-    }
+	public void setCategories(Set<Category> categories) {
+		this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
+	}
 
-    public String getAlias() {
-        return getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-    }
+	/**
+	 * key paired alias with language (e.g. langCode => alias)
+	 */
+	public Map<String, String> getAliases() {
+		final List<Language> languages = Imcms.getServices().getLanguageService().getAvailableLanguages();
+		final Map<String, String> aliases = new HashMap<>();
+
+		languages.forEach(language -> {
+			String key = DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + language.getCode();
+			String value = getProperties().get(key);
+			aliases.put(language.getCode(), StringUtils.defaultString(value));
+		});
+
+		return aliases;
+	}
 }

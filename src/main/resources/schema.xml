@@ -1,24 +1,24 @@
-<schema version="7.5"
+<schema version="7.6"
         xsi:noNamespaceSchemaLocation="schema.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <init version="4.11">
-        <script>imcms_4.11.sql</script>
-    </init>
+	<init version="4.11">
+		<script>imcms_4.11.sql</script>
+	</init>
 
-    <diffs>
-        <diff from="4.8" to="4.9">
-            <script>diff/diff-4.8-4.9-mysql.sql</script>
-        </diff>
-        <diff from="4.9" to="4.10">
-            <script>diff/diff-4.9-4.10-mysql.sql</script>
-        </diff>
-        <diff from="4.10" to="4.11">
-            <script>diff/diff-4.10-4.11-mysql.sql</script>
-        </diff>
-        <diff from="4.11" to="4.12">
-            <script>diff/diff-4.11-4.12-mysql.sql</script>
-        </diff>
+	<diffs>
+		<diff from="4.8" to="4.9">
+			<script>diff/diff-4.8-4.9-mysql.sql</script>
+		</diff>
+		<diff from="4.9" to="4.10">
+			<script>diff/diff-4.9-4.10-mysql.sql</script>
+		</diff>
+		<diff from="4.10" to="4.11">
+			<script>diff/diff-4.10-4.11-mysql.sql</script>
+		</diff>
+		<diff from="4.11" to="4.12">
+			<script>diff/diff-4.11-4.12-mysql.sql</script>
+		</diff>
         <diff from="4.12" to="4.13">
             <script>diff/diff-4.12-4.13-mysql.sql</script>
         </diff>
@@ -322,23 +322,26 @@
         <diff from="6.97" to="6.98">
             <script>diff/diff-6.97-6.98-mysql.sql</script>
         </diff>
-        <diff from="6.98" to="6.99">
-            <script>diff/diff-6.98-6.99-mysql.sql</script>
-        </diff>
-        <diff from="6.99" to="7.1">
-            <script>diff/diff-6.99-7.1-mysql.sql</script>
-        </diff>
-        <diff from="7.1" to="7.2">
-            <script>diff/diff-7.1-7.2-mysql.sql</script>
-        </diff>
-        <diff from="7.2" to="7.3">
-            <script>diff/diff-7.2-7.3-mysql.sql</script>
-        </diff>
-        <diff from="7.3" to="7.4">
-            <script>diff/diff-7.3-7.4-mysql.sql</script>
-        </diff>
-        <diff from="7.4" to="7.5">
-            <script>diff/diff-7.4-7.5-mysql.sql</script>
-        </diff>
-    </diffs>
+		<diff from="6.98" to="6.99">
+			<script>diff/diff-6.98-6.99-mysql.sql</script>
+		</diff>
+		<diff from="6.99" to="7.1">
+			<script>diff/diff-6.99-7.1-mysql.sql</script>
+		</diff>
+		<diff from="7.1" to="7.2">
+			<script>diff/diff-7.1-7.2-mysql.sql</script>
+		</diff>
+		<diff from="7.2" to="7.3">
+			<script>diff/diff-7.2-7.3-mysql.sql</script>
+		</diff>
+		<diff from="7.3" to="7.4">
+			<script>diff/diff-7.3-7.4-mysql.sql</script>
+		</diff>
+		<diff from="7.4" to="7.5">
+			<script>diff/diff-7.4-7.5-mysql.sql</script>
+		</diff>
+		<diff from="7.5" to="7.6">
+			<script>diff/diff-7.5-7.6-mysql.sql</script>
+		</diff>
+	</diffs>
 </schema>
