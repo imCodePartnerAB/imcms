@@ -17,47 +17,50 @@ public class DocumentStoredFieldsDTO {
 
     private Integer id;
 
-    private String title;
+	private String title;
 
-    private Meta.DocumentType type;
+	private Meta.DocumentType type;
 
-    private DocumentStatus documentStatus;
+	private DocumentStatus documentStatus;
 
-    private String alias;
+	private String alias;
 
-    private Integer currentVersion;
+	private Integer currentVersion;
 
-    private Boolean isShownTitle;
+	private Boolean defaultLanguageAliasEnabled;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date created;
+	private Boolean isShownTitle;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date modified;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date created;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date published;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date modified;
 
-    private String createdBy;
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date published;
 
-    private String modifiedBy;
+	private String createdBy;
 
-    private String publishedBy;
+	private String modifiedBy;
+
+	private String publishedBy;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
-        id = from.id();
-        title = from.headline();
-        type = from.documentType();
-        documentStatus = from.documentStatus();
-        alias = from.alias();
-        currentVersion = from.versionNo();
-        isShownTitle = from.isShownTitle();
-        created = from.created();
-        modified = from.modified();
-        published = from.publicationStart();
-        createdBy = from.createdBy();
-        publishedBy = from.publicationStartBy();
-        modifiedBy = from.modifiedBy();
+	    id = from.id();
+	    title = from.headline();
+	    type = from.documentType();
+	    documentStatus = from.documentStatus();
+	    alias = from.alias();
+	    currentVersion = from.versionNo();
+	    defaultLanguageAliasEnabled = from.isDefaultLanguageAliasEnabled();
+	    isShownTitle = from.isShownTitle();
+	    created = from.created();
+	    modified = from.modified();
+	    published = from.publicationStart();
+	    createdBy = from.createdBy();
+	    publishedBy = from.publicationStartBy();
+	    modifiedBy = from.modifiedBy();
     }
 
 }

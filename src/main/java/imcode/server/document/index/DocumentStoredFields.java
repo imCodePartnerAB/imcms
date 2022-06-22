@@ -22,88 +22,94 @@ import static imcode.util.Utility.isDateInPast;
  */
 public class DocumentStoredFields {
 
-    private final SolrDocument solrDocument;
+	private final SolrDocument solrDocument;
 
-    public DocumentStoredFields(SolrDocument solrDocument) {
-        this.solrDocument = solrDocument;
-    }
+	public DocumentStoredFields(SolrDocument solrDocument) {
+		this.solrDocument = solrDocument;
+	}
 
-    public int id() {
-        return Integer.parseInt(solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID).toString());
-    }
+	public int id() {
+		return Integer.parseInt(solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID).toString());
+	}
 
-    public int versionNo() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__VERSION_NO);
-    }
+	public int versionNo() {
+		return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__VERSION_NO);
+	}
 
-    public String headline() {
-        final String currentLanguage = Imcms.getLanguage().getCode();
-        final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+	public String headline() {
+		return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + getCurrentLanguage());
+	}
 
-        final String languageForTitle = isLanguageEnabled(currentLanguage)
-                ? currentLanguage
-                : (isLanguageEnabled(defaultLanguage) && isShownInDefaultLanguage()) ? defaultLanguage : "";
+	public String alias() {
+		return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_ALIAS + "_" + getCurrentLanguage());
+	}
 
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + languageForTitle);
-    }
+	private String getCurrentLanguage() {
+		final String currentLanguage = Imcms.getLanguage().getCode();
+		final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
 
-    private boolean isLanguageEnabled(String languageCode) {
-        return enabledLanguages().contains(languageCode);
-    }
+		return isLanguageEnabled(currentLanguage)
+				? currentLanguage
+				: (isLanguageEnabled(defaultLanguage) && isShownInDefaultLanguage()) ? defaultLanguage : "";
+	}
 
-    public String alias() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__ALIAS);
-    }
+	private boolean isLanguageEnabled(String languageCode) {
+		return enabledLanguages().contains(languageCode);
+	}
 
-    public List<String> languages() {
-        return (List<String>) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
-    }
+	public List<String> languages() {
+		return (List<String>) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
+	}
 
-    public List<String> enabledLanguages() {
-        final Collection<Object> enabledLanguages = solrDocument.getFieldValues(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE);
+	public List<String> enabledLanguages() {
+		final Collection<Object> enabledLanguages = solrDocument.getFieldValues(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE);
 
-        if (enabledLanguages == null) {
-            return Collections.emptyList();
+		if (enabledLanguages == null) {
+			return Collections.emptyList();
         }
 
-        return enabledLanguages.stream()
-                .map(obj -> (String) obj)
-                .collect(Collectors.toList());
-    }
+		return enabledLanguages.stream()
+				.map(obj -> (String) obj)
+				.collect(Collectors.toList());
+	}
 
-    public DocumentType documentType() {
-        final Integer typeOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID);
-        return DocumentType.values()[typeOrdinal];
-    }
+	public DocumentType documentType() {
+		final Integer typeOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID);
+		return DocumentType.values()[typeOrdinal];
+	}
 
-    public PublicationStatus publicationStatus() {
-        final Integer statusOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__STATUS);
-        return PublicationStatus.values()[statusOrdinal];
-    }
+	public PublicationStatus publicationStatus() {
+		final Integer statusOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__STATUS);
+		return PublicationStatus.values()[statusOrdinal];
+	}
 
-    public boolean isShownInDefaultLanguage() {
-        final String disableLanguageShowMode = (String) solrDocument.getFieldValue(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE);
-        return Meta.DisabledLanguageShowMode.valueOf(disableLanguageShowMode) == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-    }
+	public boolean isShownInDefaultLanguage() {
+		final String disableLanguageShowMode = (String) solrDocument.getFieldValue(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE);
+		return Meta.DisabledLanguageShowMode.valueOf(disableLanguageShowMode) == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+	}
 
-    public boolean isShownTitle() {
-        final String currentLanguage = Imcms.getLanguage().getCode();
-        final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+	public boolean isDefaultLanguageAliasEnabled() {
+		return (boolean) solrDocument.getFieldValue(DocumentIndex.FIELD__DEFAULT_LANGUAGE_ALIAS_ENABLED);
+	}
 
-        return isLanguageEnabled(currentLanguage) || (isShownInDefaultLanguage() && isLanguageEnabled(defaultLanguage));
-    }
+	public boolean isShownTitle() {
+		final String currentLanguage = Imcms.getLanguage().getCode();
+		final String defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
 
-    public Date created() {
-        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
-    }
+		return isLanguageEnabled(currentLanguage) || (isShownInDefaultLanguage() && isLanguageEnabled(defaultLanguage));
+	}
 
-    public String createdBy() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
-    }
+	public Date created() {
+		return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
+	}
 
-    public Date modified() {
-        return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
-    }
+	public String createdBy() {
+		return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATOR_NAME);
+	}
+
+	public Date modified() {
+		return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
+	}
 
     public String modifiedBy() {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIER_NAME);

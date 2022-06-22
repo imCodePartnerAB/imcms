@@ -91,14 +91,15 @@ public class DocumentSearchQueryConverter {
 
         final String finalTerm = term;
         return Arrays.stream(new String[]{
-                                DocumentIndex.FIELD__META_ID,
-                                DocumentIndex.FIELD_META_HEADLINE + "_" + language,
-                                DocumentIndex.FIELD__META_HEADLINE + "_" + language,
-                                DocumentIndex.FIELD__META_TEXT,
-                                DocumentIndex.FIELD__KEYWORD,
-                                DocumentIndex.FIELD__TEXT,
-                                DocumentIndex.FIELD__ALIAS,
-                                DocumentIndex.FIELD__URL})
+				        DocumentIndex.FIELD__META_ID,
+				        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
+				        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
+				        DocumentIndex.FIELD__META_TEXT,
+				        DocumentIndex.FIELD__KEYWORD,
+				        DocumentIndex.FIELD__TEXT,
+				        DocumentIndex.FIELD__META_ALIAS + "_" + language,
+				        DocumentIndex.FIELD_META_ALIAS + "_" + language,
+				        DocumentIndex.FIELD__URL})
                         .map(field -> String.format("%s:(%s)", field, finalTerm))
                         .collect(Collectors.joining(" "));
     }

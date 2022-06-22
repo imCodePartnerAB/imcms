@@ -69,53 +69,54 @@
         <!--
         indicate when each document was indexed.
         -->
-        <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
+	    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
 
-             <!-- language code - i.e en, se -->
-        <field name="language" type="text_general" indexed="true" stored="true" required="true" multiValued="true"/>
-        <field name="enabled_language" type="string" indexed="false" stored="true" multiValued="true"/>
+	    <!-- language code - i.e en, se -->
+	    <field name="language" type="text_general" indexed="true" stored="true" required="true" multiValued="true"/>
+	    <field name="enabled_language" type="string" indexed="false" stored="true" multiValued="true"/>
 
-        <!--
-            Should be of type int.
-            Unfortunately some legacy imCMS clients use this field in queries with text value.
-         -->
-        <field name="meta_id" type="string" indexed="true" stored="true" required="true"/>
-        <field name="version_no" type="int" indexed="true" stored="true" required="true"/>
-        <field name="search_enabled" type="boolean" indexed="true" stored="false" required="true"/>
+	    <!--
+			Should be of type int.
+			Unfortunately some legacy imCMS clients use this field in queries with text value.
+		 -->
+	    <field name="meta_id" type="string" indexed="true" stored="true" required="true"/>
+	    <field name="version_no" type="int" indexed="true" stored="true" required="true"/>
+	    <field name="search_enabled" type="boolean" indexed="true" stored="false" required="true"/>
 
-        <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="visible" type="boolean" indexed="true" stored="false" required="true"/>
+	    <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
+	    <field name="visible" type="boolean" indexed="true" stored="false" required="true"/>
 
-        <field name="meta_headline" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="meta_headline_keyword" type="string" indexed="true" stored="false" multiValued="true"/>
-        <field name="meta_text" type="string" indexed="true" stored="false" multiValued="true"/>
-        <field name="doc_type_id" type="int" indexed="true" stored="true"/>
-        <field name="creator_id" type="int" indexed="true" stored="false"/>
-        <field name="publisher_id" type="int" indexed="true" stored="false"/>
-        <field name="creator_name" type="string" indexed="false" stored="true"/>
-        <field name="modifier_name" type="string" indexed="false" stored="true"/>
-        <field name="publisher_name" type="string" indexed="false" stored="true"/>
-        <field name="created_datetime" type="date" indexed="true" stored="true"/>
-        <field name="modified_datetime" type="date" indexed="true" stored="true"/>
-        <field name="activated_datetime" type="date" indexed="true" stored="true"/>
-        <field name="publication_start_datetime" type="date" indexed="true" stored="true"/>
-        <field name="publication_end_datetime" type="date" indexed="true" stored="true"/>
-        <field name="archived_datetime" type="date" indexed="true" stored="true"/>
-        <field name="disabled_language_show_mode" type="string" indexed="false" stored="true"/>
-        <!-- publication status -->
-        <field name="status" type="int" indexed="true" stored="true"/>
-        <!-- file-doc field -->
-        <field name="mime_type" type="text_general" indexed="true" stored="false"/>
-        <!-- category name -->
-        <field name="category" type="text_general" indexed="true" stored="false" multiValued="true"/>
-        <field name="category_id" type="int" indexed="true" stored="false" multiValued="true"/>
+	    <field name="meta_headline" type="string" indexed="true" stored="true" multiValued="true"/>
+	    <field name="meta_headline_keyword" type="string" indexed="true" stored="false" multiValued="true"/>
+	    <field name="meta_text" type="string" indexed="true" stored="false" multiValued="true"/>
+	    <field name="meta_alias" type="string" indexed="true" stored="true" multiValued="true"/>
+	    <field name="doc_type_id" type="int" indexed="true" stored="true"/>
+	    <field name="creator_id" type="int" indexed="true" stored="false"/>
+	    <field name="publisher_id" type="int" indexed="true" stored="false"/>
+	    <field name="creator_name" type="string" indexed="false" stored="true"/>
+	    <field name="modifier_name" type="string" indexed="false" stored="true"/>
+	    <field name="publisher_name" type="string" indexed="false" stored="true"/>
+	    <field name="created_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="modified_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="activated_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="publication_start_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="publication_end_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="archived_datetime" type="date" indexed="true" stored="true"/>
+	    <field name="disabled_language_show_mode" type="string" indexed="false" stored="true"/>
+	    <field name="default_language_alias_enabled" type="boolean" indexed="false" stored="true"/>
+	    <!-- publication status -->
+	    <field name="status" type="int" indexed="true" stored="true"/>
+	    <!-- file-doc field -->
+	    <field name="mime_type" type="text_general" indexed="true" stored="false"/>
+	    <!-- category name -->
+	    <field name="category" type="text_general" indexed="true" stored="false" multiValued="true"/>
+	    <field name="category_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="category_type" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="category_type_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="keyword" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_menu_id" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
-        <field name="alias" type="string" indexed="true" stored="true"/>
 
         <field name="parents_count" type="int" indexed="true" stored="true" default="0"/>
         <field name="children_count" type="int" indexed="true" stored="true" default="0"/>
@@ -129,28 +130,30 @@
         <field name="template" type="text_general" indexed="true" stored="false"/>
         <field name="nonstripped_text" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="text" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
-        <field name="child_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="has_children" type="boolean" indexed="true" stored="false"/>
-        <field name="image_link_url" type="text_general" indexed="true" stored="false" multiValued="true"/>
+	    <field name="child_id" type="int" indexed="true" stored="false" multiValued="true"/>
+	    <field name="has_children" type="boolean" indexed="true" stored="false"/>
+	    <field name="image_link_url" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
-        <!-- Dynamic field definitions allow using convention over configuration
-            for fields via the specification of patterns to match field names.
-            EXAMPLE:  name="*_i" will match any field ending in _i (like myid_i, z_i)
-            RESTRICTION: the glob-like pattern in the name attribute must have
-            a "*" only at the start or the end.  -->
+	    <!-- Dynamic field definitions allow using convention over configuration
+			for fields via the specification of patterns to match field names.
+			EXAMPLE:  name="*_i" will match any field ending in _i (like myid_i, z_i)
+			RESTRICTION: the glob-like pattern in the name attribute must have
+			a "*" only at the start or the end.  -->
 
-        <dynamicField name="property.*" type="text_general" indexed="true" stored="false"/>
-        <!-- text-doc field, name: text+textNo (including text in a loop) -->
-        <dynamicField name="text*" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
+	    <dynamicField name="property.*" type="text_general" indexed="true" stored="false"/>
+	    <!-- text-doc field, name: text+textNo (including text in a loop) -->
+	    <dynamicField name="text*" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
 
-        <dynamicField name="meta_headline_*" type="string" indexed="true" stored="true"/>
-        <dynamicField name="meta_headline_keyword_*" type="string" indexed="true" stored="false"/>
-        <dynamicField name="meta_text_*" type="string" indexed="true" stored="false"/>
-        <!-- uncomment the following to ignore any fields that don't already match an existing
-             field name or dynamic field, rather than reporting them as an error.
-             alternately, change the type="ignored" to some other type e.g. "text" if you want
-             unknown fields indexed and/or stored by default -->
-        <!--dynamicField name="*" type="ignored" multiValued="true" /-->
+	    <dynamicField name="meta_headline_*" type="string" indexed="true" stored="true"/>
+	    <dynamicField name="meta_headline_keyword_*" type="string" indexed="true" stored="false"/>
+	    <dynamicField name="meta_text_*" type="string" indexed="true" stored="false"/>
+	    <dynamicField name="meta_alias_*" type="string" indexed="true" stored="true"/>
+	    <dynamicField name="meta_alias_keyword_*" type="string" indexed="true" stored="false"/>
+	    <!-- uncomment the following to ignore any fields that don't already match an existing
+			 field name or dynamic field, rather than reporting them as an error.
+			 alternately, change the type="ignored" to some other type e.g. "text" if you want
+			 unknown fields indexed and/or stored by default -->
+	    <!--dynamicField name="*" type="ignored" multiValued="true" /-->
     </fields>
 
     <!-- Field to use to determine and enforce document uniqueness.
