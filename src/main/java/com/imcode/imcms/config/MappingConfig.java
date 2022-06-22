@@ -288,7 +288,8 @@ class MappingConfig {
 
             meta.setId(documentDTO.getId());
             meta.setDefaultVersionNo(version); // fixme: save or check version first
-            meta.setPublicationStatus(documentDTO.getPublicationStatus());
+	        meta.setDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
+	        meta.setPublicationStatus(documentDTO.getPublicationStatus());
             meta.setTarget(documentDTO.getTarget());
             meta.setDocumentType(documentDTO.getType());
             meta.setKeywords(documentDTO.getKeywords());
@@ -315,7 +316,7 @@ class MappingConfig {
 	        meta.setArchivedDatetime(archivationDate);
 
 	        final AuditDTO publicationDto = documentDTO.getPublished();
-			final Date publicationDate = publicationDto.getFormattedDate();
+	        final Date publicationDate = publicationDto.getFormattedDate();
 	        meta.setPublisherId(publicationDate == null ? null : currentUserId);
 	        meta.setPublicationStartDatetime(publicationDate);
 
@@ -324,18 +325,23 @@ class MappingConfig {
 	        meta.setDepublisherId(publicationEndDate == null ? null : currentUserId);
 	        meta.setPublicationEndDatetime(publicationEndDate);
 
-            meta.setProperties(documentDTO.getProperties());
-            meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+	        meta.setProperties(documentDTO.getProperties());
 
-            meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
-            meta.setSearchDisabled(documentDTO.isSearchDisabled());
+	        documentDTO.getCommonContents().forEach(commonContent -> {
+		        final String languageCode = commonContent.getLanguage().getCode();
+		        final String alias = commonContent.getAlias();
+		        meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + languageCode, alias);
+	        });
 
-            final Set<Category> categories = documentDTO.getCategories()
-                    .stream()
-                    .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toSet());
+	        meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
+	        meta.setSearchDisabled(documentDTO.isSearchDisabled());
+
+	        final Set<Category> categories = documentDTO.getCategories()
+			        .stream()
+			        .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
+			        .filter(Optional::isPresent)
+			        .map(Optional::get)
+			        .collect(Collectors.toSet());
 
             meta.setCategories(categories);
 
@@ -378,9 +384,9 @@ class MappingConfig {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
             dto.setId(metaId);
-            dto.setTarget(meta.getTarget());
-            dto.setAlias(meta.getAlias());
-            dto.setPublicationStatus(meta.getPublicationStatus());
+	        dto.setTarget(meta.getTarget());
+	        dto.setDefaultLanguageAliasEnabled(meta.isDefaultLanguageAliasEnabled());
+	        dto.setPublicationStatus(meta.getPublicationStatus());
             dto.setCommonContents(commonContents);
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));

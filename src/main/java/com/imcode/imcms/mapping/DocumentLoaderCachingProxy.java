@@ -24,9 +24,7 @@ import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -35,27 +33,27 @@ import java.util.stream.Stream;
 @Slf4j
 public class DocumentLoaderCachingProxy {
 
-    private final DocumentVersionMapper versionMapper;
-    private final DocumentLoader loader;
-    private final DocumentLanguages documentLanguages;
-    private final PropertyService propertyService;
-    private final DocumentsCache documentsCache;
-    private final int size;
-    private final CacheWrapper<Integer, DocumentMeta> metas;
-    private final CacheWrapper<Integer, DocumentVersionInfo> versionInfos;
-    private final CacheWrapper<DocCacheKey, DocumentDomainObject> workingDocs;
-    private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
-    private final CacheWrapper<String, Integer> aliasesToIds;
-    private final CacheWrapper<Integer, String> idsToAliases;
-    private final CacheWrapper<MenuCacheKey, MenuDTO> menuDTO;
-    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
-    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
-    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> sortedMenuItems;
-    private final CacheWrapper<MenuCacheKey, String> visibleMenuAsHtml;
-    private final CacheWrapper<MenuCacheKey, String> publicMenuAsHtml;
-    private final CacheManager cacheManager = CacheManager.create();
+	private final DocumentVersionMapper versionMapper;
+	private final DocumentLoader loader;
+	private final DocumentLanguages documentLanguages;
+	private final PropertyService propertyService;
+	private final DocumentsCache documentsCache;
+	private final int size;
+	private final CacheWrapper<Integer, DocumentMeta> metas;
+	private final CacheWrapper<Integer, DocumentVersionInfo> versionInfos;
+	private final CacheWrapper<DocCacheKey, DocumentDomainObject> workingDocs;
+	private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
+	private final CacheWrapper<String, Integer> aliasesToIds;
+	private final CacheWrapper<Integer, Set<String>> idsToAliases;
+	private final CacheWrapper<MenuCacheKey, MenuDTO> menuDTO;
+	private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
+	private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
+	private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> sortedMenuItems;
+	private final CacheWrapper<MenuCacheKey, String> visibleMenuAsHtml;
+	private final CacheWrapper<MenuCacheKey, String> publicMenuAsHtml;
+	private final CacheManager cacheManager = CacheManager.create();
 
-    private final List<Ehcache> menuCaches;
+	private final List<Ehcache> menuCaches;
 
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper,
                                       DocumentLoader loader,
@@ -128,13 +126,18 @@ public class DocumentLoaderCachingProxy {
      */
     public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, () -> {
-            Integer docId = propertyService.getDocIdByAlias(docAlias);
+	        Integer docId = propertyService.getDocIdByAlias(docAlias);
 
-            if (docId != null) {
-                idsToAliases.put(docId, docAlias);
-            }
+	        if (docId != null) {
+		        Optional.ofNullable(idsToAliases.get(docId)).ifPresentOrElse(aliases -> {
+			        aliases.add(docAlias);
+			        idsToAliases.put(docId, aliases);
+		        }, () -> {
+			        idsToAliases.put(docId, new HashSet<>(List.of(docAlias)));
+		        });
+	        }
 
-            return docId;
+	        return docId;
         });
     }
 
@@ -209,23 +212,23 @@ public class DocumentLoaderCachingProxy {
 
     public void removeDocFromCache(int docId) {
         metas.remove(docId);
-        versionInfos.remove(docId);
+	    versionInfos.remove(docId);
 
-        documentLanguages.getCodes().forEach(code -> {
-            DocCacheKey key = new DocCacheKey(docId, code);
+	    documentLanguages.getCodes().forEach(code -> {
+		    DocCacheKey key = new DocCacheKey(docId, code);
 
-            workingDocs.remove(key);
-            defaultDocs.remove(key);
-            invalidateMenuItemsCacheBy(docId);
-        });
+		    workingDocs.remove(key);
+		    defaultDocs.remove(key);
+		    invalidateMenuItemsCacheBy(docId);
+	    });
 
-        Optional<String> aliasCurrentDoc = Optional.ofNullable(idsToAliases.get(docId));
-        aliasCurrentDoc.ifPresent(alias -> {
-            idsToAliases.remove(docId);
-            aliasesToIds.remove(alias);
-        });
+	    Optional<Set<String>> aliasCurrentDoc = Optional.ofNullable(idsToAliases.get(docId));
+	    aliasCurrentDoc.ifPresent(aliases -> {
+		    idsToAliases.remove(docId);
+		    aliases.forEach(aliasesToIds::remove);
+	    });
 
-        documentsCache.invalidateDoc(docId, aliasCurrentDoc.orElse(null));
+	    documentsCache.invalidateDoc(docId, aliasCurrentDoc.orElse(null));
     }
 
     public MenuDTO getMenuItems(final MenuCacheKey menuCacheKey,

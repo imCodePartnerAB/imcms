@@ -1,12 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.PropertyService;
@@ -19,13 +14,7 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentReference;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -46,25 +35,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
-import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
-import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
-import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
+import static imcode.server.ImcmsConstants.*;
 
 @Transactional
 @Service
@@ -479,8 +455,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
         List<DocumentDomainObject> newDocs = new LinkedList<>();
 
         makeDocumentLookNew(documentMeta, user);
-        documentMeta.setId(null);
-        documentMeta.removeAlias();
+	    documentMeta.setId(null);
+	    documentMeta.removeAliases();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();

@@ -49,8 +49,8 @@ public class DocumentLoader {
         DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
 
         document.setCommonContent(dcc != null
-                ? dcc
-                : DocumentCommonContent.builder().headline("").menuText("").build()
+		        ? dcc
+		        : DocumentCommonContent.builder().alias("").headline("").menuText("").build()
         );
         document.accept(documentContentInitializingVisitor);
 
@@ -91,8 +91,9 @@ public class DocumentLoader {
         metaDO.setCategories(meta.getCategories());
         metaDO.setCreatedDatetime(meta.getCreatedDatetime());
         metaDO.setCreatorId(meta.getCreatorId());
-        metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
-        metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
+	    metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
+	    metaDO.setDefaultLanguageAliasEnabled(meta.isDefaultLanguageAliasEnabled());
+	    metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
         metaDO.setDocumentTypeId(meta.getDocumentType().ordinal());
         metaDO.setId(meta.getId());
         metaDO.setKeywords(meta.getKeywords());

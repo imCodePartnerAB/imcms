@@ -349,15 +349,17 @@ public class DocumentSaver {
     }
 
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
-        String alias = document.getAlias();
+	    final Collection<String> aliases = document.getAliases().values();
 
-        if (StringUtils.isNotBlank(alias)) {
-            Integer documentId = propertyService.getDocIdByAlias(alias);
-            if (documentId != null && !documentId.equals(document.getId())) {
-                throw new AliasAlreadyExistsInternalException(
-                        String.format("Alias %s is already in use by document %d.", alias, documentId));
-            }
-        }
+	    for (String alias : aliases) {
+		    if (StringUtils.isNotBlank(alias)) {
+			    Integer documentId = propertyService.getDocIdByAlias(alias);
+			    if (documentId != null && !documentId.equals(document.getId())) {
+				    throw new AliasAlreadyExistsInternalException(
+						    String.format("Alias %s is already in use by document %d.", alias, documentId));
+			    }
+		    }
+	    }
     }
 
     // todo: check permission
@@ -369,10 +371,11 @@ public class DocumentSaver {
         meta.setCategories(metaDO.getCategories());
         meta.setCreatedDatetime(metaDO.getCreatedDatetime());
         meta.setCreatorId(metaDO.getCreatorId());
-        meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
-        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
-                metaDO.getDisabledLanguageShowMode().name()
-        ));
+	    meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
+	    meta.setDefaultLanguageAliasEnabled(metaDO.getDefaultLanguageAliasEnabled());
+	    meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
+			    metaDO.getDisabledLanguageShowMode().name()
+	    ));
         meta.setDocumentType(DocumentType.values()[metaDO.getDocumentTypeId()]);
         meta.setId(metaDO.getId());
         meta.setKeywords(metaDO.getKeywords());

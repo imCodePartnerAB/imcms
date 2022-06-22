@@ -18,6 +18,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -145,20 +143,22 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
 	    final Integer id = saveMe.getId();
 	    final boolean isNew = (saveMe.getId() == null);
-	    final String newAlias = saveMe.getAlias();
-	    final UserDomainObject currentUser = Imcms.getUser();
 
-	    if (!Objects.equals(newAlias, "")) {
-		    Integer documentId = propertyService.getDocIdByAlias(newAlias);
-		    if (documentId != null && !documentId.equals(id)) {
-			    saveMe.setAlias("");
+	    saveMe.getCommonContents().forEach(commonContent -> {
+		    final String alias = commonContent.getAlias();
+		    if (!Objects.equals(alias, "")) {
+			    Integer documentId = propertyService.getDocIdByAlias(alias);
+			    if (documentId != null && !documentId.equals(id)) {
+				    commonContent.setAlias("");
+			    }
 		    }
-	    }
+	    });
 
 	    if (!isNew) {
-		    final String oldAlias = metaRepository.getOne(id).getAlias();
+		    final List<String> oldAliases = new ArrayList<>(metaRepository.getOne(id).getAliases().values());
+		    final List<String> newAliases = saveMe.getCommonContents().stream().map(CommonContent::getAlias).collect(Collectors.toList());
 
-		    if (!Objects.equals(oldAlias, newAlias)) {
+		    if (!CollectionUtils.isEqualCollection(newAliases, oldAliases)) {
 			    documentMapper.invalidateDocument(id);
 		    }
 	    }
@@ -197,24 +197,27 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public boolean publishDocument(int docId, int userId) {
-        if (!versionService.hasNewerVersion(docId)) return false;
+	    if (!versionService.hasNewerVersion(docId)) return false;
 
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-        final Version newVersion = versionService.create(docId, userId);
+	    final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+	    final Version newVersion = versionService.create(docId, userId);
 
-        versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
+	    versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
 
 	    final Meta publishMe = metaRepository.getOne(docId);
-        documentsCache.invalidateDoc(docId, publishMe.getAlias());
-        imageCacheManager.removePublicImagesFromCacheByKey(String.valueOf(docId));
 
-        if (Meta.PublicationStatus.NEW.equals(publishMe.getPublicationStatus())) {
-            publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
-        }
+	    final Collection<String> aliases = publishMe.getAliases().values();
 
-        publishMe.setDefaultVersionNo(newVersion.getNo());
+	    documentsCache.invalidateDoc(docId, aliases);
+	    imageCacheManager.removePublicImagesFromCacheByKey(String.valueOf(docId));
 
-        final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
+	    if (Meta.PublicationStatus.NEW.equals(publishMe.getPublicationStatus())) {
+		    publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
+	    }
+
+	    publishMe.setDefaultVersionNo(newVersion.getNo());
+
+	    final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
 
 	    if (publicationStartDatetime == null) {
 		    publishMe.setPublisherId(userId);
@@ -242,25 +245,32 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__META_ID, docId);
         indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, currentVersionDocNo);
         indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
-        indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode().name());
+	    indexDoc.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, doc.getDisabledLanguageShowMode().name());
+	    indexDoc.addField(DocumentIndex.FIELD__DEFAULT_LANGUAGE_ALIAS_ENABLED, doc.isDefaultLanguageAliasEnabled());
 
         for (CommonContent commonContent : doc.getCommonContents()) {
             String headline = StringUtils.defaultString(commonContent.getHeadline());
-            String menuText = commonContent.getMenuText();
+	        String menuText = commonContent.getMenuText();
+	        String alias = StringUtils.defaultString(commonContent.getAlias());
 
+	        final String langCode = commonContent.getLanguage().getCode();
+	        indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
+	        indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
+	        //copied for search ignore case sensitivity
+	        indexDoc.addField(DocumentIndex.FIELD_META_HEADLINE + "_" + langCode, headline.toLowerCase());
 
-            final String langCode = commonContent.getLanguage().getCode();
-            indexDoc.addField(DocumentIndex.FIELD__LANGUAGE_CODE, langCode);
-            indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode, headline);
-            //copied for search ignore case sensitivity
-            indexDoc.addField(DocumentIndex.FIELD_META_HEADLINE + "_" + langCode, headline.toLowerCase());
+	        indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD + "_" + langCode, headline);
+	        indexDoc.addField(DocumentIndex.FIELD__META_TEXT + "_" + langCode, menuText);
 
-            indexDoc.addField(DocumentIndex.FIELD__META_HEADLINE_KEYWORD + "_" + langCode, headline);
-            indexDoc.addField(DocumentIndex.FIELD__META_TEXT + "_" + langCode, menuText);
+	        indexDoc.addField(DocumentIndex.FIELD__META_ALIAS + "_" + langCode, alias);
+	        //copied for search ignore case sensitivity
+	        indexDoc.addField(DocumentIndex.FIELD_META_ALIAS + "_" + langCode, alias.toLowerCase());
 
-            if (commonContent.isEnabled()) {
-                indexDoc.addField(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE, langCode);
-            }
+	        indexDoc.addField(DocumentIndex.FIELD__META_ALIAS_KEYWORD + "_" + langCode, alias);
+
+	        if (commonContent.isEnabled()) {
+		        indexDoc.addField(DocumentIndex.FIELD__ENABLED_LANGUAGE_CODE, langCode);
+	        }
         }
 
         indexDoc.addField(DocumentIndex.FIELD__DOC_TYPE_ID, doc.getType().ordinal());
@@ -298,8 +308,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         doc.getKeywords().
                 forEach(documentKeyword -> indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword));
-
-        addFieldIfNotNull.accept(DocumentIndex.FIELD__ALIAS, doc.getAlias());
 
         doc.getProperties()
                 .forEach((key, value) -> indexDoc.addField(DocumentIndex.FIELD__PROPERTY_PREFIX + key, value));

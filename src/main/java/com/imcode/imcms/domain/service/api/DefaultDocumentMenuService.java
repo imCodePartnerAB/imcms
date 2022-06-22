@@ -17,7 +17,6 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,14 +72,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, currentVersion, commonContentList);
 
-        final String documentDTOAlias = documentDTO.getAlias();
-
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(docId);
         menuItemDTO.setType(documentDTO.getType());
         menuItemDTO.setTitle(getHeadlineInCorrectLanguage(documentDTO));
-        menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
-        menuItemDTO.setTarget(documentDTO.getTarget());
+	    menuItemDTO.setLink("/" + documentDTO.getName());
+	    menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
         menuItemDTO.setCreatedDate(documentDTO.getCreated().getFormattedDate());
         menuItemDTO.setPublishedDate(documentDTO.getPublished().getFormattedDate());
@@ -88,8 +85,9 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setCreatedBy(documentDTO.getCreated().getBy());
         menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
         menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
-        menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
-        menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
+	    menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
+	    menuItemDTO.setIsDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
+	    menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
         menuItemDTO.setSortOrder(menuItem.getSortOrder());
 
         return menuItemDTO;
