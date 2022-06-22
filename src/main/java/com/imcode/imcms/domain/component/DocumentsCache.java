@@ -4,6 +4,7 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.constructs.web.PageInfo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -20,7 +21,7 @@ public interface DocumentsCache {
 
     PageInfo getPageInfoFromCache(String key);
 
-    void invalidateDoc(Integer id, String alias);
+	void invalidateDoc(Integer id, Collection<String> aliases);
 
     void invalidateItem(String key);
 

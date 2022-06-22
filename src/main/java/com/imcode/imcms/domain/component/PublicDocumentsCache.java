@@ -3,12 +3,12 @@ package com.imcode.imcms.domain.component;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -81,17 +76,19 @@ public class PublicDocumentsCache implements DocumentsCache {
         return documentIdString + "-" + langCode;
     }
 
-    @Override
-    public void invalidateDoc(Integer id, String alias) {
-        if (cache == null) return;
+	@Override
+	public void invalidateDoc(Integer id, Collection<String> aliases) {
+		if (cache == null) return;
 
-        for (String language : languages) {
-            cache.remove(calculateKey(String.valueOf(id), language));
+		for (String language : languages) {
+			cache.remove(calculateKey(String.valueOf(id), language));
 
-            if (StringUtils.isNotBlank(alias)) {
-                cache.remove(calculateKey(alias, language));
-            }
-        }
+			if (CollectionUtils.isNotEmpty(aliases)) {
+				for (String alias : aliases) {
+					cache.remove(calculateKey(alias, language));
+				}
+			}
+		}
     }
 
     @Override

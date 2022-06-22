@@ -8,19 +8,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping("/document-cache")
 public class PublicDocumentCacheController {
 
-    private final DocumentsCache documentsCache;
+	private final DocumentsCache documentsCache;
 
-    public PublicDocumentCacheController(DocumentsCache documentsCache) {
-        this.documentsCache = documentsCache;
-    }
+	public PublicDocumentCacheController(DocumentsCache documentsCache) {
+		this.documentsCache = documentsCache;
+	}
 
-    @GetMapping("/invalidate")
-    @CheckAccess(docPermission = AccessContentType.DOC_INFO)
-    public void invalidateCache(@RequestParam int docId, @RequestParam(required = false) String alias) {
-        documentsCache.invalidateDoc(docId, alias);
-    }
+	@GetMapping("/invalidate")
+	@CheckAccess(docPermission = AccessContentType.DOC_INFO)
+	public void invalidateCache(@RequestParam int docId, @RequestParam(required = false) Collection<String> aliases) {
+		documentsCache.invalidateDoc(docId, aliases);
+	}
 }
