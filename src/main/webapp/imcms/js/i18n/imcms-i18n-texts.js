@@ -112,17 +112,18 @@ const texts = {
                 title: "Rubrik",
                 menuText: "Menytext",
                 chooseImage: "Välj bild",
-                showIn: "Visa i",
-                sameFrame: "Samma ram",
-                newWindow: "Nytt fönster",
-                replaceAll: "Ersätt alla",
-                alias: "Förenklad adress",
-                aliasPlaceholder: "detta-dokument-alias",
-                makeSuggestion: 'Ge ett förslag',
-                confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
-                missingLangRuleTitle: "Om det begärda språket saknas:",
-                showInDefault: "Visa i standardspråk om det är aktiverat",
-                doNotShow: "Visa inte alls"
+	            showIn: "Visa i",
+	            sameFrame: "Samma ram",
+	            newWindow: "Nytt fönster",
+	            replaceAll: "Ersätt alla",
+	            alias: "Förenklad adress",
+	            aliasPlaceholder: "detta-dokument-alias",
+	            makeSuggestion: 'Ge ett förslag',
+	            confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
+	            missingLangRuleTitle: "Om det begärda språket saknas:",
+	            showInDefault: "Visa i standardspråk om det är aktiverat",
+	            doNotShow: "Visa inte alls",
+	            useDefaultLanguageAlias: "Använd standardspråkalias för alla språk!"
             },
             lifeCycle: {
                 name: "Livscykel",
@@ -244,8 +245,8 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
 	            loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
-	            duplicateAlias: 'Aliaset används redan på ett annat dokument',
-                noAccess: "Ingen tillgång till sidinformation"
+	            duplicateAlias: 'Dokumentet innehåller dubblettalias i: ',
+	            noAccess: "Ingen tillgång till sidinformation"
             },
             allData:{
                 name: 'All Data',
@@ -1119,17 +1120,18 @@ const texts = {
                 title: "Title",
                 menuText: "Menu text",
                 chooseImage: "choose...",
-                showIn: "Show in",
-                sameFrame: "Same frame",
-                newWindow: "New window",
-                replaceAll: "Replace all",
-                alias: "Simplified address",
-                aliasPlaceholder: "your-simplified-address",
-                makeSuggestion: 'Make a suggestion',
-                confirmOverwritingAlias: 'Do you want to overwrite current alias?',
-                missingLangRuleTitle: "If requested language is missing:",
-                showInDefault: "Show in default language if enabled",
-                doNotShow: "Don't show at all"
+	            showIn: "Show in",
+	            sameFrame: "Same frame",
+	            newWindow: "New window",
+	            replaceAll: "Replace all",
+	            alias: "Simplified address",
+	            aliasPlaceholder: "your-simplified-address",
+	            makeSuggestion: 'Make a suggestion',
+	            confirmOverwritingAlias: 'Do you want to overwrite current alias?',
+	            missingLangRuleTitle: "If requested language is missing:",
+	            showInDefault: "Show in default language if enabled",
+	            doNotShow: "Don't show at all",
+	            useDefaultLanguageAlias: "Use default language alias for all languages!"
             },
             lifeCycle: {
                 name: "Life Cycle",
@@ -1251,9 +1253,9 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
 	            loadDocumentFailed: 'Failed to load. Maybe you do not have access',
-	            duplicateAlias: 'The alias is already in use on another document',
-                loadRolesFailed: "Failed to fetch roles",
-                noAccess: "No access to page info"
+	            duplicateAlias: 'The document contains duplicate alias in: ',
+	            loadRolesFailed: "Failed to fetch roles",
+	            noAccess: "No access to page info"
             },
             allData:{
                 name: 'All Data',

@@ -23,72 +23,74 @@ define("imcms-appearance-tab-builder",
 
         const tabData = {};
 
-        function buildDocumentAliasBlock() {
-            const $aliasTitle = components.texts.titleText("<div>", texts.alias);
+        function buildDocumentAliasBlock(commonContent) {
+	        const $aliasTitle = components.texts.titleText("<div>", texts.alias);
 
-            const $aliasPrefix = components.texts.titleText("<div>", "/", {
-                class: "imcms-flex--mb-0"
-            });
-            $aliasPrefix.css('line-height', '46px');
+	        const $aliasPrefix = components.texts.titleText("<div>", "/", {
+		        class: "imcms-flex--mb-0"
+	        });
+	        $aliasPrefix.css('line-height', '46px');
 
-            tabData.$documentAlias = components.texts.textBox("<div>", {
-                placeholder: texts.aliasPlaceholder,
-                class: "imcms-flex--w-50"
-            });
+	        const $documentAlias = components.texts.textBox("<div>", {
+		        value: commonContent.docId ? commonContent.alias : '',
+		        placeholder: texts.aliasPlaceholder,
+		        class: "imcms-flex--w-50"
+	        });
 
-            const $suggestAliasButton = components.buttons.positiveButton({
-                text: texts.makeSuggestion,
-                click: () => writeSuggestedAliasToTextInput(tabData.$documentAlias),
-                class: "imcms-flex--ml-auto"
-            });
+	        const $suggestAliasButton = components.buttons.positiveButton({
+		        text: texts.makeSuggestion,
+		        click: () => writeSuggestedAliasToTextInput($documentAlias, commonContent),
+		        class: "imcms-flex--ml-auto"
+	        });
 
-            const $aliasRow = new BEM({
-                block: "imcms-field",
+	        const $aliasRow = new BEM({
+		        block: "imcms-field",
                 elements: {
-                    "item": [$aliasPrefix, tabData.$documentAlias, $suggestAliasButton],
+	                "item": [$aliasPrefix, $documentAlias, $suggestAliasButton],
                 }
-            }).buildBlockStructure('<div>', {
-                class: "imcms-flex--d-flex imcms-flex--p-0"
-            });
+	        }).buildBlockStructure('<div>', {
+		        class: "imcms-flex--d-flex imcms-flex--p-0"
+	        });
 
-            return pageInfoInnerStructureBEM.buildBlock("<div>", [
-                {"title": $aliasTitle},
-                {"item": $aliasRow},
-            ]);
+	        const $aliasBlock = pageInfoInnerStructureBEM.buildBlock("<div>", [
+		        {"title": $aliasTitle},
+		        {"item": $aliasRow},
+	        ]);
+
+	        $.extend($aliasBlock, {
+		        getValue: () => $documentAlias.getValue(),
+		        setValue: (alias) => $documentAlias.setValue(alias)
+	        })
+
+	        return $aliasBlock;
         }
 
-        function writeSuggestedAliasToTextInput(textInput) {
-            const filteredCommonContents = tabData.commonContents.filter(element => element.pageTitle.getValue());
+	    function writeSuggestedAliasToTextInput($documentAlias, commonContent) {
+		    const $commonContent = tabData.commonContents.find(element => element.name === commonContent.language.name);
+		    const content = $commonContent.pageTitle.getValue();
 
-            if (filteredCommonContents.length === 0) {
-                return;
-            }
+		    const title = content
+			    .trim()
+			    .toLowerCase()
+			    .replace(/[äå]/g, "a")
+			    .replace(/ö/g, "o")
+			    .replace(/é/g, "e")
+			    .replace(/ +/g, "-")
+			    .replace(/[^\w\-]+/g, "");
 
-            const $commonContent = filteredCommonContents.find(element => element.name === "English")
-                || filteredCommonContents[0];
-
-            const content = $commonContent.pageTitle.getValue();
-
-            const title = content
-                .trim()
-                .toLowerCase()
-                .replace(/[äå]/g, "a")
-                .replace(/ö/g, "o")
-                .replace(/é/g, "e")
-                .replace(/ +/g, "-")
-                .replace(/[^\w\-]+/g, "");
-
-            documentRestApi.getUniqueAlias(title).done(uniqueAlias => {
-                if (textInput.getValue()) {
-                    modal.buildConfirmWindow(
-                        texts.confirmOverwritingAlias,
-                        () => textInput.setValue(uniqueAlias)
-                    );
-                } else {
-                    textInput.setValue(uniqueAlias);
-                }
-            });
-        }
+		    if (title) {
+			    documentRestApi.getUniqueAlias(title).done(uniqueAlias => {
+				    if ($documentAlias.getValue()) {
+					    modal.buildConfirmWindow(
+						    texts.confirmOverwritingAlias,
+						    () => $documentAlias.setValue(uniqueAlias)
+					    );
+				    } else {
+					    $documentAlias.setValue(uniqueAlias);
+				    }
+			    });
+		    }
+	    }
 
         function buildHorizontalLine() {
             return $("<hr/>");
@@ -101,36 +103,37 @@ define("imcms-appearance-tab-builder",
         }
 
         function buildDocumentCommonContent(commonContent) {
-            const $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
-                    name: commonContent.language.name.toLowerCase(), // fixme: or native name?
-                    text: commonContent.language.name,
-                    checked: commonContent.enabled ? "checked" : undefined
-                }),
-                $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [$checkbox]),
-                $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"checkboxes": $checkboxWrapper}]),
-                $pageTitle = components.texts.textBox("<div>", {
-                    name: "title",
-                    text: texts.title,
-                    value: commonContent.docId ? commonContent.headline : ''
-                }),
-                $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
-                $menuText = components.texts.textArea("<div>", {
-                    text: texts.menuText,
-                    html: commonContent.docId ? commonContent.menuText : '',
-                    name: "menu-text"
+	        const $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
+			        name: commonContent.language.name.toLowerCase(), // fixme: or native name?
+			        text: commonContent.language.name,
+			        checked: commonContent.enabled ? "checked" : undefined
+		        }),
+		        $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [$checkbox]),
+		        $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"checkboxes": $checkboxWrapper}]),
+		        $aliasBlock = buildDocumentAliasBlock(commonContent),
+		        $pageTitle = components.texts.textBox("<div>", {
+			        name: "title",
+			        text: texts.title,
+			        value: commonContent.docId ? commonContent.headline : ''
+		        }),
+		        $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
+		        $menuText = components.texts.textArea("<div>", {
+			        text: texts.menuText,
+			        html: commonContent.docId ? commonContent.menuText : '',
+			        name: "menu-text"
                 }),
                 $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]);
 
             tabData.commonContents = tabData.commonContents || [];
 
             tabData.commonContents.push({
-                name: commonContent.language.name,
-                checkbox: $checkbox,
-                pageTitle: $pageTitle,
-                menuText: $menuText
+	            name: commonContent.language.name,
+	            checkbox: $checkbox,
+	            alias: $aliasBlock,
+	            pageTitle: $pageTitle,
+	            menuText: $menuText
             });
-
-            return [$checkboxContainer, $pageTitleContainer, $menuTextContainer];
+	        return [$checkboxContainer, $aliasBlock, $pageTitleContainer, $menuTextContainer, buildHorizontalLine()];
         }
 
         function buildCommonContentsContainer() {
@@ -168,40 +171,47 @@ define("imcms-appearance-tab-builder",
             tabData.$doNotShow = components.radios.imcmsRadio("<div>", {
                 text: texts.doNotShow,
                 name: "langSetting",
-                value: "DO_NOT_SHOW"
+	            value: "DO_NOT_SHOW"
             });
 
-            return pageInfoInnerStructureBEM.buildBlock("<div>", [
-                {"title": $languagesTitle},
-                {"item": tabData.$showDefaultLang},
-                {"item": tabData.$doNotShow}
-            ]);
+	        return pageInfoInnerStructureBEM.buildBlock("<div>", [
+		        {"title": $languagesTitle},
+		        {"item": tabData.$showDefaultLang},
+		        {"item": tabData.$doNotShow}
+	        ]);
         }
 
-        const AppearanceTab = function (name) {
-            PageInfoTab.call(this, name);
-        };
+	    function buildUseDefaultLanguageAliasForAllLanguagesBlock() {
+		    const $useDefaultLanguageAliasForAllLanguages = components.checkboxes.imcmsCheckbox('<div>', {
+			    text: texts.useDefaultLanguageAlias,
+		    });
 
-        AppearanceTab.prototype = Object.create(PageInfoTab.prototype);
+		    tabData.$useDefaultLanguageAliasForAllLanguages = $useDefaultLanguageAliasForAllLanguages;
+		    return $('<div>').append($useDefaultLanguageAliasForAllLanguages);
+	    }
 
-        AppearanceTab.prototype.isDocumentTypeSupported = () => {
-            return true; // all supported
-        };
+	    const AppearanceTab = function (name) {
+		    PageInfoTab.call(this, name);
+	    };
+
+	    AppearanceTab.prototype = Object.create(PageInfoTab.prototype);
+
+	    AppearanceTab.prototype.isDocumentTypeSupported = () => {
+		    return true; // all supported
+	    };
         AppearanceTab.prototype.tabElementsFactory = () => [
-            buildDocumentAliasBlock(),
-            buildHorizontalLine(),
-            buildCommonContentsContainer(),
-            buildHorizontalLine(),
-            buildSelectTargetForDocumentLink(),
-            buildBlockForMissingLangSetting()
+	        buildCommonContentsContainer(),
+	        buildSelectTargetForDocumentLink(),
+	        buildBlockForMissingLangSetting(),
+	        buildHorizontalLine(),
+	        buildUseDefaultLanguageAliasForAllLanguagesBlock()
         ];
         AppearanceTab.prototype.fillTabDataFromDocument = document => {
-            tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
-            tabData.$showIn.selectValue(document.target);
-            tabData.$documentAlias.setValue(document.alias);
-
-            components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
-                .setCheckedValue(document.disabledLanguageShowMode);
+	        tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
+	        tabData.$showIn.selectValue(document.target);
+	        components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
+		        .setCheckedValue(document.disabledLanguageShowMode);
+	        tabData.$useDefaultLanguageAliasForAllLanguages.setChecked(document.defaultLanguageAliasEnabled)
         };
         AppearanceTab.prototype.saveData = documentDTO => {
             documentDTO.commonContents.forEach(docCommonContent => {
@@ -213,17 +223,17 @@ define("imcms-appearance-tab-builder",
                     }
 
                     docCommonContent.enabled = commonContent.checkbox.isChecked();
-                    docCommonContent.headline = commonContent.pageTitle.getValue();
-                    docCommonContent.menuText = commonContent.menuText.getValue();
+	                docCommonContent.headline = commonContent.pageTitle.getValue();
+	                docCommonContent.alias = commonContent.alias.getValue();
+	                docCommonContent.menuText = commonContent.menuText.getValue();
                 });
             });
 
-            documentDTO.alias = tabData.$documentAlias.getValue();
-            documentDTO.target = tabData.$showIn.getSelectedValue();
-
-            documentDTO.disabledLanguageShowMode = components.radios
-                .group(tabData.$showDefaultLang, tabData.$doNotShow)
-                .getCheckedValue();
+	        documentDTO.target = tabData.$showIn.getSelectedValue();
+	        documentDTO.defaultLanguageAliasEnabled = tabData.$useDefaultLanguageAliasForAllLanguages.isChecked();
+	        documentDTO.disabledLanguageShowMode = components.radios
+		        .group(tabData.$showDefaultLang, tabData.$doNotShow)
+		        .getCheckedValue();
 
             return documentDTO;
         };
@@ -232,14 +242,14 @@ define("imcms-appearance-tab-builder",
 
             tabData.commonContents.forEach((commonContent, index) => {
                 commonContent.checkbox.setChecked(index === 0);//check only first
-                commonContent.pageTitle.setValue(emptyString);
+	            commonContent.alias.setValue(emptyString)
+	            commonContent.pageTitle.setValue(emptyString);
                 commonContent.menuText.setValue(emptyString);
             });
 
             tabData.$commonContentsContainer.empty();
 
             tabData.$showIn.selectFirst();
-            tabData.$documentAlias.setValue(emptyString);
             tabData.$showDefaultLang.setChecked(true); //default value
         };
         AppearanceTab.prototype.isValid = () => tabData.commonContents.reduce((isChecked, commonContent) => isChecked || commonContent.checkbox.isChecked(), false);

@@ -45,7 +45,7 @@ define("imcms-page-info-builder",
 
             //Clear modified info before send to API
             documentDTO.modified = {id: ""};
-            const alias = documentDTO.alias;
+	        const commonContents = documentDTO.commonContents;
 
             $loadingAnimation.show();
             saveDoc(documentDTO)
@@ -54,45 +54,66 @@ define("imcms-page-info-builder",
                     if (documentDTO.newFiles) {
                         // files saved separately because of different content types and in file-doc case
                         documentDTO.newFiles.append("docId", savedDoc.id);
-                        docFilesAjaxApi.postFiles(documentDTO.newFiles);
+	                    docFilesAjaxApi.postFiles(documentDTO.newFiles);
                     }
 
-                    if (documentDTO.id === imcms.document.id) {
-	                    events.trigger("imcms-version-modified");
+	                if (documentDTO.id === imcms.document.id) {
+		                events.trigger("imcms-version-modified");
 
-                    } else {
-	                    documentDTO.id = savedDoc.id;
-                    }
+	                } else {
+		                documentDTO.id = savedDoc.id;
+	                }
 
-	                if (alias !== savedDoc.alias && alias !== "") {
+	                let duplicateLanguageAliases = [];
+	                commonContents.forEach((commonContent, index) => {
+		                const prevAlias = commonContent.alias;
+		                const newAlias = savedDoc.commonContents[index].alias;
+		                if (prevAlias !== newAlias && prevAlias !== "") {
+			                duplicateLanguageAliases.push(savedDoc.commonContents[index].language.name);
+		                }
+	                })
+
+	                if (duplicateLanguageAliases.length) {
 		                documentDTO = savedDoc;
 		                $loadingAnimation.hide();
-		                modal.buildErrorWindow(texts.error.duplicateAlias)
+		                modal.buildErrorWindow(texts.error.duplicateAlias + format(duplicateLanguageAliases));
 	                } else {
 		                $loadingAnimation.hide();
 		                pageInfoWindowBuilder.closeWindow();
 		                if (onDocumentSavedCallback) {
 			                onDocumentSavedCallback(savedDoc);
 		                }
-						if (onDocumentSaved)
-		                onDocumentSaved(savedDoc, true);
-					}
+		                if (onDocumentSaved)
+			                onDocumentSaved(savedDoc, true);
+	                }
                 })
-                .fail(() => {
-					modal.buildErrorWindow(texts.error.createDocumentFailed)
-					$loadingAnimation.hide();
-				});
+	            .fail(() => {
+		            modal.buildErrorWindow(texts.error.createDocumentFailed)
+		            $loadingAnimation.hide();
+	            });
         }
 
-        function saveDoc(document) {
-            return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
-        }
+	    function format(arr) {
+		    let outStr = "";
+		    if (arr.length === 1) {
+			    outStr = arr[0];
+		    } else if (arr.length === 2) {
+			    outStr = arr.join(' and ');
+		    } else if (arr.length > 2) {
+			    outStr = arr.slice(0, -1).join(', ') + ', and ' + arr.slice(-1);
+		    }
+		    return outStr;
+	    }
 
-        function saveAndPublish() {
-            saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
-        }
+	    function saveDoc(document) {
+		    return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
+	    }
 
-        function confirmSaving() {
+	    function saveAndPublish() {
+		    saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
+	    }
+
+	    function confirmSaving() {
             modal.buildConfirmWindow(texts.confirmMessage, saveAndClose);
         }
 
