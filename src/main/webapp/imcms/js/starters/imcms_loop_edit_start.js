@@ -35,6 +35,9 @@ $(function () {
             text: texts.toolbar.elementIndex + editorData.index,
             title: texts.toolbar.elementIndexTitle,
         },
+	    {
+		    type: 'language'
+	    },
         {
             type: 'close'
         }

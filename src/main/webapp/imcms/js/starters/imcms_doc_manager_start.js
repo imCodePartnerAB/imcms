@@ -6,6 +6,8 @@ import '../../css/imcms-imports_files.css';
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 20.02.18
  */
+const toolbarBuilder = require('imcms-standalone-editor-toolbar-builder');
+
 const documentEditorBuilder = require("imcms-document-editor-builder");
 const events = require("imcms-events");
 const imcms = require("imcms");
@@ -17,5 +19,12 @@ events.on("document-editor-closed", () => {
 });
 
 $(function () {
+	const toolbarContent = [
+		{
+			type: 'language'
+		}
+	];
+
     documentEditorBuilder.build();
+	toolbarBuilder.buildPanel(toolbarContent);
 });
