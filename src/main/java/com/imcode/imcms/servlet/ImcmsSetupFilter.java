@@ -279,14 +279,17 @@ public class ImcmsSetupFilter implements Filter {
 		            Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
 		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, user.getLanguage());
 	            } else if (cookies != null) {
+		            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
 		            final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
 				            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
 				            .findFirst();
-		            userLanguageCookie.ifPresent(cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())));
+		            userLanguageCookie
+				            .ifPresentOrElse(cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())),
+						            () -> Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode)));
 	            } else {
-		            final String langCode = service.getLanguageService().getDefaultLanguage().getCode();
-		            writeUserLanguageCookie(response, langCode);
-		            Imcms.setLanguage(languageMapper.getLanguageByCode(langCode));
+		            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
+		            Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode));
+		            writeUserLanguageCookie(response, defaultLanguageCode);
 	            }
             }
 
