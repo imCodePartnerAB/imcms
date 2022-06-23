@@ -136,14 +136,17 @@ class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.MENU)
     public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
-        mav.setViewName("EditMenu");
+	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
+
+	    mav.setViewName("EditMenu");
         addObjectModelViewData(mav, metaId);
         addCommonModelData(metaId, index, returnUrl, request, mav);
-        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId));
+	    mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
 
         return mav;
     }
@@ -152,14 +155,18 @@ class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.LOOP)
     public ModelAndView editLoop(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
-        mav.setViewName("EditLoop");
-        addCommonModelData(metaId, index, returnUrl, request, mav);
+	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
 
-        return mav;
+	    mav.setViewName("EditLoop");
+        addCommonModelData(metaId, index, returnUrl, request, mav);
+	    mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
+
+	    return mav;
     }
 
     @RequestMapping("/page-info")
@@ -178,14 +185,18 @@ class SuperAdminController {
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public ModelAndView editDocuments(HttpServletRequest request,
                                       @RequestParam(value = "return", required = false) String returnUrl,
+                                      @RequestParam(value = "lang", required = false) String langCode,
                                       ModelAndView mav) {
+
+	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
 
         mav.setViewName("EditDocuments");
         mav.addObject("accessToDocumentEditor", accessService.getTotalRolePermissionsByUser(Imcms.getUser()).isAccessToDocumentEditor());
         addCommonModelData(returnUrl, request, mav);
         mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
+	    mav.addObject("currentDocument", new TextDocumentDomainObject(language));
 
-        return mav;
+	    return mav;
     }
 
     @RequestMapping("/content")

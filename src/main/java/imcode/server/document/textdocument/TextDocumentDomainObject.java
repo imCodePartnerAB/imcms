@@ -14,12 +14,7 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +71,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public TextDocumentDomainObject(int documentId) {
         this(documentId, Imcms.getUser().getLanguage());
     }
+
+	public TextDocumentDomainObject(String langCode) {
+		this(ID_NEW, langCode);
+	}
 
     public TextDocumentDomainObject(int documentId, String langCode) {
         setId(documentId);
