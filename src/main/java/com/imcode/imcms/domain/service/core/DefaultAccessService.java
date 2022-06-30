@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,10 +52,13 @@ public class DefaultAccessService implements AccessService {
 
     private final DocumentRolesService documentRolesService;
     private final RoleService roleService;
+	private final List<Integer> adminFilesAllowedUsers;
 
-    DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService) {
+	DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService,
+                         @org.springframework.beans.factory.annotation.Value("#{'${admin.files.allowed.users}'.split(',')}") List<Integer> adminFilesAllowedUsers) {
         this.documentRolesService = documentRolesService;
         this.roleService = roleService;
+	    this.adminFilesAllowedUsers = adminFilesAllowedUsers;
     }
 
     @Override
@@ -120,6 +124,11 @@ public class DefaultAccessService implements AccessService {
 
         return totalPermissions;
     }
+
+	@Override
+	public boolean hasUserFileAdminAccess(int userId) {
+		return adminFilesAllowedUsers.contains(userId);
+	}
 
     private RestrictedPermission getRestrictedPermissionForUser(Set<Permission> userPermissions,
                                                                 Set<RestrictedPermissionJPA> restrictedPermissions) {
