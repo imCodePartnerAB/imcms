@@ -55,11 +55,13 @@ class SuperAdminController {
     @RequestMapping("/manager")
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public ModelAndView goToSuperAdminPage(HttpServletRequest request, ModelAndView mav) {
+	    final UserDomainObject user = Imcms.getUser();
 
         mav.setViewName("AdminManager");
         addMinimumModelData(request, mav);
         mav.addObject("imagesPath", imagesPath);
-        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
+        mav.addObject("isSuperAdmin", user.isSuperAdmin());
+	    mav.addObject("hasFileAdminAccess", accessService.hasUserFileAdminAccess(user.getId()));
         return mav;
     }
 

@@ -46,7 +46,7 @@ public class FileAdmin extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!user.isSuperAdmin() || !Imcms.getServices().getAccessService().hasUserFileAdminAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -82,7 +82,7 @@ public class FileAdmin extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!user.isSuperAdmin() || !Imcms.getServices().getAccessService().hasUserFileAdminAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
