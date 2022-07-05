@@ -51,7 +51,7 @@ const $compressText = getExplainText(texts.compression);
 
 function getCompressButton() {
 
-    compess = true;
+    compress = true;
 
     $compressBtn =  components.buttons.switchOnButton({
         'data-state': 'active',
