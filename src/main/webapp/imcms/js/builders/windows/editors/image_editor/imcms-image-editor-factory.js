@@ -37,7 +37,7 @@ module.exports = {
         //need for get data after build and data in the $infoData, in another way fix build this..
         const $title = $head.find('.imcms-title');
         $title.append($infoData);
-        $title.append($imageLinkContainerInfo);
+        if (!opts.$tag.data('standalone')) $title.append($imageLinkContainerInfo);
         $title.css("display", "flex");
 
         return new BEM({

@@ -44,7 +44,7 @@
 </c:if>
 
 <input type="hidden" id="return-url" value="${returnUrl}">
-<div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-lang-code="${langCode}"
+<div class="imcms-editor-area imcms-editor-area--image" data-standalone="true" data-doc-id="${targetDocId}" data-lang-code="${langCode}"
      data-style="${with}${height}${maxWidth}${maxHeight}"
      data-index="${index}"${empty loopEntryRef
         ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')

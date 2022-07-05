@@ -132,6 +132,7 @@ define(
                 const fillData = opts.fillData;
                 const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
+                const standaloneEditor = $tag.data('standalone');
                 imageData = opts.imageData;
 
 
@@ -495,13 +496,19 @@ define(
                 }
 
                 function removeAndClose() {
-                    imageWindowBuilder.closeWindow();
+                    if (!standaloneEditor) imageWindowBuilder.closeWindow();
 
-                    imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
+                        imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
 
-                    imageRestApi.remove(imageData)
-                        .done(onImageSaved)
-                        .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+                        imageRestApi.remove(imageData)
+                            .done(() => {
+                                if (!standaloneEditor) {
+                                    onImageSaved();
+                                } else {
+                                    imageWindowBuilder.closeWindow();
+                                }
+                            })
+                            .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
                 }
 
                 function getImageRequestData(langCode) {
@@ -657,7 +664,7 @@ define(
                         imageData.height = imageResize.getPreviewHeight();
                         const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
-                        imageWindowBuilder.closeWindow();
+                        if(!standaloneEditor) imageWindowBuilder.closeWindow();
 
                         imageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
                         imageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
@@ -674,7 +681,13 @@ define(
                         imageData.compress = compressionLock.getCompress() && $fileFormat.getSelectedValue() == 'JPEG';
 
                         imageRestApi.create(imageData)
-                            .done(onImageSaved)
+                            .done(() => {
+                                if (!standaloneEditor) {
+                                    onImageSaved();
+                                } else {
+                                    imageWindowBuilder.closeWindow();
+                                }
+                            })
                             .fail(() => modal.buildErrorWindow(texts.error.createFailed));
                     }
                 }
