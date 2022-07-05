@@ -2,7 +2,11 @@ package com.imcode.imcms.config;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.components.Validator;
+import com.imcode.imcms.components.impl.compressor.image.DefaultImageCompressor;
+import com.imcode.imcms.components.impl.compressor.image.ImageOptimCompressor;
+import com.imcode.imcms.components.impl.compressor.image.ResmushImageCompressor;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.DocumentDTO;
@@ -30,6 +34,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -225,5 +230,35 @@ public class MainConfig {
                 menuService, imageService, loopService, textService,
                 defaultCommonContentService, defaultDocumentFileService, defaultDocumentUrlService
         );
+    }
+
+    @Bean
+    public ImageCompressor imageCompressor(@Value("${image.compression.service}") String service, Properties imcmsProperties){
+        String url, username, quality;
+        switch (service) {
+            case "imageOptim":
+                url = (String) imcmsProperties.get("image.compression.imageoptim.url");
+                username = (String) imcmsProperties.get("image.compression.imageoptim.username");
+                quality = (String) imcmsProperties.get("image.compression.imageoptim.quality");
+
+                if(StringUtils.isBlank(url) || StringUtils.isBlank(quality) ||
+                        StringUtils.isBlank(quality)){
+                    throw new BeanCreationException("Bad properties for creation an image compressor " + ImageOptimCompressor.class.getName());
+                }
+
+                return new ImageOptimCompressor(url, username, quality);
+            case "resmush":
+                url = (String) imcmsProperties.get("image.compression.resmush.url");
+                quality = (String) imcmsProperties.get("image.compression.resmush.quality");
+
+                if(StringUtils.isBlank(url) || StringUtils.isBlank(quality)){
+                    throw new BeanCreationException("Bad properties for creation an image compressor " + ResmushImageCompressor.class.getName());
+                }
+
+                return new ResmushImageCompressor(url, quality);
+        }
+
+        String imageMagickPath = (String) imcmsProperties.get("ImageMagickPath");
+        return new DefaultImageCompressor(imageMagickPath);
     }
 }
