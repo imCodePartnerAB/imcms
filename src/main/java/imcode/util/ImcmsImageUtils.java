@@ -7,6 +7,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.icc.IccDirectory;
 import com.imcode.imcms.components.exception.CompressionImageException;
+import com.imcode.imcms.components.impl.compressor.image.DefaultImageCompressor;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -26,8 +27,8 @@ import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
+import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -326,50 +327,46 @@ public class ImcmsImageUtils {
     }
 
     private static byte[] generateImage(File imageFile, ImageData image) {
-        final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
+        final ImageOp operationGenerateImage = new ImageOp(imageMagickPath).input(imageFile);
 
-        setCropRegion(image, operation);
-        setSize(image, operation);
-        setRotateDirection(image, operation);
-        setFormat(image.getFormat(), operation);
+        setCropRegion(image, operationGenerateImage);
+        setSize(image, operationGenerateImage);
+        setRotateDirection(image, operationGenerateImage);
+        setFormat(image.getFormat(), operationGenerateImage);
 
-        byte[] imageContent = operation.processToByteArray();
-
-        if(image.isCompress()){
-            try {
-                imageContent = Imcms.getServices().getImageCompressor().compressImage(imageContent, image.getFormat());
-            } catch (CompressionImageException e) {
-                //Use imageMagick to compress (only JPEG)
-                setQuality(image.getFormat(), operation);
-                imageContent = operation.processToByteArray();
-            }
+        // Set the number of colors as in the original (the size becomes huge due to the overlay of colors after changing the GIF).
+        if(image.getFormat() == Format.GIF){
+            Integer colors = getNumberOfColors(imageFile);
+            if(colors != null) setNumberOfColors(colors, operationGenerateImage);
         }
 
-        return imageContent;
+        byte[] imageContent = operationGenerateImage.processToByteArray();
+
+        return image.isCompress() ? compressImage(imageContent, image.getFormat()) : imageContent;
     }
 
-    public static byte[] compressImage(byte[] imageContent, Format format) throws IOException {
+    private static Integer getNumberOfColors(File imageFile){
+        final ImageOp operationGetColors = new ImageOp(imageMagickPath).input(imageFile);
+        String separator = ";";
+        setNumberOfColorsToGet(separator, operationGetColors);
+        return Arrays.stream(new String(operationGetColors.infoProcess()).split(separator))
+                .map(Integer::parseInt)
+
+                .max(Integer::compareTo)
+                .orElse(null);
+    }
+
+    /**
+     * Compress the image using a compressor selected in the properties.
+     * Compress using a default compressor if selected one fails.
+     */
+    @SneakyThrows
+    public static byte[] compressImage(byte[] imageContent, Format format) {
         try {
-            imageContent = Imcms.getServices().getImageCompressor().compressImage(imageContent, format);
+            return Imcms.getServices().getImageCompressor().compressImage(imageContent, format);
         } catch (CompressionImageException e) {
-            //Use imageMagick to compress (only JPEG)
-            File tempFile = File.createTempFile("compressImg", null);
-            try{
-                FileUtils.writeByteArrayToFile(tempFile, imageContent);
-
-                final ImageOp operation = new ImageOp(imageMagickPath).input(tempFile);
-                setQuality(format, operation);
-                imageContent = operation.processToByteArray();
-            }finally {
-                FileUtility.forceDelete(tempFile);
-            }
+            return new DefaultImageCompressor(imageMagickPath).compressImage(imageContent, format);
         }
-
-        return imageContent;
-    }
-
-    private static void setQuality(Format format, ImageOp operation) {
-        if (format == Format.JPEG || format == Format.JPG) operation.quality(80);
     }
 
     private static void setFormat(Format format, ImageOp operation) {
@@ -403,6 +400,14 @@ public class ImcmsImageUtils {
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);
         }
+    }
+
+    private static void setNumberOfColors(int numberOfColors, ImageOp operation) {
+        operation.colors(numberOfColors);
+    }
+
+    private static void setNumberOfColorsToGet(String separator, ImageOp operation) {
+        operation.format("%k" + separator);
     }
 
     private static void setRotateDirection(ImageData image, ImageOp operation) {
