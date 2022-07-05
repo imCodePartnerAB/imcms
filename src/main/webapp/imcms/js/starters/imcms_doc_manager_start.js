@@ -19,9 +19,15 @@ events.on("document-editor-closed", () => {
 });
 
 $(function () {
+	const returnUrl = $("#return-url").val();
 	const toolbarContent = [
 		{
 			type: 'language'
+		},
+		{
+			type: 'close',
+			link: (returnUrl) ? returnUrl : "",
+			showIfSeparate: true
 		}
 	];
 
