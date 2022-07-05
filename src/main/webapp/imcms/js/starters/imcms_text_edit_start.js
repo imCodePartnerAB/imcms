@@ -46,7 +46,8 @@ $(function () {
             type: 'language'
         },
         {
-            type: 'close'
+            type: 'close',
+            link: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId
         }
     ];
 

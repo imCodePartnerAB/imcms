@@ -50,11 +50,19 @@ define("imcms-standalone-editor-toolbar-builder",
                         $itemContainer = buildFlags();
                         break;
                     case 'close':
-                        if(window.opener != null){
-                            $itemContainer = $("<div>")
-                                .append(componentsBuilder.buttons.closeButton().click(() => window.close()))
-                                .addClass("imcms-editor-toolbar-panel--close-button");
-                        }
+                        let onClose;
+
+                        if (item.link &&
+                            ((item.showIfSeparate && window.opener) || (!item.showIfSeparate && !window.opener))) {
+
+                            onClose = () => window.location = item.link;
+                        } else if (window.opener) {
+                            onClose = () => window.close();
+                        } else break;
+
+                        $itemContainer = $("<div>")
+                            .append(componentsBuilder.buttons.closeButton().click(onClose))
+                            .addClass("imcms-editor-toolbar-panel--close-button");
                         break;
                     default:
                         $itemContainer.append(

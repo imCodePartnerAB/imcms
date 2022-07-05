@@ -16,7 +16,7 @@ const texts = require("imcms-i18n-texts");
 $(() => {
     events.on("enable text editor blur", () => {
         const returnUrl = $("#return-url").val();
-        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
+        window.location.href = (returnUrl) ? returnUrl : (imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId);
     });
 
     const $editedTag = $(imageEditorInitData.EDIT_AREA_SELECTOR);
@@ -24,6 +24,7 @@ $(() => {
 
     imageEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 
+    const returnUrl = $("#return-url").val();
     const toolbarContent = [
         {
             type: 'id',
@@ -39,7 +40,9 @@ $(() => {
         }, {
             type: 'language'
         }, {
-            type: 'close'
+            type: 'close',
+            link: (returnUrl) ? returnUrl : "",
+            showIfSeparate: true
         }
     ];
 

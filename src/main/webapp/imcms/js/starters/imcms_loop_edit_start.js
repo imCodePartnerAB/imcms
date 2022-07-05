@@ -18,12 +18,13 @@ const texts = require("imcms-i18n-texts");
 $(function () {
     events.on("loop editor closed", () => {
         const returnUrl = $("#return-url").val();
-        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
+        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId);
     });
 
     const $editedTag = $(loopEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
 
+    const returnUrl = $("#return-url").val();
     const toolbarContent = [
         {
             type: 'id',
@@ -39,7 +40,9 @@ $(function () {
 		    type: 'language'
 	    },
         {
-            type: 'close'
+            type: 'close',
+            link: (returnUrl) ? returnUrl : "",
+            showIfSeparate: true
         }
     ];
 

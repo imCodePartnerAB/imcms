@@ -18,7 +18,7 @@ const texts = require("imcms-i18n-texts");
 $(function () {
     events.on("menu editor closed", () => {
         const returnUrl = $("#return-url").val();
-        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
+        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId);
     });
 
     const $editedTag = $(menuEditorInitData.EDIT_AREA_SELECTOR);
@@ -40,7 +40,9 @@ $(function () {
 			type: 'language'
 	    },
         {
-            type: 'close'
+            type: 'close',
+            link: (returnUrl) ? returnUrl : "",
+            showIfSeparate: true
         }
     ];
 
