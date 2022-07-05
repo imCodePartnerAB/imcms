@@ -661,7 +661,7 @@ define(
 
                         imageData.format = $fileFormat.getSelectedValue();
 
-                        imageData.compress = compressionLock.getCompress() && $fileFormat.getSelectedValue() == 'JPEG';
+                        imageData.compress = compressionLock.getCompress();
 
                         imageRestApi.create(imageData)
                             .done(onImageSaved)
