@@ -237,12 +237,20 @@ input:focus:-ms-input-placeholder {
 }
 
 .title-url-text-editor {
-    display: flex;
-    color: #0b94d8;
-    margin-left: 10%;
+    display: block !important;
+    color: #fff !important;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 15px;
     font-weight: 600;
+    padding: 5px 10px 5px 30px;
+
+    max-width: 100%;
+    white-space: nowrap;
+    text-transform: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-decoration: underline;
 }
 
 .mce-fullscreen-toolbar {

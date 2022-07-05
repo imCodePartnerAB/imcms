@@ -82,6 +82,9 @@ define('imcms-text-editor-initializer',
             if (opts && opts.autoFocus) {
                 editor.then(editor => {
                     editor[0].focus();
+                    // Uncover timynce editor
+                    // fixme: rewrite
+                    if(!type || editorTypes.editor === type) editor[0].buttons.fullscreen.onclick();
                 });
             }
         }
