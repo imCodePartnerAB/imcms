@@ -55,7 +55,7 @@ public class DefaultAccessService implements AccessService {
 	private final List<Integer> adminFilesAllowedUsers;
 
 	DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService,
-                         @org.springframework.beans.factory.annotation.Value("#{'${admin.files.allowed.users}'.split(',')}") List<Integer> adminFilesAllowedUsers) {
+                         @org.springframework.beans.factory.annotation.Value("#{'${admin.files.allowed-users}'.split(',')}") List<Integer> adminFilesAllowedUsers) {
         this.documentRolesService = documentRolesService;
         this.roleService = roleService;
 	    this.adminFilesAllowedUsers = adminFilesAllowedUsers;

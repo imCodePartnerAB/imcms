@@ -13,7 +13,6 @@ if(imcms.isSuperAdmin){
         require('imcms-roles-tab-builder'),
         require('imcms-ip-access-tab-builder'),
         require('imcms-delete-docs-tab-builder'),
-        require('imcms-files-tab-builder'),
         require('imcms-link-validator-tab-builder'),
         require('imcms-images-tab-builder'),
         require('imcms-categories-admin-tab-builder'),
@@ -23,6 +22,9 @@ if(imcms.isSuperAdmin){
         require('imcms-data-version-admin-tab-builder'),
         require('imcms-documentation-tab-builder')
     ];
+	if (imcms.hasFileAdminAccess) {
+		tabBuilders.splice(3, 0, require('imcms-files-tab-builder'));
+	}
 }else{
     tabBuilders = [
         require('imcms-users-tab-builder'),
