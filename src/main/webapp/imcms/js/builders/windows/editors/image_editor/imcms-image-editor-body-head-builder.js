@@ -181,7 +181,14 @@ define(
                 }),
                 icon: components.controls.images(),
             }, {
-                click: contentManager.build.bind(contentManager, fillData, () => $imgUrl.attr('data-path'))
+                click: () => {
+                    // Close and clear history
+                    const $imageHistoryBtn = $('.imcms-image-history-button').last();
+                    if ($imageHistoryBtn.attr("data-state") === "true") $imageHistoryBtn.click();
+                    $('.imcms-history-mode__entries').last().empty();
+
+                    contentManager.build(fillData, () => $imgUrl.attr('data-path'));
+                }
             });
 
             return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);

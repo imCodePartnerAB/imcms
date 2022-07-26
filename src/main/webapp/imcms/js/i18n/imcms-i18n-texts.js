@@ -1561,9 +1561,12 @@ const texts = {
                 fileFormat: "File format",
                 alignment: "Text alignment",
                 altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
+                showHistory: "Show history",
+                hideHistory: "Hide history",
                 cancelAndClose: "Cancel and close",
                 removeAndClose: "Remove and close",
                 saveAndClose: "Save and close",
+                cancel: "Cancel",
                 restrictedStyle: 'Restricted style:',
                 infoStyle: 'The used image is restricted to this style.',
                 zoomGrade: 'Zoom grade',
@@ -1574,7 +1577,8 @@ const texts = {
                 error: {
                     loadFailed: 'Failed to load image. Try again',
                     removeFailed: 'Failed to remove image. Try again',
-                    createFailed: 'Failed to create image. Try again'
+                    createFailed: 'Failed to create image. Try again',
+                    loadHistoryFailed: 'Failed to load history'
                 }
             },
             text: {

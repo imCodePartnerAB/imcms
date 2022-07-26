@@ -2,17 +2,19 @@ define(
     "imcms-image-editor-right-side-builder",
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms", "jquery",
-        "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
+        "imcms-images-rest-api", "imcms-images-history-rest-api",
+        "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", 'imcms-image-resize',
         'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls', 'imcms-image-locker-button'
     ],
-    function (components, texts, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
+    function (components, texts, imcms, $, imageRestApi, imageHistoryRestApi, BEM, modal, events, WindowBuilder,
               imageRotate, imageResize, cropCoordsControllers, path, imageEditSize, compressionLock) {
 
         texts = texts.editors.image;
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath, $compressionContainer;
         let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
+        let $advancedModeBtn, $imageHistoryBtn, $imageHistoryEntries, $cancelHistoryBtn, cancelImageData;
         const imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -106,12 +108,14 @@ define(
 
                 $fileFormat.selectValue(imageData.format);
                 if (checkExistImageData(imageData)) {
-                    $editableControls.children().not(".imcms-advanced-mode").show();
+                    $editableControls.children().not(".imcms-advanced-mode").not(".imcms-history-mode").show();
                     $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
                     $imageSizeInfo.show();
                     $noImageInfo.hide();
                 } else {
-                    $editableControls.children().hide();
+                    $editableControls.children().not(".imcms-editable-controls-area__buttons").not(".imcms-history-mode").hide();
+                    $(".imcms-image-advanced-button").hide();
+
                     $imageInfoPath.hide();
                     $imageSizeInfo.hide();
                     $noImageInfo.text(texts.noSelectedImage).show();
@@ -120,7 +124,6 @@ define(
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
             build: function (opts) {
-
                 const fillData = opts.fillData;
                 const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
@@ -185,6 +188,10 @@ define(
                             imageRestApi.read(imageRequestData)
                                 .done(fillData)
                                 .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+
+                            // Clear history for previous language
+                            if($imageHistoryBtn.attr("data-state") === "true") $imageHistoryBtn.click();
+                            $imageHistoryEntries.empty();
                         }
                     }]);
                 }
@@ -199,30 +206,28 @@ define(
                 }
 
                 function buildAdvancedModeBtn($advancedControls) {
-                    return components.buttons.buttonsContainer("<div>", [
-                        components.buttons.negativeButton({
-                            text: texts.advanced,
-                            "data-state": "false",
-                            "class": "imcms-image-advanced-button",
-                            click: function () {
-                                const $btn = $(this);
+                    return components.buttons.negativeButton({
+                        text: texts.advanced,
+                        "data-state": "false",
+                        "class": "imcms-image-advanced-button",
+                        click: function () {
+                            const $btn = $(this);
 
-                                if ($btn.attr("data-state") === "false") {
-                                    $advancedControls.css("display", "block");
-                                    $btn.attr("data-state", "true").text(texts.simple);
+                            if ($btn.attr("data-state") === "false") {
+                                $advancedControls.css("display", "block");
+                                $btn.attr("data-state", "true").text(texts.simple);
+                                $imageHistoryBtn.css("display", "none");
 
-                                    let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
-                                    let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
-                                    let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight();
-                                    $(".imcms-editable-controls-area").css("height","calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)");
-                                } else {
-                                    $advancedControls.css("display", "none");
-                                    $btn.attr("data-state", "false").text(texts.advanced);
-                                    $(".imcms-editable-controls-area").css("height","auto");
-                                }
+                                $(".imcms-editable-controls-area").css("height", calculateEditableControlsHeight());
+                            } else {
+                                $advancedControls.css("display", "none");
+                                $btn.attr("data-state", "false").text(texts.advanced);
+                                $imageHistoryBtn.css("display", "block");
+
+                                $(".imcms-editable-controls-area").css("height", "auto");
                             }
-                        })
-                    ]);
+                        }
+                    });
                 }
 
                 function buildTextAlignmentBtnsContainer() {
@@ -419,6 +424,89 @@ define(
                     ]);
                 }
 
+                function buildImageHistoryContainer(){
+                    $imageHistoryEntries = $('<div>');
+
+                    $cancelHistoryBtn = components.buttons.neutralButton({
+                        text: texts.cancel,
+                        click: () => {
+                            fillData(cancelImageData);
+                            $imageHistoryEntries.find('.image-history-entry--active').removeClass('image-history-entry--active');
+                        }
+                    }).css("display", "none");
+
+                    return new BEM({
+                        block: "imcms-history-mode",
+                        elements: {
+                            "entries": $imageHistoryEntries,
+                            "button": $cancelHistoryBtn
+                        }
+                    }).buildBlockStructure("<div>");
+                }
+
+                function buildHistoryModeBtn($imageHistoryContainer) {
+                    const $btn = components.buttons.negativeButton({
+                        text: texts.showHistory,
+                        "data-state": "false",
+                        "class": "imcms-image-history-button",
+                        click: () => {
+                            if ($btn.attr("data-state") === "false") {
+                                showHistory($imageHistoryContainer);
+                                $btn.attr("data-state", "true").text(texts.hideHistory);
+                                $advancedModeBtn.css("display", "none");
+
+                                $(".imcms-editable-controls-area").css("height", calculateEditableControlsHeight());
+                            } else {
+                                cancelImageData = null;
+                                $cancelHistoryBtn.css("display", "none");
+
+                                $imageHistoryContainer.css("display", "none");
+                                $btn.attr("data-state", "false").text(texts.showHistory);
+                                if(imageData.path) $advancedModeBtn.css("display", "block");
+
+                                $(".imcms-editable-controls-area").css("height", "auto");
+                            }
+                        }
+                    });
+
+                    return $btn;
+                }
+
+                function showHistory($imageHistoryContainer){
+                    if($imageHistoryEntries.contents().length > 0){
+                        $imageHistoryContainer.css("display", "block");
+                        return;
+                    }
+
+                    imageHistoryRestApi.read(getImageRequestData(imageData.langCode))
+                        .done(imagesHistory => {
+                            imagesHistory.forEach(imageHistory => {
+                                const $textHistoryEntry = new BEM({
+                                    block: 'image-history-entry',
+                                    elements: {
+                                        "date": $('<div>', {text: imageHistory.modifiedAt}),
+                                        "login": $('<div>', {text: imageHistory.modifiedBy.login}),
+                                        "path": $('<div>', {text: imageHistory.path})
+                                    }
+                                }).buildBlockStructure('<div>', {
+                                    click: () => {
+                                        $imageHistoryEntries.find('.image-history-entry--active').removeClass('image-history-entry--active');
+                                        $textHistoryEntry.addClass('image-history-entry--active');
+
+                                        if(!cancelImageData) cancelImageData = getCurrentImageData();
+                                        $cancelHistoryBtn.css("display", "block");
+
+                                        fillData(imageHistory);
+                                    }
+                                });
+
+                                $imageHistoryEntries.append($textHistoryEntry);
+                            });
+
+                            $imageHistoryContainer.css("display", "block");
+                        }).fail(() => modal.buildErrorWindow(texts.error.loadHistoryFailed));
+                }
+
                 function buildInfoSizePathContainer() {
                     return new BEM({
                         block: 'imcms-info-edit-image',
@@ -464,24 +552,38 @@ define(
                             "text-box": "imcms-text-box",
                             "flags": "imcms-flags",
                             "checkboxes": "imcms-checkboxes",
-                            "advanced-mode": "imcms-advanced-mode"
+                            "advanced-mode": "imcms-advanced-mode",
+                            "history-mode": "imcms-history-mode"
                         }
                     });
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
                     const $allLangs = buildAllLanguagesCheckbox();
+
                     const $advancedControls = buildAdvancedControls();
-                    const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
+                    $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
+                    const $imageHistoryContainer = buildImageHistoryContainer();
+                    $imageHistoryBtn = buildHistoryModeBtn($imageHistoryContainer);
+
+                    const $buttons = $('<div>', {html: [$advancedModeBtn, $imageHistoryBtn]});
 
                     return editableControlsBEM.buildBlock("<div>", [
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
                         {"flags": opts.imageDataContainers.$langFlags},
                         {"checkboxes": $allLangs},
-                        {"buttons": $advancedModeBtn},
-                        {"advanced-mode": $advancedControls}
+                        {"buttons": $buttons},
+                        {"advanced-mode": $advancedControls},
+                        {"history-mode": $imageHistoryContainer}
                     ]);
+                }
+
+                function calculateEditableControlsHeight(){
+                    let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
+                    let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
+                    let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight() | 0;
+                    return "calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)";
                 }
 
                 function removeAndClose() {
@@ -643,30 +745,39 @@ define(
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageData.width = imageResize.getPreviewWidth();
-                        imageData.height = imageResize.getPreviewHeight();
-                        const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
+                        const currentImageData = getCurrentImageData();
+
                         imageWindowBuilder.closeWindow();
 
-                        imageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
-                        imageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
-
-                        imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
-                        imageData.alternateText = opts.imageDataContainers.$altText.$input.val();
-                        imageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
-
-                        imageData.align = imgPosition.align;
-                        imageData.spaceAround = imgPosition.spaceAround;
-
-                        imageData.format = $fileFormat.getSelectedValue();
-
-                        imageData.compress = compressionLock.getCompress();
-
-                        imageRestApi.create(imageData)
+                        imageRestApi.create(currentImageData)
                             .done(onImageSaved)
                             .fail(() => modal.buildErrorWindow(texts.error.createFailed));
                     }
+                }
+
+                function getCurrentImageData(){
+                    const clonedImageData = $.extend(true, {}, imageData);
+
+                    clonedImageData.width = imageResize.getPreviewWidth();
+                    clonedImageData.height = imageResize.getPreviewHeight();
+                    const currentAngle = imageRotate.getCurrentAngle();
+
+                    clonedImageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
+                    clonedImageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
+
+                    clonedImageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
+                    clonedImageData.alternateText = opts.imageDataContainers.$altText.$input.val();
+                    clonedImageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
+
+                    clonedImageData.align = imgPosition.align;
+                    clonedImageData.spaceAround = imgPosition.spaceAround;
+
+                    clonedImageData.format = $fileFormat.getSelectedValue();
+
+                    clonedImageData.compress = compressionLock.getCompress();
+
+                    return clonedImageData;
                 }
 
                 function saveAndClose() {

@@ -256,6 +256,7 @@ module.exports = {
                     'imcms-loops-rest-api',
                     'imcms-menus-rest-api',
                     'imcms-images-rest-api',
+                    'imcms-images-history-rest-api',
                     'imcms-languages-rest-api',
                     'imcms-texts-rest-api',
                     'imcms-texts-history-rest-api',
