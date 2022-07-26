@@ -216,6 +216,7 @@ class MappingConfig {
             final ImageSource imageSource = ImcmsImageUtils.getImageSource(image.getUrl());
             dto.setSource(imageSource);
             dto.setExifInfo(ImcmsImageUtils.getExifInfo(imageSource));
+            dto.setSizeFormatted(formatFileSize(ImcmsImageUtils.getSize(imageSource)));
 
             dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
