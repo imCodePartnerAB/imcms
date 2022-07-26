@@ -15,6 +15,7 @@ define(
         imcms.disableContentManagerSaveButton = false;
         let imageData;
         let fillData;
+        let getCurrentImageData;
 
         const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
             .hide(
@@ -87,7 +88,7 @@ define(
             if($advancedBtn.attr("data-state") === "true") $advancedBtn.click();
 
             imageZoom.updateZoomGradeValue();
-	        imageZoom.updateImageToCoverContainerEditor();
+            imageZoom.updateImageToCoverContainerEditor();
         }
 
         function showHidePanel(panelOpts) {
@@ -135,8 +136,8 @@ define(
                 };
                 imageResize.resetToOriginal(imageData);
             }
-	        imageRotate.rotateImage("NORTH");
-	        imageZoom.resetZoom();
+            imageRotate.rotateImage("NORTH");
+            imageZoom.resetZoom();
         }
 
         let $switchViewControls;
@@ -182,12 +183,15 @@ define(
                 icon: components.controls.images(),
             }, {
                 click: () => {
+                    contentManager.build(fillData, () => $imgUrl.attr('data-path'));
+
                     // Close and clear history
                     const $imageHistoryBtn = $('.imcms-image-history-button').last();
                     if ($imageHistoryBtn.attr("data-state") === "true") $imageHistoryBtn.click();
                     $('.imcms-history-mode__entries').last().empty();
 
-                    contentManager.build(fillData, () => $imgUrl.attr('data-path'));
+                    //Prevent loss of current image state
+                    fillData(getCurrentImageData());
                 }
             });
 
@@ -563,9 +567,10 @@ define(
 
             showPreviewImageArea: () => toggleImgArea.call($tabPreview),
 
-            build: function ($rightSidePanel, _imageData, _fillData) {
+            build: function ($rightSidePanel, _imageData, _fillData, _getCurrentImageData) {
                 imageData = _imageData;
                 fillData = _fillData;
+                getCurrentImageData = _getCurrentImageData;
 
                 const bodyHeadBEM = new BEM({
                     block: "imcms-image-toolbar",

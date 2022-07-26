@@ -14,6 +14,7 @@ define(
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath, $compressionContainer;
         let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
+        let $altText, $imgLink, $langFlags, $allLanguagesCheckBox;
         let $advancedModeBtn, $imageHistoryBtn, $imageHistoryEntries, $cancelHistoryBtn, cancelImageData;
         const imgPosition = {
             align: "NONE",
@@ -94,7 +95,33 @@ define(
             return image.path !== '' && image.width > 0 && image.height > 0;
         }
 
+        function getCurrentImageData(){
+            const clonedImageData = $.extend(true, {}, imageData);
+
+            clonedImageData.width = imageResize.getPreviewWidth();
+            clonedImageData.height = imageResize.getPreviewHeight();
+            const currentAngle = imageRotate.getCurrentAngle();
+
+            clonedImageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
+            clonedImageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
+
+            clonedImageData.allLanguages = $allLanguagesCheckBox.isChecked();
+            clonedImageData.alternateText = $altText.$input.val();
+            clonedImageData.linkUrl = $imgLink.$input.val();
+
+            clonedImageData.align = imgPosition.align;
+            clonedImageData.spaceAround = imgPosition.spaceAround;
+
+            clonedImageData.format = $fileFormat.getSelectedValue();
+
+            clonedImageData.compress = compressionLock.getCompress();
+
+            return clonedImageData;
+        }
+
         module.exports = {
+            getCurrentImageData: getCurrentImageData,
+
             updateImageData: ($newTag, newImageData) => {
 
                 $tag = $newTag;
@@ -123,6 +150,7 @@ define(
 
                 $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
+
             build: function (opts) {
                 const fillData = opts.fillData;
                 const imageWindowBuilder = opts.imageWindowBuilder;
@@ -158,7 +186,7 @@ define(
                         name: "altText"
                     });
 
-                    opts.imageDataContainers.$altText = $textBox;
+                    opts.imageDataContainers.$altText = $altText = $textBox;
 
                     return new BEM({
                         block: 'action-alt-text-container',
@@ -170,7 +198,7 @@ define(
                 }
 
                 function buildImageLinkTextBox() {
-                    return opts.imageDataContainers.$imgLink = components.texts.textBox("<div>", {
+                    return opts.imageDataContainers.$imgLink = $imgLink = components.texts.textBox("<div>", {
                         text: texts.imageLink,
                         name: "imageLink"
                     });
@@ -198,7 +226,7 @@ define(
 
                 function buildAllLanguagesCheckbox() {
                     return components.checkboxes.checkboxContainer("<div>", [
-                        opts.imageDataContainers.$allLanguagesCheckBox = components.checkboxes.imcmsCheckbox("<div>", {
+                        opts.imageDataContainers.$allLanguagesCheckBox = $allLanguagesCheckBox = components.checkboxes.imcmsCheckbox("<div>", {
                             name: "allLanguages",
                             text: texts.allLangs
                         })
@@ -558,7 +586,7 @@ define(
                     });
                     const $altTextContainer = buildAltTextContainer();
                     const $imageLinkTextBox = buildImageLinkTextBox();
-                    opts.imageDataContainers.$langFlags = buildImageLangFlags();
+                    opts.imageDataContainers.$langFlags = $langFlags = buildImageLangFlags();
                     const $allLangs = buildAllLanguagesCheckbox();
 
                     const $advancedControls = buildAdvancedControls();
@@ -571,7 +599,7 @@ define(
                     return editableControlsBEM.buildBlock("<div>", [
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
-                        {"flags": opts.imageDataContainers.$langFlags},
+                        {"flags": $langFlags},
                         {"checkboxes": $allLangs},
                         {"buttons": $buttons},
                         {"advanced-mode": $advancedControls},
@@ -589,7 +617,7 @@ define(
                 function removeAndClose() {
                     imageWindowBuilder.closeWindow();
 
-                    imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
+                    imageData.allLanguages = $allLanguagesCheckBox.isChecked();
 
                     imageRestApi.remove(imageData)
                         .done(onImageSaved)
@@ -634,10 +662,10 @@ define(
                             linkUrl = "//" + linkUrl;
                         }
 
-	                    $image.parent().attr({
-		                    "href": linkUrl,
-		                    "target": "_blank"
-	                    });
+                        $image.parent().attr({
+                            "href": linkUrl,
+                            "target": "_blank"
+                        });
                     }
                 }
 
@@ -756,32 +784,8 @@ define(
                     }
                 }
 
-                function getCurrentImageData(){
-                    const clonedImageData = $.extend(true, {}, imageData);
-
-                    clonedImageData.width = imageResize.getPreviewWidth();
-                    clonedImageData.height = imageResize.getPreviewHeight();
-                    const currentAngle = imageRotate.getCurrentAngle();
-
-                    clonedImageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
-                    clonedImageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
-
-                    clonedImageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
-                    clonedImageData.alternateText = opts.imageDataContainers.$altText.$input.val();
-                    clonedImageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
-
-                    clonedImageData.align = imgPosition.align;
-                    clonedImageData.spaceAround = imgPosition.spaceAround;
-
-                    clonedImageData.format = $fileFormat.getSelectedValue();
-
-                    clonedImageData.compress = compressionLock.getCompress();
-
-                    return clonedImageData;
-                }
-
                 function saveAndClose() {
-                    if (!opts.imageDataContainers.$altText.$input.val()) {
+                    if (!$altText.$input.val()) {
                         modal.buildModalWindow(texts.altTextConfirm, callBackAltText);
 
                     } else {
