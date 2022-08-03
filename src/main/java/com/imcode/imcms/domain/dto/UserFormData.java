@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.UserData;
-import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
@@ -42,6 +41,8 @@ public class UserFormData extends UserData {
     private String[] userPhoneNumber;
     private int[] roleIds;
     private boolean external;
+	private String oneTimePassword;
+	private boolean twoFactoryAuthenticationEnabled;
     private Date blockedDate; //date when user was blocked
     private Integer attempts;
     private Date lastLoginDate;

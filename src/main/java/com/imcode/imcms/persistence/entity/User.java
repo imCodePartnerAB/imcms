@@ -95,6 +95,12 @@ public class User extends UserData implements Serializable {
     @Embedded
     private PasswordReset passwordReset;
 
+	@Column(name = "one_time_password")
+	private String oneTimePassword;
+
+	@Column(name = "2fa_enabled", unique = true)
+	private boolean twoFactoryAuthenticationEnabled;
+
     public User(String login, String password, String email) {
         this(null, login, password, email);
     }
