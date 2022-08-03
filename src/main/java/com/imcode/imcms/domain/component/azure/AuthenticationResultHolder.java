@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.component;
+package com.imcode.imcms.domain.component.azure;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

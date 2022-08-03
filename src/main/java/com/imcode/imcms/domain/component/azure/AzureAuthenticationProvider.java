@@ -1,13 +1,13 @@
-package com.imcode.imcms.domain.component;
+package com.imcode.imcms.domain.component.azure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
-import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupsHolderDTO;
-import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
+import com.imcode.imcms.domain.component.AuthenticationDataStorage;
 import com.imcode.imcms.domain.dto.ExternalRole;
+import com.imcode.imcms.domain.dto.azure.AzureActiveDirectoryGroupDTO;
+import com.imcode.imcms.domain.dto.azure.AzureActiveDirectoryGroupsHolderDTO;
+import com.imcode.imcms.domain.dto.azure.AzureActiveDirectoryUserDTO;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.model.ExternalUser;
-import com.imcode.imcms.util.AuthHelper;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
@@ -70,6 +70,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
     private final String authority = "https://login.microsoftonline.com/";
 
     private AuthenticationResultHolder applicationAccessToken = new NullAuthenticationResultHolder();
+	private final AzureAuthHelper azureAuthHelper = AzureAuthHelper.getInstance();
 
     public AzureAuthenticationProvider(Properties properties) {
         super(
@@ -90,16 +91,16 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
 
     @Override
     public void updateAuthData(HttpServletRequest request) {
-        if (AuthHelper.isAuthDataExpired(AuthHelper.getAuthenticationResult(request))) {
+        if (azureAuthHelper.isAuthDataExpired(azureAuthHelper.getAuthenticationResult(request))) {
             updateAuthDataUsingRefreshToken(request);
         }
     }
 
     private void updateAuthDataUsingRefreshToken(HttpServletRequest request) {
         final AuthenticationResult authData = getAccessTokenFromRefreshToken(
-                AuthHelper.getAuthenticationResult(request).getRefreshToken()
+		        azureAuthHelper.getAuthenticationResult(request).getRefreshToken()
         );
-        AuthHelper.setAuthenticationResult(request, authData);
+	    azureAuthHelper.setAuthenticationResult(request, authData);
     }
 
     @SneakyThrows
@@ -157,13 +158,13 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
 
     @Override
     public ExternalUser getUser(HttpServletRequest request) {
-        final AuthenticationResult result = AuthHelper.getAuthenticationResult(request);
+        final AuthenticationResult result = azureAuthHelper.getAuthenticationResult(request);
 
         if (result == null) {
             throw new RuntimeException("AuthenticationResult not found in session.");
         }
 
-        return getUserFromGraph(result.getAccessToken()).toDomainObject();
+        return getUserFromGraph(result.getAccessToken()).toExternalUser();
     }
 
     private AzureActiveDirectoryUserDTO getUserFromGraph(String accessToken) {
@@ -208,7 +209,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
         final StateHolder stateData = validateState(sessionId, params.get(STATE));
         final AuthenticationResponse authResponse = AuthenticationResponseParser.parse(new URI(fullUrl), params);
 
-        if (AuthHelper.isAuthenticationSuccessful(authResponse)) {
+        if (azureAuthHelper.isAuthenticationSuccessful(authResponse)) {
             final AuthenticationSuccessResponse oidcResponse = (AuthenticationSuccessResponse) authResponse;
             // validate that OIDC Auth Response matches Code Flow (contains only requested artifacts)
             validateAuthRespMatchesCodeFlow(oidcResponse);
@@ -216,7 +217,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
             final AuthenticationResult authData = getAccessToken(oidcResponse.getAuthorizationCode(), currentUri);
             // validate nonce to prevent reply attacks (code maybe substituted to one with broader access)
             validateNonce(stateData, getClaimValueFromIdToken(authData.getIdToken(), "nonce"));
-            AuthHelper.setAuthenticationResult(request, authData);
+	        azureAuthHelper.setAuthenticationResult(request, authData);
 
             return stateData.nextUrl;
         }

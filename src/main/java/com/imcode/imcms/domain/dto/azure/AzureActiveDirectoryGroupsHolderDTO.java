@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.dto;
+package com.imcode.imcms.domain.dto.azure;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

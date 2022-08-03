@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.component;
+package com.imcode.imcms.domain.component.azure;
 
 public class NullAuthenticationResultHolder extends AuthenticationResultHolder {
     {

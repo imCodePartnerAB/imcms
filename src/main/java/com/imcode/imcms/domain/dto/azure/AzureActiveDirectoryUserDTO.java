@@ -1,7 +1,8 @@
-package com.imcode.imcms.domain.dto;
+package com.imcode.imcms.domain.dto.azure;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.model.ExternalUser;
+import com.imcode.imcms.model.ExternalUserDTO;
 import imcode.server.ImcmsConstants;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+import static com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AzureActiveDirectoryUserDTO {
+public class AzureActiveDirectoryUserDTO implements ExternalUserDTO {
 
     /**
      * In UUID form
@@ -41,7 +42,7 @@ public class AzureActiveDirectoryUserDTO {
 
     private Set<AzureActiveDirectoryGroupDTO> userGroups;
 
-    public ExternalUser toDomainObject() {
+    public ExternalUser toExternalUser() {
         final ExternalUser user = new ExternalUser(EXTERNAL_AUTHENTICATOR_AZURE_AD);
 
         user.setLoginName(id);

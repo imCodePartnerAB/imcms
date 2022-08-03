@@ -23,7 +23,7 @@
  // THE SOFTWARE.
 */
 //https://github.com/Azure-Samples/active-directory-java-webapp-openidconnect
-package com.imcode.imcms.util;
+package com.imcode.imcms.domain.component.azure;
 
 public final class AuthParameterNames {
 

@@ -1,10 +1,11 @@
-package com.imcode.imcms.domain.dto;
+package com.imcode.imcms.domain.dto.azure;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.imcode.imcms.domain.dto.ExternalRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_USER_AND_ROLE_AZURE_AD;
+import static com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider.EXTERNAL_USER_AND_ROLE_AZURE_AD;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
