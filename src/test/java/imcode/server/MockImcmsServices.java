@@ -2,12 +2,11 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
-import com.imcode.imcms.api.DatabaseService;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -190,7 +189,12 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    @Override
+	@Override
+	public SmsService getSmsService() {
+		return null;
+	}
+
+	@Override
     public TemplateService getTemplateService() {
         return null;
     }
@@ -279,6 +283,10 @@ public class MockImcmsServices implements ImcmsServices {
     public ImageCompressor getImageCompressor(){
         return null;
     }
+	@Override
+	public MultiFactorAuthenticationService getMultiFactorAuthenticationService() {
+		return null;
+	}
 
     public DelegatingByTypeDocumentService getDelegatingByTypeDocService() {
         return null;

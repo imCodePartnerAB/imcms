@@ -77,9 +77,14 @@ class SessionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getActiveSessions_WhenSuperAdminLoggedIn_ExpectCorrectOkAndCorrectEntity() throws Exception {
+    void getActiveSessions_WhenSuperAdminLoggedInWith2FADisabled_ExpectCorrectOkAndCorrectEntity() throws Exception {
         ImcmsServices services = Imcms.getServices();
-        final UserDomainObject user = services.verifyUser("admin", "admin");
+
+	    final UserDomainObject userDomainObject = services.getImcmsAuthenticatorAndUserAndRoleMapper().getUser("admin");
+	    userDomainObject.setTwoFactoryAuthenticationEnabled(false);
+	    services.getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userDomainObject);
+
+	    final UserDomainObject user = services.verifyUser(userDomainObject.getLogin(), userDomainObject.getPassword());
 
         HttpSession mockHttpSession1 = new MockHttpSession(null, "test-mockHttpSession1-id");
         mockHttpSession1.setMaxInactiveInterval(1000);
