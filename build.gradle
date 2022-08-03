@@ -58,6 +58,8 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
+    implementation 'org.opensaml:opensaml:2.6.4'
+
     implementation "com.zaxxer:HikariCP:5.0.1"
 
     implementation("com.imcode.db:imcode-db:0.7") {
