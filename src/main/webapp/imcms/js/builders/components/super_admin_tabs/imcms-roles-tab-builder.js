@@ -7,12 +7,12 @@ define(
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
         'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication',
-        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api', 'imcms-field-wrapper',
+        'imcms-azure-roles-rest-api', 'imcms-cgi-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api', 'imcms-field-wrapper',
         'imcms-modal-window-builder'
     ],
     function (
         SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles,
-        externalToLocalRolesLinks, fieldWrapper, modal
+        cgiRoles, externalToLocalRolesLinks, fieldWrapper, modal
     ) {
 
         texts = texts.superAdmin.roles;
@@ -113,9 +113,17 @@ define(
                     });
 
                     const providers$ = providers.map(provider => {
-                        const $roles = $('<div>');
+	                    const $roles = $('<div>');
+	                    const rolesProvider = () => {
+		                    switch (provider.providerId) {
+			                    case azureRoles.getAuthenticationProviderId():
+				                    return azureRoles;
+			                    case cgiRoles.getAuthenticationProviderId():
+				                    return cgiRoles;
+		                    }
+	                    }
 
-                        azureRoles.read()
+	                    rolesProvider().read()
                             .done(externalRoles => {
                                 const roles$ = externalRoles.map(externalRole => {
                                     const $externalRoleName = $('<div>', {
