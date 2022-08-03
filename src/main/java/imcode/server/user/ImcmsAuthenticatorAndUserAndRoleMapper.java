@@ -92,6 +92,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return email == null ? null : toDomainObject(userRepository.findByEmailUnique(email));
     }
 
+	public UserDomainObject getUserByOneTimePassword(String oneTimePassword){
+		return oneTimePassword == null ? null : toDomainObject(userRepository.findByOneTimePassword(oneTimePassword));
+	}
+
     /**
      * Create and assign a new PasswordReset to the existing user.
      * User must exist and must not be default, external or superadmin when password reset is not allowed for superadmins.
@@ -194,6 +198,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setId(user.getId());
         userDO.setLoginName(user.getLogin());
         userDO.setImcmsExternal(user.isExternal());
+		userDO.setOneTimePassword(user.getOneTimePassword());
+	    userDO.setTwoFactoryAuthenticationEnabled(user.isTwoFactoryAuthenticationEnabled());
         userDO.setLanguageIso639_2(user.getLanguageIso639_2());
         userDO.setLastName(user.getLastName());
         userDO.setPassword(user.getPassword(), UserDomainObject.PasswordType.valueOf(user.getPasswordType().name()));

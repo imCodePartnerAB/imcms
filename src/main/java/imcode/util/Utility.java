@@ -30,21 +30,23 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
 import javax.servlet.jsp.PageContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
@@ -620,4 +622,15 @@ public class Utility {
 		return path;
 	}
 
+	public static Document xmlStringToDocument(String xml) {
+		try {
+			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final InputSource src = new InputSource(new StringReader(xml));
+
+			return builder.parse(src);
+		} catch (ParserConfigurationException | IOException | SAXException e) {
+			log.error("Error during parsing xml string", e);
+		}
+		return null;
+	}
 }

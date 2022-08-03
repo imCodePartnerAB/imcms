@@ -3,14 +3,13 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.api.DatabaseService;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -90,6 +89,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final DatabaseService databaseService;
     @Getter
     private final MailService mailService;
+	@Getter
+	private final SmsService smsService;
     @Getter
     private final TemplateService templateService;
     @Getter
@@ -162,12 +163,16 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Autowired
     private ImageCompressor imageCompressor;
 
+	@Getter
+	@Autowired
+	private MultiFactorAuthenticationService multiFactorAuthenticationService;
+
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
                                 LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader,
-                                ApplicationContext applicationContext,
+                                SmsService smsService, ApplicationContext applicationContext,
                                 Config config,
                                 DocumentLanguages documentLanguages,
                                 DatabaseService databaseService,
@@ -185,7 +190,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
-        this.applicationContext = applicationContext;
+	    this.smsService = smsService;
+	    this.applicationContext = applicationContext;
         this.documentLanguages = documentLanguages;
         this.config = config;
         this.properties = imcmsProperties;
@@ -256,7 +262,9 @@ public class DefaultImcmsServices implements ImcmsServices {
                 mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
                 userLockValidator.lockUserForLogin(user.getId());
             }
-
+        } else if (multiFactorAuthenticationService.isRequired(user)) {
+	        userLockValidator.unlockingUserForLogin(user);
+	        multiFactorAuthenticationService.initSecondFactor(externalizedImcmsAuthAndMapper.getUser(login));
         } else {
             result = user;
 
