@@ -1,7 +1,9 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.MultiFactorAuthenticationService;
+import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.ImcmsConstants;
+import imcode.util.Utility;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @Controller
@@ -24,8 +27,12 @@ public class MultiFactorAuthenticationController {
 	}
 
 	@RequestMapping
-	public ModelAndView goTo2FaPage() {
-		return new ModelAndView("MFA");
+	public ModelAndView goTo2FaPage(HttpServletRequest request) {
+		final ModelAndView modelAndView = new ModelAndView("MFA");
+
+		modelAndView.addObject("userLanguage", Utility.getUserLanguage(request.getCookies()));
+
+		return modelAndView;
 	}
 
 	@PostMapping(value = "/second-factor")
@@ -34,6 +41,9 @@ public class MultiFactorAuthenticationController {
 	                                            HttpServletResponse response) throws IOException, ServletException {
 
 		if (multiFactorAuthenticationService.checkSecondFactor(request, response, oneTimePassword)) {
+			final HttpSession session=request.getSession();
+			session.setAttribute(VerifyUser.REQUEST_PARAMETER__EDIT_USER, request.getAttribute(VerifyUser.REQUEST_PARAMETER__EDIT_USER));
+
 			response.sendRedirect("/servlet/VerifyUser");
 			return;
 		}

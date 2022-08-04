@@ -89,7 +89,9 @@ public class VerifyUser extends HttpServlet {
 
         if (null != cms) {
             User currentUser = cms.getCurrentUser();
-            if (req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser()) {
+	        if ((req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null
+			        || req.getSession().getAttribute(REQUEST_PARAMETER__EDIT_USER) != null)
+			        && !currentUser.isDefaultUser()) {
                 goToEditUserPage(currentUser, res, req);
             } else {
                 goToLoginSuccessfulPage(req, res);

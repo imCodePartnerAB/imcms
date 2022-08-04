@@ -14,6 +14,8 @@ public interface LanguageService {
 
     boolean isAdminLanguage(String code);
 
+	boolean isLanguageAvailableByCode(String code);
+
     List<Language> getAvailableLanguages();
 
     Language getDefaultLanguage();

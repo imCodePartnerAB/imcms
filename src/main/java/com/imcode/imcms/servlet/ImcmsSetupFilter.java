@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static imcode.server.ImcmsConstants.*;
+import static imcode.util.Utility.writeUserLanguageCookie;
 
 /**
  * Front filter.
@@ -265,29 +266,31 @@ public class ImcmsSetupFilter implements Filter {
 			            .orElse(false);
 
 	            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+	            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
 
 	            if (StringUtils.isNotEmpty(requestedLangCode)) {
 		            writeUserLanguageCookie(response, requestedLangCode);
 		            Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
 		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, requestedLangCode);
+
 	            } else if (aliasLanguage != null) {
 		            writeUserLanguageCookie(response, aliasLanguage.getCode());
 		            Imcms.setLanguage(languageMapper.getLanguageByCode(aliasLanguage.getCode()));
 		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, aliasLanguage.getCode());
-	            } else if (showInDefaultLanguageMode) {
+
+				} else if (showInDefaultLanguageMode) {
 		            writeUserLanguageCookie(response, user.getLanguage());
 		            Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
 		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, user.getLanguage());
-	            } else if (cookies != null) {
-		            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
-		            final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+
+				} else if (cookies != null) {
+		            Arrays.stream(cookies)
 				            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-				            .findFirst();
-		            userLanguageCookie
-				            .ifPresentOrElse(cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())),
+				            .findFirst()
+				            .ifPresentOrElse(
+						            cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())),
 						            () -> Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode)));
 	            } else {
-		            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
 		            Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode));
 		            writeUserLanguageCookie(response, defaultLanguageCode);
 	            }
@@ -304,17 +307,6 @@ public class ImcmsSetupFilter implements Filter {
 	        Imcms.removeUser();
         }
     }
-
-	private void writeUserLanguageCookie(HttpServletResponse response, String langCode) {
-		if (langCode == null) {
-			return;
-		}
-		final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
-		newUserLanguageCookie.setMaxAge(Integer.MAX_VALUE);
-		newUserLanguageCookie.setPath("/");
-
-		response.addCookie(newUserLanguageCookie);
-	}
 
 	private boolean redirectToLoginIfRestricted(HttpServletRequest request,
 	                                            HttpServletResponse response,

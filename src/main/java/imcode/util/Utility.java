@@ -9,6 +9,7 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.SessionInfoDTO;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -61,6 +62,8 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.servlet.ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME;
 
 @Component
 public class Utility {
@@ -632,5 +635,26 @@ public class Utility {
 			log.error("Error during parsing xml string", e);
 		}
 		return null;
+	}
+
+	public static void writeUserLanguageCookie(HttpServletResponse response, String langCode) {
+		if (langCode == null) {
+			return;
+		}
+		final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+		newUserLanguageCookie.setMaxAge(Integer.MAX_VALUE);
+		newUserLanguageCookie.setPath("/");
+
+		response.addCookie(newUserLanguageCookie);
+	}
+
+	public static String getUserLanguage(Cookie[] cookies) {
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME))
+					return cookie.getValue();
+			}
+		}
+		return Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
 	}
 }

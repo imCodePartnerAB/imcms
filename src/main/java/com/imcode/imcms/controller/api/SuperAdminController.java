@@ -8,7 +8,6 @@ import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -19,10 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import static imcode.server.ImcmsConstants.SWE_CODE;
+import static imcode.util.Utility.getUserLanguage;
 
 /**
  * Controller for super-admin functionality. Provides possibility to go to any
@@ -228,12 +226,5 @@ class SuperAdminController {
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
         mav.addObject("documentationLink", documentationLink);
-    }
-
-    private String getUserLanguage(Cookie[] cookies){
-        for(Cookie cookie: cookies){
-            if(cookie.getName().equals(ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME)) return cookie.getValue();
-        }
-        return SWE_CODE;
     }
 }
