@@ -2,6 +2,7 @@
         pageEncoding="UTF-8"
         import="com.imcode.imcms.util.l10n.LocalizedMessage"
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="inc_header.jsp" flush="true"/>
 
 <%! static final LocalizedMessage info = new LocalizedMessage("passwordreset.no_email_permission");%>

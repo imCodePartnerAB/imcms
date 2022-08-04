@@ -7,7 +7,6 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage" value="${cookie['userLanguage'].value}" scope="request"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property" scope="request"/>
 

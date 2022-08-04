@@ -51,7 +51,8 @@ public class PasswordReset extends HttpServlet {
         if (view == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         } else {
-	        request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
+		    request.setAttribute("userLanguage", Utility.getUserLanguage(request.getCookies()));
+		    request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
         }
     }
 
