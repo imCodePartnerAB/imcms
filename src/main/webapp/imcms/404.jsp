@@ -1,12 +1,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="imcode.server.Imcms" %>
+<%@ page import="imcode.util.Utility" %>
 
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
-<fmt:setLocale value="${userLanguage}"/>
+<fmt:setLocale value="<%=Utility.getUserLanguage(request.getCookies())%>"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
 <html>
