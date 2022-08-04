@@ -11,8 +11,6 @@ ${"-->"}
 
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage"
-       value="${cookie['userLanguage'].value==null ? Imcms.getLanguage().getCode():cookie['userLanguage'].value}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 

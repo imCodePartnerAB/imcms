@@ -2,7 +2,6 @@ ${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
 ${"-->"}
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
-<%@ page import="imcode.server.Imcms" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -11,8 +10,6 @@ ${"-->"}
 
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage"
-       value="${cookie['userLanguage'].value==null ? Imcms.getLanguage().getCode():cookie['userLanguage'].value}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 <html>
