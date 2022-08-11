@@ -213,6 +213,9 @@ const texts = {
             },
             cache: {
                 name: 'Cache',
+                cacheSettings: "Cache inställningar",
+                cacheForUnauthorizedUsers: 'Cache för obehöriga användare',
+                cacheForAuthorizedUsers: 'Cache för behöriga användare',
                 invalidateButton: 'Ogiltig',
                 invalidateTitle: 'Ogiltig cache',
                 error: {
@@ -1221,6 +1224,9 @@ const texts = {
             },
             cache: {
                 name: 'Cache',
+                cacheSettings: "Cache settings",
+                cacheForUnauthorizedUsers: 'Cache for unauthorized users',
+                cacheForAuthorizedUsers: 'Cache for authorized users',
                 invalidateButton: 'Clear cache',
                 invalidateTitle: 'Invalidate public',
                 error: {

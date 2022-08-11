@@ -26,6 +26,36 @@ define('imcms-cache-tab-builder',
 
 	    const tabData = {};
 
+		function buildCacheSettingsBlock(){
+			const $title = components.texts.titleText('<div>', texts.cacheSettings);
+
+			const $cacheForUnauthorizedUsers = components.checkboxes.imcmsCheckbox("<div>", {
+				name: "cacheForUnauthorizedUsers",
+				text: texts.cacheForUnauthorizedUsers
+			})
+			tabData.$checkboxCacheForUnauthorizedUsers = $cacheForUnauthorizedUsers;
+
+			const $cacheForAuthorizedUsers = components.checkboxes.imcmsCheckbox("<div>", {
+				name: "cacheForAuthorizedUsers",
+				text: texts.cacheForAuthorizedUsers
+			})
+			tabData.$checkboxCacheForAuthorizedUsers = $cacheForAuthorizedUsers;
+
+			return new BEM({
+				block: 'cache-settings',
+				elements: {
+					'title': $title,
+					'unauthorized-users': $cacheForUnauthorizedUsers,
+					'authorized-users': $cacheForAuthorizedUsers,
+				},
+			}).buildBlockStructure('<div>');
+		}
+
+		function fillCacheSettings(document){
+			tabData.$checkboxCacheForUnauthorizedUsers.setChecked(document.cacheForUnauthorizedUsers);
+			tabData.$checkboxCacheForAuthorizedUsers.setChecked(document.cacheForAuthorizedUsers);
+		}
+
 	    function buildDeleteDocsBlock() {
 		    return tabData.$deleteDocsBlock = $('<div>');
 	    }
@@ -82,12 +112,26 @@ define('imcms-cache-tab-builder',
 	    };
 
 	    CacheTab.prototype.tabElementsFactory = () => [
+			buildCacheSettingsBlock(),
+			$('<hr/>'),
 		    buildDeleteDocsBlock()
 	    ];
 
 	    CacheTab.prototype.fillTabDataFromDocument = document => {
 		    tabData.$deleteDocsBlock.prepend(fillDeleteDocsBlock(document));
+			fillCacheSettings(document);
 	    }
+
+		CacheTab.prototype.saveData = function (documentDTO) {
+			documentDTO.cacheForUnauthorizedUsers = tabData.$checkboxCacheForUnauthorizedUsers.isChecked()
+			documentDTO.cacheForAuthorizedUsers = tabData.$checkboxCacheForAuthorizedUsers.isChecked();
+			return documentDTO;
+		};
+
+		CacheTab.prototype.clearTabData = () => {
+			tabData.$checkboxCacheForUnauthorizedUsers.setChecked(false);
+			tabData.$checkboxCacheForAuthorizedUsers.setChecked(false);
+		};
 
 	    return new CacheTab(texts.name);
     }
