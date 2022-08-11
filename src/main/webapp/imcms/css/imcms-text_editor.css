@@ -94,7 +94,7 @@ input:focus:-ms-input-placeholder {
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-processing-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-processing-icon {
-    background: url("/imcms/images/text_editor/ic_loader.gif") no-repeat center;
+    background: url("/imcms/images/ic_loader.gif") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-valid-icon,

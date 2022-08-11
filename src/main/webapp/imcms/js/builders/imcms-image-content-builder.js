@@ -385,9 +385,40 @@ define("imcms-image-content-builder",
         function showImagesIn(folder) {
             sortImagesBySortingValue(getSelectedSortingBy());
 
-            folder.$images.forEach($image => {
-                $image.css("display", "block");
+            //Start lazy loading
+            let numberOfUnloaded = folder.$images.length;
+            let loadedImages = [];
+
+            folder.$images.forEach($imageContainer => {
+                $imageContainer.css("display", "block");
+
+                let $img = $imageContainer.find('img');
+                //Preload
+                let newImg = new Image;
+                newImg.onload = function () {
+                    loadedImages.unshift($img);
+
+                    numberOfUnloaded -= 1;
+                }
+                newImg.src = $img.data("src");
             });
+
+            let setImage = function (){
+                if(numberOfUnloaded || loadedImages.length){
+                    let $img = loadedImages.pop();
+                    if($img){
+                        $img.attr("src", $img.data("src")).on("load", () => setImage());
+                        $img.removeAttr("data-src").removeAttr("style");
+                    }else{
+                        setTimeout(setImage, 300);
+                    }
+                }
+            }
+            //Limit the number of images putted at the same time
+            for(let i = 0; i < 3; i++){
+                setTimeout(setImage, 300);
+            }
+            //End lazy loading
 
             setUpSelectedImage(activeFolder, getImageNameFromPath(selectedFullImagePath));
             scrollToSelectedImage();
@@ -664,12 +695,20 @@ define("imcms-image-content-builder",
 	    ;
 
         function buildImage(imageFile, folder) {
+
+            //Reduce image weight by resizing
+            const dataSrc = imageFile.size.toLowerCase().endsWith("mb") ?
+                `/api/imagehandling?path=${imageFile.path}&height=146` :
+                `${imcms.imagesPath}/${imageFile.path}`;
+
             return new BEM({
                 block: "imcms-choose-img-wrap",
                 elements: {
-                    "img": $("<div>", {
+                    "img": $("<img>", {
                         "class": "imcms-choose-img",
-                        style: `background-image: url('${imcms.imagesPath}/${imageFile.path}')`
+                        "data-src": dataSrc,    //for lazy loading
+                        style: `background-image: url('${imcms.contextPath}/imcms/images/ic_loader.gif')`,
+                        "draggable": "false"
                     }),
                     "description": buildImageDescription(imageFile)
                 }
@@ -855,7 +894,7 @@ define("imcms-image-content-builder",
 
             activeFolder.files = sortedByNameWithoutLastAddedFiles;
 
-            updateSortedImages();
+            rebuildImagesContainerContent();
 
             activeFolder.$images.slice(0, 5).forEach(highlightLastAddedImage);
         }
@@ -867,7 +906,7 @@ define("imcms-image-content-builder",
         function sortImagesWithCompareFunction(compareFunction) {
             activeFolder.files = activeFolder.files.sort(compareFunction);
 
-            updateSortedImages();
+            rebuildImagesContainerContent();
         }
 
 		function getImageNameFromPath(path) {
@@ -875,7 +914,7 @@ define("imcms-image-content-builder",
 			return path.substring(slashLastIndex + 1);
 		}
 
-        function updateSortedImages() {
+        function rebuildImagesContainerContent() {
             $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
 
             viewModel.$images = viewModel.$images.filter($image => $image.css('display') === 'none');
@@ -907,7 +946,14 @@ define("imcms-image-content-builder",
 
                 imageFilesREST.postFiles(saveImageRequestData)
                     .done(uploadedImageFiles => {
-                        const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile, activeFolder).css("display", "block"));
+                        const $newImages = uploadedImageFiles.map(imageFile => {
+                            let $imgContainer = buildImage(imageFile, activeFolder).css("display", "block");
+
+                            let $img = $imgContainer.find('img');
+                            $img.attr("src", $img.data("src")).removeAttr("data-src");
+
+                            return $imgContainer;
+                        });
                         $newImages.forEach(highlightLastAddedImage);
                         activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
                         $imagesContainer.prepend($newImages);
