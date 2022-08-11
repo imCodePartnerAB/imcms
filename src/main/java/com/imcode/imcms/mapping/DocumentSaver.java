@@ -381,6 +381,8 @@ public class DocumentSaver {
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
         meta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
+        meta.setCacheForUnauthorizedUsers(metaDO.isCacheForUnauthorizedUsers());
+        meta.setCacheForAuthorizedUsers(metaDO.isCacheForAuthorizedUsers());
         meta.setVisible(metaDO.getVisible());
         meta.setModifiedDatetime(metaDO.getModifiedDatetime());
         meta.setProperties(metaDO.getProperties());

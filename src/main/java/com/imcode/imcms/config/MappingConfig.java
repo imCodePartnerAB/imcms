@@ -349,6 +349,9 @@ class MappingConfig {
             meta.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
             meta.setLinkedForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
 
+            meta.setCacheForUnauthorizedUsers(documentDTO.isCacheForUnauthorizedUsers());
+            meta.setCacheForAuthorizedUsers(documentDTO.isCacheForAuthorizedUsers());
+
             meta.setVisible(documentDTO.isVisible());
 
             meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
@@ -405,6 +408,8 @@ class MappingConfig {
             dto.setType(meta.getDocumentType());
             dto.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
             dto.setLinkableForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+            dto.setCacheForUnauthorizedUsers(meta.isCacheForUnauthorizedUsers());
+            dto.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
             dto.setVisible(meta.getVisible());
 
             return dto;

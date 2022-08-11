@@ -99,6 +99,8 @@ public class DocumentLoader {
         metaDO.setKeywords(meta.getKeywords());
         metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
         metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+        metaDO.setCacheForUnauthorizedUsers(meta.isCacheForUnauthorizedUsers());
+        metaDO.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
         metaDO.setVisible(meta.getVisible());
         metaDO.setModifiedDatetime(meta.getModifiedDatetime());
         metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());

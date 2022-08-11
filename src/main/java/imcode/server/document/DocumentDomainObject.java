@@ -392,6 +392,30 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
+    public boolean isLinkedForUnauthorizedUsers() {
+        return meta.getLinkedForUnauthorizedUsers();
+    }
+
+    public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
+        meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForUnauthorizedUsers() {
+        return meta.isCacheForUnauthorizedUsers();
+    }
+
+    public void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers) {
+        meta.setCacheForUnauthorizedUsers(cacheForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForAuthorizedUsers() {
+        return meta.isCacheForAuthorizedUsers();
+    }
+
+    public void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers) {
+        meta.setCacheForAuthorizedUsers(cacheForAuthorizedUsers);
+    }
+
     public boolean isPublished() {
         return isPublishedAtTime(meta, new Date());
     }
@@ -414,14 +438,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setSearchDisabled(boolean searchDisabled) {
         meta.setSearchDisabled(searchDisabled);
-    }
-
-    public boolean isLinkedForUnauthorizedUsers() {
-        return meta.getLinkedForUnauthorizedUsers();
-    }
-
-    public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
-        meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
     }
 
     public boolean isVisible(){

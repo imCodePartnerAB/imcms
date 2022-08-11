@@ -37,6 +37,8 @@ public class DocumentMeta implements Serializable, Cloneable {
 	private volatile Integer documentTypeId;
 	private volatile Boolean linkableByOtherUsers;
 	private volatile Boolean linkedForUnauthorizedUsers;
+	private volatile boolean cacheForUnauthorizedUsers;
+	private volatile boolean cacheForAuthorizedUsers;
 	private volatile Boolean visible;
 	/**
 	 * (Saved) value of modified dt at the time this meta was actually loaded.

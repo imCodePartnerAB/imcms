@@ -316,6 +316,22 @@ public class Document implements Serializable {
         internalDocument.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
+    public boolean isCacheForUnauthorizedUsers() {
+        return internalDocument.isCacheForUnauthorizedUsers();
+    }
+
+    public void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers) {
+        internalDocument.setCacheForUnauthorizedUsers(cacheForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForAuthorizedUsers() {
+        return internalDocument.isCacheForAuthorizedUsers();
+    }
+
+    public void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers) {
+        internalDocument.setCacheForAuthorizedUsers(cacheForAuthorizedUsers);
+    }
+
     public PublicationStatus getPublicationStatus() {
         return internalDocument.getPublicationStatus();
     }

@@ -95,6 +95,12 @@ public class Meta implements Serializable {
     @Column(name = "show_meta", nullable = false, columnDefinition = "int")
     private Boolean linkedForUnauthorizedUsers;
 
+    @Column(name = "cache_for_unauthorized", nullable = false, columnDefinition = "int")
+    private boolean cacheForUnauthorizedUsers;
+
+    @Column(name = "cache_for_authorized", nullable = false, columnDefinition = "int")
+    private boolean cacheForAuthorizedUsers;
+
     @Column(name = "disable_search", nullable = false, columnDefinition = "int")
     private boolean searchDisabled;
 

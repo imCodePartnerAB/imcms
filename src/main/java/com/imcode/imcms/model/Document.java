@@ -48,6 +48,8 @@ public abstract class Document implements Serializable {
 	    setRoleIdToPermission(from.getRoleIdToPermission());
 	    setLinkableByOtherUsers(from.isLinkableByOtherUsers());
 	    setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
+		setCacheForUnauthorizedUsers(from.isCacheForUnauthorizedUsers());
+		setCacheForAuthorizedUsers(from.isCacheForAuthorizedUsers());
 	    setVisible(from.isVisible());
         setProperties(from.getProperties());
     }
@@ -144,6 +146,14 @@ public abstract class Document implements Serializable {
     public abstract void setLinkableByOtherUsers(boolean isLinkableByOtherUsers);
 
     public abstract boolean isLinkableForUnauthorizedUsers();
+
+	public abstract void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers);
+
+	public abstract boolean isCacheForUnauthorizedUsers();
+
+	public abstract void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers);
+
+	public abstract boolean isCacheForAuthorizedUsers();
 
     public abstract void setLinkableForUnauthorizedUsers(boolean isLinkableForUnauthorizedUsers);
 
