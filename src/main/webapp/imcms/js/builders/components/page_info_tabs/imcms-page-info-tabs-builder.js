@@ -18,7 +18,7 @@ const textTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templates
     statusTab, cacheTab, propertiesTab, allDataTab];
 
 const urlOrFileTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
-    statusTab, cacheTab, propertiesTab];
+    statusTab, propertiesTab];
 
 const limitedTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, statusTab, cacheTab];
 
