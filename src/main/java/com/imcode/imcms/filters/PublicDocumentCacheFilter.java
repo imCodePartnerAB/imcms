@@ -1,6 +1,8 @@
 package com.imcode.imcms.filters;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -34,10 +36,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
- * Public version of document is cached. Default user will receive it.
+ * The public version of the document is cached separately for default and authorized users (without admin permissions).
+ *
+ * Document value cacheForUnauthorizedUsers enables/disables caching for the default user.
+ * Document value cacheForAuthorizedUsers enables/disables caching for the authorized user (without admin permissions.
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 06.09.18.
@@ -47,6 +51,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
     private final static Logger logger = LogManager.getLogger(PublicDocumentCacheFilter.class);
 
     private DocumentsCache documentsCache;
+    private AccessService accessService;
 
     @Override
     public void doFilter(HttpServletRequest request,
@@ -55,8 +60,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
         final boolean enabledCache = !Boolean.parseBoolean(documentsCache.getDisabledCacheValue());
 
-        if (Imcms.getUser().isDefaultUser() && enabledCache) {
-
+        if (enabledCache) {
             final ImcmsServices services = Imcms.getServices();
 
             final String workaroundUriEncoding = services.getConfig().getWorkaroundUriEncoding();
@@ -65,61 +69,59 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                     (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
             );
 
-            String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
-            path = StringUtils.substringAfter(path, request.getContextPath());
+            String path = StringUtils.substringAfter(Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder), request.getContextPath());
+            if ("/".equals(path)) path = "/" + services.getSystemData().getStartDocument();
 
-            if ("/".equals(path)) path = "/" + String.valueOf(services.getSystemData().getStartDocument());
-
-            final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
+            final Set<String> resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
             if (resourcePaths == null || resourcePaths.size() == 0) {
                 final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
                 final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
 
-                final String cacheKey = documentsCache.calculateKey(documentIdString, langCode);
-                final boolean isDocumentAlreadyCached = documentsCache.isDocumentAlreadyCached(cacheKey);
+                final DocumentDomainObject document = services.getDocumentMapper().getVersionedDocument(documentIdString, langCode, request);
+                if(document != null && Utility.isTextDocument(document) &&
+                        ((document.isCacheForUnauthorizedUsers() && Imcms.getUser().isDefaultUser()) ||
+                                (document.isCacheForAuthorizedUsers() && !accessService.getPermission(Imcms.getUser(), document.getId()).getPermission().isMorePrivilegedThan(Meta.Permission.VIEW)))){
 
-                final BooleanSupplier textDocExist = () -> {
-                    final DocumentDomainObject document = services.getDocumentMapper()
-                            .getVersionedDocument(documentIdString, langCode, request);
+                    final String cacheKey = documentsCache.calculateKey(documentIdString, langCode);
+                    final boolean isDocumentAlreadyCached = documentsCache.isDocumentAlreadyCached(cacheKey);
 
-                    return ((null != document) && Utility.isTextDocument(document));
-                };
+                    final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);
+                    if (null != tempPageInfo) {
+                        final String eTagRequest = request.getHeader("if-none-match");
+                        if (null != eTagRequest) {
+                            Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream()
+                                    .filter(item -> item.getName().equals("ETag")).findFirst();
+                            boolean isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
 
-                final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);
-                if (null != tempPageInfo) {
-                    final String eTagRequest = request.getHeader("if-none-match");
-                    if (null != eTagRequest) {
-                        Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream()
-                                .filter(item -> item.getName().equals("ETag")).findFirst();
-                        boolean isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
-
-                        if (!isSameETag && isDocumentAlreadyCached) {
-                            documentsCache.invalidateItem(cacheKey);
-                            logger.info("Invalidate cache the page from docId and cacheKey: " + documentIdString + " " + cacheKey);
+                            if (!isSameETag && isDocumentAlreadyCached) {
+                                documentsCache.invalidateItem(cacheKey);
+                                logger.info("Invalidate cache the page from docId and cacheKey: " + documentIdString + " " + cacheKey);
+                            }
                         }
                     }
-                }
 
-                if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
                         super.doFilter(request, response, chain);
                         return;
                     } catch (Exception e) {
                         throw new ServletException(e);
                     }
+
                 }
             }
         }
+
         chain.doFilter(request, response);
     }
 
     @Override
     public void doInit(FilterConfig filterConfig) throws CacheException {
-
         final ServletContext servletContext = filterConfig.getServletContext();
         final WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+
         documentsCache = ctx.getBean(DocumentsCache.class);
+        accessService = ctx.getBean(AccessService.class);
 
         super.doInit(filterConfig);
 

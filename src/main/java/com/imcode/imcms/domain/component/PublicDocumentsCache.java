@@ -31,6 +31,9 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
 
+    private static final String AUTHORIZED = "authorized";
+    private static final String UNAUTHORIZED = "unauthorized";
+
     private final List<String> languages;
 
     private AtomicLong amountDocsInCaches = new AtomicLong(-1);
@@ -73,7 +76,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public String calculateKey(String documentIdString, String langCode) {
-        return documentIdString + "-" + langCode;
+        return documentIdString + "-" + langCode + "-" + (Imcms.getUser().isDefaultUser() ? UNAUTHORIZED : AUTHORIZED);
     }
 
 	@Override
