@@ -383,11 +383,14 @@ define("imcms-image-content-builder",
         }
 
         function showImagesIn(folder) {
+            sortImagesBySortingValue(getSelectedSortingBy());
+
             folder.$images.forEach($image => {
                 $image.css("display", "block");
             });
 
-            sortImagesBySortingValue(getSelectedSortingBy());
+            setUpSelectedImage(activeFolder, getImageNameFromPath(selectedFullImagePath));
+            scrollToSelectedImage();
         }
 
         function onFolderDoubleClick(folder) {
@@ -403,20 +406,14 @@ define("imcms-image-content-builder",
             folder.imagesAreLoaded ? showImagesIn(folder) : loadImages(folder);
         }
 
-        function loadImages(folder, setCurrentImage) {
+        function loadImages(folder) {
             imageFoldersREST.read({"path": folder.path})
                 .done(
                     imagesFolder => {
                         folder.imagesAreLoaded = true;
                         folder.files = imagesFolder.files;
 
-                        buildImagesNotRecursive(folder);
-
-                        $imagesContainer.append(folder.$images);
-
                         showImagesIn(folder);
-
-                        setCurrentImage && setCurrentImage();
                     })
                 .fail(() => modal.buildErrorWindow(texts.error.loadImagesFailed));
         }
@@ -728,8 +725,6 @@ define("imcms-image-content-builder",
             viewModel.root = imagesRootFolder;
             viewModel.root.imagesAreLoaded = true;
 
-            buildImages(viewModel.root);
-
             if (!viewModel.folders) {
                 viewModel.folders = [];
             }
@@ -749,24 +744,13 @@ define("imcms-image-content-builder",
             $foldersContainer.append(viewModel.folders);
             $imagesContainer.append(viewModel.$images);
 
-	        const imageName = getImageNameFromPath(selectedFullImagePath);
-
             if (activeFolder) {
                 openParentFolders(activeFolder);
-
-                loadImages(activeFolder, () => {
-                    setUpSelectedImage(activeFolder, imageName);
-                    scrollToSelectedImage();
-                });
+                loadImages(activeFolder);
             } else {
-                if (slashLastIndex === -1) { // path only with image name (image from root)
-                    setUpSelectedImage(imagesRootFolder, imageName);
-                }
-
                 activeFolder = imagesRootFolder;
                 activeFolder.$folder.find('.imcms-main-folders-controls').addClass(ACTIVE_FOLDER_CLASS);
                 showImagesIn(viewModel.root);
-                scrollToSelectedImage();
             }
         }
 
@@ -892,28 +876,13 @@ define("imcms-image-content-builder",
 		}
 
         function updateSortedImages() {
-	        if (selectedFullImagePath !== '') {
-		        selectedImageChanged = true;
-		        setUpSelectedImage(activeFolder, getImageNameFromPath(selectedFullImagePath));
-		        // scrollToSelectedImage();
-	        }
-	        else
-				selectedImage = null;
-	        $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
+            $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
 
             viewModel.$images = viewModel.$images.filter($image => $image.css('display') === 'none');
-            activeFolder.$images.forEach($image => $image.remove());
+            if(activeFolder.$images) activeFolder.$images.forEach($image => $image.remove());
             activeFolder.$images = null;
 
             buildImagesNotRecursive(activeFolder);
-
-	        activeFolder.$images.forEach($image => {
-		        if (getImageNameFromPath(selectedFullImagePath) === $image.find(".imcms-title").text()) {
-			        $image.addClass("image-chosen");
-			        $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
-		        }
-		        $image.css('display', 'block')
-	        });
 
             $imagesContainer.append(activeFolder.$images);
         }
