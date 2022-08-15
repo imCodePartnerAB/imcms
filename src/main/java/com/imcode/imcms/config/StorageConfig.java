@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.impl.cloud.CloudStorageClient;
 import com.imcode.imcms.storage.impl.disk.DiskStorageClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,8 @@ public class StorageConfig {
 
     @Bean(name = "imageStorageClient")
     public StorageClient imageStorageClient(@Value("${s3.image.permission}") String cloudStorage,
-                                            ServletContext servletContext, AmazonS3 amazonS3Client) {
+                                            ServletContext servletContext,
+                                            @Autowired(required = false) AmazonS3 amazonS3Client) {
         boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
 
         if(isCloudStorage){
@@ -59,7 +61,8 @@ public class StorageConfig {
     @Bean(name = "storageImagePath")
     public String storageImagePath(@Value("${s3.image.permission}") String cloudStorage,
                                    @Value("${ImagePath}") String imagePath,
-                                   ServletContext servletContext, AmazonS3 amazonS3Client){
+                                   ServletContext servletContext,
+                                   @Autowired(required = false) AmazonS3 amazonS3Client){
         boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
         return (isCloudStorage ? amazonS3Client.getUrl(bucketName, "") : servletContext.getContextPath() + "/" ) + imagePath;
     }
