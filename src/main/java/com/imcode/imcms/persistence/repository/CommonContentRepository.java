@@ -27,4 +27,6 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
     @Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")
     List<CommonContentJPA> findByVersion(@Param("version") Version version);
 
+	@Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no} and t.language = :#{#language}")
+	CommonContentJPA findByVersionAndLanguage(@Param("version") Version version, @Param("language") LanguageJPA language);
 }

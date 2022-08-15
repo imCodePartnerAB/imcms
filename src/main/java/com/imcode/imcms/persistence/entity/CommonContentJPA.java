@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.DocumentMetadata;
 import com.imcode.imcms.model.Language;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +10,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Content common to all document types.
@@ -46,6 +50,14 @@ public class CommonContentJPA extends CommonContent {
 	private String headline;
 
 	/**
+	 * Doc's metadata. Used in HTML meta tags.
+	 */
+	@CollectionTable(name = "imcms_doc_metadata", joinColumns = @JoinColumn(name = "imcms_doc_i18n_meta_id"))
+	@ElementCollection(fetch = FetchType.LAZY, targetClass = DocumentMetadataJPA.class)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	private List<DocumentMetadataJPA> documentMetadataList;
+
+	/**
 	 * Menu item label.
 	 * Used when a doc is included in other doc's menu (as a menu item).
 	 */
@@ -77,6 +89,12 @@ public class CommonContentJPA extends CommonContent {
 
 	public CommonContentJPA(CommonContent from) {
 		super(from);
+	}
+
+	@Override
+	public void setDocumentMetadataList(List<? extends DocumentMetadata> documentMetadataList) {
+		this.documentMetadataList = (documentMetadataList == null) ? Collections.emptyList() :
+				documentMetadataList.stream().map(DocumentMetadataJPA::new).collect(Collectors.toList());
 	}
 
 	@Override

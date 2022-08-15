@@ -104,7 +104,13 @@ public class DefaultCommonContentService
                 .collect(Collectors.toSet());
     }
 
-    @Override
+	@Override
+	public Optional<CommonContentDTO> getByVersionAndLanguage(Version version, Language language) {
+		return Optional.ofNullable(repository.findByVersionAndLanguage(version, new LanguageJPA(language)))
+				.map(CommonContentDTO::new);
+	}
+
+	@Override
     public List<CommonContent> getAll() {
         return repository.findAll()
                 .stream()
