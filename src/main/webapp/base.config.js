@@ -140,6 +140,7 @@ module.exports = {
                         page_info_tabs: [
                             'imcms-page-info-tabs-builder',
                             'imcms-appearance-tab-builder',
+	                        'imcms-metadata-tab-builder',
                             'imcms-life-cycle-tab-builder',
                             'imcms-templates-tab-builder',
                             'imcms-file-tab-builder',
@@ -278,7 +279,8 @@ module.exports = {
                     'imcms-cache-document-rest-api',
                     'imcms-doc-view-request-api',
                     'imcms-user-properties-rest-api',
-                    'imcms-all-data-document-rest-api'
+                    'imcms-all-data-document-rest-api',
+	                'imcms-meta-tag-rest-api',
                 ]
             }
         ),

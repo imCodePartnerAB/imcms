@@ -1,0 +1,13 @@
+.imcms-control.imcms-control--remove.imcms-flex--ml-auto {
+	margin-top: 55px;
+}
+
+.imcms-metadata-row__content > textarea {
+	min-height: 37px;
+	resize: vertical;
+	height: fit-content;
+}
+
+.imcms-metadata-body.imcms-metadata__body {
+	padding-left: 15px;
+}

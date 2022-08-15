@@ -166,6 +166,11 @@ const texts = {
                 template: "Mall",
                 defaultChildTemplate: "Standardmall för nya dokument"
             },
+	        metadata: {
+		        name: "SID INFO",
+		        content: "Innehåll",
+		        select: "Metatagg"
+	        },
             keywords: {
                 name: "Nyckelord",
                 title: "Nyckelord",
@@ -1177,6 +1182,11 @@ const texts = {
                 template: "Template",
                 defaultChildTemplate: "Default child template"
             },
+	        metadata: {
+		        name: "Metadata",
+		        content: "Content",
+		        select: "Meta tag"
+	        },
             keywords: {
                 name: "Keywords",
                 title: "Keywords",
