@@ -24,23 +24,8 @@ public class DefaultPropertyService implements PropertyService {
     }
 
     @Override
-    public Integer getDocIdByAlias(String alias) {
-        return propertyRepository.findDocIdByAlias(alias);
-    }
-
-    @Override
-    public List<String> findAllAliases() {
-        return propertyRepository.findAllAliases();
-    }
-
-    @Override
     public List<Property> findByDocId(int docId) {
         return propertyRepository.findByDocId(docId);
-    }
-
-    @Override
-    public Boolean existsByAlias(String alias) {
-        return propertyRepository.existsByAlias(alias);
     }
 
 }

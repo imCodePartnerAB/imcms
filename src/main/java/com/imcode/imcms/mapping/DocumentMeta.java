@@ -3,20 +3,18 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import lombok.Data;
 import org.apache.commons.lang.NullArgumentException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
  * Document's meta.
@@ -101,37 +99,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 			throw new NullArgumentException("status");
 		}
 		publicationStatus = status;
-	}
-
-	/**
-	 * key paired alias with language (e.g. langCode => alias)
-	 */
-	public Map<String, String> getAliases() {
-		final List<Language> languages = Imcms.getServices().getLanguageService().getAvailableLanguages();
-		final Map<String, String> aliases = new HashMap<>();
-
-		languages.forEach(language -> {
-			String key = DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + language.getCode();
-			String value = properties.get(key);
-			aliases.put(language.getCode(), value);
-		});
-
-		return aliases;
-	}
-
-	public void setAliases(Map<String, String> aliases) {
-		if (aliases.isEmpty()) {
-			removeAliases();
-		} else {
-			properties.putAll(aliases);
-		}
-	}
-
-	public void removeAliases() {
-		final List<Language> languages = Imcms.getServices().getLanguageService().getAvailableLanguages();
-		languages.forEach(language -> {
-			properties.remove(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + language.getCode());
-		});
 	}
 
 	/**

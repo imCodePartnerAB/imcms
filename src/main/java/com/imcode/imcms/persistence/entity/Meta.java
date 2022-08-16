@@ -1,11 +1,8 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.Language;
-import imcode.server.Imcms;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -13,8 +10,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
  * Document's meta.
@@ -249,19 +244,5 @@ public class Meta implements Serializable {
 		this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
 	}
 
-	/**
-	 * key paired alias with language (e.g. langCode => alias)
-	 */
-	public Map<String, String> getAliases() {
-		final List<Language> languages = Imcms.getServices().getLanguageService().getAvailableLanguages();
-		final Map<String, String> aliases = new HashMap<>();
 
-		languages.forEach(language -> {
-			String key = DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + language.getCode();
-			String value = getProperties().get(key);
-			aliases.put(language.getCode(), StringUtils.defaultString(value));
-		});
-
-		return aliases;
-	}
 }

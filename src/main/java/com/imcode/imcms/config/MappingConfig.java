@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
@@ -327,13 +326,6 @@ class MappingConfig {
 	        meta.setPublicationEndDatetime(publicationEndDate);
 
 	        meta.setProperties(documentDTO.getProperties());
-
-	        documentDTO.getCommonContents().forEach(commonContent -> {
-		        final String languageCode = commonContent.getLanguage().getCode();
-		        final String alias = commonContent.getAlias();
-		        meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + languageCode, alias);
-	        });
-
 	        meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
 	        meta.setSearchDisabled(documentDTO.isSearchDisabled());
 
