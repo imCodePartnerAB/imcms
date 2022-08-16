@@ -33,8 +33,3 @@
 .imcms-checkbox__checkbox[disabled] + .imcms-checkbox__label {
     cursor: not-allowed;
 }
-
-label.imcms-label.imcms-checkbox__label {
-	margin-bottom: 0;
-	margin-top: 10px;
-}

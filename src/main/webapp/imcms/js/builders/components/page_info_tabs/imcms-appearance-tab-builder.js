@@ -62,12 +62,14 @@ define("imcms-appearance-tab-builder",
 		        setValue: (alias) => $documentAlias.setValue(alias)
 	        })
 
+	        $aliasBlock.css("padding", "0");
+
 	        return $aliasBlock;
         }
 
 	    function writeSuggestedAliasToTextInput($documentAlias, commonContent) {
 		    const $commonContent = tabData.commonContents.find(element => element.name === commonContent.language.name);
-		    const content = $commonContent.pageTitle.getValue();
+		    const content = $documentAlias.getValue() ? $documentAlias.getValue() : $commonContent.pageTitle.getValue();
 
 		    const title = content
 			    .trim()
