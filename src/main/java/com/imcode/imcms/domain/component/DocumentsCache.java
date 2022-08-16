@@ -23,6 +23,8 @@ public interface DocumentsCache {
 
 	void invalidateDoc(Integer id, Collection<String> aliases);
 
+	void invalidateDoc(Integer id, String alias);
+
     void invalidateItem(String key);
 
     void invalidateCache();

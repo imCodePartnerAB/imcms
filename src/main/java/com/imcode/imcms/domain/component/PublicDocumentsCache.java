@@ -94,6 +94,18 @@ public class PublicDocumentsCache implements DocumentsCache {
 		}
     }
 
+	@Override
+	public void invalidateDoc(Integer id, String alias){
+		if (cache == null) return;
+
+		for (String language : languages) {
+			cache.remove(calculateKey(String.valueOf(id), language));
+
+			if (StringUtils.isNotBlank(alias)) {
+				cache.remove(calculateKey(alias, language));
+			}
+		}
+	}
     @Override
     public void invalidateItem(String key) {
         if (cache == null) return;

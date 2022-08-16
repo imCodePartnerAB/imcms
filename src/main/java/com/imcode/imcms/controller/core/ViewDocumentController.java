@@ -123,7 +123,7 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         if (!isVersioningAllowed) {
-	        publicDocumentsCache.invalidateDoc(docId, textDocument.getAliases().values());
+	        publicDocumentsCache.invalidateDoc(docId, textDocument.getAlias());
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))

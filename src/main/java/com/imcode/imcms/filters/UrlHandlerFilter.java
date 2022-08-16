@@ -13,9 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
@@ -57,40 +55,24 @@ public class UrlHandlerFilter implements Filter {
 		    final DocumentDomainObject document = services.getDocumentMapper()
 				    .getVersionedDocument(documentIdString, langCode, request);
 
-		    if (document != null) {
-			    final Map<String, String> aliases = document.getAliases();
-			    final Optional<String> requestedAlias = aliases.values().stream().filter(documentIdString::equalsIgnoreCase).findAny();
+		    request.setAttribute("contextPath", request.getContextPath());
+		    request.setAttribute("language", langCode);
 
-			    if (requestedAlias.isPresent() && document.getMeta().getDefaultLanguageAliasEnabled()) {
-				    final String defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
-				    final String defaultAlias = aliases.get(defaultLanguageCode);
-				    if (Objects.equals(requestedAlias.get(), defaultAlias)) {
-					    handleUrl(request, response, langCode, document);
-				    } else {
-					    response.sendError(HttpServletResponse.SC_NOT_FOUND);
-				    }
+		    if (null != document) {
+			    if (!documentIdString.equals(String.valueOf(document.getId())) && !Objects.equals(documentIdString, document.getAlias())) {
+				    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			    } else if (Utility.isTextDocument(document)) {
+				    final String newPath = API_VIEW_DOC_PATH + "/" + document.getId();
+				    request.getRequestDispatcher(newPath).forward(request, response);
 			    } else {
-				    handleUrl(request, response, langCode, document);
+				    GetDoc.viewDoc(document, request, response);
 			    }
+
 			    return;
 		    }
 	    }
 	    chain.doFilter(request, response);
     }
-
-	private void handleUrl(HttpServletRequest request, HttpServletResponse response, String langCode, DocumentDomainObject document) throws ServletException, IOException {
-		request.setAttribute("contextPath", request.getContextPath());
-		request.setAttribute("language", langCode);
-
-		if (Utility.isTextDocument(document)) {
-
-			final String newPath = API_VIEW_DOC_PATH + "/" + document.getId();
-			request.getRequestDispatcher(newPath).forward(request, response);
-
-		} else {
-			GetDoc.viewDoc(document, request, response);
-		}
-	}
 
     public void init(FilterConfig config) {
         // noop
