@@ -1,6 +1,10 @@
 SET @schema_version__major_new = 7;
 SET @schema_version__minor_new = 6;
 
+DELETE
+FROM document_properties
+WHERE key_name = 'imcms.document.alias';
+
 ALTER TABLE meta
 	ADD COLUMN default_language_alias_enabled boolean default false after disabled_language_show_rule;
 
