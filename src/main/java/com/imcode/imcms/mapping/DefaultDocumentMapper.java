@@ -3,8 +3,8 @@ package com.imcode.imcms.mapping;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
@@ -47,7 +47,7 @@ import static imcode.server.ImcmsConstants.*;
 public class DefaultDocumentMapper implements DocumentMapper {
 
     private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
-    private final PropertyService propertyService;
+    private final CommonContentService commonContentService;
     private final Database database;
     private final NativeQueries nativeQueries;
     private final DocumentSaver documentSaver;
@@ -65,7 +65,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
                                  MenuRepository menuRepository,
                                  Database database,
                                  DocumentLanguages languages,
-                                 PropertyService propertyService,
+                                 CommonContentService commonContentService,
                                  DocumentLoaderCachingProxy documentLoaderCachingProxy,
                                  MenuService defaultMenuService) {
 
@@ -76,7 +76,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         this.menuRepository = menuRepository;
         this.database = database;
         this.documentLanguages = languages;
-        this.propertyService = propertyService;
+        this.commonContentService = commonContentService;
         this.documentLoaderCachingProxy = documentLoaderCachingProxy;
         this.defaultMenuService = defaultMenuService;
     }
@@ -389,7 +389,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     @Override
     public List<String> getAllDocumentAlias() {
-        return propertyService.findAllAliases();
+        return commonContentService.getAllAliases();
     }
 
     @Override
@@ -456,7 +456,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         makeDocumentLookNew(documentMeta, user);
 	    documentMeta.setId(null);
-	    documentMeta.removeAliases();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();

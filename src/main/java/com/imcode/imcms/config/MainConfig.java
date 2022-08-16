@@ -174,11 +174,11 @@ public class MainConfig {
     public DocumentLoaderCachingProxy documentLoaderCachingProxy(DocumentVersionMapper docVersionMapper,
                                                                  DocumentLoader documentLoader,
                                                                  DocumentLanguages languages,
-                                                                 PropertyService propertyService,
+                                                                 CommonContentService commonContentService,
                                                                  DocumentsCache documentsCache,
                                                                  Config config) {
 
-        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, propertyService, documentsCache, config);
+        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, commonContentService, documentsCache, config);
     }
 
     @Bean

@@ -9,6 +9,8 @@ import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -39,8 +41,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      *
      * @see DefaultDocumentMapper#getDocument(String)
      */
-    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
-
     private static final long serialVersionUID = 9196527330127566553L;
 
     private static Logger log = LogManager.getLogger(DocumentDomainObject.class);
@@ -501,13 +501,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getLifeCyclePhaseAtTime(this, new Date());
 	}
 
-	public Map<String, String> getAliases() {
-		return meta.getAliases();
-	}
-
 	public String getAlias() {
-		final String defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
-		final String alias = isDefaultLanguageAliasEnabled() != null && isDefaultLanguageAliasEnabled() ? meta.getAliases().get(defaultLanguageCode) : commonContent.getAlias();
+		final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
+		final CommonContent defaultLanguageCommonContent = Imcms.getServices().getCommonContentService().getOrCreate(getId(), versionNo, defaultLanguageCode);
+
+		final String alias = isDefaultLanguageAliasEnabled() ? defaultLanguageCommonContent.getAlias() : commonContent.getAlias();
 
 		return StringUtils.defaultIfBlank(alias, null);
 	}
@@ -578,7 +576,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
 	public Boolean isDefaultLanguageAliasEnabled() {
-		return meta.getDefaultLanguageAliasEnabled();
+		 return meta.getDefaultLanguageAliasEnabled() != null && meta.getDefaultLanguageAliasEnabled();
 	}
 
 	public void setDefaultLanguageAlias(boolean enabled) {

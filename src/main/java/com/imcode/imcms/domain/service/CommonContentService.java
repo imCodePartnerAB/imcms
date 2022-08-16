@@ -40,4 +40,9 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
 
     List<CommonContent> getAll();
 
+	Boolean existsByAlias(String alias);
+
+	Integer getDocIdByAlias(String alias);
+
+	List<String> getAllAliases();
 }

@@ -118,7 +118,22 @@ public class DefaultCommonContentService
                 .collect(toList());
     }
 
-    @Override
+	@Override
+	public Boolean existsByAlias(String alias) {
+		return repository.existsByAlias(alias);
+	}
+
+	@Override
+	public Integer getDocIdByAlias(String alias) {
+		return repository.findDocIdByAlias(alias);
+	}
+
+	@Override
+	public List<String> getAllAliases() {
+		return repository.findAllAliases();
+	}
+
+	@Override
     public void deleteByDocId(Integer docId) {
         repository.deleteByDocId(docId);
     }

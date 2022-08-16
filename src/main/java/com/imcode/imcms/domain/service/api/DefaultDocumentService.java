@@ -147,7 +147,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    saveMe.getCommonContents().forEach(commonContent -> {
 		    final String alias = commonContent.getAlias();
 		    if (!Objects.equals(alias, "")) {
-			    Integer documentId = propertyService.getDocIdByAlias(alias);
+			    Integer documentId = commonContentService.getDocIdByAlias(alias);
 			    if (documentId != null && !documentId.equals(id)) {
 				    commonContent.setAlias("");
 			    }
@@ -155,7 +155,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    });
 
 	    if (!isNew) {
-		    final List<String> oldAliases = new ArrayList<>(metaRepository.getOne(id).getAliases().values());
+		    final List<String> oldAliases = get(id).getCommonContents().stream().map(CommonContent::getAlias).collect(Collectors.toList());
 		    final List<String> newAliases = saveMe.getCommonContents().stream().map(CommonContent::getAlias).collect(Collectors.toList());
 
 		    if (!CollectionUtils.isEqualCollection(newAliases, oldAliases)) {
@@ -206,7 +206,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
 	    final Meta publishMe = metaRepository.getOne(docId);
 
-	    final Collection<String> aliases = publishMe.getAliases().values();
+	    final Collection<String> aliases = get(docId).getCommonContents().stream().map(CommonContent::getAlias).collect(Collectors.toList());
 
 	    documentsCache.invalidateDoc(docId, aliases);
 	    imageCacheManager.removePublicImagesFromCacheByKey(String.valueOf(docId));
@@ -363,12 +363,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public String getUniqueAlias(String alias) {
-        if (!propertyService.existsByAlias(alias)) {
+        if (!commonContentService.existsByAlias(alias)) {
             return alias;
         }
 
         int i = 1;
-        while (propertyService.existsByAlias(alias + "-" + i++)) ;
+        while (commonContentService.existsByAlias(alias + "-" + i++)) ;
 
         return alias + "-" + (i - 1);
     }

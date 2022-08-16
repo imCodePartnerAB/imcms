@@ -6,7 +6,7 @@ import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.PropertyService;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
@@ -36,7 +36,7 @@ public class DocumentLoaderCachingProxy {
 	private final DocumentVersionMapper versionMapper;
 	private final DocumentLoader loader;
 	private final DocumentLanguages documentLanguages;
-	private final PropertyService propertyService;
+	private final CommonContentService commonContentService;
 	private final DocumentsCache documentsCache;
 	private final int size;
 	private final CacheWrapper<Integer, DocumentMeta> metas;
@@ -58,12 +58,12 @@ public class DocumentLoaderCachingProxy {
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper,
                                       DocumentLoader loader,
                                       DocumentLanguages documentLanguages,
-                                      PropertyService propertyService,
+                                      CommonContentService commonContentService,
                                       DocumentsCache documentsCache, Config config) {
         this.versionMapper = versionMapper;
         this.loader = loader;
         this.documentLanguages = documentLanguages;
-        this.propertyService = propertyService;
+        this.commonContentService = commonContentService;
         this.documentsCache = documentsCache;
         this.size = config.getDocumentCacheMaxSize();
 
@@ -126,7 +126,7 @@ public class DocumentLoaderCachingProxy {
      */
     public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, () -> {
-	        Integer docId = propertyService.getDocIdByAlias(docAlias);
+	        Integer docId = commonContentService.getDocIdByAlias(docAlias);
 
 	        if (docId != null) {
 		        Optional.ofNullable(idsToAliases.get(docId)).ifPresentOrElse(aliases -> {
