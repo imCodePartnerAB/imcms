@@ -8,7 +8,6 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
@@ -45,7 +44,6 @@ import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -66,6 +64,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     private RoleService roleService;
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+	@Autowired
+	private CommonContentDataInitializer commonContentDataInitializer;
     @Autowired
     private CommonContentService commonContentService;
     @Autowired
@@ -165,6 +165,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         documentDataInitializer.cleanRepositories();
         templateDataInitializer.cleanRepositories();
         userDataInitializer.cleanRepositories();
+		commonContentDataInitializer.cleanRepositories();
+
         createdDoc = documentDataInitializer.createData();
 
         testSolrFolder = new File(config.getSolrHome());
@@ -910,12 +912,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         for (int i = 1; i <= 2; i++) {
             final String head = "head" + i;
             final String menuText = "menu text" + i;
+	        final String alias = "alias" + i;
             final boolean isEnabled = isEnabledSwitcher.getAndSet(!isEnabledSwitcher.get());
 
             publishedDoc.getCommonContents().forEach(commonContent -> {
                 commonContent.setHeadline(head);
                 commonContent.setEnabled(isEnabled);
                 commonContent.setMenuText(menuText);
+	            commonContent.setAlias(alias);
             });
 
             documentService.save(publishedDoc);
@@ -925,6 +929,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
                 assertEquals(menuText, commonContent.getMenuText());
+				assertEquals(alias, commonContent.getAlias());
             });
 
             isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
@@ -936,6 +941,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
                 assertEquals(menuText, commonContent.getMenuText());
+				assertEquals(alias, commonContent.getAlias());
             });
         }
     }
@@ -993,13 +999,10 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     public void getUniqueAlias_When_Alias_NotExists_Existed_NotUpdatedAlias() {
         final String aliasName = "test-alias";
 
-        final Meta meta1 = createAndSaveMeta();
+	    createdDoc.getCommonContents().stream().filter(commonContent -> commonContent.getLanguage().equals(Imcms.getLanguage()))
+			    .forEach(commonContent -> commonContent.setAlias(aliasName + 1));
 
-        final Property property1 = new Property();
-	    property1.setDocId(meta1.getId());
-	    property1.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
-	    property1.setValue(aliasName + 1);
-        propertyRepository.save(property1);
+	    commonContentService.save(createdDoc.getId(), createdDoc.getCommonContents());
 
         assertEquals(aliasName, documentService.getUniqueAlias(aliasName));
     }
@@ -1008,13 +1011,10 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     public void getUniqueAlias_When_Alias_Exists_Existed_AliasWithCounter() {
         final String aliasName = "test-alias";
 
-        final Meta meta = createAndSaveMeta();
+	    createdDoc.getCommonContents().stream().filter(commonContent -> commonContent.getLanguage().equals(Imcms.getLanguage()))
+			    .forEach(commonContent -> commonContent.setAlias(aliasName));
 
-        final Property property = new Property();
-	    property.setDocId(meta.getId());
-	    property.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
-	    property.setValue(aliasName);
-        propertyRepository.save(property);
+	    commonContentService.save(createdDoc.getId(), createdDoc.getCommonContents());
 
         assertEquals(aliasName + "-1", documentService.getUniqueAlias(aliasName));
     }
@@ -1037,21 +1037,15 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getUniqueAlias_When_AliasWithCounter_Exists_Existed_AliasWithAnotherCounter() {
         final String aliasName = "test-alias";
+	    final List<LanguageDTO> languages = languageDataInitializer.createData();
 
-        final Meta meta1 = createAndSaveMeta();
-        final Meta meta2 = createAndSaveMeta();
+	    createdDoc.getCommonContents().stream().filter(commonContent -> commonContent.getLanguage().equals(languages.get(0)))
+			    .forEach(commonContent -> commonContent.setAlias(aliasName));
 
-        final Property property1 = new Property();
-	    property1.setDocId(meta1.getId());
-	    property1.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
-	    property1.setValue(aliasName);
-        propertyRepository.save(property1);
+	    createdDoc.getCommonContents().stream().filter(commonContent -> commonContent.getLanguage().equals(languages.get(1)))
+			    .forEach(commonContent -> commonContent.setAlias(aliasName + "-1"));
 
-        final Property property2 = new Property();
-	    property2.setDocId(meta2.getId());
-	    property2.setName(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS + '.' + Imcms.getLanguage().getCode());
-	    property2.setValue(aliasName + "-1");
-        propertyRepository.save(property2);
+	    commonContentService.save(createdDoc.getId(), createdDoc.getCommonContents());
 
         assertEquals(aliasName + "-2", documentService.getUniqueAlias(aliasName));
     }
