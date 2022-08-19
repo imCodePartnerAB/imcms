@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
+import com.imcode.imcms.components.datainitializer.DocumentMetadataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
@@ -44,6 +45,9 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+
+	@Autowired
+	private DocumentMetadataInitializer documentMetadataInitializer;
 
     @Autowired
     private VersionRepository versionRepository;
@@ -117,6 +121,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
                     contentDTO.setEnabled(true);
                     contentDTO.setMenuText("menu_text_test");
                     contentDTO.setHeadline("test_headline");
+	                contentDTO.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
                     contentDTO.setDocId(DOC_ID);
                     contentDTO.setLanguage(languageDTO);
                 }))

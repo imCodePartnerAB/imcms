@@ -10,7 +10,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +55,7 @@ public class CommonContentJPA extends CommonContent {
 	@CollectionTable(name = "imcms_doc_metadata", joinColumns = @JoinColumn(name = "imcms_doc_i18n_meta_id"))
 	@ElementCollection(fetch = FetchType.LAZY, targetClass = DocumentMetadataJPA.class)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	private List<DocumentMetadataJPA> documentMetadataList = new ArrayList<>();
+	private List<DocumentMetadataJPA> documentMetadataList;
 
 	/**
 	 * Menu item label.

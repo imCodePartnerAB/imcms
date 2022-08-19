@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class CommonContentDTO extends CommonContent implements Cloneable {
 	private String alias;
 	private LanguageDTO language;
 	private String headline;
-	private List<DocumentMetadataDTO> documentMetadataList = new ArrayList<>();
+	private List<DocumentMetadataDTO> documentMetadataList;
 	private String menuText;
 	private boolean isEnabled;
 	private Integer versionNo;
