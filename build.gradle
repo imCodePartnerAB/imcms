@@ -99,9 +99,8 @@ dependencies {
         exclude(module: "commons-logging")
     }
     implementation "org.apache.logging.log4j:log4j-core:${log4j2Version}"
+    //return log4j due to old ldap dependency backward compatibility
     implementation("org.apache.hadoop:hadoop-client:3.3.3") {
-        exclude(module: 'reload4j')
-        exclude(module: 'slf4j-reload4j')
         exclude(module: "commons-logging")
     }
 
