@@ -87,7 +87,7 @@ VALUES
 INSERT INTO meta
   (meta_id, doc_type, owner_id, permissions, shared, show_meta, lang_prefix, date_created, date_modified, disable_search, target, activate, archived_datetime, publisher_id, status, publication_start_datetime, publication_end_datetime, missing_i18n_show_rule)
 VALUES
-  (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
+  (@start_document__meta_id, 2, @user_id__admin, 0, 1, 1, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
 
 --
 -- Data for table browsers
