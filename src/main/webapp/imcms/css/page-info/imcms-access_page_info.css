@@ -86,3 +86,7 @@
 .imcms-enable-visible{
     color: #27b864 !important;
 }
+
+.imcms-field__visible-document .imcms-label{
+    margin-bottom: 0;
+}

@@ -50,9 +50,7 @@ define("imcms-access-tab-builder",
             }
 
             function displayAddRoleSelectAndBtn($addRoleSelect) {
-                $addRoleSelect.css("display", "block");
-                const $addRoleBtn = $addRoleSelect.next();
-                $addRoleBtn.css("display", "block");
+                $addRoleSelect.parent().parent().css("display", "block");
             }
 
             function hideRolesField($rolesBody) {
@@ -180,6 +178,13 @@ define("imcms-access-tab-builder",
                 change: setViewVisible
             }));
 
+            const $visibleContainer = new BEM({
+                block: "imcms-field",
+                elements: {
+                    "visible-document": tabData.$visible
+                }
+            }).buildBlockStructure("<div>");
+
             const $addRoleButton = components.buttons.neutralButton({
                     text: texts.addRole,
                     click: () => {
@@ -198,8 +203,7 @@ define("imcms-access-tab-builder",
                         $addRoleSelect.deleteOption(id);
 
                         if (!$addRoleSelect.hasOptions()) {
-                            $addRoleSelect.css("display", "none");
-                            $addRoleButton.css("display", "none");
+                            $addRoleSelect.parent().parent().css("display", "none");
                         } else {
                             $addRoleSelect.selectFirst();
                         }
@@ -226,14 +230,13 @@ define("imcms-access-tab-builder",
                 $linkAccessContainer = new BEM({
                     block: "imcms-field",
                     elements: {
-                        "access-visible": tabData.$visible,
                         "access-other-users": tabData.$otherUsers,
                         "access-unauthorized-users": tabData.$unauthorizedUsers
                     }
                 }).buildBlockStructure("<div>")
             ;
 
-            return [$rolesField, $addRoleContainer, $linkAccessContainer];
+            return [$rolesField, $visibleContainer, $addRoleContainer, $linkAccessContainer];
         };
         AccessTab.prototype.fillTabDataFromDocument = document => {
             function documentContainsRole(document, role) {
@@ -255,8 +258,7 @@ define("imcms-access-tab-builder",
                     components.selects.addOptionsToSelect(rolesDataMapped, tabData.$addRoleSelect);
                 }
 
-                tabData.$addRoleSelect.css("display", addRoleDisplay);
-                $addRoleBtn.css("display", addRoleDisplay);
+                tabData.$addRoleSelect.parent().parent().css("display", addRoleDisplay);
 
                 const $roles = Object.keys(document.roleIdToPermission).map(roleId => {
                     const role = storedRoleIdsPerRoles[roleId];
