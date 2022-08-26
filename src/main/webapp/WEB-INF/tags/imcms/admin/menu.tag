@@ -11,6 +11,7 @@
 <%@ attribute name="wrap" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="showMode" required="false" description="Editor style: default|small" type="java.lang.String" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -76,20 +77,43 @@
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
-                 data-menu-index="${index}">
-                <c:if test="${not empty label && isShowlabel}">
-                    <div class="imcms-editor-area__text-label">${label}</div>
-                </c:if>
-                <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-                     data-menu-index="${index}">${menuContent}</div>
-                    <%-- attributes used as unique identifier while reload --%>
-                <div class="imcms-editor-area__control-wrap">
-                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
-                        <div class="imcms-editor-area__control-title">${editLabel}</div>
-                    </div>
-                </div>
-            </div>
+	        <c:choose>
+		        <c:when test="${showMode == 'small'}">
+			        <div class="imcms-editor-area--small imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+			             data-menu-index="${index}">
+
+				        <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+				             data-menu-index="${index}">${menuContent}</div>
+					        <%-- attributes used as unique identifier while reload --%>
+				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
+						        <div class="imcms-editor-area__control-title">${editLabel}</div>
+					        </div>
+					        <c:if test="${not empty label && isShowlabel}">
+						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
+							        <div class="imcms-editor-area__control-title">${label}</div>
+						        </div>
+					        </c:if>
+				        </div>
+			        </div>
+		        </c:when>
+		        <c:otherwise>
+			        <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+			             data-menu-index="${index}">
+				        <c:if test="${not empty label && isShowlabel}">
+					        <div class="imcms-editor-area__text-label">${label}</div>
+				        </c:if>
+				        <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+				             data-menu-index="${index}">${menuContent}</div>
+					        <%-- attributes used as unique identifier while reload --%>
+				        <div class="imcms-editor-area__control-wrap">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
+						        <div class="imcms-editor-area__control-title">${editLabel}</div>
+					        </div>
+				        </div>
+			        </div>
+		        </c:otherwise>
+	        </c:choose>
         </c:when>
         <c:otherwise>${menuContent}</c:otherwise>
     </c:choose>

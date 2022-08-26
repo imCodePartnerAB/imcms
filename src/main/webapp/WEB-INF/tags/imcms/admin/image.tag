@@ -12,6 +12,7 @@
 <%@ attribute name="post" required="false" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="showMode" required="false" description="Editor style: default|small" type="java.lang.String" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
@@ -122,18 +123,41 @@
 
             <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}${style}
-                 data-lang-code="${language}" data-index="${no}"${loopPart}>
-                <c:if test="${not empty label && isShowlabel}">
-                    <div class="imcms-editor-area__text-label">${label}</div>
-                </c:if>
-                <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
-                <div class="imcms-editor-area__control-wrap">
-                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                        <div class="imcms-editor-area__control-title">${editLabel}</div>
-                    </div>
-                </div>
-            </div>
+	        <c:choose>
+	            <c:when test="${showMode == 'small'}">
+		            <div class="imcms-editor-area--small imcms-editor-area--image"
+		                 data-doc-id="${targetDocId}"${externalPart}${style}
+		                 data-lang-code="${language}" data-index="${no}"${loopPart}>
+
+			            <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
+			            <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+				            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
+					            <div class="imcms-editor-area__control-title">${editLabel}</div>
+				            </div>
+				            <c:if test="${not empty label && isShowlabel}">
+					            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
+						            <div class="imcms-editor-area__control-title">${label}</div>
+					            </div>
+				            </c:if>
+			            </div>
+		            </div>
+	            </c:when>
+		        <c:otherwise>
+			        <div class="imcms-editor-area imcms-editor-area--image"
+			             data-doc-id="${targetDocId}"${externalPart}${style}
+			             data-lang-code="${language}" data-index="${no}"${loopPart}>
+				        <c:if test="${not empty label && isShowlabel}">
+					        <div class="imcms-editor-area__text-label">${label}</div>
+				        </c:if>
+				        <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
+				        <div class="imcms-editor-area__control-wrap">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
+						        <div class="imcms-editor-area__control-title">${editLabel}</div>
+					        </div>
+				        </div>
+			        </div>
+		        </c:otherwise>
+	        </c:choose>
         </c:when>
         <c:otherwise>
             <c:if test="${not empty imgPath}">${imageContent}</c:if>

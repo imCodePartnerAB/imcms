@@ -15,6 +15,7 @@
 <%@ attribute name="post" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showEditToSuperAdmin" required="false" %>
+<%@ attribute name="showMode" required="false" description="Editor style: default|small" type="java.lang.String" %>
 
 <c:if test="${!isDocNew || editOptions.editText}">
     <c:if test="${empty index}">
@@ -144,25 +145,57 @@
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
             ${pre}
-            <div class="imcms-editor-area imcms-editor-area--text">
-                <c:if test="${not empty label && isShowlabel}">
-                    <div class="imcms-editor-area__text-label">${label}</div>
-                </c:if>
-                <div class="imcms-editor-area__text-toolbar"></div>
-                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}" ${externalPart}
-                data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
-                data-lang-code="${language}" placeholder="<c:if
-                    test="${empty content}">${placeholder}</c:if>" ${tagClose}
-                <c:if test="${not empty content}">
-                    ${content}
-                </c:if>
-                    ${tagEnd}
-                <div class="imcms-editor-area__control-wrap">
-                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                        <div class="imcms-editor-area__control-title">${editingLabel}</div>
-                    </div>
-                </div>
-            </div>
+	        <c:choose>
+		        <c:when test="${showMode == 'small'}">
+			        <div class="imcms-editor-area--small imcms-editor-area--text">
+				        <c:if test="${not empty label && isShowlabel}">
+					        <div class="imcms-editor-area__text-label">${label}</div>
+				        </c:if>
+				        <div class="imcms-editor-area__text-toolbar"></div>
+				        <${tag} class="imcms-editor-content imcms-editor-content--text"
+				        data-index="${index}" ${externalPart}
+				        data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+				        data-lang-code="${language}" placeholder="<c:if
+					        test="${empty content}">${placeholder}</c:if>" ${tagClose}
+				        <c:if test="${not empty content}">
+					        ${content}
+				        </c:if>
+					        ${tagEnd}
+				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
+						        <div class="imcms-editor-area__control-title">${editingLabel}</div>
+					        </div>
+					        <c:if test="${not empty label && isShowlabel}">
+						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
+							        <div class="imcms-editor-area__control-title">${label}</div>
+						        </div>
+					        </c:if>
+				        </div>
+			        </div>
+		        </c:when>
+		        <c:otherwise>
+			        <div class="imcms-editor-area imcms-editor-area--text">
+				        <c:if test="${not empty label && isShowlabel}">
+					        <div class="imcms-editor-area__text-label">${label}</div>
+				        </c:if>
+				        <div class="imcms-editor-area__text-toolbar"></div>
+				        <${tag} class="imcms-editor-content imcms-editor-content--text"
+				        data-index="${index}" ${externalPart}
+				        data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+				        data-lang-code="${language}" placeholder="<c:if
+					        test="${empty content}">${placeholder}</c:if>" ${tagClose}
+				        <c:if test="${not empty content}">
+					        ${content}
+				        </c:if>
+					        ${tagEnd}
+				        <div class="imcms-editor-area__control-wrap">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
+						        <div class="imcms-editor-area__control-title">${editingLabel}</div>
+					        </div>
+				        </div>
+			        </div>
+		        </c:otherwise>
+	        </c:choose>
             ${post}
         </c:if>
     </c:if>
