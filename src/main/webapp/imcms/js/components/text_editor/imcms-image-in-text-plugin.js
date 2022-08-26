@@ -62,6 +62,13 @@ define(
             $tag.attr("data-in-text", true);
             $tag.attr("data-index", imageDTO.index);
 
+	        $tag.hover((e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				$editorControlWrapper.show()
+				$editorControl.show()
+	        });
+
             openEditor.call($editorControl[0]);
         }
 

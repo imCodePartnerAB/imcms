@@ -107,7 +107,7 @@ define(
         function setEditorFocusOnEditControlClick(editor) {
             editor.$().parents('.imcms-editor-area--text')
                 .find('.imcms-control--text')
-                .on('click', () => {
+                .on('click focus', () => {
                     editor.focus();
                 });
         }
@@ -124,7 +124,7 @@ define(
             clearSaveBtnText(editor);
             textEditorUtils.setEditorFocus(editor);
             setEditorFocusOnEditControlClick(editor);
-            textEditorUtils.showEditButton($(editor.$()));
+            textEditorUtils.showControls($(editor.$()));
             initSaveContentConfirmation(editor);
         }
 

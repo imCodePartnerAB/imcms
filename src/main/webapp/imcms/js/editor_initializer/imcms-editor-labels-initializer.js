@@ -12,7 +12,7 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
 
             function positioningLabel(event) {
                 const $ctrl = $(this);
-                const $label = $ctrl.find(".imcms-editor-area__control-title"),
+                const $label = $ctrl.children().first(),
                     mouseCoords = {
                         x: event.clientX,
                         y: event.clientY
@@ -50,11 +50,15 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                 $label.show();
             }
 
-            editControls.on("mouseenter", positioningLabel);
+	        editControls.children().each((index, control) => {
+		        $(control).on("mouseenter", positioningLabel);
+	        });
 
-            editControls.on("mouseleave", function () {
-                $(this).find(".imcms-editor-area__control-title").hide();
-            });
+	        editControls.children().each((index, control) => {
+		        $(control).on("mouseleave", function () {
+			        $(this).children().first().hide();
+		        });
+	        });
         }
     };
 });

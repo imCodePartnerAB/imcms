@@ -72,15 +72,21 @@ define(
         }
 
         function setEditorFocus(activeTextEditor) {
-            $(activeTextEditor.$()).focus(function () {
+	        $(activeTextEditor.$()).on("click focus",function (e) {
+	            const $this = $(this);
                 setActiveTextEditor(activeTextEditor);
 
-                $(ACTIVE_EDIT_AREA_CLASS_$).removeClass(ACTIVE_EDIT_AREA_CLASS)
-                    .find('.mce-edit-focus')
-                    .removeClass('mce-edit-focus');
+	            $(ACTIVE_EDIT_AREA_CLASS_$).find(".imcms-editor-area__text-label").hide();
+	            $(ACTIVE_EDIT_AREA_CLASS_$).removeClass(ACTIVE_EDIT_AREA_CLASS)
+		            .find('.mce-edit-focus')
+		            .removeClass('mce-edit-focus');
 
-                $(this).closest('.imcms-editor-area--text').addClass(ACTIVE_EDIT_AREA_CLASS);
-            });
+	            const $parent = $this.parent();
+
+	            $parent.addClass(ACTIVE_EDIT_AREA_CLASS);
+	            $parent.find(".imcms-editor-area__control-wrap--small").hide();
+	            $parent.find(".imcms-editor-area__text-label").show();
+			});
         }
 
         function onEditorBlur(editor) {
@@ -97,11 +103,13 @@ define(
             });
         }
 
-        function showEditButton($editor) {
-            $editor.parents('.imcms-editor-area--text')
-                .find('.imcms-control--edit.imcms-control--text')
-                .css('display', 'block');
-        }
+	    function showControls($editor) {
+		    $editor.next()
+			    .children()
+			    .each((index, control) => {
+				    $(control).css('display', 'inline-block');
+			    })
+	    }
 
         function filterContent(content, filteringPolicy, onSuccess, onFail) {
             const textDTO = {
@@ -127,7 +135,7 @@ define(
             saveContent: saveContent,
             setEditorFocus: setEditorFocus,
             onEditorBlur: onEditorBlur,
-            showEditButton: showEditButton,
+	        showControls: showControls,
             filterContent,
         };
     }
