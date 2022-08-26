@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * <p> Describes HTML meta tag content <p/>
+ * <p> Describes HTML meta tag content <p>
  *
  * @see MetaTag
  */

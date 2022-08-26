@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * <p> HTML meta tag property/name and their description <p/>
+ * <p> HTML meta tag property/name and their description <p>
  */
 @NoArgsConstructor
 public abstract class MetaTag implements Serializable {
