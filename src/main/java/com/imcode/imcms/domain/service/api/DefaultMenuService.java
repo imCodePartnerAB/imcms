@@ -206,6 +206,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final MenuDTO savedMenu = menuToMenuDTO.apply(repository.save(menu));
 
         super.updateWorkingVersion(docId);
+        super.updateVersionInIndex(docId);
 
         return savedMenu;
     }

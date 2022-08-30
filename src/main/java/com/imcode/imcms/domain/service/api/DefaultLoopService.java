@@ -72,6 +72,7 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
         loopForSave.setId(loopId);
         repository.save(loopForSave);
         super.updateWorkingVersion(docId);
+        super.updateVersionInIndex(docId);
     }
 
     @Override

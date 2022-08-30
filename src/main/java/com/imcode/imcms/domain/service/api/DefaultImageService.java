@@ -171,6 +171,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         imageCacheManager.removeOtherImagesFromCacheByKey(""+docId);
 
         super.updateWorkingVersion(docId);
+        super.updateVersionInIndex(docId);
     }
 
     @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
@@ -246,6 +247,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             }
 
             super.updateWorkingVersion(docId);
+            super.updateVersionInIndex(docId);
         }
     }
 

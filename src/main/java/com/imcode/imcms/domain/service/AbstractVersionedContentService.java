@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.VersionedContentRepository;
+import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -37,4 +38,7 @@ public abstract class AbstractVersionedContentService<JPA, Repository extends Ve
         versionService.updateWorkingVersion(docId);
     }
 
+    protected void updateVersionInIndex(int docId){
+        Imcms.getServices().getDocumentMapper().getDocumentIndex().indexDocument(docId);    // TODO: 29.08.2022 Try to update only the required fields in the index
+    }
 }

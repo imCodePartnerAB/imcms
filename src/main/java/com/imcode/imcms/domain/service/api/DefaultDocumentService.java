@@ -14,7 +14,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -46,13 +46,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final MetaRepository metaRepository;
-    private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping;
+    private final BiFunction<Meta, List<CommonContent>, DocumentDTO> documentMapping;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final TextService textService;
     private final ImageService imageService;
     private final LoopService loopService;
-    private final DocumentIndex documentIndex;
     private final DocumentsCache documentsCache;
     private final DocumentMapper documentMapper;
     private final PropertyService propertyService;
@@ -66,14 +65,13 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private DeleterByDocumentId[] docContentServices = {};
 
     DefaultDocumentService(TextDocumentTemplateRepository textDocumentTemplateRepository, MetaRepository metaRepository,
-                           TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
+                           BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
                            VersionService versionService,
                            TextService textService,
                            ImageService imageService,
                            LoopService loopService,
-                           DocumentIndex documentIndex,
                            DocumentsCache documentsCache,
                            DocumentMapper documentMapper,
                            PropertyService propertyService,
@@ -90,7 +88,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.textService = textService;
         this.imageService = imageService;
         this.loopService = loopService;
-        this.documentIndex = documentIndex;
         this.documentsCache = documentsCache;
         this.documentMapper = documentMapper;
         this.propertyService = propertyService;
@@ -130,13 +127,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, workingVersion.getNo()
         );
-        final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), workingVersion, commonContents
-        );
 
-        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
-
-        return documentDTO;
+        return documentMapping.apply(metaRepository.findOne(docId), commonContents);
     }
 
     @Override
@@ -154,14 +146,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 		    }
 	    }
 
-	    if (!isNew) {
-		    final String oldAlias = metaRepository.findOne(id).getAlias();
-
-		    if (!Objects.equals(oldAlias, newAlias)) {
-			    documentMapper.invalidateDocument(id);
-		    }
-	    }
-
         final Map<Integer, Meta.Permission> roleIdToPermission = saveMe.getRoleIdToPermission();
         roleIdToPermission.remove(Roles.USER.getId());
         saveMe.setRoleIdToPermission(roleIdToPermission);
@@ -176,10 +160,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
         commonContentService.save(docId, saveMe.getCommonContents());
-
-        if (!isNew && (!Imcms.isVersioningAllowed() || Meta.PublicationStatus.APPROVED == saveMe.getPublicationStatus())) {
-            documentMapper.invalidateDocument(id);
-        }
 
 	    return get(docId);
     }
@@ -272,7 +252,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLISHER_NAME, doc.getPublished().getBy());
 
         addFieldIfNotNull.accept(DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreated().getFormattedDate());
-        addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getModified().getFormattedDate());
+        addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getCurrentVersion().getFormattedDate());
         addFieldIfNotNull.accept(DocumentIndex.FIELD__ACTIVATED_DATETIME, doc.getPublished().getFormattedDate());
         addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLICATION_START_DATETIME,
                 doc.getPublished().getFormattedDate());
@@ -334,8 +314,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         deleteDocumentContent(docIdToDelete);
 
         metaRepository.delete(docIdToDelete);
-        documentMapper.invalidateDocument(docIdToDelete);
-        documentIndex.removeDocument(docIdToDelete);
     }
 
     @Override

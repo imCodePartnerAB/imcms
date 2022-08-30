@@ -141,6 +141,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         }
 
         super.updateWorkingVersion(docId);
+        super.updateVersionInIndex(docId);
 
         textHistoryService.save(text);
 
