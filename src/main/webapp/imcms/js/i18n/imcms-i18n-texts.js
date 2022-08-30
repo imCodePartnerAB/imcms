@@ -105,6 +105,7 @@ const texts = {
                 file: "Nytt FIL-dokument",
             },
             confirmMessage: "Spara ändringar?",
+            confirmMessageOnSaveAndPublish: "Spara ändringar och publicera den här versionen?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
             oneLanguageShouldBeEnabled: "Minst ett språk måste vara aktiverat!",
             title: {
@@ -155,7 +156,7 @@ const texts = {
                 publisher: "Utgivare",
                 currentVersion: "Aktuell version:",
                 versionHasChanges: "Denna arbetsversion har ändringar",
-                publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera",
+                publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera № ",
                 error: {
                     userLoadFailed: 'Misslyckades med att hämta utgivare. Försök igen'
                 }
@@ -1115,6 +1116,7 @@ const texts = {
                 file: "New FILE document",
             },
             confirmMessage: "Save changes?",
+            confirmMessageOnSaveAndPublish: "Save changes and publish this version?",
             confirmMessageOnCancel: "Do you really want to exit?",
             oneLanguageShouldBeEnabled: "At least one language must be enabled!",
             title: {

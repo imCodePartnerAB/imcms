@@ -1,11 +1,12 @@
 define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms", "imcms-i18n-texts",
-        "imcms-date-time-validator", "imcms-page-info-tab", "imcms-modal-window-builder"
+        "imcms-date-time-validator", "imcms-document-types", "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
-    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, PageInfoTab, modal) {
+    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, docTypes, PageInfoTab, modal) {
 
         texts = texts.pageInfo.lifeCycle;
+        const WORKING_VERSION = 0;
 
         const lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
@@ -164,6 +165,7 @@ define("imcms-life-cycle-tab-builder",
             const $offlineVersionInfo = components.texts.infoText("<div>", texts.versionHasChanges);
             const $nextVersionIndex = components.texts.infoText("<span>", "", {id: "document-next-version"});
 
+            tabData.$offlineVersionInfo = $offlineVersionInfo;
             tabData.$savingVersionInfo = components.texts.infoText("<div>", texts.publishMessage)
                 .append($nextVersionIndex);
 
@@ -208,12 +210,16 @@ define("imcms-life-cycle-tab-builder",
             buildDocVersionsInfoRow()
         ];
         LifeCycleTab.prototype.fillTabDataFromDocument = document => {
-            const displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
-                && imcms.isVersioningAllowed) ? "block" : "none";
+            const changesDisplayRule = imcms.isVersioningAllowed && document.currentVersion.id === WORKING_VERSION;
+            const saveAndPublishDisplayRule = changesDisplayRule &&
+                    ((document.id === imcms.document.id && document.type === docTypes.TEXT) || document.type !== docTypes.TEXT);
+
+            tabData.$savingVersionInfo.find("#document-next-version").html(+document.latestVersion.id + 1);
+            tabData.$hasNewerVersionInfoBlock.css("display", saveAndPublishDisplayRule || changesDisplayRule ? "block" : "none");
+            tabData.$savingVersionInfo.css("display", saveAndPublishDisplayRule ? "block" : "none");
+            tabData.$offlineVersionInfo.css("display", changesDisplayRule ? "block" : "none");
 
             tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
-            tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
-            tabData.$savingVersionInfo.find("#document-next-version").html(+document.latestVersion.id + 1);
             tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
             statusRowsNames.forEach(rowName => {
