@@ -89,7 +89,7 @@ public class DocRepository {
     }
 
     public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
-        return documentFileRepository.findByDocId(docIdentity.getId());
+        return documentFileRepository.findByDocIdAndVersionIndex(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
