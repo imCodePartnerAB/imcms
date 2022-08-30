@@ -6,11 +6,12 @@ define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms",
-        "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api",
+        "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api", "imcms-publish-document-rest-api",
         "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types'
     ],
     (BEM, components, WindowBuilder, pageInfoTabs, $, events, imcms,
-     documentsRestApi, docFilesAjaxApi, rolesRestApi, modal, texts, appearanceTab, docTypes, docPermissionTypes) => {
+     documentsRestApi, docFilesAjaxApi, rolesRestApi, publishDocumentRestApi,
+     modal, texts, appearanceTab, docTypes, docPermissionTypes) => {
 
         texts = texts.pageInfo;
 
@@ -74,8 +75,6 @@ define("imcms-page-info-builder",
 		                if (onDocumentSavedCallback) {
 			                onDocumentSavedCallback(savedDoc);
 		                }
-						if (onDocumentSaved)
-		                onDocumentSaved(savedDoc, true);
 					}
                 })
                 .fail(() => {
@@ -88,12 +87,33 @@ define("imcms-page-info-builder",
             return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
         }
 
-        function saveAndPublish() {
+        function saveAndPublishAndReload() {
             saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
         }
 
+        function saveAndPublishAndClose() {
+            saveAndClose(() => {
+                publishDocumentRestApi.publish(documentDTO.id)
+                    .always(() => {
+                        events.trigger("imcms-alert-publish-new-version");
+
+                        let requestData = {docId: documentDTO.id};
+                        documentsRestApi.read(requestData).done((document) => {
+                            onDocumentSaved(document, true);
+                        }).fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed))
+                    })
+            });
+        }
+
         function confirmSaving() {
-            modal.buildConfirmWindow(texts.confirmMessage, saveAndClose);
+            const onDocumentSavedCallback = onDocumentSaved != null ?
+                (doc) => onDocumentSaved(doc, true) : null;
+
+            modal.buildConfirmWindow(texts.confirmMessage, () => saveAndClose(onDocumentSavedCallback));
+        }
+
+        function confirmSavingAndPublishing(saveAndPublish){
+            modal.buildConfirmWindow(texts.confirmMessageOnSaveAndPublish, saveAndPublish);
         }
 
         function validateDoc() {
@@ -110,7 +130,7 @@ define("imcms-page-info-builder",
             };
         }
 
-        function moveToNextTabOrEnableOthersAndReplaceButton($buttonForReplacing) {
+        function moveToNextTabOrEnableOthersAndReplaceButton($buttonsForReplacing) {
             return function () {
                 const currentTabIndex = parseInt(windowPageInfoTabsBuilder.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
                 const $nextTab = getNextTab(currentTabIndex);
@@ -121,7 +141,7 @@ define("imcms-page-info-builder",
                 } else {
                     setEnabledExcessTabs(true);
                     $(this).hide();
-                    $buttonForReplacing.show()
+                    $buttonsForReplacing.forEach($button => $button.show());
                 }
             }
         }
@@ -139,21 +159,24 @@ define("imcms-page-info-builder",
                 style: 'display: none',
             });
 
+            const saveAndPublish = documentDTO.type === docTypes.TEXT ?
+                ifValidDocInfo(saveAndPublishAndReload) : ifValidDocInfo(saveAndPublishAndClose);
+
+            $saveAndPublishBtn = components.buttons.saveButton({
+                text: texts.buttons.saveAndPublish,
+                click: () => confirmSavingAndPublishing(saveAndPublish),
+                style: "display: none;"
+            });
+
             $nextBtn = components.buttons.positiveButton({
                 text: texts.buttons.next + ' \u2b95',
-                click: moveToNextTabOrEnableOthersAndReplaceButton($saveBtn),
+                click: moveToNextTabOrEnableOthersAndReplaceButton([$saveBtn, $saveAndPublishBtn]),
                 style: 'display: none',
             });
 
             const $cancelBtn = components.buttons.negativeButton({
                 text: texts.buttons.cancel,
                 click: closePageInfo
-            });
-
-            $saveAndPublishBtn = components.buttons.saveButton({
-                text: texts.buttons.saveAndPublish,
-                click: ifValidDocInfo(saveAndPublish),
-                style: "display: none;"
             });
 
             $loadingAnimation = $('<div>').addClass('pageInfo loading-animation').css("display", "none");
@@ -184,7 +207,9 @@ define("imcms-page-info-builder",
 
         function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId) {
 
-            if ((docId === imcms.document.id) && imcms.document.hasNewerVersion) {
+            if ((docId === imcms.document.id && imcms.document.hasNewerVersion) ||
+                (documentDTO.id && documentDTO.type !== docTypes.TEXT)) {
+
                 $saveAndPublishBtn.css("display", "block");
             }
 

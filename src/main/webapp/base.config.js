@@ -263,6 +263,7 @@ module.exports = {
                     'imcms-file-doc-files-rest-api',
                     'imcms-files-rest-api',
                     'imcms-profiles-rest-api',
+                    'imcms-publish-document-rest-api',
                     'imcms-document-validation-rest-api',
                     'imcms-document-copy-rest-api',
                     'imcms-auth-providers-rest-api',
