@@ -73,7 +73,8 @@ module.exports = {
                 .filter(x => !!x)
                 .forEach(x => {
                     const styleKeyAndValue = x.split(':').map(x => x.trim());
-                    const value = styleKeyAndValue[1].replace(/(?<=\d)px/, ""); //100px -> 100
+                    const value = /(\d)px/.test(styleKeyAndValue[1]) ?
+                        styleKeyAndValue[1].replace("px", "") : styleKeyAndValue[1]; //100px -> 100
                     linkData += '&'+styleKeyAndValue[0]+'='+value;
                 });
         }
