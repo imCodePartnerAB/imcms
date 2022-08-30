@@ -16,7 +16,6 @@ import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.repository.*;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -37,6 +36,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -106,7 +106,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
     @Autowired
-    private TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
+    private BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
     @Autowired
     private Function<DocumentDTO, Meta> documentDtoToMeta;
     @Autowired
@@ -150,7 +150,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 textService,
                 imageService,
                 loopService,
-                new MockDocumentIndex(),
                 documentsCache,
                 documentMapper,
                 propertyService, versionedContentServices,

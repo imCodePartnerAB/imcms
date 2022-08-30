@@ -86,7 +86,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
             textDocumentTemplateService.save(textDocumentTemplateDTO);
         });
 
-        return saveMe;
+        return get(savedDocId);
     }
 
     @Override

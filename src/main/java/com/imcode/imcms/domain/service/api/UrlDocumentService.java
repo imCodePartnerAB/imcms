@@ -44,7 +44,9 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     @Override
     public UrlDocumentDTO get(int docId) {
         final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(defaultDocumentService.get(docId));
-        final DocumentUrlDTO documentUrlDTO = new DocumentUrlDTO(documentUrlService.getByDocId(docId));
+        final DocumentUrlDTO documentUrlDTO = Optional.ofNullable(documentUrlService.getByDocId(docId))
+                .map(DocumentUrlDTO::new)
+                .orElse(null);
 
         urlDocumentDTO.setDocumentURL(documentUrlDTO);
 
@@ -91,9 +93,9 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
             documentUrlDTO.ifPresent(urlDTO -> urlDTO.setDocId(savedDocId));
         }
 
-        documentUrlDTO.ifPresent(documentUrlService::save);
+        documentUrlDTO.ifPresent(documentUrlService::save);     // FIXME: 29.08.2022 Strange logic that is not considered in other places (e.g. copying a document)
 
-        return saveMe;
+        return get(savedDocId);
     }
 
     @Override

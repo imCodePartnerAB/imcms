@@ -275,7 +275,7 @@ public class LinkValidationServiceTest extends WebAppSpringTestConfig {
         final Version version = versionDataInitializer.createData(index, docId);
         final UserDomainObject user = new UserDomainObject(1);
         Imcms.setUser(user);
-        urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        urlDocumentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -301,7 +301,7 @@ public class LinkValidationServiceTest extends WebAppSpringTestConfig {
         final Version version = versionDataInitializer.createData(index, docId);
         final UserDomainObject user = new UserDomainObject(1);
         Imcms.setUser(user);
-        urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        urlDocumentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -326,7 +326,7 @@ public class LinkValidationServiceTest extends WebAppSpringTestConfig {
         final Version version = versionDataInitializer.createData(index, docId);
         final UserDomainObject user = new UserDomainObject(1);
         Imcms.setUser(user);
-        urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        urlDocumentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;

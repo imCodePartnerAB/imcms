@@ -9,10 +9,10 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.util.function.TernaryFunction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 @Component
 public class UrlDocumentDataInitializer extends DocumentDataInitializer {
@@ -21,7 +21,7 @@ public class UrlDocumentDataInitializer extends DocumentDataInitializer {
     private final DocumentUrlRepository documentUrlRepository;
 
     public UrlDocumentDataInitializer(MetaRepository metaRepository,
-                                      TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
+                                      BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                                       VersionDataInitializer versionDataInitializer,
                                       CommonContentDataInitializer commonContentDataInitializer,
                                       DocumentUrlRepository documentUrlRepository) {

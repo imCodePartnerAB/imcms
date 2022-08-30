@@ -369,7 +369,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(UserService userService) {
+    public BiFunction<Meta, List<CommonContent>, DocumentDTO> documentMapping(UserService userService, VersionService versionService) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
 
@@ -385,7 +385,7 @@ class MappingConfig {
                     return audit;
                 };
 
-        return (meta, latestVersion, commonContents) -> {
+        return (meta, commonContents) -> {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
             dto.setId(metaId);
@@ -399,7 +399,13 @@ class MappingConfig {
             dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
             dto.setModified(auditDtoCreator.apply(meta::getModifierId, meta::getModifiedDatetime));
             dto.setDisabledLanguageShowMode(meta.getDisabledLanguageShowMode());
-            dto.setCurrentVersion(AuditDTO.fromVersion(latestVersion));
+
+            Version currentVersion = versionService.getCurrentVersion(metaId);
+            dto.setCurrentVersion(new AuditDTO(currentVersion.getNo(), currentVersion.getModifiedBy().getLogin(), currentVersion.getModifiedDt()));
+
+            Version latestVersion = versionService.getLatestVersion(metaId);
+            dto.setLatestVersion(new AuditDTO(latestVersion.getNo(), latestVersion.getCreatedBy().getLogin(), latestVersion.getCreatedDt()));
+
             dto.setSearchDisabled(meta.isSearchDisabled());
             dto.setKeywords(meta.getKeywords());
             dto.setRoleIdToPermission(meta.getRoleIdToPermission());

@@ -34,7 +34,7 @@ public class DefaultDocumentUrlService
                 docId, Version.WORKING_VERSION_INDEX
         );
 
-        return new DocumentUrlDTO(documentUrlJPA);
+        return documentUrlJPA != null ? new DocumentUrlDTO(documentUrlJPA) : null;
     }
 
     @Override

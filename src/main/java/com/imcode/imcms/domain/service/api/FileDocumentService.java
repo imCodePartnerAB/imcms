@@ -84,7 +84,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         final int savedDocId = defaultDocumentService.save(saveMe).getId();
         documentFileService.saveAll(saveMe.getFiles(), savedDocId);
 
-        return saveMe;
+        return get(savedDocId);
     }
 
     @Override

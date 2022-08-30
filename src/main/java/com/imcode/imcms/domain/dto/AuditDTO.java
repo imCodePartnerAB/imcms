@@ -25,13 +25,10 @@ public class AuditDTO implements Serializable {
 
     private String time;
 
-    public static AuditDTO fromVersion(Version version) {
-        final AuditDTO versionAudit = new AuditDTO();
-        versionAudit.setDateTime(version.getCreatedDt());
-        versionAudit.setId(version.getNo());
-        versionAudit.setBy(version.getModifiedBy().getLogin());
-
-        return versionAudit;
+    public AuditDTO(Integer id, String by, Date date){
+        this.id = id;
+        this.by = by;
+        setDateTime(date);
     }
 
     @JsonIgnore

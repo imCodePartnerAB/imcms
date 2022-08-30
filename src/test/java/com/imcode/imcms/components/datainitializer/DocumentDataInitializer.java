@@ -7,7 +7,6 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 
@@ -24,12 +24,12 @@ public class DocumentDataInitializer extends TestDataCleaner {
     static final int TEST_VERSION_INDEX = 0;
 
     private final MetaRepository metaRepository;
-    private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
+    private final BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
     private final CommonContentDataInitializer commonContentDataInitializer;
     private final VersionDataInitializer versionDataInitializer;
 
     public DocumentDataInitializer(MetaRepository metaRepository,
-                                   TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
+                                   BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                                    VersionDataInitializer versionDataInitializer,
                                    CommonContentDataInitializer commonContentDataInitializer) {
 
@@ -69,8 +69,8 @@ public class DocumentDataInitializer extends TestDataCleaner {
                 docId, versionIndex, isEnabledEngContent, isEnabledSweContent
         );
 
-        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDoc, version, commonContents);
-        documentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDoc, commonContents);
+        documentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
 
         return documentDTO;
     }

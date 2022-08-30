@@ -218,7 +218,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXT_URL);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-        urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        urlDocumentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -242,7 +242,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXTS);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-        urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+        urlDocumentDTO.setLatestVersion(new AuditDTO(version.getNo(), version.getCreatedBy().getLogin(), version.getCreatedDt()));
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
