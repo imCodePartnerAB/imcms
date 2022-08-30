@@ -38,6 +38,10 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
         })
     }
 
+    function changeTooltipText($element, text){
+        $element[0]._tippy.setContent(text);
+    }
+
     function getCorrectDelay(delay) {
         if (!isNaN(delay)) {
             return {
@@ -56,5 +60,6 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
 
     return {
         defaultTooltip: buildDefaultTooltip,
+        changeTooltipText: changeTooltipText
     }
 });

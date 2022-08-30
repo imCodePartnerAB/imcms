@@ -143,6 +143,13 @@ define('imcms-document-editor-builder',
             incrementDocumentNumber(1);
         }
 
+        function updateDocumentInList(document) {
+            let index = docs.findIndex((doc) => doc.documentId === document.id || doc.id === document.id);
+            if(index) docs[index] = document;
+
+            refreshDocumentInList(document, true);
+        }
+
         let $textField;
 
         function buildBodyHeadTools(opts) {
@@ -1426,6 +1433,7 @@ define('imcms-document-editor-builder',
             incrementDocumentNumber,
             initMenuDocuments,
             addDocumentToList,
+            updateDocumentInList,
             getDocumentVersionTexts,
             getIdTooltipText,
             getModifiedDateTooltipText,

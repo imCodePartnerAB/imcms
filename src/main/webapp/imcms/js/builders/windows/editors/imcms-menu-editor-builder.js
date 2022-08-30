@@ -752,7 +752,7 @@ define("imcms-menu-editor-builder",
                 hasNewerVersion: document.currentVersion,
                 children: [],
 	            createdBy: document.createdBy,
-	            createdDate: document.createdDate,
+	            createdDate: `${document.created.date} ${document.created.time}`,
                 publishedDate: `${document.published.date} ${document.published.time}`,
                 modifiedDate: `${document.modified.date} ${document.modified.time}`,
             };
@@ -789,7 +789,7 @@ define("imcms-menu-editor-builder",
                     let titleValue = documentBuilderTexts.notShownInSelectedLang;
                     const $docTitle = $oldMenuItem.find(".imcms-document-item__info--title").first();
                     document.commonContents.forEach(commonContent => {
-                        if (commonContent.enabled && commonContent.language.code === imcms.language.code) {
+                        if (commonContent.enabled && commonContent.language.code === imcms.language.code && commonContent.headline) {
                             titleValue = commonContent.headline;
                         }
                     });
@@ -807,16 +807,26 @@ define("imcms-menu-editor-builder",
 
                 function changeStatus() {
                     const $status = $oldMenuItem.find(".imcms-document-item__info--status").first();
-                    const statusTexts = docStatus.getDocumentStatusTexts(document.documentStatus, document.published);
+                    const statusTexts = docStatus.getDocumentStatusTexts(document.documentStatus, `${document.published.date} ${document.published.time}`);
                     $status.text(statusTexts.title);
-                    $status.attr('title', statusTexts.tooltip);
+                    components.overlays.changeTooltipText($status, statusTexts.tooltip);
+                }
+
+                function changeStar() {
+                    const $star = $oldMenuItem.find(".imcms-control--star").first();
+
+                    if(document.currentVersion.id === WORKING_VERSION){
+                        $star.css('filter', '');
+                    }else{
+                        $star.css('filter', 'grayscale(100%) brightness(140%)');
+                    }
                 }
 
                 function toggleClass() {
-                    const menuItemClass = "imcms-menu-items__document-item";
+                    const menuItemClass = "imcms-document-items__document-item";
                     const $menuItem = $oldMenuItem.find("." + menuItemClass).first();
 
-                    $menuItem.removeClass((index, className) => (className.match(/imcms-menu-items__document-item--\S+/g) || []).join(' '));
+                    $menuItem.removeClass((index, className) => (className.match(/imcms-document-items__document-item--\S+/g) || []).join(' '));
 
                     $menuItem.addClass(
                         menuItemClass + "--" + document.documentStatus.replace(/_/g, "-").toLowerCase()
@@ -825,9 +835,10 @@ define("imcms-menu-editor-builder",
 
                 changeTitle();
                 changeStatus();
+                changeStar();
                 toggleClass();
 
-                documentEditorBuilder.refreshDocumentInList(document, true);
+                documentEditorBuilder.updateDocumentInList(document);
             }
         }
 
@@ -879,9 +890,9 @@ define("imcms-menu-editor-builder",
             });
             components.overlays.defaultTooltip($controlCopy, texts.copy);
 
-            const controls = [$controlRemove, $controlCopy, $controlEdit];
+            const controls = [];
             controls.push($controlRemove);
-            if(imcms.accessToDocumentEditor) controls.push($controlCopy);
+            if(imcms.accessToDocumentEditor || imcms.isSuperAdmin) controls.push($controlCopy);
             controls.push($controlEdit);
 
             return enabledMultiRemoveMode
