@@ -51,7 +51,9 @@ import java.security.cert.Certificate;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,6 +69,7 @@ public class Utility {
     public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
     public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
     public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
+    public static final BiPredicate<Date, Date> isDateBefore = (date1, date2) -> (date1 != null) && (date2 != null) && date1.before(date2);
     private static final Logger log = Logger.getLogger(Utility.class.getName());
     private static final String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private static final LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
@@ -575,6 +578,11 @@ public class Utility {
             }
         }
         return StringUtils.join(requestParameterStrings.iterator(), "&");
+    }
+
+    public static LocalDateTime convertDateToLocalDateTime(Date date){
+        if(date == null) return null;
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
 }

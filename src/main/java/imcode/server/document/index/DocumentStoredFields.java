@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static imcode.util.Utility.isDateInFuture;
-import static imcode.util.Utility.isDateInPast;
+import static imcode.util.Utility.*;
 
 /**
  * Document's fields stored in a Solr index.
@@ -130,25 +129,26 @@ public class DocumentStoredFields {
 
         if (PublicationStatus.NEW.equals(publicationStatus)) {
             return DocumentStatus.IN_PROCESS;
-
-        } else if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
-            return DocumentStatus.DISAPPROVED;
-
-        } else if (isDateInPast.test(archived())) {
-            return DocumentStatus.ARCHIVED;
-
-        } else if (isDateInPast.test(publicationEndDt())) {
-            return DocumentStatus.PASSED;
-
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(publicationStart())) {
-            return DocumentStatus.PUBLISHED;
-
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(publicationStart())) {
-            return DocumentStatus.PUBLISHED_WAITING;
-
-        } else { // should never happen
-            return DocumentStatus.PUBLISHED;
         }
+        if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
+            return DocumentStatus.DISAPPROVED;
+        }
+
+        if (publicationStart() == null) {
+            return DocumentStatus.IN_PROCESS;
+        }
+        if ((isDateInPast.test(publicationEndDt()) && isDateBefore.test(publicationStart(), publicationEndDt()))
+                || publicationStart().equals(publicationEndDt())) {
+            return DocumentStatus.PASSED;
+        }
+        if (isDateInPast.test(archived()) && !isDateInFuture.test(publicationStart())) {
+            return DocumentStatus.ARCHIVED;
+        }
+        if (isDateInFuture.test(publicationStart())) {
+            return DocumentStatus.PUBLISHED_WAITING;
+        }
+
+        return DocumentStatus.PUBLISHED;
     }
 
 }

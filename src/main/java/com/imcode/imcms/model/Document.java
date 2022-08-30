@@ -162,9 +162,10 @@ public abstract class Document implements Serializable {
 	    if (isNullAuditDate(getPublished())) {
 		    return DocumentStatus.IN_PROCESS;
 	    }
-	    if (isAuditDateInPast(getPublicationEnd()) && isAuditBefore(getPublished(), getPublicationEnd())) {
-		    return DocumentStatus.PASSED;
-	    }
+        if ((isAuditDateInPast(getPublicationEnd()) && isAuditBefore(getPublished(), getPublicationEnd()))
+                || isAuditDateEquals(getPublished(), getPublicationEnd())) {
+            return DocumentStatus.PASSED;
+        }
 	    if (isAuditDateInPast(getArchived()) && !isAuditDateInFuture(getPublished())) {
 		    return DocumentStatus.ARCHIVED;
 	    }
@@ -187,7 +188,13 @@ public abstract class Document implements Serializable {
         return !isNullAuditDate(auditToCheck) && Utility.isDateInFuture.test(auditToCheck.getFormattedDate());
     }
 
-	private boolean isAuditBefore(AuditDTO audit, AuditDTO other){
-		return !isNullAuditDate(audit) && !isNullAuditDate(other) && audit.getFormattedDate().before(other.getFormattedDate());
-	}
+    private boolean isAuditBefore(AuditDTO audit, AuditDTO other){
+        return !isNullAuditDate(audit) && !isNullAuditDate(other) &&
+                Utility.isDateBefore.test(audit.getFormattedDate(), other.getFormattedDate());
+    }
+
+    private boolean isAuditDateEquals(AuditDTO audit, AuditDTO other){
+        return !isNullAuditDate(audit) && !isNullAuditDate(other) &&
+                audit.getFormattedDate().equals(other.getFormattedDate());
+    }
 }

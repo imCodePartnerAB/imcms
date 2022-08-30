@@ -70,7 +70,7 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void createEmpty_When_DocumentArchivedDateIsInPast_Expect_DocumentStatusArchived() {
+    public void createEmpty_When_DocumentArchivedDateIsInPast_And_DocumentIsNotPublished_Expect_DocumentStatusInProcess() {
         final Date archivedDate = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
@@ -85,11 +85,11 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
 
-        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.ARCHIVED));
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.IN_PROCESS));
     }
 
     @Test
-    public void createEmpty_When_DocumentPublicationEndDateIsInPast_Expect_DocumentStatusPassed() {
+    public void createEmpty_When_DocumentPublicationEndDateIsInPast_And_DocumentIsNotPublished_Expect_DocumentStatusInProcess() {
         final Date publicationEnd = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
@@ -99,6 +99,159 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publicationEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.IN_PROCESS));
+    }
+
+    @Test
+    public void createEmpty_When_DocumentArchivedDate_After_DocumentIsPublished_Expect_DocumentStatusArchived() {
+        final Date archivedDate = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedDate = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, publishedDate);
+        solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.ARCHIVED));
+    }
+
+    @Test
+    public void createEmpty_When_DocumentArchivedDateInPast_And_DocumentWillBePublishedInFuture_Expect_DocumentStatusPublishedWaiting() {
+        final Date archivedDate = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedDate = new Date(LocalDateTime.now().plusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, publishedDate);
+        solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.PUBLISHED_WAITING));
+    }
+
+    @Test
+    public void createEmpty_When_PublicationStatusIsApproved_And_PublicationDateIsInFuture_Expect_DocumentStatusPublishedWaiting() {
+        final Date published = new Date(LocalDateTime.now().plusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.PUBLISHED_WAITING));
+    }
+
+    @Test
+    public void createEmpty_When_PublicationEnd_After_PublicationStart_And_InPast_Expect_DocumentStatusPassed() {
+        final Date published = new Date(LocalDateTime.now().minusYears(2).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedEnd = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.PASSED));
+    }
+
+    @Test
+    public void createEmpty_When_PublicationEnd_Before_PublicationStart_And_InPast_Expect_DocumentStatusPublished() {
+        final Date published = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedEnd = new Date(LocalDateTime.now().minusYears(2).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.PUBLISHED));
+    }
+
+    @Test
+    public void createEmpty_When_PublicationEnd_Before_PublicationStart_And_PublicationStartIsInFuture_Expect_DocumentStatusPublishedWaiting() {
+        final Date published = new Date(LocalDateTime.now().plusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedEnd = new Date(LocalDateTime.now().minusYears(2).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
+        solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+
+        DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
+        final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
+
+        assertThat(documentStoredFieldsDTO.getDocumentStatus(), equalTo(DocumentStatus.PUBLISHED_WAITING));
+    }
+
+    @Test
+    public void createEmpty_When_PublicationEnd_After_ArchivedDate_And_DocumentIsPublished_Expect_DocumentStatusPassed() {
+        final Date published = new Date(LocalDateTime.now().minusYears(3).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date archived = new Date(LocalDateTime.now().minusYears(2).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final Date publishedEnd = new Date(LocalDateTime.now().minusYears(1).toEpochSecond(ZoneOffset.UTC) * 1000);
+
+        final SolrDocument solrDocument = new SolrDocument();
+        solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
+        solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
+        solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
+        solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archived);
+        solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
