@@ -5,8 +5,8 @@ import com.imcode.imcms.persistence.entity.Meta;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -29,14 +29,14 @@ public class MenuItemDTO implements Serializable {
 
     private Boolean isShownTitle;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date publishedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Date modifiedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime modifiedDate;
 
     private String createdBy;
 

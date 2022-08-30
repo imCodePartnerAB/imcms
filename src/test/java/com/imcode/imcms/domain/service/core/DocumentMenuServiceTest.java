@@ -19,6 +19,7 @@ import com.imcode.imcms.persistence.repository.RoleRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -283,7 +284,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         assertThat(menuItemDTO.getLink(), is("/" + (StringUtils.isBlank(testAlias) ? docId : testAlias)));
         assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
         assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-        assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
-        assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+        assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
+        assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
     }
 }

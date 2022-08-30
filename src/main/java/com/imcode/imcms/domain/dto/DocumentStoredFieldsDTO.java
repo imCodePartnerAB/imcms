@@ -3,10 +3,11 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.index.DocumentStoredFields;
+    import imcode.util.Utility;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.*;
 
 /**
  * Document's stored fields in solr indexes
@@ -29,14 +30,14 @@ public class DocumentStoredFieldsDTO {
 
     private Boolean isShownTitle;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date created;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime created;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date modified;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime modified;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date published;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime published;
 
     private String createdBy;
 
@@ -52,9 +53,9 @@ public class DocumentStoredFieldsDTO {
         alias = from.alias();
         currentVersion = from.versionNo();
         isShownTitle = from.isShownTitle();
-        created = from.created();
-        modified = from.modified();
-        published = from.publicationStart();
+        created = Utility.convertDateToLocalDateTime(from.created());
+        modified = Utility.convertDateToLocalDateTime(from.modified());
+        published = Utility.convertDateToLocalDateTime(from.publicationStart());
         createdBy = from.createdBy();
         publishedBy = from.publicationStartBy();
         modifiedBy = from.modifiedBy();
