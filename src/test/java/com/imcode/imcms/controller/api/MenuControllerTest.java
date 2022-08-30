@@ -3,12 +3,12 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.enums.TypeSort;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -41,7 +41,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
-    private DocumentService<DocumentDTO> documentService;
+    private DelegatingByTypeDocumentService documentService;
 
     @Autowired
     private MenuService menuService;
@@ -75,7 +75,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -94,7 +94,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndOn_Expect_MenuDtoJson() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -110,7 +110,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndTrueParamSortTree_Expect_CorrectEntities() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -127,7 +127,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortMANUAL_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -144,7 +144,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortAlphabeticASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.ALPHABETICAL_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -161,7 +161,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndTrueParamSortAlphabeticDESC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.ALPHABETICAL_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -178,7 +178,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndNoParamSortPublishedASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.PUBLISHED_DATE_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -195,7 +195,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndTrueParamSortPublishedDESC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.PUBLISHED_DATE_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -212,7 +212,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortModifiedASC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MODIFIED_DATE_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -229,7 +229,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortModifiedDESC_Expect_CorrectEntitiesEmptyChild() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MODIFIED_DATE_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -246,7 +246,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenu_When_MenuExistInModeSHOWINDEFAULTLANGAndParamSortInvalid_Expect_CorrectData() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getDocId());
+        final Document document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
 
@@ -265,10 +265,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistAndMenuItemsHasModeDONOTSHOW_ParamSortNull_Expect_EmptyResult() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -284,10 +284,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExistAndMenuItemsHasModeDONOTSHOW_ParamTrue_Expect_EmptyResult() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, null, COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -304,10 +304,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueParamSortTree_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TREE_SORT), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -325,10 +325,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWParamSortMANUAL_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -346,10 +346,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueParamSortMANUAL_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MANUAL), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -367,10 +367,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When_MenuExistAndMenuItemsHasModeDONOTSHOWParamSortAlphabeticASC_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.ALPHABETICAL_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -388,10 +388,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueParamSortAlphabeticDESC_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.ALPHABETICAL_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -408,10 +408,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWNoParamSortPublishedASC_Expect_EmptyResult() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.PUBLISHED_DATE_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -428,10 +428,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueParamSortPublishedDESC_Expect_EmptyResult() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.PUBLISHED_DATE_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -449,10 +449,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWParamSortModifiedASC_Expect_EmptyResult() throws Exception {
 
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MODIFIED_DATE_ASC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -469,10 +469,10 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When__MenuExistAndMenuItemsHasModeDONOTSHOWTrueParamSortModifiedDESC_Expect_EmptyResult() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true, String.valueOf(TypeSort.MODIFIED_DATE_DESC), COUNT_MENU_ITEMS);
-        final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
-        final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
-        DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
-        DocumentDTO setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        final Document document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
+        final Document document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
+        Document setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
+        Document setUpDocDTO2 = setUpMenuDoc(document2, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
 
 
         assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, setUpDocDTO.getDisabledLanguageShowMode());
@@ -546,7 +546,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         performPostWithContentExpectOkAndJsonContentEquals(menuDTO, menuDTO);
     }
 
-    private DocumentDTO setUpMenuDoc(DocumentDTO document, String enableLang, Meta.DisabledLanguageShowMode showMode) {
+    private Document setUpMenuDoc(Document document, String enableLang, Meta.DisabledLanguageShowMode showMode) {
         for (CommonContent content : document.getCommonContents()) {
             Language language = content.getLanguage();
             language.setEnabled(content.getLanguage().getCode().equals(enableLang));
