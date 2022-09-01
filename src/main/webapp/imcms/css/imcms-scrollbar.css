@@ -184,16 +184,19 @@
     background-color: #abacad;
 }
 
+.roles-table::-webkit-scrollbar-track,
 .rules-table-elements::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
+.roles-table::-webkit-scrollbar,
 .rules-table-elements::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
     height: 6px;
 }
 
+.roles-table::-webkit-scrollbar-thumb,
 .rules-table-elements::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }

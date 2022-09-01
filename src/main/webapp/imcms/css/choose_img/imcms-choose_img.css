@@ -20,7 +20,7 @@
 }
 
 .imcms-choose-img-description {
-    padding: 7px;
+    padding: 7px 3px;
     position: relative;
     width: 100%;
     margin-bottom: 0;
@@ -34,7 +34,7 @@
     font-size: 13px;
     line-height: 17px;
     text-align: left;
-    padding-bottom: 3px;
+    padding: 0 4px 3px 0;
 }
 
 .imcms-choose-img-description__button {

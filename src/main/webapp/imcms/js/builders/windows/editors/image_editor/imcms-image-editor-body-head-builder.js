@@ -185,13 +185,15 @@ define(
                 click: () => {
                     contentManager.build(fillData, () => $imgUrl.attr('data-path'));
 
-                    // Close and clear history
-                    const $imageHistoryBtn = $('.imcms-image-history-button').last();
-                    if ($imageHistoryBtn.attr("data-state") === "true") $imageHistoryBtn.click();
-                    $('.imcms-history-mode__entries').last().empty();
+                    if (!imcms.disableContentManagerSaveButton) {
+                        // Close and clear history
+                        const $imageHistoryBtn = $('.imcms-image-history-button').last();
+                        if ($imageHistoryBtn.attr("data-state") === "true") $imageHistoryBtn.click();
+                        $('.imcms-history-mode__entries').last().empty();
 
-                    //Prevent loss of current image state
-                    fillData(getCurrentImageData());
+                        //Prevent loss of current image state
+                        fillData(getCurrentImageData());
+                    }
                 }
             });
 
