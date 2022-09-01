@@ -104,6 +104,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
+        documentFileService.deleteByDocId(docIdToDelete);
         defaultDocumentService.deleteByDocId(docIdToDelete);
     }
 
@@ -186,8 +187,4 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return defaultDocumentService.getUniqueAlias(alias);
     }
 
-    @Override
-    public void deleteByIds(List<Integer> ids) {
-        defaultDocumentService.deleteByIds(ids);
-    }
 }

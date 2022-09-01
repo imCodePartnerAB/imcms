@@ -343,16 +343,19 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
+    @Deprecated
     public void deleteDocument(int docId) {
         deleteDocument(getDefaultDocument(docId));
     }
 
     @Override
+    @Deprecated
     public void deleteDocument(DocumentDomainObject document) {
         documentSaver.getDocRepository().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
         documentLoaderCachingProxy.removeDocFromCache(document.getId());
+        invalidateDocument(document.getId());
     }
 
     @Override

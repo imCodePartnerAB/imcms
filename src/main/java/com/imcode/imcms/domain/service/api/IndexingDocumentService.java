@@ -11,7 +11,6 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Service("documentService")
 public class IndexingDocumentService implements DelegatingByTypeDocumentService {
@@ -89,11 +88,6 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     @Override
     public String getUniqueAlias(String alias) {
         return defaultDelegatingByTypeDocumentService.getUniqueAlias(alias);
-    }
-
-    @Override
-    public void deleteByIds(List<Integer> ids) {
-        defaultDelegatingByTypeDocumentService.deleteByIds(ids);
     }
 
     @PostConstruct

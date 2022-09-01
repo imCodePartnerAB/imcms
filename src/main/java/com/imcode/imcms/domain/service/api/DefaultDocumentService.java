@@ -373,11 +373,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         return alias + "-" + (i - 1);
     }
 
-    @Override
-    public void deleteByIds(List<Integer> ids) {
-        ids.forEach(documentMapper::deleteDocument);
-    }
-
     protected void deleteDocumentContent(Integer docIdToDelete) {
         for (DeleterByDocumentId docContentService : docContentServices) {
             docContentService.deleteByDocId(docIdToDelete);
