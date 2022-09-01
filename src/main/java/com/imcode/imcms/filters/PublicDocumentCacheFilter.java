@@ -77,13 +77,14 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             if (resourcePaths == null || resourcePaths.size() == 0) {
                 final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
                 final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
+                final boolean isDefaultUser = Imcms.getUser().isDefaultUser();
 
                 final DocumentDomainObject document = services.getDocumentMapper().getVersionedDocument(documentIdString, langCode, request);
                 if(document != null && Utility.isTextDocument(document) &&
-                        ((document.isCacheForUnauthorizedUsers() && Imcms.getUser().isDefaultUser()) ||
-                                (document.isCacheForAuthorizedUsers() && !accessService.getPermission(Imcms.getUser(), document.getId()).getPermission().isMorePrivilegedThan(Meta.Permission.VIEW)))){
+                        ((document.isCacheForUnauthorizedUsers() && isDefaultUser) ||
+                                (document.isCacheForAuthorizedUsers() && !isDefaultUser && !accessService.getPermission(Imcms.getUser(), document.getId()).getPermission().isMorePrivilegedThan(Meta.Permission.VIEW)))){
 
-                    final String cacheKey = documentsCache.calculateKey(documentIdString, langCode);
+                    final String cacheKey = documentsCache.calculateKey(documentIdString, langCode, isDefaultUser);
                     final boolean isDocumentAlreadyCached = documentsCache.isDocumentAlreadyCached(cacheKey);
 
                     final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);

@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -123,7 +124,7 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         if (!isVersioningAllowed) {
-	        publicDocumentsCache.invalidateDoc(docId, textDocument.getAlias());
+	        publicDocumentsCache.invalidateDoc(docId, Collections.singletonList(textDocument.getAlias()));
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))

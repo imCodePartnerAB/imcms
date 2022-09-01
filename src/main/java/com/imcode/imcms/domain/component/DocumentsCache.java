@@ -15,15 +15,13 @@ public interface DocumentsCache {
 
     String calculateKey(HttpServletRequest request);
 
-    String calculateKey(final String documentIdString, final String langCode);
+    String calculateKey(final String documentIdString, final String langCode, boolean defaultUser);
 
     void setCache(Ehcache cache);
 
     PageInfo getPageInfoFromCache(String key);
 
 	void invalidateDoc(Integer id, Collection<String> aliases);
-
-	void invalidateDoc(Integer id, String alias);
 
     void invalidateItem(String key);
 

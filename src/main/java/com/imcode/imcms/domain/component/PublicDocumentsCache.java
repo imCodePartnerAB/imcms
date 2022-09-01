@@ -56,7 +56,7 @@ public class PublicDocumentsCache implements DocumentsCache {
         String qsIdentifier = buildGetPostQueryStrings(request);
         String documentIdString = docIdentifier + qsIdentifier;
         String langCode = Imcms.getLanguage().getCode();
-        return calculateKey(documentIdString, langCode);
+        return calculateKey(documentIdString, langCode, Imcms.getUser().isDefaultUser());
     }
 
     private String extractDocIdentifier(String path) {
@@ -75,8 +75,8 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
-    public String calculateKey(String documentIdString, String langCode) {
-        return documentIdString + "-" + langCode + "-" + (Imcms.getUser().isDefaultUser() ? UNAUTHORIZED : AUTHORIZED);
+    public String calculateKey(String documentIdString, String langCode, boolean defaultUser) {
+        return documentIdString + "-" + langCode + "-" + (defaultUser ? UNAUTHORIZED : AUTHORIZED);
     }
 
 	@Override
@@ -84,28 +84,18 @@ public class PublicDocumentsCache implements DocumentsCache {
 		if (cache == null) return;
 
 		for (String language : languages) {
-			cache.remove(calculateKey(String.valueOf(id), language));
+            cache.removeAll(List.of(calculateKey(String.valueOf(id), language, true),
+                    calculateKey(String.valueOf(id), language, false)));
 
 			if (CollectionUtils.isNotEmpty(aliases)) {
 				for (String alias : aliases) {
-					cache.remove(calculateKey(alias, language));
+					cache.removeAll(List.of(calculateKey(alias, language, true),
+                            calculateKey(alias, language, false)));
 				}
 			}
 		}
     }
 
-	@Override
-	public void invalidateDoc(Integer id, String alias){
-		if (cache == null) return;
-
-		for (String language : languages) {
-			cache.remove(calculateKey(String.valueOf(id), language));
-
-			if (StringUtils.isNotBlank(alias)) {
-				cache.remove(calculateKey(alias, language));
-			}
-		}
-	}
     @Override
     public void invalidateItem(String key) {
         if (cache == null) return;
