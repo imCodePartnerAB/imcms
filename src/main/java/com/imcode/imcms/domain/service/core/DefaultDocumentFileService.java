@@ -58,7 +58,7 @@ class DefaultDocumentFileService
     public <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId) {
         setDocAndFileIds(saveUs, docId);
         resolveDuplicatedIds(saveUs);
-        deleteNoMoreUsedFiles(saveUs, docId);
+        deleteNoMoreUsedDocumentFiles(saveUs, docId);
         saveNewFiles(saveUs);
 
         return saveDocumentFiles(saveUs);
@@ -103,7 +103,14 @@ class DefaultDocumentFileService
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
-        // todo: implement, or not =)
+        final List<DocumentFile> documentFiles = documentFileRepository.findByDocId(docIdToDelete).stream()
+                .map(DocumentFileDTO::new)
+                .collect(Collectors.toList());
+
+        documentFileRepository.deleteByDocId(docIdToDelete);
+
+        LOG.info("Deleting unnecessary files from a file document " + docIdToDelete);
+        deleteNoMoreUsedFiles(documentFiles);
     }
 
     @Override
@@ -149,7 +156,7 @@ class DefaultDocumentFileService
         });
     }
 
-    private <T extends DocumentFile> void deleteNoMoreUsedFiles(List<T> saveUs, int docId) {
+    private <T extends DocumentFile> void deleteNoMoreUsedDocumentFiles(List<T> saveUs, int docId) {
         final Set<Integer> existingFileIds = saveUs.stream()
                 .map(DocumentFile::getId)
                 .filter(Objects::nonNull)
@@ -161,6 +168,21 @@ class DefaultDocumentFileService
                 .collect(Collectors.toList());
 
 	    documentFileRepository.deleteAll(noMoreNeededFiles);
+        LOG.info("Deleting unnecessary files from a file document " + docId);
+        deleteNoMoreUsedFiles(noMoreNeededFiles);
+    }
+
+    private <T extends DocumentFile> void deleteNoMoreUsedFiles(List<T> noMoreNeededFiles){         // TODO: 01.09.2022 Add tests
+        for(DocumentFile documentFile: noMoreNeededFiles){
+            String filename = documentFile.getFilename();
+
+            if(!documentFileRepository.existsByFilename(filename)){
+                File extraFile = new File(filesPath, filename);
+                boolean result = extraFile.delete();
+
+                LOG.info(String.format("Deleting a file %s, result:%b", extraFile.getPath(), result));
+            }
+        }
     }
 
     private <T extends DocumentFile> void saveNewFiles(List<T> saveUs) {

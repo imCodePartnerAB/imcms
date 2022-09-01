@@ -21,6 +21,8 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
 
     List<DocumentFileJPA> findByDocIdAndVersionIndex(int docId, int versionIndex);
 
+    boolean existsByFilename(String filename);
+
     @Query("select f from DocumentFileJPA f" +
             " where f.docId = ?1 and f.versionIndex = ?2 and f.defaultFile = true" +
             " order by f.defaultFile desc, f.fileId")
@@ -29,4 +31,6 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
     @Override
     @Query("select f from DocumentFileJPA f where f.versionIndex = :#{#version.no} and f.docId = :#{#version.docId}")
     List<DocumentFileJPA> findByVersion(@Param("version") Version version);
+
+    int deleteByDocId(int docId);
 }
