@@ -104,6 +104,7 @@ public class DocumentContentMapper {
         return commonContent == null
                 ? null
                 : DocumentCommonContent.builder()
+		        .alias(commonContent.getAlias())
                 .headline(commonContent.getHeadline())
                 .menuText(commonContent.getMenuText())
                 .enabled(commonContent.isEnabled())

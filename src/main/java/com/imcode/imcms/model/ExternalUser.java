@@ -18,6 +18,7 @@ public class ExternalUser extends UserDomainObject {
     private Set<ExternalRole> externalRoles;
 
     {
+		setActive(true);
         setImcmsExternal(true);
     }
 

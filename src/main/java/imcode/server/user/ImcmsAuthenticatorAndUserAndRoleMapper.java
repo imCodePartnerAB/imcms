@@ -20,7 +20,8 @@ import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
@@ -34,7 +35,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
     public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
-    private final static Logger log = Logger.getLogger(ImcmsAuthenticatorAndUserAndRoleMapper.class);
+    private final static Logger log = LogManager.getLogger(ImcmsAuthenticatorAndUserAndRoleMapper.class);
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
@@ -90,6 +91,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject getUserByEmail(String email) {
         return email == null ? null : toDomainObject(userRepository.findByEmailUnique(email));
     }
+
+	public UserDomainObject getUserByOneTimePassword(String oneTimePassword){
+		return oneTimePassword == null ? null : toDomainObject(userRepository.findByOneTimePassword(oneTimePassword));
+	}
 
     /**
      * Create and assign a new PasswordReset to the existing user.
@@ -193,6 +198,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setId(user.getId());
         userDO.setLoginName(user.getLogin());
         userDO.setImcmsExternal(user.isExternal());
+		userDO.setOneTimePassword(user.getOneTimePassword());
+	    userDO.setTwoFactoryAuthenticationEnabled(user.isTwoFactoryAuthenticationEnabled());
         userDO.setLanguageIso639_2(user.getLanguageIso639_2());
         userDO.setLastName(user.getLastName());
         userDO.setPassword(user.getPassword(), UserDomainObject.PasswordType.valueOf(user.getPasswordType().name()));
@@ -405,6 +412,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * @deprecated
      */
+    @Deprecated
     public String[] getRoleNames(UserDomainObject user) {
         try {
             final Object[] parameters = new String[]{"" + user.getId()};

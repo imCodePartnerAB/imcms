@@ -22,6 +22,8 @@ public abstract class UserData extends BasicUserData implements Serializable {
         setProvince(from.getProvince());
         setCountry(from.getCountry());
         setRef(from.getRef());
+	    setTwoFactoryAuthenticationEnabled(from.isTwoFactoryAuthenticationEnabled());
+	    setOneTimePassword(from.getOneTimePassword());
         setBlockedDate(from.getBlockedDate());
         setAttempts(from.getAttempts());
         setLastLoginDate(from.getLastLoginDate());
@@ -78,4 +80,12 @@ public abstract class UserData extends BasicUserData implements Serializable {
     public abstract Date getLastLoginDate();
 
     public abstract void setLastLoginDate(Date lastLoginDate);
+
+	public abstract boolean isTwoFactoryAuthenticationEnabled();
+
+	public abstract void setTwoFactoryAuthenticationEnabled(boolean enabled);
+
+	public abstract String getOneTimePassword();
+
+	public abstract void setOneTimePassword(String oneTimePassword);
 }

@@ -32,6 +32,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByPasswordResetId(String resetId);
 
+	User findByOneTimePassword(String oneTimePassword);
+
     @Query(value = "SELECT u.* FROM users u, user_roles_crossref u_roles " +
             "WHERE u_roles.user_id = u.user_id AND (u_roles.role_id IN (:roleIds)) " +
             "GROUP BY u.user_id",

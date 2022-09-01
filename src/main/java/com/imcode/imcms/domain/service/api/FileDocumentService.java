@@ -10,7 +10,8 @@ import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.HttpHeaders;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
     private final File filesRoot;
@@ -103,6 +104,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
+        documentFileService.deleteByDocId(docIdToDelete);
         defaultDocumentService.deleteByDocId(docIdToDelete);
     }
 
@@ -185,8 +187,4 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return defaultDocumentService.getUniqueAlias(alias);
     }
 
-    @Override
-    public void deleteByIds(List<Integer> ids) {
-        defaultDocumentService.deleteByIds(ids);
-    }
 }

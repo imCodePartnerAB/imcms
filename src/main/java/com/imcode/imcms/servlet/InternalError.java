@@ -20,7 +20,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -34,12 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -48,7 +44,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class InternalError extends HttpServlet {
 
-    private final static Logger LOGGER = Logger.getLogger(InternalError.class);
+    private final static Logger LOGGER = LogManager.getLogger(InternalError.class);
     private final static String ERROR_500_VIEW_URL = "/imcms/500.jsp";
     private final static String DEFAULT_RESPONSE = "N/A";
     private static final long serialVersionUID = 4218112557790098610L;

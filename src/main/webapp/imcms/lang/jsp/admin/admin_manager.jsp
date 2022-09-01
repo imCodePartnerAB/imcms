@@ -37,8 +37,8 @@
 <title><? webapp/imcms/lang/jsp/admin/admin_manager.jsp/6 ?></title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts()%>
 

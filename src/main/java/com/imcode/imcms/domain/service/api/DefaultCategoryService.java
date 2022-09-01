@@ -7,13 +7,12 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.HtmlUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +29,7 @@ class DefaultCategoryService implements CategoryService {
 
     private final ModelMapper modelMapper;
 
-    private Logger logger = Logger.getLogger(DefaultCategoryService.class);
+    private final Logger logger = LogManager.getLogger(DefaultCategoryService.class);
 
     @Autowired
     DefaultCategoryService(CategoryRepository categoryRepository, DocumentMapper documentMapper, ModelMapper modelMapper) {
@@ -49,20 +48,20 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Optional<Category> getById(int id) {
-        return Optional.ofNullable(categoryRepository.findOne(id)).map(CategoryDTO::new);
+        return categoryRepository.findById(id).map(CategoryDTO::new);
     }
 
     @Override
     public Category save(Category saveMe) {
-        saveMe.setName(HtmlUtils.htmlEscape(saveMe.getName(), CharEncoding.UTF_8));
+        saveMe.setName(saveMe.getName());
         return new CategoryDTO(categoryRepository.save(modelMapper.map(saveMe, CategoryJPA.class)));
     }
 
     @Override
     public Category update(Category updateMe) {
-        final Category receivedCategory = categoryRepository.findOne(updateMe.getId());
+	    final Category receivedCategory = categoryRepository.getOne(updateMe.getId());
         receivedCategory.setId(updateMe.getId());
-        receivedCategory.setName(HtmlUtils.htmlEscape(updateMe.getName(), CharEncoding.UTF_8));
+        receivedCategory.setName(updateMe.getName());
         receivedCategory.setDescription(updateMe.getDescription());
         receivedCategory.setType(updateMe.getType());
         final Category updatedCategory = categoryRepository.saveAndFlush(modelMapper.map(receivedCategory, CategoryJPA.class));
@@ -73,7 +72,7 @@ class DefaultCategoryService implements CategoryService {
     public void delete(int id) {
         List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
         if (categoryDocIds.isEmpty()) {
-            categoryRepository.delete(id);
+	        categoryRepository.deleteById(id);
         } else {
             throw new DataUseCategoryException("Category has documents!");
         }
@@ -83,8 +82,8 @@ class DefaultCategoryService implements CategoryService {
     public Collection<Integer> deleteForce(int id){
         final Collection<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
 
-        categoryRepository.deleteDocumentCategory(id);
-        categoryRepository.delete(id);
+	    categoryRepository.deleteDocumentCategory(id);
+	    categoryRepository.deleteById(id);
 
         return categoryDocIds;
     }

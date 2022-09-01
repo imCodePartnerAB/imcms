@@ -17,13 +17,13 @@ public interface ImageFolderService {
 
     ImageFolderDTO getImageFolder();
 
-    boolean createImageFolder(ImageFolderDTO folderToCreate);
+    void createImageFolder(ImageFolderDTO folderToCreate);
 
-    boolean renameFolder(ImageFolderDTO renameMe);
+    void renameFolder(ImageFolderDTO renameMe);
 
     boolean canBeDeleted(ImageFolderDTO folderToCheck) throws IOException;
 
-    boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException;
+    void deleteFolder(ImageFolderDTO deleteMe) throws IOException;
 
     ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);
 

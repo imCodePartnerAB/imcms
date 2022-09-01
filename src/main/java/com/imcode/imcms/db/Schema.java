@@ -1,5 +1,6 @@
 package com.imcode.imcms.db;
 
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -15,11 +16,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -145,11 +142,11 @@ public final class Schema {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("version", version)
-                .add("init", init)
-                .add("diffs", diffs)
-                .add("scriptsDir", scriptsDir)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("version", version)
+			    .add("init", init)
+			    .add("diffs", diffs)
+			    .add("scriptsDir", scriptsDir)
+			    .toString();
     }
 }

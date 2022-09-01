@@ -14,6 +14,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -25,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,7 +62,7 @@ public class ViewDocumentController {
                            CommonContentService commonContentService,
                            AccessService accessService,
                            PathMatcher pathMatcher,
-                           @Value("${ImagePath}") String imagesPath,
+                           @Qualifier("storageImagePath") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
                            PublicDocumentsCache publicDocumentsCache) {
@@ -111,7 +113,6 @@ public class ViewDocumentController {
         }
 
         final int docId = textDocument.getId();
-        final String alias = textDocument.getAlias();
 
         final RestrictedPermission userContentPermission = accessService.getPermission(user, docId);
         final RolePermissions rolePermissions = accessService.getTotalRolePermissionsByUser(user);
@@ -123,7 +124,7 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         if (!isVersioningAllowed) {
-            publicDocumentsCache.invalidateDoc(docId, alias);
+	        publicDocumentsCache.invalidateDoc(docId, Collections.singletonList(textDocument.getAlias()));
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
@@ -151,16 +152,16 @@ public class ViewDocumentController {
                 .findFirst();
 
         final String language;
-        if (!optionalCommonContent.isPresent()) {
-            if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-                language = user.getLanguage();
-            } else {
-                response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-                return null;
-            }
-        } else {
-            language = docLangCode;
-        }
+	    if (optionalCommonContent.isEmpty()) {
+		    if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
+			    language = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
+		    } else {
+			    response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+			    return null;
+		    }
+	    } else {
+		    language = docLangCode;
+	    }
 
         mav.setViewName(viewName);
 

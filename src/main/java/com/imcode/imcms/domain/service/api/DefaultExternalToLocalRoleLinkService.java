@@ -48,7 +48,7 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
                 .filter(linkSent -> !alreadyLinkedRolesWithoutId.contains(linkSent))
                 .map(from -> {
                     final ExternalToLocalRoleLinkJPA linkJPA = new ExternalToLocalRoleLinkJPA(from);
-                    linkJPA.setRole(roleRepository.findOne(from.getLocalRoleId()));
+                    linkJPA.setRole(roleRepository.getOne(from.getLocalRoleId()));
                     return linkJPA;
                 })
                 .forEach(repository::save);
@@ -62,7 +62,7 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
     @Override
     public void addLink(ExternalRole externalRole, int localRoleId) {
-        final RoleJPA localRole = Objects.requireNonNull(roleRepository.findOne(localRoleId));
+	    final RoleJPA localRole = Objects.requireNonNull(roleRepository.getOne(localRoleId));
         repository.save(new ExternalToLocalRoleLinkJPA(externalRole.getProviderId(), externalRole.getId(), localRole));
     }
 

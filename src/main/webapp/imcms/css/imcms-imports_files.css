@@ -6,6 +6,7 @@
 @import url("page-info/imcms-cache_page_info.css");
 @import url("page-info/imcms-properties_page_info.css");
 @import url("page-info/imcms-all-data_page_info.css");
+@import url("page-info/imcms-metadata_page_info.css");
 @import url("imcms-button.css");
 @import url("imcms-buttons.css");
 @import url("imcms-calendar.css");
@@ -57,6 +58,7 @@
 @import url("image_editor/imcms-editable-img.css");
 @import url("image_editor/imcms-crop-area.css");
 @import url("image_editor/imcms-editable-controls-area.css");
+@import url("image_editor/imcms-history-mode.css");
 @import url("image_editor/imcms-image-common-info.css");
 @import url("image_editor/imcms-editable-img-controls.css");
 @import url("image_editor/imcms-edit-size.css");

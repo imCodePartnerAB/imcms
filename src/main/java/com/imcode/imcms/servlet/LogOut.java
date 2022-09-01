@@ -13,16 +13,15 @@ import java.io.IOException;
 public class LogOut extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String language = Utility.getLoggedOnUser(req).getLanguage();
 
         Utility.removeRememberCdCookie(req, res);
-        req.setAttribute("language", language);
+	    req.setAttribute("userLanguage", Utility.getUserLanguage(req.getCookies()));
         Cookie cookie = new Cookie(ImcmsSetupFilter.USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(false));
         cookie.setMaxAge(0);
         cookie.setPath("/");
         res.addCookie(cookie);
         req.getRequestDispatcher(ImcmsConstants.LOGOUT_URL).forward(req, res);
 
-        Utility.makeUserLoggedOut(req);
+        Utility.makeUserLoggedOut(req, res);
     }
 }

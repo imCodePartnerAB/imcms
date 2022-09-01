@@ -100,7 +100,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     public void cleanRepositories(int createdDocId) {
         Imcms.removeUser();
         commonContentDataInitializer.cleanRepositories();
-        metaRepository.delete(createdDocId);
-        versionDataInitializer.cleanRepositories();
+	    metaRepository.deleteById(createdDocId);
+	    versionDataInitializer.cleanRepositories();
     }
 }

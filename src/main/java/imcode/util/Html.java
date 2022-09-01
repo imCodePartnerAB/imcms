@@ -53,6 +53,7 @@ public class Html {
     /**
      * @deprecated
      */
+    @Deprecated
     public static String createOptionList(List<String> allValues, String selected) {
         StringBuilder htmlStr = new StringBuilder();
 

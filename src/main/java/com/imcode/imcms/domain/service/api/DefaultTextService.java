@@ -11,7 +11,8 @@ import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.Imcms;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ import static com.imcode.imcms.model.Text.Type.HTML;
 @Transactional
 class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRepository> implements TextService {
 
-    private final static Logger LOGGER = Logger.getLogger(DefaultTextService.class);
+    private final static Logger LOGGER = LogManager.getLogger(DefaultTextService.class);
 
     private final LanguageService languageService;
     private final VersionService versionService;

@@ -157,7 +157,7 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
 
     @Test
     public void getDocument_whenUserIsUsualAndDocumentHaveNoRolesAndDocumentIsNotVisible_Expect_NotFound404Response() {
-        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+        final Meta metaDocument = metaRepository.getOne(textDocument.getId());
         metaDocument.setVisible(false);
         metaRepository.save(metaDocument);
 
@@ -170,7 +170,7 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
 
     @Test
     public void getDocument_whenUserIsUsualAndDocumentHaveNoRolesAndDocumentIsVisible_Expect_NotFound404Response() {
-        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+	    final Meta metaDocument = metaRepository.getOne(textDocument.getId());
         metaDocument.setVisible(true);
         metaRepository.save(metaDocument);
 
@@ -183,7 +183,7 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
 
     @Test
     public void getDocument_whenUserIsSuperAdminAndDocumentHaveNoRolesAndDocumentIsNotVisible_Expect_OkResponse() {
-        final Meta metaDocument = metaRepository.findOne(textDocument.getId());
+	    final Meta metaDocument = metaRepository.getOne(textDocument.getId());
         metaDocument.setVisible(false);
         metaRepository.save(metaDocument);
 

@@ -68,6 +68,6 @@ public class DefaultUserRolesService implements UserRolesService {
 
         saveUs.add(new UserRoles(user, new RoleJPA(Roles.USER))); // should always add "user" role to user, dunno why...
 
-        userRolesRepository.save(saveUs);
+        userRolesRepository.saveAll(saveUs);
     }
 }

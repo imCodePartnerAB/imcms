@@ -179,8 +179,8 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         final Template template = templateGroup.getTemplates().iterator().next();
 
         templateService.delete(template.getId());
-        assertNull(templateRepository.findOne(template.getId()));
-        assertTrue(templateGroupService.get(templateGroup.getId()).getTemplates().isEmpty());
+	    assertTrue(templateRepository.findById(template.getId()).isEmpty());
+	    assertTrue(templateGroupService.get(templateGroup.getId()).getTemplates().isEmpty());
     }
 
     @Test

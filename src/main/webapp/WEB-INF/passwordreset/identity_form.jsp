@@ -6,7 +6,6 @@
                 com.imcode.imcms.util.l10n.LocalizedMessage"
         pageEncoding="UTF-8"
 %>
-<%@ page import="java.util.List" %>
 <%!
     static final LocalizedMessage formInfo = new LocalizedMessage("passwordreset.identity_form_info");
     static final LocalizedMessage formLabelEmail = new LocalizedMessage("passwordreset.identity_form.lbl_identity");
@@ -14,7 +13,6 @@
 %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 <html>
@@ -38,13 +36,13 @@
             <div class="imcms-error-msg imcms-modal-admin__error-msg">
                 <fmt:message key="passwordreset.title.validation_errors" bundle="${resource_property}"/>
             </div>
-            <div class="imcms-error-msg imcms-modal-admin__error-msg"><%= error.toLocalizedStringByIso639_1( (String)pageContext.getAttribute("userLanguage") ) %>
+            <div class="imcms-error-msg imcms-modal-admin__error-msg"><%= error.toLocalizedStringByIso639_1( (String) request.getAttribute("userLanguage") ) %>
             </div>
         </div>
         <% } %>
         <div class="imcms-field">
             <div class="imcms-title" style="word-break: break-word">
-                <%= formInfo.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage")) %>
+                <%= formInfo.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage")) %>
             </div>
         </div>
         <div class="imcms-field">
@@ -55,7 +53,7 @@
                     <div class="imcms-text-box">
                         <label for="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                class="imcms-label imcms-text-box__label">
-                            <%=formLabelEmail.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
+                            <%=formLabelEmail.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage"))%>
                         </label>
                         <input id="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
                                name="<%=PasswordReset.REQUEST_USER_IDENTITY%>"
@@ -71,7 +69,7 @@
         <button type="submit"
                 form="PasswordReset"
                 class="imcms-button imcms-button--positive imcms-modal-admin-footer__button">
-            <%=formSubmit.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage"))%>
+            <%=formSubmit.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage"))%>
         </button>
     </div>
 </div>

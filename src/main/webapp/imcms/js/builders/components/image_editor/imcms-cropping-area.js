@@ -131,10 +131,11 @@ function onImageLoad() {
 }
 
 function getImage() {
-    return $image || ($image = setFunctionality($("<img>", {
-        "class": "imcms-preview-img",
-        load: onImageLoad,
-    })))
+    return $image || ($image = setFunctionality(
+        $("<img>", {
+            "class": "imcms-preview-img",
+            on: {load: onImageLoad}
+        })))
 }
 
 let $shadowLayout;

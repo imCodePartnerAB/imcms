@@ -22,6 +22,10 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StorageFile;
+import com.imcode.imcms.storage.StoragePath;
+import com.imcode.imcms.util.DeleteOnCloseStorageFile;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -30,13 +34,15 @@ import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
-import imcode.util.io.FileUtility;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +53,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -59,7 +66,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     private static final int VERSION_INDEX = 0;
 
     @org.springframework.beans.factory.annotation.Value("${ImagePath}")
-    private File imagesPath;
+    private String imagesPath;
 
     @Autowired
     private ImageService imageService;
@@ -91,6 +98,13 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+
+    @Autowired
+    @Qualifier("imageStorageClient")
+    private StorageClient storageClient;
+
+    @org.springframework.beans.factory.annotation.Value("classpath:img1.jpg")
+    private File testImageFile;
 
     @BeforeEach
     public void setUp() {
@@ -366,63 +380,70 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveImage_When_ImageFileExists_Expect_GeneratedFileExists() throws IOException {
-        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
-            img.setFormat(Format.JPEG);
-            img.setLangCode("en");
-            img.setName("img1");
-            img.setWidth(100);
-            img.setHeight(100);
-            img.setAlternateText("");
-            img.setLinkUrl("");
-            img.setBorder(0);
-            img.setAlign("");
-            img.setLowResolutionUrl("");
-            img.setTarget("");
-            img.setType(0);
-            img.setRotateAngle(0);
-        });
+        final String filePath = "test-image.jpg";
 
-        imageService.saveImage(imageDTO);
+        try(final DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePath), storageClient)){
+            imageFile.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
 
-        final ImageDTO result = imageService.getImage(imageDTO);
+            final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePath);
+                img.setFormat(Format.JPEG);
+                img.setLangCode("en");
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
 
-        assertNotNull(result);
+            imageService.saveImage(imageDTO);
 
-        final File croppedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
+            final ImageDTO result = imageService.getImage(imageDTO);
 
-        assertTrue(croppedImage.exists());
-        assertTrue(FileUtility.forceDelete(croppedImage));
+            assertNotNull(result);
+
+            final StoragePath croppedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(croppedImagePath));
+            storageClient.delete(croppedImagePath, true);
+        }
     }
 
     @Test
     public void saveImage_When_CroppingIsNotDefault_Expect_EqualCroppingAndGeneratedImageExist() throws IOException {
-        final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(10, 10, 20, 20);
-        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
-            img.setFormat(Format.JPEG);
-            img.setLangCode("en");
-            img.setName("img1");
-            img.setWidth(100);
-            img.setHeight(100);
-            img.setCropRegion(cropRegion);
-            img.setAlternateText("");
-            img.setLinkUrl("");
-            img.setBorder(0);
-            img.setAlign("");
-            img.setLowResolutionUrl("");
-            img.setTarget("");
-            img.setType(0);
-            img.setRotateAngle(0);
-        });
+        final String filePath = "test-image.jpg";
 
-        File generatedImage = null;
+        try(final DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePath), storageClient)) {
+            imageFile.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
 
-        try {
+            final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(10, 10, 20, 20);
+            final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePath);
+                img.setFormat(Format.JPEG);
+                img.setLangCode("en");
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setCropRegion(cropRegion);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
+
             imageService.saveImage(imageDTO);
 
             final ImageDTO result = imageService.getImage(imageDTO);
@@ -430,164 +451,185 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
             assertNotNull(result);
             assertEquals(result.getCropRegion(), cropRegion);
 
-            generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-            assertTrue(generatedImage.exists());
-
-        } finally {
-            if (generatedImage != null) {
-                assertTrue(FileUtility.forceDelete(generatedImage));
-            }
+            final StoragePath generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            storageClient.delete(generatedImagePath, true);
         }
     }
 
     @Test
     public void saveImage_When_CompressionIsTrueAndDifferentFormat_Expect_GeneratedImagesExistWithSmallerSizeOnlyForJPEG() throws IOException {
-        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
-            img.setFormat(Format.JPEG);
-            img.setLangCode("en");
-            img.setName("img1");
-            img.setWidth(100);
-            img.setHeight(100);
-            img.setAlternateText("");
-            img.setLinkUrl("");
-            img.setBorder(0);
-            img.setAlign("");
-            img.setLowResolutionUrl("");
-            img.setTarget("");
-            img.setType(0);
-            img.setRotateAngle(0);
-            img.setCompress(false);
-        });
+        final String filePath = "test-image.jpg";
 
-        //JPEG
-        imageService.saveImage(imageDTO);
-        ImageDTO result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+        try(final DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePath), storageClient)) {
+            imageFile.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
 
-        File generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        long sizeWithoutCompress = generatedImage.length();
+            final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePath);
+                img.setFormat(Format.JPEG);
+                img.setLangCode("en");
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+                img.setCompress(false);
+            });
 
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            //JPEG
+            imageService.saveImage(imageDTO);
+            ImageDTO result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        imageDTO.setCompress(true);
-        imageService.saveImage(imageDTO);
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            StoragePath generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            long sizeWithoutCompress;
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithoutCompress = generatedFile.size();
+            }
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
+            storageClient.delete(generatedImagePath, true);
 
-        long sizeWithCompress = generatedImage.length();
-        assertTrue(sizeWithoutCompress > sizeWithCompress);
+            imageDTO.setCompress(true);
+            imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            long sizeWithCompress;
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithCompress = generatedFile.size();
+            }
+            storageClient.delete(generatedImagePath, true);
 
-        //PNG
-        imageDTO.setFormat(Format.PNG);
-        imageService.saveImage(imageDTO);
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            assertTrue(sizeWithoutCompress > sizeWithCompress);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        sizeWithoutCompress = generatedImage.length();
+            //PNG
+            imageDTO.setFormat(Format.PNG);
+            imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithoutCompress = generatedFile.size();
+            }
 
-        imageDTO.setCompress(true);
-        imageService.saveImage(imageDTO);
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            storageClient.delete(generatedImagePath, true);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
+            imageDTO.setCompress(true);
+            imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        sizeWithCompress = generatedImage.length();
-        assertFalse(sizeWithoutCompress > sizeWithCompress);
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithCompress = generatedFile.size();
+            }
+            storageClient.delete(generatedImagePath, true);
 
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            assertFalse(sizeWithoutCompress > sizeWithCompress);
 
-        //GIF
-        imageDTO.setFormat(Format.GIF);
-        imageService.saveImage(imageDTO);
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            //GIF
+            imageDTO.setFormat(Format.GIF);
+            imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        sizeWithoutCompress = generatedImage.length();
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithoutCompress = generatedFile.size();
+            }
 
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            storageClient.delete(generatedImagePath, true);
 
-        imageDTO.setCompress(true);
-        imageService.saveImage(imageDTO);
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            imageDTO.setCompress(true);
+            imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            try(StorageFile generatedFile = storageClient.getFile(generatedImagePath)){
+                sizeWithCompress = generatedFile.size();
+            }
+            storageClient.delete(generatedImagePath, true);
 
-        sizeWithCompress = generatedImage.length();
-        assertFalse(sizeWithoutCompress > sizeWithCompress);
-
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            assertFalse(sizeWithoutCompress > sizeWithCompress);
+        }
     }
+
 
     @Test
     public void saveImage_When_ImagesHaveDifferentFormats_Expect_GeneratedImagesExist() throws IOException {
-        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
-            img.setFormat(Format.JPEG);
-            img.setLangCode("en");
-            img.setName("img1");
-            img.setWidth(100);
-            img.setHeight(100);
-            img.setAlternateText("");
-            img.setLinkUrl("");
-            img.setBorder(0);
-            img.setAlign("");
-            img.setLowResolutionUrl("");
-            img.setTarget("");
-            img.setType(0);
-            img.setRotateAngle(0);
-            img.setCompress(true);
-        });
-        //JPEG
-        imageService.saveImage(imageDTO);
-        ImageDTO result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+        final String filePath = "test-image.jpg";
 
-        File generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        assertTrue(FileUtility.forceDelete(generatedImage));
+        try (final DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePath), storageClient)) {
+            imageFile.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
 
-        //PNG
-        imageDTO.setFormat(Format.PNG);
-        imageService.saveImage(imageDTO);
+            final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePath);
+                img.setFormat(Format.JPEG);
+                img.setLangCode("en");
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+                img.setCompress(true);
+            });
+            //JPEG
+            imageService.saveImage(imageDTO);
+            ImageDTO result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            StoragePath generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            storageClient.delete(generatedImagePath, true);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            //PNG
+            imageDTO.setFormat(Format.PNG);
+            imageService.saveImage(imageDTO);
 
-        //GIF
-        imageDTO.setFormat(Format.GIF);
-        imageService.saveImage(imageDTO);
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
 
-        result = imageService.getImage(imageDTO);
-        assertNotNull(result);
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            storageClient.delete(generatedImagePath, true);
 
-        generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
-        assertTrue(generatedImage.exists());
-        assertTrue(FileUtility.forceDelete(generatedImage));
+            //GIF
+            imageDTO.setFormat(Format.GIF);
+            imageService.saveImage(imageDTO);
+
+            result = imageService.getImage(imageDTO);
+            assertNotNull(result);
+
+            generatedImagePath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, result.getGeneratedFilename());
+            assertTrue(storageClient.exists(generatedImagePath));
+            storageClient.delete(generatedImagePath, true);
+
+        }
     }
 
     @Test
@@ -869,24 +911,30 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void exifData() throws ImageProcessingException, IOException {
-        final ImageSource imageSource = ImcmsImageUtils.getImageSource("/img1.jpg");
+        final String filePath = "test-image.jpg";
 
-        if (!(imageSource instanceof NullImageSource)) {
+        try(final DeleteOnCloseStorageFile imageFile = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePath), storageClient)) {
+            imageFile.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
 
-            try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
-                Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+            final ImageSource imageSource = ImcmsImageUtils.getImageSource(filePath);
 
-                for (Directory directory : metadata.getDirectories()) {
-                    for (Tag tag : directory.getTags()) {
-                        System.out.println(tag);
+            if (!(imageSource instanceof NullImageSource)) {
+
+                try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
+                    Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+                    for (Directory directory : metadata.getDirectories()) {
+                        for (Tag tag : directory.getTags()) {
+                            System.out.println(tag);
+                        }
+                        for (String error : directory.getErrors()) {
+                            System.err.println("ERROR: " + error);
+                        }
                     }
-                    for (String error : directory.getErrors()) {
-                        System.err.println("ERROR: " + error);
-                    }
+
                 }
 
             }
-
         }
     }
 }

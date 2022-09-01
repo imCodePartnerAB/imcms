@@ -1,17 +1,15 @@
 package com.imcode.imcms.domain.factory;
 
-import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.component.cgi.CGIAuthenticationProvider;
 import com.imcode.imcms.domain.exception.ExternalIdentifierNotEnabledException;
 import com.imcode.imcms.model.AuthenticationProvider;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+import static com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+import static com.imcode.imcms.domain.component.cgi.CGIAuthenticationProvider.EXTERNAL_AUTHENTICATOR_CGI;
 
 @Component
 public class AuthenticationProvidersFactory {
@@ -28,10 +26,15 @@ public class AuthenticationProvidersFactory {
         final List<AuthenticationProvider> providers = new ArrayList<>();
 
         final String externalAuthenticator = properties.getProperty("ExternalAuthenticator", "");
+	    final boolean cgiAuthenticatorEnabled = Boolean.parseBoolean(properties.getProperty("cgi.enabled"));
 
         if (!externalAuthenticator.isEmpty()) {
             providers.add(getProvider(externalAuthenticator));
         }
+
+		if (cgiAuthenticatorEnabled){
+			providers.add(getProvider(EXTERNAL_AUTHENTICATOR_CGI));
+		}
 
         return providers;
     }
@@ -48,6 +51,10 @@ public class AuthenticationProvidersFactory {
                 final AzureAuthenticationProvider provider = new AzureAuthenticationProvider(properties);
                 idToProvider.put(EXTERNAL_AUTHENTICATOR_AZURE_AD, provider);
                 return provider;
+	        case EXTERNAL_AUTHENTICATOR_CGI:
+		        final CGIAuthenticationProvider cgiAuthenticationProvider = new CGIAuthenticationProvider(properties);
+		        idToProvider.put(EXTERNAL_AUTHENTICATOR_CGI, cgiAuthenticationProvider);
+		        return cgiAuthenticationProvider;
         }
 
         throw new ExternalIdentifierNotEnabledException(identifierId);

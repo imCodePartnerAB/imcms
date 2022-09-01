@@ -20,4 +20,6 @@ public interface AccessService {
     RestrictedPermission getPermission(UserDomainObject user, int documentId);
 
     RolePermissions getTotalRolePermissionsByUser(UserDomainObject user);
+
+	boolean hasUserFileAdminAccess(int userId);
 }

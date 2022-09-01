@@ -10,7 +10,8 @@ import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import lombok.val;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -24,7 +25,7 @@ import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZ
 // translated from scala...
 public class DocumentIndexImpl implements DocumentIndex {
 
-    private final static Logger logger = Logger.getLogger(DocumentIndexImpl.class);
+    private final static Logger logger = LogManager.getLogger(DocumentIndexImpl.class);
     private final DocumentIndexService service;
 
     DocumentIndexImpl(DocumentIndexService service) {

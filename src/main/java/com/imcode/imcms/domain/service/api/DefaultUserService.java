@@ -6,24 +6,15 @@ import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
-import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.PhoneService;
-import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.UserRolesService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.model.ExternalUser;
-import com.imcode.imcms.model.Phone;
-import com.imcode.imcms.model.PhoneType;
-import com.imcode.imcms.model.PhoneTypes;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +24,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -51,7 +36,7 @@ import static imcode.server.ImcmsConstants.ENG_CODE;
 @Transactional
 class DefaultUserService implements UserService {
 
-    private final static Logger log = Logger.getLogger(DefaultUserService.class.getName());
+    private final static Logger log = LogManager.getLogger(DefaultUserService.class.getName());
 
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -193,7 +178,7 @@ class DefaultUserService implements UserService {
         final User user = toUserJPA(userData);
 
         if (userData.getId() != null) {
-            final User existingUser = userRepository.findById(userData.getId());
+	        final User existingUser = userRepository.getOne(userData.getId());
             if (StringUtils.isBlank(user.getPassword())) user.setPassword(existingUser.getPassword());
             if (user.getPasswordReset() == null) user.setPasswordReset(existingUser.getPasswordReset());
             user.setSessionId(existingUser.getSessionId());

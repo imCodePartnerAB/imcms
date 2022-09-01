@@ -21,15 +21,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+import static com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultDocumentRolesServiceTest {
@@ -81,10 +78,10 @@ class DefaultDocumentRolesServiceTest {
                 new DocumentRole(testDoc, role2, permission2)
         );
 
-        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
-        given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
-                testUserId, testDocId
-        )).willReturn(documentRoles);
+	    given(metaRepository.getOne(testDocId)).willReturn(testDoc);
+	    given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
+			    testUserId, testDocId
+	    )).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
@@ -109,10 +106,10 @@ class DefaultDocumentRolesServiceTest {
 
         final List<DocumentRole> documentRoles = Collections.emptyList();
 
-        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
-        given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
-                testUserId, testDocId
-        )).willReturn(documentRoles);
+	    given(metaRepository.getOne(testDocId)).willReturn(testDoc);
+	    given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
+			    testUserId, testDocId
+	    )).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
@@ -160,8 +157,8 @@ class DefaultDocumentRolesServiceTest {
         user.setExternalId("external-user-id");
         user.setExternalRoles(externalUserRoles);
 
-        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
-        given(externalToLocalRoleLinkService.toLinkedLocalRoles(any())).willReturn(linkedRoles);
+	    given(metaRepository.getOne(testDocId)).willReturn(testDoc);
+	    given(externalToLocalRoleLinkService.toLinkedLocalRoles(any())).willReturn(linkedRoles);
         given(documentRolesRepository.findByDocument_Id(testDocId)).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);

@@ -234,6 +234,8 @@
 
 .roles-table {
     width: 40%;
+    max-height: 400px;
+    overflow-y: auto;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
     display: inline-block;

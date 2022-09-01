@@ -2,7 +2,6 @@ package com.imcode.imcms.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.imcode.imcms.domain.service.ImageService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +46,7 @@ class WebConfig implements WebMvcConfigurer {
         viewResolver.setPrefix("/WEB-INF/templates/text/");
         viewResolver.setSuffix(".jsp");
         viewResolver.setOrder(1);
-        viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService");
+	    viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService", "documentMetadataService");
         return viewResolver;
     }
 
@@ -74,7 +73,7 @@ class WebConfig implements WebMvcConfigurer {
         return mapper;
     }
 
-    @Override
+	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("/webapp/images/", "/webapp/images/generated", "")

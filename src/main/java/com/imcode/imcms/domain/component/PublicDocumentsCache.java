@@ -3,12 +3,12 @@ package com.imcode.imcms.domain.component;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -35,6 +30,9 @@ import java.util.stream.Collectors;
 public class PublicDocumentsCache implements DocumentsCache {
 
     private static final String PUBLIC_DOC_CACHE = "PublicDocumentsCache";
+
+    private static final String AUTHORIZED = "authorized";
+    private static final String UNAUTHORIZED = "unauthorized";
 
     private final List<String> languages;
 
@@ -58,7 +56,7 @@ public class PublicDocumentsCache implements DocumentsCache {
         String qsIdentifier = buildGetPostQueryStrings(request);
         String documentIdString = docIdentifier + qsIdentifier;
         String langCode = Imcms.getLanguage().getCode();
-        return calculateKey(documentIdString, langCode);
+        return calculateKey(documentIdString, langCode, Imcms.getUser().isDefaultUser());
     }
 
     private String extractDocIdentifier(String path) {
@@ -77,21 +75,25 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
-    public String calculateKey(String documentIdString, String langCode) {
-        return documentIdString + "-" + langCode;
+    public String calculateKey(String documentIdString, String langCode, boolean defaultUser) {
+        return documentIdString + "-" + langCode + "-" + (defaultUser ? UNAUTHORIZED : AUTHORIZED);
     }
 
-    @Override
-    public void invalidateDoc(Integer id, String alias) {
-        if (cache == null) return;
+	@Override
+	public void invalidateDoc(Integer id, Collection<String> aliases) {
+		if (cache == null) return;
 
-        for (String language : languages) {
-            cache.remove(calculateKey(String.valueOf(id), language));
+		for (String language : languages) {
+            cache.removeAll(List.of(calculateKey(String.valueOf(id), language, true),
+                    calculateKey(String.valueOf(id), language, false)));
 
-            if (StringUtils.isNotBlank(alias)) {
-                cache.remove(calculateKey(alias, language));
-            }
-        }
+			if (CollectionUtils.isNotEmpty(aliases)) {
+				for (String alias : aliases) {
+					cache.removeAll(List.of(calculateKey(alias, language, true),
+                            calculateKey(alias, language, false)));
+				}
+			}
+		}
     }
 
     @Override

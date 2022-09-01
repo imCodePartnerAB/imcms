@@ -3,7 +3,8 @@ package imcode.server.document.index.service.impl;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
 import lombok.SneakyThrows;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -27,7 +28,7 @@ import java.util.function.Consumer;
 @Component
 public class DocumentIndexServiceOps {
 
-    private static final Logger logger = Logger.getLogger(DocumentIndexServiceOps.class);
+    private static final Logger logger = LogManager.getLogger(DocumentIndexServiceOps.class);
 
     private final DocumentMapper documentMapper;
     private final DocumentIndexer documentIndexer;

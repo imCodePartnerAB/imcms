@@ -1,7 +1,9 @@
 <%@ page
 		pageEncoding="UTF-8"
-		import="com.imcode.imcms.util.l10n.LocalizedMessage"
+		import="com.imcode.imcms.util.l10n.LocalizedMessage,
+		imcode.server.Imcms"
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%!
 
 	static final LocalizedMessage confirmation = new LocalizedMessage("passwordreset.confirmation.password_changed");

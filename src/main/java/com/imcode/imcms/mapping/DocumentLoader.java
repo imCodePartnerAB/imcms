@@ -39,7 +39,7 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     public DocumentMeta loadMeta(int docId) {
-        return toDomainObject(metaRepository.findOne(docId));
+	    return toDomainObject(metaRepository.findById(docId).orElse(null));
     }
 
     /**
@@ -49,8 +49,8 @@ public class DocumentLoader {
         DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
 
         document.setCommonContent(dcc != null
-                ? dcc
-                : DocumentCommonContent.builder().headline("").menuText("").build()
+		        ? dcc
+		        : DocumentCommonContent.builder().alias("").headline("").menuText("").build()
         );
         document.accept(documentContentInitializingVisitor);
 
@@ -91,13 +91,16 @@ public class DocumentLoader {
         metaDO.setCategories(meta.getCategories());
         metaDO.setCreatedDatetime(meta.getCreatedDatetime());
         metaDO.setCreatorId(meta.getCreatorId());
-        metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
-        metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
+	    metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
+	    metaDO.setDefaultLanguageAliasEnabled(meta.isDefaultLanguageAliasEnabled());
+	    metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
         metaDO.setDocumentTypeId(meta.getDocumentType().ordinal());
         metaDO.setId(meta.getId());
         metaDO.setKeywords(meta.getKeywords());
         metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
         metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+        metaDO.setCacheForUnauthorizedUsers(meta.isCacheForUnauthorizedUsers());
+        metaDO.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
         metaDO.setVisible(meta.getVisible());
         metaDO.setModifiedDatetime(meta.getModifiedDatetime());
         metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());

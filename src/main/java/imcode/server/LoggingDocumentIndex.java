@@ -10,20 +10,10 @@ import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Logs queries {@link #LOGGED_FIELDS} parameters values into DB.
@@ -31,11 +21,11 @@ import java.util.Set;
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
     private final static Set<String> LOGGED_FIELDS = new HashSet<>(Arrays.asList(
-            DocumentIndex.FIELD__META_HEADLINE,
-            DocumentIndex.FIELD__META_TEXT,
-            DocumentIndex.FIELD__TEXT,
-            DocumentIndex.FIELD__ALIAS,
-            DocumentIndex.FIELD__KEYWORD)
+		    DocumentIndex.FIELD__META_HEADLINE,
+		    DocumentIndex.FIELD__META_TEXT,
+		    DocumentIndex.FIELD__TEXT,
+		    DocumentIndex.FIELD__META_ALIAS,
+		    DocumentIndex.FIELD__KEYWORD)
     );
     private final Database database;
 

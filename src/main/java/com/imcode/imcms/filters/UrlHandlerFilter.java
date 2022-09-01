@@ -7,18 +7,13 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Set;
 
 import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
@@ -50,36 +45,33 @@ public class UrlHandlerFilter implements Filter {
                 (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
         );
 
-        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
-        path = StringUtils.substringAfter(path, request.getContextPath());
+	    final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, fallbackDecoder));
 
-        if ("/".equals(path)) path = "/" + String.valueOf(services.getSystemData().getStartDocument());
+	    final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
-        final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
+	    if (resourcePaths == null || resourcePaths.size() == 0) {
+		    final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
+		    final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
+		    final DocumentDomainObject document = services.getDocumentMapper()
+				    .getVersionedDocument(documentIdString, langCode, request);
 
-        if (resourcePaths == null || resourcePaths.size() == 0) {
-            final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
-            final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
-            final DocumentDomainObject document = services.getDocumentMapper()
-                    .getVersionedDocument(documentIdString, langCode, request);
+		    request.setAttribute("contextPath", request.getContextPath());
+		    request.setAttribute("language", langCode);
 
-            request.setAttribute("contextPath", request.getContextPath());
-            request.setAttribute("language", langCode);
+		    if (null != document) {
+			    if (!documentIdString.equals(String.valueOf(document.getId())) && !Objects.equals(documentIdString, document.getAlias())) {
+				    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			    } else if (Utility.isTextDocument(document)) {
+				    final String newPath = API_VIEW_DOC_PATH + "/" + document.getId();
+				    request.getRequestDispatcher(newPath).forward(request, response);
+			    } else {
+				    GetDoc.viewDoc(document, request, response);
+			    }
 
-            if (null != document) {
-                if (Utility.isTextDocument(document)) {
-
-                    final String newPath = API_VIEW_DOC_PATH + "/" + document.getId();
-                    request.getRequestDispatcher(newPath).forward(request, response);
-
-                } else {
-                    GetDoc.viewDoc(document, request, response);
-                }
-
-                return;
-            }
-        }
-        chain.doFilter(request, response);
+			    return;
+		    }
+	    }
+	    chain.doFilter(request, response);
     }
 
     public void init(FilterConfig config) {

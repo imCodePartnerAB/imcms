@@ -55,7 +55,7 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
             rulesToSave.add(rule);
         }
 
-        final List<IpAccessRuleJPA> saved = ipAccessRuleRepository.save(rulesToSave);
+        final List<IpAccessRuleJPA> saved = ipAccessRuleRepository.saveAll(rulesToSave);
 
         assertNotNull(saved);
         assertEquals(rulesToSave.size(), saved.size());
@@ -70,7 +70,7 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
 
         ipAccessRuleRepository.save(rule);
 
-        assertNotNull(ipAccessRuleRepository.findOne(rule.getId()));
+	    assertTrue(ipAccessRuleRepository.findById(rule.getId()).isPresent());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
             rulesToSave.add(rule);
         }
 
-        ipAccessRuleRepository.save(rulesToSave);
+	    ipAccessRuleRepository.saveAll(rulesToSave);
 
         final List<IpAccessRuleJPA> all = ipAccessRuleRepository.findAll();
 
@@ -106,14 +106,14 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
         assertNotNull(rule.getId());
 
 
-        final IpAccessRuleJPA ruleToUpdate = ipAccessRuleRepository.findOne(rule.getId());
+	    final IpAccessRuleJPA ruleToUpdate = ipAccessRuleRepository.getOne(rule.getId());
         ruleToUpdate.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
         rule.setEnabled(false);
 
         ipAccessRuleRepository.save(ruleToUpdate);
 
-        assertEquals(1, ipAccessRuleRepository.findAll().size());
-        assertEquals(IP_RANGE_TEMPLATE_IP_V6_SHORT, ipAccessRuleRepository.findOne(rule.getId()).getIpRange());
+	    assertEquals(1, ipAccessRuleRepository.findAll().size());
+	    assertEquals(IP_RANGE_TEMPLATE_IP_V6_SHORT, ipAccessRuleRepository.getOne(rule.getId()).getIpRange());
     }
 
     @Test
@@ -123,17 +123,17 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
         rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_FULL);
         rule.setRestricted(true);
 
-        ipAccessRuleRepository.save(rule);
-        ipAccessRuleRepository.delete(rule.getId());
+	    ipAccessRuleRepository.save(rule);
+	    ipAccessRuleRepository.deleteById(rule.getId());
 
-        assertNull(ipAccessRuleRepository.findOne(rule.getId()));
+	    assertTrue(ipAccessRuleRepository.findById(rule.getId()).isEmpty());
     }
 
     @Test
     public void delete_WhenEntityNotExist_ExpectCorrectException() {
-        final int fakeId = -1;
-        assertNull(ipAccessRuleRepository.findOne(fakeId));
-        assertThrows(EmptyResultDataAccessException.class, () -> ipAccessRuleRepository.delete(fakeId));
+	    final int fakeId = -1;
+	    assertTrue(ipAccessRuleRepository.findById(fakeId).isEmpty());
+	    assertThrows(EmptyResultDataAccessException.class, () -> ipAccessRuleRepository.deleteById(fakeId));
     }
 
 }

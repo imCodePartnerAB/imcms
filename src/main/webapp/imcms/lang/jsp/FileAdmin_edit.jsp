@@ -12,7 +12,7 @@
 <%
 
 request.setCharacterEncoding("UTF-8");
-    
+
 UserDomainObject user = Utility.getLoggedOnUser( request );
 if (!user.isSuperAdmin()) {
     return ;
@@ -44,6 +44,8 @@ boolean doSave     = "POST".equalsIgnoreCase(request.getMethod()) && fileSrc != 
 boolean isReadonly = request.getParameter("readonly") != null ;
 
 String theSearchString = (request.getParameter("searchString") != null) ? request.getParameter("searchString") : "" ;
+
+if(file != null && file.contains("../")) return;
 
 /* reset file ? */
 

@@ -8,7 +8,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,17 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class AdminIpAccess extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger(AdminIpAccess.class);
+    private final static Logger log = LogManager.getLogger(AdminIpAccess.class);
 
     private static final String HTML_TEMPLATE = "AdminIpAccess.jsp";
     private static final String HTML_IP_SNIPPET = "AdminIpAccessList.jsp";

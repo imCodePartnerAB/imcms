@@ -79,7 +79,9 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     public void setUp(){
-        Imcms.setUser(new UserDomainObject(1));
+	    final UserDomainObject user = new UserDomainObject(1);
+	    user.setLanguageIso639_2(Imcms.getServices().getLanguageService().getDefaultLanguage().getNativeName());
+	    Imcms.setUser(new UserDomainObject(1));
     }
 
     @AfterEach

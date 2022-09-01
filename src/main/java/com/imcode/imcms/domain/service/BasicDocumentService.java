@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.model.Document;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
 
     String getUniqueAlias(String alias);
 
-    void deleteByIds(List<Integer> ids);
+    @Transactional
+    default void deleteByIds(List<Integer> ids){
+        ids.forEach(this::deleteByDocId);
+    };
 
 }

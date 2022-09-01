@@ -48,7 +48,7 @@ class LocalUserCreationServiceTest {
 
         assertThrows(UserValidationException.class, () -> localUserCreationService.createUser(userData));
 
-        then(userService).shouldHaveZeroInteractions();
+        then(userService).shouldHaveNoInteractions();
     }
 
 }

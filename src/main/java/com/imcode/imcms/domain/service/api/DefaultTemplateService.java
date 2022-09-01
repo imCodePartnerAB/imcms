@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ucar.httpservices.HTTPAuthStore.log;
@@ -116,8 +119,8 @@ public class DefaultTemplateService implements TemplateService {
     public void delete(Integer id) {
         List<TemplateJPA> allTemplates = templateRepository.findAll();
         if (allTemplates.size() > 1) {
-            templateRepository.deleteTemplateGroupByTemplateId(id);
-            templateRepository.delete(id);
+	        templateRepository.deleteTemplateGroupByTemplateId(id);
+	        templateRepository.deleteById(id);
         } else {
             String errorMessage = "Templates less then 1 count in db!";
             log.error(errorMessage);

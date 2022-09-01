@@ -7,9 +7,9 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -24,11 +24,6 @@ class SessionControllerTest extends AbstractControllerTest {
     @Override
     protected String controllerPath() {
         return "/sessions";
-    }
-
-    @AfterEach
-    private void cleanSessionsData() {
-        Utility.clearActiveSessionsData();
     }
 
     @Test
@@ -54,7 +49,8 @@ class SessionControllerTest extends AbstractControllerTest {
         mockHttpSession1.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest1 = new MockHttpServletRequest();
         mockRequest1.setSession(mockHttpSession1);
-        Utility.makeUserLoggedIn(mockRequest1, user);
+        MockHttpServletResponse mockResponse1 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest1, mockResponse1, user);
 
         final UserDomainObject user2 = new UserDomainObject();
         user2.setId(2);
@@ -65,7 +61,8 @@ class SessionControllerTest extends AbstractControllerTest {
         mockHttpSession2.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest2 = new MockHttpServletRequest();
         mockRequest2.setSession(mockHttpSession2);
-        Utility.makeUserLoggedIn(mockRequest2, user2);
+        MockHttpServletResponse mockResponse2 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest2, mockResponse2, user2);
 
         final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath());
 
@@ -80,15 +77,21 @@ class SessionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getActiveSessions_WhenSuperAdminLoggedIn_ExpectCorrectOkAndCorrectEntity() throws Exception {
+    void getActiveSessions_WhenSuperAdminLoggedInWith2FADisabled_ExpectCorrectOkAndCorrectEntity() throws Exception {
         ImcmsServices services = Imcms.getServices();
-        final UserDomainObject user = services.verifyUser("admin", "admin");
+
+	    final UserDomainObject userDomainObject = services.getImcmsAuthenticatorAndUserAndRoleMapper().getUser("admin");
+	    userDomainObject.setTwoFactoryAuthenticationEnabled(false);
+	    services.getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userDomainObject);
+
+	    final UserDomainObject user = services.verifyUser(userDomainObject.getLogin(), userDomainObject.getPassword());
 
         HttpSession mockHttpSession1 = new MockHttpSession(null, "test-mockHttpSession1-id");
         mockHttpSession1.setMaxInactiveInterval(1000);
         MockHttpServletRequest mockRequest1 = new MockHttpServletRequest();
         mockRequest1.setSession(mockHttpSession1);
-        Utility.makeUserLoggedIn(mockRequest1, user);
+        MockHttpServletResponse mockResponse1 = new MockHttpServletResponse();
+        Utility.makeUserLoggedIn(mockRequest1, mockResponse1, user);
 
         final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath());
         final String jsonResponse = getJsonResponse(requestBuilderGet);

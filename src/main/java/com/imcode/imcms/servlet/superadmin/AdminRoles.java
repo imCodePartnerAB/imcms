@@ -5,17 +5,12 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.NameTooLongException;
-import imcode.server.user.RoleAlreadyExistsException;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RolePermissionDomainObject;
-import imcode.server.user.UserAndRoleRegistryException;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,16 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class AdminRoles extends HttpServlet {
 
-    private final static Logger LOG = Logger.getLogger(AdminRoles.class.getName());
+    private final static Logger LOG = LogManager.getLogger(AdminRoles.class.getName());
 
     private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.jsp";
     private final static String HTML_ADD_ROLE = "AdminRoles_Add.jsp";

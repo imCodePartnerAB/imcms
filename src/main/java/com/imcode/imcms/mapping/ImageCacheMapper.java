@@ -6,16 +6,13 @@ import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Deprecated
@@ -23,7 +20,7 @@ import java.util.Set;
 public class ImageCacheMapper {
 
     @SuppressWarnings("unused")
-    private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
+    private static final Logger log = LogManager.getLogger(ImageCacheMapper.class);
 
     private final ImageCacheRepository imageCacheRepository;
 

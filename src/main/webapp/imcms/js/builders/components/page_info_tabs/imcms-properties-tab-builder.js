@@ -7,8 +7,6 @@
 
         const texts = i18Texts.pageInfo.properties;
 
-        const ALIAS_PROPERTY_KEY = 'imcms.document.alias';
-
         const classRow = 'properties-row';
         const classButton = 'properties-button';
 
@@ -140,14 +138,12 @@
         }
 
         PropertiesTab.prototype.fillTabDataFromDocument = (document) => {
-            const documentProperties = filterDocumentDtoProperties(document.properties);
-            properties = mapDtoPropertiesToProperties(documentProperties);
+            properties = mapDtoPropertiesToProperties(document.properties);
             renderRows();
         };
 
         function filterDocumentDtoProperties(properties) {
-            const entries = Object.entries(properties).filter(([key]) => key !== ALIAS_PROPERTY_KEY);
-            return jsUtils.fromEntries(entries);
+            return jsUtils.fromEntries(Object.entries(properties));
         }
 
         PropertiesTab.prototype.saveData = (document) => {

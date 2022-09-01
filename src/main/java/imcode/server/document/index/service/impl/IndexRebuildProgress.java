@@ -1,6 +1,6 @@
 package imcode.server.document.index.service.impl;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public final class IndexRebuildProgress {
 
@@ -34,11 +34,11 @@ public final class IndexRebuildProgress {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("startTime", startTime)
-                .add("currentTime", currentTime)
-                .add("totalDocsCount", totalDocsCount)
-                .add("indexedDocsCount", indexedDocsCount)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("startTime", startTime)
+			    .add("currentTime", currentTime)
+			    .add("totalDocsCount", totalDocsCount)
+			    .add("indexedDocsCount", indexedDocsCount)
+			    .toString();
     }
 }

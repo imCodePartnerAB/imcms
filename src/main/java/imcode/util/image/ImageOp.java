@@ -7,11 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -174,7 +170,7 @@ public class ImageOp {
     }
 
     public ImageOp input(File file) {
-        args.add(addQuotes(file.getAbsolutePath() + "[0]"));
+        args.add(addQuotes(file.getAbsolutePath()));
 
         return this;
     }
@@ -276,6 +272,29 @@ public class ImageOp {
         return this;
     }
 
+    public ImageOp colors(int colors){
+        args.add("-colors");
+        args.add(Integer.toString(colors));
+        return this;
+    }
+
+    public ImageOp format(String expression){
+        args.add("-format");
+        args.add(addQuotes(expression));
+        return this;
+    }
+
+    public ImageOp layers(Layer layer){
+        args.add("-layers");
+        args.add(addQuotes(layer.getLayer()));
+        return this;
+    }
+
+    public ImageOp info(){
+        args.add("info:");
+        return this;
+    }
+
     public ImageOp resizeProportional(int width, int height, Color backgroundColor, Gravity gravity) {
         this.filter(Filter.LANCZOS);
         this.resize(width, height, Resize.GREATER_THAN);
@@ -293,12 +312,21 @@ public class ImageOp {
         return this;
     }
 
+    public byte[] infoProcess(){
+        this.info();
+        return processToByteArray(args);
+    }
+
     public byte[] processToByteArray() {
         String out = (outputFormat != null ? outputFormat.getFormat() + ":-" : "-");
 
         List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
+        return processToByteArray(arguments);
+    }
+
+    private byte[] processToByteArray(List<String> arguments) {
         try {
             Process process = new ProcessBuilder(arguments).start();
 

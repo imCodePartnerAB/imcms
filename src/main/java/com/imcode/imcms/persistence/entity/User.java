@@ -1,17 +1,16 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.UserData;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -95,6 +94,12 @@ public class User extends UserData implements Serializable {
     private PasswordType passwordType = PasswordType.UNENCRYPTED;
     @Embedded
     private PasswordReset passwordReset;
+
+	@Column(name = "one_time_password")
+	private String oneTimePassword;
+
+	@Column(name = "2fa_enabled", unique = true)
+	private boolean twoFactoryAuthenticationEnabled;
 
     public User(String login, String password, String email) {
         this(null, login, password, email);

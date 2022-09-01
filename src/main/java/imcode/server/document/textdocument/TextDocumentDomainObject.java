@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
@@ -499,11 +500,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         @Override
         public String toString() {
-            return com.google.common.base.Objects.toStringHelper(this)
-                    .add("entryNo", entryNo)
-                    .add("loopNo", loopNo)
-                    .add("itemNo", itemNo)
-                    .toString();
+	        return MoreObjects.toStringHelper(this)
+			        .add("entryNo", entryNo)
+			        .add("loopNo", loopNo)
+			        .add("itemNo", itemNo)
+			        .toString();
         }
 
         public int getLoopNo() {

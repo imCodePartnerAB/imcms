@@ -14,13 +14,13 @@
 
 .imcms-choose-img {
     background: #e4e4f2 no-repeat center;
-    background-size: contain;
+    object-fit: contain;
     width: 100%;
     height: 146px;
 }
 
 .imcms-choose-img-description {
-    padding: 7px;
+    padding: 7px 3px;
     position: relative;
     width: 100%;
     margin-bottom: 0;
@@ -34,7 +34,7 @@
     font-size: 13px;
     line-height: 17px;
     text-align: left;
-    padding-bottom: 3px;
+    padding: 0 4px 3px 0;
 }
 
 .imcms-choose-img-description__button {
@@ -83,6 +83,8 @@
 
 .imcms-choose-img-wrap.image-chosen {
     background-color: #95e298;
+    position: relative;
+    z-index: 1;
 }
 
 .imcms-choose-img-wrap.image-chosen:hover {

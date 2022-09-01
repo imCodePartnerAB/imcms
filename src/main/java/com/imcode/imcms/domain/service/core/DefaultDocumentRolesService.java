@@ -38,7 +38,7 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
 
     @Override
     public DocumentRoles getDocumentRoles(int documentId, UserDomainObject user) {
-        final Meta meta = metaRepository.findOne(documentId);
+        final Meta meta = metaRepository.getOne(documentId);
 
         if (user.isImcmsExternal()) {
             final ExternalUser externalUser = (ExternalUser) user;
@@ -66,6 +66,6 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
     public DocumentRoles getDocumentRoles(int documentId) {
         final List<DocumentRole> documentRoles = new ArrayList<>(documentRolesRepository.findByDocument_Id(documentId));
 
-        return new DocumentRoles(documentRoles, metaRepository.findOne(documentId));
+	    return new DocumentRoles(documentRoles, metaRepository.getOne(documentId));
     }
 }

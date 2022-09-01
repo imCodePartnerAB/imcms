@@ -26,7 +26,6 @@ public class DocumentDtoFactory {
     public DocumentDTO createEmpty() {
         final DocumentDTO documentDTO = new DocumentDTO();
         documentDTO.setTarget("");
-        documentDTO.setAlias("");
 
         documentDTO.setCommonContents(commonContentFactory.createCommonContents());
 

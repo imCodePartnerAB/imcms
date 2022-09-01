@@ -10,14 +10,14 @@ import java.util.Date;
 
 public abstract class ImageSource extends AbstractFileSource {
     public static final int IMAGE_TYPE_ID__NULL = -1;
-    public static final int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;
+    public static final int IMAGE_TYPE_ID__FILE_STORAGE = 0;
     public static final int IMAGE_TYPE_ID__FILE_DOCUMENT = 1;
     private static final long serialVersionUID = -8968488500648667313L;
 
     private ImageInfo cachedImageInfo;
     private Date cachedImageInfoTime;
 
-    ImageSize getImageSize() throws IOException {
+    public ImageSize getImageSize() throws IOException {
         ImageInfo imageInfo = getImageInfo();
         if (imageInfo != null) {
             return new ImageSize(imageInfo.getWidth(), imageInfo.getHeight());
@@ -27,7 +27,7 @@ public abstract class ImageSource extends AbstractFileSource {
     }
 
 
-    ImageInfo getImageInfo() throws IOException {
+    public ImageInfo getImageInfo() throws IOException {
         if (getInputStreamSource().getSize() > 0) {
             Date modifiedDatetime = getModifiedDatetime();
             if (cachedImageInfoTime == null || modifiedDatetime.after(cachedImageInfoTime)) {
@@ -41,7 +41,7 @@ public abstract class ImageSource extends AbstractFileSource {
         return null;
     }
 
-    ImageInfo getNonCachedImageInfo() throws IOException {
+    public ImageInfo getNonCachedImageInfo() throws IOException {
         return ImageOp.getImageInfo(ImcmsImageUtils.imageMagickPath, getInputStreamSource().getInputStream());
     }
 }

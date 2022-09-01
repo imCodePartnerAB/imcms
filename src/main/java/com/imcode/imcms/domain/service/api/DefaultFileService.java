@@ -13,12 +13,12 @@ import com.imcode.imcms.persistence.entity.TemplateJPA;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.uima.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -155,10 +155,10 @@ public class DefaultFileService implements FileService {
         if (Files.isDirectory(file)) {
             if(isTemplatePath(file)) throwTemplateException("Folder with templates can't be deleted!  Got path:" + file);
 
-            Files.list(file)
-                    .map(Path::toFile)
-                    .forEach(FileUtils::deleteRecursive);
-            Files.delete(file);
+	        Files.list(file)
+			        .map(Path::toFile)
+			        .forEach(FileSystemUtils::deleteRecursively);
+	        Files.delete(file);
         } else {
             if(isTemplatePath(file)) deleteTemplate(file);
 

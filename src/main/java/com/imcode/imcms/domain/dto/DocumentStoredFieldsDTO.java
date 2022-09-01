@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.index.DocumentStoredFields;
-    import imcode.util.Utility;
+import imcode.util.Utility;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,17 +18,19 @@ public class DocumentStoredFieldsDTO {
 
     private Integer id;
 
-    private String title;
+	private String title;
 
-    private Meta.DocumentType type;
+	private Meta.DocumentType type;
 
-    private DocumentStatus documentStatus;
+	private DocumentStatus documentStatus;
 
-    private String alias;
+	private String alias;
 
-    private Integer currentVersion;
+	private Integer currentVersion;
 
-    private Boolean isShownTitle;
+	private Boolean defaultLanguageAliasEnabled;
+
+	private Boolean isShownTitle;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -39,11 +41,11 @@ public class DocumentStoredFieldsDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime published;
 
-    private String createdBy;
+	private String createdBy;
 
-    private String modifiedBy;
+	private String modifiedBy;
 
-    private String publishedBy;
+	private String publishedBy;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
@@ -52,6 +54,7 @@ public class DocumentStoredFieldsDTO {
         documentStatus = from.documentStatus();
         alias = from.alias();
         currentVersion = from.versionNo();
+        defaultLanguageAliasEnabled = from.isDefaultLanguageAliasEnabled();
         isShownTitle = from.isShownTitle();
         created = Utility.convertDateToLocalDateTime(from.created());
         modified = Utility.convertDateToLocalDateTime(from.modified());

@@ -1,0 +1,51 @@
+.imcms-history-mode {
+    display: none;
+}
+
+.imcms-history-mode__entries{
+    height: 140px;
+    overflow-y: auto;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro
+}
+
+.image-history-entry{
+    display: flex;
+    padding: 5px;
+    cursor: pointer;
+    word-break: break-all;
+}
+
+.image-history-entry:hover{
+    background-color: #dfedff;
+}
+
+.image-history-entry.image-history-entry--active{
+    background-color: #6fbde2;
+}
+
+.image-history-entry :not(:last-child){
+    border-right: solid 1px #dad5d5;
+}
+
+.image-history-entry__date{
+    width: 30%;
+    word-break: break-word;
+    text-align: center;
+}
+
+.image-history-entry__login{
+    width: 30%;
+    text-align: center;
+}
+
+.image-history-entry__path{
+    width: 40%;
+    text-align: center;
+}
+
+.imcms-history-mode__button{
+    float: right;
+    margin: 5px 5px 0 0;
+}
+

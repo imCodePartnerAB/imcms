@@ -13,14 +13,15 @@ import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleGetter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Document implements Serializable {
 
-    private final static Logger log = Logger.getLogger(Document.class.getName());
+    private final static Logger log = LogManager.getLogger(Document.class.getName());
     private static final long serialVersionUID = -6934849355968513148L;
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
@@ -286,6 +287,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #getPublicationStatus} instead.
      */
+    @Deprecated
     public int getStatus() {
         return internalDocument.getPublicationStatus().status;
     }
@@ -293,6 +295,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #setPublicationStatus} instead.
      */
+    @Deprecated
     public void setStatus(int status) {
         internalDocument.setPublicationStatus(new PublicationStatus(status));
     }
@@ -313,6 +316,22 @@ public class Document implements Serializable {
         internalDocument.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
+    public boolean isCacheForUnauthorizedUsers() {
+        return internalDocument.isCacheForUnauthorizedUsers();
+    }
+
+    public void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers) {
+        internalDocument.setCacheForUnauthorizedUsers(cacheForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForAuthorizedUsers() {
+        return internalDocument.isCacheForAuthorizedUsers();
+    }
+
+    public void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers) {
+        internalDocument.setCacheForAuthorizedUsers(cacheForAuthorizedUsers);
+    }
+
     public PublicationStatus getPublicationStatus() {
         return internalDocument.getPublicationStatus();
     }
@@ -329,6 +348,7 @@ public class Document implements Serializable {
     /**
      * @deprecated Use {@link #removeCategory} instead.
      */
+    @Deprecated
     public void removeCategory(com.imcode.imcms.api.Category category) {
         internalDocument.removeCategoryId(category.getId());
     }

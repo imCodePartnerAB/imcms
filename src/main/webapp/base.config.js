@@ -140,6 +140,7 @@ module.exports = {
                         page_info_tabs: [
                             'imcms-page-info-tabs-builder',
                             'imcms-appearance-tab-builder',
+	                        'imcms-metadata-tab-builder',
                             'imcms-life-cycle-tab-builder',
                             'imcms-templates-tab-builder',
                             'imcms-file-tab-builder',
@@ -256,6 +257,7 @@ module.exports = {
                     'imcms-loops-rest-api',
                     'imcms-menus-rest-api',
                     'imcms-images-rest-api',
+                    'imcms-images-history-rest-api',
                     'imcms-languages-rest-api',
                     'imcms-texts-rest-api',
                     'imcms-texts-history-rest-api',
@@ -269,7 +271,8 @@ module.exports = {
                     'imcms-auth-providers-rest-api',
                     'imcms-external-roles-rest-api',
                     'imcms-azure-roles-rest-api',
-                    'imcms-external-to-local-roles-links-rest-api',
+	                'imcms-cgi-roles-rest-api',
+	                'imcms-external-to-local-roles-links-rest-api',
                     'imcms-settings-rest-api',
                     'imcms-link-validator-rest-api',
                     'imcms-temporal-data-rest-api',
@@ -277,7 +280,8 @@ module.exports = {
                     'imcms-cache-document-rest-api',
                     'imcms-doc-view-request-api',
                     'imcms-user-properties-rest-api',
-                    'imcms-all-data-document-rest-api'
+                    'imcms-all-data-document-rest-api',
+	                'imcms-meta-tag-rest-api',
                 ]
             }
         ),

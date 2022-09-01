@@ -55,8 +55,8 @@ define(
 
             ruleEditor.editRule($('<div>'), {
                 id: null,
-                isEnabled: false,
-                isRestricted: false,
+                enabled: false,
+                restricted: false,
                 ipRange: '',
                 roleId: null,
                 userId: null,

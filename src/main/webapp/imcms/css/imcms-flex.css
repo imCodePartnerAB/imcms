@@ -71,6 +71,10 @@
     width: 50% !important;
 }
 
+.imcms-flex--w-70 {
+	width: 70% !important;
+}
+
 .imcms-flex--w-100 {
     width: 100% !important;
 }

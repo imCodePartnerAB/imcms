@@ -3,13 +3,13 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.api.DatabaseService;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.component.UserLockValidator;
+import com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -18,14 +18,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -36,7 +29,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -51,18 +45,13 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
 
-    private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
-    private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
+    private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
+    private final static Logger log = LogManager.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
 
@@ -100,6 +89,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final DatabaseService databaseService;
     @Getter
     private final MailService mailService;
+	@Getter
+	private final SmsService smsService;
     @Getter
     private final TemplateService templateService;
     @Getter
@@ -168,12 +159,20 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Autowired
     private UserLockValidator userLockValidator;
 
+    @Getter
+    @Autowired
+    private ImageCompressor imageCompressor;
+
+	@Getter
+	@Autowired
+	private MultiFactorAuthenticationService multiFactorAuthenticationService;
+
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
                                 LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader,
-                                ApplicationContext applicationContext,
+                                SmsService smsService, ApplicationContext applicationContext,
                                 Config config,
                                 DocumentLanguages documentLanguages,
                                 DatabaseService databaseService,
@@ -191,7 +190,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
-        this.applicationContext = applicationContext;
+	    this.smsService = smsService;
+	    this.applicationContext = applicationContext;
         this.documentLanguages = documentLanguages;
         this.config = config;
         this.properties = imcmsProperties;
@@ -262,7 +262,9 @@ public class DefaultImcmsServices implements ImcmsServices {
                 mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
                 userLockValidator.lockUserForLogin(user.getId());
             }
-
+        } else if (multiFactorAuthenticationService.isRequired(user)) {
+	        userLockValidator.unlockingUserForLogin(user);
+	        multiFactorAuthenticationService.initSecondFactor(externalizedImcmsAuthAndMapper.getUser(login));
         } else {
             result = user;
 
@@ -392,6 +394,10 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
+    }
+
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
+        return applicationContext.getBean(name, requiredType);
     }
 
     @SuppressWarnings("unchecked")

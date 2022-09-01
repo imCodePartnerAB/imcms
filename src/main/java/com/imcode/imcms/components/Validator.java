@@ -1,6 +1,6 @@
 package com.imcode.imcms.components;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode

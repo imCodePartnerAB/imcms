@@ -22,7 +22,8 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -39,12 +40,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class LinkCheck extends HttpServlet {
@@ -57,7 +53,7 @@ public class LinkCheck extends HttpServlet {
     private static final String HTTP_REQUEST_HEADER__USER_AGENT = "user-agent";
     private static final int CONNECTION_TIMEOUT_MILLISECONDS = 10000;
     private static final int READ_TIMEOUT_MILLISECONDS = 10000;
-    private final static Logger log = Logger.getLogger(LinkCheck.class.getName());
+    private final static Logger log = LogManager.getLogger(LinkCheck.class.getName());
     private static final long serialVersionUID = 7511371897549465582L;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 class PhoneTypeRepositoryTest extends WebAppSpringTestConfig {
@@ -27,7 +28,7 @@ class PhoneTypeRepositoryTest extends WebAppSpringTestConfig {
                 new PhoneTypeJPA(1, "test-name")
         );
 
-        final PhoneTypeJPA saved = phoneTypeRepository.findOne(phoneType.getId());
+	    final PhoneTypeJPA saved = phoneTypeRepository.getOne(phoneType.getId());
 
         assertEquals(phoneType, saved);
     }

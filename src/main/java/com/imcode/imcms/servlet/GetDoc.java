@@ -9,7 +9,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -31,8 +32,8 @@ import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
 public class GetDoc extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
-    private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
-    private final static Logger LOG = Logger.getLogger(GetDoc.class.getName());
+    private final static Logger TRACK_LOG = LogManager.getLogger(ImcmsConstants.ACCESS_LOG);
+    private final static Logger LOG = LogManager.getLogger(GetDoc.class.getName());
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.jsp";
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
     private static final long serialVersionUID = -5473146465111395039L;
@@ -164,6 +165,7 @@ public class GetDoc extends HttpServlet {
         res.setContentLength(len);
         res.setContentType(mimeType);
         res.setHeader("Content-Disposition", contentDisposition);
+	    res.setStatus(HttpServletResponse.SC_OK);
     }
 
     // fixme: not sure this crap is needed at all

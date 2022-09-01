@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.imcode.imcms.model.SpaceAround;
 import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
+import imcode.server.document.textdocument.FileStorageImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,7 @@ public abstract class ImageData implements Documentable, Serializable {
         return source;
     }
 
-    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
+    @JsonDeserialize(as = FileStorageImageSource.class)
     public void setSource(ImageSource source) {
         this.source = Objects.requireNonNull(source, "image source can not be null");
     }

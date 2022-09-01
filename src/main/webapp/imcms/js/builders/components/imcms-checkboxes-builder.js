@@ -22,7 +22,7 @@ define("imcms-checkboxes-builder",
 
         function bindSetChecked(imcmsCheckboxResult, $input) {
             return isChecked => {
-                isChecked ? $input.prop("checked", "checked") : $input.removeProp("checked");
+                $input.prop("checked", isChecked);
                 return imcmsCheckboxResult;
             };
         }

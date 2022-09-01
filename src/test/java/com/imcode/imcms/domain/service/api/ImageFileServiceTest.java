@@ -7,39 +7,38 @@ import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
-import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.util.DeleteOnCloseFile;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
+import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
+import com.imcode.imcms.util.DeleteOnCloseStorageFile;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
-import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.io.File.separator;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,11 +61,15 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
 
+    @Autowired
+    @Qualifier("imageStorageClient")
+    private StorageClient storageClient;
+
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
     @Value("${ImagePath}")
-    private File imagesPath;
+    private String imagesPath;
 
     @BeforeEach
     public void prepareData() {
@@ -137,40 +140,42 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final List<MultipartFile> files = Arrays.asList(file, file);
         final String nonExistingFolder = separator + "generateddddd";
 
-        assertThrows(FolderNotExistException.class, () -> imageFileService.saveNewImageFiles(nonExistingFolder, files));
+        assertThrows(StorageFileNotFoundException.class, () -> imageFileService.saveNewImageFiles(nonExistingFolder, files));
     }
 
 	@Test
 	public void moveImageFile_When_ImageFileNotUsed_Expect_SuccessfulResults() throws IOException {
 		final String destinationFolderName = "test-folder";
-		final String testImageName = testImageFile.getName();
+		final String testImageName = "test-image.jpg";
 		final String testImageNewPath = destinationFolderName + separator + testImageName;
-		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
+        final StoragePath destinationFolderPath = StoragePath.get(DIRECTORY, imagesPath, destinationFolderName);
 
-		Files.createDirectory(destinationFolderPath);
+        storageClient.create(StoragePath.get(FILE, imagesPath, testImageName));
+		storageClient.create(destinationFolderPath);
 
 		ImageFileDTO result = imageFileService.moveImageFile(testImageNewPath, testImageName);
 
 		assertEquals(result.getName(), testImageName);
-		assertEquals(result.getPath(), separator + testImageNewPath);
+		assertEquals(result.getPath(), testImageNewPath);
 
-		Files.move(Paths.get(imagesPath.getPath(), result.getPath()), Paths.get(imagesPath.getPath(), result.getName()));
-		Files.delete(destinationFolderPath);
+		storageClient.delete(destinationFolderPath, true);
 	}
 
 	@Test
 	public void moveImageFile_When_ImageInUse_Expect_SuccessfulResults() throws IOException {
 		final String destinationFolderName = "test-folder";
-		final String testImageName = testImageFile.getName();
-		final String testImageNewPath = separator+ destinationFolderName + separator + testImageName;
-		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
+		final String testImageName = "test-image.jpg";
+		final String testImageNewPath = destinationFolderName + separator + testImageName;
+		final StoragePath destinationFolderPath = StoragePath.get(DIRECTORY, imagesPath, destinationFolderName);
+
+        storageClient.create(StoragePath.get(FILE, imagesPath, testImageName));
 
 		final int workingDocId = documentDataInitializer.createData().getId();
 		final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
 
 		final ImageJPA image = imageDataInitializer.createData(1, testImageName, testImageName, workingVersion);
 
-		Files.createDirectory(destinationFolderPath);
+        storageClient.create(destinationFolderPath);
 
 		ImageFileDTO result = imageFileService.moveImageFile(testImageNewPath, testImageName);
 
@@ -178,22 +183,9 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
 
 		assertEquals(result.getName(), testImageName);
 		assertEquals(result.getPath(), testImageNewPath);
-		assertEquals(separator+ updatedImageDTO.getPath(), result.getPath());
+		assertEquals(updatedImageDTO.getPath(), result.getPath());
 
-		Files.move(Paths.get(imagesPath.getPath(), result.getPath()), Paths.get(imagesPath.getPath(), result.getName()));
-		Files.delete(destinationFolderPath);
-	}
-
-	@Test
-	public void moveImageFile_When_ImageFileDoesNotExist_Expect_NoSuchFileException() throws IOException {
-		final String destinationFolderName = "test-folder";
-		final String testImageName = "lalala.jpg";
-		final String testImageNewPath = destinationFolderName + separator + testImageName;
-		final Path destinationFolderPath = Paths.get(imagesPath.getPath(), destinationFolderName);
-
-		Files.createDirectory(destinationFolderPath);
-		assertThrows(NoSuchFileException.class, () -> imageFileService.moveImageFile(testImageNewPath, testImageName));
-		Files.delete(destinationFolderPath);
+        storageClient.delete(destinationFolderPath, true);
 	}
 
     @Test
@@ -211,7 +203,8 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
 
         final ImageFileDTO imageFileDTO = imageFileDTOS.get(0);
 
-        try (final DeleteOnCloseFile createdImageFile = new DeleteOnCloseFile(imagesPath, imageFileDTO.getPath())) {
+        final StoragePath createdImageFilePath = StoragePath.get(FILE, imagesPath, imageFileDTO.getPath());
+        try (final DeleteOnCloseStorageFile createdImageFile = new DeleteOnCloseStorageFile(createdImageFilePath, storageClient)) {
             assertTrue(createdImageFile.exists());
             assertTrue(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertFalse(createdImageFile.exists());
@@ -219,27 +212,15 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteImage_When_ImageNotExist_Expect_CorrectException() {
-        final String nonExistingFileName = "not_existing_image_i_hope.jpg";
-        final File nonExistingImageFile = new File(imagesPath, nonExistingFileName);
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(nonExistingFileName);
-
-        assertFalse(nonExistingImageFile.exists());
-
-        assertThrows(FileNotFoundException.class, () -> imageFileService.deleteImage(imageFileDTO));
-    }
-
-
-    @Test
     public void deleteImage_When_ImageUsedAtWorkingSingleDocument_Expect_ListWithUsages() throws IOException {
         final String testImageFileName = "test.jpg";
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
 
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
+        final StoragePath testImageFilePath = StoragePath.get(FILE, imagesPath, testImageFileName);
+        try (final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             final int workingDocId = documentDataInitializer.createData().getId();
@@ -266,9 +247,10 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
 
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
+        final StoragePath testImageFilePath = StoragePath.get(FILE, imagesPath, testImageFileName);
+        try (final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
@@ -294,15 +276,17 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdirectory";
 
-        try (final DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(imagesPath, testSubDirectoryName);
-             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName)) {
+        final StoragePath testSubdirectoryPath = StoragePath.get(DIRECTORY, imagesPath, testSubDirectoryName);
+        final StoragePath testImageFilePath = StoragePath.get(FILE, testSubdirectoryPath.toString(), testImageFileName);
+        try (final DeleteOnCloseStorageFile testSubdirectory = new DeleteOnCloseStorageFile(testSubdirectoryPath, storageClient);
+             final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
 
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
             imageFileDTO.setPath(File.separator + testSubDirectoryName + File.separator + testImageFileName);
 
             assertFalse(testImageFile.exists());
-            assertTrue(testSubdirectory.mkdir());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testSubdirectory.create());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
@@ -326,14 +310,16 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdirectory";
 
-        try (final DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(imagesPath, testSubDirectoryName);
-             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName)) {
+        final StoragePath testSubdirectoryPath = StoragePath.get(DIRECTORY, imagesPath, testSubDirectoryName);
+        final StoragePath testImageFilePath = StoragePath.get(FILE, testSubdirectoryPath.toString(), testImageFileName);
+        try (final DeleteOnCloseStorageFile testSubdirectory = new DeleteOnCloseStorageFile(testSubdirectoryPath, storageClient);
+             final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
             imageFileDTO.setPath(testSubDirectoryName + File.separator + testImageFileName);
 
             assertFalse(testImageFile.exists());
-            assertTrue(testSubdirectory.mkdir());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testSubdirectory.create());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
             imageFileService.deleteImage(imageFileDTO);
             assertFalse(testImageFile.exists());
@@ -346,9 +332,10 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
 
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
+        final StoragePath testImageFilePath = StoragePath.get(FILE, imagesPath, testImageFileName);
+        try (final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
@@ -393,9 +380,10 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final ImageFileDTO imageFile2DTO = new ImageFileDTO();
         imageFile2DTO.setPath(test2ImageFileName);
 
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
+        final StoragePath testImageFilePath = StoragePath.get(FILE, imagesPath, testImageFileName);
+        try (final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             final int tempDocId = documentDataInitializer.createData().getId();
@@ -422,9 +410,10 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
 
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
+        final StoragePath testImageFilePath = StoragePath.get(FILE, imagesPath, testImageFileName);
+        try (final DeleteOnCloseStorageFile testImageFile = new DeleteOnCloseStorageFile(testImageFilePath, storageClient)) {
             assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.create());
             assertTrue(testImageFile.exists());
 
             List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
@@ -435,12 +424,7 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
-        final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
-
-        try {
-            assertTrue(FileUtility.forceDelete(deleteMe));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final StoragePath deleteMe = StoragePath.get(FILE, imagesPath, imageFileDTO.getPath());
+        storageClient.delete(deleteMe, true);
     }
 }

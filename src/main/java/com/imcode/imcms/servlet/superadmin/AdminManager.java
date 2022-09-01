@@ -36,11 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AdminManager extends HttpServlet {
 
@@ -173,8 +169,10 @@ public class AdminManager extends HttpServlet {
         String html_admin_part = "";
 
         if (loggedOnUser.isSuperAdmin()) {
-            html_admin_part = Utility.getAdminContents(HTML_ADMINTASK, request, response);
+	        String hasFileAdminAccessKey = "#hasFileAdminAccess#";
+	        String hasFileAdminAccessValue = Imcms.getServices().getAccessService().hasUserFileAdminAccess(loggedOnUser.getId()) ? "" : "disabled";
 
+	        html_admin_part = service.getAdminTemplate(HTML_ADMINTASK, loggedOnUser, List.of(hasFileAdminAccessKey, hasFileAdminAccessValue));
         }
 
         DocumentIndex index = documentMapper.getDocumentIndex();

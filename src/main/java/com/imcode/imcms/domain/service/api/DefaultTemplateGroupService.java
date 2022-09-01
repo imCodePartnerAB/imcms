@@ -44,15 +44,15 @@ class DefaultTemplateGroupService implements TemplateGroupService {
 
     @Override
     public TemplateGroup edit(TemplateGroup templateGroup) {
-        final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findOne(templateGroup.getId());
+        final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.getOne(templateGroup.getId());
         receivedTemplateGroup.setName(templateGroup.getName());
         return new TemplateGroupDTO(templateGroupRepository.save(receivedTemplateGroup));
     }
 
     @Override
     public void addTemplate(String templateFilename, Integer groupId) {
-        final Template addedTemplate = templateService.get(FilenameUtils.removeExtension(templateFilename));
-        final TemplateGroupJPA group = templateGroupRepository.findOne(groupId);
+	    final Template addedTemplate = templateService.get(FilenameUtils.removeExtension(templateFilename));
+	    final TemplateGroupJPA group = templateGroupRepository.findById(groupId).orElse(null);
         if(addedTemplate != null && group != null){
             final Set<Template> groupTemplates = group.getTemplates();
             if(groupTemplates.stream().noneMatch(template -> addedTemplate.getId().equals(template.getId()))){
@@ -65,7 +65,7 @@ class DefaultTemplateGroupService implements TemplateGroupService {
 
     @Override
     public void deleteTemplate(String templateName, Integer groupId) {
-        final TemplateGroupJPA templateGroup = templateGroupRepository.findOne(groupId);
+	    final TemplateGroupJPA templateGroup = templateGroupRepository.findById(groupId).orElse(null);
         if(templateGroup != null){
             final Set<Template> templates = templateGroup.getTemplates().stream()
                     .filter(template -> !template.getName().equals(templateName)).collect(Collectors.toSet());
@@ -83,12 +83,12 @@ class DefaultTemplateGroupService implements TemplateGroupService {
 
     @Override
     public TemplateGroup get(Integer groupId) {
-        return new TemplateGroupDTO(templateGroupRepository.findOne(groupId));
+	    return new TemplateGroupDTO(templateGroupRepository.getOne(groupId));
     }
 
     @Override
     public void remove(Integer id) {
-        templateGroupRepository.deleteTemplateGroupByGroupId(id);
-        templateGroupRepository.delete(id);
+	    templateGroupRepository.deleteTemplateGroupByGroupId(id);
+	    templateGroupRepository.deleteById(id);
     }
 }

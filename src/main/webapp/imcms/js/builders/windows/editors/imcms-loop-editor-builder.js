@@ -6,9 +6,9 @@ define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
         "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder", "imcms-jquery-element-reload", "imcms-images-rest-api",
-	    'imcms-texts-rest-api', 'imcms-cookies'
+	    'imcms-texts-rest-api', 'imcms-cookies', 'imcms'
     ],
-    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal, reloadElement, imagesRestApi, textsRestApi, cookies) {
+    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal, reloadElement, imagesRestApi, textsRestApi, cookies, imcms) {
         let $title, $body, $listItems;
 
         texts = texts.editors.loop;
@@ -314,7 +314,7 @@ define("imcms-loop-editor-builder",
 
 				    let imageToShow = images.find(image => entryIndex === image.loopEntryRef.loopEntryIndex);
 
-				    entryImage.src = imageToShow ? imageToShow.generatedFilePath : MISSING_ICON_IMAGE;
+				    entryImage.src = imageToShow ? imcms.imagesPath +"/"+ imageToShow.generatedFilePath : MISSING_ICON_IMAGE;
 			    })
 	    }
 

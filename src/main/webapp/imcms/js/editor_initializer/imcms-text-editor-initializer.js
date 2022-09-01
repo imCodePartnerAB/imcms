@@ -11,6 +11,8 @@ define('imcms-text-editor-initializer',
     ($, textEditorUtils, tinyMceTextEditor, textEditor, uuidGenerator, editorTypes, modalWindowBuilder) => {
 
         function toggleFocusEditArea(e) {
+			e.stopPropagation();
+			e.preventDefault();
             const $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
 
             if (!$activeTextArea.length) return;
@@ -23,6 +25,12 @@ define('imcms-text-editor-initializer',
             $activeTextArea.removeClass(textEditorUtils.ACTIVE_EDIT_AREA_CLASS)
                 .find('.mce-edit-focus')
                 .removeClass('mce-edit-focus');
+
+	        const $controlsSmall = $activeTextArea.find(".imcms-editor-area__control-wrap--small");
+	        if ($controlsSmall.length) {
+		        $activeTextArea.find(".imcms-editor-area__control-wrap--small").show();
+		        $activeTextArea.find(".imcms-editor-area__text-label").hide();
+	        }
 
             textEditorUtils.setActiveTextEditor(false);
         }
@@ -63,7 +71,7 @@ define('imcms-text-editor-initializer',
                     });
 
                 $textEditor.attr('disabled', 'disabled');
-                textEditorUtils.showEditButton($textEditor);
+                textEditorUtils.showControls($textEditor);
                 return;
             }
 
@@ -76,6 +84,8 @@ define('imcms-text-editor-initializer',
                 .closest('.imcms-editor-area--text')
                 .find('.imcms-editor-area__text-toolbar')
                 .attr('id', toolbarId);
+
+	        $textEditor.on("click focus", toggleFocusEditArea);
 
             const editor = initEditor(type, $textEditor);
 

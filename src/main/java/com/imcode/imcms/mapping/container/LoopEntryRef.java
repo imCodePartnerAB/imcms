@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.container;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 import java.util.Objects;
@@ -52,10 +53,10 @@ public class LoopEntryRef {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("entryNo", entryNo)
-                .add("loopNo", loopNo)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("entryNo", entryNo)
+			    .add("loopNo", loopNo)
+			    .toString();
     }
 
     public String toUriQueryString() {

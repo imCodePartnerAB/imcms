@@ -105,7 +105,7 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         final Template template = dataInitializer.createData(templateName);
         templateGroupService.addTemplate(templateName, templateGroup.getId());
 
-        final Set<Template> returnedTemplates = templateGroupRepository.findOne(templateGroup.getId()).getTemplates();
+        final Set<Template> returnedTemplates = templateGroupRepository.getOne(templateGroup.getId()).getTemplates();
         assertEquals(1, returnedTemplates.size());
         assertEquals(template.getId(), returnedTemplates.iterator().next().getId());
     }
@@ -120,7 +120,7 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
 
         templateGroupService.addTemplate(nonexistentTemplateName, templateId);
 
-        final Set<Template> returnedTemplates = templateGroupRepository.findOne(templateId).getTemplates();
+	    final Set<Template> returnedTemplates = templateGroupRepository.getOne(templateId).getTemplates();
         assertTrue(returnedTemplates.isEmpty());
     }
 
@@ -133,11 +133,11 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         assertTrue(templateGroup.getTemplates().isEmpty());
 
         final Template template = dataInitializer.createData(templateName);
-        templateGroupService.addTemplate(templateName, templateId);
-        assertEquals(1, templateGroupRepository.findOne(templateId).getTemplates().size());
+	    templateGroupService.addTemplate(templateName, templateId);
+	    assertEquals(1, templateGroupRepository.getOne(templateId).getTemplates().size());
 
-        templateGroupService.addTemplate(template.getName(), templateId);
-        assertEquals(1, templateGroupRepository.findOne(templateId).getTemplates().size());
+	    templateGroupService.addTemplate(template.getName(), templateId);
+	    assertEquals(1, templateGroupRepository.getOne(templateId).getTemplates().size());
     }
 
     @Test
@@ -147,13 +147,13 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         final Integer createdTemplateGroupId = createdTemplateGroup.getId();
         final Integer templateId = template.getId();
 
-        final TemplateGroupJPA templateGroup = templateGroupRepository.findOne(createdTemplateGroupId);
+	    final TemplateGroupJPA templateGroup = templateGroupRepository.getOne(createdTemplateGroupId);
         assertEquals(1, templateGroup.getTemplates().size());
         assertEquals(templateId, templateGroup.getTemplates().iterator().next().getId());
 
         templateGroupService.deleteTemplate(template.getName(), createdTemplateGroupId);
 
-        assertTrue(templateGroupRepository.findOne(createdTemplateGroupId).getTemplates().isEmpty());
+	    assertTrue(templateGroupRepository.getOne(createdTemplateGroupId).getTemplates().isEmpty());
     }
 
     @Test
@@ -165,14 +165,14 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         final Integer createdTemplateGroupId = createdTemplateGroup.getId();
         final Integer templateId = template.getId();
 
-        TemplateGroupJPA templateGroup = templateGroupRepository.findOne(createdTemplateGroupId);
+	    TemplateGroupJPA templateGroup = templateGroupRepository.getOne(createdTemplateGroupId);
         assertEquals(1, templateGroup.getTemplates().size());
         assertEquals(templateId, templateGroup.getTemplates().iterator().next().getId());
 
         templateGroupService.deleteTemplate(nonexistentTemplateName, createdTemplateGroupId);
 
-        templateGroup = templateGroupRepository.findOne(createdTemplateGroupId);
-        assertEquals(1, templateGroup.getTemplates().size());
+	    templateGroup = templateGroupRepository.getOne(createdTemplateGroupId);
+	    assertEquals(1, templateGroup.getTemplates().size());
         assertEquals(templateId, templateGroup.getTemplates().iterator().next().getId());
     }
 
@@ -181,8 +181,8 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         dataInitializer.createData("groupName", 1, false);
         final int nonexistentId = 1000;
 
-        assertEquals(1, templateGroupRepository.findAll().size());
-        assertNull(templateGroupRepository.findOne(nonexistentId));
+	    assertEquals(1, templateGroupRepository.findAll().size());
+	    assertTrue(templateGroupRepository.findById(nonexistentId).isEmpty());
 
         templateGroupService.deleteTemplate("templateName", nonexistentId);
 
@@ -200,10 +200,10 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
 
         templateGroup.setTemplates(Collections.singleton(template));
         System.out.println(template.getName());
-        templateGroupRepository.save(new TemplateGroupJPA(templateGroup));
-        assertFalse(templateGroupRepository.findOne(templateGroup.getId()).getTemplates().isEmpty());
+	    templateGroupRepository.save(new TemplateGroupJPA(templateGroup));
+	    assertFalse(templateGroupRepository.getOne(templateGroup.getId()).getTemplates().isEmpty());
 
-        templateGroupService.remove(templateGroup.getId());
-        assertNull(templateGroupRepository.findOne(templateGroup.getId()));
+	    templateGroupService.remove(templateGroup.getId());
+	    assertTrue(templateGroupRepository.findById(templateGroup.getId()).isEmpty());
     }
 }

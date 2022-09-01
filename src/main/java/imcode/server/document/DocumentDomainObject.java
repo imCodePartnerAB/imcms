@@ -9,6 +9,8 @@ import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -16,7 +18,8 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
@@ -38,11 +41,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      *
      * @see DefaultDocumentMapper#getDocument(String)
      */
-    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
-
     private static final long serialVersionUID = 9196527330127566553L;
 
-    private static Logger log = Logger.getLogger(DocumentDomainObject.class);
+    private static Logger log = LogManager.getLogger(DocumentDomainObject.class);
 
     private volatile DocumentMeta meta = new DocumentMeta();
 
@@ -391,6 +392,30 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
+    public boolean isLinkedForUnauthorizedUsers() {
+        return meta.getLinkedForUnauthorizedUsers();
+    }
+
+    public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
+        meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForUnauthorizedUsers() {
+        return meta.isCacheForUnauthorizedUsers();
+    }
+
+    public void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers) {
+        meta.setCacheForUnauthorizedUsers(cacheForUnauthorizedUsers);
+    }
+
+    public boolean isCacheForAuthorizedUsers() {
+        return meta.isCacheForAuthorizedUsers();
+    }
+
+    public void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers) {
+        meta.setCacheForAuthorizedUsers(cacheForAuthorizedUsers);
+    }
+
     public boolean isPublished() {
         return isPublishedAtTime(meta, new Date());
     }
@@ -413,14 +438,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setSearchDisabled(boolean searchDisabled) {
         meta.setSearchDisabled(searchDisabled);
-    }
-
-    public boolean isLinkedForUnauthorizedUsers() {
-        return meta.getLinkedForUnauthorizedUsers();
-    }
-
-    public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
-        meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
     }
 
     public boolean isVisible(){
@@ -466,45 +483,50 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getDocumentType().getId();
     }
 
-    public final LocalizedMessage getDocumentTypeName() {
-        return getDocumentType().getName();
-    }
+	public final LocalizedMessage getDocumentTypeName() {
+		return getDocumentType().getName();
+	}
 
-    public int hashCode() {
-        return getId();
-    }
+	public int hashCode() {
+		return getId();
+	}
 
-    public void removeCategoryId(int categoryId) {
-        meta.getCategories().remove(categoryId);
-    }
+	public void removeCategoryId(int categoryId) {
+		meta.getCategories().remove(categoryId);
+	}
 
-    public abstract void accept(DocumentVisitor documentVisitor);
+	public abstract void accept(DocumentVisitor documentVisitor);
 
-    public LifeCyclePhase getLifeCyclePhase() {
-        return getLifeCyclePhaseAtTime(this, new Date());
-    }
+	public LifeCyclePhase getLifeCyclePhase() {
+		return getLifeCyclePhaseAtTime(this, new Date());
+	}
 
-    public String getAlias() {
-        return meta.getAlias();
-    }
+	public String getAlias() {
+		final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
+		final CommonContent defaultLanguageCommonContent = Imcms.getServices().getCommonContentService().getOrCreate(getId(), versionNo, defaultLanguageCode);
 
-    public void setAlias(String alias) {
-        meta.setAlias(alias);
-    }
+		final String alias = isDefaultLanguageAliasEnabled() ? defaultLanguageCommonContent.getAlias() : commonContent.getAlias();
 
-    public String getName() {
-        return StringUtils.defaultIfBlank(getAlias(), getId() + "");
-    }
+		return StringUtils.defaultIfBlank(alias, null);
+	}
 
-    public DocumentMeta getMeta() {
-        return meta;
-    }
+	public void setAlias(String alias) {
+		setCommonContent(DocumentCommonContent.builder(getCommonContent()).alias(alias).build());
+	}
 
-    public void setMeta(DocumentMeta meta) {
-        Objects.requireNonNull(meta, "meta argument can not be null.");
+	public String getName() {
+		return StringUtils.defaultIfBlank(getAlias(), String.valueOf(getId()));
+	}
 
-        this.meta = meta.clone();
-    }
+	public DocumentMeta getMeta() {
+		return meta;
+	}
+
+	public void setMeta(DocumentMeta meta) {
+		Objects.requireNonNull(meta, "meta argument can not be null.");
+
+		this.meta = meta.clone();
+	}
 
     public DocumentLanguage getLanguage() {
         return language;
@@ -538,26 +560,34 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public String[] getByUsersArr(UserService userService) {
 
-        Integer[] usersIds = new Integer[]{
-                getCreatorId(),
-                getModifierId(),
-                getArchiverId(),
-                getPublisherId(),
-                getDepublisherId(),
-        };
+	    Integer[] usersIds = new Integer[]{
+			    getCreatorId(),
+			    getModifierId(),
+			    getArchiverId(),
+			    getPublisherId(),
+			    getDepublisherId(),
+	    };
 
-        return Stream.of(usersIds)
-                .map(userId -> Optional.ofNullable(userId)
-                        .map(id -> userService.getUser(id).getLoginName())
-                        .orElse("--"))
-                .toArray(String[]::new);
+	    return Stream.of(usersIds)
+			    .map(userId -> Optional.ofNullable(userId)
+					    .map(id -> userService.getUser(id).getLoginName())
+					    .orElse("--"))
+			    .toArray(String[]::new);
     }
 
-    public DocumentMeta.DisabledLanguageShowMode getDisabledLanguageShowMode() {
-        return meta.getDisabledLanguageShowMode();
-    }
+	public Boolean isDefaultLanguageAliasEnabled() {
+		 return meta.getDefaultLanguageAliasEnabled() != null && meta.getDefaultLanguageAliasEnabled();
+	}
 
-    public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
-        meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
-    }
+	public void setDefaultLanguageAlias(boolean enabled) {
+		meta.setDefaultLanguageAliasEnabled(enabled);
+	}
+
+	public DocumentMeta.DisabledLanguageShowMode getDisabledLanguageShowMode() {
+		return meta.getDisabledLanguageShowMode();
+	}
+
+	public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
+		meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
+	}
 }

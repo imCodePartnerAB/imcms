@@ -17,7 +17,7 @@ public class DefaultQueryParser implements QueryParser {
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__TEXT,
                 DocumentIndex.FIELD__KEYWORD,
-                DocumentIndex.FIELD__ALIAS
+                DocumentIndex.FIELD__META_ALIAS
         };
 
         BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];

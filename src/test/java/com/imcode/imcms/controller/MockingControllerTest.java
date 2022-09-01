@@ -7,12 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultHandler;
-import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -40,7 +35,7 @@ public abstract class MockingControllerTest {
 
     @SneakyThrows
     protected MvcResultActions perform(MockHttpServletRequestBuilder requestBuilder, Object jsonContent) {
-        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(asJson(jsonContent));
+        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON).content(asJson(jsonContent));
         return perform(requestBuilder);
     }
 
@@ -87,7 +82,7 @@ public abstract class MockingControllerTest {
         @SneakyThrows
         public void andExpectAsJson(Object expected) {
             resultActions.andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(asJson(expected)));
         }
 

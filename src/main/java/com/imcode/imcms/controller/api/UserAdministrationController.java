@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -77,7 +78,11 @@ class UserAdministrationController {
         }
 
         try {
+            userData.setPassword(Utility.unescapeValue(userData.getPassword()));
+            userData.setPassword2(Utility.unescapeValue(userData.getPassword2()));
+
             userEditorService.editUser(userData);
+
             final String contextPath = request.getContextPath();
             modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/api/admin/manager" : contextPath));
         } catch (UserValidationException e) {
@@ -108,7 +113,11 @@ class UserAdministrationController {
         }
 
         try {
+            userData.setPassword(Utility.unescapeValue(userData.getPassword()));
+            userData.setPassword2(Utility.unescapeValue(userData.getPassword2()));
+
             userCreationService.createUser(userData);
+
             final String contextPath = request.getContextPath();
             modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/api/admin/manager" : contextPath));
         } catch (UserValidationException e) {

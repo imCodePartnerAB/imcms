@@ -19,7 +19,7 @@ define(
 
         function focusEditorOnControlClick($textEditor) {
             $textEditor.parent()
-                .find('.imcms-editor-area__control-wrap')
+                .find('.imcms-control--text')
                 .click(() => {
                     $textEditor[0].focus();
                 });
@@ -46,8 +46,8 @@ define(
 
             focusEditorOnControlClick($textEditor);
             textEditorUtils.setEditorFocus(this);
-            textEditorUtils.showEditButton($textEditor);
-        };
+            textEditorUtils.showControls($textEditor);
+		};
 
         ImcmsTextEditor.prototype = {
             $: function () {

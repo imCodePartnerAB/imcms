@@ -113,17 +113,18 @@ const texts = {
                 title: "Rubrik",
                 menuText: "Menytext",
                 chooseImage: "Välj bild",
-                showIn: "Visa i",
-                sameFrame: "Samma ram",
-                newWindow: "Nytt fönster",
-                replaceAll: "Ersätt alla",
-                alias: "Förenklad adress",
-                aliasPlaceholder: "detta-dokument-alias",
-                makeSuggestion: 'Ge ett förslag',
-                confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
-                missingLangRuleTitle: "Om det begärda språket saknas:",
-                showInDefault: "Visa i standardspråk om det är aktiverat",
-                doNotShow: "Visa inte alls"
+	            showIn: "Visa i",
+	            sameFrame: "Samma ram",
+	            newWindow: "Nytt fönster",
+	            replaceAll: "Ersätt alla",
+	            alias: "Förenklad adress",
+	            aliasPlaceholder: "detta-dokument-alias",
+	            makeSuggestion: 'Ge ett förslag',
+	            confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
+	            missingLangRuleTitle: "Om det begärda språket saknas:",
+	            showInDefault: "Visa i standardspråk om det är aktiverat",
+	            doNotShow: "Visa inte alls",
+	            useDefaultLanguageAlias: "Använd standardspråkalias för alla språk!"
             },
             lifeCycle: {
                 name: "Livscykel",
@@ -166,6 +167,11 @@ const texts = {
                 template: "Mall",
                 defaultChildTemplate: "Standardmall för nya dokument"
             },
+	        metadata: {
+		        name: "SID INFO",
+		        content: "Innehåll",
+		        select: "Metatagg"
+	        },
             keywords: {
                 name: "Nyckelord",
                 title: "Nyckelord",
@@ -213,6 +219,9 @@ const texts = {
             },
             cache: {
                 name: 'Cache',
+                cacheSettings: "Cache inställningar",
+                cacheForUnauthorizedUsers: 'Cache för obehöriga användare',
+                cacheForAuthorizedUsers: 'Cache för behöriga användare',
                 invalidateButton: 'Ogiltig',
                 invalidateTitle: 'Ogiltig cache',
                 error: {
@@ -245,8 +254,8 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
 	            loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
-	            duplicateAlias: 'Aliaset används redan på ett annat dokument',
-                noAccess: "Ingen tillgång till sidinformation"
+	            duplicateAlias: 'Dokumentet innehåller dubblettalias i: ',
+	            noAccess: "Ingen tillgång till sidinformation"
             },
             allData:{
                 name: 'All Data',
@@ -1124,17 +1133,18 @@ const texts = {
                 title: "Title",
                 menuText: "Menu text",
                 chooseImage: "choose...",
-                showIn: "Show in",
-                sameFrame: "Same frame",
-                newWindow: "New window",
-                replaceAll: "Replace all",
-                alias: "Simplified address",
-                aliasPlaceholder: "your-simplified-address",
-                makeSuggestion: 'Make a suggestion',
-                confirmOverwritingAlias: 'Do you want to overwrite current alias?',
-                missingLangRuleTitle: "If requested language is missing:",
-                showInDefault: "Show in default language if enabled",
-                doNotShow: "Don't show at all"
+	            showIn: "Show in",
+	            sameFrame: "Same frame",
+	            newWindow: "New window",
+	            replaceAll: "Replace all",
+	            alias: "Simplified address",
+	            aliasPlaceholder: "your-simplified-address",
+	            makeSuggestion: 'Make a suggestion',
+	            confirmOverwritingAlias: 'Do you want to overwrite current alias?',
+	            missingLangRuleTitle: "If requested language is missing:",
+	            showInDefault: "Show in default language if enabled",
+	            doNotShow: "Don't show at all",
+	            useDefaultLanguageAlias: "Use default language alias for all languages!"
             },
             lifeCycle: {
                 name: "Life Cycle",
@@ -1177,6 +1187,11 @@ const texts = {
                 template: "Template",
                 defaultChildTemplate: "Default child template"
             },
+	        metadata: {
+		        name: "Metadata",
+		        content: "Content",
+		        select: "Meta tag"
+	        },
             keywords: {
                 name: "Keywords",
                 title: "Keywords",
@@ -1224,6 +1239,9 @@ const texts = {
             },
             cache: {
                 name: 'Cache',
+                cacheSettings: "Cache settings",
+                cacheForUnauthorizedUsers: 'Cache for unauthorized users',
+                cacheForAuthorizedUsers: 'Cache for authorized users',
                 invalidateButton: 'Clear cache',
                 invalidateTitle: 'Invalidate public',
                 error: {
@@ -1256,9 +1274,9 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
 	            loadDocumentFailed: 'Failed to load. Maybe you do not have access',
-	            duplicateAlias: 'The alias is already in use on another document',
-                loadRolesFailed: "Failed to fetch roles",
-                noAccess: "No access to page info"
+	            duplicateAlias: 'The document contains duplicate alias in: ',
+	            loadRolesFailed: "Failed to fetch roles",
+	            noAccess: "No access to page info"
             },
             allData:{
                 name: 'All Data',
@@ -1565,9 +1583,12 @@ const texts = {
                 fileFormat: "File format",
                 alignment: "Text alignment",
                 altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
+                showHistory: "Show history",
+                hideHistory: "Hide history",
                 cancelAndClose: "Cancel and close",
                 removeAndClose: "Remove and close",
                 saveAndClose: "Save and close",
+                cancel: "Cancel",
                 restrictedStyle: 'Restricted style:',
                 infoStyle: 'The used image is restricted to this style.',
                 zoomGrade: 'Zoom grade',
@@ -1578,7 +1599,8 @@ const texts = {
                 error: {
                     loadFailed: 'Failed to load image. Try again',
                     removeFailed: 'Failed to remove image. Try again',
-                    createFailed: 'Failed to create image. Try again'
+                    createFailed: 'Failed to create image. Try again',
+                    loadHistoryFailed: 'Failed to load history'
                 }
             },
             text: {
@@ -2030,4 +2052,4 @@ const texts = {
     }
 };
 
-module.exports = texts[imcms.userLanguage || 'en'];
+module.exports = texts[imcms.userLanguage] ? texts[imcms.userLanguage] : texts['en'];

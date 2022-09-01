@@ -39,7 +39,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
             forSave.add(role);
         }
 
-        final List<RoleJPA> saved = roleRepository.save(forSave);
+        final List<RoleJPA> saved = roleRepository.saveAll(forSave);
 
         assertNotNull(saved);
         assertEquals(saved.size(), forSave.size());
@@ -51,7 +51,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
         role.setName("test_name");
         roleRepository.save(role);
 
-        assertNotNull(roleRepository.findOne(role.getId()));
+	    assertTrue(roleRepository.findById(role.getId()).isPresent());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
         roleRepository.save(role);
         final Integer roleId = role.getId();
 
-        final RolePermissionsJPA savedPermissions = roleRepository.findOne(roleId).getPermissions();
+	    final RolePermissionsJPA savedPermissions = roleRepository.getOne(roleId).getPermissions();
 
         assertNotNull(savedPermissions);
         assertEquals(roleId, savedPermissions.getRoleId());
@@ -103,8 +103,8 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
 
         roleRepository.save(role);
         final Integer roleId = role.getId();
-        roleRepository.delete(roleId);
+	    roleRepository.deleteById(roleId);
 
-        assertNull(roleRepository.findOne(roleId));
+	    assertTrue(roleRepository.findById(roleId).isEmpty());
     }
 }

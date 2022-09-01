@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping.container;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.Objects;
 
 public final class VersionRef {
@@ -42,10 +44,10 @@ public final class VersionRef {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", docId)
-                .add("no", no)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("id", docId)
+			    .add("no", no)
+			    .toString();
     }
 
     public int getDocId() {

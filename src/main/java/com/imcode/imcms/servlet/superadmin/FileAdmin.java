@@ -11,30 +11,20 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class FileAdmin extends HttpServlet {
 
-    private final static Logger LOG = Logger.getLogger("FileAdmin");
+    private final static Logger LOG = LogManager.getLogger("FileAdmin");
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.jsp";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.jsp";
@@ -56,7 +46,7 @@ public class FileAdmin extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!user.isSuperAdmin() || !Imcms.getServices().getAccessService().hasUserFileAdminAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -92,7 +82,7 @@ public class FileAdmin extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+	    if (!user.isSuperAdmin() || !Imcms.getServices().getAccessService().hasUserFileAdminAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -209,6 +199,12 @@ public class FileAdmin extends HttpServlet {
                     File destFile = destFiles[i];
                     destFile.getParentFile().mkdirs();
                     File sourceFile = sourceFileTree[i];
+
+                    if (!isUnderRoot(sourceFile, getRoots())) {
+                        LOG.error(String.format("move: File source path %s is not locate under root dir", sourceFile.getAbsolutePath()));
+                        return true;
+                    }
+
                     if (sourceFile.isFile()) {
                         FileUtils.copyFile(sourceFile, destFile);
                     }
@@ -244,6 +240,11 @@ public class FileAdmin extends HttpServlet {
                 for (int i = 0; i < sourceFileTree.length; i++) {
                     File sourceFile = sourceFileTree[i];
                     File destFile = destFileTree[i];
+                    if (!isUnderRoot(sourceFile, getRoots()) && !isUnderRoot(destFile, getRoots())) {
+                        LOG.error(String.format("copy: File source: %s or destination: %s are not locate under root dir",
+                                sourceFile.getAbsolutePath(), destFile.getAbsolutePath()));
+                        return true;
+                    }
                     if (sourceFile.isDirectory()) {
                         destFile.mkdir();
                         continue;
@@ -271,10 +272,17 @@ public class FileAdmin extends HttpServlet {
     private boolean rename(String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res,
                            HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
+        File[] roots = getRoots();
         if (files != null && files.length == 1) {    //Has the user chosen just one file?
             if (name != null && name.length() > 0) {
                 File oldFilename = new File(dir, files[0]);
                 File newFilename = new File(dir, name);
+                if (!isUnderRoot(oldFilename, roots) && !isUnderRoot(newFilename, roots)) {
+                    LOG.error(String.format("rename: File paths newName %s or oldName %s are not locate under root dir",
+                            newFilename.getAbsolutePath(), oldFilename.getAbsolutePath()));
+                    return true;
+                }
+
                 if (oldFilename.exists()) {
                     oldFilename.renameTo(newFilename);
                 }
@@ -290,6 +298,10 @@ public class FileAdmin extends HttpServlet {
         boolean handledOutput = false;
         if (files != null && files.length == 1) {    //Has the user chosen just one file?
             File file = new File(dir, files[0]);
+            if (!isUnderRoot(file, getRoots())) {
+                LOG.error(String.format("download: File path %s is not locate under root dir ", file.getAbsolutePath()));
+                return true;
+            }
             try {
                 BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file));
                 res.setContentType("application/octet-stream");
@@ -315,6 +327,13 @@ public class FileAdmin extends HttpServlet {
         File[] farray = makeFileTreeList(makeAbsoluteFileList(dir, files), false);
         File[] filelist = makeRelativeFileList(dir, farray);
         if (filelist != null && filelist.length > 0) {
+            for (int i = 0; i < filelist.length; i++) {
+                File currentFile = farray[i];
+                if (!isUnderRoot(currentFile, getRoots())) {
+                    LOG.error(String.format("delete: File path %s is not locate under root dir", currentFile.getAbsolutePath()));
+                    return true;
+                }
+            }
             outputDeleteWarning(filelist, dir1, dir2, dir, res, request);
             handledOutput = true;
         }
@@ -324,9 +343,10 @@ public class FileAdmin extends HttpServlet {
     private boolean makeDirectory(String name, File dir, File dir1, File dir2, HttpServletResponse res,
                                   HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
+
         if (name != null && name.length() > 0) {
             File newname = new File(dir, name);
-            if (!newname.exists()) {
+            if (isUnderRoot(newname, getRoots()) && !newname.exists()) {
                 newname.mkdir();
             }
         } else {
@@ -347,6 +367,11 @@ public class FileAdmin extends HttpServlet {
         }
         String filename = parameterFileItem.getName();
         File file = new File(destDir, filename);
+        if (!isUnderRoot(file, getRoots())) {
+            LOG.error(String.format("upload: File path %s is not locate under root dir", file.getAbsolutePath()));
+            return true;
+        }
+
         File uniqueFile = findUniqueFilename(file);
         if (file.equals(uniqueFile) || file.renameTo(uniqueFile)) {
             try {
@@ -450,6 +475,12 @@ public class FileAdmin extends HttpServlet {
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
         fromSourceToDestination(mp, roots, (source, dest) -> {
+            if (!isUnderRoot(dest, roots) && !isUnderRoot(source, roots)) {
+                LOG.error(String.format("moveOk: destination: %s or source %s aren't locate under root dirs",
+                        dest.getAbsolutePath(), source.getAbsolutePath()));
+                return;
+            }
+
             dest.getParentFile().mkdirs();
             if (source.isFile()) {
                 FileUtils.copyFile(source, dest);
@@ -478,6 +509,12 @@ public class FileAdmin extends HttpServlet {
 
     private void copyOk(HttpServletRequest mp, File[] roots) throws IOException {
         fromSourceToDestination(mp, roots, (source, destination) -> {
+            if (!isUnderRoot(destination, roots) && !isUnderRoot(source, roots)) {
+                LOG.error(String.format("copyOk: destination %s or source %s aren't locate under root dir",
+                        destination.getAbsolutePath(), source.getAbsolutePath()));
+                return;
+            }
+
             if (source.isDirectory()) {
                 destination.mkdir();
             } else {

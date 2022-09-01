@@ -1,6 +1,6 @@
 package com.imcode.imcms.components.exception;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 /**
  * Indicates that something wrong with required imcms properties.

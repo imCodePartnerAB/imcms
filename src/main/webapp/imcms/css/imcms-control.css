@@ -1,7 +1,7 @@
 .imcms-control {
     background: no-repeat center;
     cursor: pointer;
-    display: block;
+    display: inline-block;
     width: 16px;
     height: 16px;
 }
@@ -81,6 +81,16 @@
 .imcms-control--edit.imcms-control--image:hover {
     background-image: url("/imcms/images/controls/icon_image_edit_hover.png");
     background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--info{
+	background-image: url("/imcms/images/icon_info.svg");
+	background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--info:hover{
+	background-image: url("/imcms/images/icon_info_hover.svg");
+	background-size: contain;
 }
 
 .imcms-control--copy {

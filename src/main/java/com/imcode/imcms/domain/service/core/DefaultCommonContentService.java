@@ -17,11 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
@@ -87,13 +83,17 @@ public class DefaultCommonContentService
     @Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
         final Set<CommonContentJPA> toSave = saveUs.stream().map(commonContent -> {
-            final String headline = commonContent.getHeadline();
-            if (StringUtils.isNotBlank(headline)) commonContent.setHeadline(headline.trim());
-            return new CommonContentJPA(commonContent);
+	        final String headline = commonContent.getHeadline();
+	        final String alias = commonContent.getAlias();
+
+	        if (StringUtils.isNotBlank(headline)) commonContent.setHeadline(headline.trim());
+	        if (StringUtils.isNotBlank(alias)) commonContent.setAlias(alias.trim());
+
+	        return new CommonContentJPA(commonContent);
         }).collect(Collectors.toSet());
 
-        repository.save(toSave);
-        super.updateWorkingVersion(docId);
+	    repository.saveAll(toSave);
+	    super.updateWorkingVersion(docId);
     }
 
     @Override
@@ -104,7 +104,13 @@ public class DefaultCommonContentService
                 .collect(Collectors.toSet());
     }
 
-    @Override
+	@Override
+	public Optional<CommonContentDTO> getByVersionAndLanguage(Version version, Language language) {
+		return Optional.ofNullable(repository.findByVersionAndLanguage(version, new LanguageJPA(language)))
+				.map(CommonContentDTO::new);
+	}
+
+	@Override
     public List<CommonContent> getAll() {
         return repository.findAll()
                 .stream()
@@ -112,7 +118,22 @@ public class DefaultCommonContentService
                 .collect(toList());
     }
 
-    @Override
+	@Override
+	public Boolean existsByAlias(String alias) {
+		return repository.existsByAlias(alias);
+	}
+
+	@Override
+	public Integer getDocIdByAlias(String alias) {
+		return repository.findDocIdByAlias(alias);
+	}
+
+	@Override
+	public List<String> getAllAliases() {
+		return repository.findAllAliases();
+	}
+
+	@Override
     public void deleteByDocId(Integer docId) {
         repository.deleteByDocId(docId);
     }

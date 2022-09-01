@@ -51,7 +51,7 @@ public class DefaultProfileService implements ProfileService {
     public Profile update(Profile profile) {
         Integer id = profile.getId();
         String alias = profile.getDocumentName();
-        Profile receivedProfile = profileRepository.findOne(id);
+	    Profile receivedProfile = profileRepository.getOne(id);
 
         if (profile.getName().isEmpty()) {
             throw new IllegalArgumentException();
@@ -68,11 +68,11 @@ public class DefaultProfileService implements ProfileService {
 
     @Override
     public Optional<Profile> getById(Integer id) {
-        return Optional.ofNullable(profileRepository.findOne(id)).map(ProfileDTO::new);
+	    return profileRepository.findById(id).map(ProfileDTO::new);
     }
 
     @Override
     public void deleteById(Integer id) {
-        profileRepository.delete(id);
+	    profileRepository.deleteById(id);
     }
 }

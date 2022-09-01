@@ -5,16 +5,13 @@ import imcode.server.document.index.IndexException;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.IndexUpdateOp;
 import imcode.server.document.index.service.IndexUpdateOperation;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -30,7 +27,7 @@ import java.util.function.Consumer;
 // translated from scala
 public class ManagedDocumentIndexService implements DocumentIndexService {
 
-    private final static Logger logger = Logger.getLogger(ManagedDocumentIndexService.class);
+    private final static Logger logger = LogManager.getLogger(ManagedDocumentIndexService.class);
     private final static Object lock = new Object();
 
     private final ExecutorService serviceFailureExecutor = Executors.newSingleThreadExecutor();

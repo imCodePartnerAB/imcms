@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
@@ -39,8 +39,8 @@ public class TemplateGroupRepositoryTest extends WebAppSpringTestConfig {
     public void deleteTemplateGroup_Expected_DeletedTemplateGroupField(){
         final TemplateGroup templateGroup = templateDataInitializer.createData("groupName", 2, false);
 
-        templateGroupRepository.deleteTemplateGroupByGroupId(templateGroup.getId());
-        assertTrue(templateGroupRepository.findOne(templateGroup.getId()).getTemplates().isEmpty());
+	    templateGroupRepository.deleteTemplateGroupByGroupId(templateGroup.getId());
+	    assertTrue(templateGroupRepository.getOne(templateGroup.getId()).getTemplates().isEmpty());
     }
 
 }

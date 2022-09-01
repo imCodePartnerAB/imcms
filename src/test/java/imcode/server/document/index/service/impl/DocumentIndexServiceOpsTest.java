@@ -43,48 +43,50 @@ import static org.mockito.BDDMockito.when;
 @ExtendWith(MockitoExtension.class)
 public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
-    private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
-    private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
-    private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
-    private static final String aliasField = DocumentIndex.FIELD__ALIAS;
-    private static final List<String> mockData = new ArrayList<>();
+	private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
+	private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
+	private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
+	private static final List<String> mockData = new ArrayList<>();
+	private final String testHeadline = "testHeadline";
 
-    private final String testHeadline = "testHeadline";
+	private static String titleField;
+	private static String titleFieldLower;
+	private static String aliasField;
+	private static String aliasFieldLower;
+	private static int documentSize = 10;
+	private static boolean addedInitDocuments;
+	private static SolrClient solrClient;
 
-    private static String titleField;
-    private static String titleFieldLower;
-    private static int documentSize = 10;
-    private static boolean addedInitDocuments;
-    private static SolrClient solrClient;
+	@InjectMocks
+	private DocumentIndexServiceOps documentIndexServiceOps;
+	@Mock
+	private DocumentIndexer documentIndexer;
 
-    @InjectMocks
-    private DocumentIndexServiceOps documentIndexServiceOps;
-    @Mock
-    private DocumentIndexer documentIndexer;
-
-    private SearchQueryDTO searchQueryDTO;
+	private SearchQueryDTO searchQueryDTO;
 
     @Autowired
     private LanguageService languageService;
 
     @BeforeAll
     public static void setUp() throws Exception {
-        FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
+	    FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
-        solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), false);
+	    solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), false);
 
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        Imcms.setUser(user);
+	    final UserDomainObject user = new UserDomainObject(1);
+	    user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+	    Imcms.setUser(user);
 
-        titleField = DocumentIndex.FIELD__META_HEADLINE + "_" + user.getLanguage();
-        titleFieldLower = DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage();
+	    titleField = DocumentIndex.FIELD__META_HEADLINE + "_" + user.getLanguage();
+	    titleFieldLower = DocumentIndex.FIELD_META_HEADLINE + "_" + user.getLanguage();
+	    aliasField = DocumentIndex.FIELD__META_ALIAS + '_' + user.getLanguage();
+	    aliasFieldLower = DocumentIndex.FIELD_META_ALIAS + '_' + user.getLanguage();
 
-        mockData.add(")_fwEf$");
-        mockData.add("wefGErg(");
-        mockData.add("GEGgw$d%");
-        mockData.add("vfF ENG+ (pp)");
-        mockData.add("DSTE bv");
+	    mockData.add(")_fwEf$");
+	    mockData.add("wefGErg(");
+	    mockData.add("GEGgw$d%");
+	    mockData.add("vfF ENG+ (pp)");
+	    mockData.add("DSTE bv");
     }
 
     @AfterAll
@@ -594,18 +596,21 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
     private void addFieldToSolrDocument(SolrInputDocument solrInputDocument, String field, String value) {
         switch (field) {
-            case "headline":
-                solrInputDocument.addField(titleField, value);
-                break;
-            case "headline_lower":
-                solrInputDocument.addField(titleFieldLower, value.toLowerCase());
-                break;
-            case "alias":
-                solrInputDocument.addField(DocumentIndex.FIELD__ALIAS, value);
-                break;
-            case "keyword":
-                solrInputDocument.addField(DocumentIndex.FIELD__KEYWORD, value);
-                break;
+	        case "headline":
+		        solrInputDocument.addField(titleField, value);
+		        break;
+	        case "headline_lower":
+		        solrInputDocument.addField(titleFieldLower, value.toLowerCase());
+		        break;
+	        case "alias":
+		        solrInputDocument.addField(aliasField, value);
+		        break;
+	        case "alias_lower":
+		        solrInputDocument.addField(aliasFieldLower, value.toLowerCase());
+		        break;
+	        case "keyword":
+		        solrInputDocument.addField(DocumentIndex.FIELD__KEYWORD, value);
+		        break;
         }
     }
 

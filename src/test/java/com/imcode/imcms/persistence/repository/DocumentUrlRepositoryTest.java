@@ -41,15 +41,15 @@ public class DocumentUrlRepositoryTest extends WebAppSpringTestConfig {
     @Test
     public void deleteOneUrlDocById_When_OneSpecifiedUrlDocumentIsSaved_Expect_Deleted() {
         final DocumentUrlJPA savedUrlDocument = getDocumentUrlList(1).get(0);
-        documentUrlRepository.delete(savedUrlDocument.getId());
-        assertFalse(documentUrlRepository.findAll().contains(savedUrlDocument));
+        documentUrlRepository.deleteById(savedUrlDocument.getId());
+	    assertFalse(documentUrlRepository.findAll().contains(savedUrlDocument));
     }
 
     @Test
     public void searchDocumentById_WhenDocumentIsSaved_Expect_Found() {
         final DocumentUrlJPA savedUrlDocument = getDocumentUrlList(1).get(0);
-        assertNotNull(savedUrlDocument);
-        assertEquals(savedUrlDocument, documentUrlRepository.findOne(savedUrlDocument.getId()));
+	    assertNotNull(savedUrlDocument);
+	    assertEquals(savedUrlDocument, documentUrlRepository.getOne(savedUrlDocument.getId()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class DocumentUrlRepositoryTest extends WebAppSpringTestConfig {
                 .max()
                 .orElse(0) + 1;
 
-        assertNull(documentUrlRepository.findOne(searchingId));
+	    assertTrue(documentUrlRepository.findById(searchingId).isEmpty());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class DocumentUrlRepositoryTest extends WebAppSpringTestConfig {
     public void deleteUrlDocumentsByDocId_When_DocIdExist_Expect_Deleted() {
         final List<DocumentUrlJPA> savedDocuments = getDocumentUrlList(3);
 
-        documentUrlRepository.delete(documentUrlRepository.findByDocId(DEFAULT_DOC_ID));
+	    documentUrlRepository.deleteAll(documentUrlRepository.findByDocId(DEFAULT_DOC_ID));
 
         final List<DocumentUrlJPA> foundDocumentList = documentUrlRepository.findAll();
         savedDocuments.forEach(documentUrlJPA -> assertFalse(foundDocumentList.contains(documentUrlJPA)));

@@ -76,27 +76,35 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getById_When_ProfileExist_Expected_CorrectEntity() {
-        assertTrue(profileService.getAll().isEmpty());
-        List<ProfileDTO> profiles = createTestProfiles();
+	    assertTrue(profileService.getAll().isEmpty());
+	    List<ProfileDTO> profiles = createTestProfiles();
 
-        int idFirstProfile = profiles.get(0).getId();
+	    int idFirstProfile = profiles.get(0).getId();
 
-        assertTrue(profileService.getById(idFirstProfile).isPresent());
+	    assertTrue(profileService.getById(idFirstProfile).isPresent());
     }
 
-    @Test
-    public void createProfile_When_DocumentAliasNotExist_Expected_CorrrectException() {
-        assertTrue(profileService.getAll().isEmpty());
+	@Test
+	public void createProfile_When_DocumentIdNotExist_Expected_CorrrectException() {
+		assertTrue(profileService.getAll().isEmpty());
 
-        ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
-        assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
-    }
+		ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
+		assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
+	}
 
-    @Test
-    public void getById_When_ProfileNotExist_Expected_EmptyOptional() {
-        int fakeId = -1;
-        Optional<Profile> profileDTO = profileService.getById(fakeId);
-        assertFalse(profileDTO.isPresent());
+	@Test
+	public void createProfile_When_DocumentAliasNotExist_Expected_CorrrectException() {
+		assertTrue(profileService.getAll().isEmpty());
+
+		ProfileDTO profile = new ProfileDTO("alias", "name1", 1);
+		assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
+	}
+
+	@Test
+	public void getById_When_ProfileNotExist_Expected_EmptyOptional() {
+		int fakeId = -1;
+		Optional<Profile> profileDTO = profileService.getById(fakeId);
+		assertFalse(profileDTO.isPresent());
     }
 
     @Test
@@ -125,29 +133,41 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_DocumentNameEmpty_Expected_CorrectException() {
         assertTrue(profileService.getAll().isEmpty());
-        List<ProfileDTO> profiles = createTestProfiles();
+	    List<ProfileDTO> profiles = createTestProfiles();
 
-        ProfileDTO profile = profiles.get(0);
-        profile.setName("name1");
-        profile.setDocumentName("");
+	    ProfileDTO profile = profiles.get(0);
+	    profile.setName("name1");
+	    profile.setDocumentName("");
 
-        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+	    assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
     }
 
-    @Test
-    public void update_When_DocumentAliasNotExist_Expected_CorrrectException() {
-        assertTrue(profileService.getAll().isEmpty());
-        List<ProfileDTO> profiles = createTestProfiles();
+	@Test
+	public void update_When_DocumentIdNotExist_Expected_CorrrectException() {
+		assertTrue(profileService.getAll().isEmpty());
+		List<ProfileDTO> profiles = createTestProfiles();
 
-        ProfileDTO profile = profiles.get(0);
-        profile.setName("name1");
-        profile.setDocumentName("999");
+		ProfileDTO profile = profiles.get(0);
+		profile.setName("name1");
+		profile.setDocumentName("999");
 
-        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
-    }
+		assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+	}
 
-    @Test
-    public void deleteById_When_ProfileExist_Expected_EntityDeleted() {
+	@Test
+	public void update_When_DocumentAliasNotExist_Expected_CorrrectException() {
+		assertTrue(profileService.getAll().isEmpty());
+		List<ProfileDTO> profiles = createTestProfiles();
+
+		ProfileDTO profile = profiles.get(0);
+		profile.setName("name1");
+		profile.setDocumentName("alias");
+
+		assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+	}
+
+	@Test
+	public void deleteById_When_ProfileExist_Expected_EntityDeleted() {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
 

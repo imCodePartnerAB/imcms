@@ -11,7 +11,9 @@ import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +33,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
+    public static final String REQUEST_PARAMETER__OTP = "oneTimePassword";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     public static final String REQUEST_ATTRIBUTE__WAIT_TIME = "time_error";
     public static final String REQUEST_ATTRIBUTE__INFO_LEFT_ATTEMPTS = "left_attempts_info";
@@ -65,42 +68,51 @@ public class VerifyUser extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType(res);
 
-        String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
-        String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+        String name = StringUtils.defaultString(req.getParameter(REQUEST_PARAMETER__USERNAME), (String) req.getSession().getAttribute(REQUEST_PARAMETER__USERNAME));
+        String passwd = StringUtils.defaultString(req.getParameter(REQUEST_PARAMETER__PASSWORD), (String) req.getSession().getAttribute(REQUEST_PARAMETER__PASSWORD));
 
-        if ((name == null) || (passwd == null)) {
+	    if (StringUtils.isAnyBlank(name, passwd)) {
             goToLoginFailedPage(req, res, null);
             return;
         }
 
-        ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+	    Imcms.getServices().getMultiFactorAuthenticationService().cleanSession(req.getSession());
+	    ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         ContentManagementSystem cms = null;
         UserDomainObject userToCheck = Imcms.getServices().verifyUser(name, passwd);
         boolean isAllowed = userAndRoleMapper.isAllowedToAccess(req.getRemoteAddr(), userToCheck);
         final UserDomainObject userByLogin = userAndRoleMapper.getUserByLoginIgnoreCase(name);
 
         if (isAllowed) {
-            cms = ContentManagementSystem.login(req, userToCheck);
+            cms = ContentManagementSystem.login(req, res, userToCheck);
         }
 
         if (null != cms) {
             User currentUser = cms.getCurrentUser();
-            if (req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser()) {
+	        if ((req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null
+			        || req.getSession().getAttribute(REQUEST_PARAMETER__EDIT_USER) != null)
+			        && !currentUser.isDefaultUser()) {
                 goToEditUserPage(currentUser, res, req);
             } else {
                 goToLoginSuccessfulPage(req, res);
             }
+        } else if (Imcms.getServices().getMultiFactorAuthenticationService().isInProgress(req)) {
+	        goToMFAPage(req, res);
         } else {
             goToLoginFailedPage(req, res, userByLogin);
         }
     }
+
+	private void goToMFAPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getRequestDispatcher(API_PREFIX.concat("/mfa")).forward(request, response);
+	}
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res, UserDomainObject user) throws IOException, ServletException {
         final UserLockValidator userLockValidator = Imcms.getServices().getUserLockValidator();
         if (userLockValidator.isUserBlocked(user)) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__ATTEMPTS_EXHAUSTED);
             req.setAttribute(REQUEST_ATTRIBUTE__WAIT_TIME, userLockValidator.getRemainingWaitTime(user));
-        } else {
+        } else if (req.getAttribute(REQUEST_ATTRIBUTE__ERROR) == null) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         }
 
@@ -123,7 +135,7 @@ public class VerifyUser extends HttpServlet {
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
 
-        private final Logger log = Logger.getLogger(GoToLoginSuccessfulPageCommand.class);
+        private final Logger log = LogManager.getLogger(GoToLoginSuccessfulPageCommand.class);
 
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException {

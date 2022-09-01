@@ -10,7 +10,8 @@ import com.imcode.imcms.persistence.repository.TemporalTimeLastUseRepository;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,7 +36,7 @@ import static net.sf.ehcache.CacheManager.getCacheManager;
 @Transactional
 public class DefaultTemporalDataService implements TemporalDataService {
 
-    private final static Logger logger = Logger.getLogger(DefaultTemporalDataService.class);
+    private final static Logger logger = LogManager.getLogger(DefaultTemporalDataService.class);
     private final Integer IDENTIFIER_LAST_DATA_USE = 1;
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -133,28 +134,28 @@ public class DefaultTemporalDataService implements TemporalDataService {
     @Override
     public void addDocumentsInCache(HttpServletRequest request) {
         if (publicDocumentsCache.getAmountOfCachedDocuments() == -1) {
-            publicDocumentsCache.setAmountOfCachedDocuments(0);
-            final HttpHeaders headers = new HttpHeaders();
-            headers.set(IMCMS_HEADER_CACHING_ACTIVE, Boolean.toString(true));
+	        publicDocumentsCache.setAmountOfCachedDocuments(0);
+	        final HttpHeaders headers = new HttpHeaders();
+	        headers.set(IMCMS_HEADER_CACHING_ACTIVE, Boolean.toString(true));
 
-            final HttpEntity httpEntity = new HttpEntity(headers);
-            final int serverPort = request.getServerPort();
-            final List<String> docIdsAndAlias = getCountPublishedTextDocIdAndAlias();
+	        final HttpEntity httpEntity = new HttpEntity(headers);
+	        final int serverPort = request.getServerPort();
+	        final List<String> docIdsAndAliases = getCountPublishedTextDocIdAndAliases();
 
-            String path = null;
+	        String path = null;
 
-            for (int i = 0; i < docIdsAndAlias.size(); i++) {
-                final String docData = docIdsAndAlias.get(i);
-                try {
-                    RestTemplate restTemplate = new RestTemplate();
-                    if ((serverPort == 80) || (serverPort == 443)) {
-                        path = String.format("%s://%s/", request.getScheme(), request.getServerName()) + docData;
-                    } else {
-                        path = String.format("%s://%s:%s/", request.getScheme(), request.getServerName(), serverPort) + docData;
-                    }
+	        for (int i = 0; i < docIdsAndAliases.size(); i++) {
+		        final String docData = docIdsAndAliases.get(i);
+		        try {
+			        RestTemplate restTemplate = new RestTemplate();
+			        if ((serverPort == 80) || (serverPort == 443)) {
+				        path = String.format("%s://%s/", request.getScheme(), request.getServerName()) + docData;
+			        } else {
+				        path = String.format("%s://%s:%s/", request.getScheme(), request.getServerName(), serverPort) + docData;
+			        }
 
-                    logger.info("Will call request by URL " + path);
-                    restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
+			        logger.info("Will call request by URL " + path);
+			        restTemplate.exchange(path, HttpMethod.GET, httpEntity, String.class);
                     publicDocumentsCache.setAmountOfCachedDocuments(i + 1);
                 } catch (RestClientException r) {
                     logger.error(String.format("Not connect on the path URL %s !", path));
@@ -168,32 +169,35 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public int getTotalAmountTextDocDataForCaching() {
-        return getCountPublishedTextDocIdAndAlias().size();
+	    return getCountPublishedTextDocIdAndAliases().size();
     }
 
-    private List<String> getCountPublishedTextDocIdAndAlias() {
-        final List<String> docIdsAndAlias = new ArrayList<>();
-        final List<DocumentDTO> documentsDTO = documentMapper.getAllDocumentIds().stream()
-                .map(defaultDocumentService::get)
-                .filter(doc -> doc.getCommonContents().stream().findAny().get().isEnabled())
-                .filter(doc -> doc.getType().equals(TEXT))
-                .filter(doc -> doc.getPublicationStatus().equals(APPROVED))
-                .collect(Collectors.toList());
+	private List<String> getCountPublishedTextDocIdAndAliases() {
+		final List<String> docIdsAndAlias = new ArrayList<>();
+		final List<DocumentDTO> documentsDTO = documentMapper.getAllDocumentIds().stream()
+				.map(defaultDocumentService::get)
+				.filter(doc -> doc.getCommonContents().stream().findAny().get().isEnabled())
+				.filter(doc -> doc.getType().equals(TEXT))
+				.filter(doc -> doc.getPublicationStatus().equals(APPROVED))
+				.collect(Collectors.toList());
 
-        for (DocumentDTO documentDTO : documentsDTO) {
-            if (StringUtils.isNotBlank(documentDTO.getAlias())) {
-                docIdsAndAlias.add(documentDTO.getAlias());
-            }
-            docIdsAndAlias.add(documentDTO.getId().toString());
-        }
+		for (DocumentDTO documentDTO : documentsDTO) {
+			documentDTO.getCommonContents().forEach(commonContent -> {
+				final String alias = commonContent.getAlias();
+				if (StringUtils.isNotBlank(alias)) {
+					docIdsAndAlias.add(alias);
+				}
+			});
+			docIdsAndAlias.add(documentDTO.getId().toString());
+		}
 
         return docIdsAndAlias;
     }
 
     private String getFormattedLastDateTime(String nameData) {
         String formattedLastDataTime = null;
-        final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
-        final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
+	    final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.getOne(IDENTIFIER_LAST_DATA_USE);
+	    final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
         final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
@@ -234,8 +238,8 @@ public class DefaultTemporalDataService implements TemporalDataService {
         DataOfTimeLastUseJPA updatedLastDate = new DataOfTimeLastUseJPA();
         final Date currentDate = new Date();
 
-        DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.findOne(IDENTIFIER_LAST_DATA_USE);
-        final Integer id = receivedDate.getId();
+	    DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.getOne(IDENTIFIER_LAST_DATA_USE);
+	    final Integer id = receivedDate.getId();
         final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();

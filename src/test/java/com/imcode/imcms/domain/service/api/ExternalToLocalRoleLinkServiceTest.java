@@ -14,18 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.then;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ExternalToLocalRoleLinkServiceTest {
@@ -49,12 +41,12 @@ class ExternalToLocalRoleLinkServiceTest {
 
         given(localRole.getId()).willReturn(localRoleId);
         given(externalRole.getProviderId()).willReturn(providerId);
-        given(externalRole.getId()).willReturn(externalRoleId);
-        given(roleRepository.findOne(localRoleId)).willReturn(localRole);
+	    given(externalRole.getId()).willReturn(externalRoleId);
+	    given(roleRepository.getOne(localRoleId)).willReturn(localRole);
 
         externalToLocalRoleLinkService.addLink(externalRole, localRoleId);
 
-        then(roleRepository).should().findOne(localRoleId);
+	    then(roleRepository).should().getOne(localRoleId);
 
         final ArgumentCaptor<ExternalToLocalRoleLinkJPA> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLinkJPA.class);
         then(repository).should().save(captor.capture());

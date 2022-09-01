@@ -33,7 +33,7 @@ class LocalUserPhoneService implements PhoneService {
 
         final List<PhoneJPA> saveUs = toJPA.apply(phones);
 
-        phoneRepository.save(saveUs);
+        phoneRepository.saveAll(saveUs);
     }
 
     @Override

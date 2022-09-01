@@ -27,58 +27,59 @@ public abstract class Document implements Serializable {
 
     protected Document(Document from) {
         setId(from.getId());
-        setType(from.getType());
-        setTarget(from.getTarget());
-        setAlias(from.getAlias());
-        setName(from.getName());
-        setCommonContents(from.getCommonContents());
-        setPublicationStatus(from.getPublicationStatus());
-        setPublished(from.getPublished());
-        setArchived(from.getArchived());
-        setPublicationEnd(from.getPublicationEnd());
-        setModified(from.getModified());
-        setCreated(from.getCreated());
-        setDisabledLanguageShowMode(from.getDisabledLanguageShowMode());
-        setCurrentVersion(from.getCurrentVersion());
-        setLatestVersion(from.getLatestVersion());
-        setKeywords(from.getKeywords());
-        setSearchDisabled(from.isSearchDisabled());
-        setCategories(from.getCategories());
-        setRestrictedPermissions(from.getRestrictedPermissions());
-        setRoleIdToPermission(from.getRoleIdToPermission());
-        setLinkableByOtherUsers(from.isLinkableByOtherUsers());
-        setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
-        setVisible(from.isVisible());
+	    setType(from.getType());
+	    setTarget(from.getTarget());
+	    setName(from.getName());
+	    setCommonContents(from.getCommonContents());
+	    setPublicationStatus(from.getPublicationStatus());
+	    setPublished(from.getPublished());
+	    setArchived(from.getArchived());
+	    setPublicationEnd(from.getPublicationEnd());
+	    setModified(from.getModified());
+	    setCreated(from.getCreated());
+	    setDefaultLanguageAliasEnabled(from.isDefaultLanguageAliasEnabled());
+	    setDisabledLanguageShowMode(from.getDisabledLanguageShowMode());
+	    setCurrentVersion(from.getCurrentVersion());
+	    setLatestVersion(from.getLatestVersion());
+	    setKeywords(from.getKeywords());
+	    setSearchDisabled(from.isSearchDisabled());
+	    setCategories(from.getCategories());
+	    setRestrictedPermissions(from.getRestrictedPermissions());
+	    setRoleIdToPermission(from.getRoleIdToPermission());
+	    setLinkableByOtherUsers(from.isLinkableByOtherUsers());
+	    setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
+		setCacheForUnauthorizedUsers(from.isCacheForUnauthorizedUsers());
+		setCacheForAuthorizedUsers(from.isCacheForAuthorizedUsers());
+	    setVisible(from.isVisible());
         setProperties(from.getProperties());
     }
 
     public abstract Integer getId();
 
-    public abstract void setId(Integer id);
+	public abstract void setId(Integer id);
 
-    public abstract DocumentType getType();
+	public abstract DocumentType getType();
 
-    public abstract void setType(DocumentType type);
+	public abstract void setType(DocumentType type);
 
-    public abstract String getTarget();
+	public abstract String getTarget();
 
-    public abstract void setTarget(String target);
+	public abstract void setTarget(String target);
 
-    public abstract String getAlias();
+	/**
+	 * document alias/name related to rendered web page content
+	 */
+	public abstract String getName();
 
-    public abstract void setAlias(String alias);
+	public abstract void setName(String name);
 
-    public abstract String getName();
+	public abstract List<CommonContent> getCommonContents();
 
-    public abstract void setName(String name);
+	public abstract void setCommonContents(List<CommonContent> commonContents);
 
-    public abstract List<CommonContent> getCommonContents();
+	public abstract PublicationStatus getPublicationStatus();
 
-    public abstract void setCommonContents(List<CommonContent> commonContents);
-
-    public abstract PublicationStatus getPublicationStatus();
-
-    public abstract void setPublicationStatus(PublicationStatus publicationStatus);
+	public abstract void setPublicationStatus(PublicationStatus publicationStatus);
 
     public abstract AuditDTO getPublished();
 
@@ -90,27 +91,31 @@ public abstract class Document implements Serializable {
 
     public abstract AuditDTO getPublicationEnd();
 
-    public abstract void setPublicationEnd(AuditDTO publicationEnd);
+	public abstract void setPublicationEnd(AuditDTO publicationEnd);
 
-    public abstract AuditDTO getModified();
+	public abstract AuditDTO getModified();
 
-    public abstract void setModified(AuditDTO modified);
+	public abstract void setModified(AuditDTO modified);
 
-    public abstract AuditDTO getCreated();
+	public abstract AuditDTO getCreated();
 
-    public abstract void setCreated(AuditDTO created);
+	public abstract void setCreated(AuditDTO created);
 
-    public abstract DisabledLanguageShowMode getDisabledLanguageShowMode();
+	public abstract boolean isDefaultLanguageAliasEnabled();
 
-    public abstract void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode);
+	public abstract void setDefaultLanguageAliasEnabled(boolean defaultLanguageAliasEnabled);
 
-    public abstract AuditDTO getCurrentVersion();
+	public abstract DisabledLanguageShowMode getDisabledLanguageShowMode();
 
-    public abstract void setCurrentVersion(AuditDTO currentVersion);
+	public abstract void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode);
 
-    public abstract AuditDTO getLatestVersion();
+	public abstract AuditDTO getCurrentVersion();
 
-    public abstract void setLatestVersion(AuditDTO latestVersion);
+	public abstract void setCurrentVersion(AuditDTO currentVersion);
+
+	public abstract AuditDTO getLatestVersion();
+
+	public abstract void setLatestVersion(AuditDTO latestVersion);
 
     public abstract Set<String> getKeywords();
 
@@ -141,6 +146,14 @@ public abstract class Document implements Serializable {
     public abstract void setLinkableByOtherUsers(boolean isLinkableByOtherUsers);
 
     public abstract boolean isLinkableForUnauthorizedUsers();
+
+	public abstract void setCacheForUnauthorizedUsers(boolean cacheForUnauthorizedUsers);
+
+	public abstract boolean isCacheForUnauthorizedUsers();
+
+	public abstract void setCacheForAuthorizedUsers(boolean cacheForAuthorizedUsers);
+
+	public abstract boolean isCacheForAuthorizedUsers();
 
     public abstract void setLinkableForUnauthorizedUsers(boolean isLinkableForUnauthorizedUsers);
 

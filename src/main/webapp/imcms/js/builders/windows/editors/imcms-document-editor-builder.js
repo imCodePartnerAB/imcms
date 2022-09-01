@@ -451,7 +451,7 @@ define('imcms-document-editor-builder',
 
             const $aliasColumnHead = buildTitleRow({
                 text: texts.sort.alias,
-                bySorting: 'alias',
+	            bySorting: 'meta_alias_l_' + imcms.language.code,
                 elementClass: 'imcms-flex--flex-2',
             });
 

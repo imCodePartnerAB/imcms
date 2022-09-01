@@ -1,9 +1,9 @@
 package imcode.util;
 
 import imcode.server.Imcms;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

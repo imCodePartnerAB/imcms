@@ -31,7 +31,7 @@ public class DefaultTextDocumentTemplateService implements TextDocumentTemplateS
 
     @Override
     public Optional<TextDocumentTemplate> get(int docId) {
-        return Optional.ofNullable(textDocumentTemplateRepository.findOne(docId)).map(TextDocumentTemplateDTO::new);
+        return textDocumentTemplateRepository.findById(docId).map(TextDocumentTemplateDTO::new);
     }
 
     @Override

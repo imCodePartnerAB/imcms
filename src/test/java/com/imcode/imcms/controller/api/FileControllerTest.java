@@ -6,7 +6,6 @@ import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.FileService;
 import imcode.server.Imcms;
-import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -65,9 +65,8 @@ public class FileControllerTest extends AbstractControllerTest {
     @BeforeEach
     @AfterEach
     public void setUp() throws IOException {
-        ReflectionTestUtils.setField(Imcms.getServices().getManagedBean(FileService.class), "rootPaths", testRootPaths);  //nonexistent paths are removed when creating the service
-
-        testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileUtils::deleteRecursive);
+	    ReflectionTestUtils.setField(Imcms.getServices().getManagedBean(FileService.class), "rootPaths", testRootPaths);  //nonexistent paths are removed when creating the service
+	    testRootPaths.stream().filter(path -> !path.toString().contains(templateDirectory.toString())).map(Path::toFile).forEach(FileSystemUtils::deleteRecursively);
     }
 
     @Override

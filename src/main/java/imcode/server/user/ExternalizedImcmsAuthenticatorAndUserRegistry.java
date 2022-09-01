@@ -3,7 +3,8 @@ package imcode.server.user;
 import com.imcode.imcms.api.exception.UserAlreadyExistsException;
 import imcode.server.ImcmsConstants;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     private UserAndRoleRegistry externalUserRegistry;
     private String defaultLanguage;
 
-    private Logger log = Logger.getLogger(ExternalizedImcmsAuthenticatorAndUserRegistry.class);
+    private Logger log = LogManager.getLogger(ExternalizedImcmsAuthenticatorAndUserRegistry.class);
 
     public ExternalizedImcmsAuthenticatorAndUserRegistry(ImcmsAuthenticatorAndUserAndRoleMapper imcmsAndRole,
                                                          Authenticator externalAuthenticator,

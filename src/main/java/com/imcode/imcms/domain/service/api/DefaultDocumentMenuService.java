@@ -16,7 +16,6 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +49,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
-        final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
-                .orElseThrow(() -> new DocumentNotExistException(docId));
+        final Meta meta = metaRepository.findById(docId)
+		        .orElseThrow(() -> new DocumentNotExistException(docId));
 
         return (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers()) ||
                 (!user.isDefaultUser() && meta.getLinkableByOtherUsers());
@@ -59,13 +58,13 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId) {
-        return metaRepository.findOne(documentId).getDisabledLanguageShowMode();
+	    return metaRepository.getOne(documentId).getDisabledLanguageShowMode();
     }
 
     @Override
     public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
-        final Integer docId = menuItem.getDocumentId();
-        final Meta metaDocument = metaRepository.findOne(docId);
+	    final Integer docId = menuItem.getDocumentId();
+	    final Meta metaDocument = metaRepository.getOne(docId);
 
         final Version currentVersion = versionService.getCurrentVersion(docId);
 
@@ -74,14 +73,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, commonContentList);
 
-        final String documentDTOAlias = documentDTO.getAlias();
-
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(docId);
         menuItemDTO.setType(documentDTO.getType());
         menuItemDTO.setTitle(getHeadlineInCorrectLanguage(documentDTO));
-        menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
-        menuItemDTO.setTarget(documentDTO.getTarget());
+	    menuItemDTO.setLink("/" + documentDTO.getName());
+	    menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
         menuItemDTO.setCreatedDate(Utility.convertDateToLocalDateTime(documentDTO.getCreated().getFormattedDate()));
         menuItemDTO.setPublishedDate(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate()));
@@ -89,8 +86,9 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setCreatedBy(documentDTO.getCreated().getBy());
         menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
         menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
-        menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
-        menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
+	    menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
+	    menuItemDTO.setIsDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
+	    menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
         menuItemDTO.setSortOrder(menuItem.getSortOrder());
 
         return menuItemDTO;
@@ -150,15 +148,13 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
     @Override
     public boolean isPublicMenuItem(int docId) {
-        final Meta meta = metaRepository.findOne(docId);
-
-        if (meta == null) throw new DocumentNotExistException(docId);
+	    final Meta meta = metaRepository.findById(docId).orElseThrow(() -> new DocumentNotExistException(docId));
 
         return (isDocumentApproved(meta)
                 && isNotArchivedYet(meta)
                 && isNotUnPublishedYet(meta)
                 && isAlreadyPublished(meta)
-                && (meta.getVisible() || Imcms.getUser().hasUserAccessToDoc(meta))
+                && Imcms.getUser().hasUserAccessToDoc(meta)
         );
     }
 

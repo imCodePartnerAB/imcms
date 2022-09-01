@@ -232,11 +232,6 @@ public class DocumentSaver {
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
         meta.setId(newDocId);
 
-        docRepository.insertPropertyIfNotExists(
-                newDocId,
-                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
-                Integer.toString(newDocId)
-        );
         int versionNo = versionService.create(newDocId, user.getId()).getNo();
 
         saveContent(user, docs, meta, versionNo, firstDoc);
@@ -298,13 +293,7 @@ public class DocumentSaver {
             commonContentService.getOrCreate(newDocId, DocumentVersion.WORKING_VERSION_NO, jpaLanguage);
         });
 
-        docRepository.insertPropertyIfNotExists(
-                newDocId,
-                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
-                String.valueOf(newDocId)
-        );
-        log.error("saveNewDocument: find by doc id META - {}", metaRepository.findOne(newDocId).getId());
-
+	    log.error("saveNewDocument: find by doc id META - {}", metaRepository.getOne(newDocId).getId());
 
         Version version = versionService.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
@@ -349,15 +338,15 @@ public class DocumentSaver {
     }
 
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
-        String alias = document.getAlias();
+	    String alias = document.getAlias();
 
-        if (StringUtils.isNotBlank(alias)) {
-            Integer documentId = propertyService.getDocIdByAlias(alias);
-            if (documentId != null && !documentId.equals(document.getId())) {
-                throw new AliasAlreadyExistsInternalException(
-                        String.format("Alias %s is already in use by document %d.", alias, documentId));
-            }
-        }
+	    if (StringUtils.isNotBlank(alias)) {
+		    Integer documentId = commonContentService.getDocIdByAlias(alias);
+		    if (documentId != null && !documentId.equals(document.getId())) {
+			    throw new AliasAlreadyExistsInternalException(
+					    String.format("Alias %s is already in use by document %d.", alias, documentId));
+		    }
+	    }
     }
 
     // todo: check permission
@@ -369,15 +358,18 @@ public class DocumentSaver {
         meta.setCategories(metaDO.getCategories());
         meta.setCreatedDatetime(metaDO.getCreatedDatetime());
         meta.setCreatorId(metaDO.getCreatorId());
-        meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
-        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
-                metaDO.getDisabledLanguageShowMode().name()
-        ));
+	    meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
+	    meta.setDefaultLanguageAliasEnabled(metaDO.getDefaultLanguageAliasEnabled());
+	    meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
+			    metaDO.getDisabledLanguageShowMode().name()
+	    ));
         meta.setDocumentType(DocumentType.values()[metaDO.getDocumentTypeId()]);
         meta.setId(metaDO.getId());
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
         meta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
+        meta.setCacheForUnauthorizedUsers(metaDO.isCacheForUnauthorizedUsers());
+        meta.setCacheForAuthorizedUsers(metaDO.isCacheForAuthorizedUsers());
         meta.setVisible(metaDO.getVisible());
         meta.setModifiedDatetime(metaDO.getModifiedDatetime());
         meta.setProperties(metaDO.getProperties());

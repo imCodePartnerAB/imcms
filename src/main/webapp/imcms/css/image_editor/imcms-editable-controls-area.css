@@ -5,10 +5,21 @@
     border-left: 1px solid #d3d8de;
 }
 
+@media screen and (max-width: 1500px) {
+    .imcms-editable-controls-area {
+        padding: 15px 20px;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .imcms-editable-controls-area {
+        padding: 15px 10px;
+    }
+}
+
 .imcms-editable-controls-area__buttons {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    place-content: center;
     overflow: hidden;
 }
 
@@ -27,7 +38,11 @@
 .imcms-editable-controls-area__text-box,
 .imcms-editable-controls-area__select,
 .imcms-editable-controls-area__flags {
-    margin-bottom: 18px;
+    margin-bottom: 15px;
+}
+
+.imcms-editable-controls-area__buttons {
+    margin-bottom: 10px;
 }
 
 .imcms-editable-controls-area__text-box .imcms-text-box__input {
@@ -56,10 +71,23 @@
 }
 
 .imcms-editable-controls-area__buttons .imcms-button--negative {
-    width: 60%;
+    width: 150px;
     float: none;
     display: block;
-    margin: 0 auto 10px;
+}
+
+@media screen and (max-width: 1300px) {
+    .imcms-editable-controls-area__buttons .imcms-button--negative {
+        width: 130px;
+    }
+}
+
+.imcms-editable-controls-area__buttons .imcms-image-advanced-button{
+    margin-right: 10px;
+}
+
+.imcms-editable-controls-area__buttons .imcms-image-history-button{
+    padding: 15px;
 }
 
 .imcms-editable-controls-area__checkboxes .imcms-checkbox__label {

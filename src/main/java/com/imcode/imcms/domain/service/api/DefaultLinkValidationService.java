@@ -6,10 +6,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.model.DocumentURL;
-import com.imcode.imcms.model.Language;
-import com.imcode.imcms.model.Text;
+import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
@@ -118,21 +115,25 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
         for (Document doc : documentsToTest) {
 
-            DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
-            dtoFieldsDocument.setId(doc.getId());
-            dtoFieldsDocument.setAlias(doc.getAlias());
-            dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
-            dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
-                    doc.getLatestVersion().getId()).get(doc.getCurrentVersion().getId()).getHeadline());
+	        DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
+	        dtoFieldsDocument.setId(doc.getId());
 
-            if (doc.getType().equals(Meta.DocumentType.URL)) {
-                DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
-                List<String> validUrl = getValidUrls(documentURL.getUrl(), patternUrl);
+	        final CommonContent commonContent = commonContentService
+			        .getOrCreateCommonContents(doc.getId(), doc.getLatestVersion().getId())
+			        .get(doc.getCurrentVersion().getId());
 
-                if (!validUrl.isEmpty()) {
-                    EditLink editLink = new EditLink();
-                    editLink.setMetaId(documentURL.getDocId());
-                    editLink.setTitle(dtoFieldsDocument.getTitle());
+	        dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
+	        dtoFieldsDocument.setAlias(commonContent.getAlias());
+	        dtoFieldsDocument.setTitle(commonContent.getHeadline());
+
+	        if (doc.getType().equals(Meta.DocumentType.URL)) {
+		        DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
+		        List<String> validUrl = getValidUrls(documentURL.getUrl(), patternUrl);
+
+		        if (!validUrl.isEmpty()) {
+			        EditLink editLink = new EditLink();
+			        editLink.setMetaId(documentURL.getDocId());
+			        editLink.setTitle(dtoFieldsDocument.getTitle());
 
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);

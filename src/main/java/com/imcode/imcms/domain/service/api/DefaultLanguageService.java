@@ -86,7 +86,12 @@ class DefaultLanguageService implements LanguageService {
         return getAllAdminLangCode().contains(code);
     }
 
-    @Override
+	@Override
+	public boolean isLanguageAvailableByCode(String code) {
+		return availableLanguages.contains(code);
+	}
+
+	@Override
     public List<Language> getAvailableLanguages() {
         return languageRepository.findAll()
                 .stream()

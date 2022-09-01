@@ -1,6 +1,6 @@
 <%@ page pageEncoding="UTF-8" %>
 <%@ page import="com.imcode.imcms.servlet.PasswordReset" %>
-<%@ page import="java.util.List" %>
+<%@ page import="imcode.server.Imcms" %>
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -8,7 +8,6 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-<c:set var="userLanguage" value="${cookie['userLanguage'].value}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
@@ -35,7 +34,7 @@
 			<div class="imcms-error-msg imcms-modal-admin__error-msg">
 				<fmt:message key="passwordreset.title.validation_errors" bundle="${resource_property}"/>
 			</div>
-			<div class="imcms-error-msg imcms-modal-admin__error-msg"><%= error.toLocalizedStringByIso639_1((String) pageContext.getAttribute("userLanguage")) %>
+			<div class="imcms-error-msg imcms-modal-admin__error-msg"><%= error.toLocalizedStringByIso639_1((String) request.getAttribute("userLanguage")) %>
 			</div>
 		</div>
 			<% } %>

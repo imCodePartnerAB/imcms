@@ -34,7 +34,7 @@ public class DefaultUserPropertyService implements UserPropertyService {
 
     @Override
     public UserProperty getById(int id) {
-        return userPropertyRepository.findOne(id);
+        return userPropertyRepository.getOne(id);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DefaultUserPropertyService implements UserPropertyService {
 
     @Override
     public void deleteById(Integer id) {
-        userPropertyRepository.delete(id);
-        userPropertyRepository.flush();
+	    userPropertyRepository.deleteById(id);
+	    userPropertyRepository.flush();
     }
 }

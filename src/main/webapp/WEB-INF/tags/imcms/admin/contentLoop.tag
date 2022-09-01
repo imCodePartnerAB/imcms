@@ -8,6 +8,7 @@
 <%@ attribute name="pre" %>
 <%@ attribute name="post" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="showMode" required="false" description="Editor style: default|small" type="java.lang.String" %>
 
 <%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.model.Loop" %>
 <%@ variable name-given="loopIndex" scope="NESTED" variable-class="java.lang.Integer" %>
@@ -51,19 +52,43 @@
 
             <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
-                 data-index="${index}">
-                <c:if test="${not empty label && isShowlabel}">
-                    <div class="imcms-editor-area__text-label">${label}</div>
-                </c:if>
-                <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"${externalPart}
-                     data-index="${index}">${loopContent}</div>
-                <div class="imcms-editor-area__control-wrap">
-                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-                        <div class="imcms-editor-area__control-title">${editLabel}</div>
-                    </div>
-                </div>
-            </div>
+	        <c:choose>
+		        <c:when test="${showMode == 'small'}">
+
+			        <div class="imcms-editor-area--small imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+			             data-index="${index}">
+				        <div class="imcms-editor-area__content imcms-editor-content"
+				             data-doc-id="${targetDocId}"${externalPart}
+				             data-index="${index}">${loopContent}</div>
+				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
+						        <div class="imcms-editor-area__control-title">${editLabel}</div>
+					        </div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
+						        <c:if test="${not empty label && isShowlabel}">
+							        <div class="imcms-editor-area__control-title">${label}</div>
+						        </c:if>
+					        </div>
+				        </div>
+			        </div>
+		        </c:when>
+		        <c:otherwise>
+			        <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+			             data-index="${index}">
+				        <c:if test="${not empty label && isShowlabel}">
+					        <div class="imcms-editor-area__text-label">${label}</div>
+				        </c:if>
+				        <div class="imcms-editor-area__content imcms-editor-content"
+				             data-doc-id="${targetDocId}"${externalPart}
+				             data-index="${index}">${loopContent}</div>
+				        <div class="imcms-editor-area__control-wrap">
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
+						        <div class="imcms-editor-area__control-title">${editLabel}</div>
+					        </div>
+				        </div>
+			        </div>
+		        </c:otherwise>
+	        </c:choose>
         </c:when>
         <c:otherwise>
             ${loopContent}

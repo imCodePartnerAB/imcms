@@ -228,12 +228,12 @@ module.exports = {
     setCurrentSize(width, height) {
         currentSize.width = width;
 	    currentSize.height = height;
-	    proportionsCoefficient = (currentSize.width / currentSize.height).toFixed(2);
+	    proportionsCoefficient = (currentSize.width / currentSize.height);
     },
     setCurrentPreviewSize(width, height) {
         currentPrevSize.width = width;
 	    currentPrevSize.height = height;
-	    proportionsCoefficient = (currentPrevSize.width / currentPrevSize.height).toFixed(2);
+	    proportionsCoefficient = (currentPrevSize.width / currentPrevSize.height);
     },
     setFinalPreviewImageData(image) {
         currentFinalPrevImg = JSON.parse(JSON.stringify(image));

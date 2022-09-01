@@ -26,19 +26,20 @@ define("imcms-editor-init-strategy", ["jquery", 'imcms-modal-window-builder'], f
                 editorInitData.editorBuilder.setTag($editedTag).build(editorData);
             }
 
-            const $controls = $(editorInitData.EDIT_AREA_SELECTOR)
+	        $(editorInitData.EDIT_AREA_SELECTOR)
                 .find(editorInitData.CONTROL_SELECTOR)
 	            .off('click')
                 .click(openEditor);
 
-            $controls.each(function () {
+	        $(editorInitData.EDIT_AREA_SELECTOR).find(".imcms-editor-area__control-wrap")
+		        .children().each(function () {
                 const $this = $(this);
 
                 if ($this.parents(".imcms-image-in-text").length) {
                     return;
                 }
 
-                $this.css("display", "block");
+                $this.css("display", "inline-block");
             });
         }
     };

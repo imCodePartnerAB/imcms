@@ -21,12 +21,16 @@
     </context-param>
 
     <listener>
-        <listener-class>com.imcode.imcms.servlet.ImcmsLog4jConfigListener</listener-class>
+        <listener-class>com.imcode.imcms.servlet.ImcmsLog4j2ConfigListener</listener-class>
     </listener>
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
 
     <!-- Reads request input using UTF-8 encoding -->
     <filter>
@@ -92,6 +96,18 @@
     </filter>
 
     <filter>
+        <display-name>CSRF Protection Filter</display-name>
+        <filter-name>CSRFProtectionFilter</filter-name>
+        <filter-class>com.imcode.imcms.filters.CSRFProtectionFilter</filter-class>
+    </filter>
+
+    <filter>
+        <display-name>XSS Protection Filter</display-name>
+        <filter-name>XSSProtectionFilter</filter-name>
+        <filter-class>com.imcode.imcms.filters.xss.XSSProtectionFilter</filter-class>
+    </filter>
+
+    <filter>
         <display-name>Imcms Setup Filter</display-name>
         <filter-name>ImcmsSetupFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
@@ -152,6 +168,16 @@
 
     <filter-mapping>
         <filter-name>OtherContentCacheSupervisor</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CSRFProtectionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>XSSProtectionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

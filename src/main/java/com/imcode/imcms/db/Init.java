@@ -1,5 +1,6 @@
 package com.imcode.imcms.db;
 
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
@@ -27,9 +28,9 @@ public final class Init {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("version", version)
-                .add("scripts", scripts)
-                .toString();
+	    return MoreObjects.toStringHelper(this)
+			    .add("version", version)
+			    .add("scripts", scripts)
+			    .toString();
     }
 }

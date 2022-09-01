@@ -2,7 +2,8 @@ package imcode.server.document.index.service.impl;
 
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.IndexUpdateOp;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -21,7 +22,7 @@ import static org.apache.solr.common.SolrException.ErrorCode.*;
 
 public class DocumentIndexRebuildService implements DocumentIndexService, IndexRebuildScheduler {
 
-    private final static Logger logger = Logger.getLogger(DocumentIndexRebuildService.class);
+    private final static Logger logger = LogManager.getLogger(DocumentIndexRebuildService.class);
     private final Object lock = new Object();
     private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
     private final AtomicReference<DocumentIndexService> serviceRef = new AtomicReference<>(

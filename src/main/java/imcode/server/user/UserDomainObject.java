@@ -63,6 +63,9 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     private volatile TemplateGroupDomainObject templateGroup;
 
     private volatile boolean imcmsExternal;
+
+	private volatile String oneTimePassword;
+	private volatile boolean twoFactoryAuthenticationEnabled;
     private String externalProviderId = "";
 
     private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();

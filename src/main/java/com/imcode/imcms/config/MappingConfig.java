@@ -1,5 +1,6 @@
 package com.imcode.imcms.config;
 
+import com.drew.imaging.ImageProcessingException;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.*;
@@ -9,32 +10,31 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StorageFile;
+import com.imcode.imcms.storage.StoragePath;
+import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
@@ -148,15 +147,9 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath,
-                                                           @Value("${rootPath}") Path rootPath) {
-        final String generatedFolderPath = ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
-        final String generatedImagesPath = imagesPath + generatedFolderPath;
-        // Path.SEPARATOR slashes use in everywhere, for different OS
-        final Path currentImagesPath = Paths.get(rootPath.toString(), imagesPath);
+    public Function<ImageJPA, ImageDTO> imageJPAToImageDTO() {
         return image -> {
             final ImageDTO dto = new ImageDTO();
-            final String sizeImage = getFileSize(Paths.get(currentImagesPath.toString(), image.getUrl()).toFile());
 
             dto.setIndex(image.getIndex());
             dto.setName(image.getName());
@@ -165,18 +158,18 @@ class MappingConfig {
             dto.setPath(image.getUrl());
             dto.setAllLanguages(image.isAllLanguages());
 
-            dto.setExifInfo(ImcmsImageUtils.getExifInfo(image.getUrl()));
+            final String generatedFilename = image.getGeneratedFilename();
+            dto.setGeneratedFilename(generatedFilename);
 
-            final boolean filenameExists = (image.getGeneratedFilename() != null)
-                    && !image.getGeneratedFilename().equals("");
+            final String relativeGeneratedFilePath = StringUtils.isNotBlank(generatedFilename) ?
+                    StoragePath.get(FILE, ImcmsConstants.IMAGE_GENERATED_FOLDER, generatedFilename).toString() : "";
+            dto.setGeneratedFilePath(relativeGeneratedFilePath);
 
-            final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
-            final ImageSource imageSource = filenameExists ?
-                    new ImagesPathRelativePathImageSource(generatedFolderPath + image.getGeneratedFilename()) : new NullImageSource();
-
+            final ImageSource imageSource = ImcmsImageUtils.getImageSource(image.getUrl());
             dto.setSource(imageSource);
-            dto.setGeneratedFilePath(generatedFilePath);
-            dto.setGeneratedFilename(image.getGeneratedFilename());
+            dto.setExifInfo(ImcmsImageUtils.getExifInfo(imageSource));
+            dto.setSizeFormatted(formatFileSize(ImcmsImageUtils.getSize(imageSource)));
+
             dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
@@ -195,18 +188,13 @@ class MappingConfig {
             dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
             dto.setArchiveImageId(image.getArchiveImageId());
             dto.setResize(Resize.getByOrdinal(image.getResize()));
-            dto.setSizeFormatted(sizeImage);
 
             return dto;
         };
     }
 
     @Bean
-    public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedFolderPath = ImcmsConstants.IMAGE_GENERATED_FOLDER + org.apache.hadoop.fs.Path.SEPARATOR;
-        final String generatedImagesPath = imagesPath + generatedFolderPath;
-        // Path.SEPARATOR slashes use in everywhere, for different OS
-
+    public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO() {
         return image -> {
             final ImageHistoryDTO dto = new ImageHistoryDTO();
 
@@ -217,17 +205,18 @@ class MappingConfig {
             dto.setPath(image.getUrl());
             dto.setAllLanguages(image.isAllLanguages());
 
-            dto.setExifInfo(ImcmsImageUtils.getExifInfo(image.getUrl()));
+            final String generatedFilename = image.getGeneratedFilename();
+            dto.setGeneratedFilename(generatedFilename);
 
-            final boolean filenameExists = (image.getGeneratedFilename() != null)
-                    && !image.getGeneratedFilename().equals("");
+            final String relativeGeneratedFilePath = StringUtils.isNotBlank(generatedFilename) ?
+                    StoragePath.get(FILE, ImcmsConstants.IMAGE_GENERATED_FOLDER, generatedFilename).toString() : "";
+            dto.setGeneratedFilePath(relativeGeneratedFilePath);
 
-            final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
-            final ImageSource imageSource = filenameExists ? new ImagesPathRelativePathImageSource(generatedFolderPath + image.getGeneratedFilename()) : new NullImageSource();
-
+            final ImageSource imageSource = ImcmsImageUtils.getImageSource(image.getUrl());
             dto.setSource(imageSource);
-            dto.setGeneratedFilePath(generatedFilePath);
-            dto.setGeneratedFilename(image.getGeneratedFilename());
+            dto.setExifInfo(ImcmsImageUtils.getExifInfo(imageSource));
+            dto.setSizeFormatted(formatFileSize(ImcmsImageUtils.getSize(imageSource)));
+
             dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
@@ -260,7 +249,7 @@ class MappingConfig {
             final ImageJPA image = new ImageJPA();
 
             final String path = imageDTO.getPath();
-            image.setUrl(!path.isEmpty() && path.startsWith("/") ? path.substring(1) : path);
+            image.setUrl(StringUtils.removeStart(path, "/"));
 
             image.setIndex(imageDTO.getIndex());
             image.setVersion(version);
@@ -299,7 +288,8 @@ class MappingConfig {
 
             meta.setId(documentDTO.getId());
             meta.setDefaultVersionNo(version); // fixme: save or check version first
-            meta.setPublicationStatus(documentDTO.getPublicationStatus());
+	        meta.setDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
+	        meta.setPublicationStatus(documentDTO.getPublicationStatus());
             meta.setTarget(documentDTO.getTarget());
             meta.setDocumentType(documentDTO.getType());
             meta.setKeywords(documentDTO.getKeywords());
@@ -326,7 +316,7 @@ class MappingConfig {
 	        meta.setArchivedDatetime(archivationDate);
 
 	        final AuditDTO publicationDto = documentDTO.getPublished();
-			final Date publicationDate = publicationDto.getFormattedDate();
+	        final Date publicationDate = publicationDto.getFormattedDate();
 	        meta.setPublisherId(publicationDate == null ? null : currentUserId);
 	        meta.setPublicationStartDatetime(publicationDate);
 
@@ -335,23 +325,24 @@ class MappingConfig {
 	        meta.setDepublisherId(publicationEndDate == null ? null : currentUserId);
 	        meta.setPublicationEndDatetime(publicationEndDate);
 
-            meta.setProperties(documentDTO.getProperties());
-            meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+	        meta.setProperties(documentDTO.getProperties());
+	        meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
+	        meta.setSearchDisabled(documentDTO.isSearchDisabled());
 
-            meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
-            meta.setSearchDisabled(documentDTO.isSearchDisabled());
-
-            final Set<Category> categories = documentDTO.getCategories()
-                    .stream()
-                    .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toSet());
+	        final Set<Category> categories = documentDTO.getCategories()
+			        .stream()
+			        .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
+			        .filter(Optional::isPresent)
+			        .map(Optional::get)
+			        .collect(Collectors.toSet());
 
             meta.setCategories(categories);
 
             meta.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
             meta.setLinkedForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
+
+            meta.setCacheForUnauthorizedUsers(documentDTO.isCacheForUnauthorizedUsers());
+            meta.setCacheForAuthorizedUsers(documentDTO.isCacheForAuthorizedUsers());
 
             meta.setVisible(documentDTO.isVisible());
 
@@ -389,9 +380,9 @@ class MappingConfig {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
             dto.setId(metaId);
-            dto.setTarget(meta.getTarget());
-            dto.setAlias(meta.getAlias());
-            dto.setPublicationStatus(meta.getPublicationStatus());
+	        dto.setTarget(meta.getTarget());
+	        dto.setDefaultLanguageAliasEnabled(meta.isDefaultLanguageAliasEnabled());
+	        dto.setPublicationStatus(meta.getPublicationStatus());
             dto.setCommonContents(commonContents);
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
@@ -415,6 +406,8 @@ class MappingConfig {
             dto.setType(meta.getDocumentType());
             dto.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
             dto.setLinkableForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+            dto.setCacheForUnauthorizedUsers(meta.isCacheForUnauthorizedUsers());
+            dto.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
             dto.setVisible(meta.getVisible());
 
             return dto;
@@ -422,47 +415,46 @@ class MappingConfig {
     }
 
     @Bean
-    @SneakyThrows
-    public Function<File, ImageFileDTO> fileToImageFileDTO(@Value("${ImagePath}") Resource imagesPath) {
-        final String imageRoot = imagesPath.getFile().getPath();
+    public Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO(@Qualifier("imageStorageClient") StorageClient storageClient,
+                                                                         @Value("${ImagePath}") String imagesPath) {
+        final StoragePath imagesStoragePath = StoragePath.get(DIRECTORY, imagesPath);
 
-        return imageFile -> {
+        return storagePath -> {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            final String fileName = imageFile.getName();
 
-            imageFileDTO.setName(fileName);
-            imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+            try (final StorageFile imageFile = storageClient.getFile(storagePath)) {
 
-            final String relativePath = imageFile.getPath()
-                    .replace(imageRoot, "")
-                    .replace("\\", "/");
+                final String fileName = storagePath.getName();
+                imageFileDTO.setName(fileName);
 
-            imageFileDTO.setPath(relativePath);
+                imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+                imageFileDTO.setPath(imagesStoragePath.relativize(storagePath).toString());
 
-            final Date lastModifiedDate = new Date(imageFile.lastModified());
-            final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+                final Date lastModifiedDate = new Date(imageFile.lastModified());
+                final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+                imageFileDTO.setUploaded(formattedDate);
 
-            imageFileDTO.setUploaded(formattedDate);
+                imageFileDTO.setSize(formatFileSize(imageFile.size()));
 
-            imageFileDTO.setSize(getFileSize(imageFile));
+                final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile.getContent());
+                if (imageDimension != null) {
+                    imageFileDTO.setWidth(imageDimension.width);
+                    imageFileDTO.setHeight(imageDimension.height);
+                    imageFileDTO.setResolution(imageDimension.width + "x" + imageDimension.height);
+                }
 
-            final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
-
-            if (imageDimension != null) {
-                imageFileDTO.setWidth(imageDimension.width);
-                imageFileDTO.setHeight(imageDimension.height);
-                imageFileDTO.setResolution(imageDimension.width + "x" + imageDimension.height);
+                imageFileDTO.setExifInfo(ImcmsImageUtils.getExifInfo(imageFile.getContent()));
+            }catch (StorageFileNotFoundException e){
+                log.error("Exception while mapping StoragePath to ImageFileDTO", e);
+            }catch (ImageProcessingException | IOException e){
+                log.error("Exception while getting exif info from storage file", e);
             }
-
-            imageFileDTO.setExifInfo(ImcmsImageUtils.getExifInfo(relativePath));
 
             return imageFileDTO;
         };
     }
 
-    private String getFileSize(File file) {
-        long fileSize = file.length();
-
+    private String formatFileSize(long fileSize) {
         final String suffix;
 
         final long k = 1000L;
@@ -489,37 +481,33 @@ class MappingConfig {
     }
 
     @Bean
-    @SneakyThrows
-    public BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
-                                                                          @Value("${ImagePath}") Resource imagesPath) {
-        final String imageRoot = imagesPath.getFile().getPath();
+    public BiFunction<StoragePath, Boolean, ImageFolderDTO> storagePathToImageFolderDTO(Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO,
+                                                                                      @Qualifier("imageStorageClient") StorageClient storageClient,
+                                                                                      @Value("${ImagePath}") String imagesPath) {
+        final StoragePath imagesStoragePath = StoragePath.get(DIRECTORY, imagesPath);
+        final StoragePath generatedImagesPath = imagesStoragePath.resolve(DIRECTORY, ImcmsConstants.IMAGE_GENERATED_FOLDER);
 
-        return new BiFunction<File, Boolean, ImageFolderDTO>() {
+        return new BiFunction<StoragePath, Boolean, ImageFolderDTO>() {
             @Override
-            public ImageFolderDTO apply(File folderFile, Boolean isRoot) {
+            public ImageFolderDTO apply(StoragePath folderPath, Boolean isRoot) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
-                imageFolderDTO.setName(folderFile.getName());
-                final String relativePath = folderFile.getPath().replace(imageRoot, "");
+                imageFolderDTO.setName(folderPath.getName());
+
+                final String relativePath = imagesStoragePath.relativize(folderPath).toString();
                 imageFolderDTO.setPath(relativePath);
-                final String generatedImagesPath = new File(imageRoot, ImcmsConstants.IMAGE_GENERATED_FOLDER).getPath();
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
                 final ArrayList<ImageFileDTO> folderFiles = new ArrayList<>();
 
-                final File[] files = folderFile.listFiles();
+                final List<StoragePath> filesPath = storageClient.listPaths(folderPath).stream()
+                        .sorted(Comparator.comparing(StoragePath::getName))
+                        .collect(Collectors.toList());
 
-                if (files == null) {
-                    return imageFolderDTO;
-                }
-
-	            Arrays.sort(files, Comparator.comparing(File::getName));
-
-                for (File file : files) {
-                    if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
-                        subFolders.add(this.apply(file, false));
-
-                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
-                        folderFiles.add(fileToImageFileDTO.apply(file));
+                for (StoragePath path : filesPath) {
+                    if (path.getType() == DIRECTORY && !path.equals(generatedImagesPath)) {
+                        subFolders.add(this.apply(path, false));
+                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(path.getName()))) {
+                        folderFiles.add(storagePathToImageFileDTO.apply(path));
                     }
                 }
 
@@ -554,9 +542,8 @@ class MappingConfig {
                 if (withContent) contents = Files.readAllBytes(path);
             } catch (IOException e) {
                 log.info("File has not content!!!");
-                contents = null;
             }
-            final String size = getFileSize(path.toFile());
+            final String size = formatFileSize(path.toFile().length());
 
             return new SourceFile(path.getFileName().toString(), physicalPath, path.toString(), fileType, contents, size, true, 0);
         };

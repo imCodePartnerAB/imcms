@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<Configuration status="info">
+	<Appenders>
+		<Console name="stdout-appender" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %c{1}: %m%n" charset="UTF-8"/>
+		</Console>
+
+		<File name="sql-timing-appender"
+		      fileName="build/test-logs/sqltiming.log"
+		      append="false">
+			<PatternLayout pattern="-----> %d{yyyy-MM-dd HH:mm:ss.SSS} %m%n%n"/>
+		</File>
+
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} %-5p %c - %m%n" charset="UTF-8"/>
+		</Console>
+
+		<File name="TESTFILE"
+		      fileName="build/test-logs/test.log"
+		      append="false">
+			<PatternLayout pattern="%d{ISO8601} %-5p %c - %m%n"/>
+		</File>
+	</Appenders>
+	<Loggers>
+		<!-- log4jdbc option log the jdbc results as a table -->
+		<Logger name='jdbc.resultsettable' level="info" additivity='false'>
+			<AppenderRef ref='CONSOLE'/>
+		</Logger>
+
+		<!-- log SQL (pre-execution) plus exceptions caused by SQL -->
+		<Logger name="jdbc.sqlonly" level="OFF" additivity="false">
+		</Logger>
+
+		<!-- log SQL with timing information, post execution -->
+		<Logger name="jdbc.sqltiming" level="info" additivity="false">
+			<AppenderRef ref="sql-timing-appender"/>
+			<AppenderRef ref='CONSOLE'/>
+		</Logger>
+
+		<!-- log all jdbc calls except ResultSet calls -->
+		<Logger name="jdbc.audit" level="OFF" additivity="false">
+		</Logger>
+
+		<!-- log the jdbc ResultSet calls -->
+		<Logger name="jdbc.resultset" level="OFF" additivity="false">
+		</Logger>
+
+		<!-- log connection open/close events and dump of all open connection numbers -->
+		<Logger name="jdbc.connection" level="info" additivity="false">
+			<AppenderRef ref='CONSOLE'/>
+		</Logger>
+
+		<!-- this log is for internal debugging of log4jdbc, itself -->
+		<!-- debug logging for log4jdbc itself -->
+		<Logger name="log4jdbc.debug" level="info" additivity="false">
+			<AppenderRef ref="stdout-appender"/>
+			<AppenderRef ref='CONSOLE'/>
+		</Logger>
+
+		<Logger name="org.hibernate" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.type" level="error" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.sql" level="error" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.hql" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.tool.hbm2ddl" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.hql" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.cache" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org.hibernate.jdbc" level="off" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Logger name="org" level="INFO" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+		<Logger name="com" level="INFO" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+		<Logger name="net" level="INFO" additivity="false">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Logger>
+
+		<Root level="info">
+			<AppenderRef ref="CONSOLE" level="off"/>
+			<AppenderRef ref="TESTFILE"/>
+		</Root>
+	</Loggers>
+</Configuration>

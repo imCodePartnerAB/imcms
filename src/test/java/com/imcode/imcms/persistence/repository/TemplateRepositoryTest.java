@@ -58,6 +58,6 @@ public class TemplateRepositoryTest extends WebAppSpringTestConfig {
         final Template template = templateGroup.getTemplates().iterator().next();
 
         templateRepository.deleteTemplateGroupByTemplateId(template.getId());
-        assertTrue(templateGroupRepository.findOne(templateGroup.getId()).getTemplates().isEmpty());
+	    assertTrue(templateGroupRepository.getOne(templateGroup.getId()).getTemplates().isEmpty());
     }
 }
