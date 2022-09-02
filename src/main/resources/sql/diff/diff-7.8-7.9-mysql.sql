@@ -1,30 +1,11 @@
 SET @schema_version__major_new = 7;
 SET @schema_version__minor_new = 9;
 
-CREATE TABLE imcms_html_meta_tags
-(
-	id   INT AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(255) NOT NULL UNIQUE
-);
+ALTER TABLE meta
+    ADD COLUMN cache_for_unauthorized int NOT NULL default true,
+    ADD COLUMN cache_for_authorized int NOT NULL default false;
 
-INSERT INTO imcms_html_meta_tags
-VALUES (null, 'author'),
-       (null, 'description'),
-       (null, 'keywords'),
-       (null, 'robots');
-
-CREATE TABLE imcms_doc_metadata
-(
-	imcms_doc_i18n_meta_id INT           NOT NULL,
-	meta_tag_id            INT           NOT NULL,
-	content                VARCHAR(2048) NULL,
-
-	CONSTRAINT imcms_doc_metadata_FK_meta_tags
-		FOREIGN KEY (meta_tag_id) REFERENCES imcms_html_meta_tags (id),
-
-	CONSTRAINT imcms_doc_metadata_FK_imcms_doc_i18n_meta
-		FOREIGN KEY (imcms_doc_i18n_meta_id) REFERENCES imcms_doc_i18n_meta (id)
-);
+UPDATE meta SET cache_for_unauthorized = true, cache_for_authorized = false WHERE meta_id IN (SELECT meta_id FROM text_docs);
 
 UPDATE database_version
 SET major = @schema_version__major_new,

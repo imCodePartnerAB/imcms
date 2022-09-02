@@ -14,10 +14,8 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
-import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,11 +124,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, workingVersion.getNo()
         );
-        final DocumentDTO documentDTO = documentMapping.apply(
-		        metaRepository.getOne(docId), workingVersion, commonContents
-        );
 
-        return documentMapping.apply(metaRepository.findOne(docId), commonContents);
+        return documentMapping.apply(metaRepository.getOne(docId), commonContents);
     }
 
     @Override
@@ -325,8 +320,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         deleteDocumentContent(docIdToDelete);
 
 	    metaRepository.deleteById(docIdToDelete);
-	    documentMapper.invalidateDocument(docIdToDelete);
-        documentIndex.removeDocument(docIdToDelete);
     }
 
     @Override

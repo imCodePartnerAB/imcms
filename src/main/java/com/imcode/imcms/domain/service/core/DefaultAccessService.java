@@ -54,7 +54,7 @@ public class DefaultAccessService implements AccessService {
     private final RoleService roleService;
     private final DocumentService documentService;
 
-    private final List<Integer> adminFilesAllowedUsers;private final List<Integer> adminFilesAllowedUsers;
+    private final List<Integer> adminFilesAllowedUsers;
 
     DefaultAccessService(DocumentRolesService documentRolesService, RoleService roleService,
                          @Qualifier("defaultDocumentService") DocumentService documentService,
