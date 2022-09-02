@@ -11,8 +11,6 @@ define('imcms-text-editor-initializer',
     ($, textEditorUtils, tinyMceTextEditor, textEditor, uuidGenerator, editorTypes, modalWindowBuilder) => {
 
         function toggleFocusEditArea(e) {
-			e.stopPropagation();
-			e.preventDefault();
             const $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
 
             if (!$activeTextArea.length) return;
