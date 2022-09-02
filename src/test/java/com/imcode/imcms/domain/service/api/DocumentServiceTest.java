@@ -611,36 +611,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteByIds_When_ExistDifferentContents_Expect_DocumentsNotExistExceptionAfterDeletion() {
-        final List<DocumentDTO> createdDocuments = documentDataInitializer.createDocumentsData(2, true, true);
-
-        assertEquals(2, createdDocuments.size());
-        assertEquals(4, documentService.countDocuments()); // 4 because we had created 2 document above before test with default 1001
-
-        final List<Integer> docIds = createdDocuments.stream()
-                .map(DocumentDTO::getId)
-                .collect(Collectors.toList());
-
-        final String templateName = "newTemlate";
-
-        docIds.forEach(docId -> templateDataInitializer.createData(docId, templateName, templateName));
-
-        createdDocuments.forEach(this::addContentForDocument);
-
-        final List<Integer> docIdsByTemplateName = textDocumentTemplateRepository.findDocIdByTemplateName(templateName);
-
-        assertFalse(docIdsByTemplateName.isEmpty());
-
-        assertEquals(docIds.size(), docIdsByTemplateName.size());
-        assertEquals(docIds, docIdsByTemplateName);
-
-        documentService.deleteByIds(docIds);
-        metaRepository.flush();
-
-        docIds.forEach(docId -> assertThrows(DocumentNotExistException.class, () -> documentService.get(docId)));
-    }
-
-    @Test
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());

@@ -180,8 +180,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
-		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
+		assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
 	}
 
 	@Test
@@ -214,8 +214,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
-		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
+		assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
 	}
 
 	@Test
@@ -243,8 +243,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		assertThat(menuItemDTO.getLink(), is("/" + docId));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
-		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
+		assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
 	}
 
 	@Test
@@ -272,8 +272,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		assertThat(menuItemDTO.getLink(), is("/" + docId));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
-		assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
-		assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
+		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
+		assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
 	}
 
 	@Test
