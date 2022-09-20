@@ -2,10 +2,10 @@ define('imcms-metadata-tab-builder',
 	[
 		'imcms-bem-builder', 'imcms-components-builder', 'imcms', 'imcms-i18n-texts',
 		'imcms-page-info-tab', 'imcms-document-types', 'imcms-field-wrapper', 'jquery',
-		'imcms-meta-tag-rest-api', 'imcms-modal-window-builder'
+		'imcms-meta-tag-rest-api'
 	],
 	function (BEM, components, imcms, i18Texts, PageInfoTab, docTypes, fieldWrapper, $,
-	          metaTagsRestApi, modal) {
+	          metaTagsRestApi) {
 		const texts = i18Texts.pageInfo.metadata;
 
 		const MetadataTab = function (name, docType) {
@@ -28,15 +28,18 @@ define('imcms-metadata-tab-builder',
 						'data-value': metaTag.id,
 						text: metaTag.name.toUpperCase(),
 					}));
-				})
+				});
 		}
 
-		function buildMetaTagSelect() {
-			return components.selects.imcmsSelect('<div>', {
+		function buildMetaTagSelect(metadata) {
+			const $metaTagSelect = components.selects.imcmsSelect('<div>', {
 				name: "meta-tag-select",
-				text: texts.select,
 				class: 'imcms-flex--w-25 imcms-field',
 			}, tabData.$metaTags);
+
+			metadata ? $metaTagSelect.selectValue(metadata.metaTag.id) : $metaTagSelect.selectFirst();
+
+			return $metaTagSelect
 		}
 
 		function onMetadataContainerButtonClick(commonContent, $body) {
@@ -47,7 +50,6 @@ define('imcms-metadata-tab-builder',
 
 		function buildMetaTagTextArea(meta) {
 			return components.texts.textAreaField("<div>", {
-				text: texts.content,
 				name: "data",
 				html: meta ? meta.content : '',
 				class: 'imcms-flex--w-70 imcms-flex--ml-auto',
@@ -92,7 +94,7 @@ define('imcms-metadata-tab-builder',
 
 		function buildMetadataRow(languageName, metadata) {
 			const $metaTagContent = buildMetaTagTextArea(metadata),
-				$metaTagSelect = buildMetaTagSelect(),
+				$metaTagSelect = buildMetaTagSelect(metadata),
 				$metadataRow = new BEM({
 					block: 'imcms-metadata-row'
 				}).buildBlock("<div>",
@@ -113,9 +115,7 @@ define('imcms-metadata-tab-builder',
 					tabData.documentMetadataList.splice(tabData.documentMetadataList.indexOf(metadataListElement), 1);
 				}).addClass("imcms-flex--ml-auto");
 
-			metadata ? $metaTagSelect.selectValue(metadata.metaTag.id) : $metaTagSelect.selectFirst();
 			tabData.documentMetadataList.push(metadataListElement);
-
 			$metadataRow.append($remove);
 
 			return $metadataRow;
@@ -138,10 +138,14 @@ define('imcms-metadata-tab-builder',
 
 				const metadata = tabData.documentMetadataList.filter(meta => meta.name === docCommonContent.language.name);
 				metadata.forEach((meta, index) => {
-					docCommonContent.documentMetadataList.push({
-						metaTag: tabData.metaTags[meta.metaTagSelect.getSelectedValue() - 1],
-						content: meta.metaTagContent.getValue()
-					})
+					const metaTagContent = meta.metaTagContent.getValue();
+
+					if (metaTagContent) {
+						docCommonContent.documentMetadataList.push({
+							metaTag: tabData.metaTags[meta.metaTagSelect.getSelectedValue() - 1],
+							content: metaTagContent
+						})
+					}
 				})
 			})
 			return document;
