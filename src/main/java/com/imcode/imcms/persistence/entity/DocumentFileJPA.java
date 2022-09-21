@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 @NoArgsConstructor
 @ToString(callSuper = false)
 @Table(name = "fileupload_docs")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DocumentFileJPA extends DocumentFile {
 
