@@ -785,7 +785,7 @@ define(
 
                         if(!standaloneEditor) imageWindowBuilder.closeWindow();
 
-                        imageRestApi.create(imageData)
+                        imageRestApi.create(currentImageData)
                             .done(() => {
                                 if (!standaloneEditor) {
                                     onImageSaved();
