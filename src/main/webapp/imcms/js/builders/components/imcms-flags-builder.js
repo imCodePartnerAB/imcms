@@ -5,8 +5,9 @@
 define("imcms-flags-builder",
     [
         "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-i18n-texts", "imcms-overlays-builder",
+	    'imcms-selects-builder'
     ],
-    function (bemBuilder, languagesRestApi, imcms, $, texts, overlays) {
+    function (bemBuilder, languagesRestApi, imcms, $, texts, overlays,selectsBuilder) {
 
         texts = texts.languageFlags;
 
@@ -52,6 +53,15 @@ define("imcms-flags-builder",
             return $flag;
         }
 
+		function buildOption(language) {
+			return {
+				'data-value': language.code,
+				class: `${FLAGS_CLASS} ${FLAGS_CLASS}--${language.code}`,
+				text: language.code,
+				title: language.name + "/" + language.nativeName
+			};
+		}
+
         function mapLanguagesToFlags(languages, flagBuilderDataProducer) {
             return languages.map(language => {
                 const flagBuilderData = flagBuilderDataProducer(language),
@@ -60,6 +70,10 @@ define("imcms-flags-builder",
                 return buildFlag.apply(null, flagBuilderData.concat([isActive, language]));
             });
         }
+
+	    function mapLanguagesToSelectOptions(languages) {
+		    return languages.map(language => buildOption(language));
+	    }
 
         function addDisplayMode(displayModeCSS) {
             return function () {
@@ -70,14 +84,59 @@ define("imcms-flags-builder",
             }
         }
 
+		function buildFlagsSelect($result, languages, flagBuilderDataProducer, currentLanguageCode) {
+			const $select = selectsBuilder.imcmsSelect('<div>', {
+				class: "imcms-lang-flag--select",
+				// do not use currentLanguageCode!!!
+				onSelected: (langCode) => {
+					// have to simulate language.code behavior in order to execute flagBuilderDataProducer....
+					const language = {code: langCode};
+					const data = flagBuilderDataProducer(language);
+
+					onFlagSelected.apply($select, data.concat([langCode, $result]))
+				}
+			}, mapLanguagesToSelectOptions(languages))
+
+			$select.selectValue(currentLanguageCode)
+			$select.find(".imcms-drop-down-list__select-item-value")
+				   .addClass([FLAGS_CLASS, FLAGS_CLASS + '--' + currentLanguageCode, FLAG_ACTIVE_CLASS])
+
+			return $select;
+		}
+
+	    function onFlagSelected(tag, attributes, langCode, $result) {
+		    const $chosenValue = this.find(`[data-value=${langCode}]`);
+		    const $selectedItemValue = this.find(".imcms-drop-down-list__select-item-value");
+		    const classList = $selectedItemValue.attr("class").split(/\s+/);
+
+		   $.each(classList, function (index, className) {
+			   if (className.startsWith(FLAGS_CLASS)) {
+				   $selectedItemValue
+					   .removeClass(className)
+					   .addClass([FLAGS_CLASS, FLAGS_CLASS + '--' + langCode, FLAG_ACTIVE_CLASS])
+			   }
+		   });
+
+		    $result.setActive(langCode)
+		    attributes.click.call($chosenValue);
+	    }
+
         return {
             flagsContainer: function (flagBuilderDataProducer) {
-                const $result = flagsBEM.buildBlock("<div>", [], "flag");
+	            const currentLanguageCode = imcms.language.code;
+                const $result = flagsBEM.buildBlock("<div>", [], {
+	                class: "imcms-flags-container"
+                });
 
                 languagesRestApi.getAvailableLangs()
                     .done(languages => {
-                        const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
-                        $result.append(flags);
+	                    if (languages.length > 3) {
+		                    $result.append(buildFlagsSelect($result, languages, flagBuilderDataProducer, currentLanguageCode));
+	                    } else {
+		                    $result.append(mapLanguagesToFlags(languages, flagBuilderDataProducer));
+	                    }
+
+	                    $result.setActive(currentLanguageCode);
                     })
                     .fail(() => console.error(texts.error.loadFailed));
 

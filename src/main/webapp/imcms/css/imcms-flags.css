@@ -12,3 +12,14 @@
 .imcms-flags__flag:last-child {
     margin-right: 0;
 }
+
+.imcms-flag.imcms-drop-down-list__item{
+	width: inherit;
+	padding: 0 0 0 10px;
+	margin: 5px 0 5px 15px;
+}
+
+.imcms-drop-down-list__select-item-value.imcms-flag{
+	width: auto;
+}
+

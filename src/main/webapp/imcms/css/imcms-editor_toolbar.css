@@ -32,6 +32,10 @@
     margin-right: 53px;
 }
 
+.imcms-editor-toolbar-panel__item .imcms-select .imcms-flag{
+	margin-right: 0;
+}
+
 .imcms-editor-toolbar-panel__item .imcms-flag--en:after,
 .imcms-editor-toolbar-panel__item .imcms-flag--sw:after {
     display: block;
@@ -50,10 +54,6 @@
 }
 
 @media screen and (max-width: 1800px) {
-    .imcms-editor-toolbar-panel .imcms-flags {
-        margin-right: 0;
-    }
-
     .imcms-editor-toolbar-panel__item .imcms-flag {
         margin-right: 35px;
     }
@@ -76,7 +76,4 @@
 }
 
 @media screen and (max-width: 830px) {
-    .imcms-editor-toolbar-panel__item .imcms-flag {
-        margin: 0;
-    }
 }

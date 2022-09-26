@@ -63,3 +63,15 @@
 .imcms-info-body__login-buttons {
     margin: 10px;
 }
+
+.imcms-info-body__login-buttons .imcms-flag{
+	margin: 10px 30px 0 0;
+}
+
+.imcms-info-body__login-buttons .imcms-select .imcms-flag{
+	margin: 5px 0 5px 15px;
+}
+
+.imcms-info-body__login-buttons  .imcms-drop-down-list__select-item-value.imcms-flag{
+	margin: 0;
+}

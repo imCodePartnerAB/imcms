@@ -67,7 +67,7 @@
     height: -moz-calc(100% - 110px);
     height: -o-calc(100% - 110px);
     height: calc(100% - 110px);
-    overflow: auto;
+    overflow: hidden;
 }
 
 .imcms-image_editor__footer {

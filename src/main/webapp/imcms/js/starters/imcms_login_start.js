@@ -97,19 +97,20 @@ function getRemainingTime(date) {
 
 function buildFlags() {
 	return components.flags.flagsContainer((language) => ["<div>", {
-		click: () => flagOnClick(language)
-	}])
-		.addClass("login-page-buttons__language-flags");
+		text: language.code,
+		click: flagOnClick
+	}]);
 }
 
-function flagOnClick(language) {
+function flagOnClick() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const languageParamName = 'lang';
+	const languageCode = $(this).text();
 
 	if (urlParams.has(languageParamName)) {
 		urlParams.delete(languageParamName);
 	}
-	urlParams.append(languageParamName, language.code);
+	urlParams.append(languageParamName, languageCode);
 
 	location.href = location.origin + location.pathname + '?' + urlParams.toString();
 }

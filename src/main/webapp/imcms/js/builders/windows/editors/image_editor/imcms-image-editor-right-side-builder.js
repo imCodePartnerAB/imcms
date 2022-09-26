@@ -253,7 +253,7 @@ define(
                                 $btn.attr("data-state", "false").text(texts.advanced);
                                 $imageHistoryBtn.css("display", "block");
 
-                                $(".imcms-editable-controls-area").css("height", "auto");
+                                $(".imcms-editable-controls-area").css("height", "inherit");
                             }
                         }
                     });
@@ -493,7 +493,7 @@ define(
                                 $btn.attr("data-state", "false").text(texts.showHistory);
                                 if(imageData.path) $advancedModeBtn.css("display", "block");
 
-                                $(".imcms-editable-controls-area").css("height", "auto");
+                                $(".imcms-editable-controls-area").css("height", "inherit");
                             }
                         }
                     });

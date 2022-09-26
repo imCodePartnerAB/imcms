@@ -109,17 +109,20 @@
     background-color: #6c7383;
 }
 
-.imcms-editable-controls-area::-webkit-scrollbar-track {
+.imcms-editable-controls-area::-webkit-scrollbar-track,
+.imcms-image_editor__right-side::-webkit-scrollbar-track{
     background-color: transparent;
 }
 
-.imcms-editable-controls-area::-webkit-scrollbar {
+.imcms-editable-controls-area::-webkit-scrollbar,
+.imcms-image_editor__right-side::-webkit-scrollbar{
     background-color: transparent;
     width: 6px;
     height: 10px;
 }
 
-.imcms-editable-controls-area::-webkit-scrollbar-thumb {
+.imcms-editable-controls-area::-webkit-scrollbar-thumb,
+.imcms-image_editor__right-side::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
 
