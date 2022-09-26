@@ -1,3 +1,4 @@
+const $ = require("jquery");
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
@@ -159,7 +160,19 @@ define("imcms-flags-builder",
                 });
 
                 return $result;
-            }
+            },
+	        onFlagClickReloadWithLangParam: function () {
+		        const urlParams = new URLSearchParams(window.location.search);
+		        const languageParamName = 'lang';
+		        const languageCode = $(this).text();
+
+		        if (urlParams.has(languageParamName)) {
+			        urlParams.delete(languageParamName);
+		        }
+		        urlParams.append(languageParamName, languageCode);
+
+		        location.href = location.origin + location.pathname + '?' + urlParams.toString();
+	        }
         };
     }
 );

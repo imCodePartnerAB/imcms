@@ -146,23 +146,10 @@ define("imcms-admin-panel-builder",
             return panelButtonsBEM.buildBlock("<div>", [{"items": $buttonsWrapper}]);
         }
 
-        function flagOnClick() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const languageParamName = 'lang';
-            const languageCode = $(this).text();
-
-            if (urlParams.has(languageParamName)) {
-                urlParams.delete(languageParamName);
-            }
-            urlParams.append(languageParamName, languageCode);
-
-            location.href = location.origin + location.pathname + '?' + urlParams.toString();
-        }
-
         function buildFlags() {
             return componentsBuilder.flags.flagsContainer((language) => ["<div>", {
                 text: language.code,
-                click: flagOnClick
+                click: componentsBuilder.flags.onFlagClickReloadWithLangParam
             }]);
         }
 
