@@ -42,12 +42,6 @@ define('imcms-metadata-tab-builder',
 			return $metaTagSelect
 		}
 
-		function onMetadataContainerButtonClick(commonContent, $body) {
-			$body.append(buildMetadataRow(commonContent.language.name));
-			if ($body.children().length !== 0)
-				$body.show();
-		}
-
 		function buildMetaTagTextArea(meta) {
 			return components.texts.textAreaField("<div>", {
 				name: "data",
@@ -57,33 +51,64 @@ define('imcms-metadata-tab-builder',
 			});
 		}
 
+		function buildMetadataRowRemove($metadataRow, metadataElement) {
+			return components.controls.remove(() => {
+				$metadataRow.remove();
+				tabData.documentMetadataList.splice(tabData.documentMetadataList.indexOf(metadataElement), 1);
+			}).addClass("imcms-flex--ml-auto");
+		}
+
+		function buildMetadataRowAdd(commonContent, $body) {
+			return components.buttons.neutralButton({
+				text: 'ADD+',
+				click: () => onMetadataRowAddClick(commonContent, $body),
+				class: "imcms-flex--ml-auto"
+			})
+		}
+
+		function onMetadataRowAddClick(commonContent, $body) {
+			$body.append(buildMetadataRow(commonContent.language.name))
+				.find('.info-text')
+				.remove();
+		}
+
+		function buildMetadataContainerHead(commonContent, $metadataBody) {
+			const $languageTitle = components.texts.titleText("<div>", commonContent.language.name),
+				$addRow = buildMetadataRowAdd(commonContent, $metadataBody);
+
+			return new BEM({
+				block: 'imcms-metadata-head'
+			}).buildBlock("<div>", [
+				{"language-title": $languageTitle},
+				{"add-row": $addRow}
+			], {
+				class: 'imcms-flex--d-flex imcms-flex--p-0',
+			});
+		}
+
 		function buildMetadata(commonContent) {
-			const $body = $("<div class='imcms-metadata-body'>"),
-				$language = components.texts.titleText("<div>", commonContent.language.name),
-				$addRow = components.buttons.neutralButton({
-					text: 'ADD+',
-					click: () => onMetadataContainerButtonClick(commonContent, $body),
-					class: "imcms-flex--ml-auto"
-				}),
-				$head = new BEM({block: 'imcms-metadata-head'}).buildBlock("<div>", [
-					{"language-title": $language},
-					{"add-row": $addRow}
-				], {
-					class: 'imcms-flex--d-flex imcms-flex--p-0',
-				}),
-				$hr = $("<hr/>"),
+			const $metadataBody = $("<div class='imcms-metadata-body'>");
+
+			const $head = buildMetadataContainerHead(commonContent, $metadataBody),
 				$rows = buildMetadataRows(commonContent);
 
-			$body.append($rows);
-			$body.children().length > 0 ? $body.show() : $body.hide();
+			if (!$rows.length) {
+				$metadataBody.append(buildTextInfo(texts.noData));
+			} else {
+				$metadataBody.append($rows);
+			}
 
 			return new BEM({
 				block: 'imcms-metadata'
 			}).buildBlock($("<div>"), [
 				{'head': $head},
-				{'body': $body},
-				{'hr': $hr}
+				{'body': $metadataBody},
+				{'hr': $("<hr/>")}
 			]).addClass("imcms-field imcms-metadata");
+		}
+
+		function buildTextInfo(value) {
+			return components.texts.infoText('<div>', value).addClass('info-text')
 		}
 
 		function buildMetadataRows(commonContent) {
@@ -94,28 +119,28 @@ define('imcms-metadata-tab-builder',
 
 		function buildMetadataRow(languageName, metadata) {
 			const $metaTagContent = buildMetaTagTextArea(metadata),
-				$metaTagSelect = buildMetaTagSelect(metadata),
-				$metadataRow = new BEM({
-					block: 'imcms-metadata-row'
-				}).buildBlock("<div>",
-					[
-						{'meta-tag': $metaTagSelect},
-						{'content': $metaTagContent},
-					], {
-						class: ('imcms-flex--d-flex imcms-flex--p-0')
-					}
-				),
-				metadataListElement = {
-					name: languageName,
-					metaTagContent: $metaTagContent,
-					metaTagSelect: $metaTagSelect
-				},
-				$remove = components.controls.remove(() => {
-					$metadataRow.remove();
-					tabData.documentMetadataList.splice(tabData.documentMetadataList.indexOf(metadataListElement), 1);
-				}).addClass("imcms-flex--ml-auto");
+				$metaTagSelect = buildMetaTagSelect(metadata);
 
-			tabData.documentMetadataList.push(metadataListElement);
+			const $metadataRow = new BEM({
+				block: 'imcms-metadata-row'
+			}).buildBlock("<div>",
+				[
+					{'meta-tag': $metaTagSelect},
+					{'content': $metaTagContent},
+				], {
+					class: ('imcms-flex--d-flex imcms-flex--p-0')
+				}
+			);
+
+			const metadataElement = {
+				name: languageName,
+				metaTagContent: $metaTagContent,
+				metaTagSelect: $metaTagSelect
+			};
+
+			const $remove = buildMetadataRowRemove($metadataRow, metadataElement);
+
+			tabData.documentMetadataList.push(metadataElement);
 			$metadataRow.append($remove);
 
 			return $metadataRow;
