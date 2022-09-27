@@ -364,12 +364,15 @@ define("imcms-menu-editor-builder",
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-	                const originalMenuLvl = $frame.attr("data-menu-items-lvl");
-	                const newMenuLvl = menuDoc.attr("data-menu-items-lvl");
-	                if (originalMenuLvl !== newMenuLvl) {
-		                menuDoc.after($origin);
-		                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+	                const originalMenuItemLvl = $frame.attr("data-menu-items-lvl");
+	                const newMenuItemLvl = menuDoc.attr("data-menu-items-lvl");
+
+	                if (typeSort === TREE_SORT && originalMenuItemLvl === newMenuItemLvl) {
+		                return;
 	                }
+
+	                menuDoc.after($origin);
+	                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                 }
             }
 
@@ -413,7 +416,7 @@ define("imcms-menu-editor-builder",
 			    let swapItem = elementFromPoint === null ? selectedItem : $(elementFromPoint).parents()[1];
 			    selectedItem.classList.add("imcms-menu-items--is-drop");
 
-			    if (list === swapItem.parentNode) {
+			    if (swapItem && list === swapItem.parentNode) {
 				    swapItem = swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
 
 				    const $swapItemSortOrder = $(swapItem).find('.imcms-document-item__sort-order').children().first();
@@ -1121,8 +1124,7 @@ define("imcms-menu-editor-builder",
 		            }
 	            },
 	            "mouseover": function () {
-		            const cursor = ($numberingTypeSortFlag.isChecked() && sortType === TREE_SORT) ? "default" : "ns-resize";
-		            $(this).css("cursor", cursor)
+		            $(this).css("cursor", (!$numberingTypeSortFlag.isChecked() && sortType === TREE_SORT) ? "ns-resize" : "default");
 	            }
             });
         }
