@@ -23,6 +23,8 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 
     CommonContentJPA findByDocIdAndVersionNoAndLanguageCode(int docId, int versionNo, String code);
 
+	CommonContentJPA findFirstByAlias(String alias);
+
     @Override
     @Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")
     List<CommonContentJPA> findByVersion(@Param("version") Version version);

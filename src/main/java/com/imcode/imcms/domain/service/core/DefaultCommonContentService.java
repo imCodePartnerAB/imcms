@@ -80,7 +80,12 @@ public class DefaultCommonContentService
         return createFromWorkingVersion(docId, versionNo, language);
     }
 
-    @Override
+	@Override
+	public CommonContent getByAlias(String alias) {
+		return repository.findFirstByAlias(alias);
+	}
+
+	@Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
         final Set<CommonContentJPA> toSave = saveUs.stream().map(commonContent -> {
 	        final String headline = commonContent.getHeadline();

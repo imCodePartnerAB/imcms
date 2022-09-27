@@ -130,15 +130,13 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO save(DocumentDTO saveMe) {
-
-	    final Integer id = saveMe.getId();
 	    final boolean isNew = (saveMe.getId() == null);
 
 	    saveMe.getCommonContents().forEach(commonContent -> {
 		    final String alias = commonContent.getAlias();
 		    if (!Objects.equals(alias, "")) {
-			    Integer documentId = commonContentService.getDocIdByAlias(alias);
-			    if (documentId != null && !documentId.equals(id)) {
+			    CommonContent dbCommonContent = commonContentService.getByAlias(alias);
+			    if (dbCommonContent != null && !dbCommonContent.getId().equals(commonContent.getId())) {
 				    commonContent.setAlias("");
 			    }
 		    }
