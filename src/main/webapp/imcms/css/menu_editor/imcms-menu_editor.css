@@ -130,6 +130,37 @@ display: flex;
     width: 40%;
 }
 
+.imcms-menu-editor .imcms-document-list__items .imcms-document-items-list__document-items .imcms-document-items__document-item > .imcms-document-item__controls:first-child {
+	right: auto;
+	left: 0;
+}
+
+.imcms-menu-editor .imcms-document-item:hover .imcms-document-item__controls {
+	display: block;
+}
+
+.imcms-menu-editor .imcms-document-item__controls {
+	display: none;
+	visibility: visible;
+	width: auto;
+	margin: 0;
+	padding: 14px 0;
+	position: absolute;
+	top: 0;
+	right: 15px;
+	float: right;
+}
+
+.imcms-menu-editor .imcms-document-item__multi-remove-controls {
+	display: block;
+	padding: 14px 0;
+	width: auto;
+	position: absolute;
+	top: 0;
+	right: 7px;
+	float: right;
+}
+
 .imcms-menu-items--frame .imcms-document-item:hover .imcms-document-item__controls {
     right: auto;
     left: 0;

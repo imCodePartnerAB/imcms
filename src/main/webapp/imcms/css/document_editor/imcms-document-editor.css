@@ -16,7 +16,7 @@
 
 .imcms-document-list__titles {
     display: flex;
-    padding: 0 27px 0 35px;
+    padding: 0 0 0 35px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
 }
@@ -59,7 +59,7 @@
 }
 
 .imcms-document-list-titles__button {
-    width: 4rem;
+    width: 88px;
 }
 
 .imcms-document-editor-head__tools {
@@ -119,13 +119,8 @@
     display: flex;
     overflow: hidden;
     padding-left: 35px;
-    padding-right: 20px;
     position: relative;
     width: 100%;
-}
-
-.imcms-document-editor .imcms-document-item {
-    padding-right: calc(20px + 4rem);
 }
 
 .imcms-document-item__info {
@@ -142,21 +137,16 @@
 }
 
 .imcms-document-item__controls {
-    display: none;
-    padding: 14px 0;
-    position: absolute;
-    top: 0;
-    right: 15px;
-    float: right;
+    visibility: hidden;
+    width: 78px;
+    margin-right: 10px;
+    place-self: center;
 }
 
 .imcms-document-item__multi-remove-controls {
     display: block;
-    padding: 14px 0;
-    position: absolute;
-    top: 0;
-    right: 7px;
-    float: right;
+    width: 88px;
+    place-self: center;
 }
 
 .imcms-document-item:hover {
@@ -178,13 +168,8 @@
     clear: both;
 }
 
-.imcms-document-list__items .imcms-document-items-list__document-items .imcms-document-items__document-item > .imcms-document-item__controls:first-child {
-    right: auto;
-    left: 0;
-}
-
 .imcms-document-item:hover .imcms-document-item__controls {
-    display: block;
+    visibility: visible;
 }
 
 .imcms-document-list {
@@ -323,20 +308,11 @@
 }
 @media screen and (max-width: 950px) {
 	.imcms-document-list__titles, .imcms-document-item{
-		padding: 0 27px 0 25px;
-	}
-	.imcms-document-item__info{
-		padding-left: 3px;
-		margin-right: 0;
+		padding: 0 0 0 25px;
 	}
 }
 
 @media screen and (max-width: 850px) {
-}
-
-@media screen and (max-width: 825px) {
-	.imcms-document-item__info{
-	}
 }
 
 @media screen and (max-width: 750px) {

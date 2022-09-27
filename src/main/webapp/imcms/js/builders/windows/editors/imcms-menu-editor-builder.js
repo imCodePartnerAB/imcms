@@ -1143,7 +1143,7 @@ define("imcms-menu-editor-builder",
                 visibilityTitle = texts.visibility.title.unauthorized;
                 visibilityTooltip = texts.visibility.tooltip.unauthorized;
             } else {
-                visibilityTitle = "-";
+                visibilityTitle = "—";
                 visibilityTooltip = texts.visibility.tooltip.nobody;
             }
 
