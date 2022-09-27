@@ -30,7 +30,6 @@ define("imcms-menu-editor-builder",
         const classButtonOn = "imcms-button--switch-on";
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
-        const rightPaddingNoneClassName = 'imcms-flex--pr-0';
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         const $title = $('<a>');
@@ -680,15 +679,6 @@ define("imcms-menu-editor-builder",
             return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
-
-        function controlPaddingClassForTitlesHEAD() {
-            if (isMultiRemoveModeEnabled() && !$menuTitlesBlock.hasClass(rightPaddingNoneClassName)) {
-                $menuTitlesBlock.addClass(rightPaddingNoneClassName);
-            } else {
-                $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
-            }
-        }
-
         function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
             const submenuItem = activeMultiRemove
                 ? currentMenuItem.find(".imcms-menu-items")
@@ -973,7 +963,6 @@ define("imcms-menu-editor-builder",
 
             $menuElementsContainer.find('.imcms-menu-list').remove();
             const $menuItemsSortedList = buildMenuEditorContent(mappedMenuItems, currentTypeSort);
-            controlPaddingClassForTitlesHEAD();
             $menuElementsContainer.append($menuItemsSortedList);
 
 			if (highlight) {
@@ -1053,7 +1042,7 @@ define("imcms-menu-editor-builder",
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
             const $publishedDate = components.texts.titleText('<div>', menuElement.publishedDate, {
-                class: 'imcms-grid-col-3',
+                class: 'imcms-grid-col-22',
             });
             $publishedDate.modifiers = ['date'];
             components.overlays.defaultTooltip(
@@ -1062,7 +1051,7 @@ define("imcms-menu-editor-builder",
             );
 
             const $modifiedDate = components.texts.titleText('<div>', menuElement.modifiedDate, {
-                class: 'imcms-grid-col-3',
+                class: 'imcms-grid-col-22',
             });
             components.overlays.defaultTooltip(
                 $modifiedDate,
@@ -1072,7 +1061,7 @@ define("imcms-menu-editor-builder",
             const $star = menuElement.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-1');
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-20');
             components.overlays.defaultTooltip(
                 $currentVersion,
                 documentEditorBuilder.getDocumentVersionTexts(menuElement.hasNewerVersion).tooltip
@@ -1081,10 +1070,17 @@ define("imcms-menu-editor-builder",
 
             const documentStatusTexts = docStatus.getDocumentStatusTexts(menuElement.documentStatus, menuElement.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
-                class: 'imcms-grid-col-13'
+                class: 'imcms-grid-col-21'
             });
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
+
+            const menuVisibilityText = getMenuElementVisibility(menuElement);
+            const $menuVisibility = components.texts.titleText("<div>", menuVisibilityText.title, {
+                class: 'imcms-grid-col-19'
+            });
+            $menuVisibility.modifiers = ['menuVisibility'];
+            components.overlays.defaultTooltip($menuVisibility, menuVisibilityText.tooltip);
 
             const elements = [$docId, $titleText];
             let childrenIcon = "";
@@ -1103,7 +1099,7 @@ define("imcms-menu-editor-builder",
                     break;
             }
 
-            elements.push($currentVersion, $documentStatus);
+            elements.push($currentVersion, $documentStatus, $menuVisibility);
 
             const controls = [buildMoveControl(sortType), buildMenuItemControls(menuElement, isMultiRemoveModeEnabled())];
 
@@ -1129,6 +1125,30 @@ define("imcms-menu-editor-builder",
 		            $(this).css("cursor", cursor)
 	            }
             });
+        }
+
+        function getMenuElementVisibility(menuElement){
+            let visibilityTitle;
+            let visibilityTooltip;
+
+            if(menuElement.linkableByOtherUsers && menuElement.linkableForUnauthorizedUsers){
+                visibilityTitle = texts.visibility.title.both;
+                visibilityTooltip = texts.visibility.tooltip.both;
+            } else if(menuElement.linkableByOtherUsers){
+                visibilityTitle = texts.visibility.title.authorized;
+                visibilityTooltip = texts.visibility.tooltip.authorized;
+            } else if(menuElement.linkableForUnauthorizedUsers){
+                visibilityTitle = texts.visibility.title.unauthorized;
+                visibilityTooltip = texts.visibility.tooltip.unauthorized;
+            } else {
+                visibilityTitle = "-";
+                visibilityTooltip = texts.visibility.tooltip.nobody;
+            }
+
+            return {
+                title: visibilityTitle,
+                tooltip: visibilityTooltip
+            };
         }
 
 	    function onInputBlur(events) {
@@ -1293,7 +1313,7 @@ define("imcms-menu-editor-builder",
                     click: removeEnabledMenuItems
                 });
 
-                isMultiRemoveModeEnabled() ? $removeButton.css('display', 'block') : $removeButton.css('display', 'none');
+                isMultiRemoveModeEnabled() ? $removeButton.css('visibility', '') : $removeButton.css('visibility', 'hidden');
 
                 const $idColumnHead = $("<div>", {
                     class: "imcms-grid-col-1",
@@ -1319,7 +1339,7 @@ define("imcms-menu-editor-builder",
                 $modifiedDateHead.modifiers = ["date"];
 
                 const $versionColumnHead = $("<div>", {
-                    class: "imcms-grid-col-1",
+                    class: "imcms-grid-col-20",
                     text: texts.version
                 });
                 $versionColumnHead.modifiers = ["currentVersion"];
@@ -1329,6 +1349,12 @@ define("imcms-menu-editor-builder",
                     text: texts.status
                 });
                 $statusColumnHead.modifiers = ["status"];
+
+                const $menuVisibilityColumnHead = $("<div>", {
+                    class: "imcms-grid-col-19",
+                    text: texts.visibility.name
+                });
+                $menuVisibilityColumnHead.modifiers = ["menuVisibility"];
 
                 const containerHeadTitle = [$sortOrderColumnHead, $idColumnHead, $titleColumnHead];
 
@@ -1343,7 +1369,7 @@ define("imcms-menu-editor-builder",
                         break;
                 }
 
-                containerHeadTitle.push($versionColumnHead, $statusColumnHead);
+                containerHeadTitle.push($versionColumnHead, $statusColumnHead, $menuVisibilityColumnHead);
 
                 return new BEM({
                     block: "imcms-document-list-titles",
@@ -1446,12 +1472,10 @@ define("imcms-menu-editor-builder",
 
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $removeButton.css('display', 'none');
-                    $menuTitlesBlock.removeClass(rightPaddingNoneClassName);
+                    $removeButton.css('visibility', 'hidden');
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
-                    $removeButton.css('display', 'block');
-                    $menuTitlesBlock.addClass(rightPaddingNoneClassName);
+                    $removeButton.css('visibility', '');
                 }
 
                 changeControlsByMultiRemove();
@@ -1586,7 +1610,6 @@ define("imcms-menu-editor-builder",
         function buildMenuItemsBySelectedType(menuData) {
             menusRestApi.getSortedItems(menuData).done(menuItems => {
                 prevType = menuData.typeSort;
-                controlPaddingClassForTitlesHEAD();
                 rebuildAllMenuItemsInMenuContainer(menuItems, menuData.typeSort);
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }

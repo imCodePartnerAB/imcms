@@ -139,7 +139,6 @@
     text-overflow: ellipsis;
     overflow: inherit;
     font-weight: normal;
-	min-width: 50px;
 }
 
 .imcms-document-item__controls {

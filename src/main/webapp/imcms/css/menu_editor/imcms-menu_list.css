@@ -6,7 +6,3 @@
     height: -o-calc(100% - 55px);
     height: calc(100% - 55px);
 }
-
-.imcms-document-list__titles.imcms-menu-list-titles {
-    padding-right: 88px;
-}

@@ -410,6 +410,20 @@ const texts = {
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 saveAndClose: "Spara och stäng",
                 sortNumberTitle: 'Sortera efter siffror',
+                visibility: {
+                    name: 'Syn',
+                    title: {
+                        authorized: "B",
+                        unauthorized: "O",
+                        both: "Alla"
+                    },
+                    tooltip: {
+                        authorized: "Elementet är synligt för behöriga användare",
+                        unauthorized: "Elementet är synligt för obehöriga användare",
+                        both: "Elementet är synligt för alla användare",
+                        nobody: "Elementet är inte synligt för någon"
+                    }
+                },
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
@@ -1431,6 +1445,20 @@ const texts = {
                 saveAndClose: "Save and close",
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 sortNumberTitle: 'Sort by numbers',
+                visibility: {
+                    name: 'Vis',
+                    title: {
+                        authorized: "A",
+                        unauthorized: "U",
+                        both: "All"
+                    },
+                    tooltip: {
+                        authorized: "The element is visible to authorized users",
+                        unauthorized: "The element is visible to unauthorized users",
+                        both: "The element is visible to all users",
+                        nobody: "The element is not visible to anyone"
+                    }
+                },
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
