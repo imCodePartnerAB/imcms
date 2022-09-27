@@ -170,7 +170,8 @@ const texts = {
 	        metadata: {
 		        name: "SID INFO",
 		        content: "Innehåll",
-		        select: "Metatagg"
+		        select: "Metatagg",
+		        noData: 'Inga föremål',
 	        },
             keywords: {
                 name: "Nyckelord",
@@ -254,7 +255,7 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
 	            loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
-	            duplicateAlias: 'Dokumentet innehåller dubblettalias i: ',
+	            duplicateAlias: 'Dokumentet innehåller dubblettalias i: %s språk',
 	            noAccess: "Ingen tillgång till sidinformation"
             },
             allData:{
@@ -1190,7 +1191,8 @@ const texts = {
 	        metadata: {
 		        name: "Metadata",
 		        content: "Content",
-		        select: "Meta tag"
+		        select: "Meta tag",
+		        noData: 'No items',
 	        },
             keywords: {
                 name: "Keywords",
@@ -1274,7 +1276,7 @@ const texts = {
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
 	            loadDocumentFailed: 'Failed to load. Maybe you do not have access',
-	            duplicateAlias: 'The document contains duplicate alias in: ',
+	            duplicateAlias: 'The document contains duplicate alias in: %s languages',
 	            loadRolesFailed: "Failed to fetch roles",
 	            noAccess: "No access to page info"
             },

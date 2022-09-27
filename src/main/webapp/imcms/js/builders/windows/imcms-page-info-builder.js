@@ -7,11 +7,12 @@ define("imcms-page-info-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms",
         "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api", "imcms-publish-document-rest-api",
-        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types'
+        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types',
+	    'imcms-formatters'
     ],
     (BEM, components, WindowBuilder, pageInfoTabs, $, events, imcms,
      documentsRestApi, docFilesAjaxApi, rolesRestApi, publishDocumentRestApi,
-     modal, texts, appearanceTab, docTypes, docPermissionTypes) => {
+     modal, texts, appearanceTab, docTypes, docPermissionTypes, formatters) => {
 
         texts = texts.pageInfo;
 
@@ -77,7 +78,7 @@ define("imcms-page-info-builder",
 	                if (duplicateLanguageAliases.length) {
 		                documentDTO = savedDoc;
 		                $loadingAnimation.hide();
-		                modal.buildErrorWindow(texts.error.duplicateAlias + format(duplicateLanguageAliases));
+		                modal.buildErrorWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
 	                } else {
 		                $loadingAnimation.hide();
 		                pageInfoWindowBuilder.closeWindow();
@@ -91,18 +92,6 @@ define("imcms-page-info-builder",
 		            $loadingAnimation.hide();
 	            });
         }
-
-	    function format(arr) {
-		    let outStr = "";
-		    if (arr.length === 1) {
-			    outStr = arr[0];
-		    } else if (arr.length === 2) {
-			    outStr = arr.join(' and ');
-		    } else if (arr.length > 2) {
-			    outStr = arr.slice(0, -1).join(', ') + ', and ' + arr.slice(-1);
-		    }
-		    return outStr;
-	    }
 
 	    function saveDoc(document) {
 		    return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
