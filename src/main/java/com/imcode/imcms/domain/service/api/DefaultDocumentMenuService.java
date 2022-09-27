@@ -90,6 +90,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 	    menuItemDTO.setIsDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
 	    menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
         menuItemDTO.setSortOrder(menuItem.getSortOrder());
+        menuItemDTO.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
+        menuItemDTO.setLinkableForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
 
         return menuItemDTO;
     }

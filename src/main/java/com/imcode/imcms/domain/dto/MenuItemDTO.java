@@ -31,6 +31,10 @@ public class MenuItemDTO implements Serializable {
 
 	private Boolean isShownTitle;
 
+    private Boolean linkableByOtherUsers;
+
+    private Boolean linkableForUnauthorizedUsers;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdDate;
 
