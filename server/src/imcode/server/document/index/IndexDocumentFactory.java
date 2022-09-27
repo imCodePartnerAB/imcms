@@ -12,10 +12,10 @@ import imcode.util.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.*;
-import org.apache.tika.Tika;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.html.HtmlParser;
 
 import java.io.InputStream;
@@ -30,12 +30,14 @@ public class IndexDocumentFactory {
 
     private final static Logger log = LogManager.getLogger(IndexDocumentFactory.class.getName());
     private CategoryMapper categoryMapper;
-    private Tika tikaAutodetect;
-    private Tika tikaHtml;
+	private AutoDetectParser tikaAutodetect;
+	private AutoDetectParser tikaHtml;
+//    private Tika tikaAutodetect;
+//    private Tika tikaHtml;
 
     public IndexDocumentFactory(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
-        this.tikaAutodetect = new Tika();
+	    this.tikaAutodetect = new AutoDetectParser();
 
         HtmlParser parser = new HtmlParser();
         Detector detector = new Detector() {
@@ -45,9 +47,7 @@ public class IndexDocumentFactory {
                 return mediaType;
             }
         };
-
-        this.tikaHtml = new Tika(detector, parser);
-        this.tikaHtml.setMaxStringLength(-1);
+	    this.tikaHtml = new AutoDetectParser(detector, parser);
     }
 
     static Field unStoredKeyword(String fieldName, String fieldValue) {
