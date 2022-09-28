@@ -1,18 +1,17 @@
 package imcode.server.document.index;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.xml.sax.SAXException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * referenced from <a href="https://svn.apache.org/repos/asf/tika/trunk/tika-example/src/main/java/org/apache/tika/example/ContentHandlerExample.java">ContentHandlerExample.class</a>
  */
 public class ChunkHandler extends ContentHandlerDecorator {
 	private static final int MAXIMUM_TEXT_CHUNK_SIZE = 100 * 1024 * 1024;
-	private final List<String> chunks = new ArrayList<>(Arrays.asList(" "));
+	private final List<String> chunks = new LinkedList<>(Collections.singletonList(" "));
 
 
 	@Override
@@ -32,6 +31,6 @@ public class ChunkHandler extends ContentHandlerDecorator {
 	}
 
 	public String toString() {
-		return String.join(",", getChunks());
+		return StringUtils.join(getChunks(), ' ');
 	}
 }

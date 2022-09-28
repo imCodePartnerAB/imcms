@@ -87,7 +87,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
 	        try (InputStream in = IOUtils.toInputStream(string, StandardCharsets.UTF_8);) {
 		        tikaHtml.parse(in, handler, metadata);
-		        log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, handler.toString()));
+		        log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, handler));
 		        string = handler.toString();
             } catch (Exception e) {
                 log.error(String.format("Text doc id: %d. Unable to strip html '%s'", textDocument.getId(), string), e);
