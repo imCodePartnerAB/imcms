@@ -92,7 +92,7 @@ define('imcms-metadata-tab-builder',
 			const $head = buildMetadataContainerHead(commonContent, $metadataBody),
 				$rows = buildMetadataRows(commonContent);
 
-			if (!$rows.length) {
+			if (!$rows || !$rows.length) {
 				$metadataBody.append(buildTextInfo(texts.noData));
 			} else {
 				$metadataBody.append($rows);
