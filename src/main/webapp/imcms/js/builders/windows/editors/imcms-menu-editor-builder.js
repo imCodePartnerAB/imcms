@@ -1623,7 +1623,7 @@ define("imcms-menu-editor-builder",
         }
 
         function addHighlightToSelectItemByLastSavedType(currentSelectedVal, lastSavedType) {
-            const $currentSelectedVal = $('.imcms-drop-down-list__select-item-value');
+            const $currentSelectedVal = $('.imcms-menu-sort__type-sort .imcms-drop-down-list__select-item-value');
             if (currentSelectedVal === lastSavedType && !$currentSelectedVal.hasClass('imcms-last-saved-mode')) {
                 $currentSelectedVal.addClass('imcms-last-saved-mode');
             } else {
