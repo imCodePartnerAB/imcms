@@ -61,7 +61,22 @@
 }
 
 .imcms-info-body__login-buttons {
-    margin: 10px;
+    margin: 10px 10px 0 10px;
+	display: inline-block;
+	width: 100%;
+}
+
+.imcms-info-body__login-buttons .imcms-field{
+	padding-bottom: 0;
+}
+
+.imcms-info-body__login-buttons .imcms-flags {
+	float: left;
+}
+
+.imcms-info-body__login-buttons .imcms-start-page--link {
+	float: right;
+	padding-top: 20px;
 }
 
 .imcms-info-body__login-buttons .imcms-flag{

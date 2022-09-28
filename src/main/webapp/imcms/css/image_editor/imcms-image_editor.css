@@ -67,7 +67,7 @@
     height: -moz-calc(100% - 110px);
     height: -o-calc(100% - 110px);
     height: calc(100% - 110px);
-    overflow: hidden;
+    overflow: scroll;
 }
 
 .imcms-image_editor__footer {
@@ -125,4 +125,8 @@
 
 .imcms-display-size.imcms-image-size-control__display-size {
     display: none;
+}
+
+.imcms-image_editor__right-side .imcms-editable-controls-area .imcms-checkbox.imcms-checkboxes__checkbox{
+	padding-top: 20px;
 }
