@@ -6,10 +6,10 @@ define(
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "imcms-content-manager-builder", "jquery",
         'imcms-image-edit-size-controls', "imcms-image-rotate", "imcms-image-resize", 'imcms-originally-image', 'imcms-preview-image-area',
         'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-originally-area',
-        'imcms-image-active-tab', 'imcms-image-zoom', 'imcms'
+        'imcms-image-active-tab', 'imcms-image-zoom', 'imcms', 'imcms-drag-and-scroll'
     ],
     function (texts, BEM, components, contentManager, $, imageEditSizeControls, imageRotate, imageResize, originalImage, previewImageArea,
-              ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom, imcms) {
+              ToolbarViewBuilder, cropper, originalImageArea, checkActiveTab, imageZoom, imcms, $dragAndScroll) {
 
         texts = texts.editors.image;
         imcms.disableContentManagerSaveButton = false;
@@ -53,6 +53,8 @@ define(
                     "z-index": "50",
                     "display": "block"
                 });
+
+	            $dragAndScroll.enableDragAndScroll($previewImageArea);
             } else {
                 const original = imageResize.getOriginal();
                 const width = original.width;
@@ -80,6 +82,8 @@ define(
                     "z-index": "50",
                     'display': "block"
                 });
+
+	            $dragAndScroll.enableDragAndScroll($editableArea);
             }
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
