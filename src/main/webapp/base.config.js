@@ -87,6 +87,7 @@ module.exports = {
                         'imcms-jquery-element-reload',
                         'imcms-jquery-string-selector',
                         'imcms-dom-attributes-extractor',
+	                    'imcms-drag-and-scroll',
 	                    'imcms-formatters',
                         'imcms-numeric-limiter',
                         'imcms-session-timeout-management',
