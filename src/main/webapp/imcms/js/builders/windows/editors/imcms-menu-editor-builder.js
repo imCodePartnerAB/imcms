@@ -815,6 +815,13 @@ define("imcms-menu-editor-builder",
                     }
                 }
 
+                function changeVisibility() {
+                    const $menuVisibility = $oldMenuItem.find(".imcms-document-item__info--menuVisibility").first();
+                    const menuVisibilityText = getMenuElementVisibility(document);
+                    $menuVisibility.text(menuVisibilityText.title);
+                    components.overlays.changeTooltipText($menuVisibility, menuVisibilityText.tooltip);
+                }
+
                 function toggleClass() {
                     const menuItemClass = "imcms-document-items__document-item";
                     const $menuItem = $oldMenuItem.find("." + menuItemClass).first();
@@ -829,6 +836,7 @@ define("imcms-menu-editor-builder",
                 changeTitle();
                 changeStatus();
                 changeStar();
+                changeVisibility();
                 toggleClass();
 
                 documentEditorBuilder.updateDocumentInList(document);
