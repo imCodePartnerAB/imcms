@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,8 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static ucar.httpservices.HTTPAuthStore.log;
-
+@Log4j2
 @Service
 public class DefaultLinkValidationService implements LinkValidationService {
 

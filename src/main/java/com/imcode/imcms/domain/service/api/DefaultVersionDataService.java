@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.VersionData;
 import com.imcode.imcms.domain.service.VersionDataService;
 import com.imcode.imcms.servlet.Version;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +19,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import static ucar.httpservices.HTTPAuthStore.log;
-
 /**
  * General service for get data versions
  */
+@Log4j2
 @Service
 public class DefaultVersionDataService implements VersionDataService {
 

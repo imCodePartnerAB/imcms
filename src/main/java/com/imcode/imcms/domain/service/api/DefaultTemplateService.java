@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,9 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ucar.httpservices.HTTPAuthStore.log;
-
 @Service
+@Log4j2
 @Transactional
 public class DefaultTemplateService implements TemplateService {
 

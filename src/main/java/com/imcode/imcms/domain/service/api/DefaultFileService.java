@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import imcode.util.image.Format;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import static ucar.httpservices.HTTPAuthStore.log;
-
+@Log4j2
 @Service
 @Transactional
 public class DefaultFileService implements FileService {
