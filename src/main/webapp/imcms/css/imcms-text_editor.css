@@ -67,11 +67,15 @@ input:focus:-ms-input-placeholder {
     display: none;
     padding: 5px 0 5px 1px;
     height: 25px;
+	/*bootstrap conflicts with imcms styles so we need this style*/
+	box-sizing: content-box;
 }
 
 .text-toolbar__button {
     cursor: pointer;
     border: 1px solid transparent;
+	/*bootstrap conflicts with imcms styles so we need this style*/
+	background-color: white;
 }
 
 .text-toolbar__button:hover {
@@ -162,6 +166,8 @@ input:focus:-ms-input-placeholder {
 .imcms-editor-area__text-toolbar .mce-i-imcms-text-history-icon {
     padding-top: 2px;
     background-size: 16px;
+	/*bootstrap conflicts with imcms styles so we need this style*/
+	border: 0;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-valid-icon,
