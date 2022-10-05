@@ -43,7 +43,6 @@ public class StorageConfig {
                                             ServletContext servletContext,
                                             @Autowired(required = false) AmazonS3 amazonS3Client) {
         boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
-
         if(isCloudStorage){
             if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
 
@@ -53,11 +52,6 @@ public class StorageConfig {
         }
     }
 
-    private boolean validateProperty(String property) {
-        return property != null && !property.isEmpty();
-    }
-
-
     @Bean(name = "storageImagePath")
     public String storageImagePath(@Value("${s3.image.permission}") String cloudStorage,
                                    @Value("${ImagePath}") String imagePath,
@@ -65,5 +59,23 @@ public class StorageConfig {
                                    @Autowired(required = false) AmazonS3 amazonS3Client){
         boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
         return (isCloudStorage ? amazonS3Client.getUrl(bucketName, "") : servletContext.getContextPath() + "/" ) + imagePath;
+    }
+
+    @Bean(name = "fileDocumentStorageClient")
+    public StorageClient fileDocumentStorageClient(@Value("${s3.document.file.permission}") String cloudStorage,
+                                            ServletContext servletContext,
+                                            @Autowired(required = false) AmazonS3 amazonS3Client) {
+        boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
+        if(isCloudStorage){
+            if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
+
+            return new CloudStorageClient(amazonS3Client, bucketName, CannedAccessControlList.Private);
+        }else{
+            return new DiskStorageClient(Paths.get(servletContext.getRealPath("/")));
+        }
+    }
+
+    private boolean validateProperty(String property) {
+        return property != null && !property.isEmpty();
     }
 }
