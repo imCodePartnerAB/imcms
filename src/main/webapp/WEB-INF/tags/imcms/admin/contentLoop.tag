@@ -64,11 +64,11 @@
 					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
 						        <div class="imcms-editor-area__control-title">${editLabel}</div>
 					        </div>
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
-						        <c:if test="${not empty label && isShowlabel}">
+					        <c:if test="${not empty label && isShowlabel}">
+						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
 							        <div class="imcms-editor-area__control-title">${label}</div>
-						        </c:if>
-					        </div>
+						        </div>
+					        </c:if>
 				        </div>
 			        </div>
 		        </c:when>

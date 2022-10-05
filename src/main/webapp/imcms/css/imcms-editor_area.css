@@ -16,19 +16,20 @@
 .imcms-editor-area--small {
 	display: inline-block;
 	position: relative;
+	padding: 10px 25px 10px 10px;
+	width: 100%;
+}
+
+.imcms-editor-area,
+.imcms-editor-area--small:hover,
+.imcms-editor-area--small.imcms-editor-area--text .imcms-image-in-text:hover{
 	background-color: white;
 	-webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
 	-moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
 	box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
 }
 
-.imcms-editor-area {
-	padding: 10px 25px 10px 10px;
-	width: 100%;
-}
-
 .imcms-editor-area--small {
-	/*width: auto;*/
 	min-width: 60px;
 	min-height: 30px;
 }
@@ -50,6 +51,11 @@
     position: relative;
     bottom: 0;
     left: 0;
+}
+
+.imcms-editor-area--small .imcms-editor-area__text-toolbar{
+	/*due to <p> tag specifity especially style margin: 16px we need to add this */
+	margin-bottom: -16px;
 }
 
 .imcms-editor-area__text-label::before,
@@ -209,4 +215,16 @@
 
 .imcms-editor-area--small.imcms-editor-area--text {
 	min-width: 120px;
+}
+
+.imcms-editor-area--small.imcms-editor-area--text .imcms-editor-content.imcms-editor-content--text{
+	background-color: unset;
+}
+
+.imcms-editor-area--small.imcms-editor-area--text .imcms-editor-content.imcms-editor-content--text:focus{
+	background-color: white;
+}
+
+.imcms-editor-area--small.imcms-editor-area--active:hover{
+	background-color: #8bc7e4;
 }
