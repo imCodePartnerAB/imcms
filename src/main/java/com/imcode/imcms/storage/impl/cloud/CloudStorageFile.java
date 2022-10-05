@@ -54,8 +54,10 @@ public class CloudStorageFile implements StorageFile {
 
     @Override
     public void close() throws IOException {
-        s3Object.close();
-        s3Object = null;
+        if (s3Object != null) {
+            s3Object.close();
+            s3Object = null;
+        }
 
         if (inputStream != null) {
             inputStream.close();
