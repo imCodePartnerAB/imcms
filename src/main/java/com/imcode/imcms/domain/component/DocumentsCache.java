@@ -15,6 +15,8 @@ public interface DocumentsCache {
 
     String calculateKey(HttpServletRequest request);
 
+    String calculateKey(String documentIdString, String langCode);
+
     String calculateKey(final String documentIdString, final String langCode, boolean defaultUser);
 
     void setCache(Ehcache cache);
