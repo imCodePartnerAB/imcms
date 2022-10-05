@@ -281,13 +281,14 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService) {
+    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService, VersionService versionService) {
         return documentDTO -> {
             final Meta meta = new Meta();
-            final Integer version = documentDTO.getCurrentVersion().getId();
+            final Integer id = documentDTO.getId();
+            final int version = id != null ? versionService.getLatestVersion(id).getNo() : Version.WORKING_VERSION_INDEX;
 
-            meta.setId(documentDTO.getId());
-            meta.setDefaultVersionNo(version); // fixme: save or check version first
+            meta.setId(id);
+            meta.setDefaultVersionNo(version);
 	        meta.setDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
 	        meta.setPublicationStatus(documentDTO.getPublicationStatus());
             meta.setTarget(documentDTO.getTarget());
