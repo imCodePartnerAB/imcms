@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.DocumentFileService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.security.CheckAccess;
@@ -27,9 +28,12 @@ import java.util.stream.Collectors;
 public class DocumentFilesController {
 
     private final DocumentFileService documentFileService;
+    private final DocumentMapper documentMapper;
 
-    DocumentFilesController(DocumentFileService documentFileService) {
+    DocumentFilesController(DocumentFileService documentFileService,
+                            DocumentMapper documentMapper) {
         this.documentFileService = documentFileService;
+        this.documentMapper = documentMapper;
     }
 
     @PostMapping
@@ -63,6 +67,7 @@ public class DocumentFilesController {
                 .collect(Collectors.toList());
 
         documentFileService.saveAll(saveUs, docId);
+        documentMapper.getDocumentIndex().indexDocument(docId);
     }
 
 }
