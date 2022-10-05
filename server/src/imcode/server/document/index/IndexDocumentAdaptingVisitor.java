@@ -12,10 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.*;
 import org.apache.lucene.util.BytesRef;
+import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -28,10 +29,10 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 
     private final static Logger log = LogManager.getLogger(IndexDocumentFactory.class.getName());
     Document indexDocument;
-	AutoDetectParser tikaAutodetect;
-	AutoDetectParser tikaHtml;
+	Tika tikaAutodetect;
+	Tika tikaHtml;
 
-	IndexDocumentAdaptingVisitor(Document indexDocument, AutoDetectParser tikaAutodetect, AutoDetectParser tikaHtml) {
+	IndexDocumentAdaptingVisitor(Document indexDocument, Tika tikaAutodetect, Tika tikaHtml) {
         this.indexDocument = indexDocument;
         this.tikaAutodetect = tikaAutodetect;
         this.tikaHtml = tikaHtml;
@@ -79,19 +80,16 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //    }
 
     private String stripHtml(TextDocumentDomainObject textDocument, TextDomainObject text) {
-	    final ChunkHandler handler = new ChunkHandler();
-	    final Metadata metadata = new Metadata();
-
         String string = text.getText();
 
         if (text.getType() != TextDomainObject.TEXT_TYPE_HTML) {
 	        try (InputStream in = IOUtils.toInputStream(string, StandardCharsets.UTF_8);) {
-		        tikaHtml.parse(in, handler, metadata);
-		        log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, handler));
-		        string = handler.toString();
-            } catch (Exception e) {
-                log.error(String.format("Text doc id: %d. Unable to strip html '%s'", textDocument.getId(), string), e);
-            }
+		        String stripped = tikaHtml.parseToString(in);
+		        log.trace(String.format("Text doc id: %d. Stripped html to plain text: '%s' -> '%s'", textDocument.getId(), string, stripped));
+		        string = stripped;
+	        } catch (Exception e) {
+		        log.error(String.format("Text doc id: %d. Unable to strip html '%s'", textDocument.getId(), string), e);
+	        }
         }
 
         return string;
@@ -148,15 +146,14 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //    }
 
     private void indexFileContents(FileDocumentDomainObject fileDocument, FileDocumentDomainObject.FileDocumentFile file) {
-	    final ChunkHandler handler = new ChunkHandler();
-
-        Metadata metadata = new Metadata();
+	    final Metadata metadata = new Metadata();
         metadata.set(Metadata.CONTENT_DISPOSITION, file.getFilename());
         metadata.set(Metadata.CONTENT_TYPE, file.getMimeType());
 
 	    try (InputStream in = file.getInputStreamSource().getInputStream()) {
-		    tikaAutodetect.parse(in, handler, metadata);
-		    indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT, handler.toString(), Field.Store.NO));
+		    final Reader reader = tikaAutodetect.parse(in, metadata);
+
+		    indexDocument.add(new TextField(DocumentIndex.FIELD__TEXT, reader));
 	    } catch (Exception e) {
 		    log.error(String.format("File doc id: %d. Unable to index content of file-doc-file '%s'", fileDocument.getId(), file), e);
 	    }
