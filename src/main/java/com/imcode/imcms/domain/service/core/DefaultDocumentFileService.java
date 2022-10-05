@@ -8,24 +8,33 @@ import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
 import imcode.util.Utility;
+import imcode.util.io.EmptyInputStreamSource;
+import imcode.util.io.FileUtility;
+import imcode.util.io.InputStreamSource;
+import imcode.util.io.StorageInputStreamSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 
 @Service
 @Transactional
@@ -36,22 +45,27 @@ class DefaultDocumentFileService
     public static final Logger LOG = LogManager.getLogger(DefaultDocumentFileService.class);
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
-    private final File filesPath;
+    private final StorageClient fileDocumentStorageClient;
+    private final StoragePath storageFileDocumentDirectoryPath;
 
     @SneakyThrows
     DefaultDocumentFileService(DocumentFileRepository documentFileRepository,
                                VersionService versionService,
-                               @Value("${FilePath}") Resource filesPath) {
+                               @Value("${FilePath}") String filesPath,
+                               @Qualifier("fileDocumentStorageClient") StorageClient storageClient) {
 
         super(documentFileRepository);
         this.documentFileRepository = documentFileRepository;
         this.versionService = versionService;
-        this.filesPath = filesPath.getFile();
+        this.storageFileDocumentDirectoryPath = StoragePath.get(DIRECTORY, filesPath);
+        this.fileDocumentStorageClient = storageClient;
     }
 
     @PostConstruct
     private void createFilesPathDirectories() {
-        filesPath.mkdirs();
+        if(!fileDocumentStorageClient.exists(storageFileDocumentDirectoryPath)) {
+            fileDocumentStorageClient.create(storageFileDocumentDirectoryPath);
+        }
     }
 
     @Override
@@ -85,14 +99,44 @@ class DefaultDocumentFileService
     }
 
     @Override
-    public DocumentFile getPublicByDocId(int docId) {
+    public List<DocumentFile> getPublicByDocId(int docId) {
         final int latestVersionIndex = versionService.getLatestVersion(docId).getNo();
-        return documentFileRepository.findDefaultByDocIdAndVersionIndex(docId, latestVersionIndex);
+        return documentFileRepository.findByDocIdAndVersionIndex(docId, latestVersionIndex).stream()
+                .map(DocumentFileDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public InputStreamSource getFileDocumentInputStreamSource(DocumentFile documentFile){
+        StoragePath resultPath;
+
+        StoragePath storagePathByName = storageFileDocumentDirectoryPath.resolve(FILE, documentFile.getFilename());
+        if (fileDocumentStorageClient.exists(storagePathByName)) {
+            resultPath = storagePathByName;
+
+        } else {
+            StoragePath storagePathById = storageFileDocumentDirectoryPath.resolve(FILE, documentFile.getFileId());
+            if (fileDocumentStorageClient.exists(storagePathById)) {
+                resultPath = storagePathById;
+
+            } else {
+                final String escapedFileId = FileUtility.escapeFilename(documentFile.getFileId());
+                final String oldWayName = documentFile.getDocId() + "." + escapedFileId;
+                StoragePath storagePathByIdOldWay = storageFileDocumentDirectoryPath.resolve(FILE, oldWayName);
+                if (fileDocumentStorageClient.exists(storagePathByIdOldWay)) {
+                    resultPath = storagePathByIdOldWay;
+
+                } else {
+                    return new EmptyInputStreamSource();
+                }
+            }
+        }
+
+        return new StorageInputStreamSource(resultPath, fileDocumentStorageClient);
     }
 
     @Override
     public void copy(int fromDocId, int toDocId) {
-
         getByDocId(fromDocId).forEach(documentFile -> {
             final DocumentFileDTO clonedDocumentFileDTO = new DocumentFileDTO(documentFile).clone();
             clonedDocumentFileDTO.setDocId(toDocId);
@@ -172,15 +216,17 @@ class DefaultDocumentFileService
         deleteNoMoreUsedFiles(noMoreNeededFiles);
     }
 
-    private <T extends DocumentFile> void deleteNoMoreUsedFiles(List<T> noMoreNeededFiles){         // TODO: 01.09.2022 Add tests
+    private <T extends DocumentFile> void deleteNoMoreUsedFiles(List<T> noMoreNeededFiles){
         for(DocumentFile documentFile: noMoreNeededFiles){
             String filename = documentFile.getFilename();
 
             if(!documentFileRepository.existsByFilename(filename)){
-                File extraFile = new File(filesPath, filename);
-                boolean result = extraFile.delete();
+                StoragePath storageFileDocumentPath = storageFileDocumentDirectoryPath.resolve(FILE, filename);
+                if(fileDocumentStorageClient.exists(storageFileDocumentPath)){
+                    fileDocumentStorageClient.delete(storageFileDocumentPath, false);
+                }
 
-                LOG.info(String.format("Deleting a file %s, result:%b", extraFile.getPath(), result));
+                LOG.info(String.format("Deleting a file %s", storageFileDocumentPath));
             }
         }
     }
@@ -197,19 +243,19 @@ class DefaultDocumentFileService
             int copiesCount = 1;
             String originalFilename = Utility.normalizeString(file.getOriginalFilename());
             originalFilename = originalFilename.replace("(", "").replace(")", "");
-            File destination = new File(filesPath, originalFilename);
+            StoragePath destination = storageFileDocumentDirectoryPath.resolve(FILE, originalFilename);
 
-            while (destination.exists()) {
+            while (fileDocumentStorageClient.exists(destination)) {
                 final String baseName = FilenameUtils.getBaseName(originalFilename);
                 final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
-                destination = new File(filesPath, newName);
+                destination = storageFileDocumentDirectoryPath.resolve(FILE, newName);
                 copiesCount++;
             }
 
             documentFile.setFilename(destination.getName());
 
-            try {
-                file.transferTo(destination);
+            try (InputStream multipartInputStream = file.getInputStream()){
+                fileDocumentStorageClient.put(destination, multipartInputStream);
             } catch (IOException e) {
                 LOG.error("Error while saving Document File.", e);
             }
