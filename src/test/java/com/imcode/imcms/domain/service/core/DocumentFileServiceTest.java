@@ -12,17 +12,18 @@ import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
-import org.apache.commons.io.FileUtils;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StorageFile;
+import com.imcode.imcms.storage.StoragePath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -58,7 +61,11 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     private VersionDataInitializer versionDataInitializer;
 
     @Value("${FilePath}")
-    private Resource filesPath;
+    private String filesPath;
+
+    @Autowired
+    @Qualifier("fileDocumentStorageClient")
+    private StorageClient storageClient;
 
     @BeforeEach
     public void setUp() {
@@ -79,11 +86,9 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @AfterEach
-    public void clearTestFiles() throws IOException {
-        File[] testFiles = filesPath.getFile().listFiles();
-        for(File file: testFiles){
-            file.delete();
-        }
+    public void clearTestFiles() {
+        storageClient.listPaths(StoragePath.get(DIRECTORY, filesPath))
+                .forEach(path -> storageClient.delete(path, true));
     }
 
     @Test
@@ -115,12 +120,9 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
 
         documentFileService.publishDocumentFiles(docId);
 
-        final DocumentFile publicFile = documentFileService.getPublicByDocId(docId);
-
-        assertNotNull(publicFile);
-        assertNotNull(publicFile.getId());
-        assertTrue(publicFile.isDefaultFile());
-        assertEquals(publicFile.getFilename(), futurePublicFile.getFilename());
+        final List<DocumentFile> publicByDocIdList = documentFileService.getPublicByDocId(docId);
+        assertNotNull(publicByDocIdList);
+        assertEquals(publicByDocIdList.size(), documentFiles.size());
     }
 
     @Test
@@ -203,27 +205,29 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
         savedDocumentFiles.forEach(docFile -> docFile.setId(null));
         assertEquals(documentFile, savedDocumentFiles.get(0));
 
-        File testFile = new File(filesPath.getFile(), filename);
-        assertTrue(testFile.exists());
-        assertArrayEquals(content, FileUtils.readFileToByteArray(testFile));
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
+        assertTrue(storageClient.exists(testFilePath));
+        try(final StorageFile testFile = storageClient.getFile(testFilePath)){
+            assertArrayEquals(content, testFile.getContent().readAllBytes());
+        }
     }
 
     @Test
     public void saveAll_When_DocumentFileReplaced_And_MultipartFileSet_Expect_OldFileDeleted_And_NewFileSaved() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
-        final File testFile = new File(filesPath.getFile(), filename);
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
 
         final String filename2 = "test_name2.txt";
         final byte[] content2 = "test text2".getBytes();
-        final File testFile2 = new File(filesPath.getFile(), filename2);
+        StoragePath testFilePath2 = StoragePath.get(FILE, filesPath, filename2);
 
         final DocumentFile documentFile = documentFiles.get(0);
 
         documentFile.setMultipartFile(new MockMultipartFile("files", filename, null, content));
         documentFileService.saveAll(Collections.singletonList(documentFile), docId);
 
-        assertTrue(testFile.exists());
+        assertTrue(storageClient.exists(testFilePath));
 
         final DocumentFile documentFile2 = documentFiles.get(1);
         documentFile2.setMultipartFile(new MockMultipartFile("files", filename2, null, content2));
@@ -234,20 +238,22 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
         savedDocumentFiles.forEach(docFile -> docFile.setId(null));
         assertEquals(documentFile2, savedDocumentFiles.get(0));
 
-        assertFalse(testFile.exists());
-        assertTrue(testFile2.exists());
-        assertArrayEquals(content2, FileUtils.readFileToByteArray(testFile2));
+        assertFalse(storageClient.exists(testFilePath));
+        assertTrue(storageClient.exists(testFilePath2));
+        try(final StorageFile testFile2 = storageClient.getFile(testFilePath2)){
+            assertArrayEquals(content2, testFile2.getContent().readAllBytes());
+        }
     }
 
     @Test
     public void saveAll_When_DocumentFileReplaced_And_DocumentVersionHasPreviosDocumentFile_And_NewMultipartFileSet_Expect_PreviosFileLeft_And_NewFileSaved() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
-        final File testFile = new File(filesPath.getFile(), filename);
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
 
         final String filename2 = "test_name2.txt";
         final byte[] content2 = "test text2".getBytes();
-        final File testFile2 = new File(filesPath.getFile(), filename2);
+        StoragePath testFilePath2 = StoragePath.get(FILE, filesPath, filename2);
 
         versionService.create(docId, 1);
 
@@ -273,28 +279,31 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
         savedDocumentFiles.forEach(docFile -> docFile.setId(null));
         assertTrue(savedDocumentFiles.containsAll(List.of(versionedDocumentFile, documentFile2)));
 
-        assertTrue(testFile.exists());
-        assertArrayEquals(content, FileUtils.readFileToByteArray(testFile));
-        assertTrue(testFile2.exists());
-        assertArrayEquals(content2, FileUtils.readFileToByteArray(testFile2));
+        assertTrue(storageClient.exists(testFilePath));
+        assertTrue(storageClient.exists(testFilePath2));
+        try(final StorageFile testFile = storageClient.getFile(testFilePath);
+            final StorageFile testFile2 = storageClient.getFile(testFilePath2)){
+            assertArrayEquals(content, testFile.getContent().readAllBytes());
+            assertArrayEquals(content2, testFile2.getContent().readAllBytes());
+        }
     }
 
     @Test
     public void saveAll_When_ListContaintsOldAndNewDocumentFiles_And_NewMultipartFileSet_Expect_OldFileLeft_And_NewFileSaved() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
-        final File testFile = new File(filesPath.getFile(), filename);
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
 
         final String filename2 = "test_name2.txt";
         final byte[] content2 = "test text2".getBytes();
-        final File testFile2 = new File(filesPath.getFile(), filename2);
+        StoragePath testFilePath2 = StoragePath.get(FILE, filesPath, filename2);
 
         final DocumentFile documentFile = documentFiles.get(0);
 
         documentFile.setMultipartFile(new MockMultipartFile("files", filename, null, content));
         documentFileService.saveAll(Collections.singletonList(documentFile), docId);
 
-        assertTrue(testFile.exists());
+        assertTrue(storageClient.exists(testFilePath));
 
         final DocumentFile documentFile2 = documentFiles.get(1);
         documentFile2.setMultipartFile(new MockMultipartFile("files", filename2, null, content2));
@@ -307,17 +316,20 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
         savedDocumentFiles.forEach(docFile -> docFile.setId(null));
         assertTrue(savedDocumentFiles.containsAll(documentFiles));
 
-        assertTrue(testFile.exists());
-        assertTrue(testFile2.exists());
-        assertArrayEquals(content, FileUtils.readFileToByteArray(testFile));
-        assertArrayEquals(content2, FileUtils.readFileToByteArray(testFile2));
+        assertTrue(storageClient.exists(testFilePath));
+        assertTrue(storageClient.exists(testFilePath2));
+        try(final StorageFile testFile = storageClient.getFile(testFilePath);
+            final StorageFile testFile2 = storageClient.getFile(testFilePath2)){
+            assertArrayEquals(content, testFile.getContent().readAllBytes());
+            assertArrayEquals(content2, testFile2.getContent().readAllBytes());
+        }
     }
 
     @Test
     public void deleteByDocId_Expect_DocumentFilesDeleted() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
-        final File testFile = new File(filesPath.getFile(), filename);
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
 
         final DocumentFile documentFile = documentFiles.get(0);
         documentFile.setMultipartFile(new MockMultipartFile("files", filename, null, content));
@@ -329,6 +341,6 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
         documentFileService.deleteByDocId(docId);
 
         assertTrue(documentFileRepository.findAll().isEmpty());
-        assertFalse(testFile.exists());
+        assertFalse(storageClient.exists(testFilePath));
     }
 }

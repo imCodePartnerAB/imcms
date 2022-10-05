@@ -8,6 +8,8 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -30,21 +33,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static org.junit.Assert.*;
 
 @Transactional
 public class DocumentFilesControllerTest extends AbstractControllerTest {
 
     private static File testSolrFolder;
-    private static File testFilesFolder;
 
     private int createdDocId;
 
     @Value("classpath:img1.jpg")
     private File testFile;
 
+    @Autowired
+    @Qualifier("fileDocumentStorageClient")
+    private StorageClient storageClient;
+
     @Value("${FilePath}")
-    private Resource filesPath;
+    private String filesPath;
 
     @Autowired
     private FileDocumentDataInitializer documentDataInitializer;
@@ -62,30 +69,19 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     public static void shutDownSolr() {
         try {
             FileUtility.forceDelete(testSolrFolder);
-
         } catch (Exception e) {
             testSolrFolder.deleteOnExit();
-
-        } finally {
-            try {
-                FileUtility.forceDelete(testFilesFolder);
-
-            } catch (Exception e) {
-                testFilesFolder.deleteOnExit();
-            }
         }
     }
 
     @BeforeEach
     public void setUp() throws Exception {
         createdDocId = documentDataInitializer.createFileDocument().getId();
-        filesPath.getFile().mkdirs();
     }
 
     @PostConstruct
     private void setUpSolrFiles() throws IOException {
         testSolrFolder = new File(config.getSolrHome());
-        testFilesFolder = filesPath.getFile();
 
         if (testSolrFolder.mkdirs()) {
             FileUtils.copyDirectory(defaultSolrFolder.getFile(), testSolrFolder);
@@ -132,14 +128,10 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
 
         for (DocumentFileDTO documentFileDTO : newFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
-            final File savedFile = new File(filesPath.getFile(), documentFileDTO.getFilename());
-            assertTrue(savedFile.exists());
+            final StoragePath savedFilePath = StoragePath.get(FILE, filesPath, documentFileDTO.getFilename());
+            assertTrue(storageClient.exists(savedFilePath));
 
-            try {
-                FileUtility.forceDelete(savedFile);
-            } catch (Exception e) {
-                savedFile.deleteOnExit();
-            }
+            storageClient.delete(savedFilePath, false);
         }
     }
 

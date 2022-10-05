@@ -199,7 +199,6 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         final Template template = dataInitializer.createData(templateName);
 
         templateGroup.setTemplates(Collections.singleton(template));
-        System.out.println(template.getName());
 	    templateGroupRepository.save(new TemplateGroupJPA(templateGroup));
 	    assertFalse(templateGroupRepository.getOne(templateGroup.getId()).getTemplates().isEmpty());
 

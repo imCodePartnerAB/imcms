@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.domain.dto.AuditDTO;
@@ -18,6 +19,8 @@ import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StoragePath;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -28,19 +31,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,7 +52,6 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
     private static final int userId = 1;
 
     private static File testSolrFolder;
-    private static File testFilesFolder;
 
     private FileDocumentDTO createdDoc;
     private int createdDocId;
@@ -62,7 +60,7 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
     private File testFile;
 
     @Value("${FilePath}")
-    private Resource filesPath;
+    private String filesPath;
 
     @Autowired
     private FileDocumentDataInitializer documentDataInitializer;
@@ -88,6 +86,10 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    @Qualifier("fileDocumentStorageClient")
+    private StorageClient storageClient;
+
     @BeforeAll
     public static void setUpUser() {
         Imcms.setUser(new UserDomainObject(userId));
@@ -101,13 +103,6 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
         } catch (Exception e) {
             testSolrFolder.deleteOnExit();
 
-        } finally {
-            try {
-                FileUtility.forceDelete(testFilesFolder);
-
-            } catch (Exception e) {
-                testFilesFolder.deleteOnExit();
-            }
         }
     }
 
@@ -115,13 +110,11 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createFileDocument();
         createdDocId = createdDoc.getId();
-        filesPath.getFile().mkdirs();
     }
 
     @PostConstruct
     private void setUpSolrFiles() throws IOException {
         testSolrFolder = new File(config.getSolrHome());
-        testFilesFolder = filesPath.getFile();
 
         if (testSolrFolder.mkdirs()) {
             FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
@@ -226,11 +219,11 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
 
         assertTrue(published);
 
-        final DocumentFile publicByDocId = documentFileService.getPublicByDocId(createdDocId);
-
-        assertNotNull(publicByDocId);
-        assertEquals(publicByDocId.getDocId().intValue(), createdDocId);
-        assertEquals(publicByDocId.getFilename(), documentFileJPA.getFilename());
+        final List<DocumentFile> publicByDocIdList = documentFileService.getPublicByDocId(createdDocId);
+        assertNotNull(publicByDocIdList);
+        assertEquals(publicByDocIdList.size(), 1);
+        assertEquals(publicByDocIdList.get(0).getDocId().intValue(), createdDocId);
+        assertEquals(publicByDocIdList.get(0).getFilename(), documentFileJPA.getFilename());
     }
 
     @Test
@@ -298,14 +291,9 @@ public class FileDocumentServiceTest extends WebAppSpringTestConfig {
 
         for (DocumentFileDTO documentFileDTO : newFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
-            final File savedFile = new File(filesPath.getFile(), documentFileDTO.getFilename());
-            assertTrue(savedFile.exists());
-
-            try {
-                FileUtility.forceDelete(savedFile);
-            } catch (Exception e) {
-                savedFile.deleteOnExit();
-            }
+            StoragePath savedFilePath = StoragePath.get(SourceFile.FileType.FILE, filesPath, documentFileDTO.getFilename());
+            assertTrue(storageClient.exists(savedFilePath));
+            storageClient.delete(savedFilePath, true);
         }
     }
 
