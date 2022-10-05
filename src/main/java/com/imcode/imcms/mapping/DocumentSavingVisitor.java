@@ -7,6 +7,7 @@ import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentVisitor;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -20,14 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class DocumentSavingVisitor extends DocumentStoringVisitor {
+public class DocumentSavingVisitor extends DocumentVisitor {
+
+    private final DocRepository docRepository;
+    private final VersionRepository versionRepository;
+    private final TextDocumentContentSaver textDocumentContentSaver;
 
     public DocumentSavingVisitor(DocRepository docRepository,
                                  VersionRepository versionRepository,
-                                 LanguageRepository languageRepository,
                                  TextDocumentContentSaver textDocumentContentSaver) {
-
-        super(docRepository, versionRepository, languageRepository, textDocumentContentSaver);
+        this.docRepository = docRepository;
+        this.versionRepository = versionRepository;
+        this.textDocumentContentSaver = textDocumentContentSaver;
     }
 
     // todo: check and (if needs) prepare like #visitUrlDocument()

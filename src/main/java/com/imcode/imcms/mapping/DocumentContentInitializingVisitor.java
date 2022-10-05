@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
@@ -9,10 +10,8 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.util.io.FileInputStreamSource;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.Collection;
 
 /**
@@ -24,12 +23,15 @@ import java.util.Collection;
 public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
     private final TextDocumentContentInitializer textDocumentContentInitializer;
-
     private final DocRepository docRepository;
+    private final DocumentFileService documentFileService;
 
-    public DocumentContentInitializingVisitor(TextDocumentContentInitializer textDocumentContentInitializer, DocRepository docRepository) {
+    public DocumentContentInitializingVisitor(TextDocumentContentInitializer textDocumentContentInitializer,
+                                              DocRepository docRepository,
+                                              DocumentFileService documentFileService) {
         this.textDocumentContentInitializer = textDocumentContentInitializer;
         this.docRepository = docRepository;
+        this.documentFileService = documentFileService;
     }
 
     /**
@@ -48,13 +50,10 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             file.setMimeType(item.getMimeType());
             file.setCreatedAsImage(item.isCreatedAsImage());
-
-            final File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(item);
-            file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
+            file.setInputStreamSource(documentFileService.getFileDocumentInputStreamSource(item));
             file.setFilename(item.getFilename());
 
             doc.addFile(fileId, file);
-
             if (item.isDefaultFile()) {
                 doc.setDefaultFileId(fileId);
             }
