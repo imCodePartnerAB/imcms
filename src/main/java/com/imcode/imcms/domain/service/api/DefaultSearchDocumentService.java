@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.document.index.IndexSearchResult;
 import imcode.server.document.index.ResolvingQueryIndex;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,16 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
     }
 
     @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(SearchQueryDTO searchQuery, boolean limitSearch) {
+        return documentIndex.search(searchQuery, limitSearch).solrDocumentList();
+    }
+
+    @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(SearchQueryDTO searchQuery) {
+        return searchDocumentsReturnSolrDocumentList(searchQuery, true);
+    }
+
+    @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, boolean limitSearch) {
         return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, limitSearch));
     }
@@ -41,6 +52,16 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
     }
 
     @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, boolean limitSearch) {
+        return documentIndex.search(stringSearchQuery, limitSearch).solrDocumentList();
+    }
+
+    @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery) {
+        return searchDocumentsReturnSolrDocumentList(stringSearchQuery, true);
+    }
+
+    @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page, boolean limitSearch) {
         return mapToDocumentStoredFieldsDTO(documentIndex.search(stringSearchQuery, page, limitSearch));
     }
@@ -48,6 +69,16 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
     @Override
     public List<DocumentStoredFieldsDTO> searchDocuments(String stringSearchQuery, PageRequestDTO page) {
         return searchDocuments(stringSearchQuery, page, true);
+    }
+
+    @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, PageRequestDTO page, boolean limitSearch) {
+        return documentIndex.search(stringSearchQuery, page, limitSearch).solrDocumentList();
+    }
+
+    @Override
+    public SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, PageRequestDTO page) {
+        return searchDocumentsReturnSolrDocumentList(stringSearchQuery, page, true);
     }
 
     private List<DocumentStoredFieldsDTO> mapToDocumentStoredFieldsDTO(IndexSearchResult result){

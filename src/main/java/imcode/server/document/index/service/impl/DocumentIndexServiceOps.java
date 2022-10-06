@@ -24,7 +24,6 @@ import java.util.function.Consumer;
  * <p>
  * An instance of this class is thread save.
  */
-// todo: document search might return doc which is not present in db (deleted) - return stub instead
 @Component
 public class DocumentIndexServiceOps {
 
