@@ -31,6 +31,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
+
 /**
  * Service for work with common document entities.
  * Every specified document type has it's own corresponding service.
@@ -155,7 +157,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
 
-        commonContentService.save(docId, saveMe.getCommonContents());
+        //Prevent unnecessary saving and version updating
+        if(isNew || (!saveMe.getCommonContents().equals(commonContentService.getOrCreateCommonContents(docId, WORKING_VERSION_INDEX)))){
+            commonContentService.save(docId, saveMe.getCommonContents());
+        }
 
 	    return get(docId);
     }

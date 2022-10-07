@@ -75,11 +75,13 @@ class DefaultDocumentFileService
         deleteNoMoreUsedDocumentFiles(saveUs, docId);
         saveNewFiles(saveUs);
 
+        if(saveUs.isEmpty() && !getByDocId(docId).isEmpty()) super.updateWorkingVersion(docId); // when user deletes all files
         return saveDocumentFiles(saveUs);
     }
 
     @Override
     public <T extends DocumentFile> DocumentFile save(T saveMe) {
+        super.updateWorkingVersion(saveMe.getDocId());
         return new DocumentFileDTO(documentFileRepository.save(new DocumentFileJPA(saveMe)));
     }
 

@@ -93,7 +93,11 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
             documentUrlDTO.ifPresent(urlDTO -> urlDTO.setDocId(savedDocId));
         }
 
-        documentUrlDTO.ifPresent(documentUrlService::save);     // FIXME: 29.08.2022 Strange logic that is not considered in other places (e.g. copying a document)
+        documentUrlDTO.ifPresent(documentURL -> {     // FIXME: 29.08.2022 ifPresent is strange logic that is not considered in other places (e.g. copying a document)
+            if(!documentURL.equals(documentUrlService.getByDocId(savedDocId))){
+                documentUrlService.save(documentURL);
+            }
+        });
 
         return get(savedDocId);
     }
