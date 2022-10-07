@@ -296,6 +296,10 @@ input.imcms-editor-content--text {
     overflow: hidden;
 }
 
+div.imcms-editor-content--text {
+	padding-top: 1px;
+}
+
 .imcms-editor-content--text:focus {
     outline: 1px dotted #333;
 }

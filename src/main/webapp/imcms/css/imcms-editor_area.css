@@ -53,11 +53,6 @@
     left: 0;
 }
 
-.imcms-editor-area__text-toolbar{
-	/*due to <p> tag specifity especially style margin: 16px we need to add this */
-	margin-bottom: -16px;
-}
-
 .imcms-editor-area__text-label::before,
 .imcms-toolbar-label::before {
     content: ' ';
