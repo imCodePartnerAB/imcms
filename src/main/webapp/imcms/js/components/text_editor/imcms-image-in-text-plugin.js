@@ -45,10 +45,9 @@ define(
             const $editorControl = $("<div>", {
                 "class": "imcms-editor-area__control-edit imcms-control imcms-control--edit"
                     + " imcms-control--image",
-                click: openEditor
+	            title: texts.imageEditor,
+	            click: openEditor
 			});
-
-	        components.overlays.defaultTooltip($editorControl, texts.imageEditor);
 
             const $editorControlWrapper = $("<div>", {
                 "class": "imcms-editor-area__control-wrap",
