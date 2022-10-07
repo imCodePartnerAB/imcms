@@ -53,7 +53,7 @@
     left: 0;
 }
 
-.imcms-editor-area--small .imcms-editor-area__text-toolbar{
+.imcms-editor-area__text-toolbar{
 	/*due to <p> tag specifity especially style margin: 16px we need to add this */
 	margin-bottom: -16px;
 }

@@ -162,13 +162,9 @@
 				        </c:if>
 					        ${tagEnd}
 				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-						        <div class="imcms-editor-area__control-title">${editingLabel}</div>
-					        </div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editingLabel}"></div>
 					        <c:if test="${not empty label && isShowlabel}">
-						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
-							        <div class="imcms-editor-area__control-title">${label}</div>
-						        </div>
+						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
 					        </c:if>
 				        </div>
 			        </div>
@@ -189,9 +185,7 @@
 				        </c:if>
 					        ${tagEnd}
 				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-						        <div class="imcms-editor-area__control-title">${editingLabel}</div>
-					        </div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editingLabel}"></div>
 				        </div>
 			        </div>
 		        </c:otherwise>

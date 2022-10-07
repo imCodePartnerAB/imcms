@@ -61,13 +61,9 @@
 				             data-doc-id="${targetDocId}"${externalPart}
 				             data-index="${index}">${loopContent}</div>
 				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-						        <div class="imcms-editor-area__control-title">${editLabel}</div>
-					        </div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editLabel}"></div>
 					        <c:if test="${not empty label && isShowlabel}">
-						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info">
-							        <div class="imcms-editor-area__control-title">${label}</div>
-						        </div>
+						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
 					        </c:if>
 				        </div>
 			        </div>
@@ -82,9 +78,7 @@
 				             data-doc-id="${targetDocId}"${externalPart}
 				             data-index="${index}">${loopContent}</div>
 				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-						        <div class="imcms-editor-area__control-title">${editLabel}</div>
-					        </div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editLabel}"></div>
 				        </div>
 			        </div>
 		        </c:otherwise>

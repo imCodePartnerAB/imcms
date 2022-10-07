@@ -1,4 +1,4 @@
-define("imcms-editor-labels-initializer", ["jquery"], function ($) {
+define("imcms-editor-labels-initializer", ["jquery", "imcms-components-builder"], function ($, components) {
     return {
         initEditorLabels: function () {
             const editControls = $(".imcms-editor-area__control-wrap");
@@ -10,6 +10,7 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                 };
             }
 
+			//unused because of tippy usage
             function positioningLabel(event) {
                 const $ctrl = $(this);
                 const $label = $ctrl.children().first(),
@@ -50,8 +51,15 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                 $label.show();
             }
 
+			function showLabel() {
+				const $control = $(this);
+				const label = $control.data("label");
+
+				components.overlays.defaultTooltip($control, label, {delay: 0})
+			}
+
 	        editControls.children().each((index, control) => {
-		        $(control).on("mouseenter", positioningLabel);
+		        $(control).on("mouseenter", showLabel);
 	        });
 
 	        editControls.children().each((index, control) => {
