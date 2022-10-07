@@ -17,6 +17,7 @@ define("imcms-page-info-builder",
         texts = texts.pageInfo;
 
         const TAB_INDEX_ATTRIBUTE = 'data-window-id';
+        const WORKING_VERSION = 0;
 
         let windowPageInfoTabsBuilder;
 
@@ -60,8 +61,9 @@ define("imcms-page-info-builder",
                     }
 
 	                if (documentDTO.id === imcms.document.id) {
-		                events.trigger("imcms-version-modified");
-
+                        if(savedDoc.currentVersion.id === WORKING_VERSION){
+                            events.trigger("imcms-version-modified");
+                        }
 	                } else {
 		                documentDTO.id = savedDoc.id;
 	                }
