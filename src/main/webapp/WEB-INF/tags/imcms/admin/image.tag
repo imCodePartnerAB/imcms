@@ -1,8 +1,9 @@
 <%@ tag import="org.apache.commons.text.StringEscapeUtils" %>
-
+<%@ tag import="imcode.server.Imcms" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ attribute name="no" required="false" type="java.lang.Object" %><%-- old index name --%>
 <%@ attribute name="index" required="false" %>
@@ -110,9 +111,25 @@
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editImage}">
-            <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
-            <c:set value="${isInternal ? (language.equals('en') ? 'Image Editor' : 'Redigera Bild') : 'This image is edited on page '.concat(document)}"
-                   var="editLabel"/>
+	        <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
+
+	        <fmt:setLocale value="<%=Imcms.getUser().getLanguage()%>"/>
+	        <fmt:setBundle basename="imcms" var="resource_property"/>
+	        <c:set var="editorLabel">
+		        <%-- variable can be set using another expression --%>
+		        <c:choose>
+			        <c:when test="${isInternal}">
+				        <fmt:message key="editors/image/label" bundle="${resource_property}"/>
+			        </c:when>
+			        <c:otherwise>
+				        <fmt:message key="editors/image/external_message" bundle="${resource_property}">
+					        <%--replace {0} --%>
+					        <fmt:param value="${document}"/>
+				        </fmt:message>
+			        </c:otherwise>
+		        </c:choose>
+	        </c:set>
+
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\"'))}"/>
             <c:set var="loopPart" value="${empty loopEntryRef ? ''
@@ -131,7 +148,7 @@
 
 			            <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
 			            <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-				            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image" data-label="${editLabel}"></div>
+				            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image" data-label="${editorLabel}"></div>
 				            <c:if test="${not empty label && isShowlabel}">
 					            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
 				            </c:if>
@@ -147,7 +164,7 @@
 				        </c:if>
 				        <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
 				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image" data-label="${editLabel}"></div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image" data-label="${editorLabel}"></div>
 				        </div>
 			        </div>
 		        </c:otherwise>

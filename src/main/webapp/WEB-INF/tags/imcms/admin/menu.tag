@@ -1,5 +1,7 @@
+<%@ tag import="imcode.server.Imcms" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <%@ attribute name="index" required="true" type="java.lang.Integer" %>
@@ -72,8 +74,24 @@
     <c:choose>
         <c:when test="${isEditMode && editOptions.editMenu}">
             <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
-            <c:set var="editLabel"
-                   value="${isInternal ? (language.equals('en') ? 'Menu Editor' : 'Redigera Meny') : 'This menu is edited on page '.concat(document)}"/>
+
+	        <fmt:setLocale value="<%=Imcms.getUser().getLanguage()%>"/>
+	        <fmt:setBundle basename="imcms" var="resource_property"/>
+	        <c:set var="editorLabel">
+		        <%-- variable can be set using another expression --%>
+		        <c:choose>
+			        <c:when test="${isInternal}">
+				        <fmt:message key="editors/text/label" bundle="${resource_property}"/>
+			        </c:when>
+			        <c:otherwise>
+				        <fmt:message key="editors/text/external_message" bundle="${resource_property}">
+					        <%--replace {0} --%>
+					        <fmt:param value="${document}"/>
+				        </fmt:message>
+			        </c:otherwise>
+		        </c:choose>
+	        </c:set>
+
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
@@ -86,7 +104,7 @@
 				             data-menu-index="${index}">${menuContent}</div>
 					        <%-- attributes used as unique identifier while reload --%>
 				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu" data-label="${editLabel}"></div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu" data-label="${editorLabel}"></div>
 					        <c:if test="${not empty label && isShowlabel}">
 						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
 					        </c:if>
@@ -103,7 +121,7 @@
 				             data-menu-index="${index}">${menuContent}</div>
 					        <%-- attributes used as unique identifier while reload --%>
 				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu" data-label="${editLabel}"></div>
+					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu" data-label="${editorLabel}"></div>
 				        </div>
 			        </div>
 		        </c:otherwise>

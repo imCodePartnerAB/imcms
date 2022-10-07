@@ -4,8 +4,8 @@
  */
 define(
     "imcms-image-in-text-plugin",
-    ["tinymce", "jquery", "imcms-image-editor-builder", "imcms-i18n-texts"],
-    function (tinyMCE, $, imageEditorBuilder, texts) {
+    ["tinymce", "jquery", "imcms-image-editor-builder", "imcms-i18n-texts", "imcms-components-builder"],
+    function (tinyMCE, $, imageEditorBuilder, texts, components) {
 
         texts = texts.toolTipText;
 
@@ -45,12 +45,11 @@ define(
             const $editorControl = $("<div>", {
                 "class": "imcms-editor-area__control-edit imcms-control imcms-control--edit"
                     + " imcms-control--image",
-                html: $("<div>", {
-                    "class": "imcms-editor-area__control-title",
-                    text: texts.imageEditor
-                }),
                 click: openEditor
-            });
+			});
+
+	        components.overlays.defaultTooltip($editorControl, texts.imageEditor);
+
             const $editorControlWrapper = $("<div>", {
                 "class": "imcms-editor-area__control-wrap",
                 html: $editorControl
