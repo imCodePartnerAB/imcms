@@ -75,6 +75,11 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
+    public String calculateKey(String documentIdString, String langCode) {
+        return documentIdString + "-" + langCode;
+    }
+
+    @Override
     public String calculateKey(String documentIdString, String langCode, boolean defaultUser) {
         return documentIdString + "-" + langCode + "-" + (defaultUser ? UNAUTHORIZED : AUTHORIZED);
     }

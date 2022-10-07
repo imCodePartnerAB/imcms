@@ -4,9 +4,7 @@ import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StorageFile;
 import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
-import org.apache.commons.io.IOUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,8 +13,6 @@ public class StorageInputStreamSource implements InputStreamSource{
     private final StoragePath path;
     private final StorageClient storageClient;
 
-    private byte[] content;
-
     public StorageInputStreamSource(StoragePath path, StorageClient storageClient){
         this.path = path;
         this.storageClient = storageClient;
@@ -24,25 +20,32 @@ public class StorageInputStreamSource implements InputStreamSource{
 
     @Override
     public long getSize() throws IOException {
-        if(content == null){
-            try(InputStream inputStream = getInputStream()){
-                return inputStream.available();
-            }
+        try (StorageFile file = storageClient.getFile(path)){
+            return file.size();
+        } catch(StorageFileNotFoundException e){
+            return 0;
         }
-
-        return content.length;
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        if(content == null){
-            try (StorageFile file = storageClient.getFile(path)){
-                content = IOUtils.toByteArray(file.getContent());
-            }catch (StorageFileNotFoundException e){
-                content = new byte[0];
-            }
-        }
+        try {
+            final StorageFile file = storageClient.getFile(path);
+            final InputStream content = file.getContent();
 
-        return new ByteArrayInputStream(content);
+            return new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return content.read();
+                }
+
+                @Override
+                public void close() throws IOException {
+                        file.close();
+                }
+            };
+        } catch (StorageFileNotFoundException e){
+            return new EmptyInputStream();
+        }
     }
 }

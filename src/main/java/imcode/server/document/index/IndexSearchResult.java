@@ -66,4 +66,8 @@ public class IndexSearchResult {
     public SolrQuery solrQuery() {
         return solrQuery.getCopy();
     }
+
+    public SolrDocumentList solrDocumentList(){
+        return solrDocumentList;
+    }
 }

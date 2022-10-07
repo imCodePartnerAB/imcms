@@ -39,7 +39,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
 import static imcode.server.ImcmsConstants.*;
 
 @Transactional
@@ -93,10 +92,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
         deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
-    }
-
-    static void deleteOtherFileDocumentFiles(FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
     @PostConstruct
@@ -714,22 +709,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
             return fileDocumentId == fileDocument.getId();
-        }
-    }
-
-    private static class SuperfluousFileDocumentFilesFileFilter extends FileDocumentFileFilter {
-
-        private SuperfluousFileDocumentFilesFileFilter(FileDocumentDomainObject fileDocument) {
-            super(fileDocument);
-        }
-
-        @Override
-        public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(getFileForFileDocumentFile(fileId));
-            boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
-            return fileDocumentId == fileDocument.getId()
-                    && docVersionNo == fileDocument.getVersionNo()
-                    && (!correctFileForFileDocumentFile || !fileDocumentHasFile);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.DocumentFile;
+import imcode.util.io.InputStreamSource;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public interface DocumentFileService extends DeleterByDocumentId, Copyable {
 
     void publishDocumentFiles(int docId);
 
-    DocumentFile getPublicByDocId(int docId);
+    List<DocumentFile> getPublicByDocId(int docId);
 
+    InputStreamSource getFileDocumentInputStreamSource(DocumentFile documentFile);
 }

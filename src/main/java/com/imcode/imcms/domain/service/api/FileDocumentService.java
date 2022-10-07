@@ -5,9 +5,12 @@ import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
+import imcode.util.io.EmptyInputStreamSource;
+import imcode.util.io.InputStreamSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
     private final File filesRoot;
-    private final Predicate<DocumentFileDTO> fileDocFileFilter;
+    private final Predicate<DocumentFile> fileDocFileFilter;
     private final Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
     @SneakyThrows
@@ -110,34 +112,30 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     @Override
     public SolrInputDocument index(int docId) {
-
         final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
 
-        final FileDocumentDTO fileDocumentDTO = get(docId);
+        List<DocumentFile> documentFiles = documentFileService.getPublicByDocId(docId);
 
-        fileDocumentDTO.getFiles()
-                .stream()
-                .filter(DocumentFileDTO::isDefaultFile)
+        documentFiles.stream()
+                .filter(DocumentFile::isDefaultFile)
                 .findFirst()
                 .filter(fileDocFileFilter)
                 .ifPresent(documentFileDTO -> {
+                    final InputStreamSource inputStreamSource = documentFileService.getFileDocumentInputStreamSource(documentFileDTO);
 
-                    final File file = new File(filesRoot, documentFileDTO.getFilename());
-
-                    if (!file.exists()) {
+                    if (inputStreamSource instanceof EmptyInputStreamSource) {
                         return;
                     }
 
                     solrInputDocument.addField(DocumentIndex.FIELD__MIME_TYPE, documentFileDTO.getMimeType());
 
-                    try (final InputStream fileInputStream = new FileInputStream(file)) {
+                    try (final InputStream inputStream = inputStreamSource.getInputStream()) {
                         final Metadata metadata = new Metadata();
                         metadata.set(HttpHeaders.CONTENT_DISPOSITION, documentFileDTO.getFilename());
                         metadata.set(HttpHeaders.CONTENT_TYPE, documentFileDTO.getMimeType());
 
-                        final String content = tika.parseToString(fileInputStream, metadata);
+                        final String content = tika.parseToString(inputStream, metadata);
                         solrInputDocument.addField(DocumentIndex.FIELD__TEXT, content);
-
                     } catch (Exception e) {
                         logger.error(String.format("Unable to index doc %d file '%s'.", docId, documentFileDTO), e);
                     }
@@ -146,18 +144,18 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return solrInputDocument;
     }
 
-    private Predicate<DocumentFileDTO> buildFileDocFilter(Config config) {
+    private Predicate<DocumentFile> buildFileDocFilter(Config config) {
         final Set<String> disabledFileExtensions = config.getIndexDisabledFileExtensionsAsSet();
         final Set<String> disabledFileMimes = config.getIndexDisabledFileMimesAsSet();
         final boolean noIgnoredFileNamesAndExtensions = disabledFileExtensions.isEmpty() && disabledFileMimes.isEmpty();
 
-        return documentFileDTO -> {
+        return documentFile -> {
             if (noIgnoredFileNamesAndExtensions) {
                 return true;
 
             } else {
-                final String ext = getExtension(documentFileDTO.getFilename());
-                final String mime = getExtension(documentFileDTO.getMimeType());
+                final String ext = getExtension(documentFile.getFilename());
+                final String mime = getExtension(documentFile.getMimeType());
 
                 return !(disabledFileExtensions.contains(ext) || disabledFileMimes.contains(mime));
             }
