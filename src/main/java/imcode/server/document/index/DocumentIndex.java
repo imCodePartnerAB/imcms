@@ -42,6 +42,8 @@ public interface DocumentIndex {
 	String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
 	String FIELD__ROLE_ID = "role_id";
 	String FIELD__VISIBLE = "visible";
+	String FIELD__LINKABLE_UNAUTHORIZED = "linkable_unauthorized";
+	String FIELD__LINKABLE_OTHER = "linkable_other";
 	String FIELD__STATUS = "status";
 	String FIELD__URL = "url";
 	String FIELD__DISABLED_LANGUAGE_SHOW_MODE = "disabled_language_show_mode";

@@ -157,4 +157,11 @@ public class DocumentStoredFields {
         return DocumentStatus.PUBLISHED;
     }
 
+	public boolean linkableForUnauthorizedUsers() {
+		return (Boolean) solrDocument.getFieldValue(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED);
+	}
+
+	public boolean linkableByOtherUsers() {
+		return (Boolean) solrDocument.getFieldValue(DocumentIndex.FIELD__LINKABLE_OTHER);
+	}
 }

@@ -47,6 +47,10 @@ public class DocumentStoredFieldsDTO {
 
 	private String publishedBy;
 
+    private boolean linkableForUnauthorizedUsers;
+
+    private boolean linkableByOtherUsers;
+
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
         title = from.headline();
@@ -62,6 +66,8 @@ public class DocumentStoredFieldsDTO {
         createdBy = from.createdBy();
         publishedBy = from.publicationStartBy();
         modifiedBy = from.modifiedBy();
+        linkableForUnauthorizedUsers = from.linkableForUnauthorizedUsers();
+        linkableByOtherUsers = from.linkableByOtherUsers();
     }
 
 }

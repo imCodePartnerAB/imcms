@@ -297,6 +297,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
         indexDoc.addField(DocumentIndex.FIELD__VISIBLE, doc.isVisible());
+        indexDoc.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, doc.isLinkableForUnauthorizedUsers());
+        indexDoc.addField(DocumentIndex.FIELD__LINKABLE_OTHER, doc.isLinkableByOtherUsers());
 
         return indexDoc;
     }
