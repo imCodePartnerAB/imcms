@@ -16,6 +16,7 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.util.ImcmsImageUtils;
 import jakarta.validation.constraints.NotNull;
@@ -186,7 +187,12 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         imageCacheManager.removeOtherImagesFromCacheByKey(""+docId);
 
         super.updateWorkingVersion(docId);
-        super.updateVersionInIndex(docId);
+        if(Imcms.isVersioningAllowed()){
+            super.updateVersionInIndex(docId);
+        }else{
+            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+            imageCacheManager.removePublicImagesFromCacheByKey(""+docId);
+        }
     }
 
     @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
@@ -262,7 +268,12 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             }
 
             super.updateWorkingVersion(docId);
-            super.updateVersionInIndex(docId);
+            if(Imcms.isVersioningAllowed()){
+                super.updateVersionInIndex(docId);
+            }else{
+                Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+                imageCacheManager.removePublicImagesFromCacheByKey(""+docId);
+            }
         }
     }
 

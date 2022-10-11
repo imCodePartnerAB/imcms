@@ -206,7 +206,11 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final MenuDTO savedMenu = menuToMenuDTO.apply(repository.save(menu));
 
         super.updateWorkingVersion(docId);
-        super.updateVersionInIndex(docId);
+        if(Imcms.isVersioningAllowed()){
+            super.updateVersionInIndex(docId);
+        }else{
+            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+        }
 
         return savedMenu;
     }

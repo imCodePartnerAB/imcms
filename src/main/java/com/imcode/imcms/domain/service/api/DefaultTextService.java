@@ -142,7 +142,11 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         }
 
         super.updateWorkingVersion(docId);
-        super.updateVersionInIndex(docId);
+        if(Imcms.isVersioningAllowed()){
+            super.updateVersionInIndex(docId);
+        }else{
+            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+        }
 
         textHistoryService.save(text);
 

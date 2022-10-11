@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +73,11 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
         loopForSave.setId(loopId);
         repository.save(loopForSave);
         super.updateWorkingVersion(docId);
-        super.updateVersionInIndex(docId);
+        if(Imcms.isVersioningAllowed()){
+            super.updateVersionInIndex(docId);
+        }else{
+            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+        }
     }
 
     @Override
