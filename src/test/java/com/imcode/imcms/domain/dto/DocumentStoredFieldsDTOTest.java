@@ -46,6 +46,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
 	    solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
 	    solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 	    solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
 	    DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
 	    final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -64,6 +66,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
 	    solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
 	    solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 	    solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
 	    DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
 	    final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -84,6 +88,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
 	    DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
 	    final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -104,6 +110,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publicationEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -127,6 +135,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -150,6 +160,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -170,6 +182,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -193,6 +207,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -216,6 +232,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -239,6 +257,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -264,6 +284,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publishedEnd);
         solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
         solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -284,6 +306,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
 	    solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
 	    solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 	    solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
 	    DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
 	    final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -304,6 +328,8 @@ public class DocumentStoredFieldsDTOTest extends WebAppSpringTestConfig {
 	    solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
 	    solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
 	    solrDocument.addField(DocumentIndex.FIELD__DISABLED_LANGUAGE_SHOW_MODE, Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name());
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, true);
+        solrDocument.addField(DocumentIndex.FIELD__LINKABLE_OTHER, true);
 
 	    DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
 	    final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
