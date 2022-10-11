@@ -606,6 +606,8 @@ define('imcms-document-editor-builder',
 		        'data-current-version': frameItem.find('.imcms-document-item__info--currentVersion').children().attr('value'),
 		        'data-createdBy': frameItem.find('.imcms-document-item__info--createdBy').text(),
 		        'data-createdDate': frameItem.find('.imcms-document-item__info--createdDate').text(),
+                'data-linkableForUnauthorizedUsers': frameItem.find('.imcms-document-item__info--linkableForUnauthorizedUsers').text(),
+                'data-linkableByOtherUsers': frameItem.find('.imcms-document-item__info--linkableByOtherUsers').text(),
 	        });
 
             $frame.addClass('imcms-document-items--frame');
@@ -951,6 +953,8 @@ define('imcms-document-editor-builder',
 		        'data-is-shown-title': frameItem.attr('data-is-shown-title'),
 		        'data-frame-top': insertedParent.frameTopPos,
 		        'data-current-version': frameItem.attr('data-current-version'),
+                'data-linkableForUnauthorizedUsers': frameItem.attr('data-linkableForUnauthorizedUsers'),
+                'data-linkableByOtherUsers': frameItem.attr('data-linkableByOtherUsers')
 	        });
             dataInput.attr('data-title', frameItem.attr('data-title')).trigger('change');
 
@@ -994,12 +998,17 @@ define('imcms-document-editor-builder',
             toggleUserSelect(false);
 
 	        $menuItemsList.find(menuDocItemCopy).remove();
-			refreshDocumentInList(getDocumentById(frameItem.attr('data-id')),false);
+            let document = getDocumentById(frameItem.attr('data-id'));
+			refreshDocumentInList(document, isDocSaved(document));
             $frame.remove();
             isMouseDown = false;
             const $sortOrder = $('.imcms-document-list-titles__title--sort-order');
             $sortOrder.click();
         });
+
+        function isDocSaved(document){
+            return document.commonContents !== undefined && document.currentVersion.id !== undefined;
+        }
 
         function getDocumentVersionTexts(hasNewerVersion) {
             return hasNewerVersion
@@ -1140,6 +1149,11 @@ define('imcms-document-editor-builder',
 	        const $docItemCreatedDate = $("<div hidden>").text(document.created);
 	        $docItemCreatedDate.modifiers=['createdDate'];
 
+            const $docLinkableForUnauthorizedUsers = $("<div hidden>").text(document.linkableForUnauthorizedUsers);
+            $docLinkableForUnauthorizedUsers.modifiers=['linkableForUnauthorizedUsers'];
+            const $docLinkableByOtherUsers = $("<div hidden>").text(document.linkableByOtherUsers);
+            $docLinkableByOtherUsers.modifiers=['linkableByOtherUsers'];
+
             const elements = [
                 {
                     'info': [
@@ -1153,7 +1167,9 @@ define('imcms-document-editor-builder',
                         $docStatus,
                         $originalDocStatus,
 	                    $docItemCreatedBy,
-	                    $docItemCreatedDate
+	                    $docItemCreatedDate,
+                        $docLinkableForUnauthorizedUsers,
+                        $docLinkableByOtherUsers
                     ]
                 },
                 {'controls': buildDocItemControls(document, opts, isMultiRemoveModeEnabled())}

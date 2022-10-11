@@ -113,6 +113,8 @@ define("imcms-menu-editor-builder",
                     hasNewerVersion: document.currentVersion.id === WORKING_VERSION,
                     sortOrder: menuItem.sortOrder,
                     documentStatus: document.documentStatus,
+                    linkableForUnauthorizedUsers: document.linkableForUnauthorizedUsers,
+                    linkableByOtherUsers: document.linkableByOtherUsers,
                     children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
                 };
 
@@ -139,6 +141,8 @@ define("imcms-menu-editor-builder",
                     sortOrder: menuItem.sortOrder,
                     documentStatus: document.documentStatus,
                     isShownTitle: document.isShownTitle,
+                    linkableForUnauthorizedUsers: document.linkableForUnauthorizedUsers,
+                    linkableByOtherUsers: document.linkableByOtherUsers,
                     children: menuItem.children.map(item => mapToMenuItemWithAllFields(item))
                 };
             }
@@ -612,7 +616,9 @@ define("imcms-menu-editor-builder",
 	                createdDate: $dataInput.attr("data-createdDate"),
                     publishedDate: $dataInput.attr('data-publishedDate'),
                     modifiedDate: $dataInput.attr('data-modifiedDate'),
-                    hasNewerVersion: $dataInput.attr('data-current-version') === '0' //simple convert in boolean. if not working version - not exist newer ver
+                    hasNewerVersion: $dataInput.attr('data-current-version') === '0', //simple convert in boolean. if not working version - not exist newer ver
+                    linkableForUnauthorizedUsers: $dataInput.attr('data-linkableForUnauthorizedUsers') === "true",
+                    linkableByOtherUsers: $dataInput.attr('data-linkableByOtherUsers') === "true"
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -662,7 +668,7 @@ define("imcms-menu-editor-builder",
             $menuElement.addClass("imcms-document-items-list__document-items");
             $menuElement.addClass("imcms-doc-item-copy");
             let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
-            documentEditorBuilder.refreshDocumentInList(doc);
+            documentEditorBuilder.refreshDocumentInList(doc, isDocumentItem(doc));
         }
 
         function buildFooter(opts) {
@@ -748,6 +754,8 @@ define("imcms-menu-editor-builder",
 	            createdDate: `${document.created.date} ${document.created.time}`,
                 publishedDate: `${document.published.date} ${document.published.time}`,
                 modifiedDate: `${document.modified.date} ${document.modified.time}`,
+                linkableForUnauthorizedUsers: document.linkableForUnauthorizedUsers,
+                linkableByOtherUsers: document.linkableByOtherUsers
             };
 
             document.commonContents.forEach(commonContent => {
