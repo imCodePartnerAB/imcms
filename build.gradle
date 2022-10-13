@@ -34,14 +34,15 @@ ext {
     springframeworkVersion = '5.2.22.RELEASE'
     hibernateVersion = '5.4.32.Final'
     solrVersion = '9.0.0'
-    log4j2Version = '2.17.2'
+    log4j2Version = '2.19.0'
     slf4jVersion = '1.7.36'
     junitVersion = '5.8.2'
     lombokVersion = '1.18.24'
     jacksonVersion = '2.13.2'
     mockitoVersion = '4.5.1'
-    awsVersion = '1.12.218'
+    awsVersion = '1.12.232'
     aspectjVersion = '1.9.8'
+    tikaVersion = '2.4.1'
 
     sharedManifest = manifest {
         attributes "Build-Date": new Date()
@@ -58,6 +59,8 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
     implementation 'org.opensaml:opensaml:2.6.4'
 
     implementation "com.zaxxer:HikariCP:5.0.1"
@@ -70,7 +73,7 @@ dependencies {
         exclude(module: "servlet-api")
         exclude(module: "commons-io")
     }
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation("commons-beanutils:commons-beanutils:1.9.4") {
         exclude(module: "commons-logging")
     }
@@ -84,12 +87,12 @@ dependencies {
     implementation "javax.servlet:jstl:1.2"
     implementation "javax.servlet.jsp:javax.servlet.jsp-api:2.3.3"
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.1'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     implementation("net.sf.ehcache:ehcache-web:2.0.4") {
         exclude(module: 'ehcache-core')
     }
     implementation "org.springframework:spring-context-support:${springframeworkVersion}"
-    implementation "org.jsoup:jsoup:1.14.3"
+    implementation 'org.jsoup:jsoup:1.15.3'
     implementation "org.apache.commons:commons-collections4:4.4"
     implementation "org.apache.commons:commons-email:1.5"
     implementation "org.apache.commons:commons-lang3:3.12.0"
@@ -106,11 +109,10 @@ dependencies {
 
     implementation "org.apache.lucene:lucene-queryparser:${solrVersion}"
     implementation("org.apache.solr:solr-core:${solrVersion}")
-    implementation("org.apache.tika:tika-parsers:1.28.2") {
-        exclude(module: "commons-logging")
-        exclude(module: "asm")
-        exclude(module: "commons-io")
-    }
+
+    implementation("org.apache.tika:tika-core:${tikaVersion}")
+    implementation("org.apache.tika:tika-parsers-standard-package:${tikaVersion}")
+
     runtimeOnly "org.aspectj:aspectjrt:${aspectjVersion}"
     runtimeOnly "org.aspectj:aspectjweaver:${aspectjVersion}"
     implementation("org.hibernate:hibernate-ehcache:${hibernateVersion}") {
