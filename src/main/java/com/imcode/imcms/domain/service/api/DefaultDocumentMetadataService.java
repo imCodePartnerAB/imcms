@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.dto.DocumentMetadataDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMetadataService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -30,16 +31,16 @@ public class DefaultDocumentMetadataService implements DocumentMetadataService {
 	}
 
 	@Override
-	public List<? extends DocumentMetadata> getDocumentMetadataList(Integer docId, String languageCode) {
+	public List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, String languageCode) {
 		return getDocumentMetadataList(docId, languageCode, versionService::getDocumentWorkingVersion);
 	}
 
 	@Override
-	public List<? extends DocumentMetadata> getPublicDocumentMetadataList(Integer docId, String languageCode) {
+	public List<DocumentMetadataDTO> getPublicDocumentMetadataList(Integer docId, String languageCode) {
 		return getDocumentMetadataList(docId, languageCode, versionService::getLatestVersion);
 	}
 
-	private List<? extends DocumentMetadata> getDocumentMetadataList(Integer docId, String languageCode, Function<Integer, Version> versionReceiver) {
+	private List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, String languageCode, Function<Integer, Version> versionReceiver) {
 		final Version version = versionReceiver.apply(docId);
 		final LanguageJPA language = new LanguageJPA(languageService.findByCode(languageCode));
 

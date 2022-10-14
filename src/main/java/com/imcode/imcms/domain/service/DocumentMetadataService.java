@@ -1,11 +1,11 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.model.DocumentMetadata;
+import com.imcode.imcms.domain.dto.DocumentMetadataDTO;
 
 import java.util.List;
 
 public interface DocumentMetadataService {
-	List<? extends DocumentMetadata> getDocumentMetadataList(Integer docId, String languageCode);
+	List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, String languageCode);
 
-	List<? extends DocumentMetadata> getPublicDocumentMetadataList(Integer docId, String languageCode);
+	List<DocumentMetadataDTO> getPublicDocumentMetadataList(Integer docId, String languageCode);
 }
