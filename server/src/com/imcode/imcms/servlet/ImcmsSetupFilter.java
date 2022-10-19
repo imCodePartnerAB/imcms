@@ -78,7 +78,8 @@ public class ImcmsSetupFilter implements Filter {
             Utility.makeUserLoggedIn(request, (HttpServletResponse) response, user);
         } else {
 
-            if (user.isImcmsExternal()) {
+			//ldap causes errors because there are no such provider...
+	        if (user.isImcmsExternal() && StringUtils.isNotBlank(user.getExternalProviderId())) {
                 service.getAuthenticationProviderService()
                         .getAuthenticationProvider(user.getExternalProviderId())
                         .updateAuthData(request);

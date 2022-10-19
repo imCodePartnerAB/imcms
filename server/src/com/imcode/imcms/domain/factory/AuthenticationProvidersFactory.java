@@ -3,12 +3,9 @@ package com.imcode.imcms.domain.factory;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.exception.ExternalIdentifierNotEnabledException;
 import com.imcode.imcms.model.AuthenticationProvider;
+import imcode.server.DefaultImcmsServices;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 
@@ -24,7 +21,9 @@ public class AuthenticationProvidersFactory {
     public List<AuthenticationProvider> getProviders() {
         final List<AuthenticationProvider> providers = new ArrayList<>();
         final String externalAuthenticator = properties.getProperty("ExternalAuthenticator", "");
-        if (!externalAuthenticator.isEmpty()) {
+
+		//ldap causes errors because there are no such provider...
+        if (!externalAuthenticator.isEmpty() && !externalAuthenticator.equalsIgnoreCase(DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_LDAP)) {
             providers.add(getProvider(externalAuthenticator));
         }
         return providers;

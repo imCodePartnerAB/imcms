@@ -54,8 +54,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private static final int DEFAULT_STARTDOCUMENT = 1001;
     private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = LogManager.getLogger(DefaultImcmsServices.class.getName());
-    private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
-    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
+    public static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
+    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
 
     static {
         mainLog.info("Main log started.");
