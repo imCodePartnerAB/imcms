@@ -253,10 +253,33 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     public String[] getRoleNames(UserDomainObject user) {
         String loginName = user.getLoginName();
         Map<String, String> attributeMappedRoles = searchForUserAttributes(loginName, ldapAttributesAutoMappedToRoles);
-        Set<String> roles = new HashSet<>(attributeMappedRoles.values());
+
+        Set<String> roles = new HashSet<>();
         roles.add(DEFAULT_LDAP_ROLE);
-        return roles.toArray(new String[roles.size()]);
+        roles.addAll(attributeMappedRoles.values());
+	    roles.addAll(getADUserGroups(loginName));
+
+		return roles.toArray(new String[0]);
     }
+
+	private Set<String> getADUserGroups(String loginName){
+		final Set<String> groups = new HashSet<>();
+		try {
+			LdapConnection connection = null;
+			try {
+				connection = ldapConnectionPool.getConnection();
+				groups.addAll(connection.getUserGroups(loginName));
+			} finally {
+				if (connection != null) {
+					connection.close();
+				}
+			}
+		} catch (LdapClientException e) {
+			LOG.warn("Could not find user " + loginName, e);
+		}
+
+		return groups;
+	}
 
     /**
      * @since 4.1.6

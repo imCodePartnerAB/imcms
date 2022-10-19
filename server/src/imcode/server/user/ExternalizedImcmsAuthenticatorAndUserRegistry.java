@@ -145,10 +145,10 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
         for (String roleName : userExternalRolesNamesLCase) {
             RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(roleName);
-            log.debug(String.format("Syncing user %s external role %s.", externalUser.getLoginName(), role.getName()));
+            log.debug(String.format("Syncing user %s external role %s.", externalUser.getLoginName(), roleName));
 
             if (null == role) {
-                log.debug(String.format("Role %s is new and will be stored internally.", role.getName()));
+                log.debug(String.format("Role %s is new and will be stored internally.", roleName));
                 role = imcmsAuthenticatorAndUserMapperAndRole.addRole(roleName);
             }
 

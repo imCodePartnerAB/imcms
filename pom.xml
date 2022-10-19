@@ -479,13 +479,7 @@
 		<dependency>
 			<groupId>com.imcode.net.ldap</groupId>
 			<artifactId>imcode-ldap</artifactId>
-			<version>1.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
