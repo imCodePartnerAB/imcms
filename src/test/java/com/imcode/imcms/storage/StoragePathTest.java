@@ -126,6 +126,14 @@ public class StoragePathTest {
     }
 
     @Test
+    public void getName_When_FileTypeIsDirectory_And_OneDirectory_Expected_CorrectName() {
+        final String folder1 = "folder1";
+
+        final StoragePath folderPath1 = StoragePath.get(DIRECTORY, folder1);
+        assertEquals(folder1, folderPath1.getName());
+    }
+
+    @Test
     public void getName_When_FileTypeIsFile_Expected_CorrectName() {
         final String folder1 = "/folder1/";
         final String folder2 = "folder2/";
@@ -134,5 +142,50 @@ public class StoragePathTest {
         final StoragePath filePath12 = StoragePath.get(FILE, folder1, folder2, file);
 
         assertEquals(file, filePath12.getName());
+    }
+
+    @Test
+    public void getName_When_FileTypeIsFile_And_PathWithoutDirectory_Expected_CorrectName() {
+        final String file = "file.txt";
+
+        final StoragePath filePath12 = StoragePath.get(FILE, file);
+        assertEquals(file, filePath12.getName());
+    }
+
+    @Test
+    public void getParent_When_FileTypeIsDirectory_Expected_CorrectParentName() {
+        final String folder1 = "folder1";
+        final String folder2 = "folder2";
+
+        final StoragePath folderPath12 = StoragePath.get(DIRECTORY, folder1, folder2);
+        final StoragePath parentStoragePath = StoragePath.get(DIRECTORY, folder1);
+        assertEquals(parentStoragePath, folderPath12.getParentPath());
+    }
+
+    @Test
+    public void getParent_When_FileTypeIsDirectory_And_NoParent_Expected_CorrectParentName() {
+        final String folder1 = "/folder1/";
+
+        final StoragePath folderPath12 = StoragePath.get(DIRECTORY, folder1);
+        assertNull(folderPath12.getParentPath());
+    }
+
+    @Test
+    public void getParent_When_FileTypeIsFile_Expected_CorrectParentName() {
+        final String folder1 = "/folder1/";
+        final String folder2 = "folder2";
+        final String file = "file.txt";
+
+        final StoragePath filePath12 = StoragePath.get(FILE, folder1, folder2, file);
+        final StoragePath parentStoragePath = StoragePath.get(DIRECTORY, folder1, folder2);
+        assertEquals(parentStoragePath, filePath12.getParentPath());
+    }
+
+    @Test
+    public void getParent_When_FileTypeIsFile_And_PathWithoutDirectory_Expected_CorrectParentName() {
+        final String file = "file.txt";
+
+        final StoragePath filePath12 = StoragePath.get(FILE, file);
+        assertNull(filePath12.getParentPath());
     }
 }
