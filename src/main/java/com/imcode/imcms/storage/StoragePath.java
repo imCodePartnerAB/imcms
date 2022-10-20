@@ -86,14 +86,16 @@ public class StoragePath {
     }
 
     public String getName() {
-        if(type == FILE){
-            return path.contains(PATH_SEPARATOR) ?
-                    StringUtils.substringAfterLast(path, PATH_SEPARATOR) : path;
-        }else{
-            String dirPath = StringUtils.removeEnd(path, PATH_SEPARATOR);
-            return dirPath.contains(PATH_SEPARATOR) ?
-                    StringUtils.substringAfterLast(dirPath, PATH_SEPARATOR) : dirPath;
-        }
+        String tempPath = (type == FILE) ? path : StringUtils.removeEnd(path, PATH_SEPARATOR);
+        return tempPath.contains(PATH_SEPARATOR) ?
+                StringUtils.substringAfterLast(tempPath, PATH_SEPARATOR) : tempPath;
+    }
+
+    public StoragePath getParentPath(){
+        String tempPath = (type == FILE) ? path : StringUtils.removeEnd(path, PATH_SEPARATOR);
+
+        return tempPath.contains(PATH_SEPARATOR) ?
+                get(DIRECTORY, StringUtils.substringBeforeLast(tempPath, PATH_SEPARATOR)) : null;
     }
 
     public FileType getType(){
