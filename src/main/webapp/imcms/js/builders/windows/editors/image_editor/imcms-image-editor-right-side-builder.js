@@ -136,7 +136,7 @@ define(
                 $fileFormat.selectValue(imageData.format);
                 if (checkExistImageData(imageData)) {
                     $editableControls.children().not(".imcms-advanced-mode").not(".imcms-history-mode").show();
-                    $imageInfoPath.text(path.normalize(`${imcms.imagesPath}/${imageData.path}`)).show();
+                    $imageInfoPath.text(path.normalize(`${imageData.path}`)).show();
                     $imageSizeInfo.show();
                     $noImageInfo.hide();
                 } else {
@@ -734,7 +734,7 @@ define(
 
                     setAltAttribute($image, imageDTO);
                     if (filePath) {
-                        filePath = imcms.imagesPath + "/" + filePath;
+                        filePath = imcms.imagesPath + "?path=" + filePath;
                         addOrRemoveLinkElementIfNeeded($image, imageDTO);
                         setHrefAttribute($image, imageDTO);
                     } else {

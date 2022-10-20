@@ -94,7 +94,7 @@
                 <c:if test="${not empty href}">
                     <a${href} target="_blank">
                 </c:if>
-                    <img src="${imagesPath}/${imgPath}"${classes}${alt}/>
+                    <img src="${imagesPath}?path=${imgPath}"${classes}${alt}/>
                 <c:if test="${not empty href}">
                     </a>
                 </c:if>

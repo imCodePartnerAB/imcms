@@ -314,7 +314,7 @@ define("imcms-loop-editor-builder",
 
 				    let imageToShow = images.find(image => entryIndex === image.loopEntryRef.loopEntryIndex);
 
-				    entryImage.src = imageToShow ? imcms.imagesPath +"/"+ imageToShow.generatedFilePath : MISSING_ICON_IMAGE;
+				    entryImage.src = imageToShow ? imcms.imagesPath +"?path="+ imageToShow.generatedFilePath : MISSING_ICON_IMAGE;
 			    })
 	    }
 
