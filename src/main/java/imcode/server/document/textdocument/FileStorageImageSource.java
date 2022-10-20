@@ -3,11 +3,15 @@ package imcode.server.document.textdocument;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.imcode.imcms.servlet.ImageFetcher;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
 import imcode.server.Imcms;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.io.InputStreamSource;
 import imcode.util.io.StorageInputStreamSource;
+import lombok.SneakyThrows;
+import org.apache.http.client.utils.URIBuilder;
 
 import java.util.Date;
 
@@ -20,7 +24,7 @@ public class FileStorageImageSource extends ImageSource{
     private final StoragePath path;
     private InputStreamSource inputStreamSource;
 
-    private final static StoragePath imageStoragePath = StoragePath.get(DIRECTORY,  Imcms.getServices().getConfig().getImageUrl());
+    private final static StoragePath imageStoragePath = StoragePath.get(DIRECTORY, ImcmsImageUtils.imagesPath);
 
     @JsonCreator
     public FileStorageImageSource(@JsonProperty("urlPathRelativeToContextPath") String path) {
@@ -37,9 +41,12 @@ public class FileStorageImageSource extends ImageSource{
     }
 
     @Override
+    @SneakyThrows
     public String getUrlPathRelativeToContextPath() {
-        return Imcms.getServices()
-                .getManagedBean("storageImagePath", String.class) + StoragePath.PATH_SEPARATOR + path.toString();
+        String storageImagePath = Imcms.getServices().getManagedBean("storageImagePath", String.class);
+
+        return new URIBuilder().setPath(storageImagePath).
+                addParameter(ImageFetcher.PATH_PARAMETER, path.toString()).build().toString();
     }
 
     @Override
