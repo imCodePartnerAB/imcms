@@ -40,6 +40,11 @@ public class StorageInputStreamSource implements InputStreamSource{
                 }
 
                 @Override
+                public int available() throws IOException {
+                    return content.available();
+                }
+
+                @Override
                 public void close() throws IOException {
                         file.close();
                 }
