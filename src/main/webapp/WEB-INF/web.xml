@@ -385,6 +385,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ImageFetcher</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ImageFetcher</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ImageHandling</servlet-class>
     </servlet>
@@ -542,6 +547,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.Restart</servlet-name>
         <url-pattern>/servlet/Restart</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ImageFetcher</servlet-name>
+        <url-pattern>/image/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

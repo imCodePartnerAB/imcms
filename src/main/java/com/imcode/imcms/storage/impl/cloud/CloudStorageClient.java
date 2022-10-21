@@ -33,7 +33,7 @@ public class CloudStorageClient implements StorageClient {
     private final CannedAccessControlList defaultAccess;
 
     public CloudStorageClient(AmazonS3 s3Client, String bucketName) {
-        this(s3Client, bucketName, CannedAccessControlList.PublicRead);
+        this(s3Client, bucketName, CannedAccessControlList.Private);
     }
 
     public CloudStorageClient(AmazonS3 s3Client, String bucketName, CannedAccessControlList defaultAccess) {

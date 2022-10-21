@@ -141,7 +141,7 @@ public class GetDoc extends HttpServlet {
             return;
         }
 
-        try (InputStream inputStream = new BufferedInputStream(file.getInputStreamSource().getInputStream())) {
+        try (InputStream inputStream = file.getInputStreamSource().getInputStream()) {
             try (ServletOutputStream out = res.getOutputStream()) {
                 try {
                     final int len = inputStream.available();

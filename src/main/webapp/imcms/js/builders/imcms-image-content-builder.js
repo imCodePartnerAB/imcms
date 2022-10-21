@@ -261,6 +261,15 @@ define("imcms-image-content-builder",
                 value: opts.previousFolderName,
                 placeholder: texts.newFolderName
             });
+
+            const $closeBtn = components.controls.remove(() => $(`#${FOLDER_CREATION_BLOCK_ID}`).remove());
+            components.controls.create($closeBtn.attr("title", texts.createFolderImage));
+
+            const $loadingAnimation = $('<div>', {
+                class: 'loading-animation',
+                style: 'display: none'
+            });
+
             const $confirmBtn = components.buttons.neutralButton({
                 "class": "imcms-button",
                 text: texts.add,
@@ -297,31 +306,39 @@ define("imcms-image-content-builder",
                         contextOnSuccess.path = pathSplitBySeparator.join("/") + "/";
                     }
 
+                    $confirmBtn.css("display", "none");
+                    $closeBtn.attr("style", "display: none !important");
+                    $loadingAnimation.css("display", "");
+
                     onConfirm(dataOnConfirm)
                         .done(response => {
-	                            const oldFolderPath = opts.folder.path;
+                            const oldFolderPath = opts.folder.path;
 
-	                            if (!isNewFolder) {
-                                    opts.folder.name = contextOnSuccess.name;
-                                    opts.folder.path = contextOnSuccess.path;
+                            if (!isNewFolder) {
+                                opts.folder.name = contextOnSuccess.name;
+                                opts.folder.path = contextOnSuccess.path;
 
-                                    if(opts.folder.folders) opts.folder.folders.forEach(subFolder =>
-                                        subFolder.path = subFolder.path.replace(oldFolderPath, contextOnSuccess.path));
-                                }
-                                onSuccess.call(contextOnSuccess, oldFolderPath, response);
+                                if(opts.folder.folders) opts.folder.folders.forEach(subFolder =>
+                                    subFolder.path = subFolder.path.replace(oldFolderPath, contextOnSuccess.path));
+                            }
+                            onSuccess.call(contextOnSuccess, oldFolderPath, response);
                         })
-                        .fail(() => modal.buildErrorWindow(texts.error.addFolderFailed));
+                        .fail(() => modal.buildErrorWindow(texts.error.addFolderFailed))
+                        .always(() => {
+                            $confirmBtn.css("display", "");
+                            $closeBtn.css("display", "");
+                            $loadingAnimation.css("display", "none");
+                        });
                 }
             });
-            const $closeBtn = components.controls.remove(() => $(`#${FOLDER_CREATION_BLOCK_ID}`).remove());
-            components.controls.create($closeBtn.attr("title", texts.createFolderImage));
 
             const $folderCreationBlock = new BEM({
                 block: "imcms-panel-named",
                 elements: {
                     "input": $folderNameInput,
                     "button": $confirmBtn,
-                    "control-close": $closeBtn
+                    "control-close": $closeBtn,
+                    "loading": $loadingAnimation
                 }
             }).buildBlockStructure("<div>", {id: FOLDER_CREATION_BLOCK_ID});
 
@@ -675,7 +692,7 @@ define("imcms-image-content-builder",
                     ),
                     "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
                     'open-image': components.buttons.openInNewWindow('<a>', {
-                        href: `${imcms.imagesPath}/${imageFile.path}`,
+                        href: `${imcms.imagesPath}?path=${imageFile.path}`,
                         title: texts.openImage,
                         target: '_blank',
                     }),
@@ -695,11 +712,11 @@ define("imcms-image-content-builder",
 	    ;
 
         function buildImage(imageFile, folder) {
-
+            let dataSrc = `${imcms.imagesPath}?path=${imageFile.path}`;
             //Reduce image weight by resizing
-            const dataSrc = imageFile.size.toLowerCase().endsWith("mb") ?
-                `/api/imagehandling?path=${imageFile.path}&height=146` :
-                `${imcms.imagesPath}/${imageFile.path}`;
+            if(imageFile.size.toLowerCase().endsWith("mb")){
+                dataSrc += "&height=146";
+            }
 
             return new BEM({
                 block: "imcms-choose-img-wrap",

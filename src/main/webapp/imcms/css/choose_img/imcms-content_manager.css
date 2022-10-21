@@ -38,6 +38,16 @@
     background-color: #d3d8de;
 }
 
+#imcms-folder-create-block .imcms-panel-named__loading{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+
+#imcms-folder-create-block .loading-animation::before{
+    border-width: 4px;
+}
+
 .imcms-toolbar-images-select {
     display: flex;
     border-bottom: 1px solid #d3d8de;

@@ -5,8 +5,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.imcode.imcms.servlet.ImageFetcher;
 import com.imcode.imcms.storage.StorageClient;
+import com.imcode.imcms.storage.StorageLocation;
+import com.imcode.imcms.storage.impl.SynchronizedDiskToCloudStorageClient;
 import com.imcode.imcms.storage.impl.cloud.CloudStorageClient;
 import com.imcode.imcms.storage.impl.disk.DiskStorageClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,40 +41,46 @@ public class StorageConfig {
     }
 
     @Bean(name = "imageStorageClient")
-    public StorageClient imageStorageClient(@Value("${s3.image.permission}") String cloudStorage,
+    public StorageClient imageStorageClient(@Value("${image.storage.location}") String imageStorageLocation,
                                             ServletContext servletContext,
                                             @Autowired(required = false) AmazonS3 amazonS3Client) {
-        boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
-        if(isCloudStorage){
-            if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
-
-            return new CloudStorageClient(amazonS3Client, bucketName, CannedAccessControlList.PublicRead);
-        }else{
-            return new DiskStorageClient(Paths.get(servletContext.getRealPath("/")));
-        }
+        return createStorageClient(imageStorageLocation, servletContext, amazonS3Client);
     }
 
     @Bean(name = "storageImagePath")
-    public String storageImagePath(@Value("${s3.image.permission}") String cloudStorage,
-                                   @Value("${ImagePath}") String imagePath,
-                                   ServletContext servletContext,
-                                   @Autowired(required = false) AmazonS3 amazonS3Client){
-        boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
-        return (isCloudStorage ? amazonS3Client.getUrl(bucketName, "") : servletContext.getContextPath() + "/" ) + imagePath;
+    public String storageImagePath(ServletContext servletContext){
+        return servletContext.getContextPath() + "/" + ImageFetcher.URL;
     }
 
     @Bean(name = "fileDocumentStorageClient")
-    public StorageClient fileDocumentStorageClient(@Value("${s3.document.file.permission}") String cloudStorage,
+    public StorageClient fileDocumentStorageClient(@Value("${file.storage.location}") String fileDocumentStorageLocation,
                                             ServletContext servletContext,
                                             @Autowired(required = false) AmazonS3 amazonS3Client) {
-        boolean isCloudStorage = Boolean.parseBoolean(cloudStorage);
-        if(isCloudStorage){
-            if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
+        return createStorageClient(fileDocumentStorageLocation, servletContext, amazonS3Client);
+    }
 
-            return new CloudStorageClient(amazonS3Client, bucketName, CannedAccessControlList.Private);
-        }else{
-            return new DiskStorageClient(Paths.get(servletContext.getRealPath("/")));
+    private StorageClient createStorageClient(String storageLocation, ServletContext servletContext,
+                                              AmazonS3 amazonS3Client) {
+        StorageClient imageStorageClient;
+
+        switch (StorageLocation.getByName(storageLocation)) {
+            case CLOUD:
+                if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
+                imageStorageClient = new CloudStorageClient(amazonS3Client, bucketName);
+                break;
+            case SYNC:
+                if(!amazonS3Client.doesBucketExistV2(bucketName)) amazonS3Client.createBucket(bucketName);
+                DiskStorageClient diskStorageClient = new DiskStorageClient(Paths.get(servletContext.getRealPath("/")));
+                CloudStorageClient cloudStorageClient = new CloudStorageClient(amazonS3Client, bucketName);
+
+                imageStorageClient = new SynchronizedDiskToCloudStorageClient(diskStorageClient, cloudStorageClient);
+                break;
+            case DISK:
+            default:
+                imageStorageClient = new DiskStorageClient(Paths.get(servletContext.getRealPath("/")));
         }
+
+        return imageStorageClient;
     }
 
     private boolean validateProperty(String property) {

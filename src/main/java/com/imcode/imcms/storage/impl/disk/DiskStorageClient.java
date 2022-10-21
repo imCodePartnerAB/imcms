@@ -68,7 +68,7 @@ public class DiskStorageClient implements StorageClient {
         Path filePath = resolveRoot(path);
 
         if(path.getType() == DIRECTORY){
-            Files.createDirectory(filePath);
+            Files.createDirectories(filePath);
         }else{
             Files.createFile(filePath);
         }
@@ -77,7 +77,7 @@ public class DiskStorageClient implements StorageClient {
     @Override
     @SneakyThrows
     public void put(StoragePath path, InputStream inputStream) {
-        FileUtils.copyInputStreamToFile(inputStream, resolveRoot(path).toFile());
+        FileUtils.copyToFile(inputStream, resolveRoot(path).toFile());
     }
 
     @Override
