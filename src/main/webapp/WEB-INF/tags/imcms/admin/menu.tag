@@ -81,10 +81,10 @@
 		        <%-- variable can be set using another expression --%>
 		        <c:choose>
 			        <c:when test="${isInternal}">
-				        <fmt:message key="editors/text/label" bundle="${resource_property}"/>
+				        <fmt:message key="editors/menu/label" bundle="${resource_property}"/>
 			        </c:when>
 			        <c:otherwise>
-				        <fmt:message key="editors/text/external_message" bundle="${resource_property}">
+				        <fmt:message key="editors/menu/external_message" bundle="${resource_property}">
 					        <%--replace {0} --%>
 					        <fmt:param value="${document}"/>
 				        </fmt:message>
