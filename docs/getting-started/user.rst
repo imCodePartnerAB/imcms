@@ -1,7 +1,7 @@
 Start With ImCMS as a User
 ==========================
 
-It is quite simple to to start working with ImCMS.
+It is quite simple to start working with ImCMS.
 But since you've prepared database, there are few more things that are required.
 
 In this article:
@@ -14,8 +14,8 @@ In this article:
 Installing Java
 ---------------
 
-To use ImCMS you have to have java8 installed on your machine.
-You can use either `OracleJDK <https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html>`_
+To use ImCMS you must have Java 14 installed on your machine.
+You can use either `OracleJDK <https://www.oracle.com/cis/java/technologies/javase/jdk14-archive-downloads.html>`_
 or `OpenJDK <http://openjdk.java.net/install/>`_.
 
 
@@ -23,14 +23,14 @@ Installing Tomcat
 -----------------
 
 Tomcat is a servlet container for running web applications such as ImCMS.
-First of all, download latest Tomcat 8 from `official site <https://tomcat.apache.org/download-80.cgi>`_ and then
+First of all, download latest Tomcat 9 from `official site <https://tomcat.apache.org/download-90.cgi>`_ and then
 simply extract an archive into any folder. We will call the result tomcat directory with it's full path **tomcat_home**.
 
 
 ImCMS Configuration
 -------------------
 
-Next step - `download latest ImCMS <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-beta1/imcms-6.0.0-beta1.war>`_.
+Next step - `download latest ImCMS <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-beta18/imcms-6.0.0-beta18.war>`_.
 Then put downloaded file here: ``tomcat_home/webapps/``.
 You can rename this file, so result will look like this: ``tomcat_home/webapps/imcms.war``.
 

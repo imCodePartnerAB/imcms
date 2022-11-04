@@ -1,3 +1,4 @@
 .. _Oleg Dokuka: http://omniscient.me/
 .. _Serhii Maksymchuk: https://github.com/Serg-Maximchuk
 .. _Pavlenko Victor : https://github.com/VictorPavfurious
+.. _Roman Gorkun: https://github.com/RomanRD

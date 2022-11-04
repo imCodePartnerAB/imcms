@@ -36,6 +36,7 @@ Database and Hibernate Configuration
 
 *
     For SQL Server:
+
     .. code-block:: properties
 
             jdbc-driver = net.sourceforge.jtds.jdbc.Driver
@@ -43,6 +44,7 @@ Database and Hibernate Configuration
             hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
 *
     For MySQL:
+
     .. code-block:: properties
 
             jdbc-driver = com.mysql.jdbc.Driver
@@ -50,6 +52,7 @@ Database and Hibernate Configuration
             hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 *
     For both:
+
     .. code-block:: properties
 
             jdbc-username =

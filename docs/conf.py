@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ImCMS'
-copyright = '2015-2018, ImCodePartnerAB'
+copyright = '2015-2022, ImCodePartnerAB'
 author = 'ImCodePartnerAB'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -125,8 +125,8 @@ if not on_rtd:
 	html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 	
 def setup(app):
-	app.add_stylesheet('custom.css')	
-	app.add_javascript('wedc.js')
+	app.add_css_file('custom.css')
+	app.add_js_file('wedc.js')
 
 #html_theme = 'default'
 
