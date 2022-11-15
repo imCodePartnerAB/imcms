@@ -60,6 +60,7 @@ import java.util.Properties;
         ApplicationConfig.class,
         MappingConfig.class,
         WebConfig.class,
+		SVNConfig.class,
         CachingConfig.class
 })
 @ComponentScan({
