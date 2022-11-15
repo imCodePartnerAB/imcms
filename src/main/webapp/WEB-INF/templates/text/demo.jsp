@@ -15,6 +15,7 @@
     <!--style files-->
     <link rel="stylesheet" href="${contextPath}/demo/css/demo.css">
     <imcms:admin/>
+	<imcms:templateCSS/>
 </head>
 <body>
 
