@@ -1,5 +1,7 @@
 package com.imcode.imcms.config;
 
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,14 +13,36 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 @Configuration
 public class SVNConfig {
-	@Value("${svn.url}")
 	private String repositoryUrl;
-	@Value("${svn.username}")
 	private String username;
-	@Value("${svn.password}")
 	private String password;
+	private Path localSVNRepositoryFolder;
+
+	public SVNConfig(@Value("${svn.url:#{null}}") String repositoryUrl,
+	                 @Value("${svn.username:#{null}}") String username,
+	                 @Value("${svn.password:#{null}}") String password,
+	                 ServletContext servletContext) {
+		this.repositoryUrl = repositoryUrl;
+		this.username = username;
+		this.password = password;
+		this.localSVNRepositoryFolder = Path.of(servletContext.getRealPath("/"), "WEB-INF/svn");
+	}
+
+	@PostConstruct
+	@SneakyThrows
+	private void init() {
+		if (StringUtils.isEmpty(repositoryUrl)) {
+			Files.createDirectory(localSVNRepositoryFolder);
+			this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
+		}
+	}
 
 	@Bean
 	public ISVNAuthenticationManager svnAuthenticationManager() {

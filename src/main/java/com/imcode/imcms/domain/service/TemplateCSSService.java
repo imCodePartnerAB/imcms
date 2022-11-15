@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>Service to work with template CSS.<p/>
- * <p>Template CSS - is a CSS code that applied to page which has such template on load.<p/>
+ * <p>Service to work with template CSS.</p>
+ * <p>Template CSS - is a CSS code that applied to page which has such template on load.</p>
  *
- * <p>See also <b>templateCSS.tag</b> <p/>
+ * <p>See also <b>templateCSS.tag</b> </p>
  */
 public interface TemplateCSSService {
 	String CSS_EXTENSION = ".css";
