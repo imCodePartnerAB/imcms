@@ -107,6 +107,8 @@ public interface ImcmsServices {
 
     TemplateService getTemplateService();
 
+	TemplateCSSService getTemplateCSSService();
+
     MenuService getMenuService();
 
     AccessService getAccessService();

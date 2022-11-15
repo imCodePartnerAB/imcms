@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.File;
 import java.util.Properties;
+import java.util.Set;
 
 public class Imcms {
 
@@ -161,7 +162,10 @@ public class Imcms {
     @PostConstruct
     private void init() {
         invokeStart();
-        new Thread(services.getTemplateService()::checkTemplates).start();
+	    new Thread(() -> {
+		    final Set<String> templateNames = services.getTemplateService().checkTemplates();
+		    services.getTemplateCSSService().sync(templateNames);
+	    }).start();
         new Thread(services.getImageService()::regenerateImages).start();
     }
 
