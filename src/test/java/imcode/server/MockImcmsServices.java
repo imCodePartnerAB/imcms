@@ -199,7 +199,12 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    @Override
+	@Override
+	public TemplateCSSService getTemplateCSSService() {
+		return null;
+	}
+
+	@Override
     public MenuService getMenuService() {
         return null;
     }

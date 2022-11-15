@@ -11,18 +11,30 @@ import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
+import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertTrue;
@@ -36,8 +48,25 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 public class TestConfig {
 
+	@Autowired
+	private Environment env;
+
     @Value("WEB-INF/test-solr")
     private File defaultTestSolrFolder;
+
+	@Value("WEB-INF/test-svn/trunk")
+	private File localSVNRepositoryFolder;
+
+	@PostConstruct
+	private void init() {
+		final String localSVNRepositoryURL = createLocalSVNRepository();
+
+		final Map<String, Object> runtimeTestProperties = new HashMap<>();
+		runtimeTestProperties.put("svn.url", localSVNRepositoryURL);
+
+		final MutablePropertySources propertySources = ((StandardServletEnvironment) env).getPropertySources();
+		propertySources.addFirst(new MapPropertySource("runtime.test.properties", runtimeTestProperties));
+	}
 
     @Bean
     public MockMvc mockMvc(WebApplicationContext wac) {
@@ -98,5 +127,13 @@ public class TestConfig {
     private void destroy() throws IOException {
         assertTrue(FileUtility.forceDelete(defaultTestSolrFolder.getParentFile()));
     }
+
+	private String createLocalSVNRepository() {
+		try {
+			return SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder, true, true).toString();
+		} catch (SVNException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }
