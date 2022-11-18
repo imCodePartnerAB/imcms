@@ -165,7 +165,9 @@ const texts = {
             appearance: {
                 name: "Utseende",
                 template: "Mall",
-                defaultChildTemplate: "Standardmall för nya dokument"
+                defaultChildTemplate: "Standardmall för nya dokument",
+	            previewTemplateCSSBtnText: 'Förhandsgranska mall CSS-layout',
+	            previewTemplateCSSBtnInfo: 'Klicka och den fungerande versionen av mallens css-stilar kommer att tillämpas på den aktuella sidan!'
             },
 	        metadata: {
 		        name: "SID INFO",
@@ -859,6 +861,30 @@ const texts = {
                     boundDocumentsWarn: 'Vissa dokument relaterade till den här mallen. Vill du ersätta den med en annan mall?',
                 }
             },
+	        templatesCSS: {
+		        name: 'Mallar CSS',
+		        editorTitle: 'Mall CSS Editor',
+		        templatesSelectTitle: 'Välj mall',
+		        history: {
+			        headText: "Mallar CSS-historik",
+			        closeBtnText: "Avbryt",
+			        useBtnText: "Använda sig av",
+		        },
+		        buttons: {
+			        historyBtnText: "Historia",
+			        activeVersionBtnText: "Historia",
+			        workingVersionBtnText: "Arbetssätt",
+			        saveBtnText: "Spara",
+			        clearBtnText: "Klar",
+			        publishBtnText: "Publicera",
+		        },
+		        errors: {
+			        EMPTY_AREA: "Välj mall",
+			        ACTIVE_VERSION: "Byt till fungerande version för att redigera",
+			        SAVE_FIRST: "Spara den först för att publicera",
+			        EQUALS_WORKING_VERSION: 'Gör ändringar först!',
+		        }
+	        },
             search: {
                 name: 'Sök'
             },
@@ -1200,7 +1226,9 @@ const texts = {
             appearance: {
                 name: "Appearance",
                 template: "Template",
-                defaultChildTemplate: "Default child template"
+                defaultChildTemplate: "Default child template",
+	            previewTemplateCSSBtnText:'Preview Template CSS Layout',
+	            previewTemplateCSSBtnInfo: 'Click and the working version of template css styles will be applied on current page!'
             },
 	        metadata: {
 		        name: "Metadata",
@@ -1897,6 +1925,30 @@ const texts = {
                     boundDocumentsWarn: 'Some documents related to this template. Do you want to replace it to another template?',
                 }
             },
+	        templatesCSS: {
+		        name: 'Templates CSS',
+		        editorTitle: 'Template CSS Editor',
+		        templatesSelectTitle: 'Choose template',
+		        history: {
+			        headText: "Templates CSS History",
+			        closeBtnText: "Cancel",
+			        useBtnText: "Use",
+		        },
+		        buttons: {
+			        historyBtnText: "History",
+			        activeVersionBtnText: "Active",
+			        workingVersionBtnText: "Working",
+			        saveBtnText: "Save",
+			        clearBtnText: "Clear",
+			        publishBtnText: "Publish",
+		        },
+		        errors: {
+			        EMPTY_AREA: "Choose template!",
+			        ACTIVE_VERSION: "In order to edit switch to working version!",
+			        SAVE_FIRST: "In order to publish please save it first!",
+			        EQUALS_WORKING_VERSION:'Make changes first!'
+		        }
+	        },
             search: {
                 name: 'Search'
             },

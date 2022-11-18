@@ -5,13 +5,14 @@ import com.imcode.imcms.model.Template;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service for work with templates in relation to template files.
  */
 public interface TemplateService {
 
-    void checkTemplates();
+    Set<String> checkTemplates();
 
     List<Template> getAll();
 

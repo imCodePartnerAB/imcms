@@ -6,7 +6,7 @@ import com.imcode.imcms.storage.exception.ConflictFileTypeException;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import com.imcode.imcms.storage.impl.disk.DiskStorageClient;
 import org.apache.commons.io.FileUtils;
-import org.apache.tika.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

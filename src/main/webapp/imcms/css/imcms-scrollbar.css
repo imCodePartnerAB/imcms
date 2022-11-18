@@ -7,6 +7,7 @@
 .imcms-right-side::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
+	height: 6px;
 }
 
 .imcms-right-side__images-container::-webkit-scrollbar-thumb,
@@ -202,4 +203,18 @@
 .roles-table::-webkit-scrollbar-thumb,
 .rules-table-elements::-webkit-scrollbar-thumb {
     background-color: #abacad;
+}
+
+.templates-css-edit-area-container__edit-area::-webkit-scrollbar-thumb {
+	background-color: #abacad;
+}
+
+.templates-css-edit-area-container__edit-area::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.templates-css-edit-area-container__edit-area::-webkit-scrollbar {
+	background-color: transparent;
+	width: 6px;
+	height: 6px;
 }

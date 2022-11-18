@@ -106,6 +106,7 @@ public class DefaultFileService implements FileService {
         if(!Files.isDirectory(path)) return Collections.EMPTY_LIST;
 
         return Files.list(path).sorted()
+		        .filter(filePath -> !filePath.toFile().isHidden())
                 .map(filePath -> {
                     final SourceFile sourceFile = fileToSourceFile.apply(filePath, false);
                     if (isTemplatePath(filePath) && !Files.isDirectory(filePath)) {

@@ -93,6 +93,9 @@ public class DefaultImcmsServices implements ImcmsServices {
 	private final SmsService smsService;
     @Getter
     private final TemplateService templateService;
+
+	@Getter
+	private final TemplateCSSService templateCSSService;
     @Getter
     private final TextService textService;
     private final Properties properties;
@@ -185,7 +188,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 MenuService menuService,
                                 AuthenticationProvidersService authenticationProvidersService,
                                 LanguageService languageService,
-                                TextService textService) {
+                                TemplateCSSService templateCSSService, TextService textService) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -201,7 +204,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.procedureExecutor = procedureExecutor;
         this.documentMapper = documentMapper;
         this.languageMapper = languageMapper;
-        this.textService = textService;
+	    this.templateCSSService = templateCSSService;
+	    this.textService = textService;
 
         this.kerberosLoginService = new KerberosLoginService(config);
         this.accessService = accessService;

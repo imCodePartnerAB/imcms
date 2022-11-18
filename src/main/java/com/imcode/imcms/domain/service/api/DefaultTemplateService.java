@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +38,8 @@ public class DefaultTemplateService implements TemplateService {
 
     DefaultTemplateService(TemplateRepository templateRepository, TextDocumentTemplateService textDocumentTemplateService,
                            DocumentMapper documentMapper,
-                           @Value("WEB-INF/templates/text") File templateDirectory, @Value("${TemplatePath}") Path templateAdminPath) {
+                           @Value("WEB-INF/templates/text") File templateDirectory,
+                           @Value("${TemplatePath}") Path templateAdminPath) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
@@ -52,9 +50,11 @@ public class DefaultTemplateService implements TemplateService {
 
     /**
      * Check template files and save/delete in the DB
+     *
+     * @return Set of template names or empty set if there are no templates
      */
     @Override
-    public void checkTemplates() {
+    public Set<String> checkTemplates() {
         final Set<String> savedTemplateNames = templateRepository.findAll().stream()
                 .map(Template::getName)
                 .collect(Collectors.toSet());
@@ -62,7 +62,7 @@ public class DefaultTemplateService implements TemplateService {
         final String[] templateNames = templateDirectory.list(
                 (dir, name) -> templateExtensions.contains(FilenameUtils.getExtension(name)));
 
-        if(templateNames == null) return;
+	    if (templateNames == null) return Collections.emptySet();
 
         //add templates missing in the db
         Arrays.stream(templateNames)
@@ -72,11 +72,14 @@ public class DefaultTemplateService implements TemplateService {
 
         //delete templates from db that were manually deleted
         final Set<TemplateDTO> allTemplates = templateRepository.findAll().stream().map(TemplateDTO::new).collect(Collectors.toSet());
-        if (allTemplates.size() > templateNames.length) {
-            final Set<String> templateNamesList = Arrays.stream(templateNames).map(FilenameUtils::getBaseName).collect(Collectors.toSet());
+	    final Set<String> templateNamesList = Arrays.stream(templateNames).map(FilenameUtils::getBaseName).collect(Collectors.toSet());
+
+	    if (allTemplates.size() > templateNamesList.size()) {
             allTemplates.stream().filter(template -> !templateNamesList.contains(template.getName()))
                     .forEach(template -> delete(template.getId()));
         }
+
+		return templateNamesList;
     }
 
     @Override

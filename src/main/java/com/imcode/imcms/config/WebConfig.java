@@ -46,7 +46,7 @@ class WebConfig implements WebMvcConfigurer {
         viewResolver.setPrefix("/WEB-INF/templates/text/");
         viewResolver.setSuffix(".jsp");
         viewResolver.setOrder(1);
-	    viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService", "documentMetadataService");
+	    viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService", "documentMetadataService", "templateCSSService");
         return viewResolver;
     }
 

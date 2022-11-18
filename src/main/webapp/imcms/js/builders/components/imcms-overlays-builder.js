@@ -3,7 +3,8 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
     const defaultAttributes = {
         delay: {show: 400, hide: null},
         placement: 'top',
-        followCursor: false
+        followCursor: false,
+	    hideOnClick: true
     };
 
     /**
@@ -22,7 +23,8 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
         {
             delay = defaultAttributes.delay,
             placement = defaultAttributes.placement,
-            followCursor = defaultAttributes.followCursor
+            followCursor = defaultAttributes.followCursor,
+	        hideOnClick = defaultAttributes.hideOnClick
         } = defaultAttributes
     ) {
         const correctDelay = getCorrectDelay(delay);
@@ -33,6 +35,7 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
             placement: placement,
             theme: 'default',
             followCursor: followCursor,
+	        hideOnClick: hideOnClick,
             zIndex: 999999,
             plugins: [tippy.followCursor]
         })
@@ -41,6 +44,14 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
     function changeTooltipText($element, text){
         $element[0]._tippy.setContent(text);
     }
+
+	function enable($element) {
+		$element[0]._tippy.enable();
+	}
+
+	function disable($element){
+		$element[0]._tippy.disable();
+	}
 
     function getCorrectDelay(delay) {
         if (!isNaN(delay)) {
@@ -60,6 +71,8 @@ define('imcms-overlays-builder', ['jquery', 'imcms-bem-builder', 'tippy.js'], fu
 
     return {
         defaultTooltip: buildDefaultTooltip,
+	    enable: enable,
+	    disable: disable,
         changeTooltipText: changeTooltipText
     }
 });

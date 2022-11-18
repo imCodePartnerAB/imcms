@@ -1,9 +1,9 @@
 define("imcms-templates-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
-        "imcms-i18n-texts", "imcms-page-info-tab"
+        "jquery","imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
+        "imcms-i18n-texts", "imcms-page-info-tab", "imcms-templates-css-rest-api", "imcms-templates-css-versions"
     ],
-    function (BEM, components, templatesRestApi, docTypes, texts, PageInfoTab) {
+	function ($, BEM, components, templatesRestApi, docTypes, texts, PageInfoTab, templatesCSSRestApi, templatesCSSVersions) {
 
         texts = texts.pageInfo.appearance;
 
@@ -26,7 +26,22 @@ define("imcms-templates-tab-builder",
                     name: "childTemplate",
                     text: texts.defaultChildTemplate
                 }),
-                $defaultChildTemplateSelect = $defaultChildTemplateSelectContainer.getSelect();
+                $defaultChildTemplateSelect = $defaultChildTemplateSelectContainer.getSelect(),
+
+	            $previewTemplateCSSBtn = components.buttons.neutralButton( {
+		            text: texts.previewTemplateCSSBtnText,
+		            click: onPreviewTemplateCSSBtnClick
+	            }),
+	            $descriptionIcon = $('<div class="imcms-control imcms-control--edit imcms-control--info">'),
+	            $previewTemplateCSSContainer = new BEM({
+		            block: 'preview-template-css-container',
+		            elements: {
+			            'preview-btn': $previewTemplateCSSBtn,
+			            'description-icon': $descriptionIcon
+		            }
+	            }).buildBlockStructure('<div>', {});
+
+			components.overlays.defaultTooltip($descriptionIcon, texts.previewTemplateCSSBtnInfo)
 
             tabData.$templateSelect = $templateSelect;
             tabData.$defaultChildTemplateSelect = $defaultChildTemplateSelect;
@@ -44,9 +59,26 @@ define("imcms-templates-tab-builder",
 
             return [
                 $templateSelectContainer,
-                $defaultChildTemplateSelectContainer
+                $defaultChildTemplateSelectContainer,
+	            $previewTemplateCSSContainer
             ];
         };
+
+		function onPreviewTemplateCSSBtnClick() {
+			const id = "templateCSS";
+			let templateCSS = document.getElementById(id);
+
+			if (!templateCSS) {
+				templateCSS = document.createElement('style');
+				templateCSS.id = id;
+			}
+
+			templatesCSSRestApi.get(tabData.$templateSelect.getSelectedValue(), templatesCSSVersions.WORKING)
+				.done((data) => {
+					templateCSS.innerHTML = data;
+					document.head.appendChild(templateCSS);
+				})
+		}
 
         TemplatesTab.prototype.fillTabDataFromDocument = document => {
             if (document.template) {

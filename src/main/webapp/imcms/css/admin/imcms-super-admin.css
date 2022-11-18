@@ -1088,3 +1088,191 @@
     display: flex;
     align-items: center;
 }
+
+
+
+.templates-select-container > button {
+	display: inline-block;
+}
+
+.templates-css-edit-area-container {
+	position: relative;
+	height: 600px;
+	background-color: #ececec;
+	border: solid 1px #d1d2c6;
+	margin: 0.8em 0;
+}
+
+.templates-css-edit-area-container__edit-area{
+	cursor: not-allowed;
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0.5em;
+	white-space: pre;
+	resize: none;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 15px;
+	line-height: 15px;
+	color: #2f4047;
+}
+
+.templates-css-edit-area-container,
+.templates-css-edit-area-container__edit-area:focus-visible,
+.templates-css-edit-area-container__loading-animation,
+.loading-animation{
+	outline: none;
+}
+
+.templates-css-controls {
+	display: block;
+}
+
+.templates-css-controls > button {
+	display: inline-block;
+}
+
+.imcms-right-side .imcms-right-side__templates-css-history-view {
+	padding-top: 10px;
+	overflow: auto;
+}
+
+.imcms-pop-up-modal.template-css-history .imcms-pop-up-modal__head {
+	height: 6%;
+}
+
+.imcms-pop-up-modal.template-css-history .imcms-pop-up-modal__right-side {
+	background-color: #f3f3fc;
+	height: 84%;
+	padding: 0 10px;
+	position: relative;
+}
+
+.imcms-right-side .imcms-right-side__template-css-history-view {
+	padding-top: 10px;
+	overflow: auto;
+}
+
+.imcms-pop-up-modal.template-css-history .template-css-history-list.imcms-pop-up-modal__left-side {
+	padding: 5px 0 5px 0;
+	overflow: auto;
+	height: 94%;
+}
+
+.imcms-pop-up-modal.template-css-history .imcms-pop-up-modal__footer {
+	border-top: solid 1px #d3d8de;
+	padding: 8px;
+	height: 10%;
+}
+
+.template-css-history .template-css-history-list .template-css-history-date-unit .template-css-history-date-unit__date .template-css-history-date-container__date {
+	padding-top: 10px;
+	padding-left: 10px;
+	font-weight: bold;
+	cursor: default;
+}
+
+.template-css-history .template-css-history-list .template-css-history-date-unit .template-css-history-date-unit__date .template-css-history-date-container__separator {
+	border-bottom: solid 1px #d3d8de;
+}
+
+.template-css-history .template-css-history-list .template-css-history-date-unit .template-css-history-date-unit__unit {
+	padding: 5px 0 5px 15px;
+	cursor: pointer;
+	word-break: break-all;
+}
+
+.template-css-history .template-css-history-list .template-css-history-date-unit .template-css-history-date-unit__unit.template-history-date-unit__unit--active {
+	background-color: #4ca9d82e;
+}
+
+.template-css-history .template-css-history-list .template-css-history-date-unit .template-css-history-date-unit__unit:hover {
+	background-color: #d3d8de61;
+}
+
+.template-css-history {
+	z-index: 65536;
+}
+
+.template-css-history + .imcms-modal-layout {
+	z-index: 65535;
+}
+
+.templates-select-container .imcms-select {
+	width: 25%;
+}
+
+.templates-select-container .imcms-select .imcms-drop-down-list{
+	width: 100%;
+}
+
+.templates-select-container__controls > button {
+	display: inline-block;
+
+}
+
+.templates-select-container .controls__load-history-button {
+	display: none;
+	padding: 15px 28px;
+}
+
+.templates-select-container .templates-select-container__controls {
+	display: inline-block;
+	width: 25%;
+	margin-left: 15px;
+}
+
+.templates-css-controls-left-side,
+.templates-css-controls-right-side,
+.templates-css-controls-left-side > *,
+.templates-css-controls-right-side > * {
+	display: inline-block;
+}
+
+.templates-css-controls-left-side,
+.templates-css-controls-right-side {
+	display: none;
+}
+
+.templates-css-controls-left-side {
+	float: left;
+}
+
+.templates-css-controls-right-side {
+	float: right;
+}
+
+.templates-css-controls-left-side .templates-css-controls-left-side__working {
+	margin-left: 5px;
+}
+
+.templates-css-controls-right-side > button {
+	padding: 15px 28px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.templates-css-controls .templates-css-controls-left-side .imcms-button--neutral.active {
+	text-decoration: underline;
+}
+
+.templates-css-edit-area-container__loading-animation,
+.imcms-pop-up-modal.template-css-history .imcms-pop-up-modal__right-side .imcms-right-side__loading-animation {
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+}
+
+.templates-css-edit-area-container__loading-animation .loading-animation,
+.imcms-right-side__loading-animation .loading-animation{
+	left: 46%;
+	top: 50%;
+}
+
+.templates-select-container{
+	height: 72px;
+}

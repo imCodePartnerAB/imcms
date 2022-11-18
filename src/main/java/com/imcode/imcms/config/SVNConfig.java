@@ -1,0 +1,80 @@
+package com.imcode.imcms.config;
+
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
+import org.tmatesoft.svn.core.io.SVNRepository;
+import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
+import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+@Configuration
+public class SVNConfig {
+	private String repositoryUrl;
+	private String username;
+	private String password;
+	private Path localSVNRepositoryFolder;
+
+	public SVNConfig(@Value("${svn.url:#{null}}") String repositoryUrl,
+	                 @Value("${svn.username:#{null}}") String username,
+	                 @Value("${svn.password:#{null}}") String password,
+	                 ServletContext servletContext) {
+		this.repositoryUrl = repositoryUrl;
+		this.username = username;
+		this.password = password;
+		this.localSVNRepositoryFolder = Path.of(servletContext.getRealPath("/"), "WEB-INF/svn");
+	}
+
+	@PostConstruct
+	@SneakyThrows
+	private void init() {
+		if (StringUtils.isEmpty(repositoryUrl)) {
+			Files.createDirectory(localSVNRepositoryFolder);
+			this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
+		}
+	}
+
+	@Bean
+	public ISVNAuthenticationManager svnAuthenticationManager() {
+		return SVNWCUtil.createDefaultAuthenticationManager(username, password.toCharArray());
+	}
+
+	@Bean
+	public SVNURL svnRepositoryURL() {
+		try {
+			return SVNURL.parseURIEncoded(repositoryUrl);
+		} catch (SVNException e) {
+			throw new RuntimeException(String.format("Incorrect repository URL: %s", repositoryUrl), e);
+		}
+	}
+
+	@Bean
+	public SVNRepository svnRepository() {
+		try {
+			final SVNRepository repository = SVNRepositoryFactory.create(svnRepositoryURL());
+			repository.setAuthenticationManager(svnAuthenticationManager());
+
+			return repository;
+		} catch (SVNException e) {
+			throw new RuntimeException(String.format("Cannot create repository: %s", svnRepositoryURL()), e);
+		}
+	}
+
+	@Bean
+	public SvnOperationFactory svnOperationFactory() {
+		final SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
+		svnOperationFactory.setAuthenticationManager(svnAuthenticationManager());
+
+		return svnOperationFactory;
+	}
+}

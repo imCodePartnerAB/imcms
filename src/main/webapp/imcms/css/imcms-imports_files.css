@@ -1,6 +1,7 @@
 @import url("imcms-reset.css");
 @import url("grid/imcms-grid.css");
 @import url("page-info/imcms-life-cycle_page_info.css");
+@import url("page-info/imcms-appearance_page_info.css");
 @import url("page-info/imcms-access_page_info.css");
 @import url("page-info/imcms-status_page_info.css");
 @import url("page-info/imcms-cache_page_info.css");
