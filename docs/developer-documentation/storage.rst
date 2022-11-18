@@ -67,4 +67,16 @@ Usage example
 API
 ---
 
-Coming soon...
+.. seealso:: Read Storage API :doc:`here </developer-documentation/api/storage/index>`
+
+How to get the client that is used to save **images**
+
+.. code-block:: java
+
+    StorageСlient storageСlient = Imcms.getServices().getManagedBean("imageStorageClient", StorageClient.class);
+
+How to get the client that is used to save **file documents**
+
+.. code-block:: java
+
+    StorageСlient storageСlient = Imcms.getServices().getManagedBean("fileDocumentStorageClient", StorageClient.class);

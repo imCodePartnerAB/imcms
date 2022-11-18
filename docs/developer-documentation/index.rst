@@ -8,3 +8,5 @@ Developer Documentation
     cache
     storage
     image-processing
+    solr
+    api/index
