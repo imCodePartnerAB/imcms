@@ -117,8 +117,10 @@ public class AdminRoles extends HttpServlet {
         String opt = Html.createOptionList(rolesV, Arrays.asList(new String[]{""}));
         vm.put("ROLES_MENU", opt);
 
+        vm.put("DISPLAY_AZURE", identifierId.isEmpty() ? "none" : "table-cell");
+
 	    final List<ExternalRole> externalRoles = new ArrayList<>();
-	    if (!identifierId.equalsIgnoreCase(DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_LDAP)) {
+	    if (!identifierId.isEmpty() && !identifierId.equalsIgnoreCase(DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_LDAP)) {
 		    final AuthenticationProvider authenticationProvider = imcref.getAuthenticationProviderService().getAuthenticationProvider(identifierId);
 
 			externalRoles.addAll(authenticationProvider.getRoles());

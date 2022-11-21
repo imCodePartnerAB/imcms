@@ -53,13 +53,13 @@
 			#ROLES_MENU#
 		</select></td>
 
-        <td class="imcmsAdmText" nowrap>&nbsp;<? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;</td>
-        <td>
+        <td style="display: #DISPLAY_AZURE#" class="imcmsAdmText" nowrap>&nbsp;<? templates/sv/AdminRoles_external_roles.htm/3 ?> &nbsp;</td>
+        <td style="display: #DISPLAY_AZURE#">
             <select name="AZURE_ROLE_ID" size="10" id="selectAzureBox" onchange="selectedValue()">
                 #EXTERNAL_ROLES_MENU#
             </select>
         </td>
-        <td>
+        <td style="display: #DISPLAY_AZURE#">
             <div class="multiselect">
                 <div class="selectBox" onclick="showCheckboxes()">
                     <select>
@@ -72,7 +72,7 @@
                 </div>
             </div>
         </td>
-        <td><input type="submit" class="imcmsFormBtnSmall" id="linkSaveRoles" name="SAVE_EXTERNAL_TO_LOCAL_ROLE"
+        <td style="display: #DISPLAY_AZURE#"><input type="submit" class="imcmsFormBtnSmall" id="linkSaveRoles" name="SAVE_EXTERNAL_TO_LOCAL_ROLE"
                    value="<? templates/sv/change_img.html/2007 ?>"></td>
 	</tr>
     </table>
