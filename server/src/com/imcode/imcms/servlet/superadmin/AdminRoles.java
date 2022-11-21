@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.model.AuthenticationProvider;
@@ -117,7 +118,7 @@ public class AdminRoles extends HttpServlet {
         String opt = Html.createOptionList(rolesV, Arrays.asList(new String[]{""}));
         vm.put("ROLES_MENU", opt);
 
-        vm.put("DISPLAY_AZURE", identifierId.isEmpty() ? "none" : "table-cell");
+        vm.put("DISPLAY_AZURE", !AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD.equalsIgnoreCase(identifierId) ? "none" : "table-cell");
 
 	    final List<ExternalRole> externalRoles = new ArrayList<>();
 	    if (!identifierId.isEmpty() && !identifierId.equalsIgnoreCase(DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_LDAP)) {
