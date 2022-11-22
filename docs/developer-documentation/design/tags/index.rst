@@ -10,3 +10,4 @@ Tags
     menu
     loop
     metadata
+    templateCSS

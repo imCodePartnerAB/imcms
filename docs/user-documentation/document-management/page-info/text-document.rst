@@ -13,13 +13,53 @@ Introduction
 ------------
 
 Text Document represents a web page.
-In this article, we'll take a look at special tabs for *Text*, documents in the *Page Info*.
+In this article, we'll take a look at special tabs for *Text* documents in the *Page Info*.
 
 ------------
 Metadata Tab
 ------------
 
-Coming soon...
+**Metadata** – is an equivalent entity to HTML ``<meta name=”…” property=”…” content=”…”>`` tag.
+
+Here you can add, delete, change metas. Each language has unique metadata so you can control it differently.
+
+.. image:: _static/metadata/metadata-tab.png
+
+In order to add new one, you have to:
+
+1. Press **ADD+** button.
+
+2. Then select required meta name.
+
+.. image:: _static/metadata/metas.png
+
+3. Write value.
+
+.. image:: _static/metadata/ready-meta.png
+
+In order to delete meta tag, you have to click on **X**.
+
+*******
+Preview
+*******
+
+**After saving**, you can see the added metas only **in Preview mode**.
+
+.. image:: _static/metadata/save-and-preview.png
+
+**After publishing** the document, you can see the added metas also **on a public page**.
+
+.. image:: _static/metadata/publish-and-public.png
+
+*************
+Configuration
+*************
+
+If after adding metas you do not have them on the page, then
+ask the developer to enable this feature or read :doc:`Metadata </developer-documentation/design/tags/metadata>` article.
+
+If you need additional meta name, ask the developer to add it or
+read :doc:`Metadata </developer-documentation/design/tags/metadata>` article.
 
 --------------
 Appearance Tab
