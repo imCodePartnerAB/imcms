@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileAdmin extends HttpServlet {
 
@@ -29,6 +30,10 @@ public class FileAdmin extends HttpServlet {
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
+	private static final List<Integer> fileAdminAllowedIds = Arrays.stream(Imcms.getServices().getConfig().getAllowFileAdmin().split(","))
+															.mapToInt(value -> Integer.parseInt(value.trim()))
+															.boxed().collect(Collectors.toList());
+
 
     static File findUniqueFilename(File file) {
         File uniqueFile = file;
@@ -47,7 +52,7 @@ public class FileAdmin extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-	    if (!hasAccess(user.getId())) {
+	    if (!user.isSuperAdmin() || !hasAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -84,7 +89,7 @@ public class FileAdmin extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
-	    if (!hasAccess(user.getId())) {
+	    if (!user.isSuperAdmin() || !hasAccess(user.getId())) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
@@ -166,22 +171,7 @@ public class FileAdmin extends HttpServlet {
     }
 
 	public static boolean hasAccess(int userId) {
-		final String allowFileAdmin = Imcms.getServices().getConfig().getAllowFileAdmin();
-		boolean hasAccess = false;
-
-		if (StringUtils.isNotBlank(allowFileAdmin)) {
-			final List<Integer> userIdsAllowedToAccessFileAdmin = new ArrayList<>();
-			final StringTokenizer tokenizer = new StringTokenizer(allowFileAdmin, ",");
-
-			for (int i = 0; i < tokenizer.countTokens(); i++) {
-				String id = tokenizer.nextToken().trim();
-				userIdsAllowedToAccessFileAdmin.add(Integer.parseInt(id));
-			}
-
-			hasAccess = userIdsAllowedToAccessFileAdmin.contains(userId);
-		}
-
-		return hasAccess;
+		return fileAdminAllowedIds.contains(userId);
 	}
 
     private File[] getRoots() {
