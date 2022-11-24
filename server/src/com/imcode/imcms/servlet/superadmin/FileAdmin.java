@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FileAdmin extends HttpServlet {
 
@@ -30,9 +29,6 @@ public class FileAdmin extends HttpServlet {
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
-	private static final List<Integer> fileAdminAllowedIds = Arrays.stream(Imcms.getServices().getConfig().getAllowFileAdmin().split(","))
-															.mapToInt(value -> Integer.parseInt(value.trim()))
-															.boxed().collect(Collectors.toList());
 
 
     static File findUniqueFilename(File file) {
@@ -171,7 +167,9 @@ public class FileAdmin extends HttpServlet {
     }
 
 	public static boolean hasAccess(int userId) {
-		return fileAdminAllowedIds.contains(userId);
+        return Arrays.stream(Imcms.getServices().getConfig().getAllowFileAdmin().split(","))
+                .filter(id -> !id.isEmpty())
+                .anyMatch(id -> userId == Integer.parseInt(id.trim()));
 	}
 
     private File[] getRoots() {
