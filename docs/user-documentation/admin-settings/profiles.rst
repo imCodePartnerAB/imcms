@@ -11,7 +11,7 @@ In this article:
 Introduction
 ------------
 
-**Profile** is used to facilitate :doc:`document creation </user-documentation/document-management/document-manager/#document-management>`.
+**Profile** is used to facilitate :doc:`document creation </user-documentation/document-management/document-manager>`.
 
 **Profile** has the following fields:
 

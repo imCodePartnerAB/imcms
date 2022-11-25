@@ -23,7 +23,7 @@ By default, the system has 2 roles:
 .. note:: Each user has *Users* role.
 
 We specify permissions for the entire system when :doc:`creating a role</user-documentation/admin-settings/roles>`.
-Then we grant permissions to these roles in a document separately when :doc:`creating the document</user-documentation/document-management/page-info/base/#access-tab>`.
+Then we grant permissions to these roles in a document separately when :doc:`creating the document</user-documentation/document-management/page-info/base>`.
 
 -----------------------------------
 Role permissions (the whole system)
