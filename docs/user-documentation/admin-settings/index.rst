@@ -11,6 +11,7 @@ or using following link - ``<domain-name>/api/admin/manager``.
     roles
     ip-access
     files
+    template-css
     link-validator
     categories
     profiles

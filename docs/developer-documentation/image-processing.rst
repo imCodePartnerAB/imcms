@@ -75,4 +75,5 @@ For ImageOptim:
 API
 ---
 
-Coming soon...
+.. seealso:: Read how to create and compress images in the :doc:`ImcmsImageUtils</developer-documentation/api/imcmsImageUtils>`
+    and :doc:`ImageCompressor</developer-documentation/api/imageCompressor>` API articles.
