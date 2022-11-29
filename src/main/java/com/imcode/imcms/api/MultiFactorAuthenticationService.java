@@ -1,12 +1,15 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.api.exception.MailException;
 import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.UserDomainObject;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,10 +28,10 @@ import java.util.Optional;
 
 import static com.imcode.imcms.servlet.VerifyUser.*;
 
+@Log4j2
 @Service
 public class MultiFactorAuthenticationService {
 	private final static Logger mainLog = LogManager.getLogger(ImcmsConstants.MAIN_LOG);
-	private final Logger logger = LogManager.getLogger(MultiFactorAuthenticationService.class);
 	@Value("${2fa.enabled}")
 	private boolean twoFactoryAuthEnabled;
 	@Value("${2fa.cookie.lifetime}")
@@ -39,17 +42,22 @@ public class MultiFactorAuthenticationService {
 	private boolean lettersEnabled;
 	@Value("${2fa.password-numbers}")
 	private boolean numbersEnabled;
+	@Value("${2fa.email-if-phone-missing}")
+	private boolean useEmailIfPhoneMissing;
 	private final SmsService smsService;
+	private final MailService mailService;
 	private final UserLockValidator lockValidator;
 	private static final String COOKIE_NAME_2FA = "2fa";
 	private final LocalizedMessage ERROR_NO_PHONE_NUMBER_FOUND = new LocalizedMessage("templates/login/2fa/phone-not-found");
 	private final LocalizedMessage ERROR_WRONG_CODE = new LocalizedMessage("templates/login/2fa/incorrect-code");
 	private final LocalizedMessage ERROR_CODE_NOT_SENT = new LocalizedMessage("templates/login/2fa/code-not-sent");
-	private final LocalizedMessage SMS_AUTHORIZATION_CODE_MESSAGE = new LocalizedMessage("templates/login/2fa/authorization_code/message");
+	private final LocalizedMessage AUTHORIZATION_CODE_MESSAGE = new LocalizedMessage("templates/login/2fa/authorization_code/message");
+	private final LocalizedMessageFormat EMAIL_SUBJECT = new LocalizedMessageFormat("templates/login/2fa/email/authorization_code/subject");
 	private final String SECOND_FACTOR_IN_PROGRESS = "second_factor_in_progress";
 
-	public MultiFactorAuthenticationService(SmsService smsService, UserLockValidator lockValidator) {
+	public MultiFactorAuthenticationService(SmsService smsService, MailService mailService, UserLockValidator lockValidator) {
 		this.smsService = smsService;
+		this.mailService = mailService;
 		this.lockValidator = lockValidator;
 	}
 
@@ -61,13 +69,13 @@ public class MultiFactorAuthenticationService {
 		final String oneTimePassword = RandomStringUtils.random(oneTimePasswordLength, lettersEnabled, numbersEnabled);
 		final Optional<PhoneNumber> phoneNumber = user.getPhoneNumbersOfType(PhoneNumberType.MOBILE).stream().findAny();
 
-		if (phoneNumber.isEmpty()) {
+		if (phoneNumber.isEmpty() && !useEmailIfPhoneMissing) {
 			addErrorMessage(ERROR_NO_PHONE_NUMBER_FOUND);
 			mainLog.info("->User '" + user.getLogin() + "' cannot finish authorization: No phone number found.");
 			return;
 		}
 
-		if (!smsService.sendSms(SMS_AUTHORIZATION_CODE_MESSAGE.toLocalizedString(user) + oneTimePassword, phoneNumber.get().getNumber())) {
+		if (!sendOTP(user, phoneNumber, oneTimePassword)) {
 			addErrorMessage(ERROR_CODE_NOT_SENT);
 			return;
 		}
@@ -155,6 +163,35 @@ public class MultiFactorAuthenticationService {
 
 		session.setAttribute(SECOND_FACTOR_IN_PROGRESS, true);
 		session.setAttribute("user", user);
+	}
+
+	private boolean sendOTP(UserDomainObject user, Optional<PhoneNumber> phoneNumber, String oneTimePassword) {
+		final String message = AUTHORIZATION_CODE_MESSAGE.toLocalizedString(user) + oneTimePassword;
+
+		if (phoneNumber.isPresent()) {
+			return smsService.sendSms(message, phoneNumber.get().getNumber());
+		} else {
+			return sendOTPUsingMail(user, oneTimePassword);
+		}
+	}
+
+	private boolean sendOTPUsingMail(UserDomainObject user, String message) {
+		final String emailServerMaster = Imcms.getServices().getSystemData().getServerMasterAddress();
+		final String userEmail = user.getEmail();
+		try {
+
+			final Mail mail = new Mail(emailServerMaster);
+			mail.setSubject(EMAIL_SUBJECT.setArguments(new Object[]{emailServerMaster}).toLocalizedString(user));
+			mail.setBody(message);
+			mail.setToAddresses(new String[]{userEmail});
+
+			mailService.sendMail(mail);
+
+			return true;
+		} catch (MailException e) {
+			log.error(String.format("Failed to send one time password to the user %s, using e-mail address %s.", user, userEmail), e);
+			return false;
+		}
 	}
 
 	public void cleanSession(HttpSession session) {
