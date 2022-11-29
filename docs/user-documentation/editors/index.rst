@@ -9,7 +9,8 @@ or via ``<domain-name>/servlet/AdminDoc?meta_id=<id>``.
 
 There are 4 types of content on the page that we can edit: *text*, *image*, *menu*, *loop*.
 
-A *loop* is a cycle of one or more combined content types. For example, 5 times display an image on the left and text on the right.
+A *loop* is a cycle of one or more combined content types.
+For example, 5 times display different images on the left and different texts on the right.
 
 .. toctree::
     :titlesonly:
