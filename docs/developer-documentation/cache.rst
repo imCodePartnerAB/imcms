@@ -51,11 +51,19 @@ Public Content Cache
 
 The system keeps a cache of the results of finding the content of the *public version*, currently only images.
 
+************
+Static Cache
+************
+
+The system caches such files: .jpg, .jpeg, .gif, .png, .ico, .wof, .pdf, .ttf, .svg.
+
 -----------
 Other Cache
 -----------
 
 The system keeps a cache of the results of finding the content of the *working version*, currently only images.
+
+The system caches such files: .jsp, .js, .css.
 
 --------------
 Clearing Cache
@@ -69,4 +77,14 @@ In order to clear a *cache group* for the entire system, use the *Admin Page* ->
 API
 ---
 
-Coming soon...
+.. seealso:: You can manage Public Document Cache using ``DocumentsCache`` class.
+    Check out the API :doc:`here </developer-documentation/api/documentsCache>`.
+
+.. seealso:: You can manage all types of cache using ``DefaultTemporalDataService`` class.
+    Check out the API :doc:`here </developer-documentation/api/defaultTemporalDataService>`.
+
+How you can get ``EhCacheCacheManager``:
+
+.. code-block:: java
+
+	Imcms.getServices().getManagedBean("ehCacheCacheManager", EhCacheCacheManager.class);

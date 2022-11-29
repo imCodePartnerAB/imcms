@@ -61,3 +61,5 @@ How to start indexing the desired document
 ``imcode.server.document.index.DocumentIndex`` contain the name of the keys that are used when indexing documents.
 
 .. seealso:: Read how use quick search in :doc:`SearchDocumentService</developer-documentation/api/searchDocumentService>` API article.
+
+.. seealso:: Read how reindex all documents in :doc:`TemporalDataService</developer-documentation/api/temporalDataService>` API article.

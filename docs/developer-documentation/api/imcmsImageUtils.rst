@@ -43,3 +43,22 @@ ImageData
 ``imcode.util.image.Format format`` - image file format.
 
 ``com.imcode.imcms.domain.dto.ImageCropRegionDTO cropRegion`` - new image borders (X1, X2, Y1, Y2).
+
+``boolean compress`` - whether to compress the image.
+
+-------------
+Usage example
+-------------
+
+.. code-block:: java
+
+        ImageSource imageSource = new FileStorageImageSource("img1.jpg");
+
+        ImageData imageData = new ImageDTO();
+        imageData.setSource(imageSource);
+        imageData.setHeight(100);
+        imageData.setResize(Resize.DEFAULT);
+        imageData.setFormat(Format.JPEG);
+        imageData.setCompress(false);
+
+        byte[] generatedImage = ImcmsImageUtils.generateImage(imageData);

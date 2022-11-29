@@ -7,4 +7,7 @@ API
     accessService
     searchDocumentService
     imageCompressor
+    imcmsImageUtils
     storage/index
+    documentsCache
+    temporalDataService
