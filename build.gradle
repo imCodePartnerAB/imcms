@@ -142,7 +142,7 @@ dependencies {
     implementation "mysql:mysql-connector-java:8.0.29"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
 
-    implementation 'org.tmatesoft.svnkit:svnkit:1.10.8'
+    implementation 'org.tmatesoft.svnkit:svnkit:1.10.9'
 
     testImplementation 'com.jayway.jsonpath:json-path-assert:2.7.0'
     testImplementation 'org.dbunit:dbunit:2.7.3'

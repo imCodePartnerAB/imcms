@@ -1,6 +1,7 @@
 package com.imcode.imcms.config;
 
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import javax.servlet.ServletContext;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Log4j2
 @Configuration
 public class SVNConfig {
 	private String repositoryUrl;
@@ -41,6 +43,7 @@ public class SVNConfig {
 		if (StringUtils.isEmpty(repositoryUrl)) {
 			Files.createDirectory(localSVNRepositoryFolder);
 			this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
+			log.info(String.format("Created local SVN repository with path: %s", repositoryUrl));
 		}
 	}
 
@@ -63,6 +66,8 @@ public class SVNConfig {
 		try {
 			final SVNRepository repository = SVNRepositoryFactory.create(svnRepositoryURL());
 			repository.setAuthenticationManager(svnAuthenticationManager());
+
+			log.info(String.format("Created connection with SVN repository: %s", svnRepositoryURL()));
 
 			return repository;
 		} catch (SVNException e) {
