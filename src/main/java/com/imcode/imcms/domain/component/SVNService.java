@@ -32,19 +32,15 @@ public class SVNService {
 	 * @return Collection of SVNLogEntry entities.
 	 * @see SVNLogEntry
 	 */
-	public Collection<SVNLogEntry> getRevisions(String filePath) {
-		try {
-			final SvnLog svnLog = svnOperationFactory.createLog();
+	public Collection<SVNLogEntry> getRevisions(String filePath) throws SVNException {
+		final SvnLog svnLog = svnOperationFactory.createLog();
 
-			svnLog.setSingleTarget(SvnTarget.fromURL(appendToSVNURL(filePath, true)));
-			svnLog.setRevisionRanges(Collections.singleton(
-					SvnRevisionRange.create(SVNRevision.create(1),
-							SVNRevision.HEAD)));
+		svnLog.setSingleTarget(SvnTarget.fromURL(appendToSVNURL(filePath)));
+		svnLog.setRevisionRanges(Collections.singleton(
+				SvnRevisionRange.create(SVNRevision.create(1),
+						SVNRevision.HEAD)));
 
-			return svnLog.run(null);
-		} catch (SVNException e) {
-			throw new RuntimeException("Error receiving revisions", e);
-		}
+		return svnLog.run(null);
 	}
 
 	/**
@@ -53,7 +49,7 @@ public class SVNService {
 	 * @param filePath accords to file path on SVN. e.g. ../src/main/webapp//WEB-INF/templates/css/demo.css
 	 * @return OutputStream that contains all bytes
 	 */
-	public OutputStream get(String filePath) {
+	public OutputStream get(String filePath) throws SVNException {
 		return getFile(filePath, LATEST_REVISION);
 	}
 
@@ -65,7 +61,7 @@ public class SVNService {
 	 * @return OutputStream that contains all bytes
 	 * @see #getRevisions(String)
 	 */
-	public OutputStream get(String filePath, Long revision) {
+	public OutputStream get(String filePath, Long revision) throws SVNException {
 		return getFile(filePath, (revision == null) ? LATEST_REVISION : revision);
 	}
 
@@ -77,23 +73,29 @@ public class SVNService {
 	 * @param message    commit message that describes you actions.
 	 * @param properties custom properties you want to put on. Can be null or empty. e.g. {@value IMCODE_USERNAME_PROPERTY}
 	 */
-	public void commit(Path path, String message, Map<String, String> properties) {
-		try {
-			final SvnCommit commit = svnOperationFactory.createCommit();
+	public void commit(Path path, String message, Map<String, String> properties) throws SVNException {
+		final SvnCommit commit = svnOperationFactory.createCommit();
 
-			commit.setSingleTarget(SvnTarget.fromFile(path.toFile()));
-			commit.setCommitMessage(message);
+		commit.setSingleTarget(SvnTarget.fromFile(path.toFile()));
+		commit.setCommitMessage(message);
 
-			if (MapUtils.isNotEmpty(properties)) {
-				for (Map.Entry<String, String> propertyEntry : properties.entrySet()) {
-					commit.setRevisionProperty(propertyEntry.getKey(), SVNPropertyValue.create(propertyEntry.getValue()));
-				}
-			}
+		if (MapUtils.isNotEmpty(properties))
+			commit.setRevisionProperties(SVNProperties.wrap(properties));
 
-			commit.run();
-		} catch (SVNException e) {
-			throw new RuntimeException("Error performing commit", e);
-		}
+		commit.run();
+	}
+
+	public void move(String oldPath, String newPath, Map<String, String> properties, String message) throws SVNException {
+		//fixme somehow svn preserves file history changes(revisions, messages etc) but file data on each specific revision lost
+		final SvnRemoteCopy remoteCopy = svnOperationFactory.createRemoteCopy();
+
+		remoteCopy.addCopySource(SvnCopySource.create(SvnTarget.fromURL(appendToSVNURL(oldPath)), SVNRevision.HEAD));
+		remoteCopy.setSingleTarget(SvnTarget.fromURL(appendToSVNURL(newPath)));
+		remoteCopy.setMove(true);
+		remoteCopy.setCommitMessage(message);
+		remoteCopy.setRevisionProperties(SVNProperties.wrap(properties));
+
+		remoteCopy.run();
 	}
 
 	/**
@@ -101,7 +103,7 @@ public class SVNService {
 	 *
 	 * @param path real path to local file. e.g. /home/imcms/v6/WEB-INF/templates/css/demo.css
 	 */
-	public void add(Path path) {
+	public void add(Path path) throws SVNException {
 		addToSVN(Set.of(path));
 	}
 
@@ -110,17 +112,17 @@ public class SVNService {
 	 *
 	 * @param paths real paths to local files. e.g. /home/imcms/v6/WEB-INF/templates/css/demo.css
 	 */
-	public void add(Set<Path> paths) {
+	public void add(Set<Path> paths) throws SVNException {
 		addToSVN(paths);
 	}
 
 	/**
 	 * Check whether the file/folder exists on SVN
 	 *
-	 * @param filePath accords to file path on SVN. e.g. ../src/main/webapp//WEB-INF/templates/css/demo.css
+	 * @param path accords to file path on SVN. e.g. ../src/main/webapp//WEB-INF/templates/css/demo.css
 	 */
-	public boolean exists(String filePath) {
-		return checkIfExists(filePath, null);
+	public boolean exists(String path) throws SVNException {
+		return checkIfExists(path, null);
 	}
 
 	/**
@@ -129,7 +131,7 @@ public class SVNService {
 	 * @param filePath filePath accords to file path on SVN. e.g. ../src/main/webapp//WEB-INF/templates/css/demo.css
 	 * @param revision revision number
 	 */
-	public boolean exists(String filePath, Long revision) {
+	public boolean exists(String filePath, Long revision) throws SVNException {
 		return checkIfExists(filePath, revision);
 	}
 
@@ -139,23 +141,19 @@ public class SVNService {
 	 *
 	 * @param path folder or folders you want to create.
 	 */
-	public void createFolder(String path) {
-		try {
-			final SvnRemoteMkDir mkDir = svnOperationFactory.createMkDir();
+	public void createFolder(String path) throws SVNException {
+		final SvnRemoteMkDir mkDir = svnOperationFactory.createMkDir();
 
-			Path target = Path.of("/");
-			for (Path value : Path.of(path)) {
-				target = target.resolve(value);
-				if (!exists(target.toString())) {
-					mkDir.addTarget(SvnTarget.fromURL(appendToSVNURL(target.toString(), true)));
-				}
+		Path target = Path.of("/");
+		for (Path value : Path.of(path)) {
+			target = target.resolve(value);
+			if (!exists(target.toString())) {
+				mkDir.addTarget(SvnTarget.fromURL(appendToSVNURL(target.toString())));
 			}
-
-			if (!mkDir.getTargets().isEmpty())
-				mkDir.run();
-		} catch (SVNException e) {
-			throw new RuntimeException("Cannot create folder", e);
 		}
+
+		if (!mkDir.getTargets().isEmpty())
+			mkDir.run();
 	}
 
 	/**
@@ -164,77 +162,57 @@ public class SVNService {
 	 *
 	 * @param paths folders or files you want to delete.
 	 */
-	public void delete(String... paths) {
-		try {
-			final SvnRemoteDelete svnRemoteDelete = svnOperationFactory.createRemoteDelete();
+	public void delete(String... paths) throws SVNException {
+		final SvnRemoteDelete svnRemoteDelete = svnOperationFactory.createRemoteDelete();
 
-			for (String path : paths) {
-				svnRemoteDelete.addTarget(SvnTarget.fromURL(appendToSVNURL(path, true)));
-			}
-
-			svnRemoteDelete.run();
-		} catch (SVNException e) {
-			throw new RuntimeException("Cannot delete folders", e);
+		for (String path : paths) {
+			svnRemoteDelete.addTarget(SvnTarget.fromURL(appendToSVNURL(path)));
 		}
+
+		svnRemoteDelete.run();
 	}
 
 	/**
-	 * This method checks out the latest revision of target file/folder into destination folder.
+	 * This method checks out the latest revision of target folder into destination folder.
 	 *
-	 * @param target      path related to the svn repository. Can be file/folder. e.g. /src/main/webapp/WEB-INF/template/css/
-	 * @param destination real local path where you want to check out files
+	 * @param target      path related to the svn repository. e.g. /src/main/webapp/WEB-INF/template/css/
+	 * @param destination real local path where you want to check out
 	 */
-	public void checkout(Path target, Path destination) {
-		try {
-			final SvnCheckout checkout = svnOperationFactory.createCheckout();
+	public void checkout(String target, Path destination) throws SVNException {
+		final SvnCheckout checkout = svnOperationFactory.createCheckout();
 
-			checkout.setSingleTarget(SvnTarget.fromFile(destination.toFile()));
-			checkout.setSource(SvnTarget.fromURL(appendToSVNURL(target.toString(), true)));
+		checkout.setSingleTarget(SvnTarget.fromFile(destination.toFile()));
+		checkout.setSource(SvnTarget.fromURL(appendToSVNURL(target)));
 
-			checkout.run();
-		} catch (SVNException e) {
-			throw new RuntimeException("Error performing checkout", e);
-		}
+		checkout.run();
 	}
 
-	private void addToSVN(Set<Path> paths) {
-		try {
-			final SvnScheduleForAddition svnAdd = svnOperationFactory.createScheduleForAddition();
+	private void addToSVN(Set<Path> paths) throws SVNException {
+		final SvnScheduleForAddition svnAdd = svnOperationFactory.createScheduleForAddition();
 
-			paths.forEach(path -> svnAdd.addTarget(SvnTarget.fromFile(path.toFile())));
+		paths.forEach(path -> svnAdd.addTarget(SvnTarget.fromFile(path.toFile())));
 
-			svnAdd.run();
-		} catch (SVNException e) {
-			throw new RuntimeException("Error adding to repository", e);
-		}
+		svnAdd.run();
 	}
 
-	private OutputStream getFile(String filePath, Long revision) {
-		try {
-			final SVNProperties fileProperties = new SVNProperties();
-			final OutputStream outputStream = new ByteArrayOutputStream();
+	private OutputStream getFile(String filePath, Long revision) throws SVNException {
+		final SVNProperties fileProperties = new SVNProperties();
+		final OutputStream outputStream = new ByteArrayOutputStream();
 
-			svnRepository.getFile(filePath, revision, fileProperties, outputStream);
+		svnRepository.getFile(filePath, revision, fileProperties, outputStream);
 
-			return outputStream;
-		} catch (SVNException e) {
-			throw new RuntimeException("Cannot load file from svn repository", e);
-		}
+		return outputStream;
 	}
 
-	private boolean checkIfExists(String filePath, Long revision) {
-		try {
-			final SVNNodeKind kind = svnRepository.checkPath(filePath, revision == null ? LATEST_REVISION : revision);
+	private boolean checkIfExists(String path, Long revision) throws SVNException {
+		final SVNNodeKind kind = svnRepository.checkPath(path, revision == null ? LATEST_REVISION : revision);
 
-			return kind == SVNNodeKind.FILE || kind == SVNNodeKind.DIR;
-		} catch (SVNException e) {
-			throw new RuntimeException(e);
-		}
+		return kind == SVNNodeKind.FILE || kind == SVNNodeKind.DIR;
 	}
 
-	private SVNURL appendToSVNURL(String path, boolean uriEncoded) {
+	private SVNURL appendToSVNURL(String path) {
 		try {
-			return svnRepositoryURL.appendPath(path, uriEncoded);
+			return svnRepositoryURL.appendPath(path, true);
 		} catch (SVNException e) {
 			throw new RuntimeException(
 					String.format("Cannot append given path %s to SVN URL %s", path, svnRepositoryURL), e);

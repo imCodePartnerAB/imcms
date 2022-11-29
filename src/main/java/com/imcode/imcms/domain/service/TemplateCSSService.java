@@ -66,6 +66,8 @@ public interface TemplateCSSService {
 	 */
 	void update(String templateName, String css);
 
+	void rename(String templateName, String newTemplateName);
+
 	/**
 	 * Copy WORKING version to ACTIVE version local file.
 	 *

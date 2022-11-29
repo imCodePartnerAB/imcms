@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.exception.TemplateFileException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import com.imcode.imcms.domain.service.TemplateCSSService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
@@ -35,6 +36,7 @@ public class DefaultFileService implements FileService {
 
     private final DocumentService<DocumentDTO> documentService;
     private final TemplateService templateService;
+	private final TemplateCSSService templateCSSService;
 
     private final BiFunction<Path, Boolean, SourceFile> fileToSourceFile;
 
@@ -48,10 +50,11 @@ public class DefaultFileService implements FileService {
     @Autowired
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
                               TemplateService templateService,
-                              BiFunction<Path, Boolean, SourceFile> fileToSourceFile) {
+                              TemplateCSSService templateCSSService, BiFunction<Path, Boolean, SourceFile> fileToSourceFile) {
         this.documentService = documentService;
         this.templateService = templateService;
-        this.fileToSourceFile = fileToSourceFile;
+	    this.templateCSSService = templateCSSService;
+	    this.fileToSourceFile = fileToSourceFile;
     }
 
     @PostConstruct
@@ -327,6 +330,7 @@ public class DefaultFileService implements FileService {
 
             try{
                 templateService.save(templateJPA);
+				templateCSSService.create(templateName);
             }catch (DataIntegrityViolationException e){
                 Files.delete(path);
                 throwTemplateException("Template with the same name already exists!");
@@ -337,7 +341,10 @@ public class DefaultFileService implements FileService {
     private void renameTemplate(Path path, String newName){
         if(templateService.isValidName(newName)){
             final String oldTemplateName = FilenameUtils.removeExtension(path.getFileName().normalize().toString());
-            templateService.renameTemplate(oldTemplateName, FilenameUtils.removeExtension(newName));
+	        final String newClearName = FilenameUtils.removeExtension(newName);
+
+	        templateService.renameTemplate(oldTemplateName, newClearName);
+	        templateCSSService.rename(oldTemplateName, newClearName);
         }else{
             deleteTemplate(path);
         }

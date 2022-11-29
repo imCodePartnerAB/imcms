@@ -32,15 +32,17 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	private void init() {
 		Files.createDirectories(filesFolderPath);
 		svnService.createFolder(filesFolder);
-		svnService.checkout(filesFolderPath, filesFolderPath);
+		svnService.checkout(filesFolder, filesFolderPath);
 	}
 
 	@Test
+	@SneakyThrows
 	public void checkIfFolderExists_When_NoFolderAvailable_Expect_CorrectResult() {
 		assertFalse(svnService.exists(folderName));
 	}
 
 	@Test
+	@SneakyThrows
 	public void createThenDeleteFolder_Expect_CorrectResult() {
 		final String folderSVNPath = SVN_WEBAPP_PATH + folderName;
 
@@ -52,6 +54,7 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	}
 
 	@Test
+	@SneakyThrows
 	public void createThenDeleteFolders_Expect_CorrectResults() {
 		final String folder1 = folderName;
 		final String folder2 = String.format("%s/%s", folder1, folderName2);
@@ -86,11 +89,13 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	}
 
 	@Test
+	@SneakyThrows
 	public void checkoutFolder_Expect_CorrectResult() {
-		assertDoesNotThrow(() -> svnService.checkout(filesFolderPath, filesFolderPath));
+		assertDoesNotThrow(() -> svnService.checkout(filesFolder, filesFolderPath));
 	}
 
 	@Test
+	@SneakyThrows
 	public void addThenCommitFileThatExists_Expect_CorrectResults() {
 		try {
 			final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
@@ -117,6 +122,7 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	}
 
 	@Test
+	@SneakyThrows
 	public void addCommitUpdateGetFile_Expect_CorrectResults() {
 		try {
 			final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
