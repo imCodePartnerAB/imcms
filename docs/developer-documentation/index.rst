@@ -5,6 +5,7 @@ Developer Documentation
     :titlesonly:
 
     design/index
+    configuration
     cache
     storage
     image-processing
