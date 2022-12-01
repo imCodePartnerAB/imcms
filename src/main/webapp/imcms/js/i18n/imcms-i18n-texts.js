@@ -368,7 +368,8 @@ const texts = {
                     userLoadFailed: 'Misslyckades med att hämta användare. Försök igen',
                     categoriesLoadFailed: 'Misslyckades med att hämta kategorier. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
-                    removeDocumentFailed: 'Misslyckades med att ta bort dokument. Försök igen'
+                    removeDocumentFailed: 'Misslyckades med att ta bort dokument. Försök igen',
+                    removeProtectedDocumentFailed: 'Det är inte tillåtet att radera dokument'
                 }
             },
             newDocument: {
@@ -774,7 +775,8 @@ const texts = {
                 deleteConfirmation: 'VARNING: Dokumentet och dess data kommer att raderas. Är du säker?',
                 deleteDocButton: 'Radera!',
                 error: {
-                    missedDoc: 'Dokument finns inte!'
+                    missedDoc: 'Dokument finns inte!',
+                    protectedDoc: 'Det är inte tillåtet att radera detta dokument'
                 },
             },
             dataVersion: {
@@ -1429,7 +1431,8 @@ const texts = {
                     userLoadFailed: 'Failed to fetch users. Try again',
                     categoriesLoadFailed: 'Failed to fetch categories. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
-                    removeDocumentFailed: 'Failed to remove document. Try again'
+                    removeDocumentFailed: 'Failed to remove document. Try again',
+                    removeProtectedDocumentFailed: 'It is not allowed to delete documents'
                 }
             },
             newDocument: {
@@ -1838,7 +1841,8 @@ const texts = {
                 deleteConfirmation: 'WARNING: Document and it\'s data will be deleted. Are you sure?',
                 deleteDocButton: 'Delete!',
                 error: {
-                    missedDoc: 'Document does not exist!'
+                    missedDoc: 'Document does not exist!',
+                    protectedDoc: 'It is not allowed to delete this document'
                 },
             },
             dataVersion: {
