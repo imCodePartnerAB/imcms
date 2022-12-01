@@ -333,6 +333,7 @@ public class TextDocument extends Document {
             final MenuItemDTO menuItemDTO = new MenuItemDTO();
             menuItemDTO.setDocumentId(docId);
             menuItemDTO.setTitle(documentToAdd.getHeadline());
+            menuItemDTO.setMenuText(documentToAdd.getMenuText());
             menuItemDTO.setTarget(documentToAdd.getTarget());
             menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentTypeId()]);
             menuItemDTO.setDocumentStatus(DocumentStatus.IN_PROCESS);

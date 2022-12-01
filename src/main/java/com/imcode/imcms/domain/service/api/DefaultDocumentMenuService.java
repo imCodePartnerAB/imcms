@@ -19,7 +19,6 @@ import imcode.util.Utility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -73,10 +72,15 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, commonContentList);
 
+        final List<CommonContent> enabledCommonContents = documentDTO.getCommonContents().stream()
+                .filter(CommonContent::isEnabled)
+                .collect(Collectors.toList());
+
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(docId);
         menuItemDTO.setType(documentDTO.getType());
-        menuItemDTO.setTitle(getHeadlineInCorrectLanguage(documentDTO));
+        menuItemDTO.setTitle(getHeadlineInCorrectLanguage(enabledCommonContents, documentDTO.getDisabledLanguageShowMode()));
+        menuItemDTO.setMenuText(getMenuTextInCorrectLanguage(enabledCommonContents, documentDTO.getDisabledLanguageShowMode()));
 	    menuItemDTO.setLink("/" + documentDTO.getName());
 	    menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
@@ -97,29 +101,23 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     // TODO: Move this logic to some service if it will be used somewhere else
-    private String getHeadlineInCorrectLanguage(Document document) {
-        final List<CommonContent> enabledCommonContents = document.getCommonContents().stream()
-                .filter(CommonContent::isEnabled)
-                .collect(Collectors.toList());
+    private String getHeadlineInCorrectLanguage(List<CommonContent> enabledCommonContents, Meta.DisabledLanguageShowMode disabledLanguageShowMode) {
 
-        if (enabledCommonContents.size() == 0) {
+        if (enabledCommonContents.isEmpty()) {
             return "";
         }
 
         final Language currentLanguage = Imcms.getLanguage();
-
         final Optional<String> headlineInCurrentLanguage = getEnabledHeadLine(enabledCommonContents, currentLanguage);
-
         if (headlineInCurrentLanguage.isPresent()) {
             return headlineInCurrentLanguage.get();
         }
 
-        if (!isShownInDefaultLanguage(document)) {
+        if (disabledLanguageShowMode == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
             return "";
         }
 
         final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
-
         return getEnabledHeadLine(enabledCommonContents, defaultLanguage).orElse("");
     }
 
@@ -127,6 +125,33 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         return enabledCommonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
                 .map(commonContent -> Optional.ofNullable(commonContent.getHeadline()).orElse(""))
+                .findFirst();
+    }
+
+    private String getMenuTextInCorrectLanguage(List<CommonContent> enabledCommonContents, Meta.DisabledLanguageShowMode disabledLanguageShowMode) {
+
+        if (enabledCommonContents.isEmpty()) {
+            return "";
+        }
+
+        final Language currentLanguage = Imcms.getLanguage();
+        final Optional<String> menuTextInCurrentLanguage = getEnabledMenuText(enabledCommonContents, currentLanguage);
+        if (menuTextInCurrentLanguage.isPresent()) {
+            return menuTextInCurrentLanguage.get();
+        }
+
+        if (disabledLanguageShowMode == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
+            return "";
+        }
+
+        final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
+        return getEnabledMenuText(enabledCommonContents, defaultLanguage).orElse("");
+    }
+
+    private Optional<String> getEnabledMenuText(List<CommonContent> enabledCommonContents, Language language) {
+        return enabledCommonContents.stream()
+                .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
+                .map(commonContent -> Optional.ofNullable(commonContent.getMenuText()).orElse(""))
                 .findFirst();
     }
 
