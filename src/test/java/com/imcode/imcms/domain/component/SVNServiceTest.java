@@ -4,6 +4,7 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
 import javax.annotation.PostConstruct;
@@ -73,19 +74,16 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	}
 
 	@Test
+	@SneakyThrows
 	public void addFile_Expect_CorrectResul() {
-		try {
-			final Path path = Files.createTempFile(filesFolderPath, null, null);
+		final Path path = Files.createTempFile(filesFolderPath, null, null);
 
-			assertDoesNotThrow(() -> svnService.add(path));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		assertDoesNotThrow(() -> svnService.add(path));
 	}
 
 	@Test
 	public void addFile_WhenThereAreNoSuchFile_Expect_CorrectResul() {
-		assertThrows(RuntimeException.class, () -> svnService.add(filesFolderPath.resolve("file1.tmp")));
+		assertThrows(SVNException.class, () -> svnService.add(filesFolderPath.resolve("file1.tmp")));
 	}
 
 	@Test
@@ -97,51 +95,40 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	@Test
 	@SneakyThrows
 	public void addThenCommitFileThatExists_Expect_CorrectResults() {
-		try {
-			final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
-			final String fileSVNPath = filesFolder + path.getFileName();
+		final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
+		final String fileSVNPath = filesFolder + path.getFileName();
 
-			svnService.add(path);
-			svnService.commit(path, "message", null);
+		svnService.add(path);
+		svnService.commit(path, "message", null);
 
-			assertTrue(svnService.exists(fileSVNPath));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		assertTrue(svnService.exists(fileSVNPath));
 	}
 
 	@Test
+	@SneakyThrows
 	public void commitLocalFileWithoutAddingIt_Expect_Correct_Exception() {
-		try {
-			final Path path = Files.createTempFile(filesFolderPath, null, null);
+		final Path path = Files.createTempFile(filesFolderPath, null, null);
 
-			assertThrows(RuntimeException.class, () -> svnService.commit(path, "message", null));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		assertThrows(SVNException.class, () -> svnService.commit(path, "message", null));
 	}
 
 	@Test
 	@SneakyThrows
 	public void addCommitUpdateGetFile_Expect_CorrectResults() {
-		try {
-			final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
-			final String fileSVNPath = filesFolder + path.getFileName();
-			final String fileData = "TEXT";
+		final Path path = Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
+		final String fileSVNPath = filesFolder + path.getFileName();
+		final String fileData = "TEXT";
 
-			svnService.add(path);
-			svnService.commit(path, "message", null);
+		svnService.add(path);
+		svnService.commit(path, "message", null);
 
-			assertNotEquals(fileData, svnService.get(fileSVNPath).toString());
-			assertEquals("", svnService.get(fileSVNPath).toString());
+		assertNotEquals(fileData, svnService.get(fileSVNPath).toString());
+		assertEquals("", svnService.get(fileSVNPath).toString());
 
-			Files.writeString(path, fileData);
-			svnService.commit(path, "changes", null);
+		Files.writeString(path, fileData);
+		svnService.commit(path, "changes", null);
 
-			assertEquals(fileData, svnService.get(fileSVNPath).toString());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		assertEquals(fileData, svnService.get(fileSVNPath).toString());
 	}
 
 	@Test
@@ -171,11 +158,7 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 		assertEquals(fileData2, svnService.get(fileSVNPath, entries.get(2).getRevision()).toString());
 	}
 
-	private Path createTempFile() {
-		try {
-			return Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	private Path createTempFile() throws IOException {
+		return Files.createTempFile(filesFolderPath.toAbsolutePath(), null, null);
 	}
 }
