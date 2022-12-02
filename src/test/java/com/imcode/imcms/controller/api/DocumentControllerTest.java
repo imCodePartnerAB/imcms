@@ -21,11 +21,14 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +40,8 @@ class DocumentControllerTest extends MockingControllerTest {
     private DelegatingByTypeDocumentService documentService;
 	@Mock
 	private DocumentMapper documentMapper;
+    @Mock
+    private List<Integer> deleteProtectedMetaIds;
 
     @InjectMocks
     private DocumentController documentController;
@@ -208,13 +213,52 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void delete_When_DeletingDisabled_Expect_DeleteMethodCalledWithCorrectDocId() {
-        final int docId = 42;
-        final UberDocumentDTO deleteMe = new UberDocumentDTO();
-        deleteMe.setId(docId);
+    void delete_Expect_DeleteMethodCalledWithCorrectDocId() {
+        final int docId = 1234;
+        when(deleteProtectedMetaIds.contains(docId)).thenReturn(false);
 
         perform(delete(CONTROLLER_PATH + '/' + docId)).andExpect(status().isOk());
 
         then(documentService).should().deleteByDocId(docId);
+    }
+
+    @Test
+    void delete_When_deleteProtectedMetaIdsContainDocId_Expect_BadRequest_And_DeleteMethodNotCalled() throws Exception {
+        final int docId = 1111;
+        when(deleteProtectedMetaIds.contains(docId)).thenReturn(true);
+
+        perform(delete(CONTROLLER_PATH + '/' + docId)).andExpect(status().isBadRequest())
+                .andExpect(content().string(String.valueOf(docId)));
+
+        verify(documentService, never()).deleteByDocId(docId);
+    }
+
+    @Test
+    void deleteAll_Expect_DeleteMethodCalledWithCorrectDocIds() {
+        final List<Integer> docIds = List.of(1234, 1235);
+        when(deleteProtectedMetaIds.contains(docIds.get(0))).thenReturn(false);
+        when(deleteProtectedMetaIds.contains(docIds.get(1))).thenReturn(false);
+
+        perform(delete(CONTROLLER_PATH + "/deleteAll"), docIds)
+                .andExpect(status().isOk());
+
+        then(documentService).should().deleteByIds(docIds);
+    }
+
+    @Test
+    void deleteAll_When_deleteProtectedMetaIdsContainDocId_Expect_BadRequest_And_DeleteMethodNotCalled() throws Exception {
+        final List<Integer> docIds = List.of(1112, 1234, 1111, 1235);
+        when(deleteProtectedMetaIds.contains(docIds.get(0))).thenReturn(true);
+        when(deleteProtectedMetaIds.contains(docIds.get(1))).thenReturn(false);
+        when(deleteProtectedMetaIds.contains(docIds.get(2))).thenReturn(true);
+        when(deleteProtectedMetaIds.contains(docIds.get(3))).thenReturn(false);
+
+        final List<Integer> protectedDocIds = List.of(1111, 1112);
+
+        perform(delete(CONTROLLER_PATH + "/deleteAll"), docIds)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(asJson(protectedDocIds)));
+
+        verifyNoInteractions(documentService);
     }
 }

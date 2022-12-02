@@ -11,10 +11,15 @@ import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
@@ -26,10 +31,15 @@ class DocumentController {
 
     private final DelegatingByTypeDocumentService documentService;
 	private final DocumentMapper documentMapper;
+    private final List<Integer> deleteProtectedMetaIds;
 
-    DocumentController(DelegatingByTypeDocumentService documentService, DocumentMapper documentMapper) {
+    DocumentController(DelegatingByTypeDocumentService documentService, DocumentMapper documentMapper,
+                       @Value("#{'${DeleteProtectedMetaIds}'.split(',')}") List<Integer> deleteProtectedMetaIds) {
         this.documentService = documentService;
 	    this.documentMapper = documentMapper;
+        this.deleteProtectedMetaIds = deleteProtectedMetaIds/*.stream()
+                .map(id -> Integer.parseInt(id.trim()))
+                .collect(Collectors.toList())*/;
     }
 
     @GetMapping
@@ -89,14 +99,27 @@ class DocumentController {
 
     @DeleteMapping("/{docId}")
     @CheckAccess(role = {AccessRoleType.ADMIN_PAGES, AccessRoleType.DOCUMENT_EDITOR})
-    public void delete(@PathVariable Integer docId) {
+    public ResponseEntity<Integer> delete(@PathVariable Integer docId) throws IOException {
+        // check if the document is protected from deletion
+        if(deleteProtectedMetaIds.contains(docId)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(docId);
+        }
+
         documentService.deleteByDocId(docId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/deleteAll")
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
-    public void deleteAll(@RequestBody List<Integer> ids) {
+    public ResponseEntity<List<Integer>> deleteAll(@RequestBody List<Integer> ids) {
+        // check if documents is protected from deletion
+        final List<Integer> protectedIds = ids.stream().filter(deleteProtectedMetaIds::contains).sorted().collect(Collectors.toList());
+        if(!protectedIds.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(protectedIds);
+        }
+
         documentService.deleteByIds(ids);
+        return ResponseEntity.ok().build();
     }
 
     private boolean hasEditPermission(UserDomainObject user, Document document){

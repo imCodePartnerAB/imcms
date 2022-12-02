@@ -24,8 +24,9 @@ define(
                     .done(() => {
                         $inputBlock.getInput().val('');
                     })
-                    .fail(() => {
-                        $inputBlock.find('.imcms-error-msg').slideDown();
+                    .fail((response) => {
+                        let errorText = response.responseText ? texts.error.protectedDoc : texts.error.missedDoc;
+                        $inputBlock.find('.imcms-error-msg').text(errorText).slideDown();
                     });
             });
         }
@@ -37,7 +38,7 @@ define(
                     'input': $inputBlock = components.texts.textNumber('<div>', {
                         placeholder: '1001',
                         text: texts.title,
-                        error: texts.error.missedDoc
+                        error: ''
                     }),
                     'confirm': components.buttons.negativeButton({
                         text: texts.deleteDocButton,

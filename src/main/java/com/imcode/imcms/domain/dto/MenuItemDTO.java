@@ -17,6 +17,8 @@ public class MenuItemDTO implements Serializable {
 
     private String title;
 
+    private String menuText;
+
 	private Meta.DocumentType type;
 
 	private Integer documentId;

@@ -1361,7 +1361,16 @@ define('imcms-document-editor-builder',
                     .done(function () {
                         $(this).parent().parent().remove();
                     })
-                    .fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed));
+                    .fail((response) => {
+                        let errorText;
+                        if(response.responseText){
+                            let ids = response.responseText.replace("[", "").replace("]", "");
+                            errorText = texts.error.removeProtectedDocumentFailed + ": " + ids;
+                        }else{
+                            errorText = texts.error.removeDocumentFailed;
+                        }
+                        modal.buildErrorWindow(errorText);
+                    });
             });
         }
 
@@ -1388,7 +1397,16 @@ define('imcms-document-editor-builder',
                     docRestApi.removeByIds(documentIds).done(() => {
                         removeDocumentsFromEditor(documentIds);
                         alert(texts.deleteInfo)
-                    }).fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed))
+                    }).fail((response) => {
+                        let errorText;
+                        if(response.responseText){
+                            let ids = response.responseText.replace("[", "").replace("]", "");
+                            errorText = texts.error.removeProtectedDocumentFailed + ": " + ids;
+                        }else{
+                            errorText = texts.error.removeDocumentFailed;
+                        }
+                        modal.buildErrorWindow(errorText);
+                    })
                 });
             });
         }
