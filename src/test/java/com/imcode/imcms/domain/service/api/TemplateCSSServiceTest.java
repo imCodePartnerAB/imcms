@@ -7,7 +7,7 @@ import com.imcode.imcms.domain.service.TemplateCSSService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,8 @@ public class TemplateCSSServiceTest extends WebAppSpringTestConfig {
 
 	@Autowired
 	private TemplateCSSService templateCSSService;
+
+	private final RandomStringGenerator stringGenerator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
 
 	@BeforeEach
 	public void beforeEach() {
@@ -169,7 +171,7 @@ public class TemplateCSSServiceTest extends WebAppSpringTestConfig {
 		final Set<String> templateNames = new HashSet<>();
 
 		for (int i = 0; i < count; i++) {
-			templateNames.add(RandomStringUtils.random(5));
+			templateNames.add(stringGenerator.generate(5));
 		}
 
 		return templateNames;

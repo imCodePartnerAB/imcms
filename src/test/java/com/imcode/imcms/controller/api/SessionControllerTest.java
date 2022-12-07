@@ -70,7 +70,10 @@ class SessionControllerTest extends AbstractControllerTest {
         final List<SessionInfoDTO> sessions = fromJson(jsonResponse, new TypeReference<List<SessionInfoDTO>>() {
         });
 
-        assertNotNull(sessions);
+	    Utility.makeUserLoggedOut(mockRequest1, mockResponse1);
+	    Utility.makeUserLoggedOut(mockRequest2, mockResponse2);
+
+	    assertNotNull(sessions);
         assertEquals(2, sessions.size());
         assertEquals("test-mockHttpSession2-id", sessions.get(0).getSessionId());
         assertEquals("test-mockHttpSession1-id", sessions.get(1).getSessionId());
@@ -97,6 +100,8 @@ class SessionControllerTest extends AbstractControllerTest {
         final String jsonResponse = getJsonResponse(requestBuilderGet);
         final List<SessionInfoDTO> sessions = fromJson(jsonResponse, new TypeReference<List<SessionInfoDTO>>() {
         });
+
+	    Utility.makeUserLoggedOut(mockRequest1, mockResponse1);
 
         assertNotNull(sessions);
         assertEquals(1, sessions.size());
