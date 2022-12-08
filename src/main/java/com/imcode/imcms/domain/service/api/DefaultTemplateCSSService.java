@@ -18,6 +18,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperties;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,12 +40,12 @@ public class DefaultTemplateCSSService implements TemplateCSSService {
 
 	public DefaultTemplateCSSService(SVNService svnService,
 	                                 DocumentsCache documentsCache, DocumentService<DocumentDTO> documentService,
-	                                 @Value("${TemplateCSSPath}") Path templateCSSAbsoluteDirPath,
+	                                 ServletContext context,
 	                                 @Value("${TemplateCSSPath}") String templateCSSDirectory) {
 		this.svnService = svnService;
 		this.documentsCache = documentsCache;
 		this.documentService = documentService;
-		this.templateCSSAbsoluteDirPath = templateCSSAbsoluteDirPath;
+		this.templateCSSAbsoluteDirPath = Path.of(context.getRealPath("/"), templateCSSDirectory);
 		this.templateCSSDirectory = templateCSSDirectory;
 	}
 
@@ -64,12 +65,14 @@ public class DefaultTemplateCSSService implements TemplateCSSService {
 
 	@Override
 	public void sync(final Set<String> templateNames) {
+		final String target = SVN_WEBAPP_PATH + templateCSSDirectory;
 		try {
-			svnService.checkout(SVN_WEBAPP_PATH + templateCSSDirectory, templateCSSAbsoluteDirPath.toAbsolutePath());
+			svnService.checkout(target, templateCSSAbsoluteDirPath.toAbsolutePath());
 
 			this.create(templateNames);
 		} catch (SVNException e) {
-			throw new RuntimeException("Cannot checkout remote template css folder", e);
+			throw new RuntimeException(
+					String.format("Cannot checkout remote template css folder. Target: %s, destination: %s", target, templateCSSAbsoluteDirPath.toAbsolutePath()), e);
 		}
 	}
 
