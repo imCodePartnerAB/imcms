@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Browse images in image-directory.
@@ -294,8 +295,7 @@ public class ImageBrowse extends HttpServlet {
                 imageUrl = FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, currentImage));
             }
             File[] images = currentDirectory.listFiles(new ImageForWebExtensionFilenameFilter());
-            Arrays.sort(images);
-            return Arrays.asList(images);
+	        return Arrays.stream(images).sorted().filter(file -> file.length() > 0).collect(Collectors.toList());
         }
 
         public String getImageUrl() {

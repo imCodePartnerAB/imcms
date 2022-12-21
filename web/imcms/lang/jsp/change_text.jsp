@@ -14,6 +14,7 @@
 	        com.imcode.imcms.servlet.AjaxServlet"
 
     contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"
 
 %><%@taglib prefix="vel" uri="imcmsvelocity"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
@@ -85,6 +86,7 @@ try {
 <vel:velocity>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="sv" lang="sv">
 <head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<title><? templates/sv/change_text.html/1 ?></title>
 
 	<link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms_admin.css.jsp" />
@@ -1145,7 +1147,8 @@ function validateText($, showResults) {
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
 		url     : '<%= AjaxServlet.getPath(cp) %>',
-		type    : 'POST',		
+		type    : 'POST',
+		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 		data    : {
 			action : 'getCompleteHtmlForW3cValidation',
 			value  : textContent
@@ -1301,6 +1304,7 @@ function saveText($, closeAfter) {<%
 		url     : '<%= AjaxServlet.getPath(cp) %>',
 		type    : 'POST',
 		dataType : 'json',
+		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 		data    : {
 			action  : 'saveText',
 			meta_id : <%= textEditPage.getDocumentId() %>,
