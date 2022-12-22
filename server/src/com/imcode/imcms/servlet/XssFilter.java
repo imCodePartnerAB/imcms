@@ -1,7 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.google.common.html.HtmlEscapers;
 import imcode.server.Imcms;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +58,9 @@ public final class XssFilter implements Filter {
             if(encode){
                 value = Arrays.stream(request.getParameterValues(paramName))
                         .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
-                        .map(StringEscapeUtils::unescapeHtml4)
-                        .map(StringEscapeUtils::escapeHtml4)
+		                .map(StringEscapeUtils::unescapeHtml)
+		                //StringEscapeUtils::escapeHtml brakes UTF-8 characters..
+		                .map(s -> HtmlEscapers.htmlEscaper().escape(s))
                         .findFirst().orElse("");
             }else{
                 value = request.getParameter(paramName);

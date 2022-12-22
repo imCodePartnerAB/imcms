@@ -18,6 +18,7 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -152,8 +153,9 @@ public class TagParser {
         };
     }
 
+    @SneakyThrows
     private static String removeHtmlTagsAndUrlEncode(String label) {
-        return URLEncoder.encode(Html.removeTags(label));
+        return URLEncoder.encode(Html.removeTags(label), Imcms.UTF_8_ENCODING);
     }
 
     public static String addPreAndPost(Properties attributes, String tagResult) {
