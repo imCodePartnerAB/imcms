@@ -9,6 +9,21 @@
 
     <display-name>imCMS</display-name>
 
+	<filter>
+		<filter-name>EncodingFilter</filter-name>
+		<filter-class>
+			com.imcode.imcms.servlet.EncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>EncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
     <filter>
         <description>Checking for answer from IDP server</description>
         <filter-name>SSOFilter</filter-name>
