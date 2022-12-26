@@ -43,28 +43,33 @@
         <c:set var="imgPath" value="${image.generatedFilePath}"/>
 
         <c:set var="classes" value=""/>
+        <c:set var="styles" value=""/>
 
         <c:if test="${image.spaceAround.top ne 0}">
-            <c:set var="spaceTop" value="img--mt-${image.spaceAround.top} "/>
+            <c:set var="spaceTopStyle" value="margin-top:${image.spaceAround.top}px; "/>
         </c:if>
         <c:if test="${image.spaceAround.right ne 0}">
-            <c:set var="spaceRight" value="img--mr-${image.spaceAround.right} "/>
+            <c:set var="spaceRightStyle" value="margin-right:${image.spaceAround.right}px; "/>
         </c:if>
         <c:if test="${image.spaceAround.bottom ne 0}">
-            <c:set var="spaceBottom" value="img--mb-${image.spaceAround.bottom} "/>
+            <c:set var="spaceBottomStyle" value="margin-bottom:${image.spaceAround.bottom}px; "/>
         </c:if>
         <c:if test="${image.spaceAround.left ne 0}">
-            <c:set var="spaceLeft" value="img--ml-${image.spaceAround.left} "/>
+            <c:set var="spaceLeftStyle" value="margin-left:${image.spaceAround.left}px; "/>
         </c:if>
-        <c:set var="spaces">${spaceTop}${spaceRight}${spaceBottom}${spaceLeft}</c:set>
+        <c:set var="spaceStyles">${spaceTopStyle}${spaceRightStyle}${spaceBottomStyle}${spaceLeftStyle}</c:set>
 
         <c:set var="alignClass" value=""/>
         <c:if test="${'CENTER' eq image.align}"><c:set var="alignClass" value="imcms-image-align-center "/></c:if>
         <c:if test="${'LEFT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-left "/></c:if>
         <c:if test="${'RIGHT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-right "/></c:if>
 
-        <c:if test="${not empty alignClass or not empty spaces}">
-            <c:set var="classes" value=" class=\"${alignClass}${spaces}\""/>
+        <c:if test="${not empty alignClass}">
+            <c:set var="classes" value=" class=\"${alignClass}\""/>
+        </c:if>
+
+        <c:if test="${not empty spaceStyles}">
+            <c:set var="styles" value=" style=\"${spaceStyles}\""/>
         </c:if>
 
         <c:set var="alt" value="${empty image.alternateText
@@ -94,7 +99,7 @@
                 <c:if test="${not empty href}">
                     <a${href} target="_blank">
                 </c:if>
-                    <img src="${imagesPath}?path=${imgPath}"${classes}${alt}/>
+                    <img src="${imagesPath}?path=${imgPath}"${classes}${styles}${alt}/>
                 <c:if test="${not empty href}">
                     </a>
                 </c:if>

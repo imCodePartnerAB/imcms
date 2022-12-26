@@ -764,6 +764,12 @@ define(
                             alignNameToAction[imageDTO.align].call($tag);
                             $('.imcms-image-in-text').parent().focus();
                         }
+
+                        if(imageDTO.spaceAround.top !== 0) $image.css("margin-top", imageDTO.spaceAround.top + "px");
+                        if(imageDTO.spaceAround.bottom !== 0) $image.css("margin-bottom", imageDTO.spaceAround.bottom + "px");
+                        if(imageDTO.spaceAround.left !== 0) $image.css("margin-left",imageDTO.spaceAround.left + "px");
+                        if(imageDTO.spaceAround.right !== 0) $image.css("margin-right", imageDTO.spaceAround.right + "px");
+
                     }
                     // window.location.reload(true);
                 }
