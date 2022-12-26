@@ -20,24 +20,6 @@ public abstract class UserPassword {
         return new Reset();
     }
 
-    public static void main(String[] args) {
-        UserPassword up = UserPassword.encrypted();
-
-        switch (up.type()) {
-            case ENCRYPTED:
-                UserPassword.Encrypted ep = (UserPassword.Encrypted) up;
-                break;
-
-            case PLAIN:
-                UserPassword.Plain pp = (UserPassword.Plain) up;
-                break;
-
-            case RESET:
-                UserPassword.Reset rp = (UserPassword.Reset) up;
-                break;
-        }
-    }
-
     public final Type type() {
         return type;
     }
