@@ -1,14 +1,14 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.googlecode.ipv6.IPv6Address;
+import com.googlecode.ipv6.IPv6AddressRange;
 import com.imcode.imcms.domain.component.AccessRuleValidationActionConsumer;
 import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
-import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -16,14 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,64 +75,77 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public boolean isAllowedToAccess(InetAddress accessIp, UserDomainObject user) {
+        final List<IpAccessRuleDTO> rules = ipAccessRuleRepository.findAll().stream()
+                .filter(IpAccessRuleJPA::isEnabled)
+                .map(IpAccessRuleDTO::new)
+                .collect(Collectors.toList());
 
-        final Predicate<IpAccessRuleJPA> isRuleAppliedPredicate = rule -> {
-            boolean isInRange = null != rule.getIpRange() && isIpInRange(accessIp, rule.getIpRange());
-            boolean isUserRoleRestricted = false;
-            boolean isUserRestricted = false;
+        final boolean isRestricted = rules.stream()
+                .filter(IpAccessRuleDTO::isRestricted)
+                .anyMatch(rule -> {
+                    if (isIpInRange(accessIp, rule.getIpRange())) {
+                        if (rule.getUserId() != null || rule.getRoleId() != null) {
+                            return user.getId().equals(rule.getUserId()) || user.hasRoleId(rule.getRoleId());
+                        } else {
+                            return true;
+                        }
+                    }
 
-            if (null != user) {
-                final boolean hasMorePrivilegedSuperAdminRole;
+                    return false;
+                });
 
-                if (null != rule.getRoleId()) {
-                    hasMorePrivilegedSuperAdminRole = user.isSuperAdmin() && rule.getRoleId() > Roles.SUPER_ADMIN.getId();
-                } else {
-                    hasMorePrivilegedSuperAdminRole = false;
-                }
+        if (isRestricted) {
+            return false;
+        }
 
-                isUserRoleRestricted = (user.hasRoleId(rule.getRoleId())) && (!hasMorePrivilegedSuperAdminRole);
 
-                isUserRestricted = Objects.equals(rule.getUserId(), user.getId());
+        final List<IpAccessRuleDTO> whiteListRules = rules.stream()
+                .filter(rule -> !rule.isRestricted())
+                .collect(Collectors.toList());
 
-                if (StringUtils.isNotBlank(rule.getIpRange())) {
-                    isUserRoleRestricted &= isInRange;
-                    isUserRestricted &= isInRange;
-                }
-                if (null != rule.getRoleId() || null != rule.getUserId()) {
-                    isInRange = false;
-                }
-            }
-            return (isUserRestricted || isUserRoleRestricted || isInRange);
-        };
+        final List<IpAccessRuleDTO> whiteListRulesWithCurrentUserOrRoles = whiteListRules.stream().filter(rule ->
+                (user.getId().equals(rule.getUserId()) || user.hasRoleId(rule.getRoleId()))).collect(Collectors.toList());
 
-        boolean isAllowed = ipAccessRuleRepository.findAll().stream()
-                .filter(IpAccessRule::isEnabled)
-                .filter(isRuleAppliedPredicate)
-                .max(Comparator.comparing(IpAccessRuleJPA::isRestricted))
-                .orElseGet(IpAccessRuleJPA::new)
-                .isRestricted();
-
-        return !isAllowed;
+        if(!whiteListRulesWithCurrentUserOrRoles.isEmpty()){
+            return whiteListRulesWithCurrentUserOrRoles.stream().allMatch(rule ->
+                    isIpInRange(accessIp, rule.getIpRange())
+            );
+        }else{
+            return whiteListRules.stream()
+                    .noneMatch(rule ->
+                            (rule.getUserId() == null && rule.getRoleId() == null) &&
+                                    !isIpInRange(accessIp, rule.getIpRange()));
+        }
     }
 
-    private boolean isIpInRange(InetAddress ipToCheck, String ipv6Range) {
-        List<String> ipRange = Arrays.asList(ipv6Range.split("-"));
+    private boolean isIpInRange(InetAddress ipToCheck, String ipRange) {
+        List<String> ipRangeList = Arrays.asList(ipRange.split("-"));
+
+        String ipRangeBottom = ipRangeList.get(0);
+        String ipRangeTop = ipRangeList.size() > 1 ? ipRangeList.get(1) : ipRangeBottom;
+
+        // Don't check the range if the id form of the rule and the user don't match
+        if (!(ipRangeBottom.contains(".") && ipToCheck.toString().contains(".")) &&
+                !(ipRangeBottom.contains(":") && ipToCheck.toString().contains(":"))) {
+            return false;
+        }
+
         try {
-            InetAddress rangeBottom;
-            rangeBottom = getInetAddressFromIpString(ipRange.get(0));
+            if(ipRangeBottom.contains(".")){    //ipv4
+                long ipTop = ipToLong(Inet4Address.getByName(ipRangeBottom));
+                long ipBottom = ipToLong(Inet4Address.getByName(ipRangeTop));
+                long ipToTest = ipToLong(ipToCheck);
 
-            InetAddress rangeTop;
-            if (ipRange.size() > 1) {
-                rangeTop = getInetAddressFromIpString(ipRange.get(1));
-            } else {
-                rangeTop = rangeBottom;
+                return (ipToTest >= ipTop && ipToTest <= ipBottom);
+            }else{                              //ipv6
+                IPv6Address ipv6RangeBottomAddress = IPv6Address.fromString(ipRangeBottom);
+                IPv6Address ipv6RangeTopAddress = IPv6Address.fromString(ipRangeTop);
+                IPv6Address ipv6RangeToCheckAddress = IPv6Address.fromInetAddress(ipToCheck);
+
+                return IPv6AddressRange.fromFirstAndLast(ipv6RangeBottomAddress, ipv6RangeTopAddress)
+                        .contains(ipv6RangeToCheckAddress);
             }
-
-            long ipTop = ipToLong(rangeBottom);
-            long ipBottom = ipToLong(rangeTop);
-            long ipToTest = ipToLong(ipToCheck);
-            return (ipToTest >= ipTop && ipToTest <= ipBottom);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | IllegalArgumentException e) {
             LOG.debug("Can't parse IP address", e);
             return false;
         }
@@ -151,11 +160,5 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
         }
         return result;
     }
-
-    private InetAddress getInetAddressFromIpString(String ipString) throws UnknownHostException {
-        final boolean isIPv4 = ipString.contains(".");
-        return isIPv4 ? Inet4Address.getByName(ipString) : Inet6Address.getByName(ipString);
-    }
-
 
 }

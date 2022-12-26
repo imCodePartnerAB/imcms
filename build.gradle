@@ -61,6 +61,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'com.googlecode.java-ipv6:java-ipv6:0.17'
 
     implementation ('org.opensaml:opensaml:2.6.4'){
         exclude(module: "commons-logging")
