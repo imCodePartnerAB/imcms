@@ -73,6 +73,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 	    ipAccessRuleRepository.deleteById(ruleId);
     }
 
+    // See the description of this algorithm in the documentation - docs/user-documentation/admin-settings/ip-access
     @Override
     public boolean isAllowedToAccess(InetAddress accessIp, UserDomainObject user) {
         final List<IpAccessRuleDTO> rules = ipAccessRuleRepository.findAll().stream()
