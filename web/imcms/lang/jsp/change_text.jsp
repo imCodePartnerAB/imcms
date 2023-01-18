@@ -381,7 +381,7 @@ if (1 == rows) { %>
 	<div id="validationDiv" title="<%= isSwe ? "Validering - Resultat" : "Validation - Result" %>">
 		<a name="jumpbar"></a>
 		<h2 id="validationHeading"></h2>
-		<div id="validationResults"></div>
+		<div id="validationResult"></div>
 		<div id="validationSource"></div><%
 		if (DEBUG_VALIDATION) { %>
 		<div id="validationDebug">
@@ -1146,101 +1146,89 @@ function validateText($, showResults) {
 	}
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
-		url     : '<%= AjaxServlet.getPath(cp) %>',
-		type    : 'POST',
-		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-		data    : {
-			action : 'getCompleteHtmlForW3cValidation',
-			value  : textContent
+		url: '<%= AjaxServlet.getPath(cp) %>',
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			action: 'sendValidationToW3cAndReturnJson',
+			showResults: showResults,
+			htmlToValidate: textContent
 		},
-		cache   : false,
-		success : function(data) {
-			$.ajax({
-				url      : '<%= AjaxServlet.getPath(cp) %>',
-				type     : 'POST',
-				dataType : 'json',
-				data     : {
-					action         : 'sendValidationToW3cAndReturnJson',
-					showResults    : showResults,
-					htmlToValidate : data
-				},
-				success : function(response) {
-					var theClassName ;
-					var isOk          = (null != response && response.isOk) ;
-					var isValid       = (null != response && response.isValid) ;
-					var responseHtml  = (null == response || !showResults) ? '' : response.getHtml ;
-					var responseError = (null == response) ? '' : response.error ;
-					if (!isOk) {
-						hideDisableDiv($, true, function() {
-							if ('' != responseError && 0 == $(this).find('#validationErrorDivStatus').length) {
-								$('#validationErrorDiv').append('<div id="validationErrorDivStatus" style="color:red;">Error: <i>' + responseError + '</i></div>')
-							}
-							$('#validationErrorDiv').slideDown('slow') ;
-						}) ;
-					} else {
-						if (!showResults) {
-							$(oBtn)
-									.removeClass('iconValidate_pending')
-									.removeClass('iconValidate_' + !isValid)
-									.addClass('iconValidate_' + isValid)
-									.enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>') ;
-							hideDisableDiv($, true) ;
-						} else {
-							$(oBtn)
-									.removeClass('iconValidate_pending')
-									.removeClass('iconValidate_' + !isValid)
-									.addClass('iconValidate_' + isValid) ;
-							if (isValid) {
-								heading      = "<%= isSwe ? "Godkänd XHTML!" : "Approved XHTML!" %>" ;
-								theClassName = "message" ;
-							} else {
-								heading      = "<%= isSwe ? "Ej godkänd XHTML!" : "NOT approved XHTML!" %>" ;
-								theClassName = "error" ;
-							}
-							$('#validationHeading').attr('class', theClassName).html('').html(heading) ;
-							if (!isValid) {
-								$('#validationResults').html('').html($(responseHtml).find('#result').html()) ;
-							} else {
-								$('#validationResults').html('') ;
-							}
-							$('#validationSource').html('').html($(responseHtml).find('#source').html()) ;
-							$('#responseAllTa').val(responseHtml) ;<%----%>
-							for (var i = 1; i <= 8; i++) {
-								$('#line-' + i).remove() ;<%--.css('color', '#999') ;--%>
-							}
-							for (i = 1; i <= 2; i++) {
-								$('li[id^=line-]:last').remove() ;
-							}
-							$('li[id^=line-]').each(function() {
-								if (/^\s*&lt;(h2|h3|h4)/gi.test($(this).html())) {
-									$(this).addClass('heading') ;
-								}
-							}) ;
-							$('li[id^=line-]:first').parent()<%-- It didn't find a direct selector to '#sourse h3'!!! --%>
-											.prev('p').html('<%= isSwe ?
-											"Nedan listas koden som validerades.<br/>Vid fel kan du lätt kolla vilken rad felet ligger på och hitta rätt stycke för felet." :
-											"The code that was validated is listed below.<br/>If there\\'s any errors you can easily see what row they\\'re on and find the right paragraph for the errors." %>')
-											.prev('h3').html('XHTML <%= isSwe ? "kodlistning" : "source code" %>') ;
-							if ($('a[href^=#line-]').length > 0) {
-								$('a[href^=#line-]').each(function() {
-									var errLine = parseInt($(this).attr('href').replace(/[^\d]/g, '')) ;
-									$('#line-' + errLine).addClass('errorLine') ;
-									$(this).html((errLine - 8) + '') ;
-								}) ;
-							}
-							$('#validationDiv').scrollTop(0) ;
-							$(oBtn).enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>') ;
-							hideDisableDiv($, true) ;
-							$dialog.dialog('open') ;
-						}
+		success: function (response) {
+			let theClassName;
+			let isOk = (null != response && response.isOk);
+			let isValid = (null != response && response.isValid);
+			let errors = (null == response || !showResults) ? '' : response.errors;
+			let warnings = (null == response || !showResults) ? '' : response.warnings;
+			let responseError = (null == response) ? '' : response.error;
+
+			if (!isOk) {
+				hideDisableDiv($, true, function () {
+					if ('' != responseError && 0 == $(this).find('#validationErrorDivStatus').length) {
+						$('#validationErrorDiv').append('<div id="validationErrorDivStatus" style="color:red;">Error: <i>' + responseError + '</i></div>')
 					}
+					$('#validationErrorDiv').slideDown('slow');
+				});
+			} else {
+				if (!showResults) {
+					$(oBtn)
+						.removeClass('iconValidate_pending')
+						.removeClass('iconValidate_' + !isValid)
+						.addClass('iconValidate_' + isValid)
+						.enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>');
+					hideDisableDiv($, true);
+				} else {
+					$(oBtn)
+						.removeClass('iconValidate_pending')
+						.removeClass('iconValidate_' + !isValid)
+						.addClass('iconValidate_' + isValid);
+					if (isValid) {
+						heading = "<%= isSwe ? "Godkänd XHTML!" : "Approved XHTML!" %>";
+						theClassName = "message";
+					} else {
+						heading = "<%= isSwe ? "Ej godkänd XHTML!" : "NOT approved XHTML!" %>";
+						theClassName = "error";
+					}
+					$('#validationHeading').attr('class', theClassName).html('').html(heading);
+					const $validationResult = $('#validationResult')
+					$validationResult.empty();
+
+					function appendValidationFailRow(item, pos) {
+						const $container = $("<div>"),
+							$sourceContainer = $("<div>");
+
+						const errorMessage = pos + 1 + ". " + item.message;
+						const $errorMessage = $("<div>").text(errorMessage);
+
+						const $invalidHtml = $("<code>")
+							.html(item.lastLine + ": " + item.extract.replace(/[<]/g, "&lt").replace(/[>]/g, "&gt"));
+
+						$sourceContainer.append($invalidHtml);
+						$container.append($errorMessage);
+						$container.append($sourceContainer);
+						$validationResult.append($container);
+					}
+
+					const $errorsTitle = $("<h3>").text("<%= isSwe ? "Fel: " : "Errors: "  %>");
+					const $warningsTitle = $("<h3>").text("<%= isSwe ? "Varningar: " : "Warnings: "  %>");
+					if (!isValid) {
+						$validationResult.append($errorsTitle);
+						errors.forEach(appendValidationFailRow);
+
+						$validationResult.append($warningsTitle);
+						warnings.forEach(appendValidationFailRow);
+					} else {
+						$validationResult.empty();
+					}
+
+					$('#validationDiv').scrollTop(0);
+					$(oBtn).enableBtn('<%= isSwe ? "Validera texten" : "Validate the text" %>');
+					hideDisableDiv($, true);
+					$dialog.dialog('open');
 				}
-			}) ;
-		},
-		error: function() {
-			$('#validationErrorDiv').slideDown('slow') ;
+			}
 		}
-	}) ;
+	});
 }
 
 
