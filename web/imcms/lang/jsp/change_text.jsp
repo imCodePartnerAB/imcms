@@ -1200,7 +1200,7 @@ function validateText($, showResults) {
 						const errorMessage = pos + 1 + ". " + item.message;
 						const $errorMessage = $("<div>").text(errorMessage);
 
-						const $invalidHtml = $("<code>")
+						const $invalidHtml = (!item.extract) ? "" : $("<code>")
 							.html(item.lastLine + ": " + item.extract.replace(/[<]/g, "&lt").replace(/[>]/g, "&gt"));
 
 						$sourceContainer.append($invalidHtml);

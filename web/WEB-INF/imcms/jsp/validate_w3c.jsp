@@ -23,7 +23,7 @@
 	private static final String CONTENT_WRAPPER = "<!DOCTYPE html>\n"
 			+ "<html lang=\"en\">\n"
 			+ "  <head>\n"
-			+ "    <meta charset=\"utf-8\">\n"
+			+ "    <meta charset=\"UTF-8\">\n"
 			+ "    <title>ImCMS HTML validation</title>\n"
 			+ "    <meta name=\"description\" content=\"ImCMS HTML validation\">\n"
 			+ "  </head>\n"
@@ -52,7 +52,7 @@
 	JSONParser jsonParser = new JSONParser();
 
 	try (CloseableHttpClient httpClient = HttpClients.createDefault();) {
-		String htmlToValidate = request.getParameter("htmlToValidate");
+		String htmlToValidate = convertIsoToUtf8(request.getParameter("htmlToValidate"));
 		boolean showResults = "true".equals(request.getParameter("showResults"));
 
 		final HttpPost httpPost = new HttpPost("https://validator.w3.org/nu/?out=json");
