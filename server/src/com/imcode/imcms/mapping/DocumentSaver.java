@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.SingleConnectionDatabase;
+import com.imcode.db.commands.*;
 import com.imcode.imcms.api.Document;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -17,16 +17,10 @@ import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class DocumentSaver {
 
@@ -35,6 +29,8 @@ class DocumentSaver {
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
     private final DocumentMapper documentMapper;
+
+    Logger log = LogManager.getLogger(DocumentSaver.class);
 
     DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -71,7 +67,7 @@ class DocumentSaver {
         }
     }
 
-    void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    void saveDocument(final DocumentDomainObject document, final DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -86,25 +82,40 @@ class DocumentSaver {
             }
             document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY, "" + user.getId());
 
-            sqlUpdateMeta(document);
+            getDatabase().execute(new TransactionDatabaseCommand() {
+                public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                    final SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
 
-            updateDocumentSectionsCategoriesKeywords(document);
+                    sqlUpdateMeta(document, database);
 
-            updateDocumentProperties(document);
+                    updateDocumentSectionsCategoriesKeywords(document, database);
 
-            if (user.canEditPermissionsFor(oldDocument)) {
-                updateDocumentRolePermissions(document, user, oldDocument);
+                    updateDocumentProperties(document, database);
 
-                documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
-            }
+                    if (user.canEditPermissionsFor(oldDocument)) {
+                        updateDocumentRolePermissions(document, user, oldDocument, database);
+
+                        new DocumentPermissionSetMapper(database).saveRestrictedDocumentPermissionSets(document, user, oldDocument);
+                    }
+
+                    return null;
+                }
+            });
 
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
+
+        } catch (Exception e) {
+            log.error("Exception while saving a document", e);
         } finally {
             documentMapper.invalidateDocument(document);
         }
     }
 
     private void sqlUpdateMeta(DocumentDomainObject document) {
+        sqlUpdateMeta(document, getDatabase());
+    }
+
+    private void sqlUpdateMeta(DocumentDomainObject document, Database database) {
         String headline = document.getHeadline();
         String text = document.getMenuText();
 
@@ -140,7 +151,15 @@ class DocumentSaver {
         sqlStr.append(" where meta_id = ?");
         sqlUpdateValues.add("" + document.getId());
         String[] params = (String[]) sqlUpdateValues.toArray(new String[0]);
-        getDatabase().execute(new SqlUpdateCommand(sqlStr.toString(), params));
+        database.execute(new SqlUpdateCommand(sqlStr.toString(), params));
+    }
+
+    private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document, Database database) {
+        updateDocumentSections(document.getId(), document.getSectionIds(), database);
+
+        new CategoryMapper(database).updateDocumentCategories(document);
+
+        updateDocumentKeywords(document, database);
     }
 
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
@@ -195,6 +214,11 @@ class DocumentSaver {
 
     void updateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
                                        DocumentDomainObject oldDocument) {
+        updateDocumentRolePermissions(document, user, oldDocument, getDatabase());
+    }
+
+    void updateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
+                                       DocumentDomainObject oldDocument, Database database) {
         RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
         if (null != oldDocument) {
@@ -218,15 +242,14 @@ class DocumentSaver {
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
 
             if (null == oldDocument
-                    || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument))
-            {
+                    || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
                 String[] params1 = new String[]{"" + roleId,
                         "" + document.getId()};
-                getDatabase().execute(new SqlUpdateCommand(SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1));
+                database.execute(new SqlUpdateCommand(SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1));
                 if (!DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType)) {
                     String[] params = new String[]{
                             "" + roleId.intValue(), "" + document.getId(), "" + documentPermissionSetType};
-                    getDatabase().execute(new SqlUpdateCommand(SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params));
+                    database.execute(new SqlUpdateCommand(SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params));
                 }
             }
         }
@@ -310,6 +333,22 @@ class DocumentSaver {
         deleteUnusedKeywords();
     }
 
+    void updateDocumentKeywords(DocumentDomainObject document, Database database) {
+        int meta_id = document.getId();
+        Set keywords = document.getKeywords();
+        Set allKeywords = new HashSet(Arrays.asList(documentMapper.getAllKeywords(database)));
+        deleteKeywordsFromDocument(meta_id, database);
+        for (Iterator iterator = keywords.iterator(); iterator.hasNext(); ) {
+            String keyword = (String) iterator.next();
+            final boolean keywordExists = allKeywords.contains(keyword);
+            if (!keywordExists) {
+                addKeyword(keyword, database);
+            }
+            addExistingKeywordToDocument(meta_id, keyword, database);
+        }
+        deleteUnusedKeywords(database);
+    }
+
     void updateDocumentProperties(DocumentDomainObject document) {
         int meta_id = document.getId();
         Map properties = document.getProperties();
@@ -321,9 +360,24 @@ class DocumentSaver {
         }
     }
 
+    void updateDocumentProperties(DocumentDomainObject document, Database database) {
+        int meta_id = document.getId();
+        Map properties = document.getProperties();
+        deletePropertiesFromDocument(meta_id, database);
+        for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext(); ) {
+            String key = (String) iterator.next();
+            String[] params = new String[]{meta_id + "", key, (String) properties.get(key)};
+            database.execute(new SqlUpdateCommand("INSERT INTO document_properties (meta_id, key_name, value) VALUES(?,?,?)", params));
+        }
+    }
+
     private void deletePropertiesFromDocument(int meta_id) {
+        deletePropertiesFromDocument(meta_id, getDatabase());
+    }
+
+    private void deletePropertiesFromDocument(int meta_id, Database database) {
         String[] params = new String[]{meta_id + ""};
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM document_properties WHERE meta_id = ?", params));
+        database.execute(new SqlUpdateCommand("DELETE FROM document_properties WHERE meta_id = ?", params));
     }
 
     void updateDocumentSections(int metaId,
@@ -335,39 +389,72 @@ class DocumentSaver {
         }
     }
 
+    void updateDocumentSections(int metaId,
+                                Set sectionIds, Database database) {
+        removeAllSectionsFromDocument(metaId, database);
+        for (Object sectionId1 : sectionIds) {
+            Integer sectionId = (Integer) sectionId1;
+            addSectionIdToDocument(metaId, sectionId, database);
+        }
+    }
+
     private void addSectionIdToDocument(int metaId, Integer sectionId) {
+        addSectionIdToDocument(metaId, sectionId, getDatabase());
+    }
+
+    private void addSectionIdToDocument(int metaId, Integer sectionId, Database database) {
         Integer[] params = new Integer[]{metaId, sectionId};
-        getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
+        database.execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
     }
 
     private void deleteKeywordsFromDocument(int meta_id) {
+        deleteKeywordsFromDocument(meta_id, getDatabase());
+    }
+
+    private void deleteKeywordsFromDocument(int meta_id, Database database) {
         String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
         String[] params = new String[]{"" + meta_id};
-        getDatabase().execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
+        database.execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
     }
 
     private void deleteUnusedKeywords() {
+        deleteUnusedKeywords(getDatabase());
+    }
+
+    private void deleteUnusedKeywords(Database database) {
         String[] params = new String[0];
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
+        database.execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
     }
 
     private void addKeyword(String keyword) {
+        addKeyword(keyword, getDatabase());
+    }
+
+    private void addKeyword(String keyword, Database database) {
         String[] params = new String[]{keyword};
-        getDatabase().execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
+        database.execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
     }
 
     private void removeAllSectionsFromDocument(int metaId) {
+        removeAllSectionsFromDocument(metaId, getDatabase());
+    }
+
+    private void removeAllSectionsFromDocument(int metaId, Database database) {
         String[] params = new String[]{"" + metaId};
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM meta_section WHERE meta_id = ?", params));
+        database.execute(new SqlUpdateCommand("DELETE FROM meta_section WHERE meta_id = ?", params));
     }
 
     private void addExistingKeywordToDocument(int meta_id, String keyword) {
+        addExistingKeywordToDocument(meta_id, keyword, getDatabase());
+    }
+
+    private void addExistingKeywordToDocument(int meta_id, String keyword, Database database) {
         String[] params1 = new String[]{
                 keyword
         };
         int keywordId = Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
         String[] params = new String[]{"" + meta_id, "" + keywordId};
-        getDatabase().execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
+        database.execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
     }
 
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {

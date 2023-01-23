@@ -1,10 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
@@ -66,21 +64,15 @@ public class DocumentPermissionSetMapper {
         }
 
         final int permissionBits1 = permissionBits;
-        database.execute(new TransactionDatabaseCommand() {
-            public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                sqlDeleteFromExtendedPermissionsTable(document, documentPermissionSet, forNewDocuments, connection);
-                String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS;
-                connection.executeUpdate("DELETE FROM " + tableName + "\n"
-                                + "WHERE meta_id = ?\n"
-                                + "AND  set_id = ?",
-                        new String[]{"" + document.getId(), "" + documentPermissionSet.getType()});
-                connection.executeUpdate("INSERT INTO " + tableName + " (meta_id, set_id, permission_id)\n"
-                        + "VALUES (?,?,?)", new String[]{"" + document.getId(),
-                        "" + documentPermissionSet.getType(),
-                        "" + permissionBits1});
-                return null;
-            }
-        });
+        sqlDeleteFromExtendedPermissionsTable(document, documentPermissionSet, forNewDocuments);
+        String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS;
+        database.execute(new SqlUpdateCommand("DELETE FROM " + tableName + "\n"
+                + "WHERE meta_id = ?\n"
+                + "AND  set_id = ?",
+                new String[]{"" + document.getId(), "" + documentPermissionSet.getType()}));
+        database.execute(new SqlUpdateCommand("INSERT INTO " + tableName + " (meta_id, set_id, permission_id)\n"
+                + "VALUES (?,?,?)",
+                new String[]{"" + document.getId(), "" + documentPermissionSet.getType(), "" + permissionBits1}));
 
         if (document instanceof TextDocumentDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) documentPermissionSet;
@@ -110,14 +102,13 @@ public class DocumentPermissionSetMapper {
 
     private void sqlDeleteFromExtendedPermissionsTable(DocumentDomainObject document,
                                                        DocumentPermissionSetDomainObject documentPermissionSet,
-                                                       boolean forNewDocuments,
-                                                       DatabaseConnection connection) throws DatabaseException {
+                                                       boolean forNewDocuments) throws DatabaseException {
         String table = getExtendedPermissionsTable(forNewDocuments);
         String sqlDelete = "DELETE FROM " + table
                 + " WHERE meta_id = ? AND set_id = ?";
-        connection.executeUpdate(sqlDelete, new String[]{
+        database.execute(new SqlUpdateCommand(sqlDelete, new String[]{
                 "" + document.getId(), "" + documentPermissionSet.getType()
-        });
+        }));
     }
 
     private void sqlSaveAllowedDocumentTypes(DocumentDomainObject document,

@@ -506,8 +506,12 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     String[] getAllKeywords() {
+        return getAllKeywords(getDatabase());
+    }
+
+    String[] getAllKeywords(Database database) {
         String[] params = new String[0];
-        return getDatabase().execute(new SqlQueryCommand<>("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
+        return database.execute(new SqlQueryCommand<>("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
     }
 
     public List<DocumentDomainObject> getDocuments(Collection documentIds) {
