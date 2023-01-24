@@ -14,6 +14,7 @@ In this article:
     - `Solr/index`_
     - `Cache`_
     - `Template CSS Feature`_
+    - `SVN – SVNService`_
     - `SMS`_
     - `Mail`_
     - `Other`_
@@ -77,7 +78,134 @@ Hibernate
 Authentication
 --------------
 
-Coming soon...
+.. code-block:: properties
+
+    # ImCms can authenticate users using external authentication providers such as BankID(CGI) or AAD.
+    # Possible values: cgi, aad.
+    ExternalAuthenticator=
+    # ImCms can fetch and save external roles.
+    # Possible values: ldap, aad.
+    ExternalUserAndRoleMapper=
+
+**********************
+Azure Active Directory
+**********************
+
+.. code-block:: properties
+
+    # In order to use Azure Active Directory you have to fill in such properties:
+    # Azure Active Directory auth parameters
+    aad.tenant.name=
+    aad.client.id=
+    aad.secret.key=
+
+****
+LDAP
+****
+
+.. code-block:: properties
+
+    # In order to communicate with LDAP server you have to fill in such properties:
+    # ldap server url, you have to know for sure it
+    # (e.g. ldap://localhost:389/CN=Users,DC=example,DC=com)
+    LdapUrl=
+    # User login/username with password that has admin rights, can be a situation when there are no admins so leave empty.
+    LdapBindDn=
+    LdapPassword=
+
+*****************************
+Properties that may be needed
+*****************************
+
+.. code-block:: properties
+
+    # By default, 'uid' is the user-identifying attribute, the login name.
+    # MS Active Directory uses attribute 'sAMAccountName' instead of 'uid'.
+    LdapUserAttribute.LoginName=uid
+
+    # MS Active Directory uses objectClass 'user' instead of 'inetOrgPerson'.
+    LdapUserObjectClass=inetOrgPerson
+
+    # You can automatically create and assign imCMS roles from LDAP attributes.
+    # LdapAttributesMappedToRoles = company, co, ou, l.
+
+    # You can define your own attribute mappings with "LdapUserAttribute.<xxx> = ldap-attribute",
+    # where <xxx> is one of LoginName, FirstName, LastName, Title, Company, Address, City, Zip, Country, Province, EmailAddress, WorkPhone, MobilePhone, HomePhone.
+    # This demonstrates using the two Active Directory attributes, "company" and "co" (country):
+    #LdapUserAttribute.Company = company
+    #LdapUserAttribute.Country = co
+
+    # Authentication and user-mapping via secondary LDAP
+    # By default imCMS uses the popular inetOrgPerson (2.16.840.1.113730.3.2.2) schema found in Netscape Directory Server.
+    # See for example http://www.cio.ufl.edu/projects/directory/ldap-schema/oc-INETORGPERSON.html or http://www.faqs.org/rfcs/rfc2798.html for details.
+
+    #Also you can enable secondary mapper and authenticator. Same properties, same rules
+    SecondaryExternalAuthenticator=
+    SecondaryExternalUserAndRoleMapper=
+    SecondaryLdapUrl=
+    SecondaryLdapBindDn=
+    SecondaryLdapPassword=
+
+    # By default, 'uid' is the user-identifying attribute, the login name.
+    # MS Active Directory uses attribute 'sAMAccountName' instead of 'uid'.
+    SecondaryLdapUserAttribute.LoginName=uid
+
+    # MS Active Directory uses objectClass 'user' instead of 'inetOrgPerson'.
+    SecondaryLdapUserObjectClass=inetOrgPerson
+
+    # You can automatically create and assign imCMS roles from LDAP attributes.
+    #SecondaryLdapAttributesMappedToRoles = company, co, ou, l
+
+    # You can define your own attribute mappings with "SecondaryLdapUserAttribute.<xxx> = ldap-attribute",
+    # where <xxx> is one of LoginName, FirstName, LastName, Title, Company, Address, City, Zip, Country, Province, EmailAddress, WorkPhone, MobilePhone, HomePhone.
+    # This demonstrates using the two Active Directory attributes, "company" and "co" (country):
+    #SecondaryLdapUserAttribute.Company = company
+    #SecondaryLdapUserAttribute.Country = co
+
+************
+BankID (CGI)
+************
+
+.. code-block:: properties
+
+    # Bank id
+    # Enable/disable bank id.
+    cgi.enabled = false
+    # Url where imcms will fetch newest metadata.
+    cgi.metadata-url = https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0
+    # Use role name that will be used and applied to user when external user will try to sign in.
+    cgi.user-role-name = BankId
+
+********************************
+2FA – Two Factory Authentication
+********************************
+
+.. code-block:: properties
+
+    # Enable/disable two factory authentication.
+    2fa.enabled =
+    # Define cookie lifetime that used to temporarily disable 2FA for user.
+    2fa.cookie.lifetime =
+    # OTP length.
+    2fa.password-length =
+    # Define if OTP will have letters/numbers.
+    2fa.password-letters =
+    2fa.password-numbers =
+    # Send OTP using email if there is no user phone number.
+    2fa.email-if-phone-missing =
+
+***
+SSO
+***
+
+.. code-block:: properties
+
+    SsoEnabled=false
+    SsoUseLocalJaasConfig=true
+    SsoJaasConfigName=Imcms
+    SsoJaasPrincipalPassword=
+    SsoUseLocalKrbConfig=true
+    SsoKerberosDebug=false
 
 --------
 Document
@@ -269,13 +397,45 @@ Cache
 Template CSS Feature
 --------------------
 
-Coming soon...
+.. code-block:: properties
+
+    # Working folder for template CSS files.
+    TemplateCSSPath=WEB-INF/templates/.css/
+
+----------------
+SVN – SVNService
+----------------
+
+.. code-block:: properties
+
+    # SVN credentials, if you work locally do not specify any of these properties.
+
+    # Remote SVN repository URL.
+    svn.url=
+    # User credentials.
+    svn.username=
+    svn.password=
 
 ---
 SMS
 ---
 
-Coming soon...
+.. code-block:: properties
+
+    # SMS gateway mandatory credentials.
+    # Imcode SMS server gateway.
+    sms.gateway.url =
+    # Imcode SMS server gateway credentials.
+    sms.gateway.password =
+    sms.gateway.username =
+    # SMS gateway optional parameters.
+    # You can define SMS originator but usually it comes from gateway.
+    sms.gateway.originator =
+    # Format yyyy-MM-dd HH:mm:ss Z, example: 2000-05-31 18:45:00 -0000
+    # You can decide when the recipient receive SMS.
+    sms.gateway.delivery.time =
+    # Default time is 172800 (48 hours), -1 means default value.
+    sms.gateway.validity.time =
 
 ----
 Mail
