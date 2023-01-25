@@ -3,7 +3,6 @@ package imcode.util.log;
 import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
-import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.collections.iterators.TransformIterator;
@@ -31,12 +30,7 @@ public final class DocumentRequestRenderer {
 		message.append(' ').append(documentRequest.getUser().getId());
 
 		message.append(" sessionID=").append(documentRequest.getHttpServletRequest().getSession().getId());
-		Revisits revisits = documentRequest.getRevisits();
 
-		message.append(";imVisits=").append(revisits.getRevisitsId());
-		if (null != revisits.getRevisitsDate()) {
-			message.append(revisits.getRevisitsDate());
-		}
 		message.append(' ').append(documentRequest.getHttpServletRequest().getContextPath()).append(REDIRECT_PREFIX).append(renderDocument(document));
 		if (null != referrer) {
 			message.append(' ').append(documentRequest.getHttpServletRequest().getContextPath()).append(REDIRECT_PREFIX).append(renderDocument(referrer));

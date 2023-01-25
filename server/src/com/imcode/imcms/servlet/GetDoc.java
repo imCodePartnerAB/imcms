@@ -2,7 +2,10 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.*;
+import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.kerberos.KerberosLoginResult;
 import imcode.server.kerberos.KerberosLoginStatus;
@@ -23,7 +26,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -103,23 +105,6 @@ public class GetDoc extends HttpServlet {
             Cookie currentCookie = cookies[i];
             cookieHash.put(currentCookie.getName(), currentCookie.getValue());
         }
-
-        Revisits revisits = new Revisits();
-
-        if (cookieHash.get("imVisits") == null) {
-            Date now = new Date();
-            long lNow = now.getTime();
-            String sNow = "" + lNow;
-            Cookie resCookie = new Cookie("imVisits", session.getId() + sNow);
-            resCookie.setMaxAge(31500000);
-            resCookie.setPath("/");
-            res.addCookie(resCookie);
-            revisits.setRevisitsId(session.getId());
-            revisits.setRevisitsDate(sNow);
-        } else {
-            revisits.setRevisitsId(cookieHash.get("imVisits").toString());
-        }
-        documentRequest.setRevisits(revisits);
 
         if (!user.canAccess(document)) {
             if (imcref.getConfig().isSsoEnabled() && user.isDefaultUser()) {

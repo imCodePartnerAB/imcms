@@ -23,8 +23,6 @@ public class DocumentRequest implements Message, StringBuilderFormattable, Clone
     private DocumentDomainObject referrer;
     private String[] emphasize;
 
-    private Revisits revisits;
-
     public DocumentRequest(ImcmsServices serverObject, UserDomainObject user, DocumentDomainObject document,
                            DocumentDomainObject referrer, HttpServletRequest httpServletRequest,
                            HttpServletResponse httpServletResponse) {
@@ -42,14 +40,6 @@ public class DocumentRequest implements Message, StringBuilderFormattable, Clone
 
     public ImcmsServices getServices() {
         return this.serverObject;
-    }
-
-    public Revisits getRevisits() {
-        return this.revisits;
-    }
-
-    public void setRevisits(Revisits revisits) {
-        this.revisits = revisits;
     }
 
     public UserDomainObject getUser() {
