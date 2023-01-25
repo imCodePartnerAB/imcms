@@ -191,22 +191,6 @@ public class GetDoc extends HttpServlet {
             cookieHash.put(currentCookie.getName(), currentCookie.getValue());
         }
 
-        final Revisits revisits = new Revisits();
-
-        if (cookieHash.get("imVisits") == null) {
-            Date now = new Date();
-            long lNow = now.getTime();
-            String sNow = "" + lNow;
-            Cookie resCookie = new Cookie("imVisits", session.getId() + sNow);
-            resCookie.setMaxAge(31500000);
-            resCookie.setPath("/");
-            res.addCookie(resCookie);
-            revisits.setRevisitsId(session.getId());
-            revisits.setRevisitsDate(sNow);
-        } else {
-            revisits.setRevisitsId(cookieHash.get("imVisits"));
-        }
-        documentRequest.setRevisits(revisits);
         // Log to accesslog
         TRACK_LOG.info(documentRequest);
     }

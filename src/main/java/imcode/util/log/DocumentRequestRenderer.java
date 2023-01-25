@@ -1,7 +1,6 @@
 package imcode.util.log;
 
 import imcode.server.DocumentRequest;
-import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -26,12 +25,7 @@ public class DocumentRequestRenderer  {
         result.append(' ').append(docReq.getUser().getId());
 
         result.append(" sessionID=").append(docReq.getHttpServletRequest().getSession().getId());
-        Revisits revisits = docReq.getRevisits();
 
-        result.append(";imVisits=").append(revisits.getRevisitsId());
-        if (null != revisits.getRevisitsDate()) {
-            result.append(revisits.getRevisitsDate());
-        }
         result.append(' ').append(docReq.getHttpServletRequest().getContextPath()).append(REDIRECT_PREFIX).append(renderDocument(document));
         if (null != referrer) {
             result.append(' ').append(docReq.getHttpServletRequest().getContextPath()).append(REDIRECT_PREFIX).append(renderDocument(referrer));

@@ -22,8 +22,6 @@ public class DocumentRequest implements Message, StringBuilderFormattable, Clone
     private DocumentDomainObject document;
     private DocumentDomainObject referrer;
 
-    private Revisits revisits;
-
     /**
      * Simplest DocumentRequest constructor, when referrer document not needs.
      *
@@ -62,14 +60,6 @@ public class DocumentRequest implements Message, StringBuilderFormattable, Clone
 
     public ImcmsServices getServices() {
         return this.serverObject;
-    }
-
-    public Revisits getRevisits() {
-        return this.revisits;
-    }
-
-    public void setRevisits(Revisits revisits) {
-        this.revisits = revisits;
     }
 
     public UserDomainObject getUser() {

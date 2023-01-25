@@ -46,7 +46,6 @@ import static imcode.util.Utility.writeUserLanguageCookie;
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
-    public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
     public static final String USER_LANGUAGE_IN_COOKIE_NAME = "userLanguage";
 
     private static final String USER_REMOTE_ADDRESS = "userRemoteAddress";
@@ -229,16 +228,6 @@ public class ImcmsSetupFilter implements Filter {
                             .updateAuthData(request);
                 }
 
-
-                //Adding cookie to find out is user logged in
-                if (!user.isDefaultUser()) {
-                    Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
-                    cookie.setMaxAge(session.getMaxInactiveInterval());
-	                cookie.setPath("/");
-	                response.addCookie(cookie);
-                }
-
-
 	            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
 	            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
@@ -342,7 +331,6 @@ public class ImcmsSetupFilter implements Filter {
                         final String cookieName = cookie.getName();
 
                         return cookieName.equals(JSESSIONID_COOKIE_NAME)
-                                || cookieName.equals(USER_LOGGED_IN_COOKIE_NAME)
                                 || cookieName.equals(USER_LANGUAGE_IN_COOKIE_NAME);
                     })
                     .forEach(cookie -> {

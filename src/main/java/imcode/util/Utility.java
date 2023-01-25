@@ -546,15 +546,6 @@ public class Utility {
 		return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
 	}
 
-	public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
-		Cookie cookie = new Cookie("im_remember_cd", "");
-		cookie.setMaxAge(0);
-		cookie.setPath("/");
-
-		setCookieDomain(request, cookie);
-		response.addCookie(cookie);
-	}
-
 	public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
 		String serverName = request.getServerName();
 		if (!IP_PATTERN.matcher(serverName).matches()) {
