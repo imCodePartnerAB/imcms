@@ -2135,7 +2135,1074 @@ const texts = {
         },
         save: "Save",
         none: 'None'
-    }
+    },
+    "no": {
+        panel: {
+            settingsTitle: 'Administrasjonspanelinnstillinger',
+            settingsList: {
+                size: {
+                    name: "Panelstørrelse",
+                    small: "Liten",
+                    smallTitle: "Panelet blir mindre med færre tekster",
+                    large: "Stor",
+                    largeTitle: "Panelet blir større med tilleggstekster"
+                },
+                appearance: {
+                    name: "Panelutseende",
+                    auto: "Auto",
+                    autoTitle: "Vises automatisk når du beveger musen nær toppen av siden, skjuler seg når du klikker med musen utenfor",
+                    hidden: "Skjult",
+                    hiddenTitle: "Panelet er skjult som standard, du kan åpne det ved å klikke på det lille ikonet øverst på siden",
+                    visible: "Synlig",
+                    visibleTitle: "Panelet er alltid synlig"
+                },
+                unlockPanel: "Lås opp administrasjonspanelet",
+                hidePanel: "Skjul administrasjonspanelet"
+            },
+            error: {
+                loadFailed: "Kunne ikke laste inn på nytt. Prøv igjen"
+            },
+            "public": "offentlig",
+            publicTitle: 'Viser den publiserte visningen',
+            edit: "redigere",
+            editTitle: 'Viser den redigerbare arbeidsversjonen',
+            preview: "forhåndsvisning",
+            previewTitle: 'Viser den redigerbare arbeidsversjonen',
+            publish: "publisere",
+            publishTitle: 'Publiser den fungerende versjonen umiddelbart',
+            pageInfo: "side info",
+            pageInfoTitle: 'Viser alle sideinnstillinger og metadata',
+            special: "Spesiell",
+            specialTitle: "Viser kundespesifikk administrasjon",
+            document: "dokument",
+            documentTitle: 'Viser alle dokumenter i dokumentredigereren',
+            admin: "admin",
+            adminTitle: 'Viser alle systeminnstillinger (kun for systemadministratorer)',
+            logout: "Logg ut"
+        },
+        toolbar: {
+            documentId: "Dokument ",
+            documentIdTitle: "Dokument no",
+            elementIndex: "Element ",
+            elementIndexTitle: "Element no"
+        },
+        toolTipText: {
+            textHistory: "Se teksthistorikk",
+            validateContent: "Valider innhold over W3C",
+            fullScreen: "Full skjerm",
+            save: "Lagre",
+            htmlContent: "Håndtering av HTML-innholdsfiltrering",
+            bold: 'Modig',
+            italic: 'Kursiv',
+            underline: 'Vektlegging',
+            sourceCode: "Kildekode",
+            bulletListText: "Bullet list",
+            numberedListText: "Nummerert liste",
+            horizontalLineText: "Horisontal linje",
+            alignLeftText: "Juster venstre",
+            alignRightText: "Juster rett",
+            alignCenterText: "Juster midten",
+            alignJustify: "i henhold til standard",
+            insertLinkText: "Sett inn/rediger lenke",
+            addImageText: "Legg til bilde",
+            switchTextEditor: "Bytt til tekstredigering",
+            switchTextMode: "Bytt til ren tekstmodus",
+            switchHTMLMode: "Bytt til HTML-modus",
+            discardChange: "Endre endringer",
+            discardChangesQuestion: 'Ignorer endringer?',
+            textEditor: 'Tekstredigerer',
+            imageEditor: 'Bilderedigerer',
+            normal: 'Vanlig',
+            auto: 'Auto',
+            maximize: 'Maksimer',
+            close: 'Lukk',
+            filterPolicy: {
+                restricted: 'Kun tekst',
+                relaxed: 'Kraftig filter',
+                allowedAll: 'Ingen filter',
+                titleRestricted: 'Ulovlige tagger (header, script, innebygd stil) vil bli fjernet med innhold. Alle tagger i stedet for <p> og <br> vil bli fjernet, men innholdet vil bli bevart.',
+                titleRelaxed: 'Ulovlige tagger (header, script, innebygd stil) vil bli fjernet med innhold. Alle tagger i stedet for basic (b, i, li, sub, a) vil bli fjernet, men innholdet blir bevart.',
+                titleAllowedAll: 'Alt er lov',
+                chooseFilter: 'Velg filter for innlimte data'
+            }
+        },
+        pageInfo: {
+            document: "Dokument",
+            newDocument: {
+                text: "Nytt TEXT-dokument",
+                url: "Nytt URL-dokument",
+                file: "Nytt FIL-dokument",
+            },
+            confirmMessage: "Lagre endringer?",
+            confirmMessageOnSaveAndPublish: "Vil du lagre endringer og publisere denne versjonen?",
+            confirmMessageOnCancel: "Vil du virkelig slutte?",
+            oneLanguageShouldBeEnabled: "Minst ett språk må være aktivert!",
+            title: {
+                name: "Overskrift",
+                title: "Overskrift",
+                menuText: "Menytekst",
+                chooseImage: "Velg bilde",
+                showIn: "Vis inn",
+                sameFrame: "Samme ramme",
+                newWindow: "Nytt vindu",
+                replaceAll: "Bytt ut alle",
+                alias: "Forenklet adresse",
+                aliasPlaceholder: "dette-dokument-alias",
+                makeSuggestion: 'Komme med et forslag',
+                confirmOverwritingAlias: 'Vil du overskrive gjeldende alias?',
+                missingLangRuleTitle: "Hvis det forespurte språket mangler:",
+                showInDefault: "Vises på standardspråk hvis aktivert",
+                doNotShow: "Ikke vis i det hele tatt",
+                useDefaultLanguageAlias: "Bruk standardspråkalias for alle språk!"
+            },
+            lifeCycle: {
+                name: "Livssyklus",
+                status: {
+                    title: "Status",
+                    inProcess: "Ny",
+                    disapproved: "Ikke godkjent",
+                    approved: "Godkjent"
+                },
+                now: "Nå",
+                clear: "Klar",
+                published: {
+                    title: "Publisert",
+                    dateTitle: "Angi publiseringsdato",
+                    timeTitle: "Angi publisert tid",
+                    dateTimeTitle: "Lagret dato/klokkeslett"
+                },
+                archived: {
+                    title: "Arkivert ",
+                    dateTitle: "Skriv inn innleveringsdatoen",
+                    timeTitle: "Angi tidspunkt for arkivering",
+                    dateTimeTitle: "Lagret arkiv dato-klokkeslett"
+                },
+                publicationEnd: {
+                    title: "Publikasjonen avsluttes",
+                    dateTitle: "Angi sluttdato for publikasjonen",
+                    timeTitle: "Angi sluttid for publisering",
+                    dateTimeTitle: "Lagret sluttdato-tid"
+                },
+                publisher: "Forlegger",
+                currentVersion: "Gjeldende versjon:",
+                versionHasChanges: "Denne fungerende versjonen har endringer",
+                publishMessage: "Trykk \"Lagre og publiser denne versjonen\" for å publisere",
+                error: {
+                    userLoadFailed: 'Kunne ikke hente utgiveren. Prøv igjen'
+                }
+            },
+            appearance: {
+                name: "Utseende",
+                template: "Mal",
+                defaultChildTemplate: "Standard mal for nye dokumenter",
+                previewTemplateCSSBtnText:'Forhåndsvis mal CSS-oppsett',
+                previewTemplateCSSBtnInfo: 'Klikk og arbeidsversjonen av mal css-stiler vil bli brukt på gjeldende side!'
+            },
+            metadata: {
+                name: "Metadata",
+                content: "Content",
+                select: "Meta tag",
+                noData: 'Ingen data',
+            },
+            keywords: {
+                name: "Nøkkelord",
+                title: "Nøkkelord",
+                placeholder: "nøkkelord",
+                add: "LEGGE TIL+",
+                disableSearch: "Deaktiver søk"
+            },
+            categories: {
+                name: "Kategorier",
+                error: {
+                    loadFailed: "Kunne ikke hente kategorier. Vær så snill, prøv på nytt."
+                }
+            },
+            access: {
+                name: "Tillatelser",
+                role: "rolle",
+                view: "lese/se",
+                edit: "redigere",
+                restricted_1: "begrenset 1",
+                restricted_2: "begrenset 2",
+                addRole: "Legg til rolle",
+                linkableByOtherUsers: "Kan kobles til av andre brukere",
+                linkableForUnauthorizedUsers: "Kan kobles sammen for uautoriserte brukere",
+                visible: "VIS for alle brukere",
+                error: {
+                    loadFailed: "Kunne ikke hente roller. Vær så snill, prøv på nytt."
+                }
+            },
+            permissions: {
+                name: "Tillatelsesinnstillinger",
+                editText: "Rediger tekst",
+                editMenu: "Rediger menyen",
+                editImage: "Rediger bilde",
+                editLoop: "Rediger loop",
+                editDocInfo: "Rediger sideinformasjon"
+            },
+            status: {
+                name: "Status",
+                created: "Opprettet",
+                modified: "Endret",
+                archived: "Arkivert",
+                published: "Publisert",
+                publicationEnd: "Publisering fullført",
+                by: "Av"
+            },
+            cache: {
+                name: 'Cache',
+                cacheSettings: "Bufferinnstillinger",
+                cacheForUnauthorizedUsers: 'Buffer for uautoriserte brukere',
+                cacheForAuthorizedUsers: 'Buffer for autoriserte brukere',
+                invalidateButton: 'Ugyldig',
+                invalidateTitle: 'Ugyldig cache',
+                error: {
+                    failedClear: 'Kunne ikke tømme gjeldende dokumentbuffer!'
+                }
+            },
+            file: {
+                name: "Filer",
+                upload: "Laste opp",
+                id: "ID",
+                fileName: "Navn",
+                isDefault: "Standard"
+            },
+            url: {
+                name: "URL",
+                title: "URL"
+            },
+            properties: {
+                name: 'Egenskaper',
+                add: 'Legge til',
+                key: 'Eiendomsnavn',
+                value: 'Verdi',
+            },
+            buttons: {
+                ok: "ok",
+                cancel: "avbryt",
+                saveAndPublish: "lagre og publiser denne versjonen",
+                next: "neste",
+            },
+            error: {
+                createDocumentFailed: 'Kunne ikke lagre dokumentet. Prøv igjen',
+                loadDocumentFailed: 'Kunne ikke laste. Prøv igjen',
+                duplicateAlias: 'Dokumentet inneholder duplikatalias på: %s språk',
+                loadRolesFailed: "Kunne ikke hente roller",
+                noAccess: "Ingen tilgang til sideinformasjon"
+            },
+            allData:{
+                name: 'Alle data',
+                edit: 'Redigere',
+                errorGettingData: 'Feil ved henting av alle data!',
+                noData: 'Ingen ting',
+                index: 'Index',
+                id: 'Id',
+                language: 'Språk',
+                text:{
+                    title:'Tekster',
+                    access:'Adgang',
+                    type:'Type'
+                },
+                menu:{
+                    title:'Menyer',
+                    countElements:'Antall ting'
+                },
+                category:{
+                    title:'Kategorier',
+                    visible:'Synlig'
+                },
+                loop:{
+                    title:'Loops',
+                    titleSingle:'Loop',
+                    countElements:'Antall innlegg'
+                },
+                image:{
+                    title:'Bilder',
+                    allLanguages:'Alle språk',
+                    path:'Filsøkväg'
+                }
+            }
+        },
+        modal: {
+            doNotShowAgain: "Ikke vis igjen",
+            title: "Bekrefte",
+            editFile: "Rediger fil",
+            editDirectory: "Rediger mappe",
+            userProperties: 'Manager-brukeregenskaper',
+            options: "Alternativer",
+            yes: "Ja",
+            no: "Nei",
+            ok: "Ok",
+            cancel: "Avbryt",
+            save: "Lagre",
+            create: "Skape",
+        },
+        editors: {
+            document: {
+                title: "Dokumentansvarlig",
+                freeText: "Fri tekst",
+                freeTextPlaceholder: "Skriv for å søke etter dokumenter",
+                owner: "Eieren",
+                category: "Kategori",
+                by: 'av',
+                notShownInSelectedLang: 'Ikke vist på valgt språk',
+                deleteInfo: 'Sletting av dokumenter ble fullført!',
+                controls: {
+                    edit: {
+                        title: "Redigere"
+                    },
+                    question: 'Er du sikker på at du vil slette disse dokumentene? Dette kan ikke angres!',
+                    question2: 'Du kan ikke tilbakestille dette dokumentet! Fjerne?',
+                    multiRemoveInfo: 'Flere fjernet',
+                    removeButton: 'Fjerne',
+                    copy: {
+                        title: "Kopiere",
+                        confirmMessage: "Vil du virkelig kopiere (all informasjon i dokumentet vil bli kopiert) doc med id ",
+                        action: 'Kopierer'
+                    }
+                },
+                sort: {
+                    id: "ID",
+                    title: "Overskrift",
+                    alias: "Alias",
+                    modified: "Endret",
+                    published: "Publ",
+                    type: "Type",
+                    status: "Status",
+                    version: 'Ver'
+                },
+                id: {
+                    tooltip: {
+                        createdOn: 'Opprettet'
+                    }
+                },
+                modified: {
+                    tooltip: {
+                        lastChangedOn: 'Dokumentet ble sist endret',
+                    }
+                },
+                published: {
+                    tooltip: {
+                        publishedOn: 'Dokumentet ble publisert',
+                    }
+                },
+                version: {
+                    tooltip: {
+                        hasNewerVersion: 'Dokumentet har en upublisert arbeidsversjon',
+                        noWorkingVersion: 'Dokumentet har ingen fungerende versjon',
+                    },
+                },
+                error: {
+                    searchFailed: 'Ingen søkeresultater',
+                    userLoadFailed: 'Kunne ikke hente bruker. Prøv igjen',
+                    categoriesLoadFailed: 'Kunne ikke hente kategorier. Prøv igjen',
+                    copyDocumentFailed: 'Dokumentet kunne ikke kopieres. Prøv igjen',
+                    removeDocumentFailed: 'Kunne ikke slette dokumentet. Prøv igjen',
+                    removeProtectedDocumentFailed: 'Det er ikke tillatt å slette dokumenter'
+                }
+            },
+            newDocument: {
+                title: "Opprett nytt dokument",
+                textDoc: "Tekstdokument",
+                fileDoc: "Lastet opp fil",
+                urlDoc: "Link (URL)"
+            },
+            newDocumentProfile: {
+                title: "Opprett nytt dokument",
+                createDocButton: "Skape",
+                chooseProfileOrParent: "Velg profil for det nye dokumentet:",
+                validationErrorMessage: "Du må velge en eksisterende profil eller angi meta-IDen eller aliaset til et tekstdokument",
+                buildByProfile: "Velg etter profil",
+                buildByParent: "Velg en tekstdokument-ID",
+                buildByCurrentDocId: "Velg dette dokumentet som profil",
+                selectProfile: "Velg profil",
+                selectParent: "Velg 'parent'",
+                selectParentPlaceholder: "Skriv inn dokument-ID",
+                error: {
+                    loadProfilesFailed: "Kunne ikke hente kategorier. Prøv igjen"
+                }
+            },
+            menu: {
+                title: "Rediger menyen ",
+                teaser: "Teaser-menyen ",
+                page: "side ",
+                menuTitle: "meny ",
+                remove: "Fjern fra menyen",
+                copy: "Kopiere",
+                edit: "Rediger sideinformasjon",
+                order: 'Ordning',
+                id: "ID",
+                docTitle: "Overskrift",
+                publishDate: 'Publ',
+                publishedTimePrompt: 'Aldri publisert!',
+                modifiedDate: 'Endret',
+                status: "Status",
+                version: 'Ver',
+                removeConfirmation: "Vil du fjerne menypunktet \"",
+                confirmFlatSortMessage: 'Hvis du bytter til en annen type, vil TreeSort gå tilbake til en flat meny! Vil du fortsette?',
+                saveAndClose: "Lagre og lukk",
+                sortNumberTitle: 'Sorter etter tall',
+                visibility: {
+                    name: 'Vis',
+                    title: {
+                        authorized: "A",
+                        unauthorized: "U",
+                        both: "Alle"
+                    },
+                    tooltip: {
+                        authorized: "Elementet er synlig for autoriserte brukere",
+                        unauthorized: "Elementet er synlig for uautoriserte brukere",
+                        both: "Elementet er synlig for alle brukere",
+                        nobody: "Elementet er ikke synlig for noen"
+                    }
+                },
+                error: {
+                    createFailed: 'Menyen kunne ikke lagres. Prøv igjen',
+                    copyDocumentFailed: 'Dokumentet kunne ikke kopieres. Prøv igjen',
+                    loadFailed: 'Kunne ikke laste. Prøv igjen',
+                    invalidSortNumber: 'Ugyldig datasorteringsnummer!',
+                    invalidPosition: 'Ugyldig stilling!',
+                    fixInvalidPosition: 'Menyområdet har en ugyldig plassering! Vennligst fiks det!'
+
+                },
+                typesSort: {
+                    treeSort: 'Tresortering',
+                    manual: 'Manuell',
+                    alphabeticalAsc: 'Alfabetiskt (A-Å)',
+                    alphabeticalDesc: 'Alfabetiskt (Å-A)',
+                    publishedDateAsc: 'Publisert (ny først)',
+                    publishedDateDesc: 'Publisert (gammel først)',
+                    modifiedDateAsc: 'Endret (ny først)',
+                    modifiedDateDesc: 'Modifisert (gammel først)',
+
+                },
+                multiRemoveInfo: 'Flere fjernet',
+                multiRemove: 'Fjerne',
+            },
+            loop: {
+                title: "Editor loop",
+                teaser:"Teaser meny ",
+                page:"page ",
+                loopTitle: "loop ",
+                createNew: "Lag ny",
+                saveAndClose: "Lagre og lukk",
+                resetSorting: "Tilbakestill sorteringen",
+                id: "ID",
+                content: "innhold",
+                image: "bilde",
+                isEnabled: "er aktivert",
+                error: {
+                    createFailed: 'Kunne ikke opprette loop. Prøv igjen',
+                    loadFailed: 'Kunne ikke laste. Prøv igjen'
+                }
+            },
+            content: {
+                title: "Bildearkiv",
+                hideFolders: "Skjul mapper",
+                showFolders: "Vis mapper",
+                checkFolderImagesUsage: "Gå til katalogen",
+                createFolderImage: "Legg til underkatalog",
+                editFolderImage: "Endre katalognavn",
+                deleteFolderImage: "Slett katalog",
+                cancel: "Avbryt",
+                upload: "Laste opp",
+                useSelectedImage: "Bruk det valgte bildet",
+                removeImageConfirm: "Vil du slette bildet ",
+                imageStillUsed: "Bilde i bruk",
+                removeFolderMessage: "Vil du slette mappen \"",
+                folderNotEmptyMessage: "Mappen er ikke tom",
+                newFolderName: "Nytt mappenavn",
+                add: "LEGGE TIL+",
+                cancelChanges: "Avbryt endringer",
+                openImage: "Åpne bildet i nytt vindu",
+                sortBy: 'Sorter etter',
+                sorting: {
+                    default: 'Standard',
+                    az: 'A-Å',
+                    za: 'Å-A',
+                    dateNewFirst: 'Dato (ny først)',
+                    dateOldFirst: 'Dato (gammel først)',
+                },
+                error: {
+                    removeFailed: 'Kunne ikke slette. Prøv igjen',
+                    checkFailed: 'Kunne ikke sjekke. Prøv igjen',
+                    addFolderFailed: 'Kunne ikke legge til mappe. Prøv igjen',
+                    loadImagesFailed: 'Kunne ikke hente bilder. Prøv igjen',
+                    uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen'
+                }
+            },
+            image: {
+                title: "Rediger bilde",
+                page: 'side ',
+                imageName: 'bilde ',
+                teaser: 'Teaser-bilde',
+                proportion: "Aktiver proporsjoner",
+                compression: "Komprimering",
+                presetCrop: "Forhåndsinnstilt beskjæringsformat",
+                crop: "Forhåndsinnstilt",
+                activeTitle: 'Aktivt bilde:',
+                noSelectedImage: 'Ingen bilder er valgt!',
+                editInNewWindow: 'Rediger i nytt vindu',
+                panels: {
+                    bottom: {
+                        hide: "Skjul bunnpanelet",
+                        show: "Vis det nederste panelet"
+                    },
+                    right: {
+                        hide: "Skjul høyre panel",
+                        show: "Vis høyre panel"
+                    }
+                },
+                align: {
+                    none: "Ingen justering",
+                    center: "Fungerer kun hvis funksjonen er implementert av utvikleren. [Utviklerinfo: 'imcms-image-align-center'-klassen lagt til for vanlig imcms-bildetag]",
+                    left: "Fungerer kun hvis funksjonen er implementert av utvikleren. [Utviklerinfo: 'imcms-image-align-left'-klassen lagt til for vanlig imcms-bildetag]",
+                    right: "Fungerer kun hvis funksjonen er implementert av utvikleren. [Utviklerinfo: 'imcms-image-align-center'-klassen lagt til for vanlig imcms-bildetag]"
+                },
+                buttons: {
+                    zoomIn: 'Zoom inn',
+                    zoomOut: 'Zoome ut',
+                    reset: 'Tilbakestill til opprinnelig verdi',
+                    rotateLeft: 'Rotér mot venstre',
+                    rotateRight: 'Roter til høyre',
+                    revert: 'Gå tilbake til den opprinnelige forhåndsvisningen',
+                    cropping: 'Beskjær bildet',
+                    cancelText: "Avbryt",
+                    cancelTitle: "Avbryt endringer",
+                    applyChangeText: "Søke om",
+                    applyChangeTitle: "Bruk endringer",
+                    removeCropping: "Fjern beskjæring",
+                    removeCroppingDescription: "Gå tilbake til forrige beskjæring",
+                    revertCropping: "Gå tilbake til originalen",
+                    revertCroppingDescription: "Gå tilbake til det opprinnelige beskjæringsområdet",
+                    rotationTitle: "Aktiver rotasjonskontroller"
+                },
+                styleInfo: {
+                    title: 'Begrensede stiler',
+                    info: 'Bildet som brukes er begrenset til denne stilen'
+                },
+                proportionsButtonTitle: "Bevar bildeproporsjoner Av/På",
+                compressionButtonTitle: "Bildekomprimering På/Av",
+                wantedSize: "Ønsket størrelse (B x H)",
+                revertWantedSize: "Ønsket størrelse (H x B)",
+                displaySize: "Vist størrelse (B x H)",
+                revertDisplaySize: "Vist størrelse (H x B)",
+                originSize: 'Original størrelse (B x H)',
+                height: "Høyde",
+                width: "Bredde",
+                preview: "Forhåndsvisning",
+                edit: 'Redigere',
+                original: "Original",
+                selectImage: "Velg bilde",
+                suggestAltText: 'Komme med et forslag',
+                warnChange: 'Alt-teksten er ikke tom! Vil du endre alt-tekst?',
+                altText: "Alt. tekst (For synshemmede. Bør spesifiseres)",
+                imageLink: "Bildelink (URL)",
+                allLangs: "Hvert språk",
+                advanced: "Avansert",
+                simple: "Enkel",
+                none: "Nei",
+                top: "topp",
+                right: "høyre",
+                bottom: "bunn",
+                left: "venstre",
+                spaceAround: "Luft rundt bildet",
+                cropCoords: "Beskjæringskoordinater",
+                fileFormat: "Filformat",
+                alignment: "Tekstjustering",
+                altTextConfirm: "Alternativ tekst mangler. Er du sikker på at du vil fortsette?",
+                showHistory: "Vis historikk",
+                hideHistory: "Skjul historie",
+                cancelAndClose: "Avbryt og lukk",
+                removeAndClose: "Fjern og lukk",
+                saveAndClose: "Lagre og lukk",
+                cancel: "Avbryt",
+                restrictedStyle: 'Begrenset stil:',
+                infoStyle: 'Bildet som brukes er begrenset til denne stilen.',
+                zoomGrade: 'Zoom grad',
+                exif: {
+                    button: "Vis Exif info",
+                    title: "Se dette bildet EXIF-informasjon",
+                },
+                error: {
+                    loadFailed: 'Bildet kunne ikke lastes inn. Prøv igjen',
+                    removeFailed: 'Kunne ikke slette bildet. Prøv igjen',
+                    createFailed: 'Kunne ikke lage bildet. Prøv igjen',
+                    loadHistoryFailed: 'Kunne ikke laste inn loggen'
+                }
+            },
+            text: {
+                confirmSave: "Lagre endringer?",
+                error: {
+                    createFailed: 'Kunne ikke lagre tekst. Prøv igjen',
+                    filterFailed: 'Kan ikke filtrere tekst. Prøv igjen',
+                }
+            }
+        },
+        status: {
+            title: {
+                published: "Publisert",
+                publishedWaiting: "Godkjent, venter",
+                inProcess: "Ny, u a",
+                disapproved: "Ikke godkjent",
+                archived: "Arkivert",
+                passed: "Fullført"
+            },
+            tooltip: {
+                published: "Dokumentet er publisert",
+                publishedWaiting: "Godkjent, venter",
+                inProcess: "Dokumentet er nytt og under konstruksjon",
+                disapproved: "Ikke godkjent",
+                archived: "Arkivert",
+                passed: "Fullført"
+            },
+        },
+        languageFlags: {
+            alertInfoLanguage: 'Språket vil gjelde etter ny pålogging (lang:',
+            error: {
+                loadFailed: 'Kunne ikke laste inn språket. Prøv igjen'
+            }
+        },
+        userProperties: {
+            key: 'Nøkkel',
+            value: 'Verdi',
+            add: 'Legge til',
+            successDelete: 'Vellykket slettet!',
+            wrongKeyError: 'Nøkkelen finnes, vennligst skriv en annen nøkkel!',
+            emptyValueError: 'Nøkkelen og verdien må ikke være tomme!',
+            errorMessage: 'Noe gikk galt',
+            deleteConfirm: 'Ønsker du å fjerne eiendom?',
+            updateMessage: 'Oppdater eiendommen suksess!',
+            savedSuccess: 'Egenskapers suksess reddet!',
+            save: 'Save'
+        },
+        textHistory: {
+            title: "Teksthistorikk",
+            cancel: "Avbryt",
+            writeToText: "Skriv til tekstfeltet",
+            viewSource: "Vis kilde",
+            viewText: "Vis tekst",
+            error: {
+                loadFailed: 'Kunne ikke hente loggen. Prøv igjen'
+            }
+        },
+        textValidation: {
+            title: "Validering ved W3C",
+            pluginTitle: "Valider innhold over W3C",
+            ok: "OK",
+            output: "Valideringsresultater: ",
+            errors: " Feil",
+            warnings: " Advarsler",
+            error: {
+                validationFailed: 'Kunne ikke validere. Prøv igjen'
+            }
+        },
+        sessionExpiredMessage: "Du har blitt logget ut på grunn av inaktivitet. Omdirigere til påloggingssiden?",
+        contentSaveWarningMessage: "Økten din utløper om 2 min. Vennligst lagre det nødvendige innholdet. Økten fortsetter etter at du har lagret.",
+        superAdmin: {
+            head: 'SuperAdmin',
+            oldInterface: 'Eldre grensesnitt',
+            users: {
+                name: 'Bruker',
+                searchFilter: {
+                    byName: {
+                        text: 'Søk bruker',
+                        placeholder: 'Tomt felt viser alt'
+                    },
+                    byRole: {
+                        title: 'Bruker med rolle'
+                    },
+                    inactiveUsers: 'Inkluder inaktive brukere',
+                    listUsers: 'List brukere'
+                },
+                searchResult: {
+                    title: ' brukerne ble funnet',
+                    id: 'ID',
+                    firstName: 'Fornavn',
+                    lastName: 'Etternavn',
+                    userName: 'Brukernavn',
+                    email: 'E-post',
+                    archived: 'er arkivert'
+                },
+                createNewUser: 'Opprett ny bruker',
+                error: {
+                    loadRolesFailed: 'Kunne ikke hente roller. Prøv igjen',
+                    updateFailed: 'Kunne ikke oppdatere brukeren. Prøv igjen',
+                    searchFailed: 'Kunne ikke søke etter bruker. Prøv igjen'
+                },
+                tooltip: {
+                    archiveUser: 'For å arkivere brukere',
+                    editUser: 'Redigere',
+                },
+            },
+            roles: {
+                name: 'Roller',
+                title: 'Roller: administrasjon',
+                createNewRole: 'Opprett ny rolle',
+                roleName: 'Rollenavn',
+                save: 'Lagre',
+                documentEditor: 'Dokumentredigering',
+                cancel: 'Avbryt',
+                externalRolesInfo: 'Du kan angi eksterne roller til å fungere som lokale',
+                permissions: {
+                    title: 'Rolletillatelser',
+                    getPasswordByEmail: 'Motta passord på e-post',
+                    accessToAdminPages: 'Tilgang til admin sider',
+                    accessToDocumentEditor: 'Tilgang til dokumentredigering',
+                    publishOwnDocuments: 'Publiser egne opprettede dokumenter',
+                    publishAllDocuments: 'Publiser alle dokumenter (kun med EDIT-tillatelse)'
+                },
+                deleteConfirm: 'Er du sikker på at du vil slette denne rollen?',
+                editRole: 'Rediger rollen',
+                deleteRole: 'Slett rollen',
+                saveChanges: 'Lagre endringer',
+                discardChangesMessage: 'Ignorer endringer?',
+                error: {
+                    loadFailed: 'Kunne ikke hente roller. Prøv igjen',
+                    loadProvidersFailed: 'Kunne ikke godkjenne leverandører. Prøv igjen',
+                    removeFailed: 'Kunne ikke slette rollen. Prøv igjen',
+                    updateFailed: 'Kunne ikke oppdatere rollen. Prøv igjen',
+                    createFailed: 'Kunne ikke opprette rolle. Prøv igjen',
+                    externalRoles: {
+                        loadFailed: 'Kunne ikke hente eksterne roller. Prøv igjen',
+                        updateFailed: 'Kunne ikke oppdatere ekstern rolle. Prøv igjen'
+                    },
+                    azureRoles: {
+                        loadFailed: 'Kunne ikke hente eksterne roller. Prøv igjen'
+                    }
+                }
+            },
+            ipAccess: {
+                name: 'IP-tilgang',
+                title: 'IP-tilgang',
+                createNewRule: 'Ny',
+                editRule: 'Redigere',
+                deleteRule: 'Slett',
+                save: 'Lagre',
+                cancel: 'Avbryt',
+                deleteConfirm: 'Er du sikker på at du vil slette denne regelen?',
+                saveChanges: 'Lagre endringer',
+                discardChangesMessage: 'Ignorer endringer?',
+                fromIp: 'Fra IP-nummer',
+                tillIp: 'Til IP-nummer',
+                fields: {
+                    enabled: 'Aktivert',
+                    restricted: 'Begrenset',
+                    ipRange: 'IP-område',
+                    role: 'Rolle',
+                    user: 'Bruker'
+                },
+                error: {
+                    loadFailed: 'Kunne ikke hente regler. Prøv igjen',
+                    removeFailed: 'Kunne ikke slette regelen. Prøv igjen',
+                    updateFailed: 'Kunne ikke oppdatere regelen. Prøv igjen',
+                    createFailed: 'Kunne ikke opprette regelen. Prøv igjen',
+                    loadRolesFailed: 'Kunne ikke hente roller. Prøv igjen',
+                    loadUsersFailed: 'Kunne ikke hente bruker. Prøv igjen',
+                    invalidIP: 'Ugyldig ipv4 / ipv6-adresse'
+                }
+            },
+            deleteDocs: {
+                name: 'Slett dokumenter',
+                title: 'Slett dokument med id',
+                deleteConfirmation: 'ADVARSEL: Dokumentet og dets data vil bli slettet. Er du sikker?',
+                deleteDocButton: 'Slett!',
+                error: {
+                    missedDoc: 'Dokumentet finnes ikke!',
+                    protectedDoc: 'Det er ikke tillatt å slette dette dokumentet'
+                },
+            },
+            dataVersion: {
+                name: 'Dataversjon',
+                error: {
+                    loadVersion: 'Kunne ikke laste inn versjonen!'
+                }
+            },
+            files: {
+                name: 'Filer',
+                upload: 'Laste opp',
+                rename: 'Endre navn',
+                add: 'Legge til',
+                moveRight: 'Flytt til høyre',
+                moveLeft: 'Gå til venstre',
+                copyRight: 'Kopier til høyre',
+                copyLeft: 'Kopier til venstre',
+                warnDeleteMessage: 'Er du sikker på at du vil slette filen?',
+                warnEditMessage: 'Redigerer du virkelig innholdsfilen?',
+                warnViewDocMessage: 'Vil du omdirigere på gjeldende dokument?',
+                title: {
+                    createFile: 'Opprett fil',
+                    createFileOrDirectory: 'Opprett fil/katalog',
+                    createFileName: 'Filnavn',
+                    createFileOrDirectoryName: 'Fil-/katalognavn',
+                    createDirectory: 'Katalog',
+                    fileName: 'Filnavn',
+                    directoryName: 'Katalognavn',
+                    delete: 'Slett',
+                    move: 'Flytt',
+                    copy: 'Kopiere',
+                    download: 'Nedlasting',
+                    edit: 'Redigere',
+                    addToGroup: 'Legg til i gruppe',
+                    titleByMove: 'Flytt fil',
+                    titleByCopy: 'Kopier fil',
+                    titleContent: 'Filinnhold',
+                    titleEditContent: 'Rediger filinnhold!',
+                    replaceTemplate: 'Velg mal'
+                },
+                error: {
+                    loadError: 'Kunne ikke laste inn filer. Prøv igjen!',
+                    loadFileError: 'Kunne ikke laste inn filen. Prøv igjen!',
+                    deleteFailed: 'Kunne ikke slette!',
+                    renameFailed: 'Kunne ikke gi nytt navn til filen. Prøv igjen!',
+                    editFailed: 'Kunne ikke redigere filinnholdet. Prøv igjen!',
+                    createError: 'Mislykkes i å opprette fil!',
+                    downloadError: 'Kunne ikke opprette nedlastingsfil. Prøv igjen!',
+                    moveError: 'Kunne ikke flytte filen. Prøv igjen!',
+                    copyError: 'Kunne ikke kopiere filen. Prøv igjen!',
+                    uploadError: 'Filen kunne ikke lastes opp. Prøv igjen!',
+                    loadDocError: 'Kunne ikke laste dokumentet!',
+                    loadGroupsError: 'Kunne ikke laste inn malgrupper!',
+                    deleteGroup: 'Kunne ikke slette malgruppen!',
+                    createGroup: 'Kunne ikke opprette malgruppe!',
+                    editGroup: 'Kunne ikke redigere malgruppen!',
+                    loadGroup: 'Kunne ikke bruke malgruppen!',
+                    addTemplateToGroup: 'Kunne ikke legge til mal i malgruppe!',
+                    deleteTemplate: 'Kunne ikke slette malen!',
+                    deleteGroupFromTemplate: 'Kunne ikke slette gruppen fra malen!',
+                    replaceTemplate: 'Kunne ikke erstatte malen!',
+                    noOtherTemplates: 'Ingen andre maler!',
+                    loadTemplates: 'Kunne ikke laste inn maler!'
+                },
+                documentData: {
+                    docsNumber: 'Antall dokumenter: ',
+                    docView: 'VIEW',
+                    docEdit: 'EDIT',
+                },
+                groupData: {
+                    title: 'Malgruppe',
+                    templatesTableTitle: 'Maler i gruppen:',
+                    edit: 'Redigere',
+                    delete: 'Slett',
+                    save: 'Lagre',
+                    cancel: 'Avbryt',
+                    create: 'Opprett malgruppe',
+                    deleteConfirm: 'Er du sikker på at du vil slette malgruppe?',
+                    saveConfirm: 'Er du sikker på at du vil lagre malgruppen?',
+                    cancelConfirm: 'Er du sikker på at du vil avbryte endringer?',
+                    addToGroupConfirm: 'Er du sikker på at du vil legge til denne malen i den gjeldende malgruppen?'
+                },
+                template: {
+                    boundDocumentsWarn: 'Noen dokumenter relatert til denne malen. Vil du erstatte den med en annen mal?',
+                }
+            },
+            templatesCSS: {
+                name: 'Maler CSS',
+                editorTitle: 'Mal CSS Editor',
+                templatesSelectTitle: 'Velg mal',
+                history: {
+                    headText: "Maler CSS-historikk",
+                    closeBtnText: "Avbryt",
+                    useBtnText: "Bruk",
+                },
+                buttons: {
+                    historyBtnText: "Historie",
+                    activeVersionBtnText: "Aktiv",
+                    workingVersionBtnText: "Arbeider",
+                    saveBtnText: "Lagre",
+                    clearBtnText: "Klar",
+                    publishBtnText: "Publisere",
+                },
+                errors: {
+                    EMPTY_AREA: "Velg mal!",
+                    ACTIVE_VERSION: "For å redigere bytt til fungerende versjon!",
+                    SAVE_FIRST: "For å publisere, vennligst lagre det først!",
+                    EQUALS_WORKING_VERSION:'Gjør endringer først!'
+                }
+            },
+            search: {
+                name: 'Søk'
+            },
+            linkValidator: {
+                name: 'Link Validator',
+                titleOnlyBrokenLinks: "Vis kun ødelagte lenker",
+                brokenLinks: "Vis kun ødelagte lenker",
+                buttonValidation: 'Start validering',
+                startDocumentId: 'Start id',
+                endDocumentId: 'Slutt id',
+                linkInfoRow: {
+                    pageAlias: 'Sidealias',
+                    status: "Status",
+                    type: 'Type',
+                    admin: "Administrasjon",
+                    reference: "Ref.",
+                    link: "Link",
+                    hostFound: "Vert funnet",
+                    hostReachable: "Verdier kan nås",
+                    pageFound: 'Siden ble funnet'
+                },
+                error: {
+                    validationFailed: 'Kunne ikke validere. Prøv igjen'
+                },
+            },
+            imagesTab: {
+                title: 'Bilder',
+                label: 'Link til bildebibliotek'
+            },
+            categories: {
+                name: 'Kategorier',
+                createButtonName: "Skape",
+                removeButtonName: "Slett",
+                saveButton: 'Lagre',
+                cancelButton: 'Avbryt',
+                warnCancelMessage: 'Er du sikker på at du vil avbryte dette?',
+                confirmDelete: 'Slett?',
+                sections: {
+                    createCategoryType: {
+                        title: 'Opprett kategoritype',
+                        name: 'Kategoritypenavn',
+                        inherited: 'Arvet til nye dokumenter',
+                        visible: 'Synlig i sideinfo',
+                        singleSelect: 'Singlevalg',
+                        multiSelect: 'Multivalg',
+                        chooseType: 'Velg kategoritype',
+                    },
+                    createCategory: {
+                        title: 'Opprett kategori',
+                        name: 'Kategori navn',
+                        description: 'Beskrivelse',
+                        categoryType: 'Legg til kategoritype',
+                        chooseCategory: 'Velg kategori',
+                    }
+                },
+                error: {
+                    invalidName: 'Tomt navn er uakseptabelt! Vennligst velg et annet navn!',
+                    category: {
+                        loadFailed: 'Kunne ikke hente kategori. Prøv igjen',
+                        removeFailed: 'Denne kategorien brukes i dokumenter! Er du sikker på at du vil slette den?',
+                        removeForceFailed: 'Kunne ikke fjerne kategorien'
+                    },
+                    categoryType: {
+                        loadFailed: 'Kunne ikke hente kategoriene. Prøv igjen',
+                        removeFailed: 'Denne kategoritypen har kategorier! Er du sikker på at du vil fjerne den?',
+                        removeForceFailed: 'Kunne ikke fjerne kategorityper'
+                    }
+                }
+            },
+            profiles: {
+                name: 'Profiler',
+                title: 'Profiler',
+                createButton: "Opprett ny profil",
+                warnChangeMessage: 'Vil du endre denne profilen?',
+                warnDelete: 'Sletter du virkelig denne profilen?',
+                warnCancelMessage: 'Er du sikker på at du vil avbryte?',
+                cancel: "Avbryt",
+                titleTextName: 'Navn',
+                titleTextDocName: 'Dokumentnavn',
+                createNewProfile: {
+                    titleTextName: 'Navn',
+                    titleTextDocName: 'Dokumentnavn',
+                    textFieldName: 'Tekstnavn',
+                    textFieldDocName: 'Tekst doc navn',
+                    buttonSave: 'Save'
+                },
+                editProfile: {
+                    name: "Navn",
+                    docName: 'Dokumentnavn',
+                    buttonEdit: 'Rediger profil',
+                    buttonDelete: 'Slett profil'
+                },
+                error: {
+                    createFailed: 'Kunne ikke opprette profil. Prøv igjen',
+                    loadFailed: 'Kunne ikke hente profiler. Prøv igjen',
+                    errorMessage: 'Beklager, men du tok feil!'
+                }
+            },
+            systemProperties: {
+                name: 'System egenskaper',
+                nameInputTitle: 'Navn',
+                emailInputTitle: 'E-post',
+                sections: {
+                    startPage: {
+                        name: "Hjemmeside",
+                        description: "Side nummer",
+                        input: "Inndatasideside"
+                    },
+                    systemMessage: {
+                        name: "Systemmelding",
+                        description: "Beskjed",
+                        inputBox: "Box Beskjed"
+                    },
+                    serverMaster: {
+                        name: "Servermester",
+                        descriptionName: "Servermester navn",
+                        descriptionEmail: "Servermester-e-post",
+                        descriptionByName: "Servermester Navnebeskrivelse",
+                        descriptionByEmail: "Servermester E-postbeskrivelse",
+                        inputName: "Skriver inn servermasternavn",
+                        inputEmail: "Skriver inn servermaster e-post"
+                    },
+                    webMaster: {
+                        name: "WebMaster",
+                        descriptionName: "Webmaster navn",
+                        descriptionEmail: "Webmaster e-post",
+                        descriptionByName: "Webmasters navnebeskrivelse",
+                        descriptionByEmail: "Webmaster E-postbeskrivelse",
+                        inputName: "Skriver inn webbnavn",
+                        inputEmail: "Webmaster e-postbeskrivelse"
+                    },
+                    error: {
+                        incorrectEmail: "Ukorrekt email"
+                    }
+                },
+                changeButton: "Lagre",
+                error: {
+                    loadFailed: 'Kunne ikke laste inn egenskaper. Prøv igjen'
+                }
+            },
+            temporalContent: {
+                name: 'Index / Cache',
+                actions: {
+                    rebuildIndex: 'Reindekser innholdet',
+                    deletePublicDocCache: 'Tøm offentlig dokumentcache',
+                    deleteOtherCache: 'Tøm annen cache',
+                    deleteStaticCache: 'Tøm statisk cache',
+                    buildCacheDocument: 'Bygg opp cache'
+                },
+                warning: {
+                    buildCacheWarning: 'Er du sikker på å bygge cache?'
+                },
+                init: 'Henrette',
+                initIndexing: 'Indekser',
+                indexing: 'Indeksering',
+                lastUpdate: 'Indeksert',
+                timeLeft: 'Tid igjen',
+                lastDeleteCache: 'Slettet',
+                caching: 'Caching',
+                initCaching: 'Bygge caches',
+                lastBuildCache: "Opprettet"
+            },
+            menuTab: {
+                name: 'Meny'
+            },
+            documentationTab: {
+                title: 'Dokumentasjon',
+                label: 'Link til dokumentasjon siste versjon '
+            }
+        },
+        login: {
+            alternativeLogin: "Alternativ pålogging:",
+            error: {
+                loadProvidersFailed: 'Kunne ikke godkjenne leverandører. Prøv igjen'
+            }
+        },
+        dateTime: {
+            yearMonthDay: 'åååå-mm-dd',
+            hourMinute: 'tt:mm',
+        },
+        save: "Lagre",
+        none: 'Ingen'
+    },
 };
 
 module.exports = texts[imcms.userLanguage] ? texts[imcms.userLanguage] : texts['en'];

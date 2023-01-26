@@ -76,7 +76,7 @@ class DefaultLanguageService implements LanguageService {
 
     @Override
     public List<String> getAllAdminLangCode() { // maybe in future we can fetch langs admin from db..
-        return Arrays.asList(ImcmsConstants.ENG_CODE, ImcmsConstants.SWE_CODE);
+        return Arrays.asList(ImcmsConstants.ENG_CODE, ImcmsConstants.SWE_CODE, ImcmsConstants.NOR_CODE);
     }
 
     @Override

@@ -146,6 +146,7 @@ ImcmsConstants {
 
     public static final String ENG_CODE = "en";
     public static final String SWE_CODE = "sv";
+    public static final String NOR_CODE = "no";
     public static final List<String> LANGUAGES = Arrays.asList("en", "sv", "be", "bs", "bg", "zh", "hr", "cs", "da", "nl", "et", "fi", "fr", "de", "el", "hu", "ga", "is", "it", "ja", "kk", "lb", "lt", "lv", "mn", "no", "pl", "pt", "ro", "ru", "sr", "gd", "sk", "sl", "es", "tr", "uk", "sma", "smj");
 
     public static final String ENG_CODE_ISO_639_2 = "eng";
