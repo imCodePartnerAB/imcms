@@ -245,11 +245,11 @@ public class PasswordReset extends HttpServlet {
 
                 final String passResetMessageSubjectKey = "passwordreset.password_reset_email.subject";
                 final String subject = new LocalizedMessageFormat(passResetMessageSubjectKey, serverName)
-                        .toLocalizedString(user);
+                        .toLocalizedString(user.getLanguageIso639_2());
 
                 final String passResetMessageBodyKey = "passwordreset.password_reset_email.body";
                 final String body = new LocalizedMessageFormat(passResetMessageBodyKey, serverName, url, loginName)
-                        .toLocalizedString(user);
+                        .toLocalizedString(user.getLanguageIso639_2());
 
                 final SystemData sysData = Imcms.getServices().getSystemData();
                 final String eMailServerMaster = sysData.getServerMasterAddress();
