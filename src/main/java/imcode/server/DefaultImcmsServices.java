@@ -256,14 +256,14 @@ public class DefaultImcmsServices implements ImcmsServices {
             logUserDeactivated(user);
 
         } else if(userLockValidator.isUserBlocked(user)) {
-            mainLog.info("->User '" + login + "' failed to log in: User is blocked to login.");
+            mainLog.info("->User " + user.getId() + " failed to log in: User is blocked to login.");
 
         } else if (!userAuthenticates) {
-            mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
+            mainLog.info("->User " + user.getId() + " failed to log in: Wrong password.");
             final Integer userAttemptsToLogin = userLockValidator.increaseAttempts(user);
 
             if (userLockValidator.isAmountAttemptsMorePropValue(userAttemptsToLogin)) {
-                mainLog.info("->User '" + login + "' User has exceeded the norm amount attempts to login.");
+                mainLog.info("->User " + user.getId() + " User has exceeded the norm amount attempts to login.");
                 userLockValidator.lockUserForLogin(user.getId());
             }
         } else if (multiFactorAuthenticationService.isRequired(user)) {
@@ -631,12 +631,12 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void logUserDeactivated(UserDomainObject user) {
-        mainLog.info("->User '" + user.getLoginName() + "' failed to log in: User deactivated.");
+        mainLog.info("->User " + user.getId() + " failed to log in: User deactivated.");
     }
 
     private void logUserLoggedIn(UserDomainObject user) {
         if (!user.isDefaultUser()) {
-            mainLog.info("->User '" + user.getLoginName() + "' successfully logged in.");
+            mainLog.info("->User " + user.getId() + " successfully logged in.");
         }
     }
 

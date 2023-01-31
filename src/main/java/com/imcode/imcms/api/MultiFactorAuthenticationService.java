@@ -71,7 +71,7 @@ public class MultiFactorAuthenticationService {
 
 		if (phoneNumber.isEmpty() && !useEmailIfPhoneMissing) {
 			addErrorMessage(ERROR_NO_PHONE_NUMBER_FOUND);
-			mainLog.info("->User '" + user.getLogin() + "' cannot finish authorization: No phone number found.");
+			mainLog.info("->User " + user.getId() + " cannot finish authorization: No phone number found.");
 			return;
 		}
 
@@ -91,11 +91,11 @@ public class MultiFactorAuthenticationService {
 		final UserDomainObject sessionUser = (UserDomainObject) session.getAttribute("user");
 
 		if (dbUser == null || !dbUser.equals(sessionUser)) {
-			mainLog.info("->User '" + sessionUser.getLogin() + "' failed to log in: Wrong one time password.");
+			mainLog.info("->User " + sessionUser.getId() + " failed to log in: Wrong one time password.");
 			final Integer attempts = lockValidator.increaseAttempts(sessionUser);
 
 			if (lockValidator.isAmountAttemptsMorePropValue(attempts)) {
-				mainLog.info("->User '" + sessionUser.getLogin() + "' User has exceeded the norm amount attempts to login.");
+				mainLog.info("->User " + sessionUser.getId() + " User has exceeded the norm amount attempts to login.");
 				lockValidator.lockUserForLogin(sessionUser.getId());
 				session.setAttribute(REQUEST_PARAMETER__USERNAME, sessionUser.getLogin());
 				session.setAttribute(REQUEST_PARAMETER__PASSWORD, sessionUser.getPassword());
@@ -110,7 +110,7 @@ public class MultiFactorAuthenticationService {
 			}
 		}
 
-		mainLog.info("->User '" + dbUser.getLogin() + "' proceed second factor!.");
+		mainLog.info("->User " + dbUser.getId() + " proceed second factor!.");
 		deactivateSecondFactor(request, response, dbUser);
 		session.setAttribute(REQUEST_PARAMETER__USERNAME, dbUser.getLogin());
 		session.setAttribute(REQUEST_PARAMETER__PASSWORD, dbUser.getPassword());
