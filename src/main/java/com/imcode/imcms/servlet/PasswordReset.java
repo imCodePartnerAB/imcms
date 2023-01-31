@@ -125,6 +125,7 @@ public class PasswordReset extends HttpServlet {
                 } else {
                     user.setPassword(password);
                     Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+                    Utility.logGDPR(user.getId(), "Password changed");
                     view = password_changed_confirmation_view;
                 }
             }
@@ -199,6 +200,7 @@ public class PasswordReset extends HttpServlet {
 
             try {
                 result = UserIdentity.of(urm.createPasswordReset(user.getId()), userAndEmail.identity());
+                Utility.logGDPR(user.getId(), "Password reset request");
             } catch (Exception e) {
                 logger.error(String.format("Failed to create password reset for user %s.", user), e);
             }

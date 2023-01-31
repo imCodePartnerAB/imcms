@@ -2,11 +2,13 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +45,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Query("UPDATE User u SET u.sessionId = ?1 WHERE u.id = ?2")
     void updateSessionId(int userId, String sessionId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.blockedDate = ?1 WHERE u.id = ?2")
+    void updateBlockDate(Date blockedDate, int userId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.lastLoginDate = ?1 WHERE u.id = ?2")
+    void updateLastLoginDate(Date lastLoginDate, int userId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.attempts = 0 WHERE u.id = ?1")
+    void resetAttempts(int userId);
 
     @Transactional
     @Query("SELECT u.sessionId FROM User u WHERE u.id = ?1")

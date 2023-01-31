@@ -97,8 +97,9 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     public UserDomainObject(int id) {
         this.id = id;
     }
-    public UserDomainObject(UserFormData userFormData) {
-        super(userFormData);
+
+    public UserDomainObject(UserData userData) {
+        super(userData);
     }
 
     private static Set<Integer> createRolesSetWithUserRole() {

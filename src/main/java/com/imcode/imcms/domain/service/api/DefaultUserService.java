@@ -1,10 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.UserLockValidator;
-import com.imcode.imcms.domain.dto.PasswordResetDTO;
-import com.imcode.imcms.domain.dto.PhoneDTO;
-import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.*;
@@ -12,6 +9,9 @@ import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
+import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,14 +82,18 @@ class DefaultUserService implements UserService {
     @Override
     public void updateUser(UserDTO updateData) {
         final Integer id = updateData.getId();
-
         if (id == null) return;
 
+        final UserGDPRDataDTO previousUserGDPRDataDTO = getUserGDPRDataDTO(id);
+
         final User user = getUser(id);
-
         updatePresentUserFields(user, updateData);
-
         userRepository.save(user);
+
+        //log changed fields
+        final UserGDPRDataDTO updatedUserGDPRDataDTO = getUserGDPRDataDTO(id);
+        List<String> changedFields = Utility.findFieldsWithMismatchedValue(previousUserGDPRDataDTO, updatedUserGDPRDataDTO);
+        if(!changedFields.isEmpty()) Utility.logGDPR(id, "Changed data: " + String.join(";", changedFields));
     }
 
     private void updatePresentUserFields(User user, UserDTO updateData) {
@@ -103,6 +107,33 @@ class DefaultUserService implements UserService {
 
     private <T> void updateFieldIfPresent(Supplier<T> fieldGetter, Consumer<T> fieldSetter) {
         Optional.ofNullable(fieldGetter.get()).ifPresent(fieldSetter);
+    }
+
+    @Override
+    public int incrementUserAttempts(int id) {
+        User user = userRepository.findById(id);
+
+        final int incrementedAttempts = user.getAttempts() + 1;
+
+        user.setAttempts(incrementedAttempts);
+        userRepository.save(user);
+
+        return incrementedAttempts;
+    }
+
+    @Override
+    public void resetUserAttempts(int id) {
+        userRepository.resetAttempts(id);
+    }
+
+    @Override
+    public void updateUserBlockDate(Date blocdDate, int id) {
+        userRepository.updateBlockDate(blocdDate, id);
+    }
+
+    @Override
+    public void updateLastLoginDate(Date lastLoginDate, int id) {
+        userRepository.updateLastLoginDate(lastLoginDate, id);
     }
 
     @Override
@@ -163,8 +194,19 @@ class DefaultUserService implements UserService {
 
     @Override
     public void saveUser(UserFormData userData) {
+        final UserGDPRDataDTO previousUserGDPRDataDTO = userData.getId() != null ? getUserGDPRDataDTO(userData.getId()) : null;
+
         final User user = saveAndGetUser(userData);
         updateUserData(userData, user);
+
+        //log changed fields
+        if(previousUserGDPRDataDTO == null){
+            Utility.logGDPR(user.getId(), "Created new user");
+        }else{
+            UserGDPRDataDTO updatedUserGDPRDataDTO = getUserGDPRDataDTO(user.getId());
+            List<String> changedFields = Utility.findFieldsWithMismatchedValue(previousUserGDPRDataDTO, updatedUserGDPRDataDTO);
+            if(!changedFields.isEmpty()) Utility.logGDPR(user.getId(), "Changed data: " + String.join(";", changedFields));
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -192,6 +234,16 @@ class DefaultUserService implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    private UserGDPRDataDTO getUserGDPRDataDTO(int id){
+        User oldUser = userRepository.findById(id);
+        Set<Integer> roleIds = userRolesService.getRoleIdsByUser(id);
+        Set<PhoneNumber> phoneNumbers = phoneService.getUserPhones(id).stream()
+                .map(phone -> new PhoneNumber(phone.getNumber(), PhoneNumberType.getPhoneNumberTypeById(phone.getPhoneType().getId())))
+                .collect(Collectors.toSet());
+
+        return new UserGDPRDataDTO(oldUser, roleIds, phoneNumbers);
     }
 
     private UserFormData toUserFormData(User user) {

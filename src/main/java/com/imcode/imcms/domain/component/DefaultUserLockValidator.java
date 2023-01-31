@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.component;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,40 +68,24 @@ class DefaultUserLockValidator implements UserLockValidator {
 
     @Override
     public void lockUserForLogin(Integer userId) {
-        final UserFormData receivedUserData = userService.getUserData(userId);
-
-        receivedUserData.setBlockedDate(new Date(System.currentTimeMillis()));
-
-        userService.saveUser(receivedUserData);
+        userService.updateUserBlockDate(new Date(System.currentTimeMillis()), userId);
+        Utility.logGDPR(userId, "Block user from logging in for "+ timeBlocking +" minute(s)");
     }
-
 
     @Override
     public Integer increaseAttempts(UserDomainObject user) {
-        final UserFormData receivedUserData = userService.getUserData(user.getId());
-        receivedUserData.setAttempts(user.getAttempts() + 1);
-
-        userService.saveUser(receivedUserData);
-
-        return receivedUserData.getAttempts();
+        return userService.incrementUserAttempts(user.getId());
     }
 
     @Override
     public void resetAttempts(Integer userId) {
-        final UserFormData receivedUserData = userService.getUserData(userId);
-
-        receivedUserData.setAttempts(0);
-
-        userService.saveUser(receivedUserData);
+        userService.resetUserAttempts(userId);
     }
 
     @Override
     public void unLockDateTimeBlocked(Integer userId) {
-        final UserFormData receivedUserData = userService.getUserData(userId);
+        userService.updateUserBlockDate(null, userId);
 
-        receivedUserData.setBlockedDate(null);
-
-        userService.saveUser(receivedUserData);
     }
 
     @Override

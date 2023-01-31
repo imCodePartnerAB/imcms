@@ -95,6 +95,8 @@ ImcmsConstants {
 
     public final static String MAIN_LOG = "com.imcode.imcms.log.main";
 
+    public final static String GDPR_LOG = "com.imcode.imcms.log.gdpr";
+
     public final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
     public final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
     public final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;

@@ -21,6 +21,7 @@ public interface UserPropertyService {
 
     void update(List<UserPropertyDTO> deletedProperties, List<UserPropertyDTO> editedProperties, List<UserPropertyDTO> createdProperties);
 
+    void delete(UserProperty userProperty);
     void deleteById(Integer id);
 
 }

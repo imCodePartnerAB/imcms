@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.service.UserPropertyService;
 import com.imcode.imcms.model.UserProperty;
 import com.imcode.imcms.persistence.entity.UserPropertyJPA;
 import com.imcode.imcms.persistence.repository.UserPropertyRepository;
+import imcode.util.Utility;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,8 @@ public class DefaultUserPropertyService implements UserPropertyService {
             throw new DataIsNotValidException();
         }
         userPropertyRepository.saveAndFlush(new UserPropertyJPA(userProperty));
+
+        Utility.logGDPR(userProperty.getUserId(), "Created user property");
     }
 
     @Override
@@ -65,19 +68,32 @@ public class DefaultUserPropertyService implements UserPropertyService {
             receivedUserProperty.setKeyName(userProperty.getKeyName());
             receivedUserProperty.setValue(userProperty.getValue());
         }
-        return new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(receivedUserProperty)));
+
+        final UserPropertyDTO userPropertyDTO = new UserPropertyDTO(userPropertyRepository.save(new UserPropertyJPA(receivedUserProperty)));
+
+        Utility.logGDPR(userPropertyDTO.getUserId(), "Updated user property");
+
+        return userPropertyDTO;
     }
 
     @Override
     public void update(List<UserPropertyDTO> deletedProperties, List<UserPropertyDTO> editedProperties, List<UserPropertyDTO> createdProperties) {
-        deletedProperties.forEach((userProperty -> deleteById(userProperty.getId())));
+        deletedProperties.forEach(this::delete);
         editedProperties.forEach(this::update);
         createdProperties.forEach(this::create);
     }
 
     @Override
+    public void delete(UserProperty userProperty) {
+        userPropertyRepository.deleteById(userProperty.getId());
+        userPropertyRepository.flush();
+
+        Utility.logGDPR(userProperty.getUserId(), "Deleted user property");
+    }
+
+    @Override
     public void deleteById(Integer id) {
-	    userPropertyRepository.deleteById(id);
-	    userPropertyRepository.flush();
+        Optional<UserPropertyJPA> userPropertyJPA = userPropertyRepository.findById(id);
+        userPropertyJPA.ifPresent(this::delete);
     }
 }

@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.persistence.entity.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,14 @@ public interface UserService extends UserDataService, ExternalUserService {
     UserDTO getUser(String login) throws UserNotExistsException;
 
     void updateUser(UserDTO updateMe);
+
+    int incrementUserAttempts(int id);
+
+    void resetUserAttempts(int id);
+
+    void updateUserBlockDate(Date blocdDate, int id);
+
+    void updateLastLoginDate(Date lastLoginDate, int id);
 
     List<UserDTO> getAdminUsers();
 
