@@ -226,14 +226,31 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_When_UserPropertyExist_Expected_EmptyResult() {
+    public void deleteById_When_UserPropertyExist_Expected_EmptyResult() {
         userPropertyService.deleteById(userProperty.getId());
         assertTrue(userPropertyService.getAll().isEmpty());
     }
 
     @Test
-    public void delete_When_UserPropertyNotExist_Expected_CorrectException() {
+    public void deleteById_When_UserPropertyNotExist_Expected_CorrectException() {
         int nonExistenceId = 1000;
         assertThrows(EmptyResultDataAccessException.class, ()-> userPropertyService.deleteById(nonExistenceId));
+    }
+
+    @Test
+    public void delete_When_UserPropertyExist_Expected_EmptyResult() {
+        userPropertyService.delete(userProperty);
+        assertTrue(userPropertyService.getAll().isEmpty());
+    }
+
+    @Test
+    public void delete_When_UserPropertyNotExist_Expected_CorrectException() {
+        final UserPropertyDTO nonExistenceUserProperty = new UserPropertyDTO();
+        nonExistenceUserProperty.setId(10000);
+        nonExistenceUserProperty.setUserId(user.getId());
+        nonExistenceUserProperty.setKeyName("key");
+        nonExistenceUserProperty.setValue("value");
+
+        assertThrows(EmptyResultDataAccessException.class, ()-> userPropertyService.delete(nonExistenceUserProperty));
     }
 }
