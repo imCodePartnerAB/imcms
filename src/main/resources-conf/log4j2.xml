@@ -36,6 +36,16 @@
 			</Policies>
 		</RollingFile>
 
+		<RollingFile name="GDPR"
+					 fileName="${com.imcode.imcms.path}/WEB-INF/logs/gdpr.log"
+					 filePattern="${com.imcode.imcms.path}/WEB-INF/logs/gdpr-%d{yyyy-MM}.log"
+					 ignoreExceptions="false">
+			<PatternLayout charset="UTF-8" pattern="%d{ISO8601} %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+		</RollingFile>
+
 		<!-- The alllog (captures everything that doesn't go to one of the above. -->
 		<RollingFile name="ALL"
 		             fileName="${com.imcode.imcms.path}/WEB-INF/logs/all.log"
@@ -64,6 +74,10 @@
 
 		<Logger name="org.apache" level="error" additivity="false">
 			<AppenderRef ref="ERROR"/>
+		</Logger>
+
+		<Logger name="com.imcode.imcms.log.gdpr" level="info" additivity="false">
+			<AppenderRef ref="GDPR"/>
 		</Logger>
 
 		<!--Log all SQL DML statements as they are executed-->
