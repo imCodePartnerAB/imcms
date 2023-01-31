@@ -19,6 +19,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -78,9 +79,8 @@ public class Utility {
 	public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
 	public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
 	public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
-
 	public static final BiPredicate<Date, Date> isDateBefore = (date1, date2) -> (date1 != null) && (date2 != null) && date1.before(date2);
-    private static final Logger log = LogManager.getLogger(Utility.class.getName());
+
 	private static final String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
 	private static final LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
 	private static final String LOGGED_IN_USER = "logon.isDone";
@@ -88,6 +88,9 @@ public class Utility {
 	private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
 	private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
+
+	private static final Logger log = LogManager.getLogger(Utility.class);
+	private static final Logger logGDPR = LogManager.getLogger(ImcmsConstants.GDPR_LOG);
 
 	private static final Map<String, SessionInfoDTO> sessions = new HashMap<>();
 
@@ -655,5 +658,36 @@ public class Utility {
         if(date == null) return null;
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
+
+	public static void logGDPR(int editableUserId, String message){
+		int byId = Imcms.getUser().isDefaultUser() ? editableUserId : Imcms.getUser().getId();
+		logGDPR.info(String.format("- User id: %d - Account id: %d - %s", byId, editableUserId, message));
+	}
+
+	/**
+	 * Compare values of all variables of the two classes. The classes must be the same.
+	 *
+	 * @return field names with mismatched value.
+	 */
+	@SneakyThrows
+	public static List<String> findFieldsWithMismatchedValue(Object o1, Object o2) {
+		if(!o1.getClass().equals(o2.getClass())) return Collections.emptyList();
+
+		final ArrayList<String> fieldNames = new ArrayList<>();
+
+		final Field[] declaredFields1 = o1.getClass().getDeclaredFields();
+		final Field[] declaredFields2 = o2.getClass().getDeclaredFields();
+		for(int i=0; i<declaredFields1.length; i++){
+			Field field1 = declaredFields1[i];
+			field1.setAccessible(true);
+
+			Field field2 = declaredFields2[i];
+			field2.setAccessible(true);
+
+			if(!Objects.equals(field1.get(o1), field2.get(o2))) fieldNames.add(field1.getName());
+		}
+
+		return fieldNames;
+	}
 
 }
