@@ -16,7 +16,9 @@
     contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"
+%>
+<%@ page import="com.imcode.imcms.domain.services.api.W3CValidationService" %>
+<%@taglib prefix="vel" uri="imcmsvelocity"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
 
@@ -26,6 +28,7 @@ boolean DEBUG_EDITOR        = false ;
 boolean DEBUG_CHANGED       = false ;
 boolean DEBUG_CHANGED_CONT  = false ;
 boolean DEBUG_SAVE          = false ;
+boolean isW3CValidationAvailable = W3CValidationService.isAvailable();
 
 %><%!
 
@@ -74,7 +77,7 @@ if (!(width >= 150 && width <= 600)) {
 }
 
 boolean editorActive = (TextDomainObject.TEXT_TYPE_HTML == textEditPage.getType() && !editorHidden) ;
-boolean validationIsActive = !"false".equals(getCookie("validationActive", request)) ;
+boolean validationIsActive = isW3CValidationAvailable && !"false".equals(getCookie("validationActive", request));
 
 boolean isSwe = false ;
 try {
@@ -188,7 +191,7 @@ if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl(
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="2" width="100%;">
-	<tr valign="top">
+	<tr valign="top" <%=  isW3CValidationAvailable ? "" : "hidden" %>>
 		<td width="80%">
 		<div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
 		<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
@@ -1146,11 +1149,10 @@ function validateText($, showResults) {
 	}
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
-		url: '<%= AjaxServlet.getPath(cp) %>',
+		url: '/w3cValidation',
 		type: 'POST',
 		dataType: 'json',
 		data: {
-			action: 'sendValidationToW3cAndReturnJson',
 			showResults: showResults,
 			htmlToValidate: textContent
 		},

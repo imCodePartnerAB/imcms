@@ -31,11 +31,7 @@ public class AjaxServlet extends HttpServlet {
 
     protected void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = StringUtils.defaultString(request.getParameter("action"));
-        if ("sendValidationToW3cAndReturnJson".equals(action)) {
-            request.getRequestDispatcher("/WEB-INF/imcms/jsp/validate_w3c.jsp").forward(request, response);
-        } else {
-            request.getRequestDispatcher("/WEB-INF/imcms/jsp/ajax_data.jsp").forward(request, response);
-        }
+		request.getRequestDispatcher("/WEB-INF/imcms/jsp/ajax_data.jsp").forward(request, response);
     }
 
 }
