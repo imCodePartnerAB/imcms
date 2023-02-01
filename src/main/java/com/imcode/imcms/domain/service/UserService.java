@@ -21,7 +21,7 @@ public interface UserService extends UserDataService, ExternalUserService {
 
     void resetUserAttempts(int id);
 
-    void updateUserBlockDate(Date blocdDate, int id);
+    void updateUserBlockDate(Date blockDate, int id);
 
     void updateLastLoginDate(Date lastLoginDate, int id);
 

@@ -123,17 +123,20 @@ class DefaultUserService implements UserService {
 
     @Override
     public void resetUserAttempts(int id) {
-        userRepository.resetAttempts(id);
+        User user = userRepository.findById(id);
+        user.setAttempts(0);
     }
 
     @Override
-    public void updateUserBlockDate(Date blocdDate, int id) {
-        userRepository.updateBlockDate(blocdDate, id);
+    public void updateUserBlockDate(Date blockDate, int id) {
+        User user = userRepository.findById(id);
+        user.setBlockedDate(blockDate);
     }
 
     @Override
     public void updateLastLoginDate(Date lastLoginDate, int id) {
-        userRepository.updateLastLoginDate(lastLoginDate, id);
+        User user = userRepository.findById(id);
+        user.setLastLoginDate(lastLoginDate);
     }
 
     @Override

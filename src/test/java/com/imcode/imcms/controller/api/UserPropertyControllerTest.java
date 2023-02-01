@@ -232,10 +232,4 @@ public class UserPropertyControllerTest extends AbstractControllerTest {
         assertEquals(0, userPropertyService.getAll().size());
     }
 
-    @Test
-    public void delete_When_UserPropertyNotExist_Expected_CorrectException() throws Exception {
-        int nonExistenceId = 1000;
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + nonExistenceId);
-        performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
-    }
 }

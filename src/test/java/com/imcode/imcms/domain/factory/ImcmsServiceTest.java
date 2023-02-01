@@ -8,6 +8,8 @@ import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.persistence.entity.User;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.Test;
@@ -144,6 +146,9 @@ public class ImcmsServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void verifyUser_WhenUserExist_And_LoginAndPasswordIsCorrect_Expect_CorrectResult(){
+        final UserDomainObject imcmsUser = new UserDomainObject(1);
+        imcmsUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(imcmsUser);
 
         userDataInitializer.cleanRepositories();
 
@@ -165,6 +170,9 @@ public class ImcmsServiceTest extends WebAppSpringTestConfig {
 
 	@Test
 	public void verifyUser_WhenUserExist_And_LoginAndPasswordIsCorrect_And_2FAEnabled_And_PhoneNumberIsEmpty_Expect_CorrectResult(){
+        final UserDomainObject imcmsUser = new UserDomainObject(1);
+        imcmsUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(imcmsUser);
 
 		userDataInitializer.cleanRepositories();
 
@@ -210,7 +218,11 @@ public class ImcmsServiceTest extends WebAppSpringTestConfig {
 
 	@Test
 	public void verifyUser_WhenUserExist_And_LoginAndPasswordIsNotCorrect_And_2FAEnabled_Expect_CorrectResult(){
-		userDataInitializer.cleanRepositories();
+        final UserDomainObject imcmsUser = new UserDomainObject(1);
+        imcmsUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(imcmsUser);
+
+        userDataInitializer.cleanRepositories();
 
 		User user = userDataInitializer.createData("login");
 		user.setTwoFactoryAuthenticationEnabled(true);

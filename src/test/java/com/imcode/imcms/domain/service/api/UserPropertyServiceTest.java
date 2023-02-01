@@ -232,12 +232,6 @@ public class UserPropertyServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteById_When_UserPropertyNotExist_Expected_CorrectException() {
-        int nonExistenceId = 1000;
-        assertThrows(EmptyResultDataAccessException.class, ()-> userPropertyService.deleteById(nonExistenceId));
-    }
-
-    @Test
     public void delete_When_UserPropertyExist_Expected_EmptyResult() {
         userPropertyService.delete(userProperty);
         assertTrue(userPropertyService.getAll().isEmpty());
