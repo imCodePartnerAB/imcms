@@ -5,6 +5,7 @@ In this article:
     - `Endpoint to Receive`_
     - `Image Storage`_
     - `Image Compressor`_
+    - `ImageMagick`_
     - `API`_
 
 -------------------
@@ -70,6 +71,22 @@ For ImageOptim:
     image.compression.imageoptim.username =
     # Available options: lossless, high, medium(balanced quality/filesize tradeoff), low.
     image.compression.imageoptim.quality =
+
+-----------
+ImageMagick
+-----------
+ImageMagick is a free and open-source software suite for displaying, converting, and editing image files.
+
+ImCMS uses ImageMagick to work with images. You need to download this software to use any features related to image.
+
+You also need to configure the next property if you use Windows.
+
+.. code-block:: properties
+
+    # ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org.
+    # This path should lead to where ImageMagick is installed, and is required only on windows.
+    # For example: C:\\Program Files\\ImageMagick-6.9.6-Q16
+    ImageMagickPath=
 
 ---
 API

@@ -174,11 +174,11 @@ What can you do:
 * Allow to write text around the image.
     The text editor gives you the option to use an image editor internally. You can allow text to write text around the image. There is an usage example below
 
-    +--------------------------------------------------------+
+    +---------------------------------------------------------------+
     + .. image:: _static/editor/advanced-text-alignment.png         +
-    +--------------------------------------------------------+
+    +---------------------------------------------------------------+
     + .. image:: _static/editor/advanced-text-alignment-example.png +
-    +--------------------------------------------------------+
+    +---------------------------------------------------------------+
 
 * **Specify the coordinates at which the image will be cropped.**
 * **Select the format in which the image will be saved.**

@@ -6,6 +6,7 @@ Developer Documentation
 
     design/index
     configuration
+    custom-tab
     cache
     storage
     image-processing
