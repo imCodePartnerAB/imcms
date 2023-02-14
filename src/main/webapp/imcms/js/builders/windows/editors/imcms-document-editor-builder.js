@@ -1441,10 +1441,6 @@ define('imcms-document-editor-builder',
             // clean up
             $textField.$input.val('');
 
-            $.find('.imcms-drop-down-list__select-item-value').forEach(selectItemValue => {
-                $(selectItemValue).text(textNone);
-            });
-
             $editorBody.remove();
         }
 
