@@ -402,41 +402,6 @@ define("imcms-image-content-builder",
         function showImagesIn(folder) {
             sortImagesBySortingValue(getSelectedSortingBy());
 
-            //Start lazy loading
-            let numberOfUnloaded = folder.$images.length;
-            let loadedImages = [];
-
-            folder.$images.forEach($imageContainer => {
-                $imageContainer.css("display", "block");
-
-                let $img = $imageContainer.find('img');
-                //Preload
-                let newImg = new Image;
-                newImg.onload = function () {
-                    loadedImages.unshift($img);
-
-                    numberOfUnloaded -= 1;
-                }
-                newImg.src = $img.data("src");
-            });
-
-            let setImage = function (){
-                if(numberOfUnloaded || loadedImages.length){
-                    let $img = loadedImages.pop();
-                    if($img){
-                        $img.attr("src", $img.data("src")).on("load", () => setImage());
-                        $img.removeAttr("data-src").removeAttr("style");
-                    }else{
-                        setTimeout(setImage, 300);
-                    }
-                }
-            }
-            //Limit the number of images putted at the same time
-            for(let i = 0; i < 3; i++){
-                setTimeout(setImage, 300);
-            }
-            //End lazy loading
-
             setUpSelectedImage(activeFolder, getImageNameFromPath(selectedFullImagePath));
             scrollToSelectedImage();
         }
@@ -711,6 +676,7 @@ define("imcms-image-content-builder",
 		    dragged={}
 	    ;
 
+        //build image with lazy loading!
         function buildImage(imageFile, folder) {
             let dataSrc = `${imcms.imagesPath}?path=${imageFile.path}`;
             //Reduce image weight by resizing
@@ -768,6 +734,41 @@ define("imcms-image-content-builder",
         function buildImagesNotRecursive(folder) {
 	        folder.$images = folder.files.map((imageFile) => buildImage(imageFile, folder));
             viewModel.$images = viewModel.$images.concat(folder.$images);
+
+            //Start lazy loading
+            let numberOfUnloaded = folder.$images.length;
+            let loadedImages = [];
+
+            folder.$images.forEach($imageContainer => {
+                $imageContainer.css("display", "block");
+
+                let $img = $imageContainer.find('img');
+                //Preload
+                let newImg = new Image;
+                newImg.onload = function () {
+                    loadedImages.unshift($img);
+
+                    numberOfUnloaded -= 1;
+                }
+                newImg.src = $img.data("src");
+            });
+
+            let setImage = function (){
+                if(numberOfUnloaded || loadedImages.length){
+                    let $img = loadedImages.pop();
+                    if($img){
+                        $img.attr("src", $img.data("src")).on("load", () => setImage());
+                        $img.removeAttr("data-src").removeAttr("style");
+                    }else{
+                        setTimeout(setImage, 300);
+                    }
+                }
+            }
+            //Limit the number of images putted at the same time
+            for(let i = 0; i < 3; i++){
+                setTimeout(setImage, 300);
+            }
+            //End lazy loading
         }
 
 	    function scrollToSelectedImage() {
@@ -940,6 +941,13 @@ define("imcms-image-content-builder",
 
             buildImagesNotRecursive(activeFolder);
 
+            activeFolder.$images.forEach($image => {
+                if (getImageNameFromPath(selectedFullImagePath) === $image.find(".imcms-title").text()) {
+                    $image.addClass("image-chosen");
+                    $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
+                }
+                $image.css('display', 'block')
+            });
             $imagesContainer.append(activeFolder.$images);
         }
 
@@ -967,7 +975,7 @@ define("imcms-image-content-builder",
                             let $imgContainer = buildImage(imageFile, activeFolder).css("display", "block");
 
                             let $img = $imgContainer.find('img');
-                            $img.attr("src", $img.data("src")).removeAttr("data-src");
+                            $img.attr("src", $img.data("src")).removeAttr("data-src").removeAttr("style");
 
                             return $imgContainer;
                         });
