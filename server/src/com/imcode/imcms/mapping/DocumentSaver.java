@@ -88,9 +88,9 @@ class DocumentSaver {
 
                     sqlUpdateMeta(document, database);
 
-                    updateDocumentSectionsCategoriesKeywords(document, database);
+                    updateDocumentSectionsCategoriesKeywords(document, oldDocument, database);
 
-                    updateDocumentProperties(document, database);
+                    updateDocumentProperties(document, oldDocument, database);
 
                     if (user.canEditPermissionsFor(oldDocument)) {
                         updateDocumentRolePermissions(document, user, oldDocument, database);
@@ -152,6 +152,17 @@ class DocumentSaver {
         sqlUpdateValues.add("" + document.getId());
         String[] params = (String[]) sqlUpdateValues.toArray(new String[0]);
         database.execute(new SqlUpdateCommand(sqlStr.toString(), params));
+    }
+
+    private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document, DocumentDomainObject oldDocument, Database database) {
+        if(!oldDocument.getSectionIds().equals(document.getSectionIds()))
+            updateDocumentSections(document.getId(), document.getSectionIds(), database);
+
+        if(!oldDocument.getCategoryIds().equals(document.getCategoryIds()))
+            new CategoryMapper(database).updateDocumentCategories(document);
+
+        if(!oldDocument.getKeywords().equals(document.getKeywords()))
+            updateDocumentKeywords(document, database);
     }
 
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document, Database database) {
@@ -369,6 +380,11 @@ class DocumentSaver {
             String[] params = new String[]{meta_id + "", key, (String) properties.get(key)};
             database.execute(new SqlUpdateCommand("INSERT INTO document_properties (meta_id, key_name, value) VALUES(?,?,?)", params));
         }
+    }
+
+    void updateDocumentProperties(DocumentDomainObject document, DocumentDomainObject oldDocument, Database database) {
+        if(!oldDocument.getProperties().equals(document.getProperties()))
+            updateDocumentProperties(document, database);
     }
 
     private void deletePropertiesFromDocument(int meta_id) {
