@@ -174,6 +174,7 @@ const texts = {
 		        content: "Innehåll",
 		        select: "Metatagg",
 		        noData: 'Inga föremål',
+                add: "LÄGG TILL+"
 	        },
             keywords: {
                 name: "Nyckelord",
@@ -1237,6 +1238,7 @@ const texts = {
 		        content: "Content",
 		        select: "Meta tag",
 		        noData: 'No items',
+                add: "ADD+"
 	        },
             keywords: {
                 name: "Keywords",
@@ -2192,23 +2194,23 @@ const texts = {
             fullScreen: "Full skjerm",
             save: "Lagre",
             htmlContent: "Håndtering av HTML-innholdsfiltrering",
-            bold: 'Modig',
+            bold: 'Fet',
             italic: 'Kursiv',
-            underline: 'Vektlegging',
+            underline: 'Understreking',
             sourceCode: "Kildekode",
-            bulletListText: "Bullet list",
+            bulletListText: "Punktliste",
             numberedListText: "Nummerert liste",
             horizontalLineText: "Horisontal linje",
             alignLeftText: "Juster venstre",
-            alignRightText: "Juster rett",
-            alignCenterText: "Juster midten",
+            alignRightText: "Juster høyre",
+            alignCenterText: "Midtstill",
             alignJustify: "i henhold til standard",
             insertLinkText: "Sett inn/rediger lenke",
             addImageText: "Legg til bilde",
             switchTextEditor: "Bytt til tekstredigering",
             switchTextMode: "Bytt til ren tekstmodus",
             switchHTMLMode: "Bytt til HTML-modus",
-            discardChange: "Endre endringer",
+            discardChange: "Angre endringer",
             discardChangesQuestion: 'Ignorer endringer?',
             textEditor: 'Tekstredigerer',
             imageEditor: 'Bilderedigerer',
@@ -2303,6 +2305,7 @@ const texts = {
                 content: "Content",
                 select: "Meta tag",
                 noData: 'Ingen data',
+                add: "LEGGE TIL+"
             },
             keywords: {
                 name: "Nøkkelord",
@@ -2442,7 +2445,7 @@ const texts = {
                 title: "Dokumentansvarlig",
                 freeText: "Fri tekst",
                 freeTextPlaceholder: "Skriv for å søke etter dokumenter",
-                owner: "Eieren",
+                owner: "Eier",
                 category: "Kategori",
                 by: 'av',
                 notShownInSelectedLang: 'Ikke vist på valgt språk',
@@ -2530,7 +2533,7 @@ const texts = {
                 remove: "Fjern fra menyen",
                 copy: "Kopiere",
                 edit: "Rediger sideinformasjon",
-                order: 'Ordning',
+                order: 'Rekkefølge',
                 id: "ID",
                 docTitle: "Overskrift",
                 publishDate: 'Publ',
@@ -2661,7 +2664,7 @@ const texts = {
                 },
                 buttons: {
                     zoomIn: 'Zoom inn',
-                    zoomOut: 'Zoome ut',
+                    zoomOut: 'Zoom ut',
                     reset: 'Tilbakestill til opprinnelig verdi',
                     rotateLeft: 'Rotér mot venstre',
                     rotateRight: 'Roter til høyre',
@@ -2669,7 +2672,7 @@ const texts = {
                     cropping: 'Beskjær bildet',
                     cancelText: "Avbryt",
                     cancelTitle: "Avbryt endringer",
-                    applyChangeText: "Søke om",
+                    applyChangeText: "Gjør om",
                     applyChangeTitle: "Bruk endringer",
                     removeCropping: "Fjern beskjæring",
                     removeCroppingDescription: "Gå tilbake til forrige beskjæring",
@@ -2698,7 +2701,7 @@ const texts = {
                 warnChange: 'Alt-teksten er ikke tom! Vil du endre alt-tekst?',
                 altText: "Alt. tekst (For synshemmede. Bør spesifiseres)",
                 imageLink: "Bildelink (URL)",
-                allLangs: "Hvert språk",
+                allLangs: "Alle språk",
                 advanced: "Avansert",
                 simple: "Enkel",
                 none: "Nei",
@@ -2710,7 +2713,7 @@ const texts = {
                 cropCoords: "Beskjæringskoordinater",
                 fileFormat: "Filformat",
                 alignment: "Tekstjustering",
-                altTextConfirm: "Alternativ tekst mangler. Er du sikker på at du vil fortsette?",
+                altTextConfirm: "Alternativ tekst mangler. Vil du virkelig fortsette?",
                 showHistory: "Vis historikk",
                 hideHistory: "Skjul historie",
                 cancelAndClose: "Avbryt og lukk",
@@ -2797,7 +2800,7 @@ const texts = {
                 validationFailed: 'Kunne ikke validere. Prøv igjen'
             }
         },
-        sessionExpiredMessage: "Du har blitt logget ut på grunn av inaktivitet. Omdirigere til påloggingssiden?",
+        sessionExpiredMessage: "Du har blitt logget ut på grunn av inaktivitet. Omdirigerer til påloggingssiden?",
         contentSaveWarningMessage: "Økten din utløper om 2 min. Vennligst lagre det nødvendige innholdet. Økten fortsetter etter at du har lagret.",
         superAdmin: {
             head: 'SuperAdmin',
@@ -2920,9 +2923,9 @@ const texts = {
             },
             files: {
                 name: 'Filer',
-                upload: 'Laste opp',
+                upload: 'Last opp',
                 rename: 'Endre navn',
-                add: 'Legge til',
+                add: 'Legg til',
                 moveRight: 'Flytt til høyre',
                 moveLeft: 'Gå til venstre',
                 copyRight: 'Kopier til høyre',
@@ -3076,7 +3079,7 @@ const texts = {
                     }
                 },
                 error: {
-                    invalidName: 'Tomt navn er uakseptabelt! Vennligst velg et annet navn!',
+                    invalidName: 'Tomt navn er ikke lov! Vennligst velg et annet navn!',
                     category: {
                         loadFailed: 'Kunne ikke hente kategori. Prøv igjen',
                         removeFailed: 'Denne kategorien brukes i dokumenter! Er du sikker på at du vil slette den?',
@@ -3085,7 +3088,7 @@ const texts = {
                     categoryType: {
                         loadFailed: 'Kunne ikke hente kategoriene. Prøv igjen',
                         removeFailed: 'Denne kategoritypen har kategorier! Er du sikker på at du vil fjerne den?',
-                        removeForceFailed: 'Kunne ikke fjerne kategorityper'
+                        removeForceFailed: 'Kunne ikke fjerne kategoritypen'
                     }
                 }
             },

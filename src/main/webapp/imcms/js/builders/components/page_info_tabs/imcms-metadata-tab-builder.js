@@ -60,7 +60,7 @@ define('imcms-metadata-tab-builder',
 
 		function buildMetadataRowAdd(commonContent, $body) {
 			return components.buttons.neutralButton({
-				text: 'ADD+',
+				text: texts.add,
 				click: () => onMetadataRowAddClick(commonContent, $body),
 				class: "imcms-flex--ml-auto"
 			})
