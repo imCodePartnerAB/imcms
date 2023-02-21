@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
+import imcode.server.Imcms;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -114,17 +115,17 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 .collect(Collectors.toList());
 
         for (Document doc : documentsToTest) {
-
 	        DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
 	        dtoFieldsDocument.setId(doc.getId());
+            dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
 
-	        final CommonContent commonContent = commonContentService
-			        .getOrCreateCommonContents(doc.getId(), doc.getLatestVersion().getId())
-			        .get(doc.getCurrentVersion().getId());
-
-	        dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
-	        dtoFieldsDocument.setAlias(commonContent.getAlias());
-	        dtoFieldsDocument.setTitle(commonContent.getHeadline());
+            for(CommonContent commonContent: commonContentService.getOrCreateCommonContents(doc.getId(), doc.getLatestVersion().getId())){
+                if(Imcms.getLanguage().getId().equals(commonContent.getLanguage().getId())){
+                    dtoFieldsDocument.setAlias(commonContent.getAlias());
+                    dtoFieldsDocument.setTitle(commonContent.getHeadline());
+                    break;
+                }
+            }
 
 	        if (doc.getType().equals(Meta.DocumentType.URL)) {
 		        DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
