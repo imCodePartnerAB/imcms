@@ -1,7 +1,10 @@
 package imcode.server.document;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.imcode.imcms.domain.dto.export.URLDocumentSerializer;
 import org.apache.oro.text.perl.Perl5Util;
 
+@JsonSerialize(using = URLDocumentSerializer.class)
 public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     private String url = "";

@@ -1,5 +1,10 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.NullSerializer;
+import com.imcode.imcms.domain.dto.export.FileDocumentSerializer;
+import com.imcode.imcms.domain.dto.export.TextDocumentSerializer;
 import com.imcode.imcms.mapping.DocumentMenusMap;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -13,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+@JsonSerialize(using = TextDocumentSerializer.class)
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
     /**

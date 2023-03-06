@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.imcode.imcms.domain.dto.export.FileDocumentSerializer;
 import imcode.util.Utility;
 import imcode.util.io.ExceptionFreeInputStreamSource;
 import imcode.util.io.InputStreamSource;
@@ -11,6 +13,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonSerialize(using = FileDocumentSerializer.class)
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
