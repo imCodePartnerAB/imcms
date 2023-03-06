@@ -390,3 +390,62 @@ TD.NavBtnTextInact { cursor: pointer; }
 	z-index: 20000010 !important;
 	display: none;
 }
+
+/* *******************************************************************************************
+ *         export checkmark statuses                                                         *
+ ******************************************************************************************* */
+.checkmark {
+	display: inline-block;
+	width: 25px;
+	height: 18px;
+	-ms-transform: rotate(45deg); /* IE 9 */
+	-webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+	transform: rotate(45deg);
+}
+
+.checkmark:before {
+	content: "";
+	position: absolute;
+	background-color: green;
+	width: 3px;
+	height: 9px;
+	left: 11px;
+	top: 6px;
+}
+
+.checkmark:after {
+	content: "";
+	position: absolute;
+	width: 3px;
+	background-color: green;
+	height: 3px;
+	left: 8px;
+	top: 12px;
+}
+
+.close {
+	width: 16px;
+	height: 16px;
+	position: relative;
+	display: inline-block;
+}
+
+.close:after {
+	background-color: red;
+	content: '';
+	height: 16px;
+	position: absolute;
+	width: 2px;
+	transform: rotate(45deg);
+	left: 9px;
+}
+
+.close:before {
+	background-color: red;
+	content: '';
+	width: 2px;
+	height: 16px;
+	position: absolute;
+	transform: rotate(-45deg);
+	left: 9px;
+}
