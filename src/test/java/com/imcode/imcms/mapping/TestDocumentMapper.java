@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
+import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
@@ -50,6 +51,7 @@ public class TestDocumentMapper extends TestCase {
         MockImcmsServices services = new MockImcmsServices() ;
         services.setImcmsAuthenticatorAndUserAndRoleMapper(userRegistry);
         services.setTemplateMapper(new TemplateMapper(new MockImcmsServices())) ;
+	    services.setDocumentExportService(new DocumentExportService(new MockImcmsServices()));
         documentIndex = new MockDocumentIndex();
         CategoryMapper categoryMapper = new CategoryMapper(database);
         documentMapper = new DocumentMapper( services, database);

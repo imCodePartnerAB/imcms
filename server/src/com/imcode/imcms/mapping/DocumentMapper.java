@@ -25,6 +25,7 @@ import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
@@ -37,7 +38,9 @@ import java.io.FileFilter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Log4j2
 public class DocumentMapper implements DocumentGetter {
 
     private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
@@ -471,6 +474,23 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
 
+	public void updateExportStatus(int docId, boolean exported, final UserDomainObject user){
+		log.info("Changing document export status!");
+
+		final DocumentDomainObject document = getDocument(docId);
+		final Integer id = document.getId();
+		final String type = document.getDocumentType().getName().toLocalizedString("eng");
+
+		try {
+			document.setExportAllowed(exported);
+			saveDocument(document, user);
+
+			log.info(String.format("Document 'id = %s', 'type = %s' changed export status to = %s", id, type, document.isExportAllowed()));
+		} catch (DocumentSaveException e) {
+			log.error(String.format("Cannot save document with id = %s, type = %s", id, type), e);
+		}
+	}
+
     public DocumentDomainObject getDocument(Integer documentId) {
         return getDocument(documentId, false);
     }
@@ -517,6 +537,10 @@ public class DocumentMapper implements DocumentGetter {
     public List<DocumentDomainObject> getDocuments(Collection documentIds) {
         return documentGetter.getDocuments(documentIds);
     }
+
+	public List<DocumentDomainObject> getDocuments(IntRange idRange){
+		return documentGetter.getDocuments(Arrays.stream(getDocumentIds(idRange)).boxed().collect(Collectors.toList()));
+	}
 
     public Set<SectionDomainObject> getSections(Collection<Integer> sectionIds) {
         Set<SectionDomainObject> sections = new HashSet<>();

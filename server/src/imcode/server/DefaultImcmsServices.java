@@ -7,6 +7,7 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.services.api.ImcmsAuthenticationProviderService;
@@ -64,6 +65,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
     private TextDocumentParser textDocParser;
+	private DocumentExportService documentExportService;
     private Config config;
     private SystemData sysData;
     private CachingFileLoader fileLoader;
@@ -103,6 +105,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initTemplateMapper();
         initImageCacheMapper();
         initTextDocParser();
+		initDocumentExportService();
         this.authenticationProviderService = authenticationProviderService;
         this.externalToLocalRoleLinkComponent = externalToLocalRoleLinkComponent;
         this.externalToLocalRoleLinkService = new DefaultExternalToLocalRoleLinkService(externalToLocalRoleLinkComponent);
@@ -224,6 +227,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initTextDocParser() {
         textDocParser = new TextDocumentParser(this);
     }
+
+	private void initDocumentExportService() {
+		this.documentExportService = new DocumentExportService(this);
+	}
 
     private void initSysData() {
         sysData = getSystemDataFromDb();
@@ -567,6 +574,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public TemplateMapper getTemplateMapper() {
         return templateMapper;
     }
+
+	public DocumentExportService getDocumentExportService() {
+		return documentExportService;
+	}
 
     public ImcmsAuthenticationProviderService getAuthenticationProviderService() {
         return authenticationProviderService;
