@@ -140,6 +140,8 @@ class DocumentSaver {
         makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("show_meta", document.isLinkedForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
+	    makeBooleanSqlUpdateClause("export_allowed", document.isExportAllowed(), sqlUpdateColumns, sqlUpdateValues);
+	    makeBooleanSqlUpdateClause("exported", document.isExported(), sqlUpdateColumns, sqlUpdateValues);
         makeIntSqlUpdateClause("publisher_id", document.getPublisherId(), sqlUpdateColumns,
                 sqlUpdateValues);
         makeIntSqlUpdateClause("owner_id", document.getCreatorId(), sqlUpdateColumns,

@@ -106,4 +106,9 @@
             <script location="diff-4.23-4.24-mysql.sql"/>
         </vendor>
     </diff>
+	<diff version="4.25">
+		<vendor name="mysql">
+			<script location="diff-4.24-4.25-mysql.sql"/>
+		</vendor>
+	</diff>
 </schema-upgrade>

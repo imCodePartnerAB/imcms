@@ -197,6 +197,22 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.publicationEndDatetime = datetime;
     }
 
+	public Boolean isExportAllowed() {
+		return attributes.exportAllowed;
+	}
+
+	public void setExportAllowed(Boolean allowedToExport) {
+		attributes.exportAllowed = allowedToExport;
+	}
+
+	public Boolean isExported() {
+		return attributes.exported;
+	}
+
+	public void setExported(Boolean exported) {
+		attributes.exported = exported;
+	}
+
     public Date getPublicationStartDatetime() {
         return attributes.publicationStartDatetime;
     }
@@ -503,6 +519,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;
+		private Boolean exportAllowed;
+		private Boolean exported;
         private Integer publisherId;
         private boolean searchDisabled;
         private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
