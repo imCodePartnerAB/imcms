@@ -109,8 +109,8 @@ public abstract class AbstractDocumentSerializer<T extends DocumentDomainObject>
 			gen.writeStartObject();
 
 			gen.writeStringField("name", category.getName());
-			gen.writeStringField("description", category.getDescription());
-			gen.writeStringField("image_url", category.getImageUrl());
+			writeNullable("description", category.getDescription(), gen);
+			writeNullable("image_url", category.getImageUrl(), gen);
 
 			final CategoryTypeDomainObject type = category.getType();
 			gen.writeObjectFieldStart("category_type");

@@ -9,6 +9,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.Config;
@@ -473,6 +474,20 @@ public class DocumentMapper implements DocumentGetter {
             }
         };
     }
+
+	public void markDocumentAsExported(int docId, final UserDomainObject user){
+		log.info("Marking document as exported");
+		final DocumentDomainObject document = getDocument(docId);
+
+		try {
+			document.setExported(true);
+			saveDocument(document, user);
+
+			log.info(String.format("Document marked as exported, id: %d", docId));
+		} catch (DocumentSaveException e) {
+			log.error(String.format("Failed to save document, id: %d", docId));
+		}
+	}
 
 	public void updateExportStatus(int docId, boolean exported, final UserDomainObject user){
 		log.info("Changing document export status!");

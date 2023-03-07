@@ -74,7 +74,7 @@ public class DocumentExportService {
 						zip.putNextEntry(zipEntry);
 						zip.write(bytes);
 
-						documentMapper.updateExportStatus(docId, true, user);
+						documentMapper.markDocumentAsExported(docId, user);
 						status = DocumentExportHistory.ExportStatus.SUCCESS;
 					}
 
