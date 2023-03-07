@@ -3,13 +3,11 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.domain.services.api.W3CValidationService;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "W3CValidationServlet", urlPatterns = "/w3cValidation")
 public class W3CValidationServlet extends HttpServlet {
 
 	@Override

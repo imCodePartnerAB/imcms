@@ -1150,7 +1150,7 @@ function validateText($, showResults) {
 	}
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
-		url: '/w3cValidation',
+		url: '/servlet/w3cValidation',
 		type: 'POST',
 		dataType: 'json',
 		data: {
