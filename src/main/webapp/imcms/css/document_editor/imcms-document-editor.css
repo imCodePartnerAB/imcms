@@ -144,9 +144,11 @@
 }
 
 .imcms-document-item__multi-remove-controls {
+    visibility: visible;
     display: block;
     width: 88px;
     place-self: center;
+    margin-right: 0;
 }
 
 .imcms-document-item:hover {
