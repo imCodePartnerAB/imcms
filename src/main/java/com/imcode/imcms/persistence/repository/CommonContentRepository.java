@@ -40,4 +40,8 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 
 	@Query("select distinct lower(c.alias) from CommonContentJPA c")
 	List<String> findAllAliases();
+
+	@Modifying
+	@Query("update CommonContentJPA set alias = null where alias=:alias")
+	void removeAlias(@Param("alias") String alias);
 }

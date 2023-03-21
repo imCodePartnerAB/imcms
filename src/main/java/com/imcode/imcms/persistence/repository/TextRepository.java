@@ -62,4 +62,6 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer>, Version
 
 	@Query("SELECT i FROM TextJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef.loopIndex = ?3 ")
 	List<TextJPA> findByVersionAndLanguageAndLoopIndex(Version version, LanguageJPA language, int loopIndex);
+
+	List<TextJPA> findByTextContaining(String content);
 }
