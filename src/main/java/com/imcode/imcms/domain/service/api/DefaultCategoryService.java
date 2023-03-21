@@ -51,7 +51,12 @@ class DefaultCategoryService implements CategoryService {
         return categoryRepository.findById(id).map(CategoryDTO::new);
     }
 
-    @Override
+	@Override
+	public Optional<Category> getByName(String name) {
+		return categoryRepository.getByName(name).map(CategoryDTO::new);
+	}
+
+	@Override
     public Category save(Category saveMe) {
         saveMe.setName(saveMe.getName());
         return new CategoryDTO(categoryRepository.save(modelMapper.map(saveMe, CategoryJPA.class)));
@@ -92,4 +97,9 @@ class DefaultCategoryService implements CategoryService {
     public List<Category> getCategoriesByCategoryType(Integer id) {
         return categoryRepository.findByTypeId(id).stream().map(CategoryDTO::new).collect(Collectors.toList());
     }
+
+	@Override
+	public boolean existsByName(String name) {
+		return categoryRepository.existsByName(name);
+	}
 }

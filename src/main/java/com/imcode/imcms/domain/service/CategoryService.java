@@ -12,6 +12,8 @@ public interface CategoryService {
 
     Optional<Category> getById(int id);
 
+    Optional<Category> getByName(String name);
+
     Category save(Category saveMe);
 
     Category update(Category updateMe);
@@ -21,4 +23,6 @@ public interface CategoryService {
     Collection<Integer> deleteForce(int id);
 
     List<Category> getCategoriesByCategoryType(Integer id);
+
+	boolean existsByName(String name);
 }

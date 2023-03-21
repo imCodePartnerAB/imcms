@@ -39,7 +39,12 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         return categoryTypeRepository.findById(id).map(CategoryTypeDTO::new);
     }
 
-    @Override
+	@Override
+	public Optional<CategoryType> getByName(String name) {
+		return categoryTypeRepository.findByName(name).map(CategoryTypeDTO::new);
+	}
+
+	@Override
     public List<CategoryType> getAll() {
         return categoryTypeRepository.findAll()
                 .stream()
@@ -94,5 +99,10 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
         return docIds;
     }
+
+	@Override
+	public boolean existsByName(String name) {
+		return categoryTypeRepository.existsByName(name);
+	}
 
 }

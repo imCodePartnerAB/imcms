@@ -26,7 +26,12 @@ class DefaultRoleService implements RoleService {
 	    return roleRepository.findById(id).map(RoleDTO::new).orElse(null);
     }
 
-    @Override
+	@Override
+	public Role getByName(String name) {
+		return roleRepository.findByName(name);
+	}
+
+	@Override
     public List<Role> getAll() {
         return roleRepository.findAll().stream()
                 .map(RoleDTO::new)
