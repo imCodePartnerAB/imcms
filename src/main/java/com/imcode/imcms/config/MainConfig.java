@@ -61,7 +61,8 @@ import java.util.Properties;
         MappingConfig.class,
         WebConfig.class,
 		SVNConfig.class,
-        CachingConfig.class
+        CachingConfig.class,
+		AsyncConfig.class
 })
 @ComponentScan({
         "com.imcode.imcms.domain",
