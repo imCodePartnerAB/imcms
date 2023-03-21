@@ -449,3 +449,35 @@ TD.NavBtnTextInact { cursor: pointer; }
 	transform: rotate(-45deg);
 	left: 9px;
 }
+
+.loading-animation {
+	position: relative;
+	left: 7px;
+	top: 19px;
+	width: 25px;
+	height: 25px;
+	text-align: center;
+	font-size: 14px;
+}
+
+.loading-animation::before {
+	content: '';
+	position: absolute;
+	left: -7px;
+	top: -19px;
+	width: 100%;
+	height: 100%;
+	border: 4px solid #d4d4d4;
+	border-top: 4px solid #20568d;
+	border-radius: 50%;
+	animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

@@ -135,6 +135,7 @@
 		<tfoot>
 		<tr>
 			<td colspan="6" align="right">
+				<div class="loading-animation" style="display: none;float:left;" id="spinner"></div>
 				<form method="get" action="AdminManager" style="display: inline-block;">
 					<input type="submit" class="imcmsFormBtn" name="" id="cancelBtn" value="<? global/cancel ?>">
 				</form>
@@ -158,6 +159,7 @@
 	const $listEndInput = document.getElementById("end");
 	const $skipExportedInput = document.getElementById("skipExported");
 	const $tbody = $documentsTable.querySelector("tbody");
+	const $spinner = document.getElementById("spinner");
 
 	function onAllowedToExportCheckboxClick(docId) {
 		const $row = this.closest("tr");
@@ -185,6 +187,7 @@
 		e.preventDefault();
 		disableButtons();
 
+		$spinner.style.display = "inline-block";
 		const exportRequest = new Request("/servlet/ExportDocuments" + ($skipExportedInput.checked ? "?skipExported=true" : ""), {
 			cache: "no-cache",
 			method: "POST",
@@ -198,7 +201,9 @@
 			.then(response => {
 				if (response.ok) {
 					window.location.replace("/servlet/ExportDocuments")
+
 				}
+				$spinner.style.display = "none";
 			})
 	})
 
