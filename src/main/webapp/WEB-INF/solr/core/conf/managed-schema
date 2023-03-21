@@ -55,6 +55,7 @@
         <!-- CHECK: -->
         <!-- ??? virtual field ??? - phase -->
 
+		<field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
         <!--
             Unique field, contains of meta_id and language code combination delimited with underscore.
             Currently only default version is indexed.
