@@ -43,6 +43,14 @@ public class DocumentUrlDTO extends DocumentURL implements Cloneable {
         return documentUrlDTO;
     }
 
+	public static DocumentUrlDTO createDefaultWithUrl(String url) {
+		final DocumentUrlDTO documentUrlDTO = createDefault();
+
+		documentUrlDTO.setUrl(url);
+
+		return documentUrlDTO;
+	}
+
     @Override
     public DocumentUrlDTO clone() {
         try {
