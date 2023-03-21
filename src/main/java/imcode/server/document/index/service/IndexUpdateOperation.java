@@ -8,6 +8,6 @@ package imcode.server.document.index.service;
  */
 public enum IndexUpdateOperation {
 
-    ADD, DELETE
+    ADD, DELETE, UPDATE_VERSION
 
 }

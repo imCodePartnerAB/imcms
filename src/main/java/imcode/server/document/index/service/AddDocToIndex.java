@@ -1,5 +1,7 @@
 package imcode.server.document.index.service;
 
+import lombok.EqualsAndHashCode;
+
 import static imcode.server.document.index.service.IndexUpdateOperation.ADD;
 
 /**
@@ -8,12 +10,15 @@ import static imcode.server.document.index.service.IndexUpdateOperation.ADD;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.12.17.
  */
+@EqualsAndHashCode
 public final class AddDocToIndex implements IndexUpdateOp {
 
     private final int docId;
+	private final IndexUpdateOperation operation;
 
     public AddDocToIndex(int docId) {
         this.docId = docId;
+	    this.operation = ADD;
     }
 
     @Override
@@ -23,7 +28,7 @@ public final class AddDocToIndex implements IndexUpdateOp {
 
     @Override
     public IndexUpdateOperation operation() {
-        return ADD;
+	    return operation;
     }
 
 }
