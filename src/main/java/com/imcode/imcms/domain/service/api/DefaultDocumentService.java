@@ -303,6 +303,35 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         return indexDoc;
     }
 
+
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		final DocumentDTO doc = get(docId);
+
+		final Integer currentVersionDocNo = versionService.getCurrentVersion(docId).getNo();
+		final SolrInputDocument indexDoc = new SolrInputDocument();
+
+		final BiConsumer<String, Object> addFieldIfNotNull = (name, value) -> {
+			if (value != null) indexDoc.addField(name, Map.of("set",value));
+		};
+
+		indexDoc.addField(DocumentIndex.FIELD__ID, docId);
+
+		addFieldIfNotNull.accept(DocumentIndex.FIELD__TIMESTAMP, new Date());
+
+		doc.getCommonContents().forEach(commonContent -> {
+			addFieldIfNotNull.accept(DocumentIndex.FIELD__LANGUAGE_CODE, commonContent.getLanguage().getCode());
+		});
+
+		addFieldIfNotNull.accept(DocumentIndex.FIELD__META_ID, docId);
+		addFieldIfNotNull.accept(DocumentIndex.FIELD__VERSION_NO, currentVersionDocNo);
+		addFieldIfNotNull.accept(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
+		addFieldIfNotNull.accept(DocumentIndex.FIELD__VISIBLE, doc.isVisible());
+
+
+		return indexDoc;
+	}
+
     @Override
     public DocumentDTO copy(int docId) {
         final DocumentDTO documentDTO = get(docId);

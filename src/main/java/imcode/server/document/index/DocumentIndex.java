@@ -94,6 +94,8 @@ public interface DocumentIndex {
 
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
+	void updateDocumentVersion(DocumentDomainObject document) throws IndexException;
+
     /**
      * @since 6.0
      */
@@ -110,6 +112,8 @@ public interface DocumentIndex {
      * @since 6.0
      */
     void removeDocument(int docId) throws IndexException;
+
+	void updateDocumentVersion(int docId) throws IndexException;
 
     /**
      * Returns underlying service.

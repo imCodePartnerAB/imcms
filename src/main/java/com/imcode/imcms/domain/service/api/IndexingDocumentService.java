@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -61,7 +62,12 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
         return defaultDelegatingByTypeDocumentService.index(docId);
     }
 
-    @Override
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		return defaultDelegatingByTypeDocumentService.updateDocumentVersion(docId);
+	}
+
+	@Override
     public Document copy(int docId) {
         final Document copiedDocument = defaultDelegatingByTypeDocumentService.copy(docId);
 

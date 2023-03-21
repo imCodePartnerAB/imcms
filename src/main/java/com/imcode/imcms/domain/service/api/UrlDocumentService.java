@@ -68,7 +68,12 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
         return solrInputDocument;
     }
 
-    @Override
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		return defaultDocumentService.updateDocumentVersion(docId);
+	}
+
+	@Override
     public UrlDocumentDTO copy(int docId) {
         final int copiedDocId = defaultDocumentService.copy(docId).getId();
 
