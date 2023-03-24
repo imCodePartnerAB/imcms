@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
+import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -136,6 +137,11 @@ public class DefaultCommonContentService
 	@Override
 	public List<String> getAllAliases() {
 		return repository.findAllAliases();
+	}
+
+	@Override
+	public void removeAlias(String alias) {
+		repository.removeAlias(alias);
 	}
 
 	@Override

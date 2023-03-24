@@ -2,10 +2,17 @@ package com.imcode.imcms.config;
 
 import com.drew.imaging.ImageProcessingException;
 import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.component.ImportToLocalCategoryResolver;
+import com.imcode.imcms.domain.component.ImportToLocalRolePermissionResolver;
+import com.imcode.imcms.domain.component.ImportToLocalTextDocumentTemplateResolver;
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.ImportDocumentDTO;
+import com.imcode.imcms.domain.dto.ImportPropertyDTO;
+import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -17,6 +24,7 @@ import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.LanguageMapper;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
@@ -37,15 +45,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static com.imcode.imcms.persistence.entity.Meta.PublicationStatus.APPROVED;
 
 /**
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
@@ -346,6 +352,7 @@ class MappingConfig {
             meta.setCacheForAuthorizedUsers(documentDTO.isCacheForAuthorizedUsers());
 
             meta.setVisible(documentDTO.isVisible());
+			meta.setImported(documentDTO.isImported());
 
             meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
 
@@ -410,6 +417,7 @@ class MappingConfig {
             dto.setCacheForUnauthorizedUsers(meta.isCacheForUnauthorizedUsers());
             dto.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
             dto.setVisible(meta.getVisible());
+			dto.setImported(meta.isImported());
 
             return dto;
         };
@@ -554,5 +562,128 @@ class MappingConfig {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
+	@Bean
+	public Function<ImportDocumentDTO, UberDocumentDTO> importDocumentToDocument(
+			CommonContentFactory commonContentFactory,
+			ImportToLocalTextDocumentTemplateResolver templateResolver,
+			ImportToLocalCategoryResolver categoryResolver,
+			ImportToLocalRolePermissionResolver rolePermissionResolver
+
+	){
+		return importDocument -> {
+			final UberDocumentDTO document = new UberDocumentDTO();
+
+			document.setType(Meta.DocumentType.getByRB4Name(importDocument.getType()));
+			document.setFiles(Collections.emptyList());
+
+			if (document.getType().equals(Meta.DocumentType.URL)) {
+				document.setDocumentURL(DocumentUrlDTO.createDefaultWithUrl(importDocument.getUrl()));
+			}
+
+			if (document.getType().equals(Meta.DocumentType.TEXT)) {
+				document.setTemplate(templateResolver.resolve(importDocument.getTemplate()));
+			}
+
+			document.setCategories(importDocument.getCategories().stream()
+					.map(categoryResolver::resolve)
+					.collect(Collectors.toSet()));
+
+			document.setRoleIdToPermission(rolePermissionResolver.resolve(importDocument.getRoles()));
+
+			document.setTarget(importDocument.getTarget());
+			document.setKeywords(importDocument.getKeywords());
+			document.setSearchDisabled(importDocument.isSearchDisabled());
+			document.setLinkableForUnauthorizedUsers(importDocument.isLinkableForUnauthorizedUsers());
+			document.setLinkableByOtherUsers(importDocument.isLinkableByOtherUsers());
+			document.setTarget(importDocument.getTarget());
+
+			document.setImported(true);
+			document.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+			document.setPublicationStatus(APPROVED);
+
+			document.setCommonContents(commonContentFactory.createCommonContents());
+			document.getCommonContents().stream()
+					.filter(commonContent -> commonContent.getLanguage()
+							.getCode().equals(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage())))
+					.forEach(commonContent -> {
+						commonContent.setAlias(StringUtils.isBlank(importDocument.getAlias()) ? "import/" + importDocument.getId() : importDocument.getAlias());
+						commonContent.setHeadline(importDocument.getHeadline());
+						commonContent.setMenuText(importDocument.getMenuText());
+					});
+
+			document.setProperties(importDocument.getProperties()
+					.stream()
+					.collect(Collectors.toMap(ImportPropertyDTO::getKey, ImportPropertyDTO::getValue))
+			);
+
+			final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+			final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+			restricted1.setPermission(Meta.Permission.RESTRICTED_1);
+			restricted2.setPermission(Meta.Permission.RESTRICTED_2);
+			document.setRestrictedPermissions(Set.of(restricted1, restricted2));
+
+			final AuditDTO createdAt = new AuditDTO();
+			createdAt.setDateTime(importDocument.getCreatedAt());
+			if (importDocument.getCreatedAt() == null) {
+				createdAt.setDateTime(new Date());
+			}
+			document.setCreated(createdAt);
+
+			final AuditDTO modifiedAt = new AuditDTO();
+			modifiedAt.setDateTime(importDocument.getChangedAt());
+			document.setModified(modifiedAt);
+
+			final AuditDTO publishedAt = new AuditDTO();
+			publishedAt.setDateTime(importDocument.getPublishedAt());
+			document.setPublished(publishedAt);
+
+			final AuditDTO publicationEnd = new AuditDTO();
+			publicationEnd.setDateTime(importDocument.getExpiresAt());
+			document.setPublicationEnd(publicationEnd);
+
+			document.setArchived(new AuditDTO());
+
+			document.setCurrentVersion(new AuditDTO());
+			document.getCurrentVersion().setId(Version.WORKING_VERSION_INDEX);
+
+			return document;
+		};
+	}
+
+	@Bean
+	public BiConsumer<ImportDocumentDTO, Document> updateFromImported(
+			ImportToLocalCategoryResolver categoryResolver,
+			ImportToLocalRolePermissionResolver rolePermissionResolver
+	){
+		return (importDocument, document)  -> {
+
+			document.setCategories(importDocument.getCategories().stream()
+					.map(categoryResolver::resolve)
+					.collect(Collectors.toSet()));
+
+			document.setRoleIdToPermission(rolePermissionResolver.resolve(importDocument.getRoles()));
+
+			document.setTarget(importDocument.getTarget());
+			document.setKeywords(importDocument.getKeywords());
+			document.setSearchDisabled(importDocument.isSearchDisabled());
+			document.setLinkableForUnauthorizedUsers(importDocument.isLinkableForUnauthorizedUsers());
+			document.setLinkableByOtherUsers(importDocument.isLinkableByOtherUsers());
+			document.setTarget(importDocument.getTarget());
+
+			document.getCommonContents().stream()
+					.filter(commonContent -> commonContent.getLanguage().getCode().equals(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage())))
+					.forEach(commonContent -> {
+						commonContent.setAlias(StringUtils.isBlank(importDocument.getAlias()) ? "import/" + importDocument.getId() : importDocument.getAlias());
+						commonContent.setHeadline(importDocument.getHeadline());
+						commonContent.setMenuText(importDocument.getMenuText());
+					});
+
+			document.setProperties(importDocument.getProperties()
+					.stream()
+					.collect(Collectors.toMap(ImportPropertyDTO::getKey, ImportPropertyDTO::getValue))
+			);
+		};
+	}
 
 }

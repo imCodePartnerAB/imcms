@@ -172,6 +172,7 @@ module.exports = {
                             'imcms-system-properties-tab-builder',
                             'imcms-temporal-data-tab-builder',
                             'imcms-data-version-admin-tab-builder',
+	                        'imcms-documents-import-tab-builder',
                             'imcms-documentation-tab-builder'
                         ],
                         '': [
@@ -287,6 +288,9 @@ module.exports = {
                     'imcms-user-properties-rest-api',
                     'imcms-all-data-document-rest-api',
 	                'imcms-meta-tag-rest-api',
+	                'imcms-import-documents-rest-api',
+	                'imcms-basic-import-documents-info-rest-api',
+	                'imcms-import-entity-reference-rest-api'
                 ]
             }
         ),

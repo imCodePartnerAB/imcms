@@ -48,6 +48,7 @@ public class DocumentDTO extends Document implements Cloneable {
 	private boolean cacheForUnauthorizedUsers;
 	private boolean cacheForAuthorizedUsers;
 	private boolean visible;
+	private boolean imported;
 	private Set<CategoryDTO> categories;
 	private Set<RestrictedPermissionDTO> restrictedPermissions;
     private Map<String, String> properties;

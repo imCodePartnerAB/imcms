@@ -135,7 +135,12 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         return solrInputDocument;
     }
 
-    @Override
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		return defaultDocumentService.updateDocumentVersion(docId);
+	}
+
+	@Override
     public void deleteByDocId(Integer docIdToDelete) {
         textDocumentTemplateService.deleteByDocId(docIdToDelete);
         defaultDocumentService.deleteByDocId(docIdToDelete);

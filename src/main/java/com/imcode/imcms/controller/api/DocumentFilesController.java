@@ -67,7 +67,7 @@ public class DocumentFilesController {
                 .collect(Collectors.toList());
 
         documentFileService.saveAll(saveUs, docId);
-        documentMapper.getDocumentIndex().indexDocument(docId);
+        documentMapper.getDocumentIndex().updateDocumentVersion(docId);
     }
 
 }

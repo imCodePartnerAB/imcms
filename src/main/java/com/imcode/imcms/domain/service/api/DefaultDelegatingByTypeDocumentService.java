@@ -68,7 +68,12 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
         return getCorrespondingDocumentService(docId).index(docId);
     }
 
-    @Override
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		return getCorrespondingDocumentService(docId).updateDocumentVersion(docId);
+	}
+
+	@Override
     public Document copy(int docId) {
         return getCorrespondingDocumentService(docId).copy(docId);
     }

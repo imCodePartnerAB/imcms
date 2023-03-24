@@ -282,4 +282,11 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 				.map(TextDTO::new)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<Text> getTextsContaining(String content) {
+		return repository.findByTextContaining(content)
+				.stream().map(TextDTO::new)
+				.collect(Collectors.toList());
+	}
 }

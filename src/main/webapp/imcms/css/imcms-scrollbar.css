@@ -218,3 +218,31 @@
 	width: 6px;
 	height: 6px;
 }
+
+.imcms-import-entity-reference-manager-body__container::-webkit-scrollbar-thumb {
+	background-color: #abacad;
+}
+
+.imcms-import-entity-reference-manager-body__container::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.imcms-import-entity-reference-manager-body__container::-webkit-scrollbar{
+	background-color: transparent;
+	width: 6px;
+	height: 6px;
+}
+
+.table-import-documents::-webkit-scrollbar-thumb{
+	background-color: #abacad;
+}
+
+.table-import-documents::-webkit-scrollbar-track{
+	background-color: transparent;
+}
+
+.table-import-documents::-webkit-scrollbar{
+	background-color: transparent;
+	width: 6px;
+	height: 6px;
+}

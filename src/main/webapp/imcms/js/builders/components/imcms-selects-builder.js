@@ -267,6 +267,14 @@ define("imcms-selects-builder",
                     blockElements = [{"label": buildSelectLabel(attributes)}];
                 }
 
+	            if (attributes.click) {
+		            options.forEach(option => option.click = attributes.click);
+				}
+
+				if (attributes.change){
+					options.forEach(option => option.change = attributes.change);
+				}
+
                 const $selectElements = [];
 
                 if (options && options.length) {

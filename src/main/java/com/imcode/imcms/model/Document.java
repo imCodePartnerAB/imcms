@@ -52,6 +52,7 @@ public abstract class Document implements Serializable {
 		setCacheForAuthorizedUsers(from.isCacheForAuthorizedUsers());
 	    setVisible(from.isVisible());
         setProperties(from.getProperties());
+		setImported(from.isImported());
     }
 
     public abstract Integer getId();
@@ -160,6 +161,10 @@ public abstract class Document implements Serializable {
     public abstract boolean isVisible();
 
     public abstract void setVisible(boolean isVisible);
+
+	public abstract boolean isImported();
+
+	public abstract void setImported(boolean imported);
 
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {

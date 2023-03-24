@@ -35,7 +35,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private final ExecutorService indexRebuildExecutor = Executors.newSingleThreadExecutor();
 
     private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
-    private final LinkedBlockingQueue<IndexUpdateOp> indexUpdateRequests = new LinkedBlockingQueue<>(1024);
+    private final LinkedBlockingQueue<IndexUpdateOp> indexUpdateRequests = new LinkedBlockingQueue<>();
 
     private volatile Future indexUpdateFuture = CompletableFuture.completedFuture(null);
     private volatile Future indexRebuildFuture = CompletableFuture.completedFuture(null);
@@ -72,6 +72,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     @Override
     public void update(IndexUpdateOp request) {
         if (!shutdownRef.get()) {
+	        indexUpdateRequests.removeIf(indexUpdateOp -> indexUpdateOp.equals(request));
             if (indexUpdateRequests.offer(request)) {
                 invokeIndexUpdateThread();
 
@@ -166,12 +167,12 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                 final IndexUpdateOp updateOp = indexUpdateRequests.take();
                 final IndexUpdateOperation indexUpdateOperation = updateOp.operation();
 
-                if (IndexUpdateOperation.ADD.equals(indexUpdateOperation)) {
-                    serviceOps.addDocsToIndex(solrClientWriter, updateOp.docId());
-
-                } else if (IndexUpdateOperation.DELETE.equals(indexUpdateOperation)) {
-                    serviceOps.deleteDocsFromIndex(solrClientWriter, updateOp.docId());
-                }
+	            final int docId = updateOp.docId();
+	            switch (indexUpdateOperation) {
+		            case ADD -> serviceOps.addDocsToIndex(solrClientWriter, docId);
+		            case DELETE -> serviceOps.deleteDocsFromIndex(solrClientWriter, docId);
+		            case UPDATE_VERSION -> serviceOps.updateDocumentVersionInIndex(solrClientWriter, docId);
+	            }
             } catch (InterruptedException e) {
                 logger.debug("document-index-update thread [" + toString() + "] was interrupted");
 

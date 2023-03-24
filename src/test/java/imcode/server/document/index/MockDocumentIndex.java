@@ -31,7 +31,11 @@ public class MockDocumentIndex implements DocumentIndex {
     public void removeDocument(DocumentDomainObject document) throws IndexException {
     }
 
-    @Override
+	@Override
+	public void updateDocumentVersion(DocumentDomainObject document) throws IndexException {
+	}
+
+	@Override
     public IndexSearchResult search(SolrQuery query) throws IndexException {
         return null;
     }
@@ -44,7 +48,11 @@ public class MockDocumentIndex implements DocumentIndex {
     public void removeDocument(int docId) throws IndexException {
     }
 
-    @Override
+	@Override
+	public void updateDocumentVersion(int docId) throws IndexException {
+	}
+
+	@Override
     public DocumentIndexService getService() {
         return null;
     }

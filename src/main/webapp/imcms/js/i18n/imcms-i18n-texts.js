@@ -786,6 +786,42 @@ const texts = {
                     loadVersion: 'Det gick inte att ladda versionen!'
                 }
             },
+	        documentsImport: {
+		        name: 'Importera dokument',
+		        importEntityReferenceManagerHead: "Importera Entity Reference Manager",
+		        tableTitles: {
+			        id: "Importera dokument-ID",
+			        metaId: "Meta ID",
+			        status: "Status"
+		        },
+		        statusResponses: {
+			        success: "Sparad...",
+			        failed: "Misslyckades..."
+		        },
+		        uploadButton: "Ladda upp",
+		        uploadFailure: "Det gick inte att ladda upp!",
+		        fieldStart: "Start-ID",
+		        fieldEnd: "Slut-ID",
+		        listButton: "Lista",
+		        importButton: "Importera",
+		        filter: {
+			        name: "Filtrera",
+			        excludeImported: "Importerad",
+			        excludeSkip: "Hoppa"
+		        },
+		        listFailure: "Det gick inte att lista grundläggande dokumentinformation!",
+		        importFailure: "Importen misslyckades!",
+		        importEntityName: "Namn",
+		        references: {
+			        roles: "Roller",
+			        templates: "Mallar",
+			        categories: "Kategorier",
+			        categoryTypes: "Kategorityper"
+		        },
+		        footer: {
+			        closeButton: "Stänga"
+		        }
+	        },
             files: {
                 name: 'Filer',
                 upload: 'Ladda upp',
@@ -1853,6 +1889,43 @@ const texts = {
                     loadVersion: 'Failed version load!'
                 }
             },
+	        documentsImport: {
+		        name: 'Import Documents',
+		        importEntityReferenceManagerHead: "Import Entity Reference Manager",
+		        tableTitles: {
+			        id: "Import document ID",
+			        metaId: "Meta ID",
+			        status: "Status"
+		        },
+		        statusResponses: {
+			        success: "Saved...",
+			        failed: "Failed..."
+		        },
+		        uploadButton: "Upload",
+		        uploadFailure: "Failed to upload!",
+		        emitterError: "Connection closed!",
+		        fieldStart: "Start ID",
+		        fieldEnd: "End ID",
+		        listButton: "List",
+		        importButton: "Import",
+		        filter: {
+			        name: "Filter",
+			        excludeImported: "Imported",
+			        excludeSkip: "Skip"
+		        },
+		        listFailure: "Failed to list basic documents info!",
+		        importFailure: "Import failed!",
+		        importEntityName: "Name",
+		        references: {
+			        roles: "Roles",
+			        templates: "Templates",
+			        categories: "Categories",
+			        categoryTypes: "Category Types"
+		        },
+		        footer: {
+			        closeButton: "Close"
+		        }
+	        },
             files: {
                 name: 'Files',
                 upload: 'Upload',

@@ -37,4 +37,17 @@ public class DocumentIndexer {
         }
         return null;
     }
+
+	public SolrInputDocument updateDocumentVersion(int docId){
+		try {
+			return documentService.updateDocumentVersion(docId);
+		} catch (UnsupportedDocumentTypeException e) {
+			logger.warn("Updating of document`s version skipped for unsupported document type " + e.getType() + ", doc " + docId);
+
+		} catch (Exception e) {
+			logger.error(String.format("Failed to update doc's version in index. Doc id: %d",
+					docId), e);
+		}
+		return null;
+	}
 }

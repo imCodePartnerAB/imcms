@@ -7,6 +7,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.AddDocToIndex;
 import imcode.server.document.index.service.DeleteDocFromIndex;
 import imcode.server.document.index.service.DocumentIndexService;
+import imcode.server.document.index.service.UpdateDocumentVersionInIndex;
 import imcode.server.user.UserDomainObject;
 import lombok.val;
 import org.apache.commons.lang3.NotImplementedException;
@@ -97,6 +98,11 @@ public class DocumentIndexImpl implements DocumentIndex {
         removeDocument(document.getId());
     }
 
+	@Override
+	public void updateDocumentVersion(DocumentDomainObject document) throws IndexException {
+		updateDocumentVersion(document.getId());
+	}
+
     @Override
     public IndexSearchResult search(SolrQuery solrQuery) throws IndexException {
         val queryResponse = service.query(solrQuery);
@@ -112,6 +118,11 @@ public class DocumentIndexImpl implements DocumentIndex {
     public void removeDocument(int docId) throws IndexException {
         service.update(new DeleteDocFromIndex(docId));
     }
+
+	@Override
+	public void updateDocumentVersion(int docId) throws IndexException {
+		service.update(new UpdateDocumentVersionInIndex(docId));
+	}
 
     @Override
     public DocumentIndexService getService() {

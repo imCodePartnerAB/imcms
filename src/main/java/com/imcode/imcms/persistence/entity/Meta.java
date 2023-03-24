@@ -106,6 +106,9 @@ public class Meta implements Serializable {
     @Column(name = "target", nullable = false, length = MAX_TARGET_LENGTH)
     private String target;
 
+	@Column(name = "imported", nullable = false, columnDefinition = "int")
+	private boolean imported;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "document_properties",
@@ -166,7 +169,20 @@ public class Meta implements Serializable {
         FILE,
         HTML,
         TEXT,
-        URL
+        URL;
+
+	    private static final Map<String, DocumentType> rb4NameToDocumentTypeMap = new HashMap<>();
+
+		static {
+			rb4NameToDocumentTypeMap.put("File", FILE);
+			rb4NameToDocumentTypeMap.put("HTML", HTML);
+			rb4NameToDocumentTypeMap.put("Textpage", TEXT);
+			rb4NameToDocumentTypeMap.put("External link", URL);
+		}
+
+		public static DocumentType getByRB4Name(String rb4Name){
+			return rb4NameToDocumentTypeMap.get(rb4Name);
+		}
     }
 
     /**

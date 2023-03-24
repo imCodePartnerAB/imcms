@@ -144,7 +144,12 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return solrInputDocument;
     }
 
-    private Predicate<DocumentFile> buildFileDocFilter(Config config) {
+	@Override
+	public SolrInputDocument updateDocumentVersion(int docId) {
+		return defaultDocumentService.updateDocumentVersion(docId);
+	}
+
+	private Predicate<DocumentFile> buildFileDocFilter(Config config) {
         final Set<String> disabledFileExtensions = config.getIndexDisabledFileExtensionsAsSet();
         final Set<String> disabledFileMimes = config.getIndexDisabledFileMimesAsSet();
         final boolean noIgnoredFileNamesAndExtensions = disabledFileExtensions.isEmpty() && disabledFileMimes.isEmpty();

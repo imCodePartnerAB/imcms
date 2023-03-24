@@ -30,6 +30,11 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.removeDocument(document);
     }
 
+	@Override
+	public void updateDocumentVersion(DocumentDomainObject document) throws IndexException {
+		index.updateDocumentVersion(document);
+	}
+
     @Override
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser);
@@ -59,6 +64,11 @@ public class DocumentIndexWrapper implements DocumentIndex {
     public void removeDocument(int docId) throws IndexException {
         index.removeDocument(docId);
     }
+
+	@Override
+	public void updateDocumentVersion(int docId) throws IndexException {
+		index.updateDocumentVersion(docId);
+	}
 
     @Override
     public boolean isUpdateDone() {

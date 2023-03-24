@@ -10,6 +10,8 @@ public interface CategoryTypeService {
 
     Optional<CategoryType> get(int id);
 
+	Optional<CategoryType> getByName(String name);
+
     List<CategoryType> getAll();
 
     CategoryType create(CategoryType saveMe);
@@ -19,4 +21,6 @@ public interface CategoryTypeService {
     void delete(int id);
 
     Collection<Integer> deleteForce(int id);
+
+	boolean existsByName(String name);
 }

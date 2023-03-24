@@ -53,6 +53,17 @@ public class DocumentIndexServiceOps {
         }
     }
 
+	private SolrInputDocument prepareSolrInputDocForVersionUpdate(int docId){
+		try {
+			return documentIndexer.updateDocumentVersion(docId);
+		}catch (Exception e){
+			logger.error(
+					String.format("Can`t prepare SolrInputDocument for update from doc %d", docId), e
+			);
+			return null;
+		}
+	}
+
     private String mkSolrDocsDeleteQuery(int docId) {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
@@ -79,6 +90,17 @@ public class DocumentIndexServiceOps {
         solrClient.commit(false, false, true);
         logger.info(String.format("Removed document with docId %d from index.", docId));
     }
+
+	public void updateDocumentVersionInIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
+		final SolrInputDocument solrInputDocument = prepareSolrInputDocForVersionUpdate(docId);
+
+		if (solrInputDocument != null) {
+			solrClient.add(solrInputDocument);
+			solrClient.commit(false, false, true);
+
+			logger.error(String.format("Updated document version in index with docId %d.", docId));
+		}
+	}
 
     public void rebuildIndex(SolrClient solrClient) {
         rebuildIndex(solrClient, indexRebuildProgress -> {

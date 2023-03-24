@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> {
@@ -33,4 +34,8 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = "DELETE FROM document_categories WHERE category_id = ?1", nativeQuery = true)
     void deleteDocumentCategory(int categoryId);
+
+	Optional<CategoryJPA> getByName(String name);
+
+	boolean existsByName(String name);
 }
