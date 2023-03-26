@@ -53,6 +53,7 @@ public abstract class Document implements Serializable {
 	    setVisible(from.isVisible());
         setProperties(from.getProperties());
 		setImported(from.isImported());
+		setDocumentWasteBasket(from.getDocumentWasteBasket());
     }
 
     public abstract Integer getId();
@@ -166,9 +167,17 @@ public abstract class Document implements Serializable {
 
 	public abstract void setImported(boolean imported);
 
+	public abstract DocumentWasteBasket getDocumentWasteBasket();
+
+	public abstract void setDocumentWasteBasket(DocumentWasteBasket documentWasteBasket);
+
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {
         final PublicationStatus publicationStatus = getPublicationStatus();
+
+		if (getDocumentWasteBasket() != null){
+			return DocumentStatus.WASTE_BASKET;
+		}
 
 	    if (PublicationStatus.NEW.equals(publicationStatus)) {
 		    return DocumentStatus.IN_PROCESS;

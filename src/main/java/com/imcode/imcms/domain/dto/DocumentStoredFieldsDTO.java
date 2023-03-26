@@ -51,6 +51,8 @@ public class DocumentStoredFieldsDTO {
 
     private boolean linkableByOtherUsers;
 
+    private boolean inWasteBasket;
+
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
         title = from.headline();
@@ -68,6 +70,7 @@ public class DocumentStoredFieldsDTO {
         modifiedBy = from.modifiedBy();
         linkableForUnauthorizedUsers = from.linkableForUnauthorizedUsers();
         linkableByOtherUsers = from.linkableByOtherUsers();
+        inWasteBasket = from.isInWasteBasket();
     }
 
 }

@@ -15,5 +15,6 @@ public enum DocumentStatus {
     IN_PROCESS,         // PublicationStatus is NEW
     DISAPPROVED,        // PublicationStatus is DISAPPROVED
     ARCHIVED,           // archived date-time is <= than now
-    PASSED              // publicationEnd date-time is <= than now
+    PASSED,             // publicationEnd date-time is <= than now
+    WASTE_BASKET        // document in the waste basket
 }

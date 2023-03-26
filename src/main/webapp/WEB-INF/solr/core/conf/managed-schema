@@ -107,6 +107,7 @@
 	    <field name="archived_datetime" type="date" indexed="true" stored="true"/>
 	    <field name="disabled_language_show_mode" type="string" indexed="false" stored="true"/>
 	    <field name="default_language_alias_enabled" type="boolean" indexed="false" stored="true"/>
+	    <field name="in_waste_basket" type="boolean" indexed="false" stored="true"/>
 	    <!-- publication status -->
 	    <field name="status" type="int" indexed="true" stored="true"/>
 	    <!-- file-doc field -->

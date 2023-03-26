@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
@@ -52,8 +51,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final ImageService imageService;
     private final LoopService loopService;
     private final DocumentsCache documentsCache;
-    private final DocumentMapper documentMapper;
-    private final PropertyService propertyService;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
     private final MenuService menuService;
@@ -72,8 +69,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentsCache documentsCache,
-                           DocumentMapper documentMapper,
-                           PropertyService propertyService,
                            @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices,
                            MenuService menuService, Function<Menu, MenuDTO> menuToMenuDTO,
                            Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
@@ -88,8 +83,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.imageService = imageService;
         this.loopService = loopService;
         this.documentsCache = documentsCache;
-        this.documentMapper = documentMapper;
-        this.propertyService = propertyService;
         this.versionedContentServices = versionedContentServices;
         this.menuService = menuService;
         this.menuToMenuDTO = menuToMenuDTO;
@@ -147,6 +140,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final Map<Integer, Meta.Permission> roleIdToPermission = saveMe.getRoleIdToPermission();
         roleIdToPermission.remove(Roles.USER.getId());
         saveMe.setRoleIdToPermission(roleIdToPermission);
+
+        saveMe.setDocumentWasteBasket(null);
 
 	    final Meta meta = documentSaver.apply(saveMe);
         final Integer docId = meta.getId();
@@ -299,6 +294,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__VISIBLE, doc.isVisible());
         indexDoc.addField(DocumentIndex.FIELD__LINKABLE_UNAUTHORIZED, doc.isLinkableForUnauthorizedUsers());
         indexDoc.addField(DocumentIndex.FIELD__LINKABLE_OTHER, doc.isLinkableByOtherUsers());
+        indexDoc.addField(DocumentIndex.FIELD__IN_WASTE_BASKET, doc.getDocumentWasteBasket() != null);
 
         return indexDoc;
     }

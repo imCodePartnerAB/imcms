@@ -133,6 +133,10 @@ public class DocumentStoredFields {
     public DocumentStatus documentStatus() {
         final PublicationStatus publicationStatus = publicationStatus();
 
+		if(isInWasteBasket()){
+			return DocumentStatus.WASTE_BASKET;
+		}
+
         if (PublicationStatus.NEW.equals(publicationStatus)) {
             return DocumentStatus.IN_PROCESS;
         }
@@ -163,5 +167,9 @@ public class DocumentStoredFields {
 
 	public boolean linkableByOtherUsers() {
 		return (Boolean) solrDocument.getFieldValue(DocumentIndex.FIELD__LINKABLE_OTHER);
+	}
+
+	public boolean isInWasteBasket(){
+		return (Boolean) solrDocument.getFieldValue(DocumentIndex.FIELD__IN_WASTE_BASKET);
 	}
 }

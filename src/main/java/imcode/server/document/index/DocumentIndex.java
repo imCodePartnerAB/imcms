@@ -79,6 +79,8 @@ public interface DocumentIndex {
 	String FIELD_META_HEADLINE = "meta_headline_l";
 	String FIELD_META_ALIAS = "meta_alias_l";
 
+	String FIELD__IN_WASTE_BASKET = "in_waste_basket";
+
 	/**
 	 * Searches documents.
 	 */
