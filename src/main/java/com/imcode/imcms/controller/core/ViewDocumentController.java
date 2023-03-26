@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentWasteBasketService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
@@ -51,6 +52,7 @@ public class ViewDocumentController {
     private final VersionService versionService;
     private final CommonContentService commonContentService;
     private final AccessService accessService;
+    private final DocumentWasteBasketService documentWasteBasketService;
     private final PathMatcher pathMatcher;
     private final String imagesPath;
     private final String version;
@@ -61,6 +63,7 @@ public class ViewDocumentController {
                            VersionService versionService,
                            CommonContentService commonContentService,
                            AccessService accessService,
+                           DocumentWasteBasketService documentWasteBasketService,
                            PathMatcher pathMatcher,
                            @Qualifier("storageImagePath") String imagesPath,
                            @Value("${imcms.version}") String version,
@@ -71,6 +74,7 @@ public class ViewDocumentController {
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.accessService = accessService;
+        this.documentWasteBasketService = documentWasteBasketService;
         this.pathMatcher = pathMatcher;
         this.imagesPath = imagesPath;
         this.version = version;
@@ -128,7 +132,8 @@ public class ViewDocumentController {
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
-                || (!hasUserViewAccess(userContentPermission) && !textDocument.isVisible())) {
+                || (!hasUserViewAccess(userContentPermission) && !textDocument.isVisible())
+                || (!user.isSuperAdmin() && documentWasteBasketService.isDocumentInWasteBasket(docId))) {
             response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             return null;
         }
