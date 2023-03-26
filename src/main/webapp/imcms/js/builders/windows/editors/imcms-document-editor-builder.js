@@ -5,13 +5,13 @@
 define('imcms-document-editor-builder',
     [
         'imcms-bem-builder', 'imcms-page-info-builder', 'imcms-components-builder', 'imcms-primitives-builder',
-        'imcms-documents-rest-api', 'imcms-documents-search-rest-api', 'imcms-users-rest-api',
+        'imcms-documents-rest-api', 'imcms-document-basket-rest-api', 'imcms-documents-search-rest-api', 'imcms-users-rest-api',
         'imcms-categories-rest-api', 'imcms-window-builder', 'jquery', 'imcms', 'imcms-modal-window-builder',
         'imcms-document-type-select-window-builder', 'imcms-i18n-texts', 'imcms-events',
         'imcms-document-profile-select-window-builder', 'imcms-document-copy-rest-api',
         'imcms-document-status', 'imcms-modal-window-builder'
     ],
-    function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
+    function (BEM, pageInfoBuilder, components, primitives, docRestApi, docBasketRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
               docProfileSelectBuilder, docCopyRestApi, docStatus, modal) {
 
@@ -41,7 +41,7 @@ define('imcms-document-editor-builder',
             }
         ;
 
-        let $documentsContainer, $editorBody, $documentsList;
+        let $documentsContainer, $editorBody, $documentsList, $actionSelect;
 
         let currentDocumentNumber = 0;
         const defaultPageSize = 100;
@@ -415,23 +415,23 @@ define('imcms-document-editor-builder',
             appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
         }
 
-        function removeEnabledMenuItems() {
+        function getDocumentIdsWithActiveCheckbox(){
             const $documents = $('.imcms-document-items-list').find('.imcms-document-items');
             const docIds = [];
 
             $documents.each(function () {
                 const $doc = $(this).first();
 
-                if (isActiveCheckBoxMultiRemoveDocuments($doc)) {
+                if (isActiveCheckBox($doc)) {
                     docIds.push(parseInt($doc.attr('data-doc-id')));
                 }
             });
 
-            removeDocuments(docIds);
-
-            function isActiveCheckBoxMultiRemoveDocuments($doc) {
-                return $doc.find('.imcms-document-item__multi-remove-controls').children()[0].firstChild.checked;
+            function isActiveCheckBox($doc) {
+                return $doc.find('.'+multiRemoveControlClass).find(":input").get(0).checked;
             }
+
+            return docIds;
         }
 
         function buildDocumentListTitlesRow(opts) {
@@ -501,7 +501,7 @@ define('imcms-document-editor-builder',
                 ],
             };
             if (!opts.inMenu) {
-                elements.button = buildRemoveButton();
+                elements.actions = buildActionSelect();
             }
 
             return new BEM({
@@ -544,14 +544,48 @@ define('imcms-document-editor-builder',
             return $titleRowBem;
         }
 
-        function buildRemoveButton() {
-            $removeButton = components.buttons.errorButton({
-	            class:'imcms-document-list-titles__title--remove',
-                text: texts.controls.removeButton,
-                click: removeEnabledMenuItems,
-                style: 'display:none;'
-            });
-            return $('<div>').append($removeButton);
+        function buildActionSelect() {
+            const deleteId = 'delete';
+            const putId = 'put';
+
+            const onSelected = value => {
+                let docIdsWithActiveCheckbox = getDocumentIdsWithActiveCheckbox();
+
+                switch (value) {
+                    case deleteId:
+                        removeDocuments(docIdsWithActiveCheckbox);
+                        break;
+                    case putId:
+                        putToWasteBasket(docIdsWithActiveCheckbox);
+
+                        docIdsWithActiveCheckbox.forEach(docId => {
+                            $documentsList.find('[data-doc-id=' + docId + ']')
+                                .find('.' + multiRemoveControlClass).find(":input").get(0).click()
+                        });
+                        break;
+                }
+
+                $actionSelect.find(".imcms-drop-down-list__select-item-value").text(texts.controls.actions);
+            };
+
+            $actionSelect = components.selects.selectContainer('<div>', {
+                emptySelect: false,
+                onSelected: onSelected
+            }, [
+                {
+                    text: texts.controls.removeAction,
+                    'data-value': deleteId
+                },
+                {
+                    text: texts.controls.putToBasketAction,
+                    'data-value': putId
+                }]);
+
+            $actionSelect.css("display", "none")
+
+            $actionSelect.find(".imcms-drop-down-list__select-item-value").text(texts.controls.actions);
+
+            return $('<div>').append($actionSelect);
         }
 
         function createFrame(event) {
@@ -639,6 +673,19 @@ define('imcms-document-editor-builder',
             }
         }
 
+        function refreshDocumentStatus(docId, docStatus, statusColor, backgroundColor){
+            const $documentElement = $documentsList.find('[data-doc-id=' + docId + ']');
+
+            const $documentStatus = $documentElement.find(".imcms-document-item__info--status");
+            $documentStatus.text(docStatus.title);
+            if(statusColor) $documentStatus.css("color", statusColor);
+
+            if(backgroundColor) $documentElement.find(".imcms-document-item").css("background-color", backgroundColor);
+
+            components.overlays.changeTooltipText($documentStatus, docStatus.tooltip);
+
+            $documentElement.find(".imcms-document-item__info--originalStatus").text(docStatus);
+        }
 
         function isMultiRemoveModeEnabled() {
             return $('.imcms-remove-switch-block__button').hasClass(classButtonOn);
@@ -662,8 +709,6 @@ define('imcms-document-editor-builder',
             });
         }
 
-        let $removeButton;
-
         function buildSwitchesOffOnButtons() {
 
             function switchButtonAction() {
@@ -671,10 +716,10 @@ define('imcms-document-editor-builder',
 
                 if (isMultiRemoveModeEnabled()) {
                     $switchButton.removeClass(classButtonOn).addClass(classButtonOff);
-                    $removeButton.css('display', 'none');
+                    $actionSelect.css('display', 'none');
                 } else if ($switchButton.hasClass(classButtonOff)) {
                     $switchButton.removeClass(classButtonOff).addClass(classButtonOn);
-                    $removeButton.css('display', 'block');
+                    $actionSelect.css('display', 'block');
                 }
 
                 changeControlsByMultiRemove();
@@ -1408,6 +1453,16 @@ define('imcms-document-editor-builder',
                         modal.buildErrorWindow(errorText);
                     })
                 });
+            });
+        }
+
+        function putToWasteBasket(docIds){
+            docBasketRestApi.createByIds(docIds).done(() => {
+                docIds.forEach(docId => {
+                    refreshDocumentStatus(docId, docStatus.getDocumentStatusTexts('WASTE_BASKET'), "red", "transparent");
+                });
+            }).fail(() => {
+                modal.buildErrorWindow(texts.error.putToWasteBasketFailed);
             });
         }
 

@@ -32,6 +32,10 @@ define("imcms-document-status",
                         title: texts.title.passed,
                         tooltip: texts.tooltip.passed,
                     },
+                    WASTE_BASKET: {
+                        title: texts.title.wasteBasket,
+                        tooltip: texts.tooltip.wasteBasket,
+                    }
                 }[documentStatus];
             }
         }

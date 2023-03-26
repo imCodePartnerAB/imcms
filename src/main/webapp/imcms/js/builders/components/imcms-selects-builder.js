@@ -303,8 +303,10 @@ define("imcms-selects-builder",
                 const $selectElements = [];
 
                 if (attributes.emptySelect) {
+                    let emptySelectText = attributes.emptySelectText ? attributes.emptySelectText : texts.none;
+
                     options.unshift({
-                        text: texts.none,
+                        text: emptySelectText,
                         "data-value": null
                     });
                 }

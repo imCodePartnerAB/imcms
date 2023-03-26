@@ -38,8 +38,7 @@
     transition: none;
 }
 
-.imcms-menu-list-titles__title--remove,
-.imcms-button.imcms-button--error.imcms-document-list-titles__title--remove {
+.imcms-menu-list-titles__title--remove {
 	border-radius: 10px;
 	background-color: #ff4b45;
 	border-color: #ff4b45;
@@ -47,8 +46,7 @@
 	width: 78px;
 }
 
-.imcms-menu-list-titles__title--remove:hover,
-.imcms-button.imcms-button--error.imcms-document-list-titles__title--remove:hover {
+.imcms-menu-list-titles__title--remove:hover {
 	background-color: transparent;
 	color: #ed4337;
 }

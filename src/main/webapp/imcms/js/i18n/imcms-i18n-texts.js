@@ -326,7 +326,9 @@ const texts = {
                     question: 'Vill du ta bort de här dokumenten? Detta kan inte göras ogjort!',
                     question2: 'Du kan inte ångra detta dokument! Ta bort?',
                     multiRemoveInfo: 'Multi-remove',
-                    removeButton: 'Ta bort',
+                    actions: 'Effekter',
+                    removeAction: 'Ta bort',
+                    putToBasketAction: 'Lägg till papperskorgen',
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
@@ -370,7 +372,8 @@ const texts = {
                     categoriesLoadFailed: 'Misslyckades med att hämta kategorier. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
                     removeDocumentFailed: 'Misslyckades med att ta bort dokument. Försök igen',
-                    removeProtectedDocumentFailed: 'Det är inte tillåtet att radera dokument'
+                    removeProtectedDocumentFailed: 'Det är inte tillåtet att radera dokument',
+                    putToWasteBasketFailed: 'Det gick inte att lägga dokument i papperskorgen'
                 }
             },
             newDocument: {
@@ -614,7 +617,8 @@ const texts = {
                 inProcess: "Nytt, u a",
                 disapproved: "Ej godkänd",
                 archived: "Arkiverat",
-                passed: "Avslutad"
+                passed: "Avslutad",
+                wasteBasket: "Papperskorg"
             },
             tooltip: {
                 published: "Dokumentet är publicerat",
@@ -622,7 +626,8 @@ const texts = {
                 inProcess: "Dokumentet är nytt och under arbete",
                 disapproved: "Ej godkänd",
                 archived: "Arkiverat",
-                passed: "Avslutad"
+                passed: "Avslutad",
+                wasteBasket: "Dokument i papperskorgen"
             },
         },
         languageFlags: {
@@ -777,8 +782,26 @@ const texts = {
                 deleteDocButton: 'Radera!',
                 error: {
                     missedDoc: 'Dokument finns inte!',
-                    protectedDoc: 'Det är inte tillåtet att radera detta dokument'
+                    protectedDoc: 'Det är inte tillåtet att radera detta dokument',
+                    removeDocumentFailed: 'Misslyckades med att ta bort dokument',
+                    removeProtectedDocumentFailed: 'Det är inte tillåtet att radera dokument'
                 },
+                basket: {
+                    title: 'Papperskorg',
+                    metaId: 'Id',
+                    headline: 'Länkrubrik',
+                    addedDate: 'Tillagd datum',
+                    userLogin: 'Användarnamn',
+                    input: 'Lägg till metaid i papperskorgen',
+                    putButton: "Ok",
+                    restoreButton: 'Återställ',
+                    deleteButton: 'Radera',
+                    error: {
+                        readFailed: 'Kunde inte hämta dokument från papperskorgen',
+                        putFailed: 'Kunde inte lägga dokument i papperskorgen',
+                        restoreFailed: 'Kunde inte återskapa dokument från papperskorgen'
+                    }
+                }
             },
             dataVersion: {
                 name: 'Data-Version',
@@ -1426,7 +1449,9 @@ const texts = {
                     question: 'Are you sure want to delete this documents? This can not be undone!',
                     question2: 'You can not revert this document! Remove?',
                     multiRemoveInfo: 'Multi-remove',
-                    removeButton: 'Remove',
+                    actions: 'Actions',
+                    removeAction: 'Remove',
+                    putToBasketAction: 'Put to basket',
                     copy: {
                         title: "Copy",
                         confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",
@@ -1470,7 +1495,8 @@ const texts = {
                     categoriesLoadFailed: 'Failed to fetch categories. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
                     removeDocumentFailed: 'Failed to remove document. Try again',
-                    removeProtectedDocumentFailed: 'It is not allowed to delete documents'
+                    removeProtectedDocumentFailed: 'It is not allowed to delete documents',
+                    putToWasteBasketFailed: 'Failed to put documents to the waste basket'
                 }
             },
             newDocument: {
@@ -1717,7 +1743,8 @@ const texts = {
                 inProcess: "New, u c",
                 disapproved: "D",
                 archived: "Arc",
-                passed: "P end"
+                passed: "P end",
+                wasteBasket: "W basket"
             },
             tooltip: {
                 published: "The document is published",
@@ -1725,7 +1752,8 @@ const texts = {
                 inProcess: "The document is new and under construction",
                 disapproved: "Disapproved",
                 archived: "Archived",
-                passed: "Publication end"
+                passed: "Publication end",
+                wasteBasket: "The document in the waste basket"
             },
         },
         languageFlags: {
@@ -1880,8 +1908,26 @@ const texts = {
                 deleteDocButton: 'Delete!',
                 error: {
                     missedDoc: 'Document does not exist!',
-                    protectedDoc: 'It is not allowed to delete this document'
+                    protectedDoc: 'It is not allowed to delete this document',
+                    removeDocumentFailed: 'Failed to remove document. Try again',
+                    removeProtectedDocumentFailed: 'It is not allowed to delete documents'
                 },
+                basket: {
+                    title: 'Waste Basket',
+                    metaId: 'Id',
+                    headline: 'Headline',
+                    addedDate: 'Added date',
+                    userLogin: 'Username',
+                    input: 'Put document to the waste basket by id',
+                    putButton: "Put",
+                    restoreButton: 'Restore',
+                    deleteButton: 'Delete',
+                    error: {
+                        readFailed: 'Failed to fetch documents from the waste basket',
+                        putFailed: 'Failed to put the document',
+                        restoreFailed: 'Failed to restore the document from the waste basket'
+                    }
+                }
             },
             dataVersion: {
                 name: 'Data-Version',
@@ -2530,7 +2576,9 @@ const texts = {
                     question: 'Er du sikker på at du vil slette disse dokumentene? Dette kan ikke angres!',
                     question2: 'Du kan ikke tilbakestille dette dokumentet! Fjerne?',
                     multiRemoveInfo: 'Flere fjernet',
-                    removeButton: 'Fjerne',
+                    actions: 'Actions',
+                    removeAction: 'Remove',
+                    putToBasketAction: 'Put to basket',
                     copy: {
                         title: "Kopiere",
                         confirmMessage: "Vil du virkelig kopiere (all informasjon i dokumentet vil bli kopiert) doc med id ",
@@ -2574,7 +2622,8 @@ const texts = {
                     categoriesLoadFailed: 'Kunne ikke hente kategorier. Prøv igjen',
                     copyDocumentFailed: 'Dokumentet kunne ikke kopieres. Prøv igjen',
                     removeDocumentFailed: 'Kunne ikke slette dokumentet. Prøv igjen',
-                    removeProtectedDocumentFailed: 'Det er ikke tillatt å slette dokumenter'
+                    removeProtectedDocumentFailed: 'It is not allowed to delete documents',
+                    putToWasteBasketFailed: 'Failed to put documents to the waste basket'
                 }
             },
             newDocument: {
@@ -2822,7 +2871,8 @@ const texts = {
                 inProcess: "Ny, u a",
                 disapproved: "Ikke godkjent",
                 archived: "Arkivert",
-                passed: "Fullført"
+                passed: "Fullført",
+                wasteBasket: "W basket"
             },
             tooltip: {
                 published: "Dokumentet er publisert",
@@ -2830,7 +2880,8 @@ const texts = {
                 inProcess: "Dokumentet er nytt og under konstruksjon",
                 disapproved: "Ikke godkjent",
                 archived: "Arkivert",
-                passed: "Fullført"
+                passed: "Publication end",
+                wasteBasket: "The document in the waste basket"
             },
         },
         languageFlags: {
@@ -2985,8 +3036,26 @@ const texts = {
                 deleteDocButton: 'Slett!',
                 error: {
                     missedDoc: 'Dokumentet finnes ikke!',
-                    protectedDoc: 'Det er ikke tillatt å slette dette dokumentet'
+                    protectedDoc: 'Det er ikke tillatt å slette dette dokumentet',
+                    removeDocumentFailed: 'Kunne ikke slette dokumentet',
+                    removeProtectedDocumentFailed: 'Det er ikke tillatt å slette dokumenter'
                 },
+                basket: {
+                    title: 'Waste Basket',
+                    metaId: 'Id',
+                    headline: 'Headline',
+                    addedDate: 'Added date',
+                    userLogin: 'Username',
+                    input: 'Put document to the waste basket by id',
+                    putButton: "Put",
+                    restoreButton: 'Restore',
+                    deleteButton: 'Delete',
+                    error: {
+                        readFailed: 'Failed to fetch documents from the waste basket',
+                        putFailed: 'Failed to put the document',
+                        restoreFailed: 'Failed to restore the document from the waste basket'
+                    }
+                }
             },
             dataVersion: {
                 name: 'Dataversjon',
