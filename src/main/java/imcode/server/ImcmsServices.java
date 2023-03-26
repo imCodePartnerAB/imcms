@@ -139,6 +139,8 @@ public interface ImcmsServices {
 
     SearchDocumentService getSearchDocumentService();
 
+    DocumentWasteBasketService getDocumentWasteBasketService();
+
     UserLockValidator getUserLockValidator();
 
     ImageCompressor getImageCompressor();

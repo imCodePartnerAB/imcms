@@ -8,7 +8,6 @@ import com.imcode.imcms.components.ImageCompressor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.component.azure.AzureAuthenticationProvider;
-import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -157,6 +156,10 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Getter
     @Autowired
     private SearchDocumentService searchDocumentService;
+
+    @Getter
+    @Autowired
+    private DocumentWasteBasketService documentWasteBasketService;
 
     @Getter
     @Autowired
