@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.DocumentWasteBasket;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
@@ -108,6 +109,10 @@ public class Meta implements Serializable {
 
 	@Column(name = "imported", nullable = false, columnDefinition = "int")
 	private boolean imported;
+
+    @OneToOne(mappedBy = "meta", cascade = CascadeType.REMOVE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private DocumentWasteBasketJPA documentWasteBasket;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -260,5 +265,8 @@ public class Meta implements Serializable {
 		this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
 	}
 
+    public void setDocumentWasteBasket(DocumentWasteBasket documentWasteBasket) {
+        this.documentWasteBasket = documentWasteBasket != null ? new DocumentWasteBasketJPA(documentWasteBasket) : null;
+    }
 
 }
