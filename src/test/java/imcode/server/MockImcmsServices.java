@@ -280,6 +280,11 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     @Override
+    public DocumentWasteBasketService getDocumentWasteBasketService() {
+        return null;
+    }
+
+    @Override
     public UserLockValidator getUserLockValidator() {
         return null;
     }

@@ -18,7 +18,6 @@ import com.imcode.imcms.persistence.repository.*;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.index.MockDocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,6 +78,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     private LoopService loopService;
     @Autowired
     private PropertyService propertyService;
+    @Autowired
+    private DocumentWasteBasketService documentWasteBasketService;
     @Autowired
     private LoopDataInitializer loopDataInitializer;
     @Autowired
@@ -150,8 +152,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 imageService,
                 loopService,
                 documentsCache,
-                documentMapper,
-                propertyService, versionedContentServices,
+                versionedContentServices,
                 menuService,
                 menuToMenuDTO,
                 imageJPAImageDTO,
@@ -627,6 +628,30 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         metaRepository.flush();
 
         assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
+    }
+
+    @Test
+    public void delete_When_DocumentInWasteBasket_Expect_DocumentNotExistExceptionAfterDeletion_And_WasteBasketDoesNotContainDocument() {
+        final EntityManager entityManager = Imcms.getServices().getManagedBean(EntityManager.class);
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(user); // means current user is admin now
+
+        final Integer createdDocId = createdDoc.getId();
+        final DocumentDTO documentDTO = documentService.get(createdDocId);
+        assertNotNull(documentDTO);
+
+        documentWasteBasketService.putToWasteBasket(documentDTO.getId());
+        entityManager.flush();
+        entityManager.clear();
+
+        documentService.deleteByDocId(documentDTO.getId());
+        metaRepository.flush();
+
+        assertThrows(DocumentNotExistException.class, () -> documentService.get(documentDTO.getId()));
+        assertFalse(documentWasteBasketService.getAllIdsFromWasteBasket().contains(createdDocId));
     }
 
     private void addContentForDocument(DocumentDTO documentDTO) {

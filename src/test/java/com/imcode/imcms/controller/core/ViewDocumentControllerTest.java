@@ -4,13 +4,17 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.DocumentWasteBasketJPA;
+import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.DocumentWasteBasketRepository;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,10 +49,16 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     private TextDocumentDataInitializer documentDataInitializer;
 
     @Autowired
+    private UserDataInitializer userDataInitializer;
+
+    @Autowired
     private CommonContentService commonContentService;
 
     @Autowired
     private MetaRepository metaRepository;
+
+    @Autowired
+    private DocumentWasteBasketRepository documentWasteBasketRepository;
 
     private List<LanguageDTO> languages;
     private TextDocumentDTO textDocument;
@@ -56,6 +67,7 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     public void setUp() {
         documentDataInitializer.cleanRepositories();
         languageDataInitializer.cleanRepositories();
+        userDataInitializer.cleanRepositories();
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         user.addRoleId(Roles.SUPER_ADMIN.getId());
@@ -188,6 +200,40 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
         metaRepository.save(metaDocument);
 
         assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isOk()));
+    }
+
+    @Test
+    public void getDocument_When_UserIsSuperAdminAndDocumentInWasteBasket_Expect_OkResponse(){
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
+        final Meta metaDocument = metaRepository.getOne(textDocument.getId());
+
+        DocumentWasteBasketJPA documentWasteBasket = new DocumentWasteBasketJPA();
+        documentWasteBasket.setMeta(metaDocument);
+        documentWasteBasket.setAddedBy(new User(user));
+        documentWasteBasketRepository.save(documentWasteBasket);
+
+        assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isOk()));
+    }
+
+    @Test
+    public void getDocument_When_UserIsNotSuperAdminAndDocumentInWasteBasket_Expect_NotFound404Response(){
+        final User testUser = userDataInitializer.createData("testUser");
+        final UserDomainObject testUserDomainObject = new UserDomainObject(testUser);
+        testUserDomainObject.setLanguageIso639_2(SWE_CODE_ISO_639_2);
+        Imcms.setUser(testUserDomainObject);
+
+        final Meta metaDocument = metaRepository.getOne(textDocument.getId());
+
+        DocumentWasteBasketJPA documentWasteBasket = new DocumentWasteBasketJPA();
+        documentWasteBasket.setMeta(metaDocument);
+        documentWasteBasket.setAddedBy(testUser);
+        documentWasteBasketRepository.save(documentWasteBasket);
+
+        assertDoesNotThrow(() -> performRequestToDocument(textDocument.getId()).andExpect(status().isNotFound()));
     }
 
     private ResultActions performRequestToDocument(Integer docId) throws Exception {
