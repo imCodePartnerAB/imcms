@@ -56,12 +56,13 @@ public class TextDocumentDTO extends DocumentDTO implements Serializable {
      * Don't use it directly.
      */
     @SuppressWarnings("unused")
-    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "template"})
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentWasteBasket", "template"})
     public TextDocumentDTO(List<CommonContentDTO> commonContents,
                            Set<CategoryDTO> categories,
                            Set<RestrictedPermissionDTO> restrictedPermissions,
+                           DocumentWasteBasketDTO documentWasteBasket,
                            TextDocumentTemplateDTO template) {
-        super(commonContents, categories, restrictedPermissions);
+        super(commonContents, categories, restrictedPermissions, documentWasteBasket);
         this.template = template;
     }
 

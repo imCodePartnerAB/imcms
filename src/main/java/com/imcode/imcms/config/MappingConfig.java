@@ -362,6 +362,7 @@ class MappingConfig {
                     .collect(Collectors.toSet());
 
             meta.setRestrictedPermissions(restrictedPermissions);
+            meta.setDocumentWasteBasket(documentDTO.getDocumentWasteBasket());
 
             return meta;
         };
@@ -418,6 +419,7 @@ class MappingConfig {
             dto.setCacheForAuthorizedUsers(meta.isCacheForAuthorizedUsers());
             dto.setVisible(meta.getVisible());
 			dto.setImported(meta.isImported());
+            dto.setDocumentWasteBasket(meta.getDocumentWasteBasket());
 
             return dto;
         };

@@ -58,15 +58,16 @@ public class UberDocumentDTO extends DocumentDTO {
      * Don't use it directly.
      */
     @SuppressWarnings("unused")
-    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "template", "files", "documentURL"})
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentWasteBasket", "template", "files", "documentURL"})
     public UberDocumentDTO(List<CommonContentDTO> commonContents,
                            Set<CategoryDTO> categories,
                            Set<RestrictedPermissionDTO> restrictedPermissions,
+                           DocumentWasteBasketDTO documentWasteBasket,
                            TextDocumentTemplateDTO template,
                            List<DocumentFileDTO> files,
                            DocumentUrlDTO documentURL) {
 
-        super(commonContents, categories, restrictedPermissions);
+        super(commonContents, categories, restrictedPermissions, documentWasteBasket);
         this.documentURL = documentURL;
         this.files = files;
         this.template = template;

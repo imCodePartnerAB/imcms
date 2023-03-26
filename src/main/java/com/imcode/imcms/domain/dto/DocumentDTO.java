@@ -49,6 +49,7 @@ public class DocumentDTO extends Document implements Cloneable {
 	private boolean cacheForAuthorizedUsers;
 	private boolean visible;
 	private boolean imported;
+	private DocumentWasteBasketDTO documentWasteBasket;
 	private Set<CategoryDTO> categories;
 	private Set<RestrictedPermissionDTO> restrictedPermissions;
     private Map<String, String> properties;
@@ -63,13 +64,15 @@ public class DocumentDTO extends Document implements Cloneable {
      * it shows concrete types of abstract classes that should be used.
      * Don't use it directly.
      */
-    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions"})
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentWasteBasket"})
     public DocumentDTO(List<CommonContentDTO> commonContents,
-                       Set<CategoryDTO> categories,
-                       Set<RestrictedPermissionDTO> restrictedPermissions) {
+					   Set<CategoryDTO> categories,
+					   Set<RestrictedPermissionDTO> restrictedPermissions,
+					   DocumentWasteBasketDTO documentWasteBasket) {
 	    this.categories = categories;
 	    this.restrictedPermissions = restrictedPermissions;
 	    this.commonContents = commonContents;
+		this.documentWasteBasket = documentWasteBasket;
     }
 
 	public List<CommonContent> getCommonContents() {
@@ -119,7 +122,17 @@ public class DocumentDTO extends Document implements Cloneable {
 				.collect(Collectors.toCollection(TreeSet::new));
     }
 
-    @Override
+	@Override
+	public DocumentWasteBasket getDocumentWasteBasket() {
+		return documentWasteBasket;
+	}
+
+	@Override
+	public void setDocumentWasteBasket(DocumentWasteBasket documentWasteBasket) {
+		this.documentWasteBasket = documentWasteBasket != null ? new DocumentWasteBasketDTO(documentWasteBasket) : null;
+	}
+
+	@Override
     public DocumentDTO clone() {
         try {
             final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();

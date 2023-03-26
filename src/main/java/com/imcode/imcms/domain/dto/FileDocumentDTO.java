@@ -43,12 +43,13 @@ public class FileDocumentDTO extends DocumentDTO {
      * Don't use it directly.
      */
     @SuppressWarnings("unused")
-    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "files"})
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentWasteBasket", "files"})
     public FileDocumentDTO(List<CommonContentDTO> commonContents,
                            Set<CategoryDTO> categories,
                            Set<RestrictedPermissionDTO> restrictedPermissions,
+                           DocumentWasteBasketDTO documentWasteBasket,
                            List<DocumentFileDTO> files) {
-        super(commonContents, categories, restrictedPermissions);
+        super(commonContents, categories, restrictedPermissions, documentWasteBasket);
         this.files = files;
     }
 

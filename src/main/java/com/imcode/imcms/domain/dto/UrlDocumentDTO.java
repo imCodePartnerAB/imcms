@@ -56,12 +56,13 @@ public class UrlDocumentDTO extends DocumentDTO implements Serializable {
      * Don't use it directly.
      */
     @SuppressWarnings("unused")
-    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentURL"})
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "documentWasteBasket", "documentURL"})
     public UrlDocumentDTO(List<CommonContentDTO> commonContents,
                           Set<CategoryDTO> categories,
                           Set<RestrictedPermissionDTO> restrictedPermissions,
+                          DocumentWasteBasketDTO documentWasteBasket,
                           DocumentUrlDTO documentURL) {
-        super(commonContents, categories, restrictedPermissions);
+        super(commonContents, categories, restrictedPermissions, documentWasteBasket);
         this.documentURL = documentURL;
     }
 }

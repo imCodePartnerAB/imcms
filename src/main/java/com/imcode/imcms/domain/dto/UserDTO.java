@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.BasicUserData;
-import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.model.UserData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class UserDTO extends BasicUserData {
 
     private Boolean active;
 
-    public UserDTO(User from) {
+    public UserDTO(UserData from) {
         super(from);
         id = from.getId();
         active = from.isActive();
