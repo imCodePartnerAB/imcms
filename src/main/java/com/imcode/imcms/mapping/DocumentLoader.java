@@ -113,6 +113,7 @@ public class DocumentLoader {
         metaDO.setSearchDisabled(meta.isSearchDisabled());
         metaDO.setTarget(meta.getTarget());
         metaDO.setRestrictedPermissions(meta.getRestrictedPermissions());
+        metaDO.setDocumentWasteBasket(meta.getDocumentWasteBasket());
 
         initRoleIdToPermissionSetIdMap(metaDO, meta);
 

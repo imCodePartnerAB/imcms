@@ -89,7 +89,7 @@ public class GetDoc extends HttpServlet {
             return;
         }
 
-        if (!document.isPublished() && !user.canEdit(document)) {
+        if ((!document.isPublished() || document.isInWasteBasket()) && !user.canEdit(document)) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Utility.setDefaultHtmlContentType(res);
 

@@ -171,6 +171,10 @@ public abstract class Document implements Serializable {
 
 	public abstract void setDocumentWasteBasket(DocumentWasteBasket documentWasteBasket);
 
+	public boolean isInWasteBasket(){
+		return getDocumentWasteBasket() != null;
+	}
+
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {
         final PublicationStatus publicationStatus = getPublicationStatus();

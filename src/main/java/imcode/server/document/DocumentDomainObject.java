@@ -590,4 +590,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
 		meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
 	}
+
+    public boolean isInWasteBasket(){
+        return meta.getDocumentWasteBasket() != null;
+    }
 }

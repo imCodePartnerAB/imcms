@@ -2,7 +2,9 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.domain.dto.DocumentWasteBasketDTO;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.DocumentWasteBasket;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import lombok.Data;
@@ -64,6 +66,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
     private volatile Set<RestrictedPermissionJPA> restrictedPermissions;
+	private volatile DocumentWasteBasketDTO documentWasteBasket;
 
     @Override
     public DocumentMeta clone() {
@@ -99,6 +102,10 @@ public class DocumentMeta implements Serializable, Cloneable {
 			throw new NullArgumentException("status");
 		}
 		publicationStatus = status;
+	}
+
+	public void setDocumentWasteBasket(DocumentWasteBasket documentWasteBasket){
+		this.documentWasteBasket = documentWasteBasket != null ? new DocumentWasteBasketDTO(documentWasteBasket) : null;
 	}
 
 	/**
