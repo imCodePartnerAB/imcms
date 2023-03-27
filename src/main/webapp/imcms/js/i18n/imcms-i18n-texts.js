@@ -787,7 +787,7 @@ const texts = {
                 }
             },
 	        documentsImport: {
-		        name: 'Importera dokument',
+		        name: "Importera dokument",
 		        importEntityReferenceManagerHead: "Importera Entity Reference Manager",
 		        tableTitles: {
 			        id: "Importera dokument-ID",
@@ -1890,7 +1890,7 @@ const texts = {
                 }
             },
 	        documentsImport: {
-		        name: 'Import Documents',
+		        name: "Import Documents",
 		        importEntityReferenceManagerHead: "Import Entity Reference Manager",
 		        tableTitles: {
 			        id: "Import document ID",
@@ -2994,6 +2994,43 @@ const texts = {
                     loadVersion: 'Kunne ikke laste inn versjonen!'
                 }
             },
+	        documentsImport: {
+		        name: "Importer dokumenter",
+		        importEntityReferenceManagerHead: "Import Entity Reference Manager",
+		        tableTitles: {
+			        id: "Importer dokument-ID",
+			        metaId: "Meta ID",
+			        status: "Status"
+		        },
+		        statusResponses: {
+			        success: "Lagret...",
+			        failed: "Mislyktes..."
+		        },
+		        uploadButton: "Laste opp",
+		        uploadFailure: "Kunne ikke laste opp!",
+		        emitterError: "Tilkoblingen er stengt!",
+		        fieldStart: "Start-ID",
+		        fieldEnd: "Slutt-ID",
+		        listButton: "Liste",
+		        importButton: "Import",
+		        filter: {
+			        name: "Filter",
+			        excludeImported: "Importert",
+			        excludeSkip: "Hopp over"
+		        },
+		        listFailure: "Kunne ikke vise grunnleggende dokumentinformasjon!",
+		        importFailure: "Import mislyktes!",
+		        importEntityName: "Navn",
+		        references: {
+			        roles: "Roller",
+			        templates: "Maler",
+			        categories: "Kategorier",
+			        categoryTypes: "Kategorityper"
+		        },
+		        footer: {
+			        closeButton: "Lukk"
+		        }
+	        },
             files: {
                 name: 'Filer',
                 upload: 'Last opp',
