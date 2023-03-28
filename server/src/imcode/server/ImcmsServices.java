@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.AuthenticationProviderService;
 import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
@@ -119,4 +120,6 @@ public interface ImcmsServices {
     ExternalToLocalRoleLinkComponent getExternalToLocalRoleLinkComponent();
 
     DefaultExternalToLocalRoleLinkService getExternalToLocalRoleLinkService();
+
+	DocumentExportService getDocumentExportService();
 }

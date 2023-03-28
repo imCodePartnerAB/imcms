@@ -28,7 +28,6 @@ boolean DEBUG_EDITOR        = false ;
 boolean DEBUG_CHANGED       = false ;
 boolean DEBUG_CHANGED_CONT  = false ;
 boolean DEBUG_SAVE          = false ;
-boolean isW3CValidationAvailable = W3CValidationService.isAvailable();
 
 %><%!
 
@@ -77,7 +76,7 @@ if (!(width >= 150 && width <= 600)) {
 }
 
 boolean editorActive = (TextDomainObject.TEXT_TYPE_HTML == textEditPage.getType() && !editorHidden) ;
-boolean validationIsActive = isW3CValidationAvailable && !"false".equals(getCookie("validationActive", request));
+boolean validationIsActive = W3CValidationService.isAvailable() && !"false".equals(getCookie("validationActive", request));
 
 boolean isSwe = false ;
 try {
@@ -191,13 +190,13 @@ if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl(
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="2" width="100%;">
-	<tr valign="top" <%=  isW3CValidationAvailable ? "" : "hidden" %>>
+	<tr valign="top">
 		<td width="80%">
 		<div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
 		<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
 		
 		<td width="20%" align="right" style="padding-top:3px; padding-left:15px; white-space:nowrap;">
-		<label for="validationActive" class="toolTip" title="<%=
+		<label for="validationActive" class="toolTip" style="<%=!validationIsActive ? "display: none;":" "%>" title="<%=
 			StringEscapeUtils.escapeHtml(isSwe ?
 					"Om denna är ikryssad körs automatiskt en<br/>" +
 					"validering på texten när en ändring registerats.<br/>" +
@@ -215,9 +214,9 @@ if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl(
 					"Automatic validation require some memory,<br/>" +
 					"so turn it off when it's not needed.")
 			%>"><input type="checkbox" id="validationActive" value="true"<%=
-			validationIsActive ? " checked=\"checked\"" : "" %> style="vertical-align:-2px;" />
+			validationIsActive ? " checked=\"checked\"" : "" %> style="vertical-align:-2px;<%=!validationIsActive ? "display: none;":" "%>" />
 			<%= isSwe ? "Validera automatiskt" : "Validate automatically" %></label>
-		<button id="validateBtn" class="imcmsFormBtnSmall imcmsFormBtnMedium toolTip iconValidate_pending" style="width:110px; margin-left:10px;"
+		<button id="validateBtn" class="imcmsFormBtnSmall imcmsFormBtnMedium toolTip iconValidate_pending" style="width:110px; margin-left:10px; <%=!validationIsActive ? "display: none;":" "%>"
 			      title="<%= StringEscapeUtils.escapeHtml(isSwe ?
 					"Validera texten och visa resultat av<br/>" +
 					"W3C-valideringen i ett popupfönster.<br/>" +
@@ -1114,6 +1113,8 @@ function hideDisableDiv($, isValidation, completeFn) {
 }
 
 function validateText($, showResults) {
+	if (!validationIsActive) return;
+
 	var oBtn = $('#validateBtn') ;<%
 	if (DEBUG_VALIDATION) { %>
 	if (console) console.log('validateText($, ' + showResults + ')') ;<%
@@ -1149,7 +1150,7 @@ function validateText($, showResults) {
 	}
 	textContent = textContent.replace(/<\?[^\?]+?\?>/g, '') ;
 	$.ajax({
-		url: '/w3cValidation',
+		url: '/servlet/w3cValidation',
 		type: 'POST',
 		dataType: 'json',
 		data: {

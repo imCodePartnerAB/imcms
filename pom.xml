@@ -43,7 +43,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-	<version>4.4.7-SNAPSHOT</version>
+	<version>4.5.0-SNAPSHOT</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -217,13 +217,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.10.3</version>
+			<version>2.14.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.10.3</version>
+			<version>2.14.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.microsoft.azure/adal4j -->
@@ -586,8 +586,8 @@
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
 

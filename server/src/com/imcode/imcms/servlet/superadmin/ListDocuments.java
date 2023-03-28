@@ -20,6 +20,7 @@ public class ListDocuments extends HttpServlet {
     public static final String PARAMETER_BUTTON__LIST = "showspan";
     public static final String PARAMETER__LIST_START = "start";
     public static final String PARAMETER__LIST_END = "end";
+	public static final String PARAMETER__EXPORT_DOCUMENTS = "export";
 
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
 
@@ -37,9 +38,11 @@ public class ListDocuments extends HttpServlet {
 
         String startString = req.getParameter(PARAMETER__LIST_START);
         String endString = req.getParameter(PARAMETER__LIST_END);
+	    String exportString = req.getParameter(PARAMETER__EXPORT_DOCUMENTS);
 
         int start = null != startString ? Integer.parseInt(startString) : allDocumentsRange.getMinimumInteger();
         int end = null != endString ? Integer.parseInt(endString) : allDocumentsRange.getMaximumInteger();
+	    boolean export = Boolean.parseBoolean(exportString);
 
         FormData formData = new FormData();
         formData.selectedRange = new IntRange(start, end);
@@ -49,7 +52,7 @@ public class ListDocuments extends HttpServlet {
         }
 
         req.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, formData);
-        req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/document_list.jsp").forward(req, res);
+	    req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/" + (export ? "export/export_" : "") + "document_list.jsp").forward(req, res);
 
     }
 

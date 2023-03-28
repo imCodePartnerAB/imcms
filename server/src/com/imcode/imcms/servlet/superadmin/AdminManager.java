@@ -524,6 +524,8 @@ public class AdminManager extends HttpServlet {
             url += "AdminSection";
         } else if (whichButton.equalsIgnoreCase("AdminCategories")) {
             url += "AdminCategories";
+        } else if (whichButton.equalsIgnoreCase("ExportDocuments")) {
+	        url += "ListDocuments?export=true";
         } else if (whichButton.equals("AdminProfiles")) {
             url = request.getContextPath() + "/imcms/admin/profile/list";
         }

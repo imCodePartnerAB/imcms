@@ -390,3 +390,94 @@ TD.NavBtnTextInact { cursor: pointer; }
 	z-index: 20000010 !important;
 	display: none;
 }
+
+/* *******************************************************************************************
+ *         export checkmark statuses                                                         *
+ ******************************************************************************************* */
+.checkmark {
+	display: inline-block;
+	width: 25px;
+	height: 18px;
+	-ms-transform: rotate(45deg); /* IE 9 */
+	-webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+	transform: rotate(45deg);
+}
+
+.checkmark:before {
+	content: "";
+	position: absolute;
+	background-color: green;
+	width: 3px;
+	height: 9px;
+	left: 11px;
+	top: 6px;
+}
+
+.checkmark:after {
+	content: "";
+	position: absolute;
+	width: 3px;
+	background-color: green;
+	height: 3px;
+	left: 8px;
+	top: 12px;
+}
+
+.close {
+	width: 16px;
+	height: 16px;
+	position: relative;
+	display: inline-block;
+}
+
+.close:after {
+	background-color: red;
+	content: '';
+	height: 16px;
+	position: absolute;
+	width: 2px;
+	transform: rotate(45deg);
+	left: 9px;
+}
+
+.close:before {
+	background-color: red;
+	content: '';
+	width: 2px;
+	height: 16px;
+	position: absolute;
+	transform: rotate(-45deg);
+	left: 9px;
+}
+
+.loading-animation {
+	position: relative;
+	left: 7px;
+	top: 19px;
+	width: 25px;
+	height: 25px;
+	text-align: center;
+	font-size: 14px;
+}
+
+.loading-animation::before {
+	content: '';
+	position: absolute;
+	left: -7px;
+	top: -19px;
+	width: 100%;
+	height: 100%;
+	border: 4px solid #d4d4d4;
+	border-top: 4px solid #20568d;
+	border-radius: 50%;
+	animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

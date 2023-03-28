@@ -3,6 +3,7 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import com.imcode.imcms.domain.repository.ExternalToLocalRoleLinkComponent;
 import com.imcode.imcms.domain.services.AuthenticationProviderService;
 import com.imcode.imcms.domain.services.api.DefaultExternalToLocalRoleLinkService;
@@ -37,6 +38,7 @@ public class MockImcmsServices implements ImcmsServices {
     private Database database = new MockDatabase();
     private KeyStore keyStore;
     private TemplateMapper templateMapper;
+	private DocumentExportService documentExportService;
     private DocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
@@ -218,7 +220,12 @@ public class MockImcmsServices implements ImcmsServices {
         return defaultExternalToLocalRoleLinkService;
     }
 
-    public void setImcmsAuthenticatorAndUserAndRoleMapper(
+	@Override
+	public DocumentExportService getDocumentExportService() {
+		return documentExportService;
+	}
+
+	public void setImcmsAuthenticatorAndUserAndRoleMapper(
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
     }
@@ -234,6 +241,10 @@ public class MockImcmsServices implements ImcmsServices {
     public void setTemplateMapper( TemplateMapper templateMapper ) {
         this.templateMapper = templateMapper;
     }
+
+	public void setDocumentExportService(DocumentExportService documentExportService){
+		this.documentExportService = documentExportService;
+	}
 
     public void setDocumentMapper( DocumentMapper documentMapper ) {
         this.documentMapper = documentMapper;

@@ -409,6 +409,21 @@
         <servlet-class>com.imcode.imcms.servlet.ProcessAuthResponseServlet</servlet-class>
     </servlet>
 
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.superadmin.ExportDocuments</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.superadmin.ExportDocuments</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.W3CValidationServlet</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.W3CValidationServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.superadmin.UpdateDocumentExportStatusServlet</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.superadmin.UpdateDocumentExportStatusServlet</servlet-class>
+	</servlet>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
@@ -683,6 +698,21 @@
         <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
         <url-pattern>/servlet/AjaxServlet</url-pattern>
     </servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.superadmin.ExportDocuments</servlet-name>
+		<url-pattern>/servlet/ExportDocuments</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.W3CValidationServlet</servlet-name>
+		<url-pattern>/servlet/w3cValidation</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.superadmin.UpdateDocumentExportStatusServlet</servlet-name>
+		<url-pattern>/servlet/UpdateDocumentExportStatusServlet</url-pattern>
+	</servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>

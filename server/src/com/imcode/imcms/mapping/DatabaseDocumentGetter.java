@@ -10,14 +10,7 @@ import imcode.server.document.DocumentDomainObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
@@ -39,7 +32,9 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             + "publisher_id,\n"
             + "status,\n"
             + "publication_start_datetime,\n"
-            + "publication_end_datetime\n"
+            + "publication_end_datetime,\n"
+		    + "export_allowed,\n"
+		    + "exported\n"
             + "FROM meta\n"
             + "WHERE meta_id ";
     static final String SQL_SELECT_PERMISSION_DATA__PREFIX = "SELECT meta_id, set_id, permission_data FROM ";
@@ -127,6 +122,8 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             document.setPublicationStatus(publicationStatus);
             document.setPublicationStartDatetime(resultSet.getTimestamp(18));
             document.setPublicationEndDatetime(resultSet.getTimestamp(19));
+			document.setExportAllowed(resultSet.getBoolean(20));
+			document.setExported(resultSet.getBoolean(21));
 
             return document;
         }

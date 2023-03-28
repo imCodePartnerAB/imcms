@@ -2,7 +2,9 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
+import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import com.imcode.imcms.servlet.LoginPasswordManager;
+import imcode.server.Imcms;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
@@ -13,7 +15,9 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntegerSet;
 import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.Serializable;
 import java.sql.ResultSet;
 
@@ -31,6 +35,7 @@ public class TestDocumentMapper extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+	    Imcms.setPath(new File("tmp"));
         user = new UserDomainObject(0);
         userRole = new RoleId( 3 );
         user.addRoleId( userRole );
@@ -50,6 +55,7 @@ public class TestDocumentMapper extends TestCase {
         MockImcmsServices services = new MockImcmsServices() ;
         services.setImcmsAuthenticatorAndUserAndRoleMapper(userRegistry);
         services.setTemplateMapper(new TemplateMapper(new MockImcmsServices())) ;
+	    services.setDocumentExportService(new DocumentExportService(new MockImcmsServices()));
         documentIndex = new MockDocumentIndex();
         CategoryMapper categoryMapper = new CategoryMapper(database);
         documentMapper = new DocumentMapper( services, database);
@@ -151,7 +157,7 @@ public class TestDocumentMapper extends TestCase {
     }
 
     public void testDeleteDocument() {
-        Object[][] documentResultRows = new Object[1][19];
+        Object[][] documentResultRows = new Object[1][21];
         documentResultRows[0][0] = textDocument.getId();
         documentResultRows[0][1] = textDocument.getDocumentTypeId();
         documentResultRows[0][5] = user.getId();

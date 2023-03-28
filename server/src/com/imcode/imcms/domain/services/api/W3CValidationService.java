@@ -43,7 +43,7 @@ public class W3CValidationService {
 					.getStatusCode() == HttpServletResponse.SC_OK;
 		} catch (IOException e) {
 			log.error(e);
-			throw new RuntimeException(e);
+			return false;
 		}
 	}
 
