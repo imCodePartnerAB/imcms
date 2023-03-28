@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class ImageCacheManager {
@@ -25,6 +27,7 @@ public class ImageCacheManager {
     private static final File IMAGE_CACHE_PATH = Imcms.getServices().getConfig().getImageCachePath();
     private static final long MAX_CACHE_SIZE = Imcms.getServices().getConfig().getImageCacheMaxSize();
 
+    private static final ExecutorService service = Executors.newSingleThreadExecutor();
 
     public static File getCacheFile(ImageCacheDomainObject imageCache) {
         // disk based hash buckets
@@ -38,7 +41,7 @@ public class ImageCacheManager {
             return null;
         }
 
-        Imcms.getServices().getImageCacheMapper().incrementFrequency(imageCache.getId());
+        service.submit(() -> Imcms.getServices().getImageCacheMapper().incrementFrequency(imageCache.getId()));
 
         return imageFile;
     }
@@ -164,6 +167,10 @@ public class ImageCacheManager {
             File entryFile = new File(IMAGE_CACHE_PATH, String.format("%d/%s", bucket, cacheId));
             entryFile.delete();
         }
+    }
+
+    public static void destroy(){
+        service.shutdownNow();
     }
 
     private static void deleteAllCacheFiles() {

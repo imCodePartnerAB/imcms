@@ -443,6 +443,12 @@ public class ImageHandling extends HttpServlet {
         handleRequest(request, response);
     }
 
+    @Override
+    public void destroy(){
+        super.destroy();
+        ImageCacheManager.destroy();
+    }
+
 
     static class SourceFile implements Serializable {
         private static final long serialVersionUID = 6075456980496678862L;

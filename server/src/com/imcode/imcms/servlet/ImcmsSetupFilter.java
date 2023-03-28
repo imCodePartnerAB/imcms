@@ -22,11 +22,15 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     private static final Logger log = LogManager.getLogger(ImcmsSetupFilter.class);
+
+    private final ExecutorService incrementSessionCounterExecutor = Executors.newSingleThreadExecutor();
 
     public static String getDocumentIdString(ImcmsServices service, String path) {
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
@@ -49,7 +53,7 @@ public class ImcmsSetupFilter implements Filter {
 
         ImcmsServices service = Imcms.getServices();
         if (session.isNew()) {
-            service.incrementSessionCounter();
+            incrementSessionCounterExecutor.submit(service::incrementSessionCounter);
             setDomainSessionCookie(response, session);
         }
 
@@ -192,6 +196,7 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public void destroy() {
+        incrementSessionCounterExecutor.shutdownNow();
     }
 
 }
