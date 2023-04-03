@@ -55,6 +55,16 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 	}
 
 	@Override
+	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId) {
+		return getAll(startId, endId, false, false, Pageable.unpaged());
+	}
+
+	@Override
+	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip) {
+		return getAll(startId, endId, excludeImported, excludeSkip, Pageable.unpaged());
+	}
+
+	@Override
 	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable) {
 		return basicImportDocumentInfoRepository.findAllWithRange(startId, endId, excludeImported, excludeSkip, pageable)
 				.map(BasicImportDocumentInfoDTO::new);
@@ -71,7 +81,7 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 	}
 
 	@Override
-	public int toMetaId(int importDocId) {
+	public Integer toMetaId(int importDocId) {
 		return basicImportDocumentInfoRepository.findMetaId(importDocId);
 	}
 
