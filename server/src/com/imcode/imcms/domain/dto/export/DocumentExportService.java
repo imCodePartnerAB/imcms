@@ -42,7 +42,7 @@ public class DocumentExportService {
 		this.imcmsServices = imcmsServices;
 
 		if (!Files.exists(exportFolder)) {
-			Files.createDirectory(exportFolder);
+			Files.createDirectories(exportFolder);
 		}
 	}
 
