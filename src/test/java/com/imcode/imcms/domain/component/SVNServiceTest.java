@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 
 import static com.imcode.imcms.domain.component.SVNService.SVN_WEBAPP_PATH;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SVNServiceTest extends WebAppSpringTestConfig {
@@ -29,8 +30,7 @@ public class SVNServiceTest extends WebAppSpringTestConfig {
 	private static final String longFolderName = String.format("/%s/%s/%s/", folderName, folderName2, folderName3);
 
 	@PostConstruct
-	@SneakyThrows
-	private void init() {
+	private void init() throws IOException, SVNException {
 		Files.createDirectories(filesFolderPath);
 		svnService.createFolder(filesFolder);
 		svnService.checkout(filesFolder, filesFolderPath);

@@ -11,6 +11,7 @@ import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -126,6 +127,7 @@ public class TestConfig {
     @PreDestroy
     private void destroy() throws IOException {
         assertTrue(FileUtility.forceDelete(defaultTestSolrFolder.getParentFile()));
+	    Assertions.assertTrue(FileUtility.forceDelete(new File("src/main/webapp/WEB-INF/test-svn")));
     }
 
 	private String createLocalSVNRepository() {
