@@ -1,6 +1,8 @@
 package com.imcode.imcms.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.base.MoreObjects;
+import com.imcode.imcms.domain.dto.UserDTO;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,12 +15,16 @@ public final class DocumentVersion implements Serializable {
 
     public static final int WORKING_VERSION_NO = 0;
     private final int no;
-    private final Integer createdBy;
+
+    private final UserDTO createdBy;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final Date createdDt;
-    private final Integer modifiedBy;
+
+    private final UserDTO modifiedBy;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final Date modifiedDt;
 
-    public DocumentVersion(int no, Integer createdBy, Date createdDt, Integer modifiedBy, Date modifiedDt) {
+    public DocumentVersion(int no, UserDTO createdBy, Date createdDt, UserDTO modifiedBy, Date modifiedDt) {
         this.no = no;
         this.createdBy = createdBy;
         this.createdDt = new Date(createdDt.getTime());
@@ -65,7 +71,7 @@ public final class DocumentVersion implements Serializable {
         return no;
     }
 
-    public Integer getCreatedBy() {
+    public UserDTO getCreatedBy() {
         return createdBy;
     }
 
@@ -73,7 +79,7 @@ public final class DocumentVersion implements Serializable {
         return createdDt;
     }
 
-    public Integer getModifiedBy() {
+    public UserDTO getModifiedBy() {
         return modifiedBy;
     }
 
@@ -87,9 +93,9 @@ public final class DocumentVersion implements Serializable {
 
     public static class Builder {
         private int no;
-        private Integer createdBy;
+        private UserDTO createdBy;
         private Date createdDt;
-        private Integer modifiedBy;
+        private UserDTO modifiedBy;
         private Date modifiedDt;
 
         public Builder no(int no) {
@@ -97,7 +103,7 @@ public final class DocumentVersion implements Serializable {
             return this;
         }
 
-        public Builder createdBy(Integer createdBy) {
+        public Builder createdBy(UserDTO createdBy) {
             this.createdBy = createdBy;
             return this;
         }
@@ -107,7 +113,7 @@ public final class DocumentVersion implements Serializable {
             return this;
         }
 
-        public Builder modifiedBy(Integer modifiedBy) {
+        public Builder modifiedBy(UserDTO modifiedBy) {
             this.modifiedBy = modifiedBy;
             return this;
         }

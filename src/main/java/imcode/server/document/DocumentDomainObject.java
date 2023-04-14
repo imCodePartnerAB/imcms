@@ -345,7 +345,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     private Integer getModifierId() {
-        return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+        return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy().getId();
     }
 
     public void setDocumentPermissionSetTypeForRoleId(Integer roleId, Meta.Permission permission) {

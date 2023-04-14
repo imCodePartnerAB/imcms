@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.persistence.entity.Version;
@@ -77,8 +78,8 @@ public class DocumentVersionMapper {
                 ? null
                 : DocumentVersion.builder()
                 .no(version.getNo())
-                .createdBy(version.getCreatedBy().getId())
-                .modifiedBy(version.getModifiedBy().getId())
+                .createdBy(new UserDTO(version.getCreatedBy()))
+                .modifiedBy(new UserDTO(version.getModifiedBy()))
                 .createdDt(version.getCreatedDt())
                 .modifiedDt(version.getModifiedDt())
                 .build();

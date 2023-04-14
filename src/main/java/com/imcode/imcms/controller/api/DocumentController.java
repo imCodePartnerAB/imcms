@@ -44,13 +44,12 @@ class DocumentController {
 
     @GetMapping
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR, docPermission = AccessContentType.DOC_INFO)
-    public Document get(Integer docId, DocumentType type, String parentDocIdentity) {
+    public Document get(Integer docId, Integer versionNo, DocumentType type, String parentDocIdentity) {
         if (docId == null) {
 	        final Integer documentId = documentMapper.toDocumentId(parentDocIdentity);
             return documentService.createNewDocument(type, documentId);
-
         } else {
-            return documentService.get(docId);
+            return versionNo == null ? documentService.get(docId) : documentService.get(docId, versionNo);
         }
     }
 
@@ -95,6 +94,13 @@ class DocumentController {
         }
 
         return documentService.save(updateMe);
+    }
+
+    @PatchMapping("/reset-version")
+    @CheckAccess
+    public void resetVersion(@RequestParam("meta-id") int docId,
+                             @RequestParam("version-no") int versionNo){
+        documentService.makeAsWorkingVersion(docId, versionNo);
     }
 
     @DeleteMapping("/{docId}")
