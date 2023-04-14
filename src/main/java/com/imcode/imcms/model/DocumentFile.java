@@ -1,5 +1,6 @@
 package com.imcode.imcms.model;
 
+import imcode.util.io.InputStreamSource;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,11 +15,13 @@ public abstract class DocumentFile implements Serializable {
         setId(from.getId());
         setDocId(from.getDocId());
         setFilename(from.getFilename());
+        setOriginalFilename(from.getOriginalFilename());
         setCreatedAsImage(from.isCreatedAsImage());
         setMimeType(from.getMimeType());
         setDefaultFile(from.isDefaultFile());
         setFileId(from.getFileId());
         setMultipartFile(from.getMultipartFile());
+        setInputStreamSource(from.getInputStreamSource());
     }
 
     public abstract Integer getId();
@@ -32,6 +35,10 @@ public abstract class DocumentFile implements Serializable {
     public abstract String getFilename();
 
     public abstract void setFilename(String filename);
+
+    public abstract String getOriginalFilename();
+
+    public abstract void setOriginalFilename(String originalFilename);
 
     public abstract boolean isCreatedAsImage();
 
@@ -52,5 +59,9 @@ public abstract class DocumentFile implements Serializable {
     public abstract MultipartFile getMultipartFile();
 
     public abstract void setMultipartFile(MultipartFile multipartFile);
+
+    public abstract InputStreamSource getInputStreamSource();
+
+    public abstract void setInputStreamSource(InputStreamSource inputStreamSource);
 
 }
