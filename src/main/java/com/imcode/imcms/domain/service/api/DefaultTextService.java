@@ -16,11 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.RELAXED;
@@ -82,7 +78,12 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
     @Override
     public Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
-        return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
+        return getText(docId, index, langCode, loopEntryRef, versionService.getDocumentWorkingVersion(docId));
+    }
+
+    @Override
+    public Text getText(int docId, int index, int versionNo, String langCode, LoopEntryRef loopEntryRef){
+        return getText(docId, index, langCode, loopEntryRef, versionService.findByDocIdAndNo(docId, versionNo));
     }
 
     @Override
@@ -92,7 +93,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
     @Override
     public Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
-        return getText(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
+        return getText(docId, index, langCode, loopEntryRef, versionService.getLatestVersion(docId));
     }
 
     @Override
@@ -151,6 +152,26 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         textHistoryService.save(text);
 
         return savedText;
+    }
+
+    @Override
+    public void setAsWorkingVersion(Version version) {
+        final Version workingVersion = versionService.getDocumentWorkingVersion(version.getDocId());
+
+        final List<TextJPA> textsByVersion = repository.findByVersion(version);
+
+        final List<TextJPA> saveTexts = new ArrayList<>();
+        textsByVersion.forEach(textByVersion -> {
+            TextJPA textCopy = new TextJPA(textByVersion, workingVersion);
+            textCopy.setId(null);
+            saveTexts.add(textCopy);
+        });
+
+        repository.deleteByVersion(workingVersion);
+        repository.flush();
+        repository.saveAll(saveTexts);
+
+        textsByVersion.forEach(textHistoryService::save);
     }
 
     @Override
@@ -217,10 +238,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
                 .collect(Collectors.toSet());
     }
 
-    private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
-                         Function<Integer, Version> versionReceiver) {
-
-        final Version version = versionReceiver.apply(docId);
+    private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef, Version version) {
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final TextJPA text = getText(index, version, language, loopEntryRef);
 

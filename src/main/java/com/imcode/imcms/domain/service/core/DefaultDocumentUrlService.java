@@ -30,11 +30,27 @@ public class DefaultDocumentUrlService
 
     @Override
     public DocumentURL getByDocId(int docId) {
-        final DocumentUrlJPA documentUrlJPA = documentUrlRepository.findByDocIdAndVersionNo(
-                docId, Version.WORKING_VERSION_INDEX
-        );
+        return getByDocIdAndVersionNo(docId, Version.WORKING_VERSION_INDEX);
+    }
 
+    @Override
+    public DocumentURL getByDocIdAndVersionNo(int docId, int versionNo){
+        final DocumentUrlJPA documentUrlJPA = documentUrlRepository.findByDocIdAndVersionNo(docId, versionNo);
         return documentUrlJPA != null ? new DocumentUrlDTO(documentUrlJPA) : null;
+    }
+
+    @Override
+    public void setAsWorkingVersion(Version version) {
+        Version workingVersion = versionService.getDocumentWorkingVersion(version.getDocId());
+
+        final DocumentUrlJPA documentUrlByVersion = documentUrlRepository.findByDocIdAndVersionNo(version.getDocId(), version.getNo());
+
+        final DocumentUrlJPA saveDocumentUrl = new DocumentUrlJPA(documentUrlByVersion, workingVersion);
+        saveDocumentUrl.setId(null);
+
+        documentUrlRepository.deleteByVersion(workingVersion);
+        documentUrlRepository.flush();
+        documentUrlRepository.save(saveDocumentUrl);
     }
 
     @Override

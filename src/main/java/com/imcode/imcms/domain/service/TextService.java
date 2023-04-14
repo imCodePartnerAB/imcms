@@ -17,6 +17,8 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
 
     Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
+    Text getText(int docId, int index, int versionNo, String langCode, LoopEntryRef loopEntryRef);
+
     List<TextJPA> getText(Integer index, String key);
 
     Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);

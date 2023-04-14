@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.DocumentFileService;
@@ -86,8 +87,36 @@ class DefaultDocumentFileService
     }
 
     @Override
+    public void setAsWorkingVersion(Version version) {
+        final List<DocumentFileJPA> documentFilesByVersion = documentFileRepository.findByDocIdAndVersionIndex(version.getDocId(), version.getNo());
+
+        final List<DocumentFileJPA> saveDocumentFiles = new ArrayList<>();
+        documentFilesByVersion.forEach(documentFile -> {
+            final DocumentFileJPA docFileOne = new DocumentFileJPA(documentFile);
+            docFileOne.setId(null);
+            docFileOne.setVersionIndex(DocumentVersion.WORKING_VERSION_NO);
+            saveDocumentFiles.add(docFileOne);
+        });
+
+        deleteNoMoreUsedDocumentFiles(saveDocumentFiles, version.getDocId());
+
+        documentFileRepository.deleteByVersion(versionService.getDocumentWorkingVersion(version.getDocId()));
+        documentFileRepository.flush();
+        documentFileRepository.saveAll(saveDocumentFiles);
+
+        super.updateWorkingVersion(version.getDocId());
+    }
+
+    @Override
     public List<DocumentFile> getByDocId(int docId) {
         return findWorkingVersionFiles(docId).stream()
+                .map(DocumentFileDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DocumentFile> getByDocIdAndVersion(int docId, int versionNo) {
+        return documentFileRepository.findByDocIdAndVersionIndex(docId, versionNo).stream()
                 .map(DocumentFileDTO::new)
                 .collect(Collectors.toList());
     }

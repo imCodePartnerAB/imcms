@@ -11,7 +11,7 @@ import java.util.List;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.12.17.
  */
-public interface DocumentFileService extends DeleterByDocumentId, Copyable {
+public interface DocumentFileService extends DeleterByDocumentId, VersionedContentService, Copyable {
 
     /**
      * This will save list of files for specified document by id.
@@ -28,6 +28,8 @@ public interface DocumentFileService extends DeleterByDocumentId, Copyable {
     <T extends DocumentFile> DocumentFile save(T saveMe);
 
     List<DocumentFile> getByDocId(int docId);
+
+    List<DocumentFile> getByDocIdAndVersion(int docId, int versionNo);
 
     void publishDocumentFiles(int docId);
 

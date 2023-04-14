@@ -6,19 +6,18 @@ import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.LoopEntry;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.LoopEntryJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.LoopJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service("loopService")
@@ -45,18 +44,22 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
 
     @Override
     public Loop getLoop(int loopIndex, int docId) {
-        return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
+        return getLoop(loopIndex, docId, versionService.getDocumentWorkingVersion(docId));
+    }
+
+    @Override
+    public Loop getLoop(int loopIndex, int docId, int versionNo) {
+        return getLoop(loopIndex, docId, versionService.findByDocIdAndNo(docId, versionNo));
     }
 
     @Override
     public Loop getLoopPublic(int loopIndex, int docId) {
-        return getLoop(loopIndex, docId, versionService::getLatestVersion);
+        return getLoop(loopIndex, docId, versionService.getLatestVersion(docId));
     }
 
     @Override
-    public Loop getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
-        final Version documentWorkingVersion = versionGetter.apply(docId);
-        final LoopJPA loop = repository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
+    public Loop getLoop(int loopIndex, int docId, Version version) {
+        final LoopJPA loop = repository.findByVersionAndIndex(version, loopIndex);
 
         return Optional.ofNullable(loop)
                 .map(LoopDTO::new)
@@ -78,6 +81,31 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
         }else{
             Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
         }
+    }
+
+    @Override
+    public void setAsWorkingVersion(Version version) {
+        final Version workingVersion = versionService.getDocumentWorkingVersion(version.getDocId());
+
+        final List<LoopJPA> loopsByVersion = repository.findByVersion(version);
+
+        final List<LoopJPA> saveLoops = new ArrayList<>();
+        loopsByVersion.forEach(loopByVersion -> {
+            List<LoopEntry> entriesCopy = new ArrayList<>();
+            loopByVersion.getEntries().forEach(loopEntry ->
+                entriesCopy.add(new LoopEntryJPA(loopEntry.getIndex(), loopEntry.isEnabled()))
+            );
+
+            LoopJPA loopCopy = new LoopJPA(loopByVersion, workingVersion);
+            loopCopy.setId(null);
+            loopByVersion.setEntries(entriesCopy);
+
+            saveLoops.add(loopCopy);
+        });
+
+        repository.deleteByVersion(workingVersion);
+        repository.flush();
+        repository.saveAll(saveLoops);
     }
 
     @Override

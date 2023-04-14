@@ -16,6 +16,8 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
 
     List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language);
 
+    List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, int versionNo, String language);
+
     List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language);
 
     List<Menu> getAll();

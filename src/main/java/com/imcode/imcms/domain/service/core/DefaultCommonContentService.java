@@ -1,18 +1,20 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
+import com.imcode.imcms.persistence.entity.DocumentMetadataJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
-import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -30,14 +32,17 @@ public class DefaultCommonContentService
         extends AbstractVersionedContentService<CommonContentJPA, CommonContentRepository>
         implements CommonContentService {
 
+    private final VersionService versionService;
     private final LanguageService languageService;
     private final Config config;
 
     DefaultCommonContentService(CommonContentRepository commonContentRepository,
+                                VersionService versionService,
                                 LanguageService languageService,
                                 Config config) {
 
         super(commonContentRepository);
+        this.versionService = versionService;
         this.languageService = languageService;
         this.config = config;
     }
@@ -100,6 +105,29 @@ public class DefaultCommonContentService
 
 	    repository.saveAll(toSave);
 	    super.updateWorkingVersion(docId);
+    }
+
+    @Override
+    public void setAsWorkingVersion(Version version) {
+        final List<CommonContentJPA> commonContentsByVersion = repository.findByVersion(version);
+
+        final List<CommonContentJPA> saveCommonContents = new ArrayList<>();
+        commonContentsByVersion.forEach(commonContentByVersion -> {
+            List<DocumentMetadataJPA> metadataListCopy = commonContentByVersion.getDocumentMetadataList().stream()
+                    .map(DocumentMetadataJPA::new)
+                    .collect(toList());
+
+            CommonContentJPA commonContentCopy = new CommonContentJPA(commonContentByVersion);
+            commonContentCopy.setId(null);
+            commonContentCopy.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
+            commonContentCopy.setDocumentMetadataList(metadataListCopy);
+            saveCommonContents.add(commonContentCopy);
+        });
+
+
+        repository.deleteByVersion(versionService.getDocumentWorkingVersion(version.getDocId()));
+        repository.flush();
+        repository.saveAll(saveCommonContents);
     }
 
     @Override

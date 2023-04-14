@@ -8,10 +8,7 @@ import com.imcode.imcms.domain.factory.ImageInTextFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
@@ -28,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -96,13 +90,22 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     @Cacheable(cacheNames = OTHER_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index+'-'+#loopEntryRef")
     @Override
     public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
-        return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
+        return getImage(docId, index, langCode, loopEntryRef, versionService.getDocumentWorkingVersion(docId));
+    }
+
+    @Override
+    public ImageDTO getImage(int docId, int index, int versionNo, String langCode, LoopEntryRef loopEntryRef) {
+        final ImageDTO imageDTO = getImage(docId, index, langCode, loopEntryRef, versionService.findByDocIdAndNo(docId, versionNo));
+
+        regenerateImage(imageDTO);
+
+        return imageDTO;
     }
 
     @Cacheable(cacheNames = PUBLIC_CACHE_NAME, key = "#docId+'-'+#langCode+'-'+#index+'-'+#loopEntryRef")
     @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
-        return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
+        return getImage(docId, index, langCode, loopEntryRef, versionService.getLatestVersion(docId));
     }
 
 	@Override
@@ -197,6 +200,30 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
 
     @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
     @Override
+    public void setAsWorkingVersion(Version version) {
+        final Version workingVersion = versionService.getDocumentWorkingVersion(version.getDocId());
+
+        final List<ImageJPA> imagesByVersion = repository.findByVersion(version);
+
+        final List<ImageJPA> saveImages = new ArrayList<>();
+        imagesByVersion.forEach(imageByVersion -> {
+            ImageJPA imageCopy = new ImageJPA(imageByVersion, workingVersion);
+            imageCopy.setId(null);
+            saveImages.add(imageCopy);
+        });
+
+        repository.deleteByVersion(workingVersion);
+        repository.flush();
+        repository.saveAll(saveImages);
+
+        saveImages.forEach(image -> {
+            regenerateImage(imageJPAToImageDTO.apply(image));
+            imageHistoryService.save(image);
+        });
+    }
+
+    @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
     }
@@ -224,6 +251,17 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                     byte[] content = ImcmsImageUtils.generateImage(imageDTO);
                     saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
                 });
+    }
+
+    private void regenerateImage(ImageDTO imageDTO){
+        final StoragePath path = StoragePath.get(SourceFile.FileType.FILE,
+                ImcmsImageUtils.imagesPath,
+                ImcmsConstants.IMAGE_GENERATED_FOLDER,
+                imageDTO.getGeneratedFilename());
+        if(!storageClient.exists(path)){
+            byte[] content = ImcmsImageUtils.generateImage(imageDTO);
+            saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+        }
     }
 
 	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
@@ -289,11 +327,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         });
     }
 
-    private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
-                              Function<Integer, Version> versionReceiver) {
-
-        final Version version = versionReceiver.apply(docId);
-
+    private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef, Version version) {
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final ImageJPA image = getImage(index, version, language, loopEntryRef);
 

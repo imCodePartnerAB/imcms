@@ -57,6 +57,11 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, int versionNo, String language) {
+        return defaultMenuService.getVisibleMenuItems(docId, menuIndex, versionNo, language);
+    }
+
+    @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         return documentLoaderCachingProxy.getPublicMenuItems(
                 getKey(menuIndex, docId, language),
@@ -73,6 +78,11 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex, int versionNo, String language, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, versionNo, language, attributes, treeKey, wrap);
+    }
+
+    @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       String attributes, String treeKey, String wrap) {
         return documentLoaderCachingProxy.getPublicMenuAsHtml(
@@ -85,6 +95,11 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
         return documentLoaderCachingProxy.getVisibleMenuAsHtml(
                 getKey(menuIndex, docId, null, true),
                 () -> defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex));
+    }
+
+    @Override
+    public String getVisibleMenuAsHtml(int docId, int menuIndex, int versionNo) {
+        return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, versionNo);
     }
 
     @Override
@@ -109,6 +124,12 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     public MenuDTO saveFrom(MenuDTO menuDTO) {
         documentLoaderCachingProxy.invalidateMenuItemsCacheBy(menuDTO);
         return defaultMenuService.saveFrom(menuDTO);
+    }
+
+    @Override
+    public void setAsWorkingVersion(Version version) {
+        documentLoaderCachingProxy.invalidateMenuItemsCacheBy(version);
+        defaultMenuService.setAsWorkingVersion(version);
     }
 
     @Override

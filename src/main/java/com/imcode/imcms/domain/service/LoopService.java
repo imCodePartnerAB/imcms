@@ -6,7 +6,6 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.Set;
-import java.util.function.Function;
 
 public interface LoopService extends VersionedContentService, DeleterByDocumentId {
 
@@ -14,9 +13,11 @@ public interface LoopService extends VersionedContentService, DeleterByDocumentI
 
     Loop getLoop(int loopIndex, int docId);
 
+    Loop getLoop(int loopIndex, int docId, int versionNo);
+
     Loop getLoopPublic(int loopIndex, int docId);
 
-    Loop getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter);
+    Loop getLoop(int loopIndex, int docId, Version version);
 
     void saveLoop(Loop loopDTO);
 

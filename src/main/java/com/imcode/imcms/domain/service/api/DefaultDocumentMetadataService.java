@@ -32,16 +32,23 @@ public class DefaultDocumentMetadataService implements DocumentMetadataService {
 
 	@Override
 	public List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, String languageCode) {
-		return getDocumentMetadataList(docId, languageCode, versionService::getDocumentWorkingVersion);
+		final Version version = versionService.getDocumentWorkingVersion(docId);
+		return getDocumentMetadataList(version, languageCode);
+	}
+
+	@Override
+	public List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, int versionNo, String languageCode) {
+		final Version version = versionService.findByDocIdAndNo(docId, versionNo);
+		return getDocumentMetadataList(version, languageCode);
 	}
 
 	@Override
 	public List<DocumentMetadataDTO> getPublicDocumentMetadataList(Integer docId, String languageCode) {
-		return getDocumentMetadataList(docId, languageCode, versionService::getLatestVersion);
+		final Version version = versionService.getLatestVersion(docId);
+		return getDocumentMetadataList(version, languageCode);
 	}
 
-	private List<DocumentMetadataDTO> getDocumentMetadataList(Integer docId, String languageCode, Function<Integer, Version> versionReceiver) {
-		final Version version = versionReceiver.apply(docId);
+	private List<DocumentMetadataDTO> getDocumentMetadataList(Version version, String languageCode) {
 		final LanguageJPA language = new LanguageJPA(languageService.findByCode(languageCode));
 
 		final Optional<CommonContentDTO> commonContentDTO = commonContentService.getByVersionAndLanguage(version, language);

@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
     ImageDTO getImage(ImageDTO dataHolder);
 
     ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
+
+    ImageDTO getImage(int docId, int index, int versionNo, String langCode, LoopEntryRef loopEntryRef);
 
     ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
