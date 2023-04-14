@@ -37,9 +37,20 @@
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
     <c:set var="imageContent">
-        <c:set var="image" value="${isEditMode || isPreviewMode
-     ? imageService.getImage(targetDocId, index, language, loopEntryRef)
-     : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
+
+        <c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
+        <c:choose>
+            <c:when test="${versionNo ne null and isPreviewMode}">
+                <c:set var="image" value="${imageService.getImage(targetDocId, index, versionNo, language, loopEntryRef)}"/>
+            </c:when>
+            <c:when test="${isEditMode or isPreviewMode}">
+                <c:set var="image" value="${imageService.getImage(targetDocId, index, language, loopEntryRef)}"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="image" value="${imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
+            </c:otherwise>
+        </c:choose>
+
         <c:set var="imgPath" value="${image.generatedFilePath}"/>
 
         <c:set var="classes" value=""/>

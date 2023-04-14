@@ -33,23 +33,27 @@
     <jsp:doBody var="tagContentBody"/>
     <c:set var="isTagBodyEmpty" value="${empty tagContentBody}"/>
 
-    <c:choose>
-        <c:when test="${isTagBodyEmpty}">
-            <c:set var="menuItems" value="${
-         (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap)
-         : menuService.getPublicMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap)
-         }" scope="request"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="menuItems" value="${
-        (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuItems(targetDocId, index, language)
-         : menuService.getPublicMenuItems(targetDocId, index, language)
-         }" scope="request"/>
-        </c:otherwise>
-    </c:choose>
-
+	<c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
+	<c:choose>
+		<c:when test="${versionNo ne null and isPreviewMode}">
+			<c:set var="menuItems"
+				   value="${isTagBodyEmpty ? menuService.getVisibleMenuAsHtml(targetDocId, index, versionNo, language, attributes, treeKey, wrap) :
+				   		menuService.getVisibleMenuItems(targetDocId, index, versionNo, language)}"
+				   scope="request"/>
+		</c:when>
+		<c:when test="${isEditMode or isPreviewMode}">
+			<c:set var="menuItems"
+				   value="${isTagBodyEmpty ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap) :
+						menuService.getVisibleMenuItems(targetDocId, index, language)}"
+				   scope="request"/>
+		</c:when>
+		<c:otherwise>
+			<c:set var="menuItems"
+				   value="${isTagBodyEmpty ? menuService.getPublicMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap) :
+				   		menuService.getPublicMenuItems(targetDocId, index, language)}"
+				   scope="request"/>
+		</c:otherwise>
+	</c:choose>
 
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 

@@ -28,10 +28,21 @@
 
 <c:if test="${!isDocNew || editOptions.editLoop}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
-    <c:set var="loop" value="${isEditMode || isPreviewMode
-            ? loopService.getLoop(index, targetDocId) : loopService.getLoopPublic(index, targetDocId)}"
-           scope="request"/>
-    <c:set var="loopIndex" value="${index}" scope="request"/>
+
+	<c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
+	<c:choose>
+		<c:when test="${versionNo ne null and isPreviewMode}">
+			<c:set var="loop" value="${loopService.getLoop(index, targetDocId, versionNo)}" scope="request"/>
+		</c:when>
+		<c:when test="${isEditMode or isPreviewMode}">
+			<c:set var="loop" value="${loopService.getLoop(index, targetDocId)}" scope="request"/>
+		</c:when>
+		<c:otherwise>
+			<c:set var="loop" value="${loopService.getLoopPublic(index, targetDocId)}" scope="request"/>
+		</c:otherwise>
+	</c:choose>
+
+	<c:set var="loopIndex" value="${index}" scope="request"/>
 
     <c:set var="loopContent" value=""/>
     <c:if test="${loop.entries.size() gt 0}">

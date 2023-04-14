@@ -8,10 +8,18 @@
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-<c:set var="metadataList" value="${isEditMode or isPreviewMode
-	? documentMetadataService.getDocumentMetadataList(targetDocId, language)
-	: documentMetadataService.getPublicDocumentMetadataList(targetDocId,language)
-}"/>
+<c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
+<c:choose>
+	<c:when test="${versionNo ne null and isPreviewMode}">
+		<c:set var="metadataList" value="${documentMetadataService.getDocumentMetadataList(targetDocId, versionNo, language)}"/>
+	</c:when>
+	<c:when test="${(isEditMode or isPreviewMode)}">
+		<c:set var="metadataList" value="${documentMetadataService.getDocumentMetadataList(targetDocId, language)}"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="metadataList" value="${documentMetadataService.getPublicDocumentMetadataList(targetDocId,language)}"/>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${not empty metadataList}">
 	<c:forEach items="${metadataList}" var="metadata">

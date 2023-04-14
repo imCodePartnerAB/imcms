@@ -25,9 +25,18 @@
 
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-    <c:set var="textField" value="${isEditMode or isPreviewMode
-         ? textService.getText(targetDocId, index, language, loopEntryRef)
-         : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
+    <c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
+    <c:choose>
+        <c:when test="${versionNo ne null and isPreviewMode}">
+            <c:set var="textField" value="${textService.getText(targetDocId, index, versionNo, language, loopEntryRef)}"/>
+        </c:when>
+        <c:when test="${(isEditMode or isPreviewMode)}">
+            <c:set var="textField" value="${textService.getText(targetDocId, index, language, loopEntryRef)}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="textField" value="${textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
+        </c:otherwise>
+    </c:choose>
 
     <c:set var="content" value="${textField.text}"/>
     <c:set var="filteringPolicy" value="${textField.htmlFilteringPolicy}"/>
