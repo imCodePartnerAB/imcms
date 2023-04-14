@@ -154,6 +154,46 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getText_When_PassedVersion_Expected_TextOfSpecifiedVersion(){
+        final int index = 1;
+        final LanguageJPA enLang = languages.get(0);
+
+        final Version version1 = latestVersion;
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        final String testTextWorkingVersion = "someText";
+        final String testTextVersion1 = "someTextVersion1";
+        final String testTextVersion2 = "someTextVersion2";
+
+        textDataInitializer.createText(index, enLang, workingVersion, testTextWorkingVersion, null);
+        final TextJPA textVersion1 = textDataInitializer.createText(index, enLang, version1, testTextVersion1, null);
+        textDataInitializer.createText(index, enLang, version2, testTextVersion2, null);
+
+        final Text expectedTextTextVersion1 = new TextDTO(textVersion1);
+        final Text receivedTextVersion1 = textService.getText(DOC_ID, index, version1.getNo(), enLang.getCode(), null);
+        assertEquals(expectedTextTextVersion1, receivedTextVersion1);
+    }
+
+    @Test
+    public void getText_When_noTextOfSpecificVersion_Expected_EmptyText(){
+        final int index = 1;
+        final LanguageJPA enLang = languages.get(0);
+
+        final Version version1WithoutText = latestVersion;
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        final String testTextWorkingVersion = "someText";
+        final String testTextVersion2 = "someTextVersion2";
+
+        textDataInitializer.createText(index, enLang, workingVersion, testTextWorkingVersion, null);
+        textDataInitializer.createText(index, enLang, version2, testTextVersion2, null);
+
+        final Text expectedEmptyText = new TextDTO(index, DOC_ID, enLang.getCode(), null, false);
+        final Text receivedTextVersion1 = textService.getText(DOC_ID, index, version1WithoutText.getNo(), enLang.getCode(), null);
+        assertEquals(expectedEmptyText, receivedTextVersion1);
+    }
+
+    @Test
     public void getTextsLikePublished_When_LikePublishedFalseAndLoopExistsAndTextHasWorkVersion_Expected_EmptyResult() {
         final int index = 1;
         final String testText = "testText";
@@ -671,5 +711,84 @@ public class TextServiceTest extends WebAppSpringTestConfig {
             final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
+    }
+
+    @Test
+    public void setAsWorkingVersion_Expect_CopyTextsFromSpecificVersionToWorkingVersion_And_AddEntryToHistory(){
+        final Version version1 = latestVersion;
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        String textWorkingVersion = "someText";
+        String textVersion1 = "someTextVersion1";
+        String textVersion2 = "someTextVersion2";
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final TextJPA workingText = new TextJPA();
+                workingText.setIndex(index);
+                workingText.setLanguage(language);
+                workingText.setText(textWorkingVersion);
+                workingText.setType(TEXT);
+                workingText.setVersion(workingVersion);
+
+                final TextJPA versionText1 = new TextJPA(workingText, version1);
+                versionText1.setText(textVersion1);
+
+                final TextJPA versionText2 = new TextJPA(workingText, version2);
+                versionText2.setText(textVersion2);
+
+                textRepository.saveAll(List.of(workingText));
+            }
+        }
+
+        final List<TextDTO> textsByWorkingVersion = textRepository.findByVersion(workingVersion).stream().map(TextDTO::new).collect(Collectors.toList());
+        final List<TextDTO> textsByVersion1 = textRepository.findByVersion(version1).stream().map(TextDTO::new).collect(Collectors.toList());
+        final List<TextDTO> textsByVersion2 = textRepository.findByVersion(version2).stream().map(TextDTO::new).collect(Collectors.toList());
+
+        assertTrue(textHistoryRepository.findAll().isEmpty());
+
+        textService.setAsWorkingVersion(version1);
+
+        final List<TextDTO> textsByWorkingVersionAfterReset  = textRepository.findByVersion(workingVersion).stream().map(TextDTO::new).collect(Collectors.toList());
+        final List<TextDTO> textsByVersion1AfterReset = textRepository.findByVersion(version1).stream().map(TextDTO::new).collect(Collectors.toList());
+        final List<TextDTO> textsByVersion2AfterReset  = textRepository.findByVersion(version2).stream().map(TextDTO::new).collect(Collectors.toList());
+
+        assertNotEquals(textsByWorkingVersion, textsByWorkingVersionAfterReset);
+        assertEquals(textsByWorkingVersionAfterReset, textsByVersion1);
+        assertEquals(textsByVersion1, textsByVersion1AfterReset);
+        assertEquals(textsByVersion2, textsByVersion2AfterReset);
+
+        assertEquals(textsByWorkingVersionAfterReset.size(), textHistoryRepository.findAll().size());
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_NoTextsOfSpecificVersion_Expect_WorkingVersionHasNoTexts(){
+        final Version version1 = latestVersion;
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        final LanguageJPA language = languages.get(0);
+
+        String textWorkingVersion = "someText";
+        String textVersion2 = "someTextVersion2";
+
+        final TextJPA workingText = new TextJPA();
+        workingText.setIndex(MIN_TEXT_INDEX);
+        workingText.setLanguage(language);
+        workingText.setText(textWorkingVersion);
+        workingText.setType(TEXT);
+        workingText.setVersion(workingVersion);
+
+        final TextJPA versionText2 = new TextJPA(workingText, version2);
+        versionText2.setText(textVersion2);
+
+        textRepository.saveAll(List.of(workingText, versionText2));
+
+        final List<TextJPA> textsByWorkingVersion = textRepository.findByVersion(workingVersion);
+        assertFalse(textsByWorkingVersion.isEmpty());
+
+        textService.setAsWorkingVersion(version1);
+
+        final List<TextJPA> textsByWorkingVersionAfterReset  = textRepository.findByVersion(workingVersion);
+        assertTrue(textsByWorkingVersionAfterReset.isEmpty());
     }
 }

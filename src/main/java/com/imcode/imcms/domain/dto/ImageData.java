@@ -11,6 +11,7 @@ import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public abstract class ImageData implements Documentable, Serializable {
     protected Format format;
     protected String generatedFilename;
     protected ImageCropRegionDTO cropRegion = new ImageCropRegionDTO();
+    @EqualsAndHashCode.Exclude
     protected ImageSource source = new NullImageSource();
     protected SpaceAroundDTO spaceAround = new SpaceAroundDTO();
     protected boolean compress;

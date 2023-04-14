@@ -110,6 +110,55 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getByDocIdAndVersion_Expected_DocumentFilesOfSpecificVersion() {
+        final String filename = "test_name.txt";
+        final byte[] content = "test text".getBytes();
+
+        final String filenameVersion1 = "test_name1.txt";
+        final byte[] contentVersion1 = "test text1".getBytes();
+
+        final DocumentFile documentFileVersion1 = documentFiles.get(0);
+        documentFileVersion1.setMultipartFile(new MockMultipartFile("files", filenameVersion1, null, contentVersion1));
+        documentFileService.saveAll(Collections.singletonList(documentFileVersion1), docId);
+
+        List<DocumentFileJPA> savedDocumentFiles = documentFileRepository.findAll();
+        assertEquals(1, savedDocumentFiles.size());
+
+        //Create new version and save document file with version
+        DocumentFileJPA versionedDocumentFile = savedDocumentFiles.get(0);
+        int publishVersionNo = versionService.create(docId, 1).getNo();
+        versionedDocumentFile.setVersionIndex(publishVersionNo);
+        documentFileRepository.save(versionedDocumentFile);
+
+        final DocumentFile documentFileWorkingVersion = documentFiles.get(1);
+        documentFileWorkingVersion.setMultipartFile(new MockMultipartFile("files", filename, null, content));
+        documentFileService.saveAll(Collections.singletonList(documentFileWorkingVersion), docId);
+
+        final List<DocumentFile> byDocIdAndVersion = documentFileService.getByDocIdAndVersion(docId, publishVersionNo);
+
+        assertEquals(byDocIdAndVersion.size(), 1);
+        assertEquals(new DocumentFileDTO(versionedDocumentFile), byDocIdAndVersion.get(0));
+    }
+
+    @Test
+    public void getByDocIdAndVersion_When_NoDocumentFilesWithSpecificVersion_Expected_EmptyList() {
+        final String filename = "test_name.txt";
+        final byte[] content = "test text".getBytes();
+
+        final DocumentFile documentFileVersion1 = documentFiles.get(0);
+        documentFileVersion1.setMultipartFile(new MockMultipartFile("files", filename, null, content));
+        documentFileService.saveAll(Collections.singletonList(documentFileVersion1), docId);
+
+        List<DocumentFileJPA> savedDocumentFiles = documentFileRepository.findAll();
+        assertEquals(1, savedDocumentFiles.size());
+
+        int publishVersionNo = versionService.create(docId, 1).getNo();
+
+        final List<DocumentFile> byDocIdAndVersion = documentFileService.getByDocIdAndVersion(docId, publishVersionNo);
+        assertTrue(byDocIdAndVersion.isEmpty());
+    }
+
+    @Test
     public void publishDocumentFiles() {
         final DocumentFile futurePublicFile = documentFiles.get(0);
         futurePublicFile.setDefaultFile(true); // one has to be default
@@ -246,7 +295,7 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveAll_When_DocumentFileReplaced_And_DocumentVersionHasPreviosDocumentFile_And_NewMultipartFileSet_Expect_PreviosFileLeft_And_NewFileSaved() throws IOException {
+    public void saveAll_When_DocumentFileReplaced_And_DocumentVersionHasPreviousDocumentFile_And_NewMultipartFileSet_Expect_PreviousFileLeft_And_NewFileSaved() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
         StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
@@ -289,7 +338,7 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveAll_When_ListContaintsOldAndNewDocumentFiles_And_NewMultipartFileSet_Expect_OldFileLeft_And_NewFileSaved() throws IOException {
+    public void saveAll_When_ListContainsOldAndNewDocumentFiles_And_NewMultipartFileSet_Expect_OldFileLeft_And_NewFileSaved() throws IOException {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
         StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
@@ -326,7 +375,71 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteByDocId_Expect_DocumentFilesDeleted() throws IOException {
+    public void setAsWorkingVersion_Expected_CopyDocumentFilesFromSpecificVersionToWorkingVersion() throws IOException {
+        final String filename = "test_name.txt";
+        final byte[] content = "test text".getBytes();
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
+
+        final String filenameVersion1 = "test_name1.txt";
+        final byte[] contentVersion1 = "test text1".getBytes();
+        StoragePath testFileVersion1Path = StoragePath.get(FILE, filesPath, filenameVersion1);
+
+        final DocumentFile documentFileVersion1 = documentFiles.get(0);
+        documentFileVersion1.setMultipartFile(new MockMultipartFile("files", filenameVersion1, null, contentVersion1));
+        documentFileService.saveAll(Collections.singletonList(documentFileVersion1), docId);
+
+        List<DocumentFileJPA> savedDocumentFiles = documentFileRepository.findAll();
+        assertEquals(1, savedDocumentFiles.size());
+
+        //Create new version and save document file with version
+        DocumentFileJPA versionedDocumentFile = savedDocumentFiles.get(0);
+        Version publishVersion = versionService.create(docId, 1);
+        versionedDocumentFile.setVersionIndex(publishVersion.getNo());
+        documentFileRepository.save(versionedDocumentFile);
+
+        final DocumentFile documentFileWorkingVersion = documentFiles.get(1);
+        documentFileWorkingVersion.setMultipartFile(new MockMultipartFile("files", filename, null, content));
+        documentFileService.saveAll(Collections.singletonList(documentFileWorkingVersion), docId);
+
+        final List<DocumentFileJPA> docFileBeforeReset = documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
+
+        documentFileService.setAsWorkingVersion(publishVersion);
+
+        final List<DocumentFileJPA> docFileAfterReset = documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
+
+        //check the previous file has been deleted (because working and previous versions don't have it)
+        assertNotEquals(docFileBeforeReset, docFileAfterReset);
+        //check the file from version exists
+        assertFalse(storageClient.exists(testFilePath));
+
+        assertTrue(storageClient.exists(testFileVersion1Path));
+        try(final StorageFile testFile = storageClient.getFile(testFileVersion1Path)){
+            assertArrayEquals(contentVersion1, testFile.getContent().readAllBytes());
+        }
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_noDocumentFilesWithSpecificVersion_Expected_WorkingVersionHasNoFiles() {
+        final String filename = "test_name.txt";
+        final byte[] content = "test text".getBytes();
+        StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);
+
+        final DocumentFile documentFileVersion1 = documentFiles.get(0);
+        documentFileVersion1.setMultipartFile(new MockMultipartFile("files", filename, null, content));
+        documentFileService.saveAll(Collections.singletonList(documentFileVersion1), docId);
+
+        List<DocumentFileJPA> savedDocumentFiles = documentFileRepository.findAll();
+        assertEquals(1, savedDocumentFiles.size());
+
+        Version publishVersion = versionService.create(docId, 1);
+        documentFileService.setAsWorkingVersion(publishVersion);
+
+        assertTrue(documentFileRepository.findAll().isEmpty());
+        assertFalse(storageClient.exists(testFilePath));
+    }
+
+    @Test
+    public void deleteByDocId_Expect_DocumentFilesDeleted() {
         final String filename = "test_name.txt";
         final byte[] content = "test text".getBytes();
         StoragePath testFilePath = StoragePath.get(FILE, filesPath, filename);

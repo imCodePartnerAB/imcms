@@ -157,6 +157,119 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getImage_When_PassedVersion_Expected_ImageOfSpecificVersion_And_GenerateImage() throws IOException {
+        final Version version1 = versionDataInitializer.createData(1, TEST_DOC_ID);
+
+        final LanguageJPA enLanguage = languageRepository.findByCode("en");
+
+        final String filePathWorkingVersion = "test-image.jpg";
+        final String filePathVersion1 = "test-image1.png";
+
+        final DeleteOnCloseStorageFile imageFileWorkingVersion = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathWorkingVersion), storageClient);
+        final DeleteOnCloseStorageFile imageFileVersion1 = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathVersion1), storageClient);
+
+        try(imageFileWorkingVersion; imageFileVersion1) {
+            imageFileWorkingVersion.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
+            imageFileVersion1.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
+
+            final ImageDTO imageDTOVersion1 = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePathVersion1);
+                img.setFormat(Format.PNG);
+                img.setLangCode(enLanguage.getCode());
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
+            imageService.saveImage(imageDTOVersion1);
+
+            imageService.createVersionedContent(workingVersion, version1);
+
+            final ImageDTO imageDTOWorkingVersion = new ImageDTO(imageDTOVersion1);
+            imageDTOWorkingVersion.setPath(filePathWorkingVersion);
+            imageDTOWorkingVersion.setFormat(Format.JPEG);
+            imageDTOWorkingVersion.setName("img");
+            imageService.saveImage(imageDTOWorkingVersion);
+
+            final ImageDTO expectedImageVersion1 =
+                    imageJPAToImageDTO.apply(imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version1, enLanguage, TEST_IMAGE_INDEX));
+            final ImageDTO receivedImageVersion1 =
+                    imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, version1.getNo(), enLanguage.getCode(), null);
+
+            assertEquals(expectedImageVersion1, receivedImageVersion1);
+
+            // delete a generated image to check generation
+            final StoragePath imageVersion1Path = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, receivedImageVersion1.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageVersion1Path));
+            storageClient.delete(imageVersion1Path, true);
+
+            imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, version1.getNo(), enLanguage.getCode(), null);
+            assertTrue(storageClient.exists(imageVersion1Path));
+
+            // check generation while obtaining the image of a specific version
+            final StoragePath imageWorkingVersionPath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, imageDTOWorkingVersion.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageWorkingVersionPath));
+            storageClient.delete(imageWorkingVersionPath, true);
+
+            storageClient.delete(imageVersion1Path, true);
+        }
+    }
+
+    @Test
+    public void getImage_When_NoImageOfSpecificVersion_Expected_EmptyImage() throws IOException {
+        final Version version1 = versionDataInitializer.createData(1, TEST_DOC_ID);
+
+        final LanguageJPA enLanguage = languageRepository.findByCode("en");
+        final String filePathWorkingVersion = "test-image.jpg";
+        final File testImageFileWorkingVersion = testImageFile;
+
+        final DeleteOnCloseStorageFile imageFileWorkingVersion = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathWorkingVersion), storageClient);
+        try(imageFileWorkingVersion) {
+            imageFileWorkingVersion.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFileWorkingVersion)));
+
+            final ImageDTO imageDTOWorkingVersion = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePathWorkingVersion);
+                img.setFormat(Format.PNG);
+                img.setLangCode(enLanguage.getCode());
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
+            imageService.saveImage(imageDTOWorkingVersion);
+
+            imageService.setAsWorkingVersion(version1);
+
+            final ImageDTO expectedEmptyImage = new ImageDTO(TEST_IMAGE_INDEX, TEST_DOC_ID, null, enLanguage.getCode());
+            final ImageDTO receivedImage = imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, version1.getNo(), enLanguage.getCode(), null);
+
+            assertEquals(expectedEmptyImage, receivedImage);
+
+            final StoragePath imageWorkingVersionPath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, imageDTOWorkingVersion.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageWorkingVersionPath));
+            storageClient.delete(imageWorkingVersionPath, true);
+        }
+    }
+
+    @Test
     public void getImages_When_ImageNotInLoopEntryRef_Expected_EqualResult() {
         final Integer createdDocId = documentDataInitializer.createData().getId();
 
@@ -629,6 +742,126 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
             assertTrue(storageClient.exists(generatedImagePath));
             storageClient.delete(generatedImagePath, true);
 
+        }
+    }
+
+    @Test
+    public void setAsWorkingVersion_Expect_CopyTextsFromSpecificVersionToWorkingVersion_And_GenerateImage_And_AddEntryToHistory() throws IOException {
+        final Version newVersion1 = versionDataInitializer.createData(1, TEST_DOC_ID);
+
+        final LanguageJPA enLanguage = languageRepository.findByCode("en");
+
+        final String filePathWorkingVersion = "test-image.jpg";
+        final String filePathVersion1 = "test-image1.png";
+
+        final DeleteOnCloseStorageFile imageFileWorkingVersion = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathWorkingVersion), storageClient);
+        final DeleteOnCloseStorageFile imageFileVersion1 = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathVersion1), storageClient);
+
+        try(imageFileWorkingVersion; imageFileVersion1) {
+            imageFileWorkingVersion.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
+            imageFileVersion1.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFile)));
+
+            final ImageDTO imageDTOVersion1 = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePathVersion1);
+                img.setFormat(Format.PNG);
+                img.setLangCode(enLanguage.getCode());
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
+            imageService.saveImage(imageDTOVersion1);
+
+            imageService.createVersionedContent(workingVersion, newVersion1);
+
+            final ImageDTO imageDTOWorkingVersion = new ImageDTO(imageDTOVersion1);
+            imageDTOWorkingVersion.setPath(filePathWorkingVersion);
+            imageDTOWorkingVersion.setFormat(Format.JPEG);
+            imageDTOWorkingVersion.setName("img");
+            imageService.saveImage(imageDTOWorkingVersion);
+
+            final ImageDTO imageWorkingVersionBeforeReset =
+                    imageJPAToImageDTO.apply(imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(workingVersion, enLanguage, TEST_IMAGE_INDEX));
+            final ImageDTO imageVersion1BeforeReset =
+                    imageJPAToImageDTO.apply(imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(newVersion1, enLanguage, TEST_IMAGE_INDEX));
+
+            assertEquals(2, imageHistoryService.getAll(imageWorkingVersionBeforeReset).size());
+
+            imageService.setAsWorkingVersion(newVersion1);
+
+            final ImageDTO imageWorkingVersionAfterReset =
+                    imageJPAToImageDTO.apply(imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(workingVersion, enLanguage, TEST_IMAGE_INDEX));
+            final ImageDTO imageVersion1AfterReset =
+                    imageJPAToImageDTO.apply(imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(newVersion1, enLanguage, TEST_IMAGE_INDEX));
+
+            assertNotEquals(imageWorkingVersionBeforeReset, imageWorkingVersionAfterReset);
+            assertEquals(imageVersion1AfterReset, imageWorkingVersionAfterReset);
+            assertEquals(imageVersion1BeforeReset, imageVersion1AfterReset);
+
+            assertEquals(3, imageHistoryService.getAll(imageWorkingVersionAfterReset).size());
+
+            final StoragePath imageWorkingVersionPath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, imageDTOWorkingVersion.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageWorkingVersionPath));
+            storageClient.delete(imageWorkingVersionPath, true);
+
+            final StoragePath imageVersion1Path = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, imageDTOVersion1.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageVersion1Path));
+            storageClient.delete(imageVersion1Path, true);
+        }
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_NoImageOfSpecificVersion_Expect_WorkingVersionHasNoImage() throws IOException {
+        final Version version1 = versionDataInitializer.createData(1, TEST_DOC_ID);
+
+        final LanguageJPA enLanguage = languageRepository.findByCode("en");
+        final String filePathWorkingVersion = "test-image.jpg";
+        final File testImageFileWorkingVersion = testImageFile;
+
+        final DeleteOnCloseStorageFile imageFileWorkingVersion = new DeleteOnCloseStorageFile(StoragePath.get(FILE, imagesPath, filePathWorkingVersion), storageClient);
+        try(imageFileWorkingVersion) {
+            imageFileWorkingVersion.put(new ByteArrayInputStream(FileUtils.readFileToByteArray(testImageFileWorkingVersion)));
+
+            final ImageDTO imageDTOWorkingVersion = Value.with(new ImageDTO(), img -> {
+                img.setIndex(TEST_IMAGE_INDEX);
+                img.setDocId(TEST_DOC_ID);
+                img.setPath(filePathWorkingVersion);
+                img.setFormat(Format.PNG);
+                img.setLangCode(enLanguage.getCode());
+                img.setName("img1");
+                img.setWidth(100);
+                img.setHeight(100);
+                img.setAlternateText("");
+                img.setLinkUrl("");
+                img.setBorder(0);
+                img.setAlign("");
+                img.setLowResolutionUrl("");
+                img.setTarget("");
+                img.setType(0);
+                img.setRotateAngle(0);
+            });
+            imageService.saveImage(imageDTOWorkingVersion);
+
+            final ImageJPA imageWorkingVersionBeforeReset = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(workingVersion, enLanguage, TEST_IMAGE_INDEX);
+            assertNotNull(imageWorkingVersionBeforeReset);
+
+            imageService.setAsWorkingVersion(version1);
+
+            final ImageJPA imageWorkingVersionAfterReset = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(workingVersion, enLanguage, TEST_IMAGE_INDEX);
+            assertNull(imageWorkingVersionAfterReset);
+
+            final StoragePath imageWorkingVersionPath = StoragePath.get(FILE, imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER, imageDTOWorkingVersion.getGeneratedFilename());
+            assertTrue(storageClient.exists(imageWorkingVersionPath));
+            storageClient.delete(imageWorkingVersionPath, true);
         }
     }
 

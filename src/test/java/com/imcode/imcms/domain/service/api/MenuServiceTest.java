@@ -12,6 +12,7 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.enums.TypeSort;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -20,7 +21,6 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.enums.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -35,14 +35,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.imcode.imcms.enums.TypeSort.*;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static com.imcode.imcms.enums.TypeSort.MANUAL;
-import static com.imcode.imcms.enums.TypeSort.TREE_SORT;
-import static imcode.server.ImcmsConstants.ENG_CODE;
-import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
-import static imcode.server.ImcmsConstants.SWE_CODE;
-import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
+import static imcode.server.ImcmsConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -830,6 +826,33 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getVisibleMenuItems_When_PassedVersion_Expected_MenuItemsOfSpecificVersion(){
+        final int index = 1;
+
+        final int version1 = 1;
+        final int version2 = 2;
+
+        menuDataInitializer.createData(true, index, WORKING_VERSION_NO, DOC_ID, String.valueOf(ALPHABETICAL_ASC), 3);
+        final MenuDTO menuVersion1 = menuDataInitializer.createData(true, index, version1, DOC_ID, String.valueOf(TREE_SORT), 5);
+        menuDataInitializer.createData(true, index, version2, DOC_ID, String.valueOf(PUBLISHED_DATE_ASC), 7);
+
+        assertEquals(menuVersion1.getMenuItems(), menuService.getVisibleMenuItems(DOC_ID, index, version1, Imcms.getUser().getLanguage()));
+    }
+
+    @Test
+    public void getVisibleMenuItems_When_NoMenuItemsOfSpecificVersion_Expected_EmptyList(){
+        final int index = 1;
+
+        final int version1 = 1;
+        final int version2 = 2;
+
+        menuDataInitializer.createData(true, index, WORKING_VERSION_NO, DOC_ID, String.valueOf(ALPHABETICAL_ASC), 3);
+        menuDataInitializer.createData(true, index, version2, DOC_ID, String.valueOf(PUBLISHED_DATE_ASC), 7);
+
+        assertTrue(menuService.getVisibleMenuItems(DOC_ID, index, version1, Imcms.getUser().getLanguage()).isEmpty());
+    }
+
+    @Test
     public void getMenuItems_When_UserSetEnLangAndMenuDisableSv_TypeSortTREE_SORT_ShowModeSHOW_ON_DEFAULT_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1, String.valueOf(TREE_SORT), 3);
         final String langUser = Imcms.getUser().getLanguage();
@@ -1035,6 +1058,85 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(menuDTO.getMenuItems().size(), resultMenuItems.size());
         resultMenu.getMenuItems().forEach(item -> assertTrue(item.getChildren().isEmpty()));
 
+    }
+
+    @Test
+    public void setAsWorkingVersion_Expected_CopyMenuFromSpecificVersionToWorkingVersion(){
+        final int index = 1;
+
+        final int version1 = 1;
+        final int version2 = 2;
+
+        menuDataInitializer.createData(true, index, WORKING_VERSION_NO, DOC_ID, String.valueOf(ALPHABETICAL_ASC), 3);
+        menuDataInitializer.createData(true, index, version1, DOC_ID, String.valueOf(TREE_SORT), 5);
+        menuDataInitializer.createData(true, index, version2, DOC_ID, String.valueOf(PUBLISHED_DATE_ASC), 7);
+
+        final List<Menu> menuWorkingVersion = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO));
+        final List<Menu> menuVersion1 = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+        final List<Menu> menuVersion2 = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, version2));
+
+        menuService.setAsWorkingVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+
+        final List<Menu> menuWorkingVersionAfterReset = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO));
+        final List<Menu> menuVersion1AfterReset = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+        final List<Menu> menuVersion2AfterReset = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, version2));
+
+        assertFalse(equalsIgnoreIdAndVersion(menuWorkingVersion, menuWorkingVersionAfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(menuVersion1, menuWorkingVersionAfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(menuVersion1, menuVersion1AfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(menuVersion2, menuVersion2AfterReset));
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_NoMenuWithSpecificVersion_Expected_WorkingVersionHasNoMenu(){
+        final int index = 1;
+
+        final int version1 = 1;
+        final int version2 = 2;
+
+        menuDataInitializer.createData(true, index, WORKING_VERSION_NO, DOC_ID, String.valueOf(ALPHABETICAL_ASC), 3);
+        versionDataInitializer.createData(version1, DOC_ID);
+        menuDataInitializer.createData(true, index, version2, DOC_ID, String.valueOf(PUBLISHED_DATE_ASC), 7);
+
+        final List<Menu> menuWorkingVersion = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO));
+        assertFalse(menuWorkingVersion.isEmpty());
+
+        menuService.setAsWorkingVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+
+        final List<Menu> menuWorkingVersionAfterReset = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO));
+        assertTrue(menuWorkingVersionAfterReset.isEmpty());
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_SpecificVersionHasMenuWithoutItems_Expected_WorkingVersionHasMenuWithoutItems(){
+        final int index = 1;
+
+        final int version1 = 1;
+        final int version2 = 2;
+
+        menuDataInitializer.createData(true, index, WORKING_VERSION_NO, DOC_ID, String.valueOf(ALPHABETICAL_ASC), 3);
+        menuDataInitializer.createData(true, index, version1, DOC_ID, String.valueOf(TREE_SORT), 0);
+        menuDataInitializer.createData(true, index, version2, DOC_ID, String.valueOf(PUBLISHED_DATE_ASC), 7);
+
+        final List<Menu> menuVersion1 = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+
+        menuService.setAsWorkingVersion(versionService.findByDocIdAndNo(DOC_ID, version1));
+
+        final List<Menu> menuVersion1AfterReset = menuRepository.findByVersion(versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO));
+
+        assertTrue(equalsIgnoreIdAndVersion(menuVersion1, menuVersion1AfterReset));
+    }
+
+    private boolean equalsIgnoreIdAndVersion(List<Menu> a, List<Menu> b){
+        Function<Menu, MenuDTO> mapMenuToMenuDTO = menu -> {
+            MenuDTO menuDTO = menuToMenuDTO.apply(menu);
+            menuDTO.setMenuItems(menuService.getSortedMenuItems(menuDTO, null));
+            return menuDTO;
+        };
+
+        List<MenuDTO> aDTO = a.stream().map(mapMenuToMenuDTO).collect(Collectors.toList());
+        List<MenuDTO> bDTO = b.stream().map(mapMenuToMenuDTO).collect(Collectors.toList());
+        return aDTO.equals(bDTO);
     }
 
     private MenuDTO getCreatedNewMenu() {

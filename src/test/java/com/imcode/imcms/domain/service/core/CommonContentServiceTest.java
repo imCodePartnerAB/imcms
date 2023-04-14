@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
@@ -139,7 +140,128 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete() {
+    public void setAsWorking_Expected_CopyCommonDataFromSpecificVersionToWorkingVersion(){
+        final int version1 = LATEST_VERSION_INDEX;
+        final int version2 = 2;
+
+        versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+        versionDataInitializer.createData(version1, DOC_ID);
+        versionDataInitializer.createData(version2, DOC_ID);
+
+        final String aliasText = "aliasText";
+        final String menuText = "menuText";
+        final String headline = "headlineText";
+
+        final List<LanguageDTO> data = languageDataInitializer.createData();
+
+        data.forEach(languageDTO -> {
+            CommonContentJPA content = new CommonContentJPA();
+            content.setVersionNo(WORKING_VERSION_INDEX);
+            content.setEnabled(true);
+            content.setAlias(aliasText);
+            content.setMenuText(menuText);
+            content.setHeadline(headline);
+            content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
+            content.setDocId(DOC_ID);
+            content.setLanguage(languageDTO);
+
+            CommonContentJPA contentVersion1 = new CommonContentJPA(content);
+            contentVersion1.setVersionNo(version1);
+            contentVersion1.setAlias(aliasText + version1);
+            contentVersion1.setMenuText(menuText + version1);
+            contentVersion1.setHeadline(headline + version1);
+
+            CommonContentJPA contentVersion2 = new CommonContentJPA(content);
+            contentVersion2.setVersionNo(version2);
+            contentVersion2.setAlias(aliasText + version2);
+            contentVersion2.setMenuText(menuText + version2);
+            contentVersion2.setHeadline(headline + version2);
+
+            commonContentRepository.saveAll(List.of(content, contentVersion1, contentVersion2));
+        });
+
+        final List<CommonContentJPA> commonContentDTOWorkingVersion = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
+        final List<CommonContentJPA> commonContentDTOVersion1 = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version1);
+        final List<CommonContentJPA> commonContentDTOVersion2 = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version2);
+
+        commonContentService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(DOC_ID, version1));
+
+        final List<CommonContentJPA> commonContentDTOWorkingVersionAfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
+        final List<CommonContentJPA> commonContentDTOVersion1AfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version1);
+        final List<CommonContentJPA> commonContentDTOVersion2AfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version2);
+
+        assertFalse(equalsIgnoreIdAndVersion(commonContentDTOWorkingVersion, commonContentDTOWorkingVersionAfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(commonContentDTOVersion1, commonContentDTOVersion1AfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(commonContentDTOVersion2, commonContentDTOVersion2AfterReset));
+        assertTrue(equalsIgnoreIdAndVersion(commonContentDTOVersion1, commonContentDTOWorkingVersionAfterReset));
+    }
+
+    @Test
+    public void setAsWorking_When_noCommonDataWithSpecificVersion_Expected_WorkingVersionHasNoCommonData(){
+        final int version1 = LATEST_VERSION_INDEX;
+        final int version2 = 2;
+
+        versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+        versionDataInitializer.createData(version1, DOC_ID);
+        versionDataInitializer.createData(version2, DOC_ID);
+
+        final String aliasText = "aliasText";
+        final String menuText = "menuText";
+        final String headline = "headlineText";
+
+        final List<LanguageDTO> data = languageDataInitializer.createData();
+
+        data.forEach(languageDTO -> {
+            CommonContentJPA content = new CommonContentJPA();
+            content.setVersionNo(WORKING_VERSION_INDEX);
+            content.setEnabled(true);
+            content.setAlias(aliasText);
+            content.setMenuText(menuText);
+            content.setHeadline(headline);
+            content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
+            content.setDocId(DOC_ID);
+            content.setLanguage(languageDTO);
+
+            CommonContentJPA contentVersion2 = new CommonContentJPA(content);
+            contentVersion2.setVersionNo(version2);
+            contentVersion2.setAlias(aliasText + version2);
+            contentVersion2.setMenuText(menuText + version2);
+            contentVersion2.setHeadline(headline + version2);
+
+            commonContentRepository.saveAll(List.of(content, contentVersion2));
+        });
+
+        final List<CommonContentJPA> commonContentDTOWorkingVersion = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
+        assertFalse(commonContentDTOWorkingVersion.isEmpty());
+
+        commonContentService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(DOC_ID, version1));
+
+        final List<CommonContentJPA> commonContentDTOWorkingVersionAfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
+        assertTrue(commonContentDTOWorkingVersionAfterReset.isEmpty());
+    }
+
+    private boolean equalsIgnoreIdAndVersion(List<CommonContentJPA> a, List<CommonContentJPA> b) {
+        List<CommonContentDTO> aDTO = a.stream()
+                .map(contentJPA -> {
+                    CommonContentDTO content = new CommonContentDTO(contentJPA);
+                    content.setId(null);
+                    content.setVersionNo(null);
+                    return content;
+                }).collect(Collectors.toList());
+
+        List<CommonContentDTO> bDTO = b.stream()
+                .map(contentJPA -> {
+                    CommonContentDTO content = new CommonContentDTO(contentJPA);
+                    content.setId(null);
+                    content.setVersionNo(null);
+                    return content;
+                }).collect(Collectors.toList());
+
+        return aDTO.equals(bDTO);
+    }
+
+    @Test
+    public void deleteByDocId() {
         final Version version = new Version();
         version.setDocId(DOC_ID);
         version.setNo(WORKING_VERSION_INDEX);
@@ -149,6 +271,32 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
         commonContentService.deleteByDocId(DOC_ID);
         assertTrue(commonContentRepository.findByVersion(version).isEmpty());
+    }
+
+    @Test
+    public void deleteByDocId_When_CommonContentHasMetadata_Expect_DeleteCascadeMetadata(){
+        final Version workingVersion = versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+
+        final List<LanguageDTO> data = languageDataInitializer.createData();
+
+        data.forEach(languageDTO -> {
+            CommonContentJPA content = new CommonContentJPA();
+            content.setVersionNo(WORKING_VERSION_INDEX);
+            content.setEnabled(true);
+            content.setAlias("alias" + languageDTO.getCode());
+            content.setMenuText("menuText" + languageDTO.getCode());
+            content.setHeadline("headline" + languageDTO.getCode());
+            content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
+            content.setDocId(DOC_ID);
+            content.setLanguage(languageDTO);
+
+            commonContentRepository.save(content);
+        });
+
+        assertFalse(commonContentRepository.findByVersion(workingVersion).isEmpty());
+
+        commonContentService.deleteByDocId(DOC_ID);
+        assertTrue(commonContentRepository.findByVersion(workingVersion).isEmpty());
     }
 
     @Test

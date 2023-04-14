@@ -98,6 +98,51 @@ public class LoopServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getLoop_When_PassedVersion_Expected_LoopOfSpecificVersion(){
+        final int index = 2;
+
+        final int workingVersion = TEST_VERSION_NO;
+        final int version1 = 1;
+        final int version2 = 2;
+
+        final Loop loopVersion = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1)));
+        loopDataInitializer.createData(loopVersion, workingVersion);
+        final Loop loopVersionVersion1 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2)));
+        loopDataInitializer.createData(loopVersionVersion1, version1);
+        final Loop loopVersionVersion2 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        ));
+        loopDataInitializer.createData(loopVersionVersion2, version2);
+
+        final Loop receivedLoopVersion1 = loopService.getLoop(index, TEST_DOC_ID, version1);
+
+        assertEquals(loopVersionVersion1, receivedLoopVersion1);
+    }
+
+    @Test
+    public void getLoop_When_NoLoopWithSpecificVersion_Expected_EmptyLoop(){
+        final int index = 2;
+
+        final int workingVersion = TEST_VERSION_NO;
+        final int version1 = 1;
+        final int version2 = 2;
+
+        final Loop loopVersion = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1)));
+        loopDataInitializer.createData(loopVersion, workingVersion);
+        final Loop loopVersionVersion2 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        ));
+        loopDataInitializer.createData(loopVersionVersion2, version2);
+
+        final Loop expectedLoop = LoopDTO.empty(TEST_DOC_ID, index);
+        final Loop receivedLoopVersion1 = loopService.getLoop(index, TEST_DOC_ID, version1);
+        assertEquals(expectedLoop, receivedLoopVersion1);
+    }
+
+    @Test
     public void getLoopPublic_Expect_correctFieldsData() {
         final Loop loop = loopService.getLoopPublic(TEST_LOOP_INDEX, TEST_DOC_ID);
         assertEquals(TEST_LOOP_DTO_LATEST_VERSION, loop);
@@ -162,6 +207,60 @@ public class LoopServiceTest extends WebAppSpringTestConfig {
         final Loop savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertEquals(savedLoop, loopDTO);
+    }
+
+    @Test
+    public void setAsWorkingVersion_Expected_CopyLoopsFromSpecificVersionToWorkingVersion(){
+        final int index = 2;
+
+        final int workingVersion = TEST_VERSION_NO;
+        final int version1 = 1;
+        final int version2 = 2;
+
+        final Loop loopWorkingVersion = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1)));
+        loopDataInitializer.createData(loopWorkingVersion, workingVersion);
+        final Loop loopVersion1 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2)
+        ));
+        loopDataInitializer.createData(loopVersion1, version1);
+        final Loop loopVersion2 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        ));
+        loopDataInitializer.createData(loopVersion2, version2);
+
+        loopService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(TEST_DOC_ID, version1));
+
+        final Loop loopWorkingVersionAfterReset = new LoopDTO(loopRepository.findByVersionAndIndex(versionRepository.findByDocIdAndNo(TEST_DOC_ID, workingVersion), index));
+        final Loop loopVersion1AfterReset = new LoopDTO(loopRepository.findByVersionAndIndex(versionRepository.findByDocIdAndNo(TEST_DOC_ID, version1), index));
+        final Loop loopVersion2AfterReset = new LoopDTO(loopRepository.findByVersionAndIndex(versionRepository.findByDocIdAndNo(TEST_DOC_ID, version2), index));
+
+        assertNotEquals(loopWorkingVersion, loopWorkingVersionAfterReset);
+        assertEquals(loopVersion1, loopWorkingVersionAfterReset);
+        assertEquals(loopVersion1, loopVersion1AfterReset);
+        assertEquals(loopVersion2, loopVersion2AfterReset);
+    }
+
+    @Test
+    public void setAsWorkingVersion_When_noLoopWithSpecificVersion_Expected_WorkingVersionHasNoLoop(){
+        final int index = 2;
+
+        final int workingVersion = TEST_VERSION_NO;
+        final int version1 = 1;
+        final int version2 = 2;
+
+        final Loop loopWorkingVersion = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1)));
+        loopDataInitializer.createData(loopWorkingVersion, workingVersion);
+        final Loop loopVersion2 = new LoopDTO(TEST_DOC_ID, index, List.of(LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        ));
+        loopDataInitializer.createData(loopVersion2, version2);
+
+        loopService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(TEST_DOC_ID, version1));
+
+        final Loop loopWorkingVersionAfterReset = loopRepository.findByVersionAndIndex(versionRepository.findByDocIdAndNo(TEST_DOC_ID, workingVersion), index);
+        assertNull(loopWorkingVersionAfterReset);
     }
 
     @Test
