@@ -121,7 +121,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
                 .findFirst()
                 .filter(fileDocFileFilter)
                 .ifPresent(documentFileDTO -> {
-                    final InputStreamSource inputStreamSource = documentFileService.getFileDocumentInputStreamSource(documentFileDTO);
+                    final InputStreamSource inputStreamSource = documentFileDTO.getInputStreamSource();
 
                     if (inputStreamSource instanceof EmptyInputStreamSource) {
                         return;

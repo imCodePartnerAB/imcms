@@ -39,6 +39,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
         documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id");
         documentFileJPA.setFilename("test_name");
+        documentFileJPA.setOriginalFilename("test_name");
         documentFileJPA.setMimeType("test");
 
         createdDocumentFile = documentFileRepository.save(documentFileJPA);
@@ -66,6 +67,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
             documentFileJPA.setVersionIndex((value % 2 == 0) ? firstVersionIndex : lastVersionIndex);
             documentFileJPA.setFileId("test_id" + value);
             documentFileJPA.setFilename("test_name" + value);
+            documentFileJPA.setOriginalFilename("test_name" + value);
             documentFileJPA.setMimeType("test" + value);
 
             documentFileRepository.save(documentFileJPA);
@@ -116,6 +118,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
             documentFileJPA.setVersionIndex((value % 2 == 0) ? firstVersionIndex : lastVersionIndex);
             documentFileJPA.setFileId("test_id" + value);
             documentFileJPA.setFilename("test_name" + value);
+            documentFileJPA.setOriginalFilename("test_name" + value);
             documentFileJPA.setMimeType("test" + value);
 
             documentFileRepository.save(documentFileJPA);
@@ -129,6 +132,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
             documentFileJPA.setVersionIndex(versionIndex);
             documentFileJPA.setFileId("test_id");
             documentFileJPA.setFilename(specialFileName);
+            documentFileJPA.setOriginalFilename(specialFileName);
             documentFileJPA.setMimeType("test");
             documentFileJPA.setDefaultFile(true); // main thing for this test
 
@@ -172,6 +176,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
                 documentFileJPA.setVersionIndex(version.getNo());
                 documentFileJPA.setFileId("test_id" + value);
                 documentFileJPA.setFilename("test_name" + value);
+                documentFileJPA.setOriginalFilename("test_name" + value);
                 documentFileJPA.setMimeType("test" + value);
 
                 documentFileRepository.save(documentFileJPA);

@@ -166,6 +166,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
          * Otherwise set by the system when FileDocumentDomainObject is initialized.
          */
         private String filename;
+        private String originalFilename;
 
         private String mimeType;
         private InputStreamSource inputStreamSource;
@@ -177,6 +178,14 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
         public void setFilename(String v) {
             this.filename = v;
+        }
+
+        public String getOriginalFilename() {
+            return originalFilename;
+        }
+
+        public void setOriginalFilename(String originalFilename) {
+            this.originalFilename = originalFilename;
         }
 
         public String getMimeType() {
