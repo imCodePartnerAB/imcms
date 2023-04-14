@@ -10,4 +10,6 @@ public interface VersionedContentRepository<T> {
 
     List<T> findByVersion(Version version);
 
+    void deleteByVersion(Version version);
+
 }

@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -33,4 +34,8 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
     List<DocumentFileJPA> findByVersion(@Param("version") Version version);
 
     int deleteByDocId(int docId);
+
+    @Modifying
+    @Query("DELETE FROM DocumentFileJPA f WHERE f.versionIndex = :#{#version.no} and f.docId = :#{#version.docId}")
+    void deleteByVersion(@Param("version") Version version);
 }
