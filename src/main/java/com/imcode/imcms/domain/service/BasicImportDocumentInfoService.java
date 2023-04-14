@@ -19,11 +19,15 @@ public interface BasicImportDocumentInfoService {
 
 	Page<BasicImportDocumentInfoDTO> getAll();
 
+	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId);
+
+	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip);
+
 	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable);
 
 	boolean exists(int importDocId);
 
 	boolean imported(int importDocId);
 
-	int toMetaId(int importDocId);
+	Integer toMetaId(int importDocId);
 }

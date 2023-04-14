@@ -2,6 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImportProgress;
 import com.imcode.imcms.domain.service.ImportDocumentService;
+import com.imcode.imcms.security.AccessRoleType;
+import com.imcode.imcms.security.CheckAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class ImportDocumentController {
 	private final ImportDocumentService importDocumentService;
 
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	@PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public String uploadDocumentsZip(@RequestParam("file") MultipartFile file) {
 		final String zipFilename = file.getOriginalFilename();
@@ -37,17 +40,20 @@ public class ImportDocumentController {
 	}
 
 	@GetMapping(value = "/upload/progress")
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public ImportProgress getUploadProgress() {
 		return importDocumentService.getExtractionProgress();
 	}
 
 
 	@GetMapping(value = "/progress")
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public ImportProgress getImportProgress() {
 		return importDocumentService.getImportingProgress();
 	}
 
 	@PostMapping
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public void importDocuments(@RequestBody Map<String, Integer> params) {
 		final Integer startId = params.get("start");
 		final Integer endId = params.get("end");
@@ -60,6 +66,7 @@ public class ImportDocumentController {
 	}
 
 	@PostMapping("/aliases/remove")
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public void removeAliases(@RequestBody Map<String, Integer> params) {
 		final Integer startId = params.get("start");
 		final Integer endId = params.get("end");
@@ -72,6 +79,7 @@ public class ImportDocumentController {
 	}
 
 	@PostMapping("/aliases/replace")
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public void replaceAliases(@RequestBody Map<String, Integer> params) {
 		final Integer startId = params.get("start");
 		final Integer endId = params.get("end");

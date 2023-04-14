@@ -27,5 +27,5 @@ public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicIm
 	boolean isImported(@Param("id") Integer id);
 
 	@Query("select b.metaId from BasicImportDocumentInfoJPA b where b.id=:importDocId")
-	int findMetaId(@Param("importDocId") Integer importDocId);
+	Integer findMetaId(@Param("importDocId") Integer importDocId);
 }

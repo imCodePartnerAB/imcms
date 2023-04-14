@@ -2,6 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.BasicImportDocumentInfoDTO;
 import com.imcode.imcms.domain.service.BasicImportDocumentInfoService;
+import com.imcode.imcms.security.AccessRoleType;
+import com.imcode.imcms.security.CheckAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ public class BasicImportDocumentInfoController {
 	private final BasicImportDocumentInfoService basicImportDocumentInfoService;
 
 	@GetMapping("all")
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public Page<BasicImportDocumentInfoDTO> getAllBasicImportDocuments(Pageable pageable,
 	                                                                   @RequestParam(required = false) Integer startId,
 	                                                                   @RequestParam(required = false) Integer endId,
@@ -26,6 +29,7 @@ public class BasicImportDocumentInfoController {
 	}
 
 	@PostMapping
+	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public void updateBasicImportDocument(@RequestBody BasicImportDocumentInfoDTO basicImportDocumentInfo) {
 		basicImportDocumentInfoService.save(basicImportDocumentInfo);
 	}
