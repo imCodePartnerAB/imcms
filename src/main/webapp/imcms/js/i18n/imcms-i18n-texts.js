@@ -775,6 +775,22 @@ const texts = {
                     invalidIP: 'Ogiltig ipv4 / ipv6-adress'
                 }
             },
+            versionControl: {
+                name: 'Version Control',
+                title: 'Version Control',
+                versionId: 'Version ID',
+                login: 'User Login',
+                publicationDate: 'Publication Date',
+                reviewButton: 'Review',
+                resetButton: 'Reset',
+                input: 'Find versions by document ID',
+                findButton: 'Find',
+                resetSuccess: 'Dokumentversionen har återställts till ',
+                error: {
+                    findFailed: 'Kunde inte hämta dokumentversioner',
+                    resetFailed: 'Det gick inte att återställa dokumentversionen '
+                }
+            },
             deleteDocs: {
                 name: 'Radera dokument',
                 title: 'Ta bort dokument med id',
@@ -1899,6 +1915,22 @@ const texts = {
                     loadRolesFailed: 'Failed to fetch roles. Try again',
                     loadUsersFailed: 'Failed to fetch users. Try again',
                     invalidIP: 'Invalid ipv4/ipv6 address'
+                }
+            },
+            versionControl: {
+                name: 'Version Control',
+                title: 'Version Control',
+                versionId: 'Version ID',
+                login: 'User Login',
+                publicationDate: 'Publication Date',
+                reviewButton: 'Review',
+                resetButton: 'Reset',
+                input: 'Find versions by document ID',
+                findButton: 'Find',
+                resetSuccess: 'Document version has been reset to ',
+                error: {
+                    findFailed: 'Failed to fetch document versions',
+                    resetFailed: 'Failed to reset document version '
                 }
             },
             deleteDocs: {
@@ -3027,6 +3059,21 @@ const texts = {
                     loadRolesFailed: 'Kunne ikke hente roller. Prøv igjen',
                     loadUsersFailed: 'Kunne ikke hente bruker. Prøv igjen',
                     invalidIP: 'Ugyldig ipv4 / ipv6-adresse'
+                }
+            },
+            versionControl: {
+                name: 'Version Control',
+                versionId: 'Version ID',
+                login: 'User Login',
+                publicationDate: 'Publication Date',
+                reviewButton: 'Review',
+                resetButton: 'Reset',
+                input: 'Find versions by document ID',
+                findButton: 'Find',
+                resetSuccess: 'Document version has been reset to ',
+                error: {
+                    findFailed: 'Failed to fetch document versions',
+                    resetFailed: 'Failed to reset document version '
                 }
             },
             deleteDocs: {

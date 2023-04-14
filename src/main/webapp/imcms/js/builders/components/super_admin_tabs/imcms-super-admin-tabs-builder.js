@@ -13,6 +13,7 @@ if(imcms.isSuperAdmin){
         require('imcms-roles-tab-builder'),
         require('imcms-ip-access-tab-builder'),
         require('imcms-templates-css-tab-builder'),
+        require('imcms-doc-versions-tab-builder'),
         require('imcms-delete-docs-tab-builder'),
         require('imcms-link-validator-tab-builder'),
         require('imcms-images-tab-builder'),

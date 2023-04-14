@@ -304,11 +304,13 @@ define("imcms-page-info-builder",
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
 
+                let versionNo = new URLSearchParams(window.location.search).get("version-no");
                 const requestData = {
                     docId: docId,
-	                parentDocIdentity: parentDocId
+                    versionNo: versionNo,
+	                parentDocIdentity: parentDocId,
+                    type: docType
                 };
-                if (docType) requestData.type = docType;
 
                 documentsRestApi.read(requestData).done((document) => {
                     documentDTO = document;

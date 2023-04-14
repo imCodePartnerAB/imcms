@@ -8,5 +8,11 @@ define('imcms-documents-rest-api', ['imcms-rest-api'], function (rest) {
 
     api.getUniqueAlias = alias => rest.ajax.call({url: `${url}/alias/unique/${alias}`, type: 'GET', json: false});
 
+    api.resetVersion = (metaId, versionNo) => rest.ajax.call({
+        url: `${url}/reset-version?meta-id=${metaId}&version-no=${versionNo}`,
+        type: 'PATCH',
+        json:false
+    });
+
     return api;
 });
