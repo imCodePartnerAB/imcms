@@ -54,6 +54,11 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     }
 
     @Override
+    public Document get(int docId, int versionNo) {
+        return getCorrespondingDocumentService(docId).get(docId, versionNo);
+    }
+
+    @Override
     public Document save(Document saveMe) {
         return getCorrespondingDocumentService(saveMe.getType()).save(UberDocumentDTO.of(saveMe).toTypedDocument());
     }
@@ -61,6 +66,11 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     @Override
     public boolean publishDocument(int docId, int userId) {
         return getCorrespondingDocumentService(docId).publishDocument(docId, userId);
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        getCorrespondingDocumentService(docId).makeAsWorkingVersion(docId, versionNo);
     }
 
     @Override

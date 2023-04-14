@@ -66,6 +66,13 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
+    public TextDocumentDTO get(int docId, int versionNo) {
+        final TextDocumentDTO textDocDTO = new TextDocumentDTO(defaultDocumentService.get(docId, versionNo));
+        textDocumentTemplateService.get(docId).map(TextDocumentTemplateDTO::new).ifPresent(textDocDTO::setTemplate);
+        return textDocDTO;
+    }
+
+    @Override
     public TextDocumentDTO save(TextDocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
         final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
@@ -101,6 +108,11 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     @Override
     public boolean publishDocument(int docId, int userId) {
         return defaultDocumentService.publishDocument(docId, userId);
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        defaultDocumentService.makeAsWorkingVersion(docId, versionNo);
     }
 
     @Override

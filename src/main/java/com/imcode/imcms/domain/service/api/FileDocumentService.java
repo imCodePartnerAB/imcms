@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
@@ -44,6 +45,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final Logger logger = LogManager.getLogger(getClass());
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
+    private final VersionService versionService;
     private final File filesRoot;
     private final Predicate<DocumentFile> fileDocFileFilter;
     private final Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
@@ -51,11 +53,13 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     @SneakyThrows
     public FileDocumentService(DocumentService<DocumentDTO> documentService,
                                DocumentFileService documentFileService,
+                               VersionService versionService,
                                @org.springframework.beans.factory.annotation.Value("${FilePath}") Resource filesRoot,
                                Config config) {
 
         this.defaultDocumentService = documentService;
         this.documentFileService = documentFileService;
+        this.versionService = versionService;
         this.filesRoot = filesRoot.getFile();
         this.fileDocFileFilter = buildFileDocFilter(config);
     }
@@ -83,6 +87,19 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return fileDocument;
     }
 
+    @Override
+    public FileDocumentDTO get(int docId, int versionNo) {
+        final FileDocumentDTO fileDocument = new FileDocumentDTO(defaultDocumentService.get(docId, versionNo));
+
+        final List<DocumentFileDTO> documentFiles = documentFileService.getByDocIdAndVersion(docId, versionNo).stream()
+                .map(DocumentFileDTO::new)
+                .collect(Collectors.toList());
+
+        fileDocument.setFiles(documentFiles);
+
+        return fileDocument;
+    }
+
     public FileDocumentDTO save(FileDocumentDTO saveMe) {
         final int savedDocId = defaultDocumentService.save(saveMe).getId();
         documentFileService.saveAll(saveMe.getFiles(), savedDocId);
@@ -102,6 +119,12 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     @Override
     public boolean publishDocument(int docId, int userId) {
         return defaultDocumentService.publishDocument(docId, userId);
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        defaultDocumentService.makeAsWorkingVersion(docId, versionNo);
+        documentFileService.setAsWorkingVersion(versionService.findByDocIdAndNo(docId, versionNo));
     }
 
     @Override

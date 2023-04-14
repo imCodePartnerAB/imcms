@@ -116,10 +116,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     public DocumentDTO get(int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, workingVersion.getNo()
-        );
+        return get(docId, workingVersion.getNo());
+    }
 
+    @Override
+    public DocumentDTO get(int docId, int versionNo) {
+        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(docId, versionNo);
         return documentMapping.apply(metaRepository.getOne(docId), commonContents);
     }
 
@@ -201,6 +203,19 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         metaRepository.save(publishMe);
 
         return true;
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        final Version version = versionService.findByDocIdAndNo(docId, versionNo);
+
+        commonContentService.setAsWorkingVersion(version);
+        loopService.setAsWorkingVersion(version);
+        textService.setAsWorkingVersion(version);
+        imageService.setAsWorkingVersion(version);
+        menuService.setAsWorkingVersion(version);
+
+        versionService.updateWorkingVersion(docId);
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
@@ -20,12 +22,15 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentUrlService documentUrlService;
+    private final VersionService versionService;
 
     public UrlDocumentService(DocumentService<DocumentDTO> documentService,
-                              DocumentUrlService documentUrlService) {
+                              DocumentUrlService documentUrlService,
+                              VersionService versionService) {
 
         this.defaultDocumentService = documentService;
         this.documentUrlService = documentUrlService;
+        this.versionService = versionService;
     }
 
     @Override
@@ -54,8 +59,26 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
+    public UrlDocumentDTO get(int docId, int versionNo) {
+        final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(defaultDocumentService.get(docId, versionNo));
+        final DocumentUrlDTO documentUrlDTO = Optional.ofNullable(documentUrlService.getByDocIdAndVersionNo(docId, versionNo))
+                .map(DocumentUrlDTO::new)
+                .orElse(null);
+
+        urlDocumentDTO.setDocumentURL(documentUrlDTO);
+
+        return urlDocumentDTO;
+    }
+
+    @Override
     public boolean publishDocument(int docId, int userId) {
         return defaultDocumentService.publishDocument(docId, userId);
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        defaultDocumentService.makeAsWorkingVersion(docId, versionNo);
+        documentUrlService.setAsWorkingVersion(versionService.findByDocIdAndNo(docId, versionNo));
     }
 
     @Override

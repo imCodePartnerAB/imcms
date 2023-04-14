@@ -196,17 +196,19 @@ public class MainConfig {
     @SneakyThrows
     public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentFileService documentFileService,
+                                                                VersionService versionService,
                                                                 Config config,
                                                                 @Value("${FilePath}") Resource filesRoot) {
 
-        return new FileDocumentService(documentService, documentFileService, filesRoot, config);
+        return new FileDocumentService(documentService, documentFileService, versionService, filesRoot, config);
     }
 
     @Bean
     public DocumentService<UrlDocumentDTO> urlDocumentService(DocumentService<DocumentDTO> documentService,
-                                                              DocumentUrlService documentUrlService) {
+                                                              DocumentUrlService documentUrlService,
+                                                              VersionService versionService) {
 
-        return new UrlDocumentService(documentService, documentUrlService);
+        return new UrlDocumentService(documentService, documentUrlService, versionService);
     }
 
     @Bean

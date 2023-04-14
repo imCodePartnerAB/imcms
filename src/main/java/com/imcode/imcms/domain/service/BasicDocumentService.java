@@ -17,7 +17,11 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
 
     D get(int docId) throws DocumentNotExistException;
 
+    D get(int docId, int versionNo) throws DocumentNotExistException;
+
     boolean publishDocument(int docId, int userId);
+
+    void makeAsWorkingVersion(int docId, int versionNo);
 
     SolrInputDocument index(int docId);
 

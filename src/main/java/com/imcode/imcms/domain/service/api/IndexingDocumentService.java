@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
-import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -46,6 +45,11 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     }
 
     @Override
+    public Document get(int docId, int versionNo) throws DocumentNotExistException {
+        return defaultDelegatingByTypeDocumentService.get(docId, versionNo);
+    }
+
+    @Override
     public boolean publishDocument(int docId, int userId) {
         final boolean isPublished = defaultDelegatingByTypeDocumentService.publishDocument(docId, userId);
 
@@ -55,6 +59,12 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
         }
 
         return isPublished;
+    }
+
+    @Override
+    public void makeAsWorkingVersion(int docId, int versionNo){
+        defaultDelegatingByTypeDocumentService.makeAsWorkingVersion(docId, versionNo);
+        defaultDelegatingByTypeDocumentService.index(docId);
     }
 
     @Override
