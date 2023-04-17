@@ -186,6 +186,11 @@
     background-image: url("/imcms/images/controls/icon_newer_version.png");
 }
 
+.imcms-control--trash {
+    background-size: contain;
+    background-image: url("/imcms/images/trash.svg");
+}
+
 .imcms-control--permalink {
     background-size: contain;
     background-image: url("/imcms/images/controls/icon_permalink.png");

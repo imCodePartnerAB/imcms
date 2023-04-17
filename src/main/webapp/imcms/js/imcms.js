@@ -20,6 +20,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     isEditMode: Imcms.isEditMode,
     isPreviewMode: Imcms.isPreviewMode,
     isVersioningAllowed: Imcms.isVersioningAllowed,
+    isInWasteBasket: Imcms.isInWasteBasket,
     isSuperAdmin: Imcms.isSuperAdmin,
 	hasFileAdminAccess: Imcms.hasFileAdminAccess,
     documentationLink: Imcms.documentationLink,

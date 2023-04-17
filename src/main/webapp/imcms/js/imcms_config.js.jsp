@@ -11,6 +11,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         isEditMode: ${isEditMode or false},
         isPreviewMode: ${isPreviewMode or false},
         isVersioningAllowed: ${isVersioningAllowed or false},
+        isInWasteBasket: ${isInWasteBasket or false},
         isSuperAdmin: ${isSuperAdmin or false},
 	    hasFileAdminAccess: ${hasFileAdminAccess or false},
         documentationLink: "${documentationLink}",
@@ -40,6 +41,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
 
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
+    <%--@elvariable id="isInWasteBasket" type="boolean"--%>
     <%--@elvariable id="isEditMode" type="boolean"--%>
     <%--@elvariable id="isPreviewMode" type="boolean"--%>
     <%--@elvariable id="hasNewerVersion" type="boolean"--%>

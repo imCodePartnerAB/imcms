@@ -17,6 +17,7 @@ define("imcms-admin-panel-builder",
         const panelItemClass = BEM.buildClass(panelBlock, "item");
         const panelItemHasNewerVersionClass = BEM.buildClass(panelBlock, "item", "has-newer-version");
 
+        let textStatus = texts.status;
         texts = texts.panel;
 
         function publishDoc() {
@@ -175,6 +176,11 @@ define("imcms-admin-panel-builder",
                 title: imcms.document.alias
             });
             const $metaItem = $("<div>").append($meta);
+
+            if(imcms.isInWasteBasket){
+                const $trash = componentsBuilder.controls.trash().attr("title", textStatus.tooltip.wasteBasket);
+                $metaItem.append($trash);
+            }
 
             const $flagsItem = buildFlags();
             const $buttonsContainer = buildPanelButtons(opts);

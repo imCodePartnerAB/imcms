@@ -56,12 +56,18 @@
 }
 
 .imcms-admin-panel__meta {
+    display: inline-block;
     color: #587380;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 15px;
     font-weight: 400;
     line-height: 56px;
     text-transform: uppercase;
+}
+
+.imcms-admin-panel__item .imcms-control--trash {
+    margin-left: 5px;
+    height: 13px;
 }
 
 .imcms-admin-panel__item .imcms-flag {

@@ -217,6 +217,19 @@ define("imcms-page-info-builder",
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
 
+        function buildPageInfoWithoutButtons(docId) {
+            panels$ = buildPageInfoPanels(docId);
+
+            return new BEM({
+                block: "imcms-pop-up-modal",
+                elements: {
+                    "head": buildPageInfoHead(),
+                    "left-side": windowPageInfoTabsBuilder.buildWindowTabs(panels$),
+                    "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$)
+                }
+            }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
+        }
+
         function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId) {
 
             if ((docId === imcms.document.id && imcms.document.hasNewerVersion) ||
@@ -305,6 +318,7 @@ define("imcms-page-info-builder",
                 onDocumentSaved = onDocumentSavedCallback;
 
                 let versionNo = new URLSearchParams(window.location.search).get("version-no");
+                debugger;
                 const requestData = {
                     docId: docId,
                     versionNo: versionNo,

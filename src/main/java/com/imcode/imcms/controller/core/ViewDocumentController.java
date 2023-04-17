@@ -179,6 +179,7 @@ public class ViewDocumentController {
         mav.addObject("imagesPath", imagesPath);
         mav.addObject("isVersioningAllowed", isVersioningAllowed);
         mav.addObject("isPreviewMode", isPreviewMode);
+        mav.addObject("isInWasteBasket", textDocument.isInWasteBasket());
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
         mav.addObject("editOptions", userContentPermission);
