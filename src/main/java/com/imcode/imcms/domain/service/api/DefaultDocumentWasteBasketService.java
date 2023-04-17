@@ -11,6 +11,8 @@ import com.imcode.imcms.persistence.repository.DocumentWasteBasketRepository;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public class DefaultDocumentWasteBasketService implements DocumentWasteBasketSer
 
         documentWasteBasketRepository.saveAndFlush(documentWasteBasketJPA);
 
-        documentMapper.invalidateDocument(docId);
+        invalidateDocumentAfterCommit(List.of(docId));
     }
 
     @Override
@@ -80,7 +82,7 @@ public class DefaultDocumentWasteBasketService implements DocumentWasteBasketSer
         documentWasteBasketRepository.saveAll(documentWasteBasketJPAS);
         documentWasteBasketRepository.flush();
 
-        docIds.forEach(documentMapper::invalidateDocument);
+        invalidateDocumentAfterCommit(docIds);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class DefaultDocumentWasteBasketService implements DocumentWasteBasketSer
         documentWasteBasketRepository.deleteByMetaId(docId);
         documentWasteBasketRepository.flush();
 
-        documentMapper.invalidateDocument(docId);
+        invalidateDocumentAfterCommit(List.of(docId));
     }
 
     @Override
@@ -96,7 +98,14 @@ public class DefaultDocumentWasteBasketService implements DocumentWasteBasketSer
         documentWasteBasketRepository.deleteByMetaIdIn(docIds);
         documentWasteBasketRepository.flush();
 
-        docIds.forEach(documentMapper::invalidateDocument);
+        invalidateDocumentAfterCommit(docIds);
     }
 
+    private void invalidateDocumentAfterCommit(List<Integer> docIds){
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter(){
+            public void afterCommit(){
+                docIds.forEach(documentMapper::invalidateDocument);
+            }
+        });
+    }
 }
