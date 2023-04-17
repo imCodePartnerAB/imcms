@@ -24,6 +24,8 @@ define("imcms-page-info-builder",
         let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
         let $title = $('<a>');
 
+        let versionNo;
+
         function buildPageInfoHead() {
             const $head = pageInfoWindowBuilder.buildHeadWithResizing(texts.document + ' - ', closePageInfo);
             $head.find(".imcms-head__title").append($title);
@@ -199,6 +201,9 @@ define("imcms-page-info-builder",
                 buttons.unshift($saveAndPublishBtn);
             }
 
+            //don't show buttons when we check a previous version of a document
+            if(versionNo) return [];
+
             return buttons;
         }
 
@@ -213,19 +218,6 @@ define("imcms-page-info-builder",
                     "left-side": windowPageInfoTabsBuilder.buildWindowTabs(panels$),
                     "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$),
                     "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
-                }
-            }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
-        }
-
-        function buildPageInfoWithoutButtons(docId) {
-            panels$ = buildPageInfoPanels(docId);
-
-            return new BEM({
-                block: "imcms-pop-up-modal",
-                elements: {
-                    "head": buildPageInfoHead(),
-                    "left-side": windowPageInfoTabsBuilder.buildWindowTabs(panels$),
-                    "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$)
                 }
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
@@ -317,8 +309,7 @@ define("imcms-page-info-builder",
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
 
-                let versionNo = new URLSearchParams(window.location.search).get("version-no");
-                debugger;
+                versionNo = new URLSearchParams(window.location.search).get("version-no");
                 const requestData = {
                     docId: docId,
                     versionNo: versionNo,

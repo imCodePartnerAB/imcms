@@ -58,11 +58,14 @@ define("imcms-admin-panel-builder",
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
 
-            const editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
+            const isPreviewVersion = imcms.isPreviewMode && new URLSearchParams(window.location.search).get("version-no");
+
+            const editContentDisplayProperty = imcms.editOptions.isEditContent && !isPreviewVersion ? "" : "display:none";
             const editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
-            const publishDisplayProperty = imcms.accessToPublishCurrentDoc || imcms.isSuperAdmin ? "" : "display:none";
-            const documentDisplayProperty = imcms.isSuperAdmin || imcms.accessToDocumentEditor ? "" : "display:none";
-            const adminDisplayProperty = imcms.isSuperAdmin || imcms.accessToAdminPages ? "" : "display:none";
+            const publishDisplayProperty = (imcms.accessToPublishCurrentDoc || imcms.isSuperAdmin) && !isPreviewVersion ? "" : "display:none";
+            const documentDisplayProperty = (imcms.isSuperAdmin || imcms.accessToDocumentEditor) && !isPreviewVersion ? "" : "display:none";
+            const adminDisplayProperty = (imcms.isSuperAdmin || imcms.accessToAdminPages) && !isPreviewVersion ? "" : "display:none";
+            const logoutDisplayProperty = !isPreviewVersion ? "" : "display:none"
 
             const versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"];
             const publishVersionButtonModifiers = (imcms.isVersioningAllowed && imcms.document.hasNewerVersion)
@@ -132,7 +135,8 @@ define("imcms-admin-panel-builder",
                     content: componentsBuilder.buttons.positiveButton({
                         text: texts.logout
                     }),
-                    modifiers: ["logout"]
+                    modifiers: ["logout"],
+                    style: logoutDisplayProperty
                 }, {
                     name: 'settings',
                     tag: '<div>',
