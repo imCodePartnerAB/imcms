@@ -978,6 +978,15 @@
     position: absolute;
 }
 
+.delete-document-row .imcms-number,
+.imcms-doc-basket-block .imcms-number{
+    width: 280px;
+}
+
+.imcms-doc-basket-block {
+    margin-top: 10px;
+}
+
 .imcms-doc-basket-block__put-row > * {
     display: inline-block;
 }
