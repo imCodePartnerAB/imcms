@@ -143,7 +143,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         roleIdToPermission.remove(Roles.USER.getId());
         saveMe.setRoleIdToPermission(roleIdToPermission);
 
-        saveMe.setDocumentWasteBasket(null);
+        saveMe.setDocumentWasteBasket(metaRepository.findWasteBasket(saveMe.getId()));
 
 	    final Meta meta = documentSaver.apply(saveMe);
         final Integer docId = meta.getId();

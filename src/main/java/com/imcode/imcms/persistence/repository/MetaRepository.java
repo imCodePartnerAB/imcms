@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.persistence.entity.DocumentWasteBasketJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,6 @@ public interface MetaRepository extends JpaRepository<Meta, Integer> {
     @Query("select m.documentType from Meta m where m.id = ?1")
     DocumentType findType(Integer docId);
 
+    @Query("select m.documentWasteBasket from Meta m where m.id = ?1")
+    DocumentWasteBasketJPA findWasteBasket(Integer docId);
 }
