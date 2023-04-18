@@ -325,10 +325,10 @@ const texts = {
                     },
                     question: 'Vill du ta bort de här dokumenten? Detta kan inte göras ogjort!',
                     question2: 'Du kan inte ångra detta dokument! Ta bort?',
-                    multiRemoveInfo: 'Multi-remove',
-                    actions: 'Effekter',
-                    removeAction: 'Ta bort',
-                    putToBasketAction: 'Lägg till papperskorgen',
+                    multiRemoveInfo: 'Ta bort',
+                    actions: 'Åtgärd',
+                    removeAction: 'Radera',
+                    putToBasketAction: 'Papperskorge',
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",
@@ -451,7 +451,7 @@ const texts = {
                     modifiedDateDesc: 'Ändrade (gamla först)',
 
                 },
-                multiRemoveInfo: 'Flera borttagna',
+                multiRemoveInfo: 'Ta bort',
                 multiRemove: 'Avlägsna',
             },
             loop: {
@@ -1464,10 +1464,10 @@ const texts = {
                     },
                     question: 'Are you sure want to delete this documents? This can not be undone!',
                     question2: 'You can not revert this document! Remove?',
-                    multiRemoveInfo: 'Multi-remove',
-                    actions: 'Actions',
-                    removeAction: 'Remove',
-                    putToBasketAction: 'Put to basket',
+                    multiRemoveInfo: 'Remove',
+                    actions: 'Action',
+                    removeAction: 'Delete',
+                    putToBasketAction: 'Waste basket',
                     copy: {
                         title: "Copy",
                         confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id ",
@@ -1589,7 +1589,7 @@ const texts = {
                     modifiedDateDesc: 'Changed (old first)',
 
                 },
-                multiRemoveInfo: 'Multi-remove',
+                multiRemoveInfo: 'Remove',
                 multiRemove: 'Remove',
             },
             loop: {
@@ -2607,10 +2607,10 @@ const texts = {
                     },
                     question: 'Er du sikker på at du vil slette disse dokumentene? Dette kan ikke angres!',
                     question2: 'Du kan ikke tilbakestille dette dokumentet! Fjerne?',
-                    multiRemoveInfo: 'Flere fjernet',
-                    actions: 'Actions',
-                    removeAction: 'Remove',
-                    putToBasketAction: 'Put to basket',
+                    multiRemoveInfo: 'Remove',
+                    actions: 'Action',
+                    removeAction: 'Delete',
+                    putToBasketAction: 'Waste basket',
                     copy: {
                         title: "Kopiere",
                         confirmMessage: "Vil du virkelig kopiere (all informasjon i dokumentet vil bli kopiert) doc med id ",
@@ -2733,7 +2733,7 @@ const texts = {
                     modifiedDateDesc: 'Modifisert (gammel først)',
 
                 },
-                multiRemoveInfo: 'Flere fjernet',
+                multiRemoveInfo: 'Fjernet',
                 multiRemove: 'Fjerne',
             },
             loop: {

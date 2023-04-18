@@ -149,10 +149,15 @@
 }
 
 .imcms-document-item__controls {
-    visibility: hidden;
     width: 78px;
     margin-right: 10px;
     place-self: center;
+}
+
+.imcms-document-editor .imcms-document-item__controls > *,
+.imcms-document-editor .imcms-document-item__multi-remove-controls > * {
+    margin-right: 10px;
+    margin-left: 0;
 }
 
 .imcms-document-item__multi-remove-controls {
