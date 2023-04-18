@@ -12,6 +12,7 @@ or using following link - ``<domain-name>/api/admin/manager``.
     ip-access
     files
     template-css
+    delete-documents
     link-validator
     categories
     profiles

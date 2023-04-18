@@ -56,9 +56,12 @@ To copy a document, you have to move the mouse over the document and click |copy
 Remove Document
 ***************
 
-In order to remove one or more documents, you have to:
+.. image:: _static/document-manager-multi-remove.png
 
-1. Enable **Multi-remove**.
+In order to remove documents or put it in the waste basket, you have to:
+
+1. Enable **Remove** switch button.
 2. Select the necessary documents.
-3. Click **Remove**.
+3. Click **Actions** and select the desired action.
 
+.. seealso:: See more information in :doc:`Deletion and Waste Basket</user-documentation/admin-settings/delete-documents>` article.
