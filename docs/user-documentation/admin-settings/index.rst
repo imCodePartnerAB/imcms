@@ -19,3 +19,4 @@ or using following link - ``<domain-name>/api/admin/manager``.
     profiles
     system-properties
     index-cache
+    import

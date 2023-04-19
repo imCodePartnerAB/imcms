@@ -220,6 +220,11 @@ Document
     # Path to the files of the file document. Path relative to the webapp root on the server storage.
     FilePath=WEB-INF/uploads/
 
+.. code-block:: properties
+
+    # Document ids that protected from deletion
+    DeleteProtectedMetaIds=
+
 --------
 Language
 --------

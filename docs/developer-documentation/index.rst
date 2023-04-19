@@ -5,6 +5,7 @@ Developer Documentation
     :titlesonly:
 
     design/index
+    authentication
     configuration
     custom-tab
     cache
