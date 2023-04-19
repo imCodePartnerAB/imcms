@@ -16,14 +16,9 @@ ImCMS Documentation
     overview
     getting-started/index
     tutorial/index
-    design/index
-    API-documentation/index
-    content-management/index
-    advanced-configuration/index
-    image-archive/index
-    bank-id/index
     user-documentation/index
     developer-documentation/index
+    old-documentation/index
 
 .. include:: /common/authors.txt
 
