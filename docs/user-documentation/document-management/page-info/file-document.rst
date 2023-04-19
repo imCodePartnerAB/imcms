@@ -24,7 +24,7 @@ For example example.txt -> example1.txt.
 .. warning:: Try not to use the same names in one document to avoid confusion.
 
 **ID** can have characters. If this is not specified, then the value will be the same as the file name.
-The user can set **ID** in the ``file-id`` parameter to get a file with that id.
+The user can set **ID** in the ``file_id`` parameter to get a file with that id.
 For example, ``<domain-name>/<document-alias>?file_id=example-id``.
 Without this parameter, the system will return the **default** file.
 

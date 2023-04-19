@@ -1,4 +1,4 @@
-Managing system properties
+Managing System Properties
 ==========================
 
 **Start page** - id of the document that is the opening page of the site.
