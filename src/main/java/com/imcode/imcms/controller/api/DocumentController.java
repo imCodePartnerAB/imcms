@@ -100,7 +100,7 @@ class DocumentController {
     @CheckAccess
     public void resetVersion(@RequestParam("meta-id") int docId,
                              @RequestParam("version-no") int versionNo){
-        documentService.makeAsWorkingVersion(docId, versionNo);
+        documentService.setAsWorkingVersion(docId, versionNo);
     }
 
     @DeleteMapping("/{docId}")

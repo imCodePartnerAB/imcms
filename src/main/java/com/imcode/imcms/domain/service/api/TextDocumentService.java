@@ -111,8 +111,8 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
-    public void makeAsWorkingVersion(int docId, int versionNo){
-        defaultDocumentService.makeAsWorkingVersion(docId, versionNo);
+    public void setAsWorkingVersion(int docId, int versionNo){
+        defaultDocumentService.setAsWorkingVersion(docId, versionNo);
     }
 
     @Override

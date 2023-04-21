@@ -69,8 +69,8 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     }
 
     @Override
-    public void makeAsWorkingVersion(int docId, int versionNo){
-        getCorrespondingDocumentService(docId).makeAsWorkingVersion(docId, versionNo);
+    public void setAsWorkingVersion(int docId, int versionNo){
+        getCorrespondingDocumentService(docId).setAsWorkingVersion(docId, versionNo);
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
@@ -76,8 +75,8 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
-    public void makeAsWorkingVersion(int docId, int versionNo){
-        defaultDocumentService.makeAsWorkingVersion(docId, versionNo);
+    public void setAsWorkingVersion(int docId, int versionNo){
+        defaultDocumentService.setAsWorkingVersion(docId, versionNo);
         documentUrlService.setAsWorkingVersion(versionService.findByDocIdAndNo(docId, versionNo));
     }
 

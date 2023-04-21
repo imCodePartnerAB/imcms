@@ -206,7 +206,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    public void makeAsWorkingVersion(int docId, int versionNo){
+    public void setAsWorkingVersion(int docId, int versionNo){
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
 
         commonContentService.setAsWorkingVersion(version);

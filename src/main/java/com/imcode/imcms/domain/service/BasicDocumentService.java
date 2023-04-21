@@ -11,17 +11,11 @@ import java.util.List;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.01.18.
  */
-public interface BasicDocumentService<D extends Document> extends DeleterByDocumentId {
+public interface BasicDocumentService<D extends Document> extends VersionedDocumentService<D>, DeleterByDocumentId {
 
     long countDocuments();
 
     D get(int docId) throws DocumentNotExistException;
-
-    D get(int docId, int versionNo) throws DocumentNotExistException;
-
-    boolean publishDocument(int docId, int userId);
-
-    void makeAsWorkingVersion(int docId, int versionNo);
 
     SolrInputDocument index(int docId);
 
