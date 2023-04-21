@@ -184,6 +184,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
         final List<CommonContentJPA> commonContentDTOVersion1 = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version1);
         final List<CommonContentJPA> commonContentDTOVersion2 = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, version2);
 
+        commonContentRepository.flush();
         commonContentService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(DOC_ID, version1));
 
         final List<CommonContentJPA> commonContentDTOWorkingVersionAfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
@@ -234,6 +235,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
         final List<CommonContentJPA> commonContentDTOWorkingVersion = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
         assertFalse(commonContentDTOWorkingVersion.isEmpty());
 
+        commonContentRepository.flush();
         commonContentService.setAsWorkingVersion(versionRepository.findByDocIdAndNo(DOC_ID, version1));
 
         final List<CommonContentJPA> commonContentDTOWorkingVersionAfterReset = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, WORKING_VERSION_INDEX);
