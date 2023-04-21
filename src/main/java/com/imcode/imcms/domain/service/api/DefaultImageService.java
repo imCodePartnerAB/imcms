@@ -248,8 +248,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                         repository.save(img);
                     }
 
-                    byte[] content = ImcmsImageUtils.generateImage(imageDTO);
-                    saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+                    regenerateImage(imageDTO);
                 });
     }
 
