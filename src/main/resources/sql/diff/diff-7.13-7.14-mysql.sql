@@ -7,7 +7,3 @@ ALTER TABLE fileupload_docs
 UPDATE database_version
 SET major = @schema_version__major_new,
     minor = @schema_version__minor_new;
-
-UPDATE database_version
-SET major = @schema_version__major_new,
-    minor = @schema_version__minor_new;
