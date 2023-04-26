@@ -14,8 +14,6 @@ ImCMS Documentation
     :titlesonly:
 
     overview
-    getting-started/index
-    tutorial/index
     user-documentation/index
     developer-documentation/index
     old-documentation/index
