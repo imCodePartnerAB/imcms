@@ -13,3 +13,4 @@ Developer Documentation
     image-processing
     solr
     api/index
+    requirements
