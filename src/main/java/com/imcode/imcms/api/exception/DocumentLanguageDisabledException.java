@@ -3,6 +3,7 @@ package com.imcode.imcms.api.exception;
 import com.imcode.imcms.api.DocumentLanguage;
 import imcode.server.document.DocumentDomainObject;
 
+@Deprecated
 public class DocumentLanguageDisabledException extends DocumentLanguageException {
 
     private DocumentDomainObject document;
