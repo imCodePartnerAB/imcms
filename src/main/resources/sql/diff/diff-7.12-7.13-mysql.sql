@@ -9,14 +9,6 @@ ALTER TABLE imcms_doc_metadata
     FOREIGN KEY (imcms_doc_i18n_meta_id) REFERENCES imcms_doc_i18n_meta (id)
     ON DELETE CASCADE;
 
-
-ALTER TABLE fileupload_docs
-    ADD COLUMN original_filename VARCHAR(255) NOT NULL;
-
-UPDATE database_version
-SET major = @schema_version__major_new,
-    minor = @schema_version__minor_new;
-
 UPDATE database_version
 SET major = @schema_version__major_new,
     minor = @schema_version__minor_new;
