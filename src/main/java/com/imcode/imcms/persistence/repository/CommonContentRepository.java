@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommonContentRepository extends JpaRepository<CommonContentJPA, Integer>, VersionedContentRepository<CommonContentJPA> {
@@ -23,7 +24,7 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 
     CommonContentJPA findByDocIdAndVersionNoAndLanguageCode(int docId, int versionNo, String code);
 
-	CommonContentJPA findFirstByAlias(String alias);
+	Optional<CommonContentJPA> findFirstByAlias(String alias);
 
     @Override
     @Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")

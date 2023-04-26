@@ -132,8 +132,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    saveMe.getCommonContents().forEach(commonContent -> {
 		    final String alias = commonContent.getAlias();
 		    if (!Objects.equals(alias, "")) {
-			    CommonContent dbCommonContent = commonContentService.getByAlias(alias);
-			    if (dbCommonContent != null && !dbCommonContent.getId().equals(commonContent.getId())) {
+                final Optional<CommonContent> dbCommonContent = commonContentService.getByAlias(alias);
+			    if (dbCommonContent.isPresent() && !dbCommonContent.get().getId().equals(commonContent.getId())) {
 				    commonContent.setAlias("");
 			    }
 		    }
