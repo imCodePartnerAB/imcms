@@ -9,7 +9,8 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.SessionInfoDTO;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -65,6 +66,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.imcode.imcms.servlet.ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME;
 
@@ -645,19 +647,26 @@ public class Utility {
 		response.addCookie(newUserLanguageCookie);
 	}
 
-	public static String getUserLanguage(Cookie[] cookies) {
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME))
-					return cookie.getValue();
-			}
-		}
-		return Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
-	}
     public static LocalDateTime convertDateToLocalDateTime(Date date){
         if(date == null) return null;
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
+
+	/**
+	 * @return mapped langCode from Cookie to Language, if cookie not available get default language
+	 */
+	public static Language getUserLanguageFromCookie(Cookie[] cookies) {
+		final LanguageService languageService = Imcms.getServices().getLanguageService();
+
+		return Stream.ofNullable(cookies)
+				.flatMap(Arrays::stream)
+				.filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+				.map(Cookie::getValue)
+				.filter(languageService::isLanguageAvailableByCode)
+				.findFirst()
+				.map(languageService::findByCode)
+				.orElseGet(languageService::getDefaultLanguage);
+	}
 
 	public static void logGDPR(int editableUserId, String message){
 		int byId = Imcms.getUser().isDefaultUser() ? editableUserId : Imcms.getUser().getId();

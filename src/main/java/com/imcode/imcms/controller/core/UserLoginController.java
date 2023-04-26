@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_META;
 import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
-import static imcode.util.Utility.getUserLanguage;
+import static imcode.util.Utility.getUserLanguageFromCookie;
 import static imcode.util.Utility.writeUserLanguageCookie;
 
 @Controller
@@ -45,7 +45,7 @@ class UserLoginController {
             modelAndView.addObject(REQUEST_PARAMETER__NEXT_URL, nextUrlParam);
         }
 
-		final String languageCode = languageService.isLanguageAvailableByCode(requestedLangCode) ? requestedLangCode : getUserLanguage(request.getCookies());
+        final String languageCode = languageService.isLanguageAvailableByCode(requestedLangCode) ? requestedLangCode : getUserLanguageFromCookie(request.getCookies()).getCode();
 
 		modelAndView.addObject("userLanguage", languageCode);
 		writeUserLanguageCookie(response, languageCode);

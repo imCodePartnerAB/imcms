@@ -30,7 +30,7 @@ public class MultiFactorAuthenticationController {
 	public ModelAndView goTo2FaPage(HttpServletRequest request) {
 		final ModelAndView modelAndView = new ModelAndView("MFA");
 
-		modelAndView.addObject("userLanguage", Utility.getUserLanguage(request.getCookies()));
+		modelAndView.addObject("userLanguage", Utility.getUserLanguageFromCookie(request.getCookies()).getCode());
 
 		return modelAndView;
 	}

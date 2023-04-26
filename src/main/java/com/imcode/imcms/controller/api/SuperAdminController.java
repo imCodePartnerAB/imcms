@@ -2,7 +2,9 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessContentType;
@@ -11,6 +13,7 @@ import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,9 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
-import static imcode.util.Utility.getUserLanguage;
 
 /**
  * Controller for super-admin functionality. Provides possibility to go to any
@@ -36,30 +38,33 @@ class SuperAdminController {
     private final String imagesPath;
     private final TextService textService;
     private final AccessService accessService;
+    private final LanguageService languageService;
     private final String documentationLink;
 
 
     SuperAdminController(@Qualifier("storageImagePath") String imagesPath,
                          TextService textService,
                          AccessService accessService,
+                         LanguageService languageService,
                          @Value("${documentation-host}") String documentationLink) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
         this.accessService = accessService;
+        this.languageService = languageService;
         this.documentationLink = documentationLink;
     }
 
     @RequestMapping("/manager")
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public ModelAndView goToSuperAdminPage(HttpServletRequest request, ModelAndView mav) {
-	    final UserDomainObject user = Imcms.getUser();
+        final UserDomainObject user = Imcms.getUser();
 
         mav.setViewName("AdminManager");
         addMinimumModelData(request, mav);
         mav.addObject("imagesPath", imagesPath);
         mav.addObject("isSuperAdmin", user.isSuperAdmin());
-	    mav.addObject("hasFileAdminAccess", accessService.hasUserFileAdminAccess(user.getId()));
+        mav.addObject("hasFileAdminAccess", accessService.hasUserFileAdminAccess(user.getId()));
         return mav;
     }
 
@@ -82,13 +87,12 @@ class SuperAdminController {
 
         mav.setViewName("EditText");
 
-
-        final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
+        final Language language = getLanguage(langCode, request.getCookies());
 
         addObjectModelViewData(mav, metaId);
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("language", language);
+        mav.addObject("language", language.getCode());
         addCommonModelData(metaId, index, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
@@ -121,12 +125,12 @@ class SuperAdminController {
             loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
         }
 
-        final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
+        final Language language =getLanguage(langCode, request.getCookies());
 
         mav.setViewName("EditImage");
 
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("langCode", language);
+        mav.addObject("langCode", language.getCode());
         mav.addObject("imagesPath", imagesPath);
         addCommonModelData(metaId, index, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
@@ -142,12 +146,10 @@ class SuperAdminController {
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
-	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
-
-	    mav.setViewName("EditMenu");
+        mav.setViewName("EditMenu");
         addObjectModelViewData(mav, metaId);
         addCommonModelData(metaId, index, returnUrl, request, mav);
-	    mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, getLanguage(langCode, request.getCookies())));
 
         return mav;
     }
@@ -161,13 +163,11 @@ class SuperAdminController {
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
-	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
-
-	    mav.setViewName("EditLoop");
+        mav.setViewName("EditLoop");
         addCommonModelData(metaId, index, returnUrl, request, mav);
-	    mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, getLanguage(langCode, request.getCookies())));
 
-	    return mav;
+        return mav;
     }
 
     @RequestMapping("/page-info")
@@ -189,15 +189,13 @@ class SuperAdminController {
                                       @RequestParam(value = "lang", required = false) String langCode,
                                       ModelAndView mav) {
 
-	    final String language = (langCode == null) ? getUserLanguage(request.getCookies()) : langCode;
-
         mav.setViewName("EditDocuments");
         mav.addObject("accessToDocumentEditor", accessService.getTotalRolePermissionsByUser(Imcms.getUser()).isAccessToDocumentEditor());
         addCommonModelData(returnUrl, request, mav);
         mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
-	    mav.addObject("currentDocument", new TextDocumentDomainObject(language));
+        mav.addObject("currentDocument", new TextDocumentDomainObject(getLanguage(langCode, request.getCookies())));
 
-	    return mav;
+        return mav;
     }
 
     @RequestMapping("/content")
@@ -237,5 +235,9 @@ class SuperAdminController {
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
         mav.addObject("documentationLink", documentationLink);
+    }
+
+    private Language getLanguage(String langCode, Cookie[] cookies){
+        return (langCode == null) ? Utility.getUserLanguageFromCookie(cookies) : languageService.findByCode(langCode);
     }
 }
