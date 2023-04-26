@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.enums.SaveMode;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.*;
@@ -131,16 +132,14 @@ public class TextDocumentContentSaver {
     public void saveImages(TextDocImagesContainer container) {
         Version version = findVersion(container);
 
-        for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, ImageDomainObject> e : container.getImages().entrySet()) {
-            LanguageJPA language = findLanguage(e.getKey());
-            ImageJPA image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+        for (Map.Entry<Language, ImageDomainObject> e : container.getImages().entrySet()) {
+            ImageJPA image = toJpaObject(e.getValue(), version, new LanguageJPA(e.getKey()), container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
         }
 
-        container.getImages().forEach((languageDO, imageDO) -> {
-            LanguageJPA language = findLanguage(languageDO);
-            ImageJPA image = toJpaObject(imageDO, version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+        container.getImages().forEach((language, imageDO) -> {
+            ImageJPA image = toJpaObject(imageDO, version, new LanguageJPA(language), container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
         });
@@ -155,9 +154,8 @@ public class TextDocumentContentSaver {
     public void saveTexts(TextDocTextsContainer container, UserDomainObject userDomainObject) {
         Version version = findVersion(container);
 
-        container.getTexts().forEach((languageDO, textDO) -> {
-            LanguageJPA language = findLanguage(languageDO);
-            TextJPA text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
+        container.getTexts().forEach((language, textDO) -> {
+            TextJPA text = toJpaObject(textDO, version, new LanguageJPA(language), container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
             textService.save(text);
         });

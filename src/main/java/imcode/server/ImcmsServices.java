@@ -91,6 +91,7 @@ public interface ImcmsServices {
 
     KerberosLoginService getKerberosLoginService();
 
+    @Deprecated
     DocumentLanguages getDocumentLanguages();
 
     LanguageService getLanguageService();

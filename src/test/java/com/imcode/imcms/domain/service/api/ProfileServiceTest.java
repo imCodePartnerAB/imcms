@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.ProfileDTO;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
@@ -28,16 +28,16 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private ProfileService profileService;
 
+    @Autowired
+    private LanguageService languageService;
+
     @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
-        DocumentLanguage language = DocumentLanguage.builder()
-                .code("en")
-                .build();
 
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        docGetterCallback.setLanguage(language);
+        docGetterCallback.setLanguage(languageService.findByCode(ImcmsConstants.ENG_CODE));
         Imcms.setUser(user);
     }
 
@@ -76,35 +76,35 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getById_When_ProfileExist_Expected_CorrectEntity() {
-	    assertTrue(profileService.getAll().isEmpty());
-	    List<ProfileDTO> profiles = createTestProfiles();
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
 
-	    int idFirstProfile = profiles.get(0).getId();
+        int idFirstProfile = profiles.get(0).getId();
 
-	    assertTrue(profileService.getById(idFirstProfile).isPresent());
+        assertTrue(profileService.getById(idFirstProfile).isPresent());
     }
 
-	@Test
-	public void createProfile_When_DocumentIdNotExist_Expected_CorrrectException() {
-		assertTrue(profileService.getAll().isEmpty());
+    @Test
+    public void createProfile_When_DocumentIdNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
 
-		ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
-		assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
-	}
+        ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
+        assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
+    }
 
-	@Test
-	public void createProfile_When_DocumentAliasNotExist_Expected_CorrrectException() {
-		assertTrue(profileService.getAll().isEmpty());
+    @Test
+    public void createProfile_When_DocumentAliasNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
 
-		ProfileDTO profile = new ProfileDTO("alias", "name1", 1);
-		assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
-	}
+        ProfileDTO profile = new ProfileDTO("alias", "name1", 1);
+        assertThrows(IllegalArgumentException.class, () -> profileService.create(profile));
+    }
 
-	@Test
-	public void getById_When_ProfileNotExist_Expected_EmptyOptional() {
-		int fakeId = -1;
-		Optional<Profile> profileDTO = profileService.getById(fakeId);
-		assertFalse(profileDTO.isPresent());
+    @Test
+    public void getById_When_ProfileNotExist_Expected_EmptyOptional() {
+        int fakeId = -1;
+        Optional<Profile> profileDTO = profileService.getById(fakeId);
+        assertFalse(profileDTO.isPresent());
     }
 
     @Test
@@ -133,41 +133,41 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_DocumentNameEmpty_Expected_CorrectException() {
         assertTrue(profileService.getAll().isEmpty());
-	    List<ProfileDTO> profiles = createTestProfiles();
+        List<ProfileDTO> profiles = createTestProfiles();
 
-	    ProfileDTO profile = profiles.get(0);
-	    profile.setName("name1");
-	    profile.setDocumentName("");
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("name1");
+        profile.setDocumentName("");
 
-	    assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
     }
 
-	@Test
-	public void update_When_DocumentIdNotExist_Expected_CorrrectException() {
-		assertTrue(profileService.getAll().isEmpty());
-		List<ProfileDTO> profiles = createTestProfiles();
+    @Test
+    public void update_When_DocumentIdNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
 
-		ProfileDTO profile = profiles.get(0);
-		profile.setName("name1");
-		profile.setDocumentName("999");
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("name1");
+        profile.setDocumentName("999");
 
-		assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
-	}
+        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+    }
 
-	@Test
-	public void update_When_DocumentAliasNotExist_Expected_CorrrectException() {
-		assertTrue(profileService.getAll().isEmpty());
-		List<ProfileDTO> profiles = createTestProfiles();
+    @Test
+    public void update_When_DocumentAliasNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
 
-		ProfileDTO profile = profiles.get(0);
-		profile.setName("name1");
-		profile.setDocumentName("alias");
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("name1");
+        profile.setDocumentName("alias");
 
-		assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
-	}
+        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+    }
 
-	@Test
-	public void deleteById_When_ProfileExist_Expected_EntityDeleted() {
+    @Test
+    public void deleteById_When_ProfileExist_Expected_EntityDeleted() {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
 

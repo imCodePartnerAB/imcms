@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -12,6 +11,7 @@ import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -40,7 +40,6 @@ import java.util.stream.Stream;
  * Used internally by DocumentMapper.
  */
 @Service
-@SuppressWarnings("unused")
 @Slf4j
 public class DocumentSaver {
 
@@ -162,7 +161,7 @@ public class DocumentSaver {
 
     @Transactional
     public void updateDocument(DocumentDomainObject doc,
-                               Map<DocumentLanguage, DocumentCommonContent> commonContents,
+                               Map<Language, DocumentCommonContent> commonContents,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -208,7 +207,7 @@ public class DocumentSaver {
     @Deprecated
     @Transactional
     public void updateDocument(DocumentDomainObject doc,
-                               Map<DocumentLanguage, DocumentCommonContent> commonContents,
+                               Map<Language, DocumentCommonContent> commonContents,
                                DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -269,7 +268,7 @@ public class DocumentSaver {
      */
     @Transactional
     public <T extends DocumentDomainObject> int saveNewDocument(T doc,
-                                                                Map<DocumentLanguage, DocumentCommonContent> dccMap,
+                                                                Map<Language, DocumentCommonContent> dccMap,
                                                                 EnumSet<DefaultDocumentMapper.SaveOpts> saveOpts,
                                                                 UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -306,8 +305,8 @@ public class DocumentSaver {
         if (doc instanceof TextDocumentDomainObject
                 && saveOpts.contains(DefaultDocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
         {
-            Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
-            Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
+            Map<Language, TextDomainObject> texts1 = new HashMap<>();
+            Map<Language, TextDomainObject> texts2 = new HashMap<>();
 
             dccMap.forEach((language, dcc) -> {
                 texts1.put(language, new TextDomainObject(dcc.getHeadline()));

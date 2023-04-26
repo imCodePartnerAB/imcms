@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
@@ -79,7 +80,7 @@ public class Document implements Serializable {
         return internalDocument.equals(document.internalDocument);
     }
 
-    public DocumentLanguage getLanguage() {
+    public Language getLanguage() {
         return internalDocument.getLanguage();
     }
 

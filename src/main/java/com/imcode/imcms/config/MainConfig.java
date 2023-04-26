@@ -103,6 +103,7 @@ public class MainConfig {
     }
 
     @Bean
+    @Deprecated
     public DocumentLanguages createDocumentLanguages(DocumentLanguageMapper languageMapper, Properties imcmsProperties) {
         return DocumentLanguages.create(languageMapper, imcmsProperties);
     }
@@ -175,12 +176,12 @@ public class MainConfig {
     @Bean
     public DocumentLoaderCachingProxy documentLoaderCachingProxy(DocumentVersionMapper docVersionMapper,
                                                                  DocumentLoader documentLoader,
-                                                                 DocumentLanguages languages,
+                                                                 LanguageService languageService,
                                                                  CommonContentService commonContentService,
                                                                  DocumentsCache documentsCache,
                                                                  Config config) {
 
-        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, commonContentService, documentsCache, config);
+        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languageService, commonContentService, documentsCache, config);
     }
 
     @Bean

@@ -1,7 +1,6 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.domain.dto.CategoryDTO;
@@ -9,7 +8,6 @@ import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
@@ -43,7 +41,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     private static final long serialVersionUID = 9196527330127566553L;
 
-    private static Logger log = LogManager.getLogger(DocumentDomainObject.class);
+    private static final Logger log = LogManager.getLogger(DocumentDomainObject.class);
 
     private volatile DocumentMeta meta = new DocumentMeta();
 
@@ -56,7 +54,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * Documents instances are created directly (using new) only in tests.
      * In production instances are created via factories that are responsible for injecting an appropriate language.
      */
-    private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").build();
+    private volatile Language language;
 
     /**
      * Factory method. Creates new document.
@@ -89,7 +87,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 throw new IllegalArgumentException(errorMessage);
         }
 
-        document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
+        document.setLanguage(Imcms.getServices().getLanguageService().getDefaultLanguage());
         document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
         return (T) document;
@@ -152,7 +150,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase;
     }
 
-    private static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
+    private static DocumentDomainObject asDefaultUser(int docId, Language language) {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         DocGetterCallback docGetterCallback = Imcms.getServices()
@@ -502,12 +500,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getAlias() {
-		final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
-		final CommonContent defaultLanguageCommonContent = Imcms.getServices().getCommonContentService().getOrCreate(getId(), versionNo, defaultLanguageCode);
-
-		final String alias = isDefaultLanguageAliasEnabled() ? defaultLanguageCommonContent.getAlias() : commonContent.getAlias();
-
-		return StringUtils.defaultIfBlank(alias, null);
+//		final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
+//		final CommonContent defaultLanguageCommonContent = Imcms.getServices().getCommonContentService().getOrCreate(getId(), versionNo, defaultLanguageCode);
+//
+//		final String alias = isDefaultLanguageAliasEnabled() ? defaultLanguageCommonContent.getAlias() : commonContent.getAlias();
+//
+//		return StringUtils.defaultIfBlank(alias, null);
+        return commonContent.getAlias();
 	}
 
 	public void setAlias(String alias) {
@@ -528,11 +527,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		this.meta = meta.clone();
 	}
 
-    public DocumentLanguage getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 
-    public void setLanguage(DocumentLanguage language) {
+    public void setLanguage(Language language) {
         this.language = Objects.requireNonNull(language, "language argument can not be null.");
     }
 
