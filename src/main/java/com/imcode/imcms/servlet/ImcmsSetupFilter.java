@@ -1,17 +1,12 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.mapping.DocGetterCallback;
-import com.imcode.imcms.mapping.DocumentMeta;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.LanguageMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -30,11 +25,10 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.API_PREFIX;
+import static imcode.server.ImcmsConstants.LOGIN_URL;
 import static imcode.util.Utility.writeUserLanguageCookie;
 
 /**
@@ -66,23 +60,13 @@ public class ImcmsSetupFilter implements Filter {
         return documentIdString;
     }
 
-    public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
-	    DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+    public static void updateUserDocGetterCallback(HttpServletRequest request, UserDomainObject user) {
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+        docGetterCallback.setLanguage(Imcms.getLanguage());
 
-	    DocumentLanguages dls = services.getDocumentLanguages();
-	    DocumentLanguage defaultLanguage = dls.getDefault();
-	    String docLangCode = Optional.ofNullable(request.getSession())
-			    .map(httpSession -> StringUtils.trimToEmpty((String) httpSession.getAttribute(REQUEST_PARAM__DOC_LANGUAGE))).orElse("");
-	    DocumentLanguage preferredLanguage = Optional.ofNullable(dls.getByCode(docLangCode))
-			    .orElse(Optional.ofNullable(docGetterCallback.getLanguage())
-					    .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
-							    .orElse(defaultLanguage)));
-
-	    docGetterCallback.setLanguage(preferredLanguage);
-
-	    final String stringDocId = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID));
-	    final Integer docId = stringDocId.isEmpty() ? null : Integer.valueOf(stringDocId);
-	    String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
+        final String stringDocId = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID));
+        final Integer docId = stringDocId.isEmpty() ? null : Integer.valueOf(stringDocId);
+        String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
 
         if (null != docId && null != versionStr) {
             switch (versionStr.toLowerCase()) {
@@ -163,53 +147,28 @@ public class ImcmsSetupFilter implements Filter {
                 return;
             }
 
-            final String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
-            final FallbackDecoder fallbackDecoder = new FallbackDecoder(
-                    Charset.forName(Imcms.DEFAULT_ENCODING),
-                    (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
-            );
-
-            if (null != workaroundUriEncoding) {
-                request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
-            }
+            request = new UriEncodingWorkaroundWrapper(request, Imcms.getDefaultFallbackDecoder());
 
             UserDomainObject user = Utility.getLoggedOnUser(request);
-
             final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
-            final LanguageMapper languageMapper = service.getLanguageMapper();
-
-	        final Cookie[] cookies = request.getCookies();
 
             if (null == user) {
                 user = userAndRoleMapper.getDefaultUser();
-                user.setLanguageIso639_2(languageMapper.getDefaultLanguage());
+                user.setLanguageIso639_2(service.getLanguageMapper().getDefaultLanguage());
                 assert user.isActive();
-                Utility.makeUserLoggedIn(request, response, user);
 
-	            Imcms.setUser(user);
-	            final String userLanguage;
-	            if (cookies != null) {
-		            final Optional<Cookie> languageCookie = Arrays.stream(cookies)
-				            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-				            .findFirst();
-		            userLanguage = languageCookie.isPresent() ? languageCookie.get().getValue() : user.getLanguage();
-	            } else {
-		            userLanguage = user.getLanguage();
-	            }
-	            Imcms.setLanguage(languageMapper.getLanguageByCode(userLanguage));
+                Imcms.setUser(user);
+                Imcms.setLanguage(Utility.getUserLanguageFromCookie(request.getCookies()));
+                Utility.makeUserLoggedIn(request, response, user);
             } else {
 //                final String login = req.getParameter(REQUEST_PARAMETER__USERNAME);
 //                final String password = req.getParameter(REQUEST_PARAMETER__PASSWORD);
-
-
 //                final UserDomainObject userToCheckAccess;
 //                if (null != login && null != password) {
 //                    userToCheckAccess = service.verifyUser(login, password);
 //                } else {
 //                    userToCheckAccess = user;
 //                }
-//
-//
 //                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, userToCheckAccess)) return;
 
                 if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
@@ -228,84 +187,61 @@ public class ImcmsSetupFilter implements Filter {
                             .updateAuthData(request);
                 }
 
-	            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-	            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
-
-	            Imcms.setUser(user);
-
-	            final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, fallbackDecoder));
-	            final String documentId = getDocumentIdString(Imcms.getServices(), path);
-
-	            Language aliasLanguage = null;
-	            DocumentDomainObject documentDomainObject = null;
-	            final Integer id = service.getDocumentMapper().toDocumentId(documentId);
-	            if (id != null) {
-		            final Version latestDocVersion = service.getVersionService().getLatestVersion(id);
-		            final List<CommonContent> commonContentList = service.getCommonContentService().getOrCreateCommonContents(id, latestDocVersion.getNo());
-		            documentDomainObject = service.getDocumentMapper().getDefaultDocument(id);
-		            aliasLanguage = commonContentList.stream()
-				            .filter(commonContent -> documentId.equalsIgnoreCase(commonContent.getAlias()))
-				            .map(CommonContent::getLanguage)
-				            .findFirst()
-				            .orElse(null);
-	            }
-
-	            final boolean showInDefaultLanguageMode = Optional.ofNullable(documentDomainObject)
-			            .map(document -> document.getDisabledLanguageShowMode().equals(DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE))
-			            .orElse(false);
-
-	            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-	            final String defaultLanguageCode = service.getLanguageService().getDefaultLanguage().getCode();
-
-	            if (StringUtils.isNotEmpty(requestedLangCode)) {
-		            writeUserLanguageCookie(response, requestedLangCode);
-		            Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
-		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, requestedLangCode);
-
-	            } else if (aliasLanguage != null) {
-		            writeUserLanguageCookie(response, aliasLanguage.getCode());
-		            Imcms.setLanguage(languageMapper.getLanguageByCode(aliasLanguage.getCode()));
-		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, aliasLanguage.getCode());
-
-				} else if (showInDefaultLanguageMode) {
-		            writeUserLanguageCookie(response, user.getLanguage());
-		            Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
-		            session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, user.getLanguage());
-
-				} else if (cookies != null) {
-		            Arrays.stream(cookies)
-				            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-				            .findFirst()
-				            .ifPresentOrElse(
-						            cookie -> Imcms.setLanguage(languageMapper.getLanguageByCode(cookie.getValue())),
-						            () -> Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode)));
-	            } else {
-		            Imcms.setLanguage(languageMapper.getLanguageByCode(defaultLanguageCode));
-		            writeUserLanguageCookie(response, defaultLanguageCode);
-	            }
+                ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+                Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+                Imcms.setUser(user);
+                Imcms.setLanguage(chooseLanguageAndWriteLangCookie(request, response, service));
             }
 
-	        ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
+            ImcmsSetupFilter.updateUserDocGetterCallback(request, user);
 
-	        Utility.initRequestWithApi(request, user);
+            Utility.initRequestWithApi(request, user);
 
-	        session.removeAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+            session.removeAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-	        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         } finally {
-	        Imcms.removeUser();
+            Imcms.removeUser();
         }
     }
 
-	private boolean redirectToLoginIfRestricted(HttpServletRequest request,
-	                                            HttpServletResponse response,
-	                                            ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
-	                                            UserDomainObject userToCheckAccess) throws ServletException, IOException {
+    private Language chooseLanguageAndWriteLangCookie(HttpServletRequest request, HttpServletResponse response, ImcmsServices services) {
+        final String workaroundUriEncoding = services.getConfig().getWorkaroundUriEncoding();
+        final FallbackDecoder fallbackDecoder = new FallbackDecoder(
+                Charset.forName(Imcms.DEFAULT_ENCODING),
+                (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
+        );
 
-		//Ugly resource filter.... to show at least login page
-		//auth-providers is allowed api call
-		if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
-			if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
+        final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, fallbackDecoder));
+        final String documentIdString = getDocumentIdString(Imcms.getServices(), path);
+
+        final LanguageService languageService = services.getLanguageService();
+        final CommonContentService commonContentService = services.getCommonContentService();
+        final Language defaultLanguage = languageService.getDefaultLanguage();
+
+        final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+
+        Language language = defaultLanguage;
+        if (StringUtils.isNotEmpty(requestedLangCode)) {
+            language = languageService.findByCode(requestedLangCode);
+            writeUserLanguageCookie(response, language.getCode());
+        } else if (commonContentService.existsByAlias(documentIdString)) {
+            language = commonContentService.getByAlias(documentIdString).get().getLanguage();
+            writeUserLanguageCookie(response, language.getCode());
+        }
+
+        return language;
+    }
+
+    private boolean redirectToLoginIfRestricted(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
+                                                UserDomainObject userToCheckAccess) throws ServletException, IOException {
+
+        //Ugly resource filter.... to show at least login page
+        //auth-providers is allowed api call
+        if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
+            if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
                 Utility.forwardToLogin(request, response);
                 return true;
             }
