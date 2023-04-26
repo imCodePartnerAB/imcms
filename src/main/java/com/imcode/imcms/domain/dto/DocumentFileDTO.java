@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.imcode.imcms.model.DocumentFile;
+import imcode.util.io.InputStreamSource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,8 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
     private String filename;
 
+    private String originalFilename;
+
     private boolean createdAsImage;
 
     private String mimeType;
@@ -28,6 +32,10 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
     private String fileId;
 
     private MultipartFile multipartFile;
+
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    private InputStreamSource inputStreamSource;
 
     public DocumentFileDTO(DocumentFile from) {
         super(from);

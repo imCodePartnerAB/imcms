@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.DocumentFile;
+import imcode.util.io.InputStreamSource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -9,13 +10,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 @Data
 @Entity
@@ -41,6 +36,9 @@ public class DocumentFileJPA extends DocumentFile {
     @Column(name = "filename", nullable = false)
     private String filename;
 
+    @Column(name = "original_filename", nullable = false)
+    private String originalFilename;
+
     @Column(name = "created_as_image", columnDefinition = "INT")
     private boolean createdAsImage;
 
@@ -55,6 +53,10 @@ public class DocumentFileJPA extends DocumentFile {
 
     @Transient
     private MultipartFile multipartFile;
+
+    @Transient
+    @EqualsAndHashCode.Exclude
+    private InputStreamSource inputStreamSource;
 
     public DocumentFileJPA(DocumentFile from) {
         super(from);

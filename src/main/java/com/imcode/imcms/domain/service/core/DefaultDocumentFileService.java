@@ -110,7 +110,10 @@ class DefaultDocumentFileService
     @Override
     public List<DocumentFile> getByDocId(int docId) {
         return findWorkingVersionFiles(docId).stream()
-                .map(DocumentFileDTO::new)
+                .map(documentFileJPA -> {
+                    documentFileJPA.setInputStreamSource(getFileDocumentInputStreamSource(documentFileJPA));
+                    return new DocumentFileDTO(documentFileJPA);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -133,7 +136,10 @@ class DefaultDocumentFileService
     public List<DocumentFile> getPublicByDocId(int docId) {
         final int latestVersionIndex = versionService.getLatestVersion(docId).getNo();
         return documentFileRepository.findByDocIdAndVersionIndex(docId, latestVersionIndex).stream()
-                .map(DocumentFileDTO::new)
+                .map(documentFileJPA -> {
+                    documentFileJPA.setInputStreamSource(getFileDocumentInputStreamSource(documentFileJPA));
+                    return new DocumentFileDTO(documentFileJPA);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -223,6 +229,7 @@ class DefaultDocumentFileService
     private <T extends DocumentFile> void setDocAndFileIds(List<T> saveUs, int docId) {
         saveUs.forEach(documentFile -> {
             documentFile.setDocId(docId);
+            documentFile.setOriginalFilename(StringUtils.defaultIfBlank(documentFile.getOriginalFilename(), documentFile.getFilename()));
             final String fileId = documentFile.getFileId();
 
             if (StringUtils.isBlank(fileId)) {
@@ -283,7 +290,11 @@ class DefaultDocumentFileService
                 copiesCount++;
             }
 
+            if (documentFile.getFileId().equals(originalFilename))
+                documentFile.setFileId(destination.getName());
+
             documentFile.setFilename(destination.getName());
+            documentFile.setInputStreamSource(new StorageInputStreamSource(destination, fileDocumentStorageClient));
 
             try (InputStream multipartInputStream = file.getInputStream()){
                 fileDocumentStorageClient.put(destination, multipartInputStream);

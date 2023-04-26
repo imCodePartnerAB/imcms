@@ -1,6 +1,9 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.*;
+import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.kerberos.KerberosLoginResult;
@@ -16,11 +19,9 @@ import org.apache.oro.text.perl.Perl5Util;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -158,8 +159,8 @@ public class GetDoc extends HttpServlet {
 
     private static void setResponseContentAttributes(HttpServletResponse res, FileDocumentFile file, int len) {
 
-        final String filename = file.getFilename();
-        final String contentDisposition = "attachment; filename=\"" + filename + "\"";
+        final String originalFilename = file.getOriginalFilename();
+        final String contentDisposition = "attachment; filename=\"" + originalFilename + "\"";
         final String mimeType = file.getMimeType();
 
         res.setContentLength(len);

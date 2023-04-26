@@ -38,6 +38,7 @@ public class FileDocumentDataInitializer extends DocumentDataInitializer {
         documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id");
         documentFileJPA.setFilename("test_name");
+        documentFileJPA.setOriginalFilename("test_name");
         documentFileJPA.setMimeType("test");
 
         final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();

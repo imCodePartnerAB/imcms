@@ -52,6 +52,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
             file.setCreatedAsImage(item.isCreatedAsImage());
             file.setInputStreamSource(documentFileService.getFileDocumentInputStreamSource(item));
             file.setFilename(item.getFilename());
+            file.setOriginalFilename(item.getOriginalFilename());
 
             doc.addFile(fileId, file);
             if (item.isDefaultFile()) {

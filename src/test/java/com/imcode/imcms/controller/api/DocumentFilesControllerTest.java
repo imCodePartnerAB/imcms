@@ -101,6 +101,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
         documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
         documentFileJPA.setFilename(filename);
+        documentFileJPA.setOriginalFilename(filename);
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
 
         final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
