@@ -9,7 +9,6 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -206,13 +204,7 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     private Language chooseLanguageAndWriteLangCookie(HttpServletRequest request, HttpServletResponse response, ImcmsServices services) {
-        final String workaroundUriEncoding = services.getConfig().getWorkaroundUriEncoding();
-        final FallbackDecoder fallbackDecoder = new FallbackDecoder(
-                Charset.forName(Imcms.DEFAULT_ENCODING),
-                (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
-        );
-
-        final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, fallbackDecoder));
+        final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, Imcms.getDefaultFallbackDecoder()));
         final String documentIdString = getDocumentIdString(Imcms.getServices(), path);
 
         final LanguageService languageService = services.getLanguageService();
