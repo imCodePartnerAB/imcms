@@ -81,7 +81,7 @@ define(
 		            .find('.mce-edit-focus')
 		            .removeClass('mce-edit-focus');
 
-	            const $parent = $this.parent();
+	            const $parent = $this.closest(".imcms-editor-area--text");
 
 	            $parent.addClass(ACTIVE_EDIT_AREA_CLASS);
 	            $parent.find(".imcms-editor-area__control-wrap--small").hide();

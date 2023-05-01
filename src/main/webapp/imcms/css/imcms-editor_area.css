@@ -15,9 +15,12 @@
 .imcms-editor-area,
 .imcms-editor-area--small {
 	display: inline-block;
-	position: relative;
-	padding: 10px 25px 10px 10px;
 	width: 100%;
+}
+
+.imcms-editor-body{
+    padding: 10px 25px 10px 10px;
+    position:relative;
 }
 
 .imcms-editor-area,
@@ -36,13 +39,9 @@
 
 .imcms-editor-area__text-label {
     display: block;
-    position: absolute;
-    padding: 3px 10px 3px 45px;
+    padding: 3px 5px;
     color: white;
     font: 400 14px/16px 'Play', Verdana, sans-serif;
-    width: 100%;
-    bottom: 100%;
-    left: 0;
     background-color: #b9d3df;
 }
 
@@ -56,12 +55,10 @@
 .imcms-editor-area__text-label::before,
 .imcms-toolbar-label::before {
     content: ' ';
-    display: block;
+    display: inline-block;
     width: 36px;
     height: 14px;
-    position: absolute;
-    top: 3px;
-    left: 3px;
+    margin-right: 5px;
     background: transparent url(/imcms/images/icon_logo_main_white.png) 0 0 no-repeat;
     background-size: cover;
 }
@@ -92,7 +89,7 @@
 }
 
 .imcms-editor-area--image {
-    width: auto;
+    width: min-content;
 }
 
 .imcms-editor-area--image > .imcms-editor-area__text-label{
@@ -111,7 +108,7 @@
 
 .imcms-editor-area__control-wrap {
     position: absolute;
-    top: 5px;
+    top: 3px;
     right: 5px;
 }
 
@@ -202,10 +199,6 @@
 
 .imcms-editor-area--loop {
     margin-top: 30px;
-}
-
-.imcms-editor-area--small.imcms-editor-area--loop {
-	padding: 25px 25px 0 0;
 }
 
 .imcms-editor-area--small.imcms-editor-area--text {

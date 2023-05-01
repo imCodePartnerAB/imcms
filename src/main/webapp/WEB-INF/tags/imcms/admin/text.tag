@@ -177,22 +177,24 @@
 				        <c:if test="${not empty label && isShowlabel}">
 					        <div class="imcms-editor-area__text-label">${label}</div>
 				        </c:if>
-				        <div class="imcms-editor-area__text-toolbar"></div>
-				        <${tag} class="imcms-editor-content imcms-editor-content--text"
-				        data-index="${index}" ${externalPart}
-				        data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
-				        data-lang-code="${language}" placeholder="<c:if
-					        test="${empty content}">${placeholder}</c:if>" ${tagClose}
-				        <c:if test="${not empty content}">
-					        ${content}
-				        </c:if>
-					        ${tagEnd}
-				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editorLabel}"></div>
-					        <c:if test="${not empty label && isShowlabel}">
-						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
-					        </c:if>
-				        </div>
+                        <div class="imcms-editor-body">
+                            <div class="imcms-editor-area__text-toolbar"></div>
+                            <${tag} class="imcms-editor-content imcms-editor-content--text"
+                            data-index="${index}" ${externalPart}
+                            data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+                            data-lang-code="${language}" placeholder="<c:if
+                                test="${empty content}">${placeholder}</c:if>" ${tagClose}
+                            <c:if test="${not empty content}">
+                                ${content}
+                            </c:if>
+                                ${tagEnd}
+                            <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+                                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editorLabel}"></div>
+                                <c:if test="${not empty label && isShowlabel}">
+                                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
+                                </c:if>
+                            </div>
+                        </div>
 			        </div>
 		        </c:when>
 		        <c:otherwise>
@@ -200,21 +202,23 @@
 				        <c:if test="${not empty label && isShowlabel}">
 					        <div class="imcms-editor-area__text-label">${label}</div>
 				        </c:if>
-				        <div class="imcms-editor-area__text-toolbar"></div>
-				        <${tag} class="imcms-editor-content imcms-editor-content--text"
-				        data-index="${index}" ${externalPart}
-				        data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
-				        data-lang-code="${language}" placeholder="<c:if
-					        test="${empty content}">${placeholder}</c:if>" ${tagClose}
-				        <c:if test="${not empty content}">
-					        ${content}
-				        </c:if>
-					        ${tagEnd}
-				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editorLabel}"></div>
-				        </div>
+                        <div class="imcms-editor-body">
+                            <div class="imcms-editor-area__text-toolbar"></div>
+                            <${tag} class="imcms-editor-content imcms-editor-content--text"
+                            data-index="${index}" ${externalPart}
+                            data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+                            data-lang-code="${language}" placeholder="<c:if
+                                test="${empty content}">${placeholder}</c:if>" ${tagClose}
+                            <c:if test="${not empty content}">
+                                ${content}
+                            </c:if>
+                                ${tagEnd}
+                            <div class="imcms-editor-area__control-wrap">
+                                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text" data-label="${editorLabel}"></div>
+                            </div>
+                        </div>
 			        </div>
-		        </c:otherwise>
+                </c:otherwise>
 	        </c:choose>
             ${post}
         </c:if>

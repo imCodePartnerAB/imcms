@@ -23,7 +23,7 @@
 <div class="imcms-info-msg">Implemented admin panel buttons: "Public", "Edit", "Page Info" and "Document"</div>
 
 <div class="imcms-demo-page">
-    <imcms:menu index='1'>
+    <imcms:menu index='1' label="ZALUPA">
         <div class="imcms-demo-page__menu imcms-demo-menu">
             <imcms:menuLoop>
                 <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
@@ -44,16 +44,16 @@
         <div class="imcms-demo-content__title">Start page</div>
 
         <div>imcms:image tag without style attribute</div>
-        <imcms:image no="100"/>
+        <imcms:image no="100" label="ZALUPA"/>
 
         <div>imcms:image tag with attribute style="width: 100px;"</div>
         <imcms:image no="101" style="width: 100px;"/>
 
         <div>imcms:image tag with attribute style="max-width: 120px;"</div>
-        <imcms:image no="102" style="max-width: 120px;"/>
+        <imcms:image no="102" style="max-width: 120px;" label="ZALUPA" showMode="small"/>
 
         <div>imcms:image tag with attribute style="height: 100px;"</div>
-        <imcms:image no="103" style="height: 100px;"/>
+        <imcms:image no="103" style="height: 100px;" showMode="small"/>
 
         <div>imcms:image tag with attribute style="max-height: 120px;"</div>
         <imcms:image no="104" style="max-height: 120px;"/>
@@ -88,7 +88,7 @@
         <imcms:text document="1001" no="8" label="Read-only text for all non-1001 docs" formats="text" post="<br/>"/>
 
         <br/>
-        <imcms:contentLoop index="1">
+        <imcms:contentLoop index="1" label="ZALUPA">
             <imcms:loop>
                 <div class="imcms-demo-content__loop-content demo-loop-content">
                     <imcms:image no="1"/>
@@ -107,7 +107,7 @@
 
         <br/>
         <br/>
-        <imcms:contentLoop index="10" document="1001">
+        <imcms:contentLoop index="10" document="1001" label="ZALUPA" showMode="small">
             <imcms:loop>
                 <div>#${entryIndex} Loop example for doc 1001</div>
             </imcms:loop>
@@ -135,7 +135,7 @@
 
     <br/>
     <div>Menu for doc 1001:</div>
-    <imcms:menu index='10' document="1001">
+    <imcms:menu index='10' document="1001" label="ZALUPA" showMode="small">
         <div class="imcms-demo-page__menu imcms-demo-menu">
             <imcms:menuLoop>
                 <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">

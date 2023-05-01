@@ -87,30 +87,34 @@
 
 			        <div class="imcms-editor-area--small imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
 			             data-index="${index}">
-				        <div class="imcms-editor-area__content imcms-editor-content"
-				             data-doc-id="${targetDocId}"${externalPart}
-				             data-index="${index}">${loopContent}</div>
-				        <div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editorLabel}"></div>
-					        <c:if test="${not empty label && isShowlabel}">
-						        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
-					        </c:if>
-				        </div>
+						<div class="imcms-editor-body">
+							<div class="imcms-editor-area__content imcms-editor-content"
+								 data-doc-id="${targetDocId}"${externalPart}
+								 data-index="${index}">${loopContent}</div>
+							<div class="imcms-editor-area__control-wrap imcms-editor-area__control-wrap--small">
+								<div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editorLabel}"></div>
+								<c:if test="${not empty label && isShowlabel}">
+									<div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--info" data-label="${label}"></div>
+								</c:if>
+							</div>
+						</div>
 			        </div>
 		        </c:when>
 		        <c:otherwise>
-			        <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
-			             data-index="${index}">
-				        <c:if test="${not empty label && isShowlabel}">
-					        <div class="imcms-editor-area__text-label">${label}</div>
-				        </c:if>
-				        <div class="imcms-editor-area__content imcms-editor-content"
-				             data-doc-id="${targetDocId}"${externalPart}
-				             data-index="${index}">${loopContent}</div>
-				        <div class="imcms-editor-area__control-wrap">
-					        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editorLabel}"></div>
-				        </div>
-			        </div>
+					<div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+						 data-index="${index}">
+						<c:if test="${not empty label && isShowlabel}">
+							<div class="imcms-editor-area__text-label">${label}</div>
+						</c:if>
+						<div class="imcms-editor-body">
+							<div class="imcms-editor-area__content imcms-editor-content"
+								 data-doc-id="${targetDocId}"${externalPart}
+								 data-index="${index}">${loopContent}</div>
+							<div class="imcms-editor-area__control-wrap">
+								<div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop" data-label="${editorLabel}"></div>
+							</div>
+						</div>
+					</div>
 		        </c:otherwise>
 	        </c:choose>
         </c:when>
