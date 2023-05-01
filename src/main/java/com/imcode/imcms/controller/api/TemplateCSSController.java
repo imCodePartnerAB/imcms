@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -21,10 +22,14 @@ public class TemplateCSSController {
 
 	@GetMapping("/{templateName}")
 	@CheckAccess(docPermission = AccessContentType.DOC_INFO)
-	public String get(@PathVariable String templateName, @RequestParam("version") TemplateCSSVersion version) {
+	public String get(@PathVariable String templateName,
+					  @RequestParam("version") TemplateCSSVersion version,
+					  HttpServletResponse res) {
 		if (!templateCSSService.existsLocally(templateName)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
+
+		res.setHeader("Cache-Control", "no-cache");
 
 		return templateCSSService.get(templateName, version);
 	}

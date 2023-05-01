@@ -6,8 +6,7 @@ define("imcms-templates-css-rest-api", ["imcms-rest-api"], function (rest) {
 	api.get = (templateName, version) => rest.ajax.call({
 		url: `${url}/${templateName}?version=${version}`,
 		type: 'GET',
-		json: false,
-		cache: false
+		json: false
 	});
 
 	api.getRevision = (templateName, revision) => rest.ajax.call({
