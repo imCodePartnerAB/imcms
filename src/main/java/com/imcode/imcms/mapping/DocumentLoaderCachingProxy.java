@@ -1,12 +1,12 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
@@ -35,7 +35,7 @@ public class DocumentLoaderCachingProxy {
 
 	private final DocumentVersionMapper versionMapper;
 	private final DocumentLoader loader;
-	private final DocumentLanguages documentLanguages;
+    private final LanguageService languageService;
 	private final CommonContentService commonContentService;
 	private final DocumentsCache documentsCache;
 	private final int size;
@@ -57,12 +57,12 @@ public class DocumentLoaderCachingProxy {
 
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper,
                                       DocumentLoader loader,
-                                      DocumentLanguages documentLanguages,
+                                      LanguageService languageService,
                                       CommonContentService commonContentService,
                                       DocumentsCache documentsCache, Config config) {
         this.versionMapper = versionMapper;
         this.loader = loader;
-        this.documentLanguages = documentLanguages;
+        this.languageService = languageService;
         this.commonContentService = commonContentService;
         this.documentsCache = documentsCache;
         this.size = config.getDocumentCacheMaxSize();
@@ -159,7 +159,7 @@ public class DocumentLoaderCachingProxy {
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
-            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+            doc.setLanguage(languageService.findByCode(docLanguageCode));
 
             return loader.loadAndInitContent(doc);
         });
@@ -183,7 +183,7 @@ public class DocumentLoaderCachingProxy {
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
-            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+            doc.setLanguage(languageService.findByCode(docLanguageCode));
 
             return loader.loadAndInitContent(doc);
         });
@@ -205,7 +205,7 @@ public class DocumentLoaderCachingProxy {
 
         doc.setMeta(meta.clone());
         doc.setVersionNo(version.getNo());
-        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
+        doc.setLanguage(languageService.findByCode(docRef.getLanguageCode()));
 
         return loader.loadAndInitContent(doc);
     }
@@ -214,8 +214,8 @@ public class DocumentLoaderCachingProxy {
         metas.remove(docId);
 	    versionInfos.remove(docId);
 
-	    documentLanguages.getCodes().forEach(code -> {
-		    DocCacheKey key = new DocCacheKey(docId, code);
+	    languageService.getAll().forEach(language -> {
+		    DocCacheKey key = new DocCacheKey(docId, language.getCode());
 
 		    workingDocs.remove(key);
 		    defaultDocs.remove(key);

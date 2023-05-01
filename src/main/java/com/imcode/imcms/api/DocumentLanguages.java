@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * Document language support.
  */
+@Deprecated
 public class DocumentLanguages {
 
     public static final Logger LOG = LogManager.getLogger(DocumentLanguages.class);

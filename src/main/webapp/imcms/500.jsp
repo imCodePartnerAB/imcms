@@ -3,7 +3,7 @@
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<fmt:setLocale value="<%=Utility.getUserLanguage(request.getCookies())%>"/>
+<fmt:setLocale value="<%=Utility.getUserLanguageFromCookie(request.getCookies()).getCode()%>"/>
 <fmt:setBundle basename="imcms" var="resource_property"/>
 
 <html>

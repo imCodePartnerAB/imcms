@@ -1,17 +1,17 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.SystemPropertyService;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +26,9 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     @Autowired
     private SystemPropertyService systemPropertyService;
 
+    @Autowired
+    private LanguageService languageService;
+
     @Override
     protected String controllerPath() {
         return "/properties";
@@ -36,11 +39,8 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
-        DocumentLanguage language = DocumentLanguage.builder()
-                .code("en")
-                .build();
 
-        docGetterCallback.setLanguage(language);
+        docGetterCallback.setLanguage(languageService.findByCode(ImcmsConstants.ENG_CODE));
         Imcms.setUser(user);
     }
 

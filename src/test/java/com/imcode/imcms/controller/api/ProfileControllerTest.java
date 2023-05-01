@@ -1,8 +1,8 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ProfileDTO;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
@@ -31,17 +31,17 @@ public class ProfileControllerTest extends AbstractControllerTest {
     @Autowired
     private ProfileService profileService;
 
+    @Autowired
+    private LanguageService languageService;
+
     @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
-        DocumentLanguage language = DocumentLanguage.builder()
-                .code("en")
-                .build();
 
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        docGetterCallback.setLanguage(language);
+        docGetterCallback.setLanguage(languageService.findByCode(ImcmsConstants.ENG_CODE));
         Imcms.setUser(user);
     }
 

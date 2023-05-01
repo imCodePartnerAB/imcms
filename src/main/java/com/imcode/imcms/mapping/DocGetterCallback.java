@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -33,10 +33,10 @@ public class DocGetterCallback implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
     private static final long serialVersionUID = 2496394918087427549L;
-    private volatile DocumentLanguage language;
+    private volatile Language language;
     private UserDomainObject user;
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
-    private Callback workingDocCallback = (docId, docMapper) -> {
+    private final Callback workingDocCallback = (docId, docMapper) -> {
         logger.trace("Working doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getWorkingDocument(docId, language);
     };
@@ -45,12 +45,12 @@ public class DocGetterCallback implements Serializable {
         return docMapper.getDefaultDocument(docId, language);
     };
     private final Callback defaultDocCallback = (docId, docMapper) -> {
-        logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", docId, language);
+        logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
 
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
         if (doc != null) {
-            List<DocumentLanguage> docLanguages = Imcms.getServices()
+            List<Language> docLanguages = Imcms.getServices()
                     .getDocumentMapper()
                     .getCommonContents(doc.getId(), doc.getVersionNo())
                     .entrySet()
@@ -77,9 +77,9 @@ public class DocGetterCallback implements Serializable {
         this.user = user;
     }
 
-    private boolean shouldDocBeShownWithDefaultLang(DocumentDomainObject doc, List<DocumentLanguage> docLanguages) {
+    private boolean shouldDocBeShownWithDefaultLang(DocumentDomainObject doc, List<Language> docLanguages) {
         return (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
-                && docLanguages.contains(Imcms.getServices().getDocumentLanguages().getDefault()));
+                && docLanguages.contains(Imcms.getServices().getLanguageService().getDefaultLanguage()));
     }
 
     @SuppressWarnings("unchecked")
@@ -114,11 +114,11 @@ public class DocGetterCallback implements Serializable {
         };
     }
 
-    public DocumentLanguage getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 
-    public void setLanguage(DocumentLanguage language) {
+    public void setLanguage(Language language) {
         this.language = language;
     }
 

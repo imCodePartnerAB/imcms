@@ -1,8 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.api.TextDocument;
@@ -10,6 +8,7 @@ import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.exception.DocumentSaveException;
+import com.imcode.imcms.model.Language;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -27,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"WeakerAccess"})
 public interface DocumentMapper extends DocumentGetter {
 
     /**
@@ -69,7 +68,7 @@ public interface DocumentMapper extends DocumentGetter {
      *
      * @since 6.0
      */
-    <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
+    <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<Language, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException;
 
     /**
@@ -83,7 +82,7 @@ public interface DocumentMapper extends DocumentGetter {
      *
      * @since 6.0
      */
-    int saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
+    int saveDocument(DocumentDomainObject doc, Map<Language, DocumentCommonContent> commonContents, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException;
 
     /**
@@ -186,7 +185,7 @@ public interface DocumentMapper extends DocumentGetter {
      * @return working document
      * @since 6.0
      */
-    <T extends DocumentDomainObject> T getWorkingDocument(int docId, DocumentLanguage language);
+    <T extends DocumentDomainObject> T getWorkingDocument(int docId, Language language);
 
     /**
      * @param docId    document id
@@ -194,7 +193,7 @@ public interface DocumentMapper extends DocumentGetter {
      * @return default document
      * @since 6.0
      */
-    <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language);
+    <T extends DocumentDomainObject> T getDefaultDocument(int docId, Language language);
 
     /**
      * @param docId        document id
@@ -209,8 +208,6 @@ public interface DocumentMapper extends DocumentGetter {
     CategoryMapper getCategoryMapper();
 
     Database getDatabase();
-
-    DocumentLanguages getDocumentLanguages();
 
     /**
      * Saves text and non-saved enclosing content loop the text may refer.
@@ -244,7 +241,7 @@ public interface DocumentMapper extends DocumentGetter {
                                                             String langCode,
                                                             ServletRequest request);
 
-    Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo);
+    Map<Language, DocumentCommonContent> getCommonContents(int docId, int versionNo);
 
     /**
      * Document save options.

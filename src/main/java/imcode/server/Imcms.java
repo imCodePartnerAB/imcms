@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.imcms.model.Language;
 import imcode.server.user.UserDomainObject;
+import imcode.util.FallbackDecoder;
 import imcode.util.PropertyManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Set;
 
@@ -46,6 +48,8 @@ public class Imcms {
      */
     private static ThreadLocal<Language> languages = new ThreadLocal<>();
 
+    private static volatile FallbackDecoder defaultFallbackDecoder;
+
     /**
      * Flag variable that shows is document versioning feature are turned on in server properties
      */
@@ -64,6 +68,7 @@ public class Imcms {
         Imcms.isVersioningAllowed = Boolean.parseBoolean(versioningProperty);
 
         setRootPath(servletContext.getRealPath("/"));
+        setDefaultFallbackDecoder(imcmsServices);
     }
 
     /**
@@ -159,6 +164,10 @@ public class Imcms {
         return services.getDatabaseService().getDataSource();
     }
 
+    public static FallbackDecoder getDefaultFallbackDecoder(){
+        return defaultFallbackDecoder;
+    }
+
     @PostConstruct
     private void init() {
         invokeStart();
@@ -188,6 +197,14 @@ public class Imcms {
     private void setRootPath(String path) {
         PropertyManager.setRoot(path);
         Imcms.path = new File(path);
+    }
+
+    private void setDefaultFallbackDecoder(ImcmsServices services){
+        final String workaroundUriEncoding = services.getConfig().getWorkaroundUriEncoding();
+        defaultFallbackDecoder = new FallbackDecoder(
+                Charset.forName(DEFAULT_ENCODING),
+                (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
+        );
     }
 
     public static class StartupException extends RuntimeException {

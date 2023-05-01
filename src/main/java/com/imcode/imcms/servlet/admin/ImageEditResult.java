@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 
+@Deprecated
 public class ImageEditResult {
 
     private boolean shareImages;

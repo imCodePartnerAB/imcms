@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
@@ -25,14 +25,13 @@ public class DocumentContentMapper {
 
     private final CommonContentRepository commonContentRepository;
     private final LanguageRepository languageRepository;
-    private final DocumentLanguageMapper languageMapper;
     private final CommonContentService commonContentService;
 
-    public DocumentContentMapper(CommonContentRepository commonContentRepository, LanguageRepository languageRepository,
-                                 DocumentLanguageMapper languageMapper, CommonContentService commonContentService) {
+    public DocumentContentMapper(CommonContentRepository commonContentRepository,
+                                 LanguageRepository languageRepository,
+                                 CommonContentService commonContentService) {
         this.commonContentRepository = commonContentRepository;
         this.languageRepository = languageRepository;
-        this.languageMapper = languageMapper;
         this.commonContentService = commonContentService;
     }
 
@@ -41,13 +40,13 @@ public class DocumentContentMapper {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     @Deprecated
-    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
+    public Map<Language, DocumentCommonContent> getCommonContents(int docId) {
         return getCommonContents(docId, DocumentVersion.WORKING_VERSION_NO);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
-        Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
+    public Map<Language, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
+        Map<Language, DocumentCommonContent> result = new HashMap<>();
 
         final List<CommonContentJPA> receivedContents = commonContentService.getOrCreateCommonContents(docId, versionNo)
                 .stream()
@@ -56,7 +55,7 @@ public class DocumentContentMapper {
 
         for (CommonContentJPA commonContent : receivedContents) {
             result.put(
-                    languageMapper.toApiObject(commonContent.getLanguage()),
+                    commonContent.getLanguage(),
                     toApiObject(commonContent)
             );
         }

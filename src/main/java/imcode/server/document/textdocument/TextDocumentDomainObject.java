@@ -3,10 +3,10 @@ package imcode.server.document.textdocument;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
 import imcode.server.Imcms;
@@ -68,18 +68,26 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this(ID_NEW);
     }
 
-
     public TextDocumentDomainObject(int documentId) {
-        this(documentId, Imcms.getUser().getLanguage());
+        this(documentId, Imcms.getLanguage());
     }
 
-	public TextDocumentDomainObject(String langCode) {
-		this(ID_NEW, langCode);
-	}
+    public TextDocumentDomainObject(String langCode){
+        this(ID_NEW, Imcms.getServices().getLanguageService().findByCode(langCode));
+    }
+
+    public TextDocumentDomainObject(Language language) {
+        this(ID_NEW, language);
+    }
 
     public TextDocumentDomainObject(int documentId, String langCode) {
         setId(documentId);
-        setLanguage(DocumentLanguage.builder().code(langCode).build());
+        setLanguage(Imcms.getServices().getLanguageService().findByCode(langCode));
+    }
+
+    public TextDocumentDomainObject(int documentId, Language language) {
+        setId(documentId);
+        setLanguage(language);
     }
 
     @Override

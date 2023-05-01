@@ -87,8 +87,8 @@ public class DefaultCommonContentService
     }
 
 	@Override
-	public CommonContent getByAlias(String alias) {
-		return repository.findFirstByAlias(alias);
+	public Optional<CommonContent> getByAlias(String alias) {
+		return repository.findFirstByAlias(alias).map(CommonContentDTO::new);
 	}
 
 	@Override

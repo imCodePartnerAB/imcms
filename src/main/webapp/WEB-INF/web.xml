@@ -723,7 +723,7 @@
 
 
     <error-page>
-        <exception-type>com.imcode.imcms.api.exception.DocumentLanguageDisabledException</exception-type>
+        <exception-type>com.imcode.imcms.api.exception.NoAvailableCommonContentException</exception-type>
         <location>/imcms/404.jsp</location>
     </error-page>
 

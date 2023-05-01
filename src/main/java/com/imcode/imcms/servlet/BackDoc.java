@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -48,8 +47,7 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument) {
             redirectToDocumentId(req, res, lastTextDocument.getId());
         } else {
-            DocumentLanguages dls = imcmsServices.getDocumentLanguages();
-            Imcms.getUser().getDocGetterCallback().setLanguage(dls.getDefault());
+            Imcms.getUser().getDocGetterCallback().setLanguage(Imcms.getServices().getLanguageService().getDefaultLanguage());
             redirectToDocumentId(req, res, imcmsServices.getSystemData().getStartDocument());
         }
     }

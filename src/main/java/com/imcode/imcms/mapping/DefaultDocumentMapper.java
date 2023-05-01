@@ -1,15 +1,20 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
@@ -53,7 +58,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     private final CategoryMapper categoryMapper;
     private final DocumentContentMapper documentContentMapper;
     private final MenuRepository menuRepository;
-    private final DocumentLanguages documentLanguages;
+    private final LanguageService languageService;
     private final MenuService defaultMenuService;
     private DocumentIndex documentIndex;
 
@@ -63,9 +68,9 @@ public class DefaultDocumentMapper implements DocumentMapper {
                                  DocumentContentMapper documentContentMapper,
                                  MenuRepository menuRepository,
                                  Database database,
-                                 DocumentLanguages languages,
                                  CommonContentService commonContentService,
                                  DocumentLoaderCachingProxy documentLoaderCachingProxy,
+                                 LanguageService languageService,
                                  MenuService defaultMenuService) {
 
         this.nativeQueries = nativeQueries;
@@ -74,7 +79,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         this.documentContentMapper = documentContentMapper;
         this.menuRepository = menuRepository;
         this.database = database;
-        this.documentLanguages = languages;
+        this.languageService = languageService;
         this.commonContentService = commonContentService;
         this.documentLoaderCachingProxy = documentLoaderCachingProxy;
         this.defaultMenuService = defaultMenuService;
@@ -200,10 +205,10 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public <T extends DocumentDomainObject> T saveNewDocument(T doc, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
         T docClone = (T) doc.clone();
-        DocumentLanguage language = docClone.getLanguage();
+        Language language = docClone.getLanguage();
 
         if (language == null) {
-            language = documentLanguages.getDefault();
+            language = languageService.getDefaultLanguage();
             docClone.setLanguage(language);
         }
 
@@ -223,7 +228,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
      * @since 6.0
      */
     @SuppressWarnings("unchecked")
-    private <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
+    private <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<Language, DocumentCommonContent> appearances,
                                                                EnumSet<SaveOpts> saveOpts,
                                                                UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
@@ -242,7 +247,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<Language, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
@@ -255,7 +260,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
-    public int saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
+    public int saveDocument(DocumentDomainObject doc, Map<Language, DocumentCommonContent> commonContents, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -274,7 +279,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
-        for (DocumentLanguage language : documentLanguages.getAll()) {
+        for (Language language : languageService.getAll()) {
             DocumentDomainObject doc = getWorkingDocument(docId, language);
             docs.add(doc);
         }
@@ -448,15 +453,15 @@ public class DefaultDocumentMapper implements DocumentMapper {
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
         DocumentMeta documentMeta = documentLoaderCachingProxy.getMeta(versionRef.getDocId());
-        Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper
+        Map<Language, DocumentCommonContent> dccMap = documentContentMapper
                 .getCommonContents(versionRef.getDocId(), versionRef.getNo());
         List<DocumentDomainObject> newDocs = new LinkedList<>();
 
         makeDocumentLookNew(documentMeta, user);
-	    documentMeta.setId(null);
+        documentMeta.setId(null);
 
-        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
-            DocumentLanguage language = e.getKey();
+        for (Map.Entry<Language, DocumentCommonContent> e : dccMap.entrySet()) {
+            Language language = e.getKey();
             DocumentCommonContent dcc = e.getValue();
 
             DocumentDomainObject newDoc = getCustomDocument(DocRef.of(versionRef, language.getCode())).clone();
@@ -497,12 +502,12 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     @Override
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, documentLanguages.getDefault());
+        return getDefaultDocument(docId, languageService.getDefaultLanguage());
     }
 
     @Override
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, documentLanguages.getDefault());
+        return getWorkingDocument(docId, languageService.getDefaultLanguage());
     }
 
     @Override
@@ -516,7 +521,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
-    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, DocumentLanguage language) {
+    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, Language language) {
         return getWorkingDocument(docId, language.getCode());
     }
 
@@ -531,7 +536,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
-    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
+    public <T extends DocumentDomainObject> T getDefaultDocument(int docId, Language language) {
         return getDefaultDocument(docId, language.getCode());
     }
 
@@ -568,11 +573,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
         return database;
     }
 
-    @Override
-    public DocumentLanguages getDocumentLanguages() {
-        return documentLanguages;
-    }
-
     /**
      * @since 6.0
      */
@@ -597,7 +597,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         try {
             final TextDocumentDomainObject internalTextDoc = textDocument.getInternal();
 
-            final Map<DocumentLanguage, TextDomainObject> langTexts = internalTextDoc.getTexts().values()
+            final Map<Language, TextDomainObject> langTexts = internalTextDoc.getTexts().values()
                     .stream()
                     .collect(Collectors.toMap(i -> internalTextDoc.getLanguage(), text -> text));
 
@@ -609,7 +609,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
                     .collect(Collectors.toList());
 
 
-            for (TextDocTextContainer container: containers) {
+            for (TextDocTextContainer container : containers) {
                 documentSaver.saveText(container, user);
             }
         } finally {
@@ -621,8 +621,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         UserDomainObject user = Imcms.getUser();
 
-        DocumentLanguage language = user == null
-                ? documentLanguages.getDefault()
+        Language language = user == null
+                ? languageService.getDefaultLanguage()
                 : user.getDocGetterCallback().getLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<>();
@@ -654,7 +654,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
      * @return document with needed version and language or null
      * @since 6.0
      */
-    private <T extends DocumentDomainObject> T getVersionedDocument(int docId, String langCode, ServletRequest request) {
+    public <T extends DocumentDomainObject> T getVersionedDocument(int docId, String langCode, ServletRequest request) {
         return (isWorkingDocumentVersion(request))
                 ? getWorkingDocument(docId, langCode)
                 : getDefaultDocument(docId, langCode);
@@ -680,7 +680,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     }
 
     @Override
-    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
+    public Map<Language, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
         return documentContentMapper.getCommonContents(docId, versionNo);
     }
 

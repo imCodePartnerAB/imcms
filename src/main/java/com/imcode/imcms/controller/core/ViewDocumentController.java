@@ -1,14 +1,12 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
+import com.imcode.imcms.api.exception.NoAvailableCommonContentException;
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentWasteBasketService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Version;
@@ -58,6 +56,7 @@ public class ViewDocumentController {
     private final String version;
     private final boolean isVersioningAllowed;
     private final PublicDocumentsCache publicDocumentsCache;
+    private final LanguageService languageService;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
@@ -68,7 +67,8 @@ public class ViewDocumentController {
                            @Qualifier("storageImagePath") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
-                           PublicDocumentsCache publicDocumentsCache) {
+                           PublicDocumentsCache publicDocumentsCache,
+                           LanguageService languageService) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
@@ -80,6 +80,7 @@ public class ViewDocumentController {
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
         this.publicDocumentsCache = publicDocumentsCache;
+        this.languageService = languageService;
     }
 
     @RequestMapping({"", "/"})
@@ -87,9 +88,9 @@ public class ViewDocumentController {
             throws IOException {
 
         final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
-        final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
+        final TextDocumentDomainObject textDocument = getTextDocument(docId, request);
 
-        return processDocView(textDocument, request, response, mav);
+        return processDocView(textDocument, docId, request, response, mav);
     }
 
     @RequestMapping("/**")
@@ -99,12 +100,13 @@ public class ViewDocumentController {
         final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
         final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern, request.getPathInfo());
 
-        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
+        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, request);
 
-        return processDocView(textDocument, request, response, mav);
+        return processDocView(textDocument, docIdentifier, request, response, mav);
     }
 
     private ModelAndView processDocView(TextDocumentDomainObject textDocument,
+                                        String docIdentifier,
                                         HttpServletRequest request,
                                         HttpServletResponse response,
                                         ModelAndView mav) throws IOException {
@@ -128,7 +130,7 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         if (!isVersioningAllowed) {
-	        publicDocumentsCache.invalidateDoc(docId, Collections.singletonList(textDocument.getAlias()));
+            publicDocumentsCache.invalidateDoc(docId, Collections.singletonList(textDocument.getAlias()));
         }
 
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
@@ -140,33 +142,51 @@ public class ViewDocumentController {
 
         final String viewName = textDocument.getTemplateName();
         final String docLangCode = textDocument.getLanguage().getCode();
-        final Version latestDocVersion = versionService.getLatestVersion(docId);
+        final Version docVersion = isPreviewMode ? versionService.getDocumentWorkingVersion(docId) : versionService.getLatestVersion(docId);
+        final Language defaultLanguage = languageService.getDefaultLanguage();
 
         final List<CommonContent> enabledCommonContents =
-                commonContentService.getOrCreateCommonContents(docId, latestDocVersion.getNo())
+                commonContentService.getOrCreateCommonContents(docId, docVersion.getNo())
                         .stream()
-		                .filter(commonContent -> isEditMode || commonContent.isEnabled())
+                        .filter(commonContent -> isEditMode || commonContent.isEnabled())
                         .collect(Collectors.toList());
 
-        if (enabledCommonContents.size() == 0) {
-            throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
+        if (enabledCommonContents.isEmpty()) {
+            throw new NoAvailableCommonContentException();
         }
 
-        final Optional<CommonContent> optionalCommonContent = enabledCommonContents.stream()
+        //if docIdentifier = alias
+        if (!docIdentifier.equals(String.valueOf(textDocument.getId()))) {
+            final Optional<CommonContent> commonContentByAlias = enabledCommonContents.stream()
+                    .filter(commonContent -> commonContent.getAlias().equalsIgnoreCase(docIdentifier))
+                    .findFirst();
+
+            //if user has no edit access and common content by alias is not enabled -> 404
+            //if user has no edit access and default lang alias enabled and common content by alias is not default lang ->404
+            if (!hasUserContentEditAccess(userContentPermission)
+                    && (commonContentByAlias.isEmpty()
+                    || (textDocument.isDefaultLanguageAliasEnabled() && !commonContentByAlias.get().getLanguage().getCode().equals(defaultLanguage.getCode())))
+            ) {
+                response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+                return null;
+            }
+        }
+
+        final Optional<CommonContent> commonContentOptional = enabledCommonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(docLangCode))
                 .findFirst();
 
         final String language;
-	    if (optionalCommonContent.isEmpty()) {
-		    if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-			    language = Imcms.getServices().getLanguageService().getDefaultLanguage().getCode();
-		    } else {
-			    response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-			    return null;
-		    }
-	    } else {
-		    language = docLangCode;
-	    }
+        if (commonContentOptional.isEmpty()) {
+            if (hasUserContentEditAccess(userContentPermission) || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
+                language = defaultLanguage.getCode();
+            } else {
+                response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+                return null;
+            }
+        } else {
+            language = docLangCode;
+        }
 
         mav.setViewName(viewName);
 
@@ -191,13 +211,9 @@ public class ViewDocumentController {
         return mav;
     }
 
-    private TextDocumentDomainObject getTextDocument(String docId, String languageCode, HttpServletRequest request) {
-        return Optional.ofNullable(documentMapper.<TextDocumentDomainObject>getVersionedDocument(docId, languageCode, request))
+    private TextDocumentDomainObject getTextDocument(String docId, HttpServletRequest request) {
+        return Optional.ofNullable(documentMapper.<TextDocumentDomainObject>getVersionedDocument(docId, Imcms.getLanguage().getCode(), request))
                 .orElseThrow(() -> new DocumentNotExistException(docId));
-    }
-
-    private String getLanguageCode() {
-        return Imcms.getLanguage().getCode();
     }
 
     private boolean hasUserContentEditAccess(final RestrictedPermission permission) {

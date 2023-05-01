@@ -7,7 +7,6 @@ import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.constructs.web.AlreadyGzippedException;
@@ -30,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -63,13 +61,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
         if (enabledCache) {
             final ImcmsServices services = Imcms.getServices();
 
-            final String workaroundUriEncoding = services.getConfig().getWorkaroundUriEncoding();
-            final FallbackDecoder fallbackDecoder = new FallbackDecoder(
-                    Charset.forName(Imcms.DEFAULT_ENCODING),
-                    (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
-            );
-
-            String path = StringUtils.substringAfter(Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder), request.getContextPath());
+            String path = StringUtils.substringAfter(Utility.fallbackUrlDecode(request.getRequestURI(), Imcms.getDefaultFallbackDecoder()), request.getContextPath());
             if ("/".equals(path)) path = "/" + services.getSystemData().getStartDocument();
 
             final Set<String> resourcePaths = request.getSession().getServletContext().getResourcePaths(path);

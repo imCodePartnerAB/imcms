@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
+import com.imcode.imcms.api.exception.NoAvailableCommonContentException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
@@ -10,11 +10,11 @@ import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.DocumentWasteBasketJPA;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.DocumentWasteBasketRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
@@ -97,14 +97,14 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     @Test
     public void getDocument_WhenEnLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException() {
 
-        assertThrows(DocumentLanguageDisabledException.class,
+        assertThrows(NoAvailableCommonContentException.class,
                 () -> testWhenAllUsersLanguagesIsDisabled(0));
     }
 
     @Test
     public void getDocument_WhenSvLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException() {
 
-        assertThrows(DocumentLanguageDisabledException.class,
+        assertThrows(NoAvailableCommonContentException.class,
                 () -> testWhenAllUsersLanguagesIsDisabled(1));
     }
 

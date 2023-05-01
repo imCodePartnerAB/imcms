@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentService;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
@@ -26,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class DocumentMapperTest extends WebAppSpringTestConfig {
@@ -61,12 +58,9 @@ public class DocumentMapperTest extends WebAppSpringTestConfig {
         user.addRoleId(Roles.SUPER_ADMIN.getId());
 
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
-        DocumentLanguage language = DocumentLanguage.builder()
-                .code("en")
-                .build();
 
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-        docGetterCallback.setLanguage(language);
+        docGetterCallback.setLanguage(languageService.findByCode(ImcmsConstants.ENG_CODE));
         Imcms.setUser(user);
     }
 
