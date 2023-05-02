@@ -62,4 +62,6 @@ public interface DocumentIndex {
             throws IndexException;
 
     void rebuild() throws IndexException;
+
+    boolean isIndexBuildingThreadAlive();
 }

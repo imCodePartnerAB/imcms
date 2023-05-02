@@ -97,6 +97,10 @@ public class BackgroundIndexBuilder {
         rememberIndexParentDirectoryLastModified();
     }
 
+    public boolean isIndexBuildingThreadAlive(){
+        return null != indexBuildingThread && indexBuildingThread.isAlive();
+    }
+
     private void rememberIndexParentDirectoryLastModified() {
         previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified();
     }

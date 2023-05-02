@@ -223,6 +223,11 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
+    @Override
+    public boolean isIndexBuildingThreadAlive() {
+        return backgroundIndexBuilder.isIndexBuildingThreadAlive();
+    }
+
     void notifyRebuildComplete(DirectoryIndex newIndex) {
         DirectoryIndex oldIndex = index;
         index = newIndex;
@@ -260,6 +265,11 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         public void rebuild() throws IndexException {
+        }
+
+        @Override
+        public boolean isIndexBuildingThreadAlive() {
+            return false;
         }
     }
 }

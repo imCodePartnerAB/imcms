@@ -46,6 +46,11 @@ public class MockDocumentIndex implements DocumentIndex {
     public void rebuild() {
     }
 
+    @Override
+    public boolean isIndexBuildingThreadAlive() {
+        return false;
+    }
+
     public boolean isRemoveDocumentCalled() {
         return removeDocumentCalled;
     }

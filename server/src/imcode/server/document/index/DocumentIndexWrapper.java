@@ -23,6 +23,11 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.rebuild();
     }
 
+    @Override
+    public boolean isIndexBuildingThreadAlive() {
+        return index.isIndexBuildingThreadAlive();
+    }
+
     public void removeDocument(DocumentDomainObject document) throws IndexException {
         index.removeDocument(document);
     }

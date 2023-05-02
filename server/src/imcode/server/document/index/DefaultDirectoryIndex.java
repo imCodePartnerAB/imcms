@@ -39,6 +39,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
+    private boolean isIndexBuildingThreadAlive;
 
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
         this.directory = directory;
@@ -97,6 +98,11 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         } catch (IOException e) {
             throw new IndexException(e);
         }
+    }
+
+    @Override
+    public boolean isIndexBuildingThreadAlive() {
+        return isIndexBuildingThreadAlive;
     }
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
@@ -182,6 +188,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private void indexDocuments() throws IOException {
         try (IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.CREATE)) {
+            isIndexBuildingThreadAlive = true;
             for (Map.Entry<String, DocumentRepository> nameToRepositoryEntry : nameToCustomDocRepository.entrySet()) {
                 final String repositoryName = nameToRepositoryEntry.getKey();
                 log.info("Indexing docs from " + repositoryName + " document repository started.");
@@ -191,6 +198,8 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
                 log.info("Indexing docs from " + repositoryName + " document repository finished.");
             }
+        }finally {
+            isIndexBuildingThreadAlive = false;
         }
     }
 
