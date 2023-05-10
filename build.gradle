@@ -16,8 +16,8 @@ version = "6.0.0-beta19-SNAPSHOT"
 
 description = "imCMS"
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 17
+targetCompatibility = 17
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = projectBuildSourceEncoding
@@ -32,7 +32,7 @@ repositories {
 }
 
 ext {
-    springframeworkVersion = '5.2.22.RELEASE'
+    springframeworkVersion = '5.3.13'
     hibernateVersion = '5.4.33.Final'
     solrVersion = '9.0.0'
     log4j2Version = '2.19.0'
@@ -265,7 +265,7 @@ task webZip(type: Zip) {
 tasks.war {
     duplicatesStrategy = DuplicatesStrategy.WARN
     it.dependsOn initParams
-//    it.dependsOn test
+    it.dependsOn test
     it.dependsOn buildWeb
 }
 
