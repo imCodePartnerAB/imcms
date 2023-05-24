@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import imcode.server.document.textdocument.*;
 import imcode.util.image.Format;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocumentDomainObject> {
 
@@ -30,7 +31,7 @@ public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocum
 			gen.writeStartObject();
 
 			gen.writeNumberField("index", textEntry.getKey());
-			gen.writeStringField("type", TextDomainObject.TEXT_TYPE_PLAIN == textEntry.getValue().getType() ? "text" : "html");
+			gen.writeStringField("type", TextDomainObject.TEXT_TYPE_PLAIN == textEntry.getValue().getType() ? "TEXT" : "HTML");
 			gen.writeStringField("text", textEntry.getValue().getText());
 
 			gen.writeEndObject();
@@ -92,14 +93,21 @@ public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocum
 			gen.writeStartObject();
 
 			gen.writeNumberField("index", menuEntry.getKey());
-			gen.writeStringField("sort_order", getSortOrder(menu.getSortOrder()));
+
+			final int sortOrderInt = menu.getSortOrder();
+			gen.writeStringField("type_sort", getTypeOrderName(sortOrderInt));
 			gen.writeArrayFieldStart("menu_items");
 
-			for (MenuItemDomainObject menuItem : menu.getMenuItems()) {
+			final MenuItemDomainObject[] menuItems = menu.getMenuItems();
+			final Map<Integer, String> sortOrderMap = getSortOrder(sortOrderInt, menuItems);
+
+			for (MenuItemDomainObject menuItem : menuItems) {
 				gen.writeStartObject();
 
-				gen.writeNumberField("document_id", menuItem.getDocumentId());
-				gen.writeNumberField("sort_order", menuItem.getSortKey());
+				final int documentId = menuItem.getDocumentId();
+
+				gen.writeNumberField("document_id", documentId);
+				gen.writeStringField("sort_order", sortOrderMap.get(documentId));
 
 				gen.writeEndObject();
 			}
@@ -110,8 +118,8 @@ public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocum
 		gen.writeEndArray();
 	}
 
-	private String getSortOrder(int sortOrder) {
-		switch (sortOrder) {
+	private String getTypeOrderName(int menuTypeOrder) {
+		switch (menuTypeOrder) {
 			case 2:
 				return "MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED";
 			case 3:
@@ -123,5 +131,28 @@ public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocum
 			default:
 				return "MENU_SORT_ORDER__BY_HEADLINE";
 		}
+	}
+
+	private Map<Integer, String> getSortOrder(int menuTypeOrder, MenuItemDomainObject[] menuItems) {
+		final HashMap<Integer, String> documentIdToSortOrderMap = new HashMap<>();
+
+		for (int i = 0; i < menuItems.length; i++) {
+			final MenuItemDomainObject menuItem = menuItems[i];
+			final int documentId = menuItem.getDocumentId();
+
+			String sortOrder;
+			if (menuTypeOrder == 2) {
+				sortOrder = String.valueOf(menuItem.getSortKey() == null ? i : menuItem.getSortKey());
+			} else if (menuTypeOrder == 4) {
+				sortOrder = StringUtils.defaultIfBlank(menuItem.getTreeSortKey().toString(), String.valueOf(i));
+			} else {
+				sortOrder = String.valueOf(i);
+
+			}
+
+			documentIdToSortOrderMap.put(documentId, sortOrder);
+		}
+
+		return documentIdToSortOrderMap;
 	}
 }
