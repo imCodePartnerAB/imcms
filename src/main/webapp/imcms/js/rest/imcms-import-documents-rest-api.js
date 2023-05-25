@@ -6,7 +6,7 @@ define("imcms-import-documents-rest-api", ["imcms-rest-api"], function (rest) {
 	api.getUploadProgress = () => rest.ajax.call({
 		url: `${url}/upload/progress`,
 		type: 'GET',
-		json:true
+		json: true
 	});
 
 	api.upload = formData => rest.ajax.call({
@@ -19,7 +19,7 @@ define("imcms-import-documents-rest-api", ["imcms-rest-api"], function (rest) {
 	api.getImportProgress = () => rest.ajax.call({
 		url: `${url}/progress`,
 		type: 'GET',
-		json:true
+		json: true
 	});
 
 	api.importDocuments = (params) => rest.ajax.call({
@@ -27,6 +27,18 @@ define("imcms-import-documents-rest-api", ["imcms-rest-api"], function (rest) {
 		type: 'POST',
 		json: true
 	}, params);
+
+	api.removeAliases = (params) => rest.ajax.call({
+		url: `${url}/aliases/remove`,
+		type: 'POST',
+		json: true
+	},params);
+
+	api.replaceAliases = (params) => rest.ajax.call({
+		url: `${url}/aliases/replace`,
+		type: 'POST',
+		json: true
+	},params);
 
 	return api;
 });

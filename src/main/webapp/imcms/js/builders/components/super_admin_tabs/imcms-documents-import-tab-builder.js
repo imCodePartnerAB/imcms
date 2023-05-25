@@ -5,8 +5,8 @@ define(
 		'imcms-templates-rest-api', "imcms-roles-rest-api", 'imcms-categories-rest-api', "imcms-category-types-rest-api",
 		"imcms-basic-import-documents-info-rest-api"],
 	function (WindowBuilder, SuperAdminTab, texts, components, modal, fieldWrapper, $, BEM,
-	          importDocumentsRestApi, importEntityReferenceRestApi, templatesRestApi, rolesRestApi, categoriesRestApi,
-	          categoryTypesRestApi, basicImportDocumentsInfoRestApi) {
+			  importDocumentsRestApi, importEntityReferenceRestApi, templatesRestApi, rolesRestApi, categoriesRestApi,
+			  categoryTypesRestApi, basicImportDocumentsInfoRestApi) {
 		texts = texts.superAdmin.documentsImport;
 
 		let tab = {};
@@ -424,6 +424,77 @@ define(
 			);
 		}
 
+		function buildAliasControlContainer() {
+			const $removeAliasesButton = components.buttons.positiveButton({
+				text: "Remove aliases",
+				click: onRemoveAliasesButtonClick
+			})
+				.css({
+					"height": "30px",
+					"display": "inline-block",
+					"line-height": "0px",
+					"font-size": "13px"
+				});
+			const $replaceAliasesButton = components.buttons.positiveButton({
+				text: "Replace aliases",
+				click: onReplaceAliasesButtonClick
+			})
+				.css({
+					"height": "30px",
+					"display": "inline-block",
+					"line-height": "0px",
+					"font-size": "13px"
+				});
+
+			return new BEM({
+				block: "imcms-import-alias-control-container",
+				elements: {
+					"remove-aliases-button": $removeAliasesButton,
+					"replace-aliases-button": $replaceAliasesButton,
+				}
+			}).buildBlockStructure("<div>", {});
+		}
+
+		function onRemoveAliasesButtonClick() {
+			const startId = tab.$startIdInput.getInput().val();
+			const endId = tab.$endIdInput.getInput().val();
+
+			const params = {
+				start: startId,
+				end: endId
+			}
+
+			if (!startId || !endId) {
+				modal.buildWarningWindow("Provide range!");
+				return;
+			}
+
+			importDocumentsRestApi.removeAliases(params)
+				.done(() => {
+					alert("Done");
+				})
+		}
+
+		function onReplaceAliasesButtonClick() {
+			const startId = tab.$startIdInput.getInput().val();
+			const endId = tab.$endIdInput.getInput().val();
+
+			const params = {
+				start: startId,
+				end: endId
+			}
+
+			if (!startId || !endId) {
+				modal.buildWarningWindow("Provide range!");
+				return;
+			}
+
+			importDocumentsRestApi.replaceAliases(params)
+				.done(()=>{
+					alert("Done");
+				})
+		}
+
 		function clearData() {
 			//
 		}
@@ -556,6 +627,7 @@ define(
 		return new SuperAdminTab(texts.name, [
 			buildUploadButtonContainer(),
 			buildTabContainer(),
+			buildAliasControlContainer(),
 			buildProgressBar(),
 			buildImportDocumentsContainer(),
 			buildImportEntityReferenceButtons(),
