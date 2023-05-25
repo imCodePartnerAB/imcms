@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.function.BiConsumer;
-
 @Service
 @RequiredArgsConstructor
 public class DefaultImportDocumentReferenceService implements ImportDocumentReferenceService {
@@ -19,21 +17,21 @@ public class DefaultImportDocumentReferenceService implements ImportDocumentRefe
 
 	@Override
 	public void createReferences(ImportDocumentDTO importDocument) {
-		final BiConsumer<String, ImportEntityReferenceType> createReferenceIfNotBlank = (name, type) -> {
-			if (StringUtils.isNotBlank(name)) {
-				importEntityReferenceManagerService.createReference(name, type);
-			}
-		};
-
 		for (ImportCategoryDTO category : importDocument.getCategories()) {
-			createReferenceIfNotBlank.accept(category.getName(), ImportEntityReferenceType.CATEGORY);
-			createReferenceIfNotBlank.accept(category.getCategoryType().getName(), ImportEntityReferenceType.CATEGORY_TYPE);
+			createReferenceIfNotBlank(category.getName(), ImportEntityReferenceType.CATEGORY);
+			createReferenceIfNotBlank(category.getCategoryType().getName(), ImportEntityReferenceType.CATEGORY_TYPE);
 		}
 
 		for (ImportRoleDTO importRole : importDocument.getRoles()) {
-			createReferenceIfNotBlank.accept(importRole.getName(), ImportEntityReferenceType.ROLE);
+			createReferenceIfNotBlank(importRole.getName(), ImportEntityReferenceType.ROLE);
 		}
 
-		createReferenceIfNotBlank.accept(importDocument.getTemplate(), ImportEntityReferenceType.TEMPLATE);
+		createReferenceIfNotBlank(importDocument.getTemplate(), ImportEntityReferenceType.TEMPLATE);
+	}
+
+	private void createReferenceIfNotBlank(String name, ImportEntityReferenceType type) {
+		if (StringUtils.isNotBlank(name)) {
+			importEntityReferenceManagerService.createReference(name, type);
+		}
 	}
 }

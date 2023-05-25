@@ -46,7 +46,7 @@ public class Imcms {
     /**
      * Current language for user
      */
-    private static ThreadLocal<Language> languages = new ThreadLocal<>();
+    private static InheritableThreadLocal<Language> languages = new InheritableThreadLocal<>();
 
     private static volatile FallbackDecoder defaultFallbackDecoder;
 

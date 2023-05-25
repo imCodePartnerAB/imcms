@@ -3,7 +3,10 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.ArchiveImportDocumentExtractor;
 import com.imcode.imcms.domain.component.DocumentImporter;
 import com.imcode.imcms.domain.dto.ImportProgress;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.BasicImportDocumentInfoService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.ImportDocumentService;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Text;
 import imcode.server.Imcms;
 import lombok.RequiredArgsConstructor;
@@ -123,7 +126,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 	private int[] getImportedDocumentIds(int startId, int endId) {
 		return IntStream.rangeClosed(startId, endId)
-				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.imported(id))
+				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.isImported(id))
 				.toArray();
 	}
 

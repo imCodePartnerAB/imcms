@@ -8,5 +8,5 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ImportMenuItemDTO {
 	private Integer documentId;
-	private Integer sortOrder;
+	private String sortOrder;
 }

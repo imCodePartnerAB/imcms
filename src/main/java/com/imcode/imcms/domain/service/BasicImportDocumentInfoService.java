@@ -27,7 +27,7 @@ public interface BasicImportDocumentInfoService {
 
 	boolean exists(int importDocId);
 
-	boolean imported(int importDocId);
+	boolean isImported(int importDocId);
 
 	Integer toMetaId(int importDocId);
 }

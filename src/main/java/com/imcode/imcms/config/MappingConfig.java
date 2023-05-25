@@ -6,8 +6,6 @@ import com.imcode.imcms.domain.component.ImportToLocalCategoryResolver;
 import com.imcode.imcms.domain.component.ImportToLocalRolePermissionResolver;
 import com.imcode.imcms.domain.component.ImportToLocalTextDocumentTemplateResolver;
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.dto.ImportDocumentDTO;
-import com.imcode.imcms.domain.dto.ImportPropertyDTO;
 import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Category;
@@ -604,15 +602,24 @@ class MappingConfig {
 			document.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
 			document.setPublicationStatus(APPROVED);
 
-			document.setCommonContents(commonContentFactory.createCommonContents());
-			document.getCommonContents().stream()
-					.filter(commonContent -> commonContent.getLanguage()
-							.getCode().equals(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage())))
-					.forEach(commonContent -> {
-						commonContent.setAlias(StringUtils.isBlank(importDocument.getAlias()) ? "import/" + importDocument.getId() : importDocument.getAlias());
-						commonContent.setHeadline(importDocument.getHeadline());
-						commonContent.setMenuText(importDocument.getMenuText());
-					});
+            final List<CommonContent> commonContents = commonContentFactory.createCommonContents();
+            commonContents.stream()
+                    .peek(commonContent -> {
+                        commonContent.setAlias("");
+                        commonContent.setHeadline("");
+                        commonContent.setMenuText("");
+                    })
+                    .filter(commonContent -> commonContent.getLanguage().getCode().equals(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage())))
+                    .forEach(commonContent -> {
+                        final String customAlias = "import/" + importDocument.getId();
+
+                        commonContent.setAlias(StringUtils.defaultIfBlank(importDocument.getAlias(), customAlias));
+                        commonContent.setHeadline(StringUtils.defaultIfBlank(importDocument.getHeadline(),""));
+                        commonContent.setMenuText(StringUtils.defaultIfBlank(importDocument.getMenuText(),""));
+                    });
+
+            document.setCommonContents(commonContents);
+			document.setDefaultLanguageAliasEnabled(true);
 
 			document.setProperties(importDocument.getProperties()
 					.stream()
@@ -629,6 +636,7 @@ class MappingConfig {
 			createdAt.setDateTime(importDocument.getCreatedAt());
 			if (importDocument.getCreatedAt() == null) {
 				createdAt.setDateTime(new Date());
+                createdAt.setBy(importDocument.getCreator());
 			}
 			document.setCreated(createdAt);
 

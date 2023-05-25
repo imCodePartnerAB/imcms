@@ -76,7 +76,7 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 	}
 
 	@Override
-	public boolean imported(int importDocId) {
+	public boolean isImported(int importDocId) {
 		return basicImportDocumentInfoRepository.isImported(importDocId);
 	}
 

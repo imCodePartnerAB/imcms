@@ -123,19 +123,19 @@ public class BasicImportDocumentInfoServiceTest extends WebAppSpringTestConfig {
 
 	@Test
 	public void checkIfDocumentImportedOnNonExisting_Expect_CorrectResult() {
-		assertFalse(basicImportDocumentInfoService.imported(DEFAULT_ID));
+		assertFalse(basicImportDocumentInfoService.isImported(DEFAULT_ID));
 	}
 
 	@Test
 	public void checkIfDocumentImportedOnNonImportedDocument_Expect_CorrectResult() {
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID, ImportDocumentStatus.IMPORT));
-		assertFalse(basicImportDocumentInfoService.imported(DEFAULT_ID));
+		assertFalse(basicImportDocumentInfoService.isImported(DEFAULT_ID));
 	}
 
 	@Test
 	public void checkIfDocumentImported_When_ImportStatusImported_Expect_CorrectResult() {
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID, ImportDocumentStatus.IMPORTED));
-		assertTrue(basicImportDocumentInfoService.imported(DEFAULT_ID));
+		assertTrue(basicImportDocumentInfoService.isImported(DEFAULT_ID));
 	}
 
 	@Test

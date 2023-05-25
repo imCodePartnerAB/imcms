@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.domain.dto.ImportCategoryTypeDTO;
+import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.domain.service.ImportEntityReferenceManagerService;
 import com.imcode.imcms.model.ImportEntityReferenceType;
@@ -28,6 +28,7 @@ public class ImportToLocalCategoryTypeResolver {
 			categoryType.setName(name);
 			categoryType.setInherited(importCategoryType.isInherited());
 			categoryType.setMultiSelect(importCategoryType.isMultiselect());
+			categoryType.setVisible(true);
 
 			categoryType = new CategoryTypeDTO(categoryTypeService.create(categoryType));
 		} else {

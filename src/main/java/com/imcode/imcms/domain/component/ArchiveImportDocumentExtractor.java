@@ -24,7 +24,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -39,11 +42,11 @@ public class ArchiveImportDocumentExtractor {
 	private Path importFolderPath;
 	private final ObjectMapper mapper;
 	private final ServletContext servletContext;
-	private final ImportProgress extractionProgress = new ImportProgress();
 	private final ImportDocumentReferenceService importDocumentReferenceService;
 	private final BasicImportDocumentInfoService basicImportDocumentInfoService;
 	private final ExecutorService zipExtractExecutor = Executors.newSingleThreadExecutor();
 	private Future zipExtractFuture = CompletableFuture.completedFuture(null);
+	private final ImportProgress extractionProgress = new ImportProgress();
 
 	@PostConstruct
 	private void init() throws IOException {
@@ -55,6 +58,7 @@ public class ArchiveImportDocumentExtractor {
 
 	public void extract(MultipartFile file) {
 		if (!zipExtractFuture.isDone()) {
+			log.warn("Cannot start new exporting process. Another one is working!");
 			return;
 		}
 
@@ -64,6 +68,7 @@ public class ArchiveImportDocumentExtractor {
 			try (final ZipFile zipFile = verifyAndGetZip(zipPath)) {
 
 				extractionProgress.setTotalSize(zipFile.size());
+
 				final Enumeration<? extends ZipEntry> entries = zipFile.entries();
 				while (entries.hasMoreElements()) {
 					final ZipEntry zipEntry = entries.nextElement();
