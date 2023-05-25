@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 import static imcode.server.ImcmsConstants.API_PREFIX;
 import static imcode.server.ImcmsConstants.LOGIN_URL;
+import static imcode.util.Utility.getUserLanguageFromCookie;
 import static imcode.util.Utility.writeUserLanguageCookie;
 
 /**
@@ -188,7 +189,7 @@ public class ImcmsSetupFilter implements Filter {
                 ResourceBundle resourceBundle = Utility.getResourceBundle(request);
                 Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
                 Imcms.setUser(user);
-                Imcms.setLanguage(chooseLanguageAndWriteLangCookie(request, response, service));
+                Imcms.setLanguage(updateUserRelatedLanguageAndWriteLangCookie(request, response, service));
             }
 
             ImcmsSetupFilter.updateUserDocGetterCallback(request, user);
@@ -203,26 +204,26 @@ public class ImcmsSetupFilter implements Filter {
         }
     }
 
-    private Language chooseLanguageAndWriteLangCookie(HttpServletRequest request, HttpServletResponse response, ImcmsServices services) {
+    private static Language updateUserRelatedLanguageAndWriteLangCookie(HttpServletRequest request, HttpServletResponse response, ImcmsServices services) {
         final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, Imcms.getDefaultFallbackDecoder()));
         final String documentIdString = getDocumentIdString(Imcms.getServices(), path);
 
-        final LanguageService languageService = services.getLanguageService();
         final CommonContentService commonContentService = services.getCommonContentService();
-        final Language defaultLanguage = languageService.getDefaultLanguage();
-
+		final LanguageService languageService = services.getLanguageService();
         final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-        Language language = defaultLanguage;
+        Language language = null;
         if (StringUtils.isNotEmpty(requestedLangCode)) {
             language = languageService.findByCode(requestedLangCode);
             writeUserLanguageCookie(response, language.getCode());
+
         } else if (commonContentService.existsByAlias(documentIdString)) {
             language = commonContentService.getByAlias(documentIdString).get().getLanguage();
             writeUserLanguageCookie(response, language.getCode());
-        }
 
-        return language;
+		}
+
+        return (language == null) ? getUserLanguageFromCookie(request.getCookies()) : language;
     }
 
     private boolean redirectToLoginIfRestricted(HttpServletRequest request,
