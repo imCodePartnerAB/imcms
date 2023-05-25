@@ -107,7 +107,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 			final List<Text> textsContainingAlias = textService.getTextsContaining(alias);
 			textsContainingAlias.forEach(text -> {
-				final String modifiedText = text.getText().replaceAll(alias, Integer.toString(metaId));
+				final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
 				text.setText(modifiedText);
 
 				textService.save(text);
