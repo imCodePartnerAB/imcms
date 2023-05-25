@@ -1,6 +1,7 @@
 package imcode.server.document.index.service;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import static imcode.server.document.index.service.IndexUpdateOperation.DELETE;
 
@@ -11,6 +12,7 @@ import static imcode.server.document.index.service.IndexUpdateOperation.DELETE;
  * 27.12.17.
  */
 @EqualsAndHashCode
+@ToString
 public final class DeleteDocFromIndex implements IndexUpdateOp {
 
     private final int docId;
