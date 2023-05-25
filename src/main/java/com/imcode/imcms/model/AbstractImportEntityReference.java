@@ -43,9 +43,8 @@ public abstract class AbstractImportEntityReference implements Serializable {
 	}
 
 	public AbstractImportEntityReference(AbstractImportEntityReference from) {
-		if (from == null) {
-			return;
-		}
+		if (from == null) return;
+
 		setId(from.getId());
 		setName(from.getName());
 		setLinkedEntityId(from.getLinkedEntityId());

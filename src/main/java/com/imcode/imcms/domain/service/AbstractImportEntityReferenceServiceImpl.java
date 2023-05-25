@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.api.exception.ImportEntityReferenceAlreadyExistsException;
 import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.model.AbstractImportEntityReference;
 import com.imcode.imcms.model.ImportEntityReferenceType;
@@ -32,7 +33,7 @@ public abstract class AbstractImportEntityReferenceServiceImpl<T extends Abstrac
 	@Override
 	public ImportEntityReferenceDTO create(ImportEntityReferenceDTO entity) {
 		if (importEntityReferenceRepository.existsByName(entity.getName())) {
-			throw new RuntimeException(String.format("Entity reference already exists, name: %s, type: %s", entity.getName(), entity.getType()));
+			throw new ImportEntityReferenceAlreadyExistsException(entity.getName(), entity.getType());
 		}
 
 		return new ImportEntityReferenceDTO(importEntityReferenceRepository.save(AbstractImportEntityReference.of(entity).toTyped()));
