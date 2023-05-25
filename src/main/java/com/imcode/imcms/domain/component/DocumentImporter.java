@@ -1,10 +1,7 @@
 package com.imcode.imcms.domain.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.imcode.imcms.domain.dto.UberDocumentDTO;
-import com.imcode.imcms.domain.dto.BasicImportDocumentInfoDTO;
-import com.imcode.imcms.domain.dto.ImportDocumentDTO;
-import com.imcode.imcms.domain.dto.ImportProgress;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.factory.FileImportMapper;
 import com.imcode.imcms.domain.factory.ImageImportMapper;
 import com.imcode.imcms.domain.factory.MenuImportMapper;
@@ -12,6 +9,7 @@ import com.imcode.imcms.domain.factory.TextImportMapper;
 import com.imcode.imcms.domain.service.BasicImportDocumentInfoService;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.ImportDocumentStatus;
 import com.imcode.imcms.model.Language;
@@ -28,7 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,18 +48,27 @@ public class DocumentImporter {
 	private Path importFolderPath;
 	private final ServletContext servletContext;
 	private final ObjectMapper mapper;
+
+	private final DocumentMapper documentMapper;
+	private final DocumentsCache documentsCache;
+
 	private final LanguageService languageService;
 	private final TextImportMapper textImportMapper;
 	private final MenuImportMapper menuImportMapper;
 	private final FileImportMapper fileImportMapper;
 	private final ImageImportMapper imageImportMapper;
 	private final ImportProgress progress = new ImportProgress();
-	private final DelegatingByTypeDocumentService documentService;
+	private final DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService;
 	private final BiConsumer<ImportDocumentDTO, Document> updateFromImported;
 	private final BasicImportDocumentInfoService basicImportDocumentInfoService;
 	private final Function<ImportDocumentDTO, UberDocumentDTO> importDocumentToDocument;
 	private final ExecutorService importExecutor = Executors.newSingleThreadExecutor();
 	private Future importFuture = CompletableFuture.completedFuture(null);
+
+	final Set<Integer> importDocumentIdsUnderImporting = new HashSet<>();
+
+	private static final String DOCUMENT_UPDATED_MSG_PATTERN = "Document updated, importDocId: {}, docId: {}";
+	private static final String DOCUMENT_IMPORTED_MSG_PATTERN = "Document imported, importDocId: {}, docId: {}";
 
 	@PostConstruct
 	private void init() throws IOException {
@@ -69,15 +79,31 @@ public class DocumentImporter {
 	}
 
 	public void importDocuments(int[] importDocsId) {
+		if (!importFuture.isDone()) {
+			log.warn("Cannot start new importing process. Another one is working!");
+			return;
+		}
+
 		importFuture = importExecutor.submit(() -> {
 			try {
+				log.info("Started importing documents thread for {} docs!", importDocsId.length);
 				progress.setTotalSize(importDocsId.length);
+
 				for (int importDocId : importDocsId) {
 					importDocument(importDocId);
-					progress.increment();
 				}
+
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			} finally {
 				progress.reset();
+				importDocumentIdsUnderImporting.clear();
+
+				final int[] docIds = Arrays.stream(importDocsId).map(basicImportDocumentInfoService::toMetaId).filter(Objects::nonNull).toArray();
+				documentMapper.invalidateDocuments(docIds);
+				documentsCache.invalidateCache();
+
+				log.info("Importing documents thread end!");
 			}
 		});
 	}
@@ -91,53 +117,85 @@ public class DocumentImporter {
 	}
 
 	private void importDocument(int importDocId) {
-		final BasicImportDocumentInfoDTO basicImportDocument = basicImportDocumentInfoService.getById(importDocId)
-				.orElseThrow(() -> new NoSuchElementException(String.format("There is no import document with importDocId: %s", importDocId)));
+		importDocumentIdsUnderImporting.add(importDocId);
 
-		final ImportDocumentStatus status = basicImportDocument.getStatus();
-		if (status.equals(IMPORTED) || status.equals(SKIP)) {
-			log.info(String.format("Document skipped because of status: %s, id: %d", status, basicImportDocument.getId()));
+		log.info("Trying to import document(rb4): {}", importDocId);
+		final BasicImportDocumentInfoDTO basicImportDocument = basicImportDocumentInfoService.getById(importDocId).orElse(null);
+		if (basicImportDocument == null) {
+			log.warn("Document is not uploaded: {}", importDocId);
 			return;
 		}
 
-		try (final InputStream inputStream = Files.newInputStream(importFolderPath.resolve(importDocId + ".json"));) {
+		final ImportDocumentStatus status = basicImportDocument.getStatus();
+		if (status.equals(IMPORTED) || status.equals(SKIP)) {
+			log.info("Document skipped because of status: {}, id: {}", status, basicImportDocument.getId());
+			return;
+		}
+
+		final Path pathToImportDocument = importFolderPath.resolve(importDocId + ".json");
+		if (!Files.exists(pathToImportDocument)) {
+			log.error("json file missing id: {}, path: {}", importDocId, pathToImportDocument);
+			return;
+		}
+
+		try (final InputStream inputStream = Files.newInputStream(pathToImportDocument)) {
 			final ImportDocumentDTO importDocument = mapper.readValue(inputStream, ImportDocumentDTO.class);
 
 			Document document;
 			if (status.equals(UPDATE)) {
-				document = documentService.get(basicImportDocument.getMetaId());
+				document = defaultDelegatingByTypeDocumentService.get(basicImportDocument.getMetaId());
 				updateFromImported.accept(importDocument, document);
 			} else {
 				document = importDocumentToDocument.apply(importDocument);
 			}
 
-			document = documentService.save(document);
-			final Integer metaId = document.getId();
+			final Integer metaId = defaultDelegatingByTypeDocumentService.save(document).getId();
 
-			importDocumentContent(metaId, importDocument);
-			documentService.publishDocument(metaId, Imcms.getUser().getId());
+			if (importDocumentContent(metaId, importDocument)) {
+				defaultDelegatingByTypeDocumentService.publishDocument(metaId, Imcms.getUser().getId());
+				log.info("Document {} published", metaId);
+			} else {
+				log.warn("Document {} not published because of problems with content importing", metaId);
+			}
+
+			log.info(!status.equals(UPDATE) ? DOCUMENT_IMPORTED_MSG_PATTERN : DOCUMENT_UPDATED_MSG_PATTERN, importDocId, metaId);
 
 			basicImportDocument.setMetaId(metaId);
 			basicImportDocument.setStatus(IMPORTED);
 
-			if (basicImportDocument.getMetaId() == null) {
-				log.info(String.format("Document successfully imported, importDocId: %s, docId: %s", importDocId, metaId));
-			} else {
-				log.info(String.format("Document successfully updated, importDocId: %s, docId: %s", importDocId, metaId));
-			}
-
 		} catch (Exception e) {
 			basicImportDocument.setStatus(FAILED);
 			log.error(String.format("Import failed, importDocId: %s", importDocId), e);
+		} finally {
+			progress.increment();
 		}
 
 		basicImportDocumentInfoService.save(basicImportDocument);
 	}
 
-	private void importDocumentContent(int metaId, ImportDocumentDTO importDocument) {
+	private boolean importDocumentContent(int metaId, ImportDocumentDTO importDocument) {
 		final Language language = languageService.findByCode(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage()));
 
 		textImportMapper.mapAndSave(importDocument.getId(), metaId, language, importDocument.getTexts());
-		menuImportMapper.mapAndSave(importDocument.getId(), metaId, importDocument.getMenus());
+
+		importMenuDocuments(importDocument);
+
+		return menuImportMapper.mapAndSave(metaId, importDocument.getMenus());
+	}
+
+	private void importMenuDocuments(ImportDocumentDTO importDocument) {
+		log.info("Started menu importing in document {}!", importDocument.getId());
+		for (ImportMenuDTO importMenu : importDocument.getMenus()) {
+			log.info("Menu index: {}", importMenu.getIndex());
+
+			for (ImportMenuItemDTO menuItem : importMenu.getMenuItems()) {
+				final Integer documentId = menuItem.getDocumentId();
+
+				if (!importDocument.getId().equals(documentId) && !importDocumentIdsUnderImporting.contains(documentId)) {
+					log.info("Trying to import document from menu");
+					importDocument(documentId);
+				}
+			}
+		}
 	}
 }

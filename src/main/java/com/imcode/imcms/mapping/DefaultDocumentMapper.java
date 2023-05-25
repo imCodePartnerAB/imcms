@@ -332,7 +332,14 @@ public class DefaultDocumentMapper implements DocumentMapper {
         }
     }
 
-    @Override
+	@Override
+	public void invalidateDocuments(int[] docIds) {
+        for (int docId : docIds) {
+            invalidateDocument(docId);
+        }
+	}
+
+	@Override
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
     }

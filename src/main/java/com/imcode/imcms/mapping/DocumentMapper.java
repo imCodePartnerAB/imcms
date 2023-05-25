@@ -106,6 +106,8 @@ public interface DocumentMapper extends DocumentGetter {
 
     void invalidateDocument(int docId);
 
+    void invalidateDocuments(int[] docIds);
+
     DocumentIndex getDocumentIndex();
 
     void setDocumentIndex(DocumentIndex documentIndex);
