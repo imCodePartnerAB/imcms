@@ -178,12 +178,8 @@ define(
 		function buildImportDocumentStatusSelect(basicImportDocument, options) {
 			const $responseMessageDiv = $("<div>")
 				.css({
-					"width": "fit-content",
 					"padding-left": "5px",
-					"position": "absolute",
 					"font-size": "smaller",
-					"display": "inline-block",
-					"line-height": "40px",
 				});
 			const $importDocumentStatusSelect = components.selects.imcmsSelect("<div>", {
 				emptySelect: false,
@@ -490,7 +486,7 @@ define(
 			}
 
 			importDocumentsRestApi.replaceAliases(params)
-				.done(()=>{
+				.done(() => {
 					alert("Done");
 				})
 		}
