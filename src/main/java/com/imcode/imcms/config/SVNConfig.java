@@ -1,6 +1,5 @@
 package com.imcode.imcms.config;
 
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +15,7 @@ import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -28,23 +28,31 @@ public class SVNConfig {
 	private Path localSVNRepositoryFolder;
 
 	public SVNConfig(@Value("${svn.url:#{null}}") String repositoryUrl,
-	                 @Value("${svn.username:#{null}}") String username,
-	                 @Value("${svn.password:#{null}}") String password,
-	                 ServletContext servletContext) {
+					 @Value("${svn.username:#{null}}") String username,
+					 @Value("${svn.password:#{null}}") String password,
+					 ServletContext servletContext) {
+
 		this.repositoryUrl = repositoryUrl;
 		this.username = username;
 		this.password = password;
-		this.localSVNRepositoryFolder = Path.of(servletContext.getRealPath("/"), "WEB-INF/svn");
+
+		this.localSVNRepositoryFolder = Path.of(servletContext.getRealPath("/") + "WEB-INF/svn");
 	}
 
 	@PostConstruct
-	@SneakyThrows
-	private void init() {
-		if (StringUtils.isEmpty(repositoryUrl)) {
-			Files.createDirectory(localSVNRepositoryFolder);
-			this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
-			log.info(String.format("Created local SVN repository with path: %s", repositoryUrl));
+	private void init() throws IOException, SVNException {
+		if (StringUtils.isNotEmpty(repositoryUrl)) return;
+
+		log.warn("svn.url not provided");
+		if (Files.exists(localSVNRepositoryFolder)) {
+			this.repositoryUrl = "file://" + localSVNRepositoryFolder.toAbsolutePath();
+			log.info("Reusing local SVN repository with path: {}", repositoryUrl);
+			return;
 		}
+
+		Files.createDirectory(localSVNRepositoryFolder);
+		this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
+		log.info(String.format("Created local SVN repository with path: %s", repositoryUrl));
 	}
 
 	@Bean
