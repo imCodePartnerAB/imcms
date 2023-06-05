@@ -328,7 +328,7 @@ const texts = {
                     multiRemoveInfo: 'Ta bort',
                     actions: 'Åtgärd',
                     removeAction: 'Radera',
-                    putToBasketAction: 'Papperskorge',
+                    putToBasketAction: 'Pappers-korge',
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id ",

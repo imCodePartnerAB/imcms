@@ -65,6 +65,10 @@
     padding: 4px 15px;
 }
 
+.imcms-document-list-titles__actions .imcms-drop-down-list__item{
+    border-top: 1px solid #d3d8de;
+}
+
 .imcms-document-list-titles__actions .imcms-drop-down-list {
     border-color: #ff4b45;
 }
