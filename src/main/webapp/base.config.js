@@ -242,6 +242,7 @@ module.exports = {
                         'imcms-window-components-builder',
                         'imcms-bem-builder',
                         'imcms-image-content-builder',
+                        'imcms-image-metadata-builder',
                         'imcms-admin-panel-builder',
                         'imcms-site-specific-admin-panel',
                         'imcms-standalone-editor-toolbar-builder'
