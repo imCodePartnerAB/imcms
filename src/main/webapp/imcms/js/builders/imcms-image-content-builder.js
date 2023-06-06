@@ -5,9 +5,10 @@
 define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts", 'imcms'
+        "imcms-image-metadata-builder", "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts", 'imcms'
     ],
-    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modal, $, texts, imcms) {
+    function (imageFilesREST, imageFoldersREST, BEM, components,
+              imageMetadataWindowBuilder, primitives, modal, $, texts, imcms) {
         const OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         const SUBFOLDER_CLASS = "imcms-folders__subfolder";
         const ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -659,10 +660,36 @@ define("imcms-image-content-builder",
                     'open-image': components.buttons.openInNewWindow('<a>', {
                         href: `${imcms.imagesPath}?path=${imageFile.path}`,
                         title: texts.openImage,
-                        target: '_blank',
+                        target: '_blank'
                     }),
+                    'edit-metadata': components.buttons.editMetadataButton({
+                        title: texts.editMetadata,
+                        click: (event) => {
+                            let $deleteImage = $(event.target).closest(".imcms-choose-img-wrap");
+                            let onMetadataSavedCallback = imageFile => onMetadataSaved(imageFile, $deleteImage);
+                            imageMetadataWindowBuilder.buildImageMetadata(selectedImage, onMetadataSavedCallback);
+                        },
+                    })
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        function onMetadataSaved(imageFile, $deleteImage){
+            $deleteImage.remove();
+
+            const indexOfImageFileForDeleting = activeFolder.files.findIndex(file => file.name === imageFile.name);
+            activeFolder.files.splice(indexOfImageFileForDeleting, 1);
+
+            const $newImage = buildImageImmediately(imageFile, activeFolder);
+            highlightLastAddedImage($newImage);
+            $imagesContainer.prepend($newImage);
+            selectImage.call($newImage);
+
+            scrollToSelectedImage();
+
+            activeFolder.files = (activeFolder.files || []).concat(imageFile);
+            activeFolder.$images = activeFolder.$images.concat($newImage);
+            viewModel.$images = viewModel.$images.concat($newImage);
         }
 
         function selectImage(imageFile) {
@@ -683,6 +710,7 @@ define("imcms-image-content-builder",
             if(imageFile.size.toLowerCase().endsWith("mb")){
                 dataSrc += "&height=146";
             }
+            imageFile.src = dataSrc;
 
             return new BEM({
                 block: "imcms-choose-img-wrap",
@@ -708,6 +736,15 @@ define("imcms-image-content-builder",
 	            'drag': function (event) {
 	            }
             });
+        }
+
+        function buildImageImmediately(imageFile, folder) {
+            let $imgContainer = buildImage(imageFile, folder).css("display", "block");
+
+            let $img = $imgContainer.find('img');
+            $img.attr("src", $img.data("src")).removeAttr("data-src").removeAttr("style");
+
+            return $imgContainer;
         }
 
 	    function onMouseDownImageHandler( imageFile) {
@@ -971,14 +1008,7 @@ define("imcms-image-content-builder",
 
                 imageFilesREST.postFiles(saveImageRequestData)
                     .done(uploadedImageFiles => {
-                        const $newImages = uploadedImageFiles.map(imageFile => {
-                            let $imgContainer = buildImage(imageFile, activeFolder).css("display", "block");
-
-                            let $img = $imgContainer.find('img');
-                            $img.attr("src", $img.data("src")).removeAttr("data-src").removeAttr("style");
-
-                            return $imgContainer;
-                        });
+                        const $newImages = uploadedImageFiles.map(imageFile => buildImageImmediately(imageFile, activeFolder));
                         $newImages.forEach(highlightLastAddedImage);
                         activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
                         $imagesContainer.prepend($newImages);

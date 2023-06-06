@@ -129,13 +129,21 @@
     display: block;
 }
 
-.imcms-choose-img-description .imcms-choose-img-description__open-image {
+.imcms-choose-img-description .imcms-choose-img-description__open-image,
+.imcms-choose-img-description .imcms-choose-img-description__edit-metadata {
+    display: inline-block;
     height: 18px;
     width: 18px;
     background-size: 18px;
     border: none;
     border-radius: 0;
     background-color: transparent;
+}
+
+.imcms-choose-img-description .imcms-choose-img-description__edit-metadata {
+    height: 18px;
+    width: 18px;
+    background-size: 16px;
 }
 
  .imcms-choose-img-description .loading-animation{
