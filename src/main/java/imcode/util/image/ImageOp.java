@@ -290,6 +290,13 @@ public class ImageOp {
         return this;
     }
 
+    public ImageOp comment(String comment){
+        args.add("-set");
+        args.add("comment");
+        args.add(comment);
+        return this;
+    }
+
     public ImageOp info(){
         args.add("info:");
         return this;

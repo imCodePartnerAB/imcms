@@ -8,6 +8,7 @@ import com.drew.metadata.Tag;
 import com.drew.metadata.icc.IccDirectory;
 import com.imcode.imcms.components.exception.CompressionImageException;
 import com.imcode.imcms.components.impl.compressor.image.DefaultImageCompressor;
+import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -345,6 +346,37 @@ public class ImcmsImageUtils {
         return image.isCompress() ? compressImage(imageContent, image.getFormat()) : imageContent;
     }
 
+    public static byte[] editCommentMetadata(String comment, ImageSource imageSource){
+        InputStreamSource inputStreamSource = imageSource.getInputStreamSource();
+        try(final InputStream inputStream = inputStreamSource.getInputStream()){
+            final ImageOp operationGenerateImage = new ImageOp(imageMagickPath).input(inputStream);
+            operationGenerateImage.comment(comment);
+            return operationGenerateImage.processToByteArray();
+        }catch (Exception e){
+            log.error("Error when editing metadata in an image file");
+            return null;
+        }
+    }
+
+    public static String getCommentMetadata(InputStream inputStream){
+        return new String(new ImageOp(imageMagickPath).format("%c").input(inputStream).infoProcess());
+    }
+
+    public static ExifDTO getExif(ImageSource imageSource){
+        if (imageSource instanceof FileStorageImageSource && !imageSource.isEmpty()) {
+            InputStreamSource inputStreamSource = imageSource.getInputStreamSource();
+            try(final InputStream inputStream = inputStreamSource.getInputStream()){
+
+                return getExif(inputStream);
+
+            } catch (Exception e) {
+                log.error("Error when receiving an EXIF");
+            }
+        }
+
+        return null;
+    }
+
     private static Integer getNumberOfColors(File imageFile){
         final ImageOp operationGetColors = new ImageOp(imageMagickPath).input(imageFile);
         String separator = ";";
@@ -416,6 +448,23 @@ public class ImcmsImageUtils {
         if (rotateDir != RotateDirection.NORTH) {
             operation.rotate(rotateDir.getAngle());
         }
+    }
+
+    public static ExifDTO getExif(InputStream inputStream) throws ImageProcessingException, IOException {
+        inputStream = new BufferedInputStream(inputStream, inputStream.available());
+        inputStream.mark(Integer.MAX_VALUE);
+
+        final ExifDTO exifDTO = new ExifDTO();
+        exifDTO.setAllExifInfo(getExifInfo(inputStream));
+
+        try{
+            inputStream.reset();
+            exifDTO.setCustomExif(ExifDTO.CustomExifDTO.mapToCustomExif(getCommentMetadata(inputStream)));
+        }catch (Exception e){
+            exifDTO.setCustomExif(new ExifDTO.CustomExifDTO());
+        }
+
+        return exifDTO;
     }
 
     public static List<String> getExifInfo(ImageSource imageSource) {
