@@ -507,7 +507,7 @@ define("imcms-image-content-builder",
 					    dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
 
 					    subfolder.files.push(imageFile);
-					    subfolder.$images.push(buildImage(imageFile, subfolder));
+					    if(subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder));
 
 					    refreshOnFolderDoubleClickListener(dragged.folderData);
 					    refreshOnFolderDoubleClickListener(subfolder);

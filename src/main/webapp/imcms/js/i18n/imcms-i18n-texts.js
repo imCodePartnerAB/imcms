@@ -603,6 +603,8 @@ const texts = {
                 fileFormat: "Filformat",
                 alignment: "Textjustering",
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
+                showHistory: "Visa historia",
+                hideHistory: "Dölj historik",
                 cancelAndClose: "Avbryt och stäng",
                 removeAndClose: "Ta bort och stäng",
                 saveAndClose: "Spara och stäng",

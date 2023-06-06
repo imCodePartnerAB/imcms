@@ -119,7 +119,7 @@ define("imcms-image-metadata-builder",
                     onMetadataSaved(savedImage);
                     imageMetadataWindowBuilder.closeWindow();
                 })
-                .always(() => {
+                .fail(() => {
                     modal.buildErrorWindow(texts.error.saveMetadataFailed);
                 });
         }

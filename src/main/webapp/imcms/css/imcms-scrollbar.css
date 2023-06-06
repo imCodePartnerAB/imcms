@@ -127,6 +127,20 @@
     background-color: #abacad;
 }
 
+.image-exif-window .imcms-pop-up-modal__body::-webkit-scrollbar-thumb{
+    background-color: #abacad;
+}
+
+.image-exif-window .imcms-pop-up-modal__body::-webkit-scrollbar-track{
+    background-color: transparent;
+}
+
+.image-exif-window .imcms-pop-up-modal__body::-webkit-scrollbar{
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
 .imcms-history-mode__entries::-webkit-scrollbar-track {
     background-color: transparent;
 }

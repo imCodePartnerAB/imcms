@@ -38,7 +38,8 @@
     color: black;
 }
 
-.imcms-image-main-info .imcms-info-field__name{
+.imcms-image-main-info .imcms-info-field__name,
+.imcms-image-main-info .imcms-info-field__value{
     width: 50%;
     text-align: left;
 }
