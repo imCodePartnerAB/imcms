@@ -164,7 +164,14 @@ public class ImageOp {
 
     public ImageOp input(InputStream input) {
         dataStream = input;
-        args.add(addQuotes("-[0]"));
+        args.add(addQuotes("-"));
+
+        return this;
+    }
+
+    public ImageOp input(InputStream input, int index) {
+        dataStream = input;
+        args.add(addQuotes("-["+index+"]"));
 
         return this;
     }

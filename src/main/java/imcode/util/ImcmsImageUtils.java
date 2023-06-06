@@ -359,7 +359,7 @@ public class ImcmsImageUtils {
     }
 
     public static String getCommentMetadata(InputStream inputStream){
-        return new String(new ImageOp(imageMagickPath).format("%c").input(inputStream).infoProcess());
+        return new String(new ImageOp(imageMagickPath).format("%c").input(inputStream, 0).infoProcess());
     }
 
     public static ExifDTO getExif(ImageSource imageSource){
