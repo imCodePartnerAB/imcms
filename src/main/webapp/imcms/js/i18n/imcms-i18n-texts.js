@@ -490,6 +490,7 @@ const texts = {
                 add: "LÄGG TILL+",
                 cancelChanges: "Avbryt ändringar",
                 openImage: "Öppna bild i nytt fönster",
+                editMetadata: "Redigera metadata",
                 sortBy: 'Sortera på',
                 sorting: {
                     default: 'Standard',
@@ -504,6 +505,22 @@ const texts = {
                     addFolderFailed: 'Misslyckades med att lägga till mapp. Försök igen',
                     loadImagesFailed: 'Misslyckades med att hämta bilder. Försök igen',
                     uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen'
+                },
+                imageMetadata: {
+                    title: 'Bildmetadata',
+                    save: 'Spara',
+                    cancel: 'Avbryt',
+                    photographer: 'Fotograf',
+                    resolution: 'Upplösning (w x h)',
+                    originalFileSize: 'Originalvikt',
+                    originalFileType: 'Originalfiltyp',
+                    uploadedBy: 'Uppladdad av',
+                    modifiedDate: 'Ändrat datum',
+                    copyright: 'Copyright',
+                    licensePeriod: 'Licensperiod',
+                    error: {
+                        saveMetadataFailed: 'Misslyckades med att spara metadata'
+                    }
                 }
             },
             image: {
@@ -1628,6 +1645,7 @@ const texts = {
                 add: "ADD+",
                 cancelChanges: "Cancel changes",
                 openImage: "Open image in new window",
+                editMetadata: "Edit metadata",
                 sortBy: 'Sort by',
                 sorting: {
                     default: 'Default',
@@ -1642,6 +1660,22 @@ const texts = {
                     addFolderFailed: 'Failed to add folder. Try again',
                     loadImagesFailed: 'Failed to fetch images. Try again',
                     uploadImagesFailed: 'Failed to fetch images. Try again'
+                },
+                imageMetadata: {
+                    title: 'Image Metadata',
+                    save: 'Save',
+                    cancel: 'Cancel',
+                    photographer: 'Photographer',
+                    resolution: 'Resolution (w x h)',
+                    originalFileSize: 'Original size',
+                    originalFileType: 'Original file type',
+                    uploadedBy: 'Uploaded by',
+                    modifiedDate: 'Modified date',
+                    copyright: 'Copyright',
+                    licensePeriod: 'License period',
+                    error: {
+                        saveMetadataFailed: 'Failed to save metadata'
+                    }
                 }
             },
             image: {
@@ -2772,6 +2806,7 @@ const texts = {
                 add: "LEGGE TIL+",
                 cancelChanges: "Avbryt endringer",
                 openImage: "Åpne bildet i nytt vindu",
+                editMetadata: "Edit metadata",
                 sortBy: 'Sorter etter',
                 sorting: {
                     default: 'Standard',
@@ -2786,6 +2821,22 @@ const texts = {
                     addFolderFailed: 'Kunne ikke legge til mappe. Prøv igjen',
                     loadImagesFailed: 'Kunne ikke hente bilder. Prøv igjen',
                     uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen'
+                },
+                imageMetadata: {
+                    title: 'Image Metadata',
+                    save: 'Save',
+                    cancel: 'Cancel',
+                    photographer: 'Photographer',
+                    resolution: 'Resolution (w x h)',
+                    originalFileSize: 'Original size',
+                    originalFileType: 'Original file type',
+                    uploadedBy: 'Uploaded by',
+                    modifiedDate: 'Modified date',
+                    copyright: 'Copyright',
+                    licensePeriod: 'License period',
+                    error: {
+                        saveMetadataFailed: 'Failed to save metadata'
+                    }
                 }
             },
             image: {
