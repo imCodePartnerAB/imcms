@@ -20,5 +20,5 @@ public class ImageFileDTO {
     private String size;
     private Integer width;
     private Integer height;
-    private List<String> exifInfo;
+    private ExifDTO exifInfo;
 }

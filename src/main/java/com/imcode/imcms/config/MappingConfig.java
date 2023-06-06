@@ -171,7 +171,7 @@ class MappingConfig {
 
             final ImageSource imageSource = ImcmsImageUtils.getImageSource(image.getUrl());
             dto.setSource(imageSource);
-            dto.setExifInfo(ImcmsImageUtils.getExifInfo(imageSource));
+            dto.setExifInfo(ImcmsImageUtils.getExif(imageSource));
             dto.setSizeFormatted(formatFileSize(ImcmsImageUtils.getSize(imageSource)));
 
             dto.setFormat(image.getFormat());
@@ -218,7 +218,7 @@ class MappingConfig {
 
             final ImageSource imageSource = ImcmsImageUtils.getImageSource(image.getUrl());
             dto.setSource(imageSource);
-            dto.setExifInfo(ImcmsImageUtils.getExifInfo(imageSource));
+            dto.setExifInfo(ImcmsImageUtils.getExif(imageSource));
             dto.setSizeFormatted(formatFileSize(ImcmsImageUtils.getSize(imageSource)));
 
             dto.setFormat(image.getFormat());
@@ -452,7 +452,7 @@ class MappingConfig {
                     imageFileDTO.setResolution(imageDimension.width + "x" + imageDimension.height);
                 }
 
-                imageFileDTO.setExifInfo(ImcmsImageUtils.getExifInfo(imageFile.getContent()));
+                imageFileDTO.setExifInfo(ImcmsImageUtils.getExif(imageFile.getContent()));
             }catch (StorageFileNotFoundException e){
                 log.error("Exception while mapping StoragePath to ImageFileDTO", e);
             }catch (ImageProcessingException | IOException e){

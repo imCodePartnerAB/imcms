@@ -26,7 +26,7 @@ public class ImageDTO extends ImageData {
     private boolean allLanguages;
     private String alternateText;
     private String linkUrl;
-    private List<String> exifInfo;
+    private ExifDTO exifInfo;
     private String sizeFormatted;
 
     /**
