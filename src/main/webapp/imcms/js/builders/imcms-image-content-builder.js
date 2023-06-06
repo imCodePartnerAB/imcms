@@ -675,14 +675,12 @@ define("imcms-image-content-builder",
         }
 
         function onMetadataSaved(imageFile, $deleteImage){
-            $deleteImage.remove();
-
             const indexOfImageFileForDeleting = activeFolder.files.findIndex(file => file.name === imageFile.name);
             activeFolder.files.splice(indexOfImageFileForDeleting, 1);
 
             const $newImage = buildImageImmediately(imageFile, activeFolder);
             highlightLastAddedImage($newImage);
-            $imagesContainer.prepend($newImage);
+            $deleteImage.replaceWith($newImage);
             selectImage.call($newImage);
 
             scrollToSelectedImage();
