@@ -40,7 +40,7 @@ define(
 
         function loadExifData() {
             /** @namespace imageData.exifInfo */
-            (imageData.exifInfo || []).forEach(exifDataRow => {
+            (imageData.exifInfo.allExifInfo || []).forEach(exifDataRow => {
                 $exifInfoContainer.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
             });
         }
