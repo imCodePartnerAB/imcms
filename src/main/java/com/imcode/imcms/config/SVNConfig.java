@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.TemplateCSSService;
 import com.imcode.imcms.domain.service.api.DefaultTemplateCSSService;
 import com.imcode.imcms.domain.service.api.DummyTemplateCSSService;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class SVNConfig {
 
 		log.warn("svn.url not provided");
 		if (Files.exists(localSVNRepositoryFolder)) {
-			this.repositoryUrl = "file://" + localSVNRepositoryFolder.toAbsolutePath();
+			this.repositoryUrl = FilenameUtils.separatorsToSystem("file://" + localSVNRepositoryFolder.toAbsolutePath());
 			log.info("Reusing local SVN repository with path: {}", repositoryUrl);
 			return;
 		}
