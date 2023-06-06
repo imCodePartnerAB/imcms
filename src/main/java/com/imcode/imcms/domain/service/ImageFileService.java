@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +24,6 @@ public interface ImageFileService {
     List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath);
 
 	ImageFileDTO moveImageFile(String destinationFolder, String filePath) throws IOException;
+
+    ImageFileDTO editCommentMetadata(String path, ExifDTO.CustomExifDTO customExif) throws IOException;
 }

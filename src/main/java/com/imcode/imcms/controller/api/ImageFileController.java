@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.service.ImageFileService;
@@ -38,6 +39,11 @@ public class ImageFileController {
 	public ImageFileDTO moveImageFile(@RequestBody ImageFileDTO imageFileDTO) throws IOException {
 		return imageFileService.moveImageFile(imageFileDTO.getPath(), imageFileDTO.getName());
 	}
+
+    @PutMapping("/editMetadata")
+    public ImageFileDTO editMetadata(String path, @RequestBody ExifDTO.CustomExifDTO customExifDTO) throws IOException {
+        return imageFileService.editCommentMetadata(path, customExifDTO);
+    }
 
     @DeleteMapping
     public List<ImageFileUsageDTO> deleteImage(@RequestBody ImageFileDTO imageFileDTO, HttpServletResponse response) throws IOException {

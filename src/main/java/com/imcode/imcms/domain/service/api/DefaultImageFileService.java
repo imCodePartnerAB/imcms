@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
@@ -11,8 +13,9 @@ import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
+import imcode.server.document.textdocument.FileStorageImageSource;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +23,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -144,4 +150,21 @@ class DefaultImageFileService implements ImageFileService {
 
         return storagePathToImageFileDTO.apply(destinationImageFilePath);
 	}
+
+    @Override
+    public ImageFileDTO editCommentMetadata(String path, ExifDTO.CustomExifDTO customExif) throws IOException {
+        final StoragePath storagePath = StoragePath.get(SourceFile.FileType.FILE, ImcmsImageUtils.imagesPath, path);
+
+        final String comment = ExifDTO.CustomExifDTO.mapToString(customExif);
+        final FileStorageImageSource imageSource = new FileStorageImageSource(path);
+
+        final byte[] content = ImcmsImageUtils.editCommentMetadata(comment, imageSource);
+
+        try(InputStream inputStream = new ByteArrayInputStream(Objects.requireNonNull(content))){
+            storageClient.put(storagePath, inputStream);
+        }
+
+        return storagePathToImageFileDTO.apply(storagePath);
+    }
+
 }
