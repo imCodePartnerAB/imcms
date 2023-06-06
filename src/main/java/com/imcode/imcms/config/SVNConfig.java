@@ -1,5 +1,12 @@
 package com.imcode.imcms.config;
 
+import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.component.SVNService;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.TemplateCSSService;
+import com.imcode.imcms.domain.service.api.DefaultTemplateCSSService;
+import com.imcode.imcms.domain.service.api.DummyTemplateCSSService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,16 +29,22 @@ import java.nio.file.Path;
 @Log4j2
 @Configuration
 public class SVNConfig {
+	private boolean svnUse;
+	private String templateCSSDirectory;
 	private String repositoryUrl;
 	private String username;
 	private String password;
 	private Path localSVNRepositoryFolder;
 
-	public SVNConfig(@Value("${svn.url:#{null}}") String repositoryUrl,
+	public SVNConfig(@Value("#{${svn.use} ?: true}") boolean svnUse,
+					 @Value("${TemplateCSSPath}") String templateCSSDirectory,
+					 @Value("${svn.url:#{null}}") String repositoryUrl,
 					 @Value("${svn.username:#{null}}") String username,
 					 @Value("${svn.password:#{null}}") String password,
 					 ServletContext servletContext) {
 
+		this.svnUse = svnUse;
+		this.templateCSSDirectory = templateCSSDirectory;
 		this.repositoryUrl = repositoryUrl;
 		this.username = username;
 		this.password = password;
@@ -89,5 +102,17 @@ public class SVNConfig {
 		svnOperationFactory.setAuthenticationManager(svnAuthenticationManager());
 
 		return svnOperationFactory;
+	}
+
+	@Bean("templateCSSService")
+	public TemplateCSSService templateCSSService(SVNService svnService,
+												 DocumentsCache documentsCache,
+												 DocumentService<DocumentDTO> documentService,
+												 ServletContext servletContext) {
+
+		if (!svnUse)
+			log.warn("Template CSS feature disabled -'svn.use '= false. Creating DummyTemplateCSSService as mock for TemplateCSSService");
+
+		return svnUse ? new DefaultTemplateCSSService(svnService, documentsCache, documentService, servletContext, templateCSSDirectory) : new DummyTemplateCSSService();
 	}
 }
