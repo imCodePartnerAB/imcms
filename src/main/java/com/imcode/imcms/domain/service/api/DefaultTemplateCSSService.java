@@ -12,8 +12,6 @@ import com.imcode.imcms.model.CommonContent;
 import imcode.server.Imcms;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperties;
 
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.domain.component.SVNService.IMCODE_USERNAME_PROPERTY;
 import static com.imcode.imcms.domain.component.SVNService.SVN_WEBAPP_PATH;
 
-@Service("templateCSSService")
 public class DefaultTemplateCSSService implements TemplateCSSService {
 	private final SVNService svnService;
 	private final DocumentsCache documentsCache;
@@ -39,9 +36,10 @@ public class DefaultTemplateCSSService implements TemplateCSSService {
 	private final String templateCSSDirectory;
 
 	public DefaultTemplateCSSService(SVNService svnService,
-	                                 DocumentsCache documentsCache, DocumentService<DocumentDTO> documentService,
-	                                 ServletContext context,
-	                                 @Value("${TemplateCSSPath}") String templateCSSDirectory) {
+									 DocumentsCache documentsCache,
+									 DocumentService<DocumentDTO> documentService,
+									 ServletContext context,
+									 String templateCSSDirectory) {
 		this.svnService = svnService;
 		this.documentsCache = documentsCache;
 		this.documentService = documentService;
@@ -198,7 +196,7 @@ public class DefaultTemplateCSSService implements TemplateCSSService {
 		final Path templateCSSPath = templateCSSAbsoluteDirPath.resolve(templateName + CSS_WORKING_VERSION_SUFFIX + CSS_EXTENSION);
 
 		try (final Reader cssReader = new BufferedReader(new StringReader(css));
-		     final Reader fileReader = new BufferedReader(new FileReader(templateCSSPath.toFile()))) {
+			 final Reader fileReader = new BufferedReader(new FileReader(templateCSSPath.toFile()))) {
 
 			return IOUtils.contentEquals(fileReader, cssReader);
 		} catch (IOException e) {
