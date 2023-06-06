@@ -53,6 +53,7 @@ module.exports = {
     revert: getButtonBuilder('revert'),
     cropping: getButtonBuilder('crop'),
     openInNewWindow: getButtonBuilder('open-in-new-window'),
+    editMetadata: getButtonBuilder('edit-metadata'),
     fit: getButtonBuilder('fit'),
     switch_on: getButtonBuilder('switch-on'),
     switch_off: getButtonBuilder('switch-off'),
@@ -139,6 +140,9 @@ module.exports = {
     },
     openInNewWindowButton: function (attributes) {
         return this.openInNewWindow('<button>', attributes);
+    },
+    editMetadataButton: function (attributes) {
+        return this.editMetadata('<button>', attributes);
     },
     fitButton: function (attributes) {
         return this.fit('<button>', attributes);

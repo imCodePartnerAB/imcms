@@ -238,6 +238,20 @@ a[class^="imcms"].imcms-button--neutral:hover {
     background: url("/imcms/images/image_editor/icon_open_in_new_hover.svg") no-repeat center;
 }
 
+.imcms-button--edit-metadata {
+    background: #fff url("/imcms/images/image_editor/icon_metadata.svg") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--edit-metadata:hover {
+    background: url("/imcms/images/image_editor/icon_metadata_hover.svg") no-repeat center;
+}
+
 .imcms-button--zoom-plus {
     background: #fff url("/imcms/images/image_editor/icon_zoom_plus.png") no-repeat center;
     border: 1px solid #d3d8de;
