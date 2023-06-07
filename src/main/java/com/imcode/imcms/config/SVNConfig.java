@@ -7,8 +7,8 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemplateCSSService;
 import com.imcode.imcms.domain.service.api.DefaultTemplateCSSService;
 import com.imcode.imcms.domain.service.api.DummyTemplateCSSService;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +37,15 @@ public class SVNConfig {
 	private String password;
 	private Path localSVNRepositoryFolder;
 
+	@Getter
+	private ISVNAuthenticationManager authenticationManager;
+	@Getter
+	private SVNURL svnRepositoryURL;
+	@Getter
+	private SVNRepository svnRepository;
+	@Getter
+	private SvnOperationFactory svnOperationFactory;
+
 	public SVNConfig(@Value("#{${svn.use} ?: true}") boolean svnUse,
 					 @Value("${TemplateCSSPath}") String templateCSSDirectory,
 					 @Value("${svn.url:#{null}}") String repositoryUrl,
@@ -55,54 +64,24 @@ public class SVNConfig {
 
 	@PostConstruct
 	private void init() throws IOException, SVNException {
-		if (StringUtils.isNotEmpty(repositoryUrl)) return;
+		if (!svnUse) return;
 
-		log.warn("svn.url not provided");
-		if (Files.exists(localSVNRepositoryFolder)) {
-			this.repositoryUrl = FilenameUtils.separatorsToSystem("file://" + localSVNRepositoryFolder.toAbsolutePath());
-			log.info("Reusing local SVN repository with path: {}", repositoryUrl);
-			return;
+		if (StringUtils.isEmpty(repositoryUrl)) {
+			log.warn("svn.url not provided");
+			if (Files.exists(localSVNRepositoryFolder)) {
+				this.repositoryUrl = "file://" + localSVNRepositoryFolder.toAbsolutePath();
+				log.info("Reusing local SVN repository with path: {}", repositoryUrl);
+			} else {
+				Files.createDirectory(localSVNRepositoryFolder);
+				this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
+				log.info(String.format("Created local SVN repository with path: %s", repositoryUrl));
+			}
 		}
 
-		Files.createDirectory(localSVNRepositoryFolder);
-		this.repositoryUrl = SVNRepositoryFactory.createLocalRepository(localSVNRepositoryFolder.toFile(), true, true).toString();
-		log.info(String.format("Created local SVN repository with path: %s", repositoryUrl));
-	}
-
-	@Bean
-	public ISVNAuthenticationManager svnAuthenticationManager() {
-		return SVNWCUtil.createDefaultAuthenticationManager(username, password.toCharArray());
-	}
-
-	@Bean
-	public SVNURL svnRepositoryURL() {
-		try {
-			return SVNURL.parseURIEncoded(repositoryUrl);
-		} catch (SVNException e) {
-			throw new RuntimeException(String.format("Incorrect repository URL: %s", repositoryUrl), e);
-		}
-	}
-
-	@Bean
-	public SVNRepository svnRepository() {
-		try {
-			final SVNRepository repository = SVNRepositoryFactory.create(svnRepositoryURL());
-			repository.setAuthenticationManager(svnAuthenticationManager());
-
-			log.info(String.format("Created connection with SVN repository: %s", svnRepositoryURL()));
-
-			return repository;
-		} catch (SVNException e) {
-			throw new RuntimeException(String.format("Cannot create repository: %s", svnRepositoryURL()), e);
-		}
-	}
-
-	@Bean
-	public SvnOperationFactory svnOperationFactory() {
-		final SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
-		svnOperationFactory.setAuthenticationManager(svnAuthenticationManager());
-
-		return svnOperationFactory;
+		this.authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(username, password.toCharArray());
+		this.svnRepositoryURL = SVNURL.parseURIEncoded(repositoryUrl);
+		this.svnRepository = setUpSvnRepository();
+		this.svnOperationFactory = setUpSvnOperationFactory();
 	}
 
 	@Bean("templateCSSService")
@@ -115,5 +94,25 @@ public class SVNConfig {
 			log.warn("Template CSS feature disabled -'svn.use '= false. Creating DummyTemplateCSSService as mock for TemplateCSSService");
 
 		return svnUse ? new DefaultTemplateCSSService(svnService, documentsCache, documentService, servletContext, templateCSSDirectory) : new DummyTemplateCSSService();
+	}
+
+	private SVNRepository setUpSvnRepository() {
+		try {
+			final SVNRepository repository = SVNRepositoryFactory.create(svnRepositoryURL);
+			repository.setAuthenticationManager(authenticationManager);
+
+			log.info(String.format("Created connection with SVN repository: %s", svnRepositoryURL));
+
+			return repository;
+		} catch (SVNException e) {
+			throw new RuntimeException(String.format("Cannot create repository: %s", svnRepositoryURL), e);
+		}
+	}
+
+	private SvnOperationFactory setUpSvnOperationFactory() {
+		final SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
+		svnOperationFactory.setAuthenticationManager(authenticationManager);
+
+		return svnOperationFactory;
 	}
 }

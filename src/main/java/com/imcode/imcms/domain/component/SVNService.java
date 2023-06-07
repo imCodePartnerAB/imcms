@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.component;
 
-import lombok.AllArgsConstructor;
+import com.imcode.imcms.config.SVNConfig;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
@@ -12,11 +12,13 @@ import org.tmatesoft.svn.core.wc2.*;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 @Component
-@AllArgsConstructor
 public class SVNService {
 	public static final String IMCODE_USERNAME_PROPERTY = "imcode:username";
 	public static final String SVN_WEBAPP_PATH = "/src/main/webapp/";
@@ -24,6 +26,13 @@ public class SVNService {
 	private final SVNURL svnRepositoryURL;
 	private final SVNRepository svnRepository;
 	private final SvnOperationFactory svnOperationFactory;
+
+
+	public SVNService(SVNConfig svnConfig) {
+		this.svnRepositoryURL = svnConfig.getSvnRepositoryURL();
+		this.svnRepository = svnConfig.getSvnRepository();
+		this.svnOperationFactory = svnConfig.getSvnOperationFactory();
+	}
 
 	/**
 	 * Retrieve file revisions starting from first one to latest. Use {@value SVN_WEBAPP_PATH} to compose path
