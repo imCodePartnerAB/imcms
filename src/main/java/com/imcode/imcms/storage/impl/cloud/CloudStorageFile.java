@@ -34,7 +34,7 @@ public class CloudStorageFile implements StorageFile {
     public InputStream getContent() {
         if(inputStream == null) {
             inputStream = new BufferedInputStream(s3Object.getObjectContent());
-            inputStream.mark(0);
+            inputStream.mark(Integer.MAX_VALUE);
         }else{
             inputStream.reset();
         }
