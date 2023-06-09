@@ -740,7 +740,7 @@ define(
                     path: currentFile.fullPath
                 };
                 fileRestApi.getFile(pathFile).done(file => {
-                    contentTextArea.setValue(window.atob(file.contents));
+                    contentTextArea.setValue(decodeURIComponent(escape(window.atob(file.contents))));
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
 
                 confirmEditFile();
