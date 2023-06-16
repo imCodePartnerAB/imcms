@@ -84,7 +84,7 @@ This tab is used to set the restricted permission types that are used in the *Ac
 * **Edit menu** - access to menu editors + **VIEW**
 * **Edit image** - access to image editors + **VIEW**
 * **Edit loop** - access to loop editors + **VIEW**
-* **Edit doc info** - access to *Page Info*, with limitations (No access to *Permission Setting*, *Properties*, *All data* tabs) + **VIEW**
+* **Edit doc info** - access to *Page Info*, with limitations (No access to *Metadata*, *Permission Setting*, *Properties*, *All data* tabs) + **VIEW**
 
 .. seealso:: Read more about access control :doc:`here </user-documentation/access-control>`
 

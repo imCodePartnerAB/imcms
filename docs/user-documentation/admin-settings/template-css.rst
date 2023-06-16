@@ -40,9 +40,9 @@ Template CSS Editor
 
 2. You have two buttons:
 
-|active| - loads active version of template css. Active means that all users see changes.
+|active| - shows active version of template css. Active means that all users see changes.
 
-|working| - loads working version. Working means no one can see changes. In order to preview them see *Appearance* tab in *Page Info*.
+|working| - shows working version. Working means no one can see changes. In order to preview them see *Appearance* tab in *Page Info*.
 
 You only can change working version.
 
@@ -58,7 +58,7 @@ You only can change working version.
 
 **Clear** button - clear working space.
 
-.. warning:: Remember that you need to provide changes in order to save working version. Also you cannot publish if versions match.
+.. note:: Remember that you need to provide changes in order to save working version. Also you cannot publish if versions match.
 
 ********************
 Template CSS History

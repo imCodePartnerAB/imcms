@@ -34,8 +34,9 @@ Location - *Admin* page -> *Roles* tab
 * **Get password by email** - gives access to recover password by sending confirmation code to email (Login page -> *Forgot password* button).
 
 * **Access to admin pages** - gives access to the *Site Specific* tab and the *Admin page*, but with limitations.
-    * No access to *Ip Access*, *Files*, *Profiles*, *System Properties*, *Index/cache*, *Data-version*, *Documentation* tabs.
+    * No access to *Ip Access*, *Version Control*, *Files*, *Profiles*, *System Properties*, *Import Documents*, *Documentation* tabs.
     * *Users* tab - a user with this permission cannot edit superadmins and doesn't see them when searching. Also, a such user cannot give the *Superadmin* role when creating/editing.
+    * *Delete Documents* tab - a user with this permission has not access to the Waste Basket.
 
 * **Access to document editor** - gives access to the *Document Manager*. But only the user with the necessary document permission (*EDIT* or *Edit doc info*, see below) can open the *Page Info* of a specific document.
 
@@ -56,7 +57,7 @@ Location *Page Info* -> *Access* and *Permission Settings* tabs
 	* **Edit menu** - access to menu editors + **VIEW**
 	* **Edit image** - access to image editors + **VIEW**
 	* **Edit loop** - access to loop editors + **VIEW**
-	* **Edit doc info** - access to *Page Info*, with limitations (No access to *Permission Setting*, *Properties*, *All data* tabs) + **VIEW**
+	* **Edit doc info** - access to *Page Info*, with limitations (No access to *Metadata*, *Permission Setting*, *Properties*, *All data* tabs) + **VIEW**
 
 * **VIEW for all users** - **VIEW** for all users - all users can see page the document, the document when searching and in the menu.
 

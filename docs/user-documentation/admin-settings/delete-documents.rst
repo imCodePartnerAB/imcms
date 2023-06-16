@@ -6,6 +6,8 @@ Using *Delete Documents* tab, you can delete the document, put it in or take it 
 .. image:: _static/admin-delete-documents.png
 
 .. note::
+    Only superadmin has access to the Waste Basket.
+
     Only superadmin can visit a document if it's in the Waste Basket.
 
     The document is stored in all menus until it's completely deleted.
