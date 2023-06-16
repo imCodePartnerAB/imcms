@@ -201,19 +201,35 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
+    @Override
+    public Boolean isExternal(String url) {
+        return isExternal(url, patternUrl);
+    }
+
+    @Override
+    public Boolean isExternal(String url, Pattern pattern) {
+        final Matcher matcher = pattern.matcher(url);
+        if (!matcher.find()){
+            return null;
+        }
+
+        final String protocol = matcher.group(1);
+        // if protocol null its mean that url is on current host
+        return protocol != null;
+    }
+
     private List<ValidationLink> validationLinksChecked(ValidationLink link, Pattern pattern) {
         List<ValidationLink> links = new ArrayList<>();
-        Matcher matcherUrl = pattern.matcher(link.getUrl());
-        if (matcherUrl.find()) {
-            String protocol = matcherUrl.group(1);
-            if (null == protocol) {  // if protocol null its mean that url is on current host
+
+        final Boolean isExternal = isExternal(link.getUrl(), pattern);
+        if (isExternal != null) {
+            if (isExternal) {
+                links.add(verifyValidationLink(link));
+            } else {
                 link.setHostFound(true);
                 link.setHostReachable(true);
                 links.addAll(checkRelativeLink(link));
-            } else {
-                links.add(verifyValidationLink(link));
             }
-
         }
         return links;
     }
