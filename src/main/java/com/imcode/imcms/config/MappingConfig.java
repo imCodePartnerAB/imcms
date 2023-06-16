@@ -3,6 +3,7 @@ package com.imcode.imcms.config;
 import com.drew.imaging.ImageProcessingException;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.component.ImportToLocalCategoryResolver;
+import com.imcode.imcms.domain.component.ImportToLocalDocumentURLResolver;
 import com.imcode.imcms.domain.component.ImportToLocalRolePermissionResolver;
 import com.imcode.imcms.domain.component.ImportToLocalTextDocumentTemplateResolver;
 import com.imcode.imcms.domain.dto.*;
@@ -568,7 +569,8 @@ class MappingConfig {
 			CommonContentFactory commonContentFactory,
 			ImportToLocalTextDocumentTemplateResolver templateResolver,
 			ImportToLocalCategoryResolver categoryResolver,
-			ImportToLocalRolePermissionResolver rolePermissionResolver
+			ImportToLocalRolePermissionResolver rolePermissionResolver,
+            ImportToLocalDocumentURLResolver importToLocalDocumentURLResolver
 
 	){
 		return importDocument -> {
@@ -578,7 +580,7 @@ class MappingConfig {
 			document.setFiles(Collections.emptyList());
 
 			if (document.getType().equals(Meta.DocumentType.URL)) {
-				document.setDocumentURL(DocumentUrlDTO.createDefaultWithUrl(importDocument.getUrl()));
+				document.setDocumentURL(importToLocalDocumentURLResolver.resolve(importDocument.getUrl()));
 			}
 
 			if (document.getType().equals(Meta.DocumentType.TEXT)) {
