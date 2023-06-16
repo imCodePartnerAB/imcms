@@ -103,7 +103,12 @@ public class DefaultTemplateService implements TemplateService {
         return templateRepository.findByName(templateName);
     }
 
-    @Override
+	@Override
+	public Template getById(int id) {
+        return templateRepository.findById(id).map(TemplateDTO::new).orElseThrow();
+	}
+
+	@Override
     public Path getTemplateAdminPath(String template) {
         return templateAdminPath.resolve(template);
     }

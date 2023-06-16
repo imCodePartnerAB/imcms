@@ -20,6 +20,8 @@ public interface TemplateService {
 
     Template get(String name);
 
+    Template getById(int id);
+
     Path getTemplateAdminPath(String templateName);
 
     Path getPhysicalPathTemplateAdmin(String templateName);
