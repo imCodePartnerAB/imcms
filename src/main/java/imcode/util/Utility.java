@@ -424,13 +424,13 @@ public class Utility {
 	}
 
 	public static String escapeValue(String value) {
-		return HtmlUtils.htmlEscape(value);
+		return HtmlUtils.htmlEscape(value, Imcms.DEFAULT_ENCODING);
 	}
 
 	public static String escapeValue(String value, String... exceptSymbols) {
-		String escapedValue = HtmlUtils.htmlEscape(value);
-		for(String symbol: exceptSymbols){
-			escapedValue = escapedValue.replace(HtmlUtils.htmlEscape(symbol), symbol);
+		String escapedValue = HtmlUtils.htmlEscape(value, Imcms.DEFAULT_ENCODING);
+		for (String symbol : exceptSymbols) {
+			escapedValue = escapedValue.replace(HtmlUtils.htmlEscape(symbol, Imcms.DEFAULT_ENCODING), symbol);
 		}
 		return escapedValue;
 	}
