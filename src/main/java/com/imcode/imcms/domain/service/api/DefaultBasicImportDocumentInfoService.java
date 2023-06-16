@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -51,21 +52,31 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 
 	@Override
 	public Page<BasicImportDocumentInfoDTO> getAll() {
-		return getAll(null, null, false, false, Pageable.unpaged());
+		return getAllInRange(null, null, false, false, Pageable.unpaged());
 	}
 
 	@Override
-	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId) {
-		return getAll(startId, endId, false, false, Pageable.unpaged());
+	public Page<BasicImportDocumentInfoDTO> getAll(Set<Integer> docIdList) {
+		return getAll(docIdList, Pageable.unpaged());
 	}
 
 	@Override
-	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip) {
-		return getAll(startId, endId, excludeImported, excludeSkip, Pageable.unpaged());
+	public Page<BasicImportDocumentInfoDTO> getAll(Set<Integer> docIdList, Pageable pageable) {
+		return basicImportDocumentInfoRepository.findAllByIdIn(docIdList, pageable).map(BasicImportDocumentInfoDTO::new);
 	}
 
 	@Override
-	public Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable) {
+	public Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId) {
+		return getAllInRange(startId, endId, false, false, Pageable.unpaged());
+	}
+
+	@Override
+	public Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip) {
+		return getAllInRange(startId, endId, excludeImported, excludeSkip, Pageable.unpaged());
+	}
+
+	@Override
+	public Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable) {
 		return basicImportDocumentInfoRepository.findAllWithRange(startId, endId, excludeImported, excludeSkip, pageable)
 				.map(BasicImportDocumentInfoDTO::new);
 	}

@@ -13,12 +13,20 @@ public interface ImportDocumentService {
 	boolean isImportingDone();
 
 	void importDocuments(int startId, int endId);
+	void importDocuments(int[] metaIds);
 
 	ImportProgress getImportingProgress();
 
-	void removeAliases(int startId, int endId);
 	void removeAlias(int importDocId);
 
-	void replaceAliases(int startId, int endId);
+	void removeAliases(int[] importDocIds);
+
+	void removeAliasesInRange(int startId, int endId);
+
+	void replaceAlias(int importDocId);
+
+	void replaceAliases(int[] importDocIds);
+
+	void replaceAliasesInRange(int startId, int endId);
 
 }

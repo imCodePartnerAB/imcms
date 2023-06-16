@@ -74,18 +74,15 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 	}
 
 	@Override
+	public void importDocuments(int[] metaIds) {
+		documentImporter.importDocuments(metaIds);
+	}
+
+	@Override
 	public ImportProgress getImportingProgress() {
 		return documentImporter.getImportProgress();
 	}
 
-
-	@Override
-	public void removeAliases(int startId, int endId) {
-		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
-		for (int importDocId : importedDocumentIds) {
-			removeAlias(importDocId);
-		}
-	}
 
 	@Override
 	public void removeAlias(int importDocId) {
@@ -98,24 +95,52 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 	}
 
 	@Override
-	public void replaceAliases(int startId, int endId) {
-		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
-
+	public void removeAliases(int[] importDocIds) {
+		final int[] importedDocumentIds = getImportedDocumentIds(importDocIds);
 		for (int importDocId : importedDocumentIds) {
-			final String alias = "/import/" + importDocId;
-			final int metaId = basicImportDocumentInfoService.toMetaId(importDocId);
-
-			final List<Text> textsContainingAlias = textService.getTextsContaining(alias);
-			textsContainingAlias.forEach(text -> {
-				final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
-				text.setText(modifiedText);
-
-				textService.save(text);
-			});
-
 			removeAlias(importDocId);
 		}
+	}
 
+	@Override
+	public void removeAliasesInRange(int startId, int endId) {
+		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
+		for (int importDocId : importedDocumentIds) {
+			removeAlias(importDocId);
+		}
+	}
+
+	@Override
+	public void replaceAlias(int importDocId) {
+		final String alias = "/import/" + importDocId;
+		final int metaId = basicImportDocumentInfoService.toMetaId(importDocId);
+
+		final List<Text> textsContainingAlias = textService.getTextsContaining(alias);
+		textsContainingAlias.forEach(text -> {
+			final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
+			text.setText(modifiedText);
+
+			textService.save(text);
+		});
+		log.info(String.format("Alias: %s in document texts with id(rb4): %d has been replaced to: %s!", alias, importDocId, importDocId));
+
+		removeAlias(importDocId);
+	}
+
+	@Override
+	public void replaceAliases(int[] metaIds) {
+		final int[] importedDocumentIds = getImportedDocumentIds(metaIds);
+		for (int importDocId : importedDocumentIds) {
+			replaceAlias(importDocId);
+		}
+	}
+
+	@Override
+	public void replaceAliasesInRange(int startId, int endId) {
+		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
+		for (int importDocId : importedDocumentIds) {
+			replaceAlias(importDocId);
+		}
 	}
 
 	private int[] getAvailableImportDocumentIdsForImport(int startId, int endId) {
@@ -126,6 +151,12 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 	private int[] getImportedDocumentIds(int startId, int endId) {
 		return IntStream.rangeClosed(startId, endId)
+				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.isImported(id))
+				.toArray();
+	}
+
+	private int[] getImportedDocumentIds(int[] metaIds) {
+		return IntStream.of(metaIds)
 				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.isImported(id))
 				.toArray();
 	}

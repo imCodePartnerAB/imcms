@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @Log4j2
 @RestController
 @RequiredArgsConstructor
@@ -20,12 +22,17 @@ public class BasicImportDocumentInfoController {
 	@GetMapping("all")
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public Page<BasicImportDocumentInfoDTO> getAllBasicImportDocuments(Pageable pageable,
-	                                                                   @RequestParam(required = false) Integer startId,
-	                                                                   @RequestParam(required = false) Integer endId,
-	                                                                   @RequestParam(required = false, defaultValue = "false") boolean excludeImported,
-	                                                                   @RequestParam(required = false, defaultValue = "false") boolean excludeSkip) {
+																	   @RequestParam(required = false) Integer startId,
+																	   @RequestParam(required = false) Integer endId,
+																	   @RequestParam(required = false) Set<Integer> docIdList,
+																	   @RequestParam(required = false, defaultValue = "false") boolean excludeImported,
+																	   @RequestParam(required = false, defaultValue = "false") boolean excludeSkip) {
 
-		return basicImportDocumentInfoService.getAll(startId, endId, excludeImported, excludeSkip, pageable);
+		if (docIdList != null) {
+			return basicImportDocumentInfoService.getAll(docIdList, pageable);
+		}
+
+		return basicImportDocumentInfoService.getAllInRange(startId, endId, excludeImported, excludeSkip, pageable);
 	}
 
 	@PostMapping

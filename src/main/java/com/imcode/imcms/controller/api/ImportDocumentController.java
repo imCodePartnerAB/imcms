@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.ImportProgress;
 import com.imcode.imcms.domain.service.ImportDocumentService;
 import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 @RestController
@@ -54,40 +55,60 @@ public class ImportDocumentController {
 
 	@PostMapping
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-	public void importDocuments(@RequestBody Map<String, Integer> params) {
-		final Integer startId = params.get("start");
-		final Integer endId = params.get("end");
-
-		if (startId == null || endId == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide start and end ids!");
+	public void importDocuments(@RequestBody ImportDocIdRequestDTO metaIdRequest) {
+		if (metaIdRequest.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		importDocumentService.importDocuments(startId, endId);
+		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
+		if (metaIdList != null) {
+			importDocumentService.importDocuments(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+			return;
+		}
+
+		importDocumentService.importDocuments(metaIdRequest.getStartId(), metaIdRequest.getEndId());
 	}
 
 	@PostMapping("/aliases/remove")
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-	public void removeAliases(@RequestBody Map<String, Integer> params) {
-		final Integer startId = params.get("start");
-		final Integer endId = params.get("end");
-
-		if (startId == null || endId == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide start and end ids!");
+	public void removeAliases(@RequestBody ImportDocIdRequestDTO metaIdRequest) {
+		if (metaIdRequest.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		importDocumentService.removeAliases(startId, endId);
+		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
+		if (metaIdList != null) {
+			importDocumentService.removeAliases(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+			return;
+		}
+
+		importDocumentService.removeAliasesInRange(metaIdRequest.getStartId(), metaIdRequest.getEndId());
 	}
 
 	@PostMapping("/aliases/replace")
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-	public void replaceAliases(@RequestBody Map<String, Integer> params) {
-		final Integer startId = params.get("start");
-		final Integer endId = params.get("end");
-
-		if (startId == null || endId == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide start and end ids!");
+	public void replaceAliases(@RequestBody ImportDocIdRequestDTO metaIdRequest) {
+		if (metaIdRequest.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		importDocumentService.replaceAliases(startId, endId);
+		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
+		if (metaIdList != null) {
+			importDocumentService.replaceAliases(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+			return;
+		}
+
+		importDocumentService.replaceAliasesInRange(metaIdRequest.getStartId(), metaIdRequest.getEndId());
+	}
+
+	@Data
+	private static class ImportDocIdRequestDTO {
+		private Set<Integer> importDocIdList;
+		private Integer startId;
+		private Integer endId;
+
+		public boolean isEmpty() {
+			return (importDocIdList == null || importDocIdList.isEmpty()) && startId == null && endId == null;
+		}
 	}
 }

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicImportDocumentInfoJPA, Integer> {
@@ -18,10 +18,12 @@ public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicIm
 			"and (:excludeImported is false or b.status <> 'IMPORTED') " +
 			"and (:excludeSkip is false or b.status <> 'SKIP') ")
 	Page<BasicImportDocumentInfoJPA> findAllWithRange(@Param("startId") Integer startId,
-	                                                        @Param("endId") Integer endId,
-	                                                        @Param("excludeImported") boolean excludeImported,
-	                                                        @Param("excludeSkip") boolean excludeSkip,
-	                                                        Pageable pageable);
+													  @Param("endId") Integer endId,
+													  @Param("excludeImported") boolean excludeImported,
+													  @Param("excludeSkip") boolean excludeSkip,
+													  Pageable pageable);
+
+	Page<BasicImportDocumentInfoJPA> findAllByIdIn(Set<Integer> docIdList, Pageable pageable);
 
 	@Query("select case when (count(b) > 0) then true else false end from BasicImportDocumentInfoJPA b where b.id=:id and b.status='Imported'")
 	boolean isImported(@Param("id") Integer id);

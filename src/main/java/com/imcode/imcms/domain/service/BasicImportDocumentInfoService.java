@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface BasicImportDocumentInfoService {
 	BasicImportDocumentInfoDTO create(int id, ImportDocumentStatus status);
@@ -19,11 +20,15 @@ public interface BasicImportDocumentInfoService {
 
 	Page<BasicImportDocumentInfoDTO> getAll();
 
-	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId);
+	Page<BasicImportDocumentInfoDTO> getAll(Set<Integer> docIdList);
 
-	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip);
+	Page<BasicImportDocumentInfoDTO> getAll(Set<Integer> docIdList, Pageable pageable);
 
-	Page<BasicImportDocumentInfoDTO> getAll(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable);
+	Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId);
+
+	Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip);
+
+	Page<BasicImportDocumentInfoDTO> getAllInRange(Integer startId, Integer endId, boolean excludeImported, boolean excludeSkip, Pageable pageable);
 
 	boolean exists(int importDocId);
 
