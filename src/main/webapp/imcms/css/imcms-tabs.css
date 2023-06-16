@@ -1,4 +1,6 @@
-.imcms-tabs__tab {
+.imcms-tabs__tab,
+.imcms-tabs__advanced-tab,
+.imcms-tabs__advanced-button{
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     cursor: pointer;
@@ -9,15 +11,25 @@
     word-break: break-word;
 }
 
+.imcms-tabs__advanced-button{
+    background-image: url(/imcms/images/icon_several_arrows_down.png);
+    background-repeat: no-repeat;
+    background-position-x: 90%;
+    background-position-y: 50%;
+    background-size: 12px;
+}
+
 .imcms-tabs__tab--disabled {
     cursor: default;
 }
 
-.imcms-tabs__tab:not(.imcms-tabs__tab--disabled):hover {
+.imcms-tabs__tab:not(.imcms-tabs__tab--disabled):hover,
+.imcms-tabs__advanced-tab:not(.imcms-tabs__tab--disabled):hover {
     border-color: #ebedef;
 }
 
 .imcms-tabs__tab:not(.imcms-tabs__tab--disabled):hover:after,
+.imcms-tabs__advanced-tab:not(.imcms-tabs__tab--disabled):hover:after,
 .imcms-title--active:not(.imcms-tabs__tab--disabled):after {
     content: "";
     background-color: #389ecf;

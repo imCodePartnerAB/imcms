@@ -3,15 +3,40 @@
  * 22.06.18
  */
 const BEM = require('imcms-bem-builder');
+const $ = require('jquery');
+const texts = require('imcms-i18n-texts');
+
+const TAB_SELECTOR = '.imcms-tabs__tab';
+const ADVANCED_TAB_SELECTOR = '.imcms-tabs__advanced-tab';
+const ADVANCED_BUTTON_SELECTOR = '.imcms-tabs__advanced-button';
 
 const ACTIVE_TAB_CLASS_NAME = 'imcms-title--active';
 const ACTIVE_TAB_SELECTOR = '.imcms-title--active';
 const DISABLED_TAB_CLASS_NAME = 'imcms-tabs__tab--disabled';
 const TAB_INDEX_ATTRIBUTE = 'data-window-id';
 
+function buildTab(tabBuilder, index, onClick){
+    return {
+        tag: '<div>',
+        'class': 'imcms-title',
+        attributes: {
+            'data-window-id': index,
+            text: tabBuilder.name,
+            click: onClick,
+        },
+        modifiers: (index === 0 ? ['active'] : [])
+    };
+}
+
 module.exports = class WindowTabsBuilder {
     constructor(opts) {
         this.tabBuilders = opts.tabBuilders;
+        this.advancedTabBuilders = opts.advancedTabBuilders ? opts.advancedTabBuilders : [];
+        this.advancedButtonText = opts.advancedButtonText ? opts.advancedButtonText : texts.windowTabs.advancedButton;
+    }
+
+    getAllTabBuilders(){
+        return this.tabBuilders.concat(this.advancedTabBuilders);
     }
 
     /**
@@ -56,26 +81,48 @@ module.exports = class WindowTabsBuilder {
         return !this.getTabByIndex(index).hasClass(DISABLED_TAB_CLASS_NAME);
     }
 
+    setEnabledAdvancedButton(isActive){
+        debugger;
+        let $advancedButton = this.$tabsContainer.find(ADVANCED_BUTTON_SELECTOR);
+        isActive ? $advancedButton.removeClass(DISABLED_TAB_CLASS_NAME) : $advancedButton.addClass(DISABLED_TAB_CLASS_NAME);
+    }
+
     buildWindowTabs(panels$) {
         this.panels$ = panels$;
 
-        const tabs = this.tabBuilders.map((tabBuilder, index) => {
-            return {
+        let tabs = this.tabBuilders.map((tabBuilder, index) =>  buildTab(tabBuilder, index, () => this.setActiveTab(index, true)));
+        let advancedButton = "";
+        let advancedTabs = "";
+
+        if(this.advancedTabBuilders.length){
+            advancedButton = {
                 tag: '<div>',
                 'class': 'imcms-title',
                 attributes: {
-                    'data-window-id': index,
-                    text: tabBuilder.name,
-                    click: () => this.setActiveTab(index, true),
-                },
-                modifiers: (index === 0 ? ['active'] : [])
+                    text: this.advancedButtonText,
+                    click: (event) => {
+                        this.$tabsContainer.find(ADVANCED_TAB_SELECTOR).slideDown(200);
+                        $(event.target).slideUp(200, function () {
+                            $(this).remove();
+                        });
+                    }
+                }
             };
-        });
+
+            advancedTabs = this.advancedTabBuilders.map((tabBuilder, index) =>  {
+                let advancedIndex = this.tabBuilders.length + index;
+                let tab = buildTab(tabBuilder, advancedIndex, () => this.setActiveTab(advancedIndex, true));
+                tab.attributes.style = "display: none;";
+                return tab;
+            });
+        }
 
         this.$tabsContainer = new BEM({
             block: 'imcms-tabs',
             elements: {
-                'tab': tabs
+                'tab': tabs,
+                'advanced-button': advancedButton,
+                'advanced-tab': advancedTabs
             }
         }).buildBlockStructure('<div>');
 

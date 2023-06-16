@@ -1203,6 +1203,9 @@ const texts = {
             yearMonthDay: 'åååå-mm-dd',
             hourMinute: 'tt:mm',
         },
+        windowTabs: {
+            advancedButton: 'Avancerad meny'
+        },
         save: "Spara",
         none: 'Ingen'
     },
@@ -2403,6 +2406,9 @@ const texts = {
             yearMonthDay: 'yyyy-mm-dd',
             hourMinute: 'hh:mm',
         },
+        windowTabs: {
+            advancedButton: 'Advanced menu'
+        },
         save: "Save",
         none: 'None'
     },
@@ -3602,6 +3608,9 @@ const texts = {
         dateTime: {
             yearMonthDay: 'åååå-mm-dd',
             hourMinute: 'tt:mm',
+        },
+        windowTabs: {
+            advancedButton: 'Advanced menu'
         },
         save: "Lagre",
         none: 'Ingen'

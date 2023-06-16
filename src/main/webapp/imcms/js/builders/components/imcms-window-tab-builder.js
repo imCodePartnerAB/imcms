@@ -5,6 +5,7 @@
 define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
     const TAB_SELECTOR = '.imcms-tabs__tab';
+    const ADVANCED_TAB_SELECTOR = '.imcms-tabs__advanced-tab';
     const DISABLED_TAB_CLASS_NAME = 'imcms-tabs__tab--disabled';
     const ID_ATTRIBUTE_NAME = 'data-window-id';
 
@@ -14,7 +15,7 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
     });
 
     function get$TabByIndex(tabIndex) {
-        return $(`${TAB_SELECTOR}[${ID_ATTRIBUTE_NAME}=${tabIndex}]`);
+        return $(`${TAB_SELECTOR}[${ID_ATTRIBUTE_NAME}=${tabIndex}], ${ADVANCED_TAB_SELECTOR}[${ID_ATTRIBUTE_NAME}=${tabIndex}]`);
     }
 
     function setDisplay(tabIndex, displayValue) {
