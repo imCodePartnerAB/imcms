@@ -588,9 +588,10 @@
 }
 
 .table-import-documents {
-	height: 600px;
+	height: 530px;
 	overflow: auto;
-	min-height: 600px
+	min-height: 520px;
+    margin: 0 5px 0 5px;
 }
 
 .link-title-row.link-title,
@@ -1476,7 +1477,7 @@
 }
 
 .imcms-import-entity-reference-manager-row{
-	padding: 1% 4% 1% 4%;
+	padding: 1.5% 4% 1.5% 4%;
 }
 
 .imcms-import-entity-reference-manager-row__text{
@@ -1612,4 +1613,268 @@
 
 .imcms-import-documents-tab__import-button{
 	margin-left: 5px;
+}
+
+.selection-window-container{
+    text-align: center;
+    width: auto;
+    margin: 0 auto;
+    padding: 200px 0 0 0;
+}
+
+.selection-window-container .upload-documents-card,
+.selection-window-container .edit-documents-card,
+.selection-window-container .alias-control-card{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    display: inline-block;
+    width: 200px;
+    height: 100px;
+    border: 2px solid #0b94d8;
+    border-radius: 5px;
+    margin: 10px 20px 10px 20px;
+    cursor: pointer;
+}
+
+.selection-window-container .upload-documents-card:hover,
+.selection-window-container .edit-documents-card:hover,
+.selection-window-container .alias-control-card:hover{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.upload-documents-card .upload-documents-card__title,
+.edit-documents-card .edit-documents-card__title,
+.selection-window-container .alias-control-card__title{
+    padding: 2px 16px;
+}
+
+.upload-documents-card .upload-documents-card__icon,
+.edit-documents-card .edit-documents-card__icon,
+.selection-window-container .alias-control-card__icon {
+    width: 50px;
+    margin-top: 5px;
+}
+
+.sections-container{
+    position: relative;
+    height: 100%;
+}
+
+.sections-container .control-buttons .disable{
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.sections-container .control-buttons{
+    display: inline-block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+.sections-container .control-buttons .control-buttons__previous-button,
+.sections-container .control-buttons .control-buttons__next-button{
+    display: inline-block;
+}
+
+.upload-documents-section .upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    max-width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.upload-documents-section .upload-area.highlight{
+    border-color: #0b94d8;
+}
+
+.upload-documents-section.section,
+.edit-imported-documents-section.section,
+.import-entity-references-section.section,
+.import-section.section.section,
+.alias-control-section.section{
+    height: fit-content;
+}
+
+.upload-documents-section .upload-area .upload-area__upload-button,
+.upload-documents-section .upload-area .upload-area__filename{
+    display: inline-block;
+}
+.upload-documents-section .upload-area .upload-area__filename{
+    margin: 0 0 0 15px;
+}
+.sections-container .sections-container__back-button{
+    float: right;
+}
+
+.edit-imported-documents-section .range-input .range-input__start-id,
+.import-section .range-input .range-input__start-id,
+.alias-control-section .range-input .range-input__start-id,
+.edit-imported-documents-section .range-input .range-input__end-id,
+.import-section .range-input .range-input__end-id,
+.alias-control-section .range-input .range-input__end-id,
+.edit-imported-documents-section .range-input .range-input__filters,
+.import-section .range-input .range-input__filters,
+.alias-control-section .range-input .range-input__filters,
+.edit-imported-documents-section .range-input .range-input__list-button,
+.import-section .range-input .range-input__list-button,
+.alias-control-section .range-input .range-input__list-button {
+    display: inline-block;
+    margin: 0 5px 0 5px;
+}
+
+.edit-imported-documents-section .range-input .range-input__start-id,
+.import-section .range-input .range-input__start-id,
+.alias-control-section .range-input .range-input__start-id{
+    width: 20%;
+}
+
+.edit-imported-documents-section .range-input .range-input__end-id,
+.import-section .range-input .range-input__end-id,
+.alias-control-section .range-input .range-input__end-id{
+    width: 20%;
+}
+
+.edit-imported-documents-section .range-input .range-input__filters,
+.import-section .range-input .range-input__filters,
+.alias-control-section .range-input .range-input__filters{
+    width: 20%;
+}
+
+.import-section .range-input .range-input__filters,
+.alias-control-section .range-input .range-input__filters{
+    display: none;
+}
+
+.edit-imported-documents-section .edit-imported-documents-section__list-button,
+.import-section .import-section__list-button,
+.import-section .import-section__import-button {
+    /*add buttons to alias-control-section*/
+    width: 25%;
+    display: inline;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.edit-imported-documents-section .edit-imported-documents-section__switch-input-type-button,
+.import-section .import-section__switch-input-type-button,
+.alias-control-section .alias-control-section__switch-input-type-button{
+    margin-bottom: 5px;
+}
+
+.edit-imported-documents-section .range-input,
+.import-section .range-input,
+.alias-control-section .range-input{
+    display: none;
+}
+.edit-imported-documents-section .list-input{
+    /*display: none;*/
+}
+
+.edit-imported-documents-section .range-input .imcms-select__drop-down-list,
+.import-section .range-input .imcms-select__drop-down-list,
+.alias-control-section .range-input .imcms-select__drop-down-list{
+    width: 100%;
+}
+
+.edit-imported-documents-section .list-input .list-input__list-button {
+    width: 25%;
+    display: inline-block;
+    float: right;
+    margin: 0 5px 0 5px;
+}
+
+.edit-imported-documents-section .list-input .meta-id-input,
+.import-section .list-input .meta-id-input,
+.alias-control-section .list-input .meta-id-input{
+    float: left;
+}
+
+.edit-imported-documents-section .list-input .list-input__meta-id-list-select,
+.import-section .list-input .list-input__meta-id-list-select,
+.alias-control-section .list-input .list-input__meta-id-list-select{
+    width: 100px;
+    height: 150px;
+    margin: 0 5px 10px 5px;
+    float: left;
+    background-color: #fff;
+    border: 1px solid #d3d8de;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color: #2f4047;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 15px;
+    outline: none;
+
+}
+
+.import-section .list-input .list-input__meta-id-list-select{
+    margin: 0 5px 0 5px;
+}
+
+.list-input__meta-id-list-select > option{
+    text-align: center;
+}
+
+.edit-imported-documents-section .list-input .list-input__meta-id-list-select:focus,
+.import-section .list-input .list-input__meta-id-list-select:focus,
+.alias-control-section .list-input .list-input__meta-id-list-select:focus {
+    border-color: #0b94d8;
+}
+
+.sections-container .control-buttons .control-buttons__previous-button{
+    float: left;
+}
+
+.sections-container .control-buttons .control-buttons__next-button{
+    float: right;
+}
+
+.edit-imported-documents-section .list-input .meta-id-input .controls .imcms-button,
+.import-section .list-input .meta-id-input .controls .imcms-button,
+.alias-control-section .list-input .meta-id-input .controls .imcms-button{
+    display: inline-block;
+    margin: 0 5px 0 5px;
+}
+
+.import-section .import-section__progress-bar,
+.alias-control-section .import-section__progress-bar{
+    margin: 0 5px 0 5px;
+}
+
+.alias-control-section .alias-control-section__remove-aliases-button,
+.alias-control-section .alias-control-section__replace-aliases-button{
+    display: inline-block;
+    margin: 0 5px 0 5px;
+}
+
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container{
+    height: 680px;
+    overflow: auto;
+    width: 100%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    word-break: break-word;
+}
+
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container .imcms-import-entity-reference-manager-row .imcms-import-entity-reference-manager-row__text>input{
+    opacity: 0.7;
+}
+
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container .titles{
+    padding: 1% 4% 0% 4%;
+}
+
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container .titles .imcms-title {
+    display: inline;
+}
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container .titles .titles__imcms-rb6-entities{
+    display: inline;
+    float: right;
+    width: 30%;
 }

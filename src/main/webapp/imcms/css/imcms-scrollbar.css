@@ -288,3 +288,26 @@
 	width: 6px;
 	height: 6px;
 }
+
+.edit-imported-documents-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-thumb,
+.import-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-thumb,
+.alias-control-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-thumb,
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container::-webkit-scrollbar-thumb{
+    background-color: #abacad;
+}
+
+.edit-imported-documents-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-track,
+.import-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-track,
+.alias-control-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-track,
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.edit-imported-documents-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar,
+.import-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar,
+.alias-control-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar,
+.import-entity-references-section .import-entity-references-section__import-entity-reference-container::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}

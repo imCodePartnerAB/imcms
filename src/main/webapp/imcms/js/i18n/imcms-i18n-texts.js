@@ -844,42 +844,83 @@ const texts = {
                     loadVersion: 'Det gick inte att ladda versionen!'
                 }
             },
-	        documentsImport: {
-		        name: "Importera dokument",
-		        importEntityReferenceManagerHead: "Importera Entity Reference Manager",
-		        tableTitles: {
-			        id: "Importera dokument-ID",
-			        metaId: "Meta ID",
-			        status: "Status"
-		        },
-		        statusResponses: {
-			        success: "Sparad...",
-			        failed: "Misslyckades..."
-		        },
-		        uploadButton: "Ladda upp",
-		        uploadFailure: "Det gick inte att ladda upp!",
-		        fieldStart: "Start-ID",
-		        fieldEnd: "Slut-ID",
-		        listButton: "Lista",
-		        importButton: "Importera",
-		        filter: {
-			        name: "Filtrera",
-			        excludeImported: "Importerad",
-			        excludeSkip: "Hoppa"
-		        },
-		        listFailure: "Det gick inte att lista grundläggande dokumentinformation!",
-		        importFailure: "Importen misslyckades!",
-		        importEntityName: "Namn",
-		        references: {
-			        roles: "Roller",
-			        templates: "Mallar",
-			        categories: "Kategorier",
-			        categoryTypes: "Kategorityper"
-		        },
-		        footer: {
-			        closeButton: "Stänga"
-		        }
-	        },
+            documentsImport: {
+                name: "Importera dokument",
+                selectionWindowContainer: {
+                    aliasControlCard: "Kontrollalias",
+                    editDocumentsCard: "Redigera dokument",
+                    uploadDocumentsCard: "Ladda upp dokument"
+                },
+                controlAliasSection: {
+                    removeAliases: "Ta bort alias",
+                    replaceAliases: "Byt ut alias",
+                    replaceFail: "Det gick inte att ersätta alias",
+                    removeFail: "Det gick inte att ta bort alias"
+                },
+                importSection: {
+                    importButton: "Importera dokument",
+                    importFail: "Det gick inte att importera dokument!"
+                },
+                importEntityReferenceSection: {
+                    roleReferences: "Rollreferenser",
+                    templateReferences: "Mallreferenser",
+                    categoryReferences: "Kategorireferenser",
+                    categoryTypeReferences: "Kategoritypreferenser",
+                    roleReferenceTitle: "roll",
+                    templateReferenceTitle: "mall",
+                    categoryReferenceTitle: "kategori",
+                    categoryTypeReferenceTitle: "kategorityp",
+                    roleReferenceTitlePlural: "roller",
+                    templateReferenceTitlePlural: "mallar",
+                    categoryReferenceTitlePlural: "kategorier",
+                    categoryTypeReferenceTitlePlural: "kategorityper",
+                    success: "Sparad...",
+                    fail: "Misslyckades...",
+                },
+                uploadDocumentsSection: {
+                    uploadButton: "Ladda upp dokument",
+                    uploadFail: "Det gick inte att ladda upp!",
+                },
+                importDocumentListBuilder: {
+                    titles: {
+                        id: "Importera dokument-ID",
+                        metaId: "Meta ID",
+                        status: "Status"
+                    }
+                },
+                controls: {
+                    previous: "<-- Tidigare",
+                    next: "Nästa -->",
+                    switchInputType: "Ändra inmatningstyp",
+                    rangeInput: {
+                        name: "Ange start- och slutdokument-id(rb4)",
+                        startId: "Start ID",
+                        endId: "End ID",
+                        warning: "Ge räckvidd!"
+                    },
+                    listInput: {
+                        name: "Tillhandahåll dokument doc id(rb4)",
+                        docIdInput: "Ange dokument-id(rb4)",
+                        removeButton: {
+                            name: "Avlägsna",
+                            warning: "Välj alternativ/er först"
+                        },
+                        addButton: {
+                            name: "Lägg till",
+                            warning: "Ange endast dokument-id"
+                        }
+                    },
+                    listButton: {
+                        name: "Lista dokument",
+                        fail: "Det gick inte att lista dokument!",
+                    },
+                    filter: {
+                        name: "Filtrera",
+                        excludeImported: "Uteslut importerade",
+                        excludeSkipped: "Uteslut överhoppad"
+                    }
+                }
+            },
             files: {
                 name: 'Filer',
                 upload: 'Ladda upp',
@@ -2005,40 +2046,80 @@ const texts = {
             },
 	        documentsImport: {
 		        name: "Import Documents",
-		        importEntityReferenceManagerHead: "Import Entity Reference Manager",
-		        tableTitles: {
-			        id: "Import document ID",
-			        metaId: "Meta ID",
-			        status: "Status"
-		        },
-		        statusResponses: {
-			        success: "Saved...",
-			        failed: "Failed..."
-		        },
-		        uploadButton: "Upload",
-		        uploadFailure: "Failed to upload!",
-		        emitterError: "Connection closed!",
-		        fieldStart: "Start ID",
-		        fieldEnd: "End ID",
-		        listButton: "List",
-		        importButton: "Import",
-		        filter: {
-			        name: "Filter",
-			        excludeImported: "Imported",
-			        excludeSkip: "Skip"
-		        },
-		        listFailure: "Failed to list basic documents info!",
-		        importFailure: "Import failed!",
-		        importEntityName: "Name",
-		        references: {
-			        roles: "Roles",
-			        templates: "Templates",
-			        categories: "Categories",
-			        categoryTypes: "Category Types"
-		        },
-		        footer: {
-			        closeButton: "Close"
-		        }
+                selectionWindowContainer:{
+                    aliasControlCard:"Control alias",
+                    editDocumentsCard:"Edit documents",
+                    uploadDocumentsCard:"Upload documents"
+                },
+                controlAliasSection:{
+                    removeAliases:"Remove aliases",
+                    replaceAliases:"Replace aliases",
+					replaceFail:"Failed to replace aliases",
+					removeFail:"Failed to remove aliases"
+                },
+                importSection:{
+                    importButton:"Import documents",
+					importFail:"Failed to import documents!"
+                },
+                importEntityReferenceSection:{
+                    roleReferences:"Role references",
+                    templateReferences:"Template references",
+                    categoryReferences:"Category references",
+                    categoryTypeReferences:"Category type references",
+                    roleReferenceTitle:"role",
+                    templateReferenceTitle:"template",
+                    categoryReferenceTitle:"category type",
+                    categoryTypeReferenceTitle:"category type",
+                    roleReferenceTitlePlural:"roles",
+                    templateReferenceTitlePlural:"template",
+                    categoryReferenceTitlePlural:"categories",
+                    categoryTypeReferenceTitlePlural:"category types",
+                    success:"Saved...",
+                    fail:"Failed...",
+                },
+                uploadDocumentsSection:{
+                    uploadButton:"Upload documents",
+                    uploadFail: "Failed to upload!",
+                },
+                importDocumentListBuilder:{
+                    titles:{
+                        id:"Import document ID",
+                        metaId:"Meta ID",
+                        status:"Status"
+                    }
+                },
+                controls:{
+                    previous:"<-- Previous",
+                    next:"Next -->",
+                    switchInputType:"Change input type",
+                    rangeInput:{
+                        name:"Provide start and end doc id(rb4)",
+						startId:"Start ID",
+						endId:"End ID",
+                        warning:"Provide range!"
+                    },
+                    listInput:{
+                        name:"Provide documents doc id(rb4)",
+						docIdInput:"Enter doc id(rb4)",
+						removeButton:{
+							name:"Remove",
+							warning:"Select option/s first"
+						},
+						addButton:{
+							name:"Add",
+							warning:"Input only doc id"
+						}
+                    },
+                    listButton:{
+						name:"List documents",
+                        fail:"Failed to list documents!",
+                    },
+                    filter:{
+                        name:"Filter",
+                        excludeImported:"Exclude imported",
+                        excludeSkipped:"Exclude skipped"
+                    }
+                }
 	        },
             files: {
                 name: 'Files',
@@ -3163,43 +3244,83 @@ const texts = {
                     loadVersion: 'Kunne ikke laste inn versjonen!'
                 }
             },
-	        documentsImport: {
-		        name: "Importer dokumenter",
-		        importEntityReferenceManagerHead: "Import Entity Reference Manager",
-		        tableTitles: {
-			        id: "Importer dokument-ID",
-			        metaId: "Meta ID",
-			        status: "Status"
-		        },
-		        statusResponses: {
-			        success: "Lagret...",
-			        failed: "Mislyktes..."
-		        },
-		        uploadButton: "Laste opp",
-		        uploadFailure: "Kunne ikke laste opp!",
-		        emitterError: "Tilkoblingen er stengt!",
-		        fieldStart: "Start-ID",
-		        fieldEnd: "Slutt-ID",
-		        listButton: "Liste",
-		        importButton: "Import",
-		        filter: {
-			        name: "Filter",
-			        excludeImported: "Importert",
-			        excludeSkip: "Hopp over"
-		        },
-		        listFailure: "Kunne ikke vise grunnleggende dokumentinformasjon!",
-		        importFailure: "Import mislyktes!",
-		        importEntityName: "Navn",
-		        references: {
-			        roles: "Roller",
-			        templates: "Maler",
-			        categories: "Kategorier",
-			        categoryTypes: "Kategorityper"
-		        },
-		        footer: {
-			        closeButton: "Lukk"
-		        }
-	        },
+            documentsImport: {
+                name: "Import Documents",
+                selectionWindowContainer:{
+                    aliasControlCard:"Control alias",
+                    editDocumentsCard:"Edit documents",
+                    uploadDocumentsCard:"Upload documents"
+                },
+                controlAliasSection:{
+                    removeAliases:"Remove aliases",
+                    replaceAliases:"Replace aliases",
+                    replaceFail:"Failed to replace aliases",
+                    removeFail:"Failed to remove aliases"
+                },
+                importSection:{
+                    importButton:"Import documents",
+                    importFail:"Failed to import documents!"
+                },
+                importEntityReferenceSection:{
+                    roleReferences:"Role references",
+                    templateReferences:"Template references",
+                    categoryReferences:"Category references",
+                    categoryTypeReferences:"Category type references",
+                    roleReferenceTitle:"role",
+                    templateReferenceTitle:"template",
+                    categoryReferenceTitle:"category type",
+                    categoryTypeReferenceTitle:"category type",
+                    roleReferenceTitlePlural:"roles",
+                    templateReferenceTitlePlural:"template",
+                    categoryReferenceTitlePlural:"categories",
+                    categoryTypeReferenceTitlePlural:"category types",
+                    success:"Saved...",
+                    fail:"Failed...",
+                },
+                uploadDocumentsSection:{
+                    uploadButton:"Upload documents",
+                    uploadFail: "Failed to upload!",
+                },
+                importDocumentListBuilder:{
+                    titles:{
+                        id:"Import document ID",
+                        metaId:"Meta ID",
+                        status:"Status"
+                    }
+                },
+                controls:{
+                    previous:"<-- Previous",
+                    next:"Next -->",
+                    switchInputType:"Change input type",
+                    rangeInput:{
+                        name:"Provide start and end doc id(rb4)",
+                        startId:"Start ID",
+                        endId:"End ID",
+                        warning:"Provide range!"
+                    },
+                    listInput:{
+                        name:"Provide documents doc id(rb4)",
+                        docIdInput:"Enter doc id(rb4)",
+                        removeButton:{
+                            name:"Remove",
+                            warning:"Select option/s first"
+                        },
+                        addButton:{
+                            name:"Add",
+                            warning:"Input only doc id"
+                        }
+                    },
+                    listButton:{
+                        name:"List documents",
+                        fail:"Failed to list documents!",
+                    },
+                    filter:{
+                        name:"Filter",
+                        excludeImported:"Exclude imported",
+                        excludeSkipped:"Exclude skipped"
+                    }
+                }
+            },
             files: {
                 name: 'Filer',
                 upload: 'Last opp',

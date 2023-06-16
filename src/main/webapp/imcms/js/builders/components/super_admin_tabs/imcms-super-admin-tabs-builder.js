@@ -22,7 +22,7 @@ if(imcms.isSuperAdmin){
         require('imcms-system-properties-tab-builder'),
         require('imcms-temporal-data-tab-builder'),
         require('imcms-data-version-admin-tab-builder'),
-        require('imcms-documents-import-tab-builder'),
+        require('imcms-import-documents-tab-builder'),
         require('imcms-documentation-tab-builder')
     ];
 	if (imcms.hasFileAdminAccess) {

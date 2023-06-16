@@ -9,7 +9,7 @@ define("imcms-basic-import-documents-info-rest-api", ["imcms-rest-api"], functio
 		json: true
 	}, basicImportDocument);
 
-	api.getAll = (pageable, startId, endId, filters) => {
+	api.getAll = (pageable, startId, endId, docIdList, filters) => {
 		const params = new URLSearchParams();
 		if (pageable) {
 			pageable.page ? params.append("page", pageable.page) : '';
@@ -17,12 +17,15 @@ define("imcms-basic-import-documents-info-rest-api", ["imcms-rest-api"], functio
 		}
 		startId ? params.append(`startId`, startId) : '';
 		endId ? params.append(`endId`, endId) : '';
-		filters.forEach(filter => {
-			if (filter === "excludeImported")
-				params.append(`excludeImported`, true);
-			if (filter === "excludeSkip")
-				params.append(`excludeSkip`, true);
-		})
+		docIdList ? params.append(`docIdList`, docIdList) : '';
+		if (filters) {
+			filters.forEach(filter => {
+				if (filter === "excludeImported")
+					params.append(`excludeImported`, true);
+				if (filter === "excludeSkip")
+					params.append(`excludeSkip`, true);
+			})
+		}
 
 		return rest.ajax.call({
 			url: `${url}/all?${params.toString()}`,
