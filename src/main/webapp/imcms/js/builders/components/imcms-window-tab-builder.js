@@ -32,7 +32,7 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
         return get$TabByIndex(tabIndex).hasClass(DISABLED_TAB_CLASS_NAME);
     }
 
-    const WindowTab = function (name) {
+    const WindowTab = function (name, attributes) {
         this.name = name;
     };
 
@@ -58,10 +58,19 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
         buildTab: function (index) {
             this.tabIndex = index;
             const tabElements$ = this.tabElementsFactory.apply(this, arguments);
-            const attributes = {
-                'data-window-id': index,
-                style: 'display: none;'
-            };
+
+            let attributes;
+            if (this.attributes) {
+                this.attributes['data-window-id'] = index;
+                this.attributes.style += 'display: none;';
+                attributes = this.attributes;
+            } else {
+                attributes = {
+                    'data-window-id': index,
+                    style: 'display: none;'
+                };
+            }
+
             return formsBEM.buildBlock("<div>", tabElements$, attributes, 'field');
         }
     };
