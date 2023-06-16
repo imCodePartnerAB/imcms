@@ -34,7 +34,7 @@ define("imcms-page-info-builder",
         }
 
         function buildPageInfoPanels(docId) {
-            return windowPageInfoTabsBuilder.tabBuilders.map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
+            return windowPageInfoTabsBuilder.getAllTabBuilders().map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
         }
 
         function closePageInfo() {
@@ -46,7 +46,7 @@ define("imcms-page-info-builder",
         }
 
         function saveAndClose(onDocumentSavedCallback) {
-            windowPageInfoTabsBuilder.tabBuilders.forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
+            windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
 
             //Clear modified info before send to API
             documentDTO.modified = {id: ""};
@@ -244,10 +244,9 @@ define("imcms-page-info-builder",
 
             $title.attr('href', linkData);
 
-            windowPageInfoTabsBuilder.tabBuilders.forEach((tab) => {
+            windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tab) => {
                 if (tab.isDocumentTypeSupported(documentDTO.type)) {
                     tab.fillTabDataFromDocument(documentDTO);
-                    tab.showTab();
 
                 } else {
                     tab.hideTab();
@@ -264,18 +263,19 @@ define("imcms-page-info-builder",
         }
 
         function setEnabledExcessTabs(isEnabled) {
-            const tabs = windowPageInfoTabsBuilder.tabBuilders;
+            const tabs = windowPageInfoTabsBuilder.getAllTabBuilders();
 
             tabs.slice(3, tabs.length).forEach(tab => {
                 tab.setEnabled(isEnabled);
             });
+            windowPageInfoTabsBuilder.setEnabledAdvancedButton(isEnabled);
         }
 
         function clearPageInfoData() {
             events.trigger("page info closed");
             $saveAndPublishBtn.css("display", "none");
 
-            windowPageInfoTabsBuilder.tabBuilders.forEach((tab) => {
+            windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tab) => {
                 tab.clearTabData();
             });
         }
@@ -287,7 +287,7 @@ define("imcms-page-info-builder",
         }
 
         function selectFirstTab(docType) {
-            const firstTab = windowPageInfoTabsBuilder.tabBuilders.find(tab => tab.isDocumentTypeSupported(docType));
+            const firstTab = windowPageInfoTabsBuilder.getAllTabBuilders().find(tab => tab.isDocumentTypeSupported(docType));
             const indexOfFirstTab = firstTab ? firstTab.tabIndex : 0;
             if (indexOfFirstTab === 0) {
                 windowPageInfoTabsBuilder.setActiveTab(indexOfFirstTab, false);

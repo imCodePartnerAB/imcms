@@ -15,25 +15,24 @@ const cacheTab =        require('imcms-cache-tab-builder');
 const propertiesTab =   require('imcms-properties-tab-builder');
 const allDataTab =      require('imcms-all-data-tab-builder');
 
-const textTabBuilders = [fileTab, urlTab, appearanceTab, metadataTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
-    statusTab, cacheTab, propertiesTab, allDataTab];
+const textWindowTabsBuilders = {
+    tabBuilders: [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab],
+    advancedTabBuilders: [metadataTab, statusTab, permissionsTab, cacheTab, propertiesTab, allDataTab]
+};
 
-const urlOrFileTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, permissionsTab,
-    statusTab, propertiesTab];
+const urlOrFileTabBuilders = {
+    tabBuilders: [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab],
+    advancedTabBuilders: [statusTab, propertiesTab]
+};
 
-const limitedTabBuilders = [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab, statusTab, cacheTab];
+const limitedTabBuilders = {
+    tabBuilders: [fileTab, urlTab, appearanceTab, lifeCycleTab, templatesTab, keywordsTab, categoriesTab, accessTab],
+    advancedTabBuilders: [statusTab, cacheTab]
+};
 
 module.exports = {
-    textWindowTabsBuilder: new WindowTabsBuilder({
-        tabBuilders: textTabBuilders
-    }),
-
-    urlOrFileWindowTabsBuilder: new WindowTabsBuilder({
-        tabBuilders: urlOrFileTabBuilders
-    }),
-
-    limitedWindowTabsBuilder: new WindowTabsBuilder({
-        tabBuilders: limitedTabBuilders
-    })
+    textWindowTabsBuilder: new WindowTabsBuilder(textWindowTabsBuilders),
+    urlOrFileWindowTabsBuilder: new WindowTabsBuilder(urlOrFileTabBuilders),
+    limitedWindowTabsBuilder: new WindowTabsBuilder(limitedTabBuilders)
 }
 
