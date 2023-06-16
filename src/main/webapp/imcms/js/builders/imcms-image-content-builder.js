@@ -124,8 +124,10 @@ define("imcms-image-content-builder",
 		            onDropFolderHandler(event, rootFile);
 		            removeBorderFromRootFolder(event.target);
 	            },
-	            'dblclick':function () {
-		            onFolderDoubleClick.call(this, rootFile)
+	            'click':function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					onFolderClick.call(this, rootFile)
 	            }
             });
         }
@@ -386,7 +388,9 @@ define("imcms-image-content-builder",
             return components.controls.buildControlsBlock("<div>", controlsElements);
         }
 
-        function openSubFolders() {
+        function openSubFolders(e) {
+			e.preventDefault();
+			e.stopPropagation();
             const $button = $(this);
             const $subFolders = $button.toggleClass(OPENED_FOLDER_BTN_CLASS)
                 .parent() // fixme: bad idea!
@@ -407,7 +411,7 @@ define("imcms-image-content-builder",
             scrollToSelectedImage();
         }
 
-        function onFolderDoubleClick(folder) {
+        function onFolderClick(folder) {
             activeFolder = folder;
 	        selectedImageChanged = false;
             $(`.${ACTIVE_FOLDER_CLASS}`).removeClass(ACTIVE_FOLDER_CLASS);
@@ -460,8 +464,10 @@ define("imcms-image-content-builder",
 					onDropFolderHandler(event, subfolder);
 		            removeBorderFromFolder(event.target);
 	            },
-	            'dblclick': function () {
-		            onFolderDoubleClick.call(this, subfolder);
+	            'click': function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					onFolderClick.call(this, subfolder);
 		            openSubFoldersOnDoubleClick(this)
 	            }
             });
@@ -509,8 +515,8 @@ define("imcms-image-content-builder",
 					    subfolder.files.push(imageFile);
 					    if(subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder));
 
-					    refreshOnFolderDoubleClickListener(dragged.folderData);
-					    refreshOnFolderDoubleClickListener(subfolder);
+						refreshOnFolderClickListener(dragged.folderData);
+						refreshOnFolderClickListener(subfolder);
 
 					    dragged.imageElement.remove();
 					    selectedFullImagePath = selectedFullImagePath.startsWith('/') ? selectedFullImagePath.substring(1) : selectedFullImagePath;
@@ -529,9 +535,11 @@ define("imcms-image-content-builder",
 			$(imageElement).find('.imcms-choose-img-description').append($loadingAnimation);
 		}
 
-	    function refreshOnFolderDoubleClickListener(folder) {
-		    $(folder.$folder.children()[0]).off('dblclick').on('dblclick', function () {
-			    onFolderDoubleClick.call(this, folder);
+	    function refreshOnFolderClickListener(folder) {
+		    $(folder.$folder.children()[0]).off('click').on('click', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				onFolderClick.call(this, folder);
 			    openSubFoldersOnDoubleClick(this)
 		    })
 	    }
