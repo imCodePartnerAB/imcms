@@ -7,9 +7,11 @@ import com.imcode.imcms.domain.service.ImportDocumentReferenceService;
 import com.imcode.imcms.domain.service.ImportEntityReferenceManagerService;
 import com.imcode.imcms.model.ImportEntityReferenceType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class DefaultImportDocumentReferenceService implements ImportDocumentReferenceService {
@@ -31,7 +33,11 @@ public class DefaultImportDocumentReferenceService implements ImportDocumentRefe
 
 	private void createReferenceIfNotBlank(String name, ImportEntityReferenceType type) {
 		if (StringUtils.isNotBlank(name)) {
-			importEntityReferenceManagerService.createReference(name, type);
+			try {
+				importEntityReferenceManagerService.createReference(name, type);
+			} catch (Exception e) {
+				log.error(e);
+			}
 		}
 	}
 }

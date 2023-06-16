@@ -78,6 +78,14 @@ public class DocumentImporter {
 		}
 	}
 
+	public boolean isImportDone() {
+		return importFuture.isDone();
+	}
+
+	public ImportProgress getImportProgress() {
+		return progress;
+	}
+
 	public void importDocuments(int[] importDocsId) {
 		if (!importFuture.isDone()) {
 			log.warn("Cannot start new importing process. Another one is working!");
@@ -108,14 +116,6 @@ public class DocumentImporter {
 		});
 	}
 
-	public boolean isImportDone() {
-		return importFuture.isDone();
-	}
-
-	public ImportProgress getImportProgress() {
-		return progress;
-	}
-
 	private void importDocument(int importDocId) {
 		importDocumentIdsUnderImporting.add(importDocId);
 
@@ -133,11 +133,6 @@ public class DocumentImporter {
 		}
 
 		final Path pathToImportDocument = importFolderPath.resolve(importDocId + ".json");
-		if (!Files.exists(pathToImportDocument)) {
-			log.error("json file missing id: {}, path: {}", importDocId, pathToImportDocument);
-			return;
-		}
-
 		try (final InputStream inputStream = Files.newInputStream(pathToImportDocument)) {
 			final ImportDocumentDTO importDocument = mapper.readValue(inputStream, ImportDocumentDTO.class);
 

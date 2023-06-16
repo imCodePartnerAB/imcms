@@ -143,8 +143,6 @@ public class ArchiveImportDocumentExtractor {
 			importDocumentReferenceService.createReferences(importDocument);
 		} catch (IOException e) {
 			log.error(String.format("Cannot read json to ImportDocumentDTO, zipEntryName: %s", zipEntry.getName()), e);
-		} catch (Exception e) {
-			log.error(e);
 		}
 	}
 

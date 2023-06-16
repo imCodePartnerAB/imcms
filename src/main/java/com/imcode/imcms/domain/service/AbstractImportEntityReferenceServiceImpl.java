@@ -43,7 +43,8 @@ public abstract class AbstractImportEntityReferenceServiceImpl<T extends Abstrac
 	public void update(ImportEntityReferenceDTO reference) {
 		final T entityReferenceBD = importEntityReferenceRepository.getOne(reference.getId());
 		if (!entityReferenceBD.getName().equals(reference.getName())) {
-			throw new RuntimeException("Cannot change name of entity reference!");
+			log.error("Cannot change name of entity reference, {},{}!", entityReferenceBD.toString(), reference.toString());
+			throw new RuntimeException(String.format("Cannot change entity reference name,db: %s, new: %s!", entityReferenceBD, reference));
 		}
 
 		importEntityReferenceRepository.save(AbstractImportEntityReference.of(reference).toTyped());
