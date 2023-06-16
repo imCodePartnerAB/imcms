@@ -15,7 +15,7 @@ define(
         let panels$;
 
         function buildSuperAdminPanels() {
-            return superAdminTabs.tabBuilders.map(function (tabBuilder, index) {
+            return superAdminTabs.getAllTabBuilders().map(function (tabBuilder, index) {
                 const $tab = tabBuilder.buildTab(index);
 
                 (index === 0) ? $tab.slideDown() : $tab.slideUp();
