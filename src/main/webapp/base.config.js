@@ -173,7 +173,7 @@ module.exports = {
                             'imcms-system-properties-tab-builder',
                             'imcms-temporal-data-tab-builder',
                             'imcms-data-version-admin-tab-builder',
-	                        'imcms-documents-import-tab-builder',
+	                        'imcms-import-documents-tab-builder',
                             'imcms-documentation-tab-builder'
                         ],
                         '': [
