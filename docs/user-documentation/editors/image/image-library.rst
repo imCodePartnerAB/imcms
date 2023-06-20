@@ -5,12 +5,16 @@ In this article:
     - `Introduction`_
     - `Choose Image`_
     - `File Management`_
+    - `Custom Metadata`_
 
 .. |create| image:: _static/library/icon_folder_controll_create.png
 .. |edit| image:: _static/library/ic_text_editor.png
     :height: 12pt
 
 .. |check| image:: _static/library/icon_folder_controll_reverse_check.png
+
+.. |metadata| image:: _static/library/icon_metadata.png
+    :height: 12pt
 
 ------------
 Introduction
@@ -46,7 +50,7 @@ You cannot delete an image if it is used in some document.
 
 In order to **move an image** to another folder, **hold down the mouse button** on the desired image and **move it to** the name of the **another folder**.
 
-In order to **open a folder**, **double-click** on it.
+In order to **open a folder**, **click** on it.
 
 In order to **change the sorting of images** in a folder, you have to **select** the required sorting **in the drop-down list at the top and right**.
 Default sorting - from newest to oldest.
@@ -57,3 +61,11 @@ In order to **rename a folder**, you have to **click** |edit| in the line with t
 
 In order to **delete a folder**, you have to **click X** in the line with the name of the folder.
 You cannot delete a folder if it contains files.
+
+---------------
+Custom Metadata
+---------------
+
+ImCMS provides the ability to edit some metadata values. To do this, you have to click |metadata|.
+
+.. image:: _static/library/metadata-editor.png

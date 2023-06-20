@@ -186,4 +186,4 @@ What can you do:
     Image compression reduces the size of the image, so image will take up less disk space and load faster on the page.
     Compression can sometimes degrade quality.
 * View exif information.
-    Exif info - information commenting on the file, describing the conditions and methods for obtaining it, authorship, etc.
+    Exif info - metadata tags, information commenting on the file, describing the conditions and methods for obtaining it, authorship, etc.
