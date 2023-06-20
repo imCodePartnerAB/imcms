@@ -689,9 +689,7 @@ define("imcms-image-content-builder",
             const $newImage = buildImageImmediately(imageFile, activeFolder);
             highlightLastAddedImage($newImage);
             $deleteImage.replaceWith($newImage);
-            selectImage.call($newImage);
-
-            scrollToSelectedImage();
+            selectImage.call($newImage, imageFile);
 
             activeFolder.files = (activeFolder.files || []).concat(imageFile);
             activeFolder.$images = activeFolder.$images.concat($newImage);
