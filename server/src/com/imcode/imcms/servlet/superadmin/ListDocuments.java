@@ -45,7 +45,7 @@ public class ListDocuments extends HttpServlet {
 
         int start = null != startString ? Integer.parseInt(startString) : allDocumentsRange.getMinimumInteger();
         int end = null != endString ? Integer.parseInt(endString) : allDocumentsRange.getMaximumInteger();
-        Integer[] list = listString != null ? Arrays.stream(listString).map(Integer::valueOf).toArray(Integer[]::new) : new Integer[]{};
+        Integer[] list = listString != null ? Arrays.stream(listString).map(Integer::valueOf).distinct().toArray(Integer[]::new) : new Integer[]{};
 	    boolean export = Boolean.parseBoolean(exportString);
 
         FormData formData = new FormData();
