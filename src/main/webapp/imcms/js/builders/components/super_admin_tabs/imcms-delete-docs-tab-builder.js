@@ -230,9 +230,9 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        return new SuperAdminTab(texts.name, [
-            buildDeleteDocsBlock(),
-            buildBasketBlock()
-        ]);
+        let tabElements = [buildDeleteDocsBlock()];
+        if(imcms.isSuperAdmin) tabElements.push(buildBasketBlock());
+
+        return new SuperAdminTab(texts.name, tabElements);
     }
 );
