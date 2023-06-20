@@ -3,12 +3,12 @@ define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-images-history-rest-api",
-        "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
+        "imcms-bem-builder", "imcms-modal-window-builder", "imcms-image-metadata-builder", "imcms-events",
         "imcms-window-builder", "imcms-image-rotate", 'imcms-image-resize',
         'imcms-crop-coords-controllers', 'path', 'imcms-image-edit-size-controls', 'imcms-image-locker-button'
     ],
-    function (components, texts, imcms, $, imageRestApi, imageHistoryRestApi, BEM, modal, events, WindowBuilder,
-              imageRotate, imageResize, cropCoordsControllers, path, imageEditSize, compressionLock) {
+    function (components, texts, imcms, $, imageRestApi, imageHistoryRestApi, BEM, modal, imageMetadataWindowBuilder, events,
+              WindowBuilder, imageRotate, imageResize, cropCoordsControllers, path, imageEditSize, compressionLock) {
 
         texts = texts.editors.image;
 
@@ -25,36 +25,6 @@ define(
                 left: 0
             }
         };
-
-        let $exifInfoContainer;
-
-        function buildExifInfoWindow() {
-            return new BEM({
-                block: "imcms-pop-up-modal",
-                elements: {
-                    "head": exifInfoWindowBuilder.buildHead("EXIF"),
-                    "body": $exifInfoContainer = $("<div>")
-                }
-            }).buildBlockStructure("<div>", {"class": "image-exif-window"});
-        }
-
-        function loadExifData() {
-            /** @namespace imageData.exifInfo */
-            (imageData.exifInfo.allExifInfo || []).forEach(exifDataRow => {
-                $exifInfoContainer.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
-            });
-        }
-
-        function clearExifData() {
-            $exifInfoContainer.empty();
-        }
-
-        var exifInfoWindowBuilder = new WindowBuilder({
-            factory: buildExifInfoWindow,
-            loadDataStrategy: loadExifData,
-            clearDataStrategy: clearExifData,
-            onEscKeyPressed: "close"
-        });
 
         const alignButtonSelectorToAlignName = {
             NONE: BEM.buildClassSelector(null, "imcms-button", "align-none"),
@@ -401,18 +371,12 @@ define(
                     return $compressionContainer;
                 }
 
-                function showExif() {
-                    exifInfoWindowBuilder.buildWindowWithShadow.apply(
-                        exifInfoWindowBuilder, arguments
-                    );
-                }
-
                 const $showExifBtn = new BEM({
                     block: 'image-exif-info',
                     elements: {
                         'button': components.buttons.neutralButton({
                             text: texts.exif.button,
-                            click: showExif,
+                            click: () => imageMetadataWindowBuilder.buildImageExifInfo(imageData),
                             name: 'exifInfo'
                         })
                     }

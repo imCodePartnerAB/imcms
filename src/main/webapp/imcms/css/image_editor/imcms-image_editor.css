@@ -67,7 +67,6 @@
     height: -moz-calc(100% - 110px);
     height: -o-calc(100% - 110px);
     height: calc(100% - 110px);
-    overflow: scroll;
 }
 
 .imcms-image_editor__footer {
@@ -87,24 +86,6 @@
     margin: 5px;
     width: 45%;
     max-width: 150px;
-}
-
-.image-exif-window {
-    z-index: 10004;
-}
-
-.image-exif-window .imcms-pop-up-modal__body {
-    overflow-y: auto;
-    height: 95%;
-    background-color: #f3f3fc;
-}
-
-.imcms-pop-up-modal__body .image-exif-window__row {
-    padding: 6px 15px;
-}
-
-.image-exif-window + .imcms-modal-layout{
-    z-index: 10003;
 }
 
 .imcms-originally-img-area__img {

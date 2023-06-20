@@ -4,12 +4,140 @@ define("imcms-image-metadata-builder",
     ],
     function (WindowBuilder, BEM, components, $, texts, imageFilesRestApi, modal) {
 
-        texts = texts.editors.content.imageMetadata;
+        texts = texts.editors.imageMetadata;
 
         let imageDTO;
-        let onMetadataSaved;
 
-        let windowData = {};
+        let onMetadataSaved;
+        let metadataEditorWindowData = {};
+
+        let exifInfoWindowData = {};
+        let exifMode = {
+            CUSTOM: "custom",
+                ALL: "all"
+        };
+
+
+        // Exif Info
+
+        function buildImageExifBody(){
+            exifInfoWindowData.$bodyContent = $('<div>');
+            exifInfoWindowData.$customExifInfo = buildCustomExifInfo();
+            exifInfoWindowData.$allExifInfo = buildAllExifInfo();
+
+            exifInfoWindowData.$bodyContent.append(exifInfoWindowData.$customExifInfo);
+            exifInfoWindowData.currentExifMode = exifMode.CUSTOM
+
+            return exifInfoWindowData.$bodyContent;
+        }
+
+        function buildCustomExifInfo(){
+            let $photographer = components.texts.textField('<div>', {
+                text: texts.photographer,
+                value: imageDTO.exifInfo.customExif.photographer
+            });
+            $photographer.$input.attr('disabled', 'disabled');
+
+            let $uploadedBy = components.texts.textField('<div>', {
+                text: texts.uploadedBy,
+                value: imageDTO.exifInfo.customExif.uploadedBy
+            });
+            $uploadedBy.$input.attr('disabled', 'disabled');
+
+            let $copyright = components.texts.textField('<div>', {
+                text: texts.copyright,
+                value: imageDTO.exifInfo.customExif.copyright
+            });
+            $copyright.$input.attr('disabled', 'disabled');
+
+            return new BEM({
+                block: "imcms-image-custom-exif",
+                elements: {
+                    "title": components.texts.titleText('<div>', texts.titleCustomExifMode),
+                    "photographer": $photographer,
+                    "uploaded-by": $uploadedBy,
+                    "copyright": $copyright,
+                    "license-period": buildReadOnlyLicensePeriodField()
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildReadOnlyLicensePeriodField(){
+            let $dateStart = components.dateTime.dateBoxReadOnly();
+            $dateStart.setDate(imageDTO.exifInfo.customExif.licensePeriodStart);
+
+            let $dateEnd = components.dateTime.dateBoxReadOnly();
+            $dateEnd.setDate(imageDTO.exifInfo.customExif.licensePeriodEnd);
+
+            let $delimiter = components.texts.titleText('<div>', "—", {
+                'class': 'imcms-delimeter'
+            });
+
+            return new BEM({
+                block: "imcms-license-period",
+                elements: {
+                    "title": components.texts.titleText("<div>", texts.licensePeriod, {
+                        'class': 'imcms-label'
+                    }),
+                    "range": $('<div>', {
+                        html: [$dateStart, $delimiter, $dateEnd]
+                    })
+                }
+            }).buildBlockStructure("<div>", {"class": "imcms-field"});
+        }
+
+        function buildAllExifInfo() {
+            let $allExifInfo = $("<div>");
+            $allExifInfo.append(components.texts.titleText('<div>', texts.titleAllExifMode));
+
+            (imageDTO.exifInfo.allExifInfo || []).forEach(exifDataRow => {
+                $allExifInfo.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
+            });
+
+            return $allExifInfo;
+        }
+
+        function buildExifInfoFooter() {
+            return WindowBuilder.buildFooter([
+                components.buttons.negativeButton({
+                    text: texts.customExifButton,
+                    click: toggleExifInfoMode
+                })
+            ]);
+        }
+
+        function toggleExifInfoMode(){
+            let $toggleButton = $(this);
+
+            exifInfoWindowData.$bodyContent.empty();
+
+            switch (exifInfoWindowData.currentExifMode) {
+                case exifMode.CUSTOM:
+                    exifInfoWindowData.$bodyContent.append(exifInfoWindowData.$allExifInfo);
+                    exifInfoWindowData.currentExifMode = exifMode.ALL;
+                    $toggleButton.text(texts.allExifButton);
+                    break;
+                case exifMode.ALL:
+                    exifInfoWindowData.$bodyContent.append(exifInfoWindowData.$customExifInfo);
+                    exifInfoWindowData.currentExifMode = exifMode.CUSTOM;
+                    $toggleButton.text(texts.customExifButton);
+                    break;
+            }
+        }
+
+        function buildImageExifInfoWindow() {
+            return new BEM({
+                block: "imcms-pop-up-modal",
+                elements: {
+                    "head": imageMetadataWindowBuilder.buildHead(texts.titleExifInfo, () => imageExifWindowBuilder.closeWindow()),
+                    "body": buildImageExifBody(),
+                    "footer": buildExifInfoFooter()
+                }
+            }).buildBlockStructure("<div>", {"class": "image-exif-window"});
+        }
+
+
+        // Metadata Editor
 
         function buildMainInfo() {
             return new BEM({
@@ -38,17 +166,17 @@ define("imcms-image-metadata-builder",
         }
 
         function buildMetadataEditor() {
-            windowData.$photographer = components.texts.textField('<div>', {
+            metadataEditorWindowData.$photographer = components.texts.textField('<div>', {
                 text: texts.photographer,
                 value: imageDTO.exifInfo.customExif.photographer
             });
 
-            windowData.$uploadedBy = components.texts.textField('<div>', {
+            metadataEditorWindowData.$uploadedBy = components.texts.textField('<div>', {
                 text: texts.uploadedBy,
                 value: imageDTO.exifInfo.customExif.uploadedBy
             });
 
-            windowData.$copyright = components.texts.textField('<div>', {
+            metadataEditorWindowData.$copyright = components.texts.textField('<div>', {
                 text: texts.copyright,
                 value: imageDTO.exifInfo.customExif.copyright
             });
@@ -56,23 +184,23 @@ define("imcms-image-metadata-builder",
             return new BEM({
                 block: "imcms-image-metadata",
                 elements: {
-                    "photographer": windowData.$photographer,
-                    "uploaded-by": windowData.$uploadedBy,
-                    "copyright": windowData.$copyright,
+                    "photographer": metadataEditorWindowData.$photographer,
+                    "uploaded-by": metadataEditorWindowData.$uploadedBy,
+                    "copyright": metadataEditorWindowData.$copyright,
                     "license-period": buildLicensePeriodField()
                 }
             }).buildBlockStructure("<div>");
         }
 
         function buildLicensePeriodField(){
-            windowData.$dateStart = components.dateTime.datePickerCalendar();
-            windowData.$dateEnd = components.dateTime.datePickerCalendar();
+            metadataEditorWindowData.$dateStart = components.dateTime.datePickerCalendar();
+            metadataEditorWindowData.$dateEnd = components.dateTime.datePickerCalendar();
             let $delimiter = components.texts.titleText('<div>', "—", {
                 'class': 'imcms-delimeter'
             });
 
-            windowData.$dateStart.setDate(imageDTO.exifInfo.customExif.licensePeriodStart);
-            windowData.$dateEnd.setDate(imageDTO.exifInfo.customExif.licensePeriodEnd);
+            metadataEditorWindowData.$dateStart.setDate(imageDTO.exifInfo.customExif.licensePeriodStart);
+            metadataEditorWindowData.$dateEnd.setDate(imageDTO.exifInfo.customExif.licensePeriodEnd);
 
             return new BEM({
                 block: "imcms-license-period",
@@ -81,13 +209,13 @@ define("imcms-image-metadata-builder",
                         'class': 'imcms-label'
                     }),
                     "range": $('<div>', {
-                        html: [windowData.$dateStart, $delimiter, windowData.$dateEnd]
+                        html: [metadataEditorWindowData.$dateStart, $delimiter, metadataEditorWindowData.$dateEnd]
                     })
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-field"});
         }
 
-        function buildFooter() {
+        function buildMetadataEditorFooter() {
             return WindowBuilder.buildFooter([
                 components.buttons.negativeButton({
                     text: texts.cancel,
@@ -107,11 +235,11 @@ define("imcms-image-metadata-builder",
         function onSave(){
             let path = imageDTO.path;
             let data = {
-                photographer: windowData.$photographer.$input.val(),
-                uploadedBy: windowData.$uploadedBy.$input.val(),
-                copyright: windowData.$copyright.$input.val(),
-                licensePeriodStart: windowData.$dateStart.getDate(),
-                licensePeriodEnd: windowData.$dateEnd.getDate()
+                photographer: metadataEditorWindowData.$photographer.$input.val(),
+                uploadedBy: metadataEditorWindowData.$uploadedBy.$input.val(),
+                copyright: metadataEditorWindowData.$copyright.$input.val(),
+                licensePeriodStart: metadataEditorWindowData.$dateStart.getDate(),
+                licensePeriodEnd: metadataEditorWindowData.$dateEnd.getDate()
             }
 
             imageFilesRestApi.editMetadata(path, data)
@@ -124,34 +252,44 @@ define("imcms-image-metadata-builder",
                 });
         }
 
-        function buildImageMetadata() {
+        function buildImageMetadataWindow() {
             return new BEM({
                 block: "imcms-pop-up-modal",
                 elements: {
-                    "head": imageMetadataWindowBuilder.buildHead(texts.title),
+                    "head": imageMetadataWindowBuilder.buildHead(texts.titleMetadataEditor, () => imageMetadataWindowBuilder.closeWindow()),
                     "left-side": buildMainInfo(),
                     "right-side": buildMetadataEditor(),
-                    "footer": buildFooter()
+                    "footer": buildMetadataEditorFooter()
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-image-metadata-editor"});
         }
 
         function clearData() {
-            windowData = {};
+            metadataEditorWindowData = {};
+            exifInfoWindowData = {};
         }
 
         let imageMetadataWindowBuilder = new WindowBuilder({
-            factory: buildImageMetadata,
+            factory: buildImageMetadataWindow,
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close"
+        });
+
+        let imageExifWindowBuilder = new WindowBuilder({
+            factory: buildImageExifInfoWindow,
             clearDataStrategy: clearData,
             onEscKeyPressed: "close"
         });
 
         return {
-            buildImageMetadata: function (imageData, onMetadataSavedCallback) {
+            buildImageMetadataEditor: function (imageData, onMetadataSavedCallback) {
                 onMetadataSaved = onMetadataSavedCallback;
-
                 imageDTO = imageData;
                 imageMetadataWindowBuilder.buildWindowWithShadow();
+            },
+            buildImageExifInfo: function (imageData) {
+                imageDTO = imageData;
+                imageExifWindowBuilder.buildWindowWithShadow();
             }
         };
     }

@@ -675,7 +675,7 @@ define("imcms-image-content-builder",
                         click: (event) => {
                             let $deleteImage = $(event.target).closest(".imcms-choose-img-wrap");
                             let onMetadataSavedCallback = imageFile => onMetadataSaved(imageFile, $deleteImage);
-                            imageMetadataWindowBuilder.buildImageMetadata(selectedImage, onMetadataSavedCallback);
+                            imageMetadataWindowBuilder.buildImageMetadataEditor(selectedImage, onMetadataSavedCallback);
                         },
                     })
                 }

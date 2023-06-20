@@ -506,22 +506,6 @@ const texts = {
                     loadImagesFailed: 'Misslyckades med att hämta bilder. Försök igen',
                     uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen'
                 },
-                imageMetadata: {
-                    title: 'Bildmetadata',
-                    save: 'Spara',
-                    cancel: 'Avbryt',
-                    photographer: 'Fotograf',
-                    resolution: 'Upplösning (w x h)',
-                    originalFileSize: 'Originalvikt',
-                    originalFileType: 'Originalfiltyp',
-                    uploadedBy: 'Uppladdad av',
-                    modifiedDate: 'Ändrat datum',
-                    copyright: 'Copyright',
-                    licensePeriod: 'Licensperiod',
-                    error: {
-                        saveMetadataFailed: 'Misslyckades med att spara metadata'
-                    }
-                }
             },
             image: {
                 title: "Redigera bild",
@@ -619,6 +603,27 @@ const texts = {
                     loadFailed: 'Det gick inte att ladda bilden. Försök igen',
                     removeFailed: 'Misslyckades med att ta bort bilden. Försök igen',
                     createFailed: 'Misslyckades med att skapa bild. Försök igen'
+                }
+            },
+            imageMetadata: {
+                titleMetadataEditor: 'Bildmetadata',
+                titleExifInfo: 'Exif Info',
+                save: 'Spara',
+                cancel: 'Avbryt',
+                photographer: 'Fotograf',
+                resolution: 'Upplösning (w x h)',
+                originalFileSize: 'Originalvikt',
+                originalFileType: 'Originalfiltyp',
+                uploadedBy: 'Uppladdad av',
+                modifiedDate: 'Ändrat datum',
+                copyright: 'Copyright',
+                licensePeriod: 'Licensperiod',
+                titleAllExifMode: 'All Exif Information',
+                titleCustomExifMode: 'Anpassad metadata',
+                customExifButton: 'Växla till anpassad metadata',
+                allExifButton: 'Växla till alla EXIF',
+                error: {
+                    saveMetadataFailed: 'Misslyckades med att spara metadata'
                 }
             },
             text: {
@@ -1707,22 +1712,6 @@ const texts = {
                     loadImagesFailed: 'Failed to fetch images. Try again',
                     uploadImagesFailed: 'Failed to fetch images. Try again'
                 },
-                imageMetadata: {
-                    title: 'Image Metadata',
-                    save: 'Save',
-                    cancel: 'Cancel',
-                    photographer: 'Photographer',
-                    resolution: 'Resolution (w x h)',
-                    originalFileSize: 'Original size',
-                    originalFileType: 'Original file type',
-                    uploadedBy: 'Uploaded by',
-                    modifiedDate: 'Modified date',
-                    copyright: 'Copyright',
-                    licensePeriod: 'License period',
-                    error: {
-                        saveMetadataFailed: 'Failed to save metadata'
-                    }
-                }
             },
             image: {
                 title: "Edit Image",
@@ -1822,6 +1811,27 @@ const texts = {
                     removeFailed: 'Failed to remove image. Try again',
                     createFailed: 'Failed to create image. Try again',
                     loadHistoryFailed: 'Failed to load history'
+                }
+            },
+            imageMetadata: {
+                titleMetadataEditor: 'Image Metadata',
+                titleExifInfo: 'Exif Info',
+                save: 'Save',
+                cancel: 'Cancel',
+                photographer: 'Photographer',
+                resolution: 'Resolution (w x h)',
+                originalFileSize: 'Original size',
+                originalFileType: 'Original file type',
+                uploadedBy: 'Uploaded by',
+                modifiedDate: 'Modified date',
+                copyright: 'Copyright',
+                licensePeriod: 'License period',
+                titleAllExifMode: 'All Exif Information',
+                titleCustomExifMode: 'Custom Metadata',
+                customExifButton: 'Switch to custom metadata',
+                allExifButton: 'Switch to all exif',
+                error: {
+                    saveMetadataFailed: 'Failed to save metadata'
                 }
             },
             text: {
@@ -2911,22 +2921,6 @@ const texts = {
                     loadImagesFailed: 'Kunne ikke hente bilder. Prøv igjen',
                     uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen'
                 },
-                imageMetadata: {
-                    title: 'Image Metadata',
-                    save: 'Save',
-                    cancel: 'Cancel',
-                    photographer: 'Photographer',
-                    resolution: 'Resolution (w x h)',
-                    originalFileSize: 'Original size',
-                    originalFileType: 'Original file type',
-                    uploadedBy: 'Uploaded by',
-                    modifiedDate: 'Modified date',
-                    copyright: 'Copyright',
-                    licensePeriod: 'License period',
-                    error: {
-                        saveMetadataFailed: 'Failed to save metadata'
-                    }
-                }
             },
             image: {
                 title: "Rediger bilde",
@@ -3026,6 +3020,27 @@ const texts = {
                     removeFailed: 'Kunne ikke slette bildet. Prøv igjen',
                     createFailed: 'Kunne ikke lage bildet. Prøv igjen',
                     loadHistoryFailed: 'Kunne ikke laste inn loggen'
+                }
+            },
+            imageMetadata: {
+                titleMetadataEditor: 'Image Metadata',
+                titleExifInfo: 'Exif Info',
+                save: 'Save',
+                cancel: 'Cancel',
+                photographer: 'Photographer',
+                resolution: 'Resolution (w x h)',
+                originalFileSize: 'Original size',
+                originalFileType: 'Original file type',
+                uploadedBy: 'Uploaded by',
+                modifiedDate: 'Modified date',
+                copyright: 'Copyright',
+                licensePeriod: 'License period',
+                titleAllExifMode: 'All Exif Information',
+                titleCustomExifMode: 'Custom Metadata',
+                customExifButton: 'Switch to custom metadata',
+                allExifButton: 'Switch to all exif',
+                error: {
+                    saveMetadataFailed: 'Failed to save metadata'
                 }
             },
             text: {
