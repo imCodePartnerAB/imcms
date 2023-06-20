@@ -28,7 +28,12 @@
 			final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 			final UserDomainObject user = Utility.getLoggedOnUser(request);
 			final Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user);
-			final Iterator iterator = documentMapper.getDocumentsIterator(history.getRange());
+			Iterator iterator;
+			if (history.getDocumentList() != null) {
+				iterator = documentMapper.getDocumentsIterator(history.getDocumentList());
+			} else {
+				iterator = documentMapper.getDocumentsIterator(history.getRange());
+			}
 
 			while (iterator.hasNext()) {
 				final DocumentDomainObject document = (DocumentDomainObject) iterator.next();

@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.zip.ZipOutputStream;
 
@@ -47,11 +46,24 @@ public class DocumentExportService {
 	}
 
 	public void exportDocuments(int start, int end, boolean skipExported, UserDomainObject user) {
-		final IntRange range = new IntRange(start, end);
 		final DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
-
+		final IntRange range = new IntRange(start, end);
 		final DocumentExportHistory history = new DocumentExportHistory(range);
 		final Iterator iterator = documentMapper.getDocumentsIterator(range);
+
+		exportDocuments(iterator, skipExported, history, user);
+	}
+
+	public void exportDocuments(Integer[] ids, boolean skipExported, UserDomainObject user) {
+		final DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
+		final DocumentExportHistory history = new DocumentExportHistory(ids);
+		final Iterator iterator = documentMapper.getDocumentsIterator(ids);
+
+		exportDocuments(iterator, skipExported, history, user);
+	}
+
+	private void exportDocuments(Iterator iterator, boolean skipExported, DocumentExportHistory history, UserDomainObject user) {
+		final DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
 
 		try (final OutputStream fileOutputStream = Files.newOutputStream(exportFolder.resolve(EXPORT_ZIP_FILENAME));
 		     final ZipOutputStream zip = new ZipOutputStream(fileOutputStream);) {

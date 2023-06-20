@@ -1,12 +1,11 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.domain.dto.export.DocumentExportService;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 @Log4j2
 public class ExportDocuments extends HttpServlet {
@@ -31,20 +29,26 @@ public class ExportDocuments extends HttpServlet {
 			return;
 		}
 
-		final ObjectMapper mapper = new ObjectMapper();
-		final TypeReference<HashMap<String, Integer>> typeReference = new TypeReference<HashMap<String, Integer>>() {
-		};
-		final Map<String, Integer> params = mapper.readValue(req.getInputStream(), typeReference);
+		final String startIdString = req.getParameter("start");
+		final String endIdString = req.getParameter("end");
+		final String documentsList = req.getParameter("documentsList");
 
-		if (!params.containsKey("start") && !params.containsKey("end")) {
+		if ((startIdString == null && endIdString == null) || documentsList == null) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect params");
 			return;
 		}
 
-		final boolean skipExported = Boolean.parseBoolean(req.getParameter("skipExported"));
 		final DocumentExportService documentExportService = Imcms.getServices().getDocumentExportService();
+		final boolean skipExported = Boolean.parseBoolean(req.getParameter("skipExported"));
 
-		documentExportService.exportDocuments(params.get("start"), params.get("end"), skipExported, user);
+		if (StringUtils.isNotEmpty(documentsList)){
+			final Integer[] array = Arrays.stream(documentsList.split(",")).map(Integer::valueOf).toArray(Integer[]::new);
+			documentExportService.exportDocuments(array, skipExported, user);
+			resp.sendError(HttpServletResponse.SC_OK);
+			return;
+		}
+
+		documentExportService.exportDocuments(Integer.parseInt(startIdString), Integer.parseInt(endIdString), skipExported, user);
 		resp.sendError(HttpServletResponse.SC_OK);
 	}
 

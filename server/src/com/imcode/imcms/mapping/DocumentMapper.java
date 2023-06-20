@@ -9,7 +9,6 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.Config;
@@ -339,6 +338,10 @@ public class DocumentMapper implements DocumentGetter {
         return new DocumentsIterator(getDocumentIds(idRange));
     }
 
+    public Iterator getDocumentsIterator(final Integer[] documentIds){
+        return new DocumentsIterator(getDocumentIds(documentIds));
+    }
+
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
         String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
         String[] parameters = new String[]{"" + document.getId()};
@@ -361,6 +364,19 @@ public class DocumentMapper implements DocumentGetter {
                 "" + idRange.getMaximumInteger()
         };
         String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
+        int[] documentIds = new int[documentIdStrings.length];
+        for (int i = 0; i < documentIdStrings.length; i++) {
+            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
+        }
+        return documentIds;
+    }
+
+    private int[] getDocumentIds(Integer[] ids){
+        String[] placeholders = new String[ids.length];
+        Arrays.fill(placeholders, "?");
+        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id in (" + String.join(", ", placeholders) + ") ORDER BY meta_id";
+
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, ids, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
