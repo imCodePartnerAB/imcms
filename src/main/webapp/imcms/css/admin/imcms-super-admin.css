@@ -203,6 +203,13 @@
     width: 20%;
 }
 
+.imcms-pop-up-super-admin-modal__left-side .imcms-tabs__advanced-button--enabled{
+    background-color: #ebeef1e0;
+    -webkit-box-shadow: inset 0 0 10px #c1c1c180;
+    -moz-box-shadow: inset 0 0 10px #c1c1c180;
+    box-shadow: inset 0 0 10px #c1c1c180;
+}
+
 @media screen and (max-width: 800px){
     .imcms-pop-up-super-admin-modal__left-side {
         width: 18%;
