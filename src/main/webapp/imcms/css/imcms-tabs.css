@@ -19,6 +19,14 @@
     background-size: 12px;
 }
 
+.imcms-tabs__advanced-button--enabled{
+    background-image: url(/imcms/images/icon_several_arrows_up.png);
+    background-color: #fbfbfb;
+    -webkit-box-shadow: inset 0px 0px 10px #e5e5e566;
+    -moz-box-shadow: inset 0px 0px 10px #e5e5e566;
+    box-shadow: inset 0px 0px 10px #e5e5e566;
+}
+
 .imcms-tabs__tab--disabled {
     cursor: default;
 }

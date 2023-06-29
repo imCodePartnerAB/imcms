@@ -82,7 +82,6 @@ module.exports = class WindowTabsBuilder {
     }
 
     setEnabledAdvancedButton(isActive){
-        debugger;
         let $advancedButton = this.$tabsContainer.find(ADVANCED_BUTTON_SELECTOR);
         isActive ? $advancedButton.removeClass(DISABLED_TAB_CLASS_NAME) : $advancedButton.addClass(DISABLED_TAB_CLASS_NAME);
     }
@@ -101,10 +100,13 @@ module.exports = class WindowTabsBuilder {
                 attributes: {
                     text: this.advancedButtonText,
                     click: (event) => {
-                        this.$tabsContainer.find(ADVANCED_TAB_SELECTOR).slideDown(200);
-                        $(event.target).slideUp(200, function () {
-                            $(this).remove();
-                        });
+                        if($(event.target).hasClass("imcms-tabs__advanced-button--enabled")){
+                            this.$tabsContainer.find(ADVANCED_TAB_SELECTOR).slideUp(200);
+                            $(event.target).removeClass("imcms-tabs__advanced-button--enabled");
+                        }else{
+                            this.$tabsContainer.find(ADVANCED_TAB_SELECTOR).slideDown(200);
+                            $(event.target).addClass("imcms-tabs__advanced-button--enabled");
+                        }
                     }
                 }
             };
