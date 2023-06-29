@@ -81,7 +81,7 @@ public class StoragePath {
      * Removes the current path from the given path.
      */
     public StoragePath relativize(StoragePath path){
-        String resultPath = path.toString().replace(this.path, "");
+        String resultPath = path.toString().replaceFirst(this.path, "");
         return new StoragePath(path.getType(), resultPath);
     }
 
