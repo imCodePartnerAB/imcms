@@ -11,6 +11,8 @@ import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class DefaultDocumentUrlService
@@ -33,7 +35,12 @@ public class DefaultDocumentUrlService
         return getByDocIdAndVersionNo(docId, Version.WORKING_VERSION_INDEX);
     }
 
-    @Override
+	@Override
+	public List<? extends DocumentURL> getAllContainingInURL(String content) {
+		return documentUrlRepository.findAllByUrlContains(content).stream().map(DocumentUrlDTO::new).toList();
+	}
+
+	@Override
     public DocumentURL getByDocIdAndVersionNo(int docId, int versionNo){
         final DocumentUrlJPA documentUrlJPA = documentUrlRepository.findByDocIdAndVersionNo(docId, versionNo);
         return documentUrlJPA != null ? new DocumentUrlDTO(documentUrlJPA) : null;

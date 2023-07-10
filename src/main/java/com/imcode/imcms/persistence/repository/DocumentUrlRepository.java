@@ -20,4 +20,6 @@ public interface DocumentUrlRepository extends JpaRepository<DocumentUrlJPA, Int
     @Override
     @Query("SELECT d FROM DocumentUrlJPA d WHERE d.version = ?1")
     List<DocumentUrlJPA> findByVersion(Version version);
+
+    List<DocumentUrlJPA> findAllByUrlContains(String content);
 }
