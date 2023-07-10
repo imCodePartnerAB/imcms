@@ -62,15 +62,22 @@ define(
 			tab.$backBtn.disable();
 			const uploadProgressInterval = setInterval(function () {
 				importDocumentsRestApi.getUploadProgress()
-					.done((progress) => {
-						if (progress.totalSize !== -1 && progress.progress !== -1) {
+					.done(progress => {
+						if (progress.totalSize !== 1) {
 							$progressBar.setTotalSize(progress.totalSize);
 							$progressBar.updateProgress(progress.progress);
 						}
 
-						if (progress.totalSize === -1 && progress.progress === -1) {
+						if (progress.error) {
 							clearInterval(uploadProgressInterval);
-							$progressBar.finish();
+							tab.tabbedContent.enableControls();
+							tab.$backBtn.enable();
+							modal.buildErrorWindow("Error");
+							return;
+						}
+
+						if (progress.totalSize === progress.progress) {
+							clearInterval(uploadProgressInterval);
 							tab.tabbedContent.enableControls();
 							tab.$backBtn.enable();
 						}
@@ -85,15 +92,23 @@ define(
 			const importProgressInterval = setInterval(function () {
 				importDocumentsRestApi.getImportProgress()
 					.done((progress) => {
-						if (progress.totalSize !== -1 && progress.progress !== -1) {
+						if (progress.totalSize !== 1) {
 							$progressBar.setTotalSize(progress.totalSize);
 							$progressBar.updateProgress(progress.progress);
 						}
 
-						if (progress.totalSize === -1 && progress.progress === -1) {
+						if (progress.error) {
 							clearInterval(importProgressInterval);
-							$progressBar.finish();
+							tab.tabbedContent.enableControls();
+							tab.$backBtn.enable();
+							modal.buildErrorWindow("Error");
+							return;
+						}
+
+						if (progress.totalSize === progress.progress) {
+							clearInterval(importProgressInterval);
 							$listBtn.click();
+							$progressBar.finish();
 							tab.tabbedContent.enableControls();
 							tab.$backBtn.enable();
 						}
@@ -179,11 +194,12 @@ define(
 			});
 		}
 
-		function handleImportBtnClick($progressBar, $listBtn, importDocIdRange, importDocIdList) {
+		function handleImportBtnClick($progressBar, $listBtn, importDocIdRange, importDocIdList, $autoImportMenusCheckbox) {
 			const body = {
-				importDocIdList: importDocIdList,
+				importDocIds: importDocIdList,
 				startId: importDocIdRange?.startId,
-				endId: importDocIdRange?.endId
+				endId: importDocIdRange?.endId,
+				autoImportMenus: $autoImportMenusCheckbox.isChecked()
 			}
 
 			importDocumentsRestApi.importDocuments(body)
@@ -232,7 +248,7 @@ define(
 			);
 		}
 
-		function buildRangeInputContainer($resultContainer, $builder, $progressBar, $listBtn) {
+		function buildRangeInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn) {
 			const $startIdInput = buildStartIdInput();
 			const $endIdInput = buildEndIdInput();
 			const $basicImportDocumentsInfoFilter = buildBasicImportDocumentsInfoFilter();
@@ -301,7 +317,7 @@ define(
 					endId: endId
 				}
 
-				handleImportBtnClick($progressBar, $listBtn, importDocIdRange, null);
+				handleImportBtnClick($progressBar, $listBtn, importDocIdRange, null,$autoImportMenusCheckbox);
 			}
 
 			function onRemoveAliasesBtnClick() {
@@ -348,7 +364,7 @@ define(
 			return $rangeInputContainer;
 		}
 
-		function buildListInputContainer($resultContainer, $builder, $progressBar, $listBtn) {
+		function buildListInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox,$listBtn) {
 			const $metaIdListSelect = buildMultipleEmptySelect();
 			const $metaIdInput = buildMetaIdInput();
 			const $addButton = buildAddMetaIdBtn($metaIdInput, $metaIdListSelect);
@@ -415,7 +431,7 @@ define(
 			}
 
 			function onImportBtnClick() {
-				handleImportBtnClick($progressBar, $listBtn, null, $metaIdListSelect.getImportDocIds());
+				handleImportBtnClick($progressBar, $listBtn, null, $metaIdListSelect.getImportDocIds(),$autoImportMenusCheckbox);
 			}
 
 			function onRemoveAliasesBtnClick() {
@@ -802,9 +818,10 @@ define(
 			const $importBtn = components.buttons.saveButton({
 				text: texts.importSection.importButton,
 			});
+			const $autoImportMenusCheckbox = components.checkboxes.imcmsCheckbox("<div>", {text: "Auto import menus"});
 
-			const $rangeInputContainer = buildRangeInputContainer($resultContainer, $builder, $progressBar, $listBtn);
-			const $listInputContainer = buildListInputContainer($resultContainer, $builder, $progressBar, $listBtn);
+			const $rangeInputContainer = buildRangeInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn);
+			const $listInputContainer = buildListInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn);
 
 			$listBtn.off('click').on('click', $listInputContainer.onListBtnClick);
 			$importBtn.off('click').on('click', $listInputContainer.onImportBtnClick);
@@ -823,8 +840,7 @@ define(
 						$importBtn.off('click').on('click', $rangeInputContainer.onImportBtnClick);
 						$rangeInputContainer.css("display", "inline");
 						$listInputContainer.hide()
-						$resultContainer.css("height", "615px");
-
+						$resultContainer.css("height", "605px");
 					}
 				}
 			});
@@ -835,8 +851,8 @@ define(
 					"switch-input-type-button": $switchInputTypeButton,
 					"range-input": $rangeInputContainer,
 					"list-input": $listInputContainer,
-					"import-button": $importBtn,
-					"progress-bar": $progressBar,
+					"container":$("<div>").append($importBtn).append($autoImportMenusCheckbox),
+						"progress-bar": $progressBar,
 					"result-container": $resultContainer
 				}
 			}).buildBlockStructure("<section>", {});

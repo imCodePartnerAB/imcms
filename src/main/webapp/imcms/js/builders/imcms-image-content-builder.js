@@ -425,6 +425,8 @@ define("imcms-image-content-builder",
         }
 
         function loadImages(folder) {
+            console.log(folder)
+            console.log(folder)
             imageFoldersREST.read({"path": folder.path})
                 .done(
                     imagesFolder => {
@@ -820,6 +822,8 @@ define("imcms-image-content-builder",
 	    }
 
         function loadImageFoldersContent(imagesRootFolder) {
+            console.log("imagesRootFolder")
+            console.log(imagesRootFolder)
             viewModel.root = imagesRootFolder;
             viewModel.root.imagesAreLoaded = true;
 

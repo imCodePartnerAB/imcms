@@ -1727,9 +1727,18 @@
 .alias-control-section .range-input .range-input__filters,
 .edit-imported-documents-section .range-input .range-input__list-button,
 .import-section .range-input .range-input__list-button,
-.alias-control-section .range-input .range-input__list-button {
+.alias-control-section .range-input .range-input__list-button,
+.import-section .import-section__container{
     display: inline-block;
     margin: 0 5px 0 5px;
+}
+
+.import-section .import-section__container .imcms-checkbox{
+    display: table-cell;
+}
+
+.import-section .import-section__container .imcms-checkbox .imcms-label.imcms-checkbox__label{
+    margin-bottom: 0;
 }
 
 .edit-imported-documents-section .range-input .range-input__start-id,
