@@ -16,35 +16,39 @@
 	<table border="0" cellspacing="0" cellpadding="2" width="680">
 		<tr>
 			<td>
-				<table border="0" cellspacing="0" cellpadding="0">
-					<form method="GET" action="ListDocuments" id="form">
-						<%
-							if (formData.list != null) {
-								for (int metaId : formData.list) {
-									out.println(String.format("<input hidden value='%s' id='%s' name='documentsList'>", metaId, metaId));
-								}
-							}
-						%>
+				<form method="GET" action="ListDocuments" id="form">
+                    <%
+                        if (formData.list != null) {
+                            for (int metaId : formData.list) {
+                                out.println(String.format("<input hidden value='%s' id='%s' name='documentsList'>", metaId, metaId));
+                            }
+                        }
+                    %>
+					<table border="0" cellspacing="0" cellpadding="0">
 						<tr>
-							<td><button type="button" id="changeInput" class="imcmsFormBtnSmall" style="margin-bottom: 5px;">Change input type</button></td>
+							<td>
+								<button type="button" id="changeInput" class="imcmsFormBtnSmall"
+										style="margin-bottom: 5px;
+										width: 100px;">
+									Change input type
+								</button>
+							</td>
 						</tr>
 						<tr id="documentsList" <%=formData.list == null ? "style='display: none'" : "" %>>
 							<td>
-								<div>
-									<select name="<%= ListDocuments.PARAMETER__LIST %>"
-											id="documentsListSelect" multiple
-											style="text-align: center;
+								<select name="<%= ListDocuments.PARAMETER__LIST %>"
+										id="documentsListSelect" multiple
+										style="text-align: center;
 											min-width: 100px;
 											min-height: 130px;">
-										<%
-											if (formData.list != null) {
-												for (int metaId : formData.list) {
-													out.println(String.format("<option value='%s' id='%s' name='documentsList'>%s</option>", metaId, metaId, metaId));
-												}
+									<%
+										if (formData.list != null) {
+											for (int metaId : formData.list) {
+												out.println(String.format("<option value='%s' id='%s' name='documentsList'>%s</option>", metaId, metaId, metaId));
 											}
-										%>
-									</select>
-								</div>
+										}
+									%>
+								</select>
 							</td>
 							<td style="display: block">
 								<div style="margin-left: 10px;">
@@ -78,31 +82,19 @@
 							<td>&nbsp;&nbsp;</td>
 						</tr>
 						<tr style="display: block;margin-top: 5px">
-						<td>
-							<input type="hidden" name="<%=ListDocuments.PARAMETER__EXPORT_DOCUMENTS%>"
-								   value="true">
-						</td>
-						<td>
-							<input type="submit" class="imcmsFormBtnSmall"
-								   id="listBtn"
-								   name="<%= ListDocuments.PARAMETER_BUTTON__LIST %>"
-								   value=" <? imcms/lang/jsp/document_list.jsp/2002 ?> ">
-						</td>
-						<%
-							if ((request.getParameter("start") != null && request.getParameter("end") != null) || request.getParameter("documentsList") != null) {
-						%>
-						<td>
-							<input type="checkbox" name="skipExported" id="skipExported" checked>
-						</td>
-						<td>
-							<label for="skipExported"><? imcms/lang/jsp/export/export_document_list.jsp/skip_exported ?></label>
-						</td>
+							<td>
+								<input type="hidden" name="<%=ListDocuments.PARAMETER__EXPORT_DOCUMENTS%>"
+									   value="true">
+							</td>
+							<td>
+								<input type="submit" class="imcmsFormBtnSmall"
+									   id="listBtn"
+									   name="<%= ListDocuments.PARAMETER_BUTTON__LIST %>"
+									   value=" <? imcms/lang/jsp/document_list.jsp/2002 ?> ">
+							</td>
 						</tr>
-						<%
-							}
-						%>
-					</form>
-				</table>
+					</table>
+				</form>
 			</td>
 		</tr>
 		<tr>
@@ -114,16 +106,14 @@
 
 	<table border="0" cellspacing="0" cellpadding="2" width="680" id="documentsTable">
 		<tr>
-			<td><b><? global/Page_alias ?>&nbsp;</b></td>
-			<td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
-			<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
-			<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
-			<td><b><? web/imcms/lang/jsp/export_allowed ?></b></td>
-				<%--			<td><b><? web/imcms/lang/jsp/exported ?></b></td>--%>
-			<td><b></b></td>
+			<td style="width: 20%"><b><? global/Page_alias ?>&nbsp;</b></td>
+			<td style="width: 5%"><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
+			<td style="width: 5%"><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+			<td style="width: 64%"><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+			<td style="width: 5%"><b><? web/imcms/lang/jsp/export_allowed ?></b></td>
+			<td style="width: 1%"><b></b></td>
 		</tr>
 		<%
-
 			DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 			UserDomainObject user = Utility.getLoggedOnUser(request);
 			Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user);
@@ -173,20 +163,45 @@
 		</tr>
 		<%
 			}%>
+		<tfoot>
 		<tr>
 			<td colspan="6">#gui_hr( "blue" )</td>
 		</tr>
-		<tfoot>
 		<tr>
 			<td colspan="6" align="right">
 				<div class="loading-animation" style="display: none;float:left;" id="spinner"></div>
+				<%
+					if ((request.getParameter("start") != null && request.getParameter("end") != null) || request.getParameter("documentsList") != null) {
+				%>
+				<div style="display: inline-block; margin: 0 5px 0 0;">
+					<div style="display: inline-block;">
+						<div style="display: inline-block;"><input type="checkbox" name="skipExported" id="skipExported" checked></div>
+						<div style="display: inline-block;">
+							<label style="vertical-align: bottom" for="skipExported"><? imcms/lang/jsp/export/export_document_list.jsp/skip_exported ?></label>
+						</div>
+					</div>
+					<div style="display: inline-block;">
+						<div style="display: inline-block;"><input type="checkbox" name="exportImages" id="exportImages"></div>
+						<div style="display: inline-block;">
+							<label style="vertical-align: bottom" for="exportImages"><? imcms/lang/jsp/export/export_document_list.jsp/export_images ?></label>
+						</div>
+					</div>
+					<div style="display: inline-block;">
+						<div style="display: inline-block;"><input type="checkbox" name="exportFiles" id="exportFiles"></div>
+						<div style="display: inline-block;">
+							<label style="vertical-align: bottom" for="exportFiles"><? imcms/lang/jsp/export/export_document_list.jsp/export_files ?></label>
+						</div>
+					</div>
+				</div>
+				<%
+					}
+				%>
 				<form method="get" action="AdminManager" style="display: inline-block;">
 					<input type="submit" class="imcmsFormBtn" name="" id="cancelBtn" value="<? global/cancel ?>">
 				</form>
 				<div style="display: inline-block;">
 					<input type="submit" class="imcmsFormBtn" name="" id="exportBtn" value="<? global/export ?>">
 				</div>
-			</td>
 		</tr>
 		</tfoot>
 	</table>
@@ -203,6 +218,8 @@
 	const $listStartInput = document.getElementById("start");
 	const $listEndInput = document.getElementById("end");
 	const $skipExportedInput = document.getElementById("skipExported");
+	const $exportImagesInput = document.getElementById("exportImages");
+	const $exportFilesInput = document.getElementById("exportFiles");
 	const $tbody = $documentsTable?.querySelector("tbody");
 	const $spinner = document.getElementById("spinner");
 
@@ -244,9 +261,9 @@
 		const documentsId = Array.from($documentsListSelect.options).map(option => option.value);
 		const url = new URLSearchParams();
 
-		if ($skipExportedInput.checked) {
-			url.append("skipExported", "true");
-		}
+		if ($skipExportedInput.checked) url.append("skipExported", "true");
+        if ($exportImagesInput.checked) url.append("exportImages", "true");
+        if ($exportFilesInput.checked) url.append("exportFiles", "true");
 
 		url.append("start", $listStartInput.value);
 		url.append("end", $listEndInput.value);

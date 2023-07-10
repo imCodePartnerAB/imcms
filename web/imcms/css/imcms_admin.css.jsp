@@ -473,6 +473,13 @@ TD.NavBtnTextInact { cursor: pointer; }
 	animation: spin 1.5s linear infinite;
 }
 
+#documentsTable>tbody{
+	display: block;
+	height: 550px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
 @keyframes spin {
 	0% {
 		transform: rotate(0deg);
