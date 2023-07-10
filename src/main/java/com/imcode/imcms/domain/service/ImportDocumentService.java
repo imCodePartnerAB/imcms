@@ -1,19 +1,12 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.ImportProgress;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface ImportDocumentService {
-	boolean isExtractingDone();
 
-	void extractAndSave(MultipartFile file);
+	void importDocuments(int startId, int endId, boolean autoImportMenus);
 
-	ImportProgress getExtractionProgress();
-
-	boolean isImportingDone();
-
-	void importDocuments(int startId, int endId);
-	void importDocuments(int[] metaIds);
+	void importDocuments(int[] importDocIds, boolean autoImportMenus);
 
 	ImportProgress getImportingProgress();
 

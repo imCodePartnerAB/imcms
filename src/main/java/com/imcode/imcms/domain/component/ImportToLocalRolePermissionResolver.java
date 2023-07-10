@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.ImportRoleDTO;
-import com.imcode.imcms.domain.factory.RoleImportMapper;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.Meta;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +13,13 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class ImportToLocalRolePermissionResolver {
-	private final RoleImportMapper roleImportMapper;
+	private final RoleImporter roleImporter;
 
 	public Map<Integer, Meta.Permission> resolve(List<ImportRoleDTO> importRoles) {
 		final HashMap<Integer, Meta.Permission> roleIdToPermission = new HashMap<>();
+
 		for (ImportRoleDTO importRole : importRoles) {
-			final Role role = roleImportMapper.mapAndSave(importRole);
+			final Role role = roleImporter.importRole(importRole);
 
 			if (role != null) {
 				String permission = importRole.getPermission();

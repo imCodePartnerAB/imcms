@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImportProgress;
+import com.imcode.imcms.domain.service.ArchiveImportDocumentExtractionService;
 import com.imcode.imcms.domain.service.ImportDocumentService;
 import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
@@ -15,14 +16,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Set;
-
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/documents/import")
 public class ImportDocumentController {
 	private final ImportDocumentService importDocumentService;
+	private final ArchiveImportDocumentExtractionService archiveImportDocumentExtractionService;
 
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	@PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -35,7 +35,7 @@ public class ImportDocumentController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 
-		importDocumentService.extractAndSave(file);
+		archiveImportDocumentExtractionService.extract(file);
 
 		return zipFilename;
 	}
@@ -43,7 +43,7 @@ public class ImportDocumentController {
 	@GetMapping(value = "/upload/progress")
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
 	public ImportProgress getUploadProgress() {
-		return importDocumentService.getExtractionProgress();
+		return archiveImportDocumentExtractionService.getProgress();
 	}
 
 
@@ -55,18 +55,18 @@ public class ImportDocumentController {
 
 	@PostMapping
 	@CheckAccess(role = AccessRoleType.ADMIN_PAGES)
-	public void importDocuments(@RequestBody ImportDocIdRequestDTO metaIdRequest) {
-		if (metaIdRequest.isEmpty()) {
+	public void importDocuments(@RequestBody ImportDocIdRequestDTO importDocIdRequestDTO) {
+		if (importDocIdRequestDTO.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
-		if (metaIdList != null) {
-			importDocumentService.importDocuments(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+		final int[] metaIdList = importDocIdRequestDTO.getImportDocIds();
+		if (metaIdList != null && metaIdList.length != 0) {
+			importDocumentService.importDocuments(importDocIdRequestDTO.getImportDocIds(), importDocIdRequestDTO.isAutoImportMenus());
 			return;
 		}
 
-		importDocumentService.importDocuments(metaIdRequest.getStartId(), metaIdRequest.getEndId());
+		importDocumentService.importDocuments(importDocIdRequestDTO.getStartId(), importDocIdRequestDTO.getEndId(), importDocIdRequestDTO.isAutoImportMenus());
 	}
 
 	@PostMapping("/aliases/remove")
@@ -76,9 +76,9 @@ public class ImportDocumentController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
-		if (metaIdList != null) {
-			importDocumentService.removeAliases(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+		final int[] metaIdList = metaIdRequest.getImportDocIds();
+		if (metaIdList != null && metaIdList.length != 0) {
+			importDocumentService.removeAliases(metaIdRequest.getImportDocIds());
 			return;
 		}
 
@@ -92,9 +92,9 @@ public class ImportDocumentController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide meta ids: list or range");
 		}
 
-		final Set<Integer> metaIdList = metaIdRequest.getImportDocIdList();
-		if (metaIdList != null) {
-			importDocumentService.replaceAliases(metaIdRequest.getImportDocIdList().stream().mapToInt(Integer::intValue).toArray());
+		final int[] metaIdList = metaIdRequest.getImportDocIds();
+		if (metaIdList != null && metaIdList.length != 0) {
+			importDocumentService.replaceAliases(metaIdRequest.getImportDocIds());
 			return;
 		}
 
@@ -103,12 +103,13 @@ public class ImportDocumentController {
 
 	@Data
 	private static class ImportDocIdRequestDTO {
-		private Set<Integer> importDocIdList;
+		private int[] importDocIds;
 		private Integer startId;
 		private Integer endId;
+		private boolean autoImportMenus;
 
 		public boolean isEmpty() {
-			return (importDocIdList == null || importDocIdList.isEmpty()) && startId == null && endId == null;
+			return (importDocIds == null || importDocIds.length == 0) && startId == null && endId == null;
 		}
 	}
 }

@@ -52,6 +52,11 @@ public class DefaultImportEntityReferenceManagerService<T extends AbstractImport
 		return getService(type).getAll();
 	}
 
+	@Override
+	public boolean existsByName(String name, ImportEntityReferenceType type) {
+		return getService(type).existsByName(name);
+	}
+
 	private ImportEntityReferenceService getService(ImportEntityReferenceType type) {
 		return switch (type) {
 			case CATEGORY_TYPE -> importCategoryTypeReferenceService;

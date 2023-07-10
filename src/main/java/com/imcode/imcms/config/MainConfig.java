@@ -43,8 +43,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import javax.servlet.ServletContext;
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -265,5 +268,18 @@ public class MainConfig {
 
         String imageMagickPath = (String) imcmsProperties.get("ImageMagickPath");
         return new DefaultImageCompressor(imageMagickPath);
+    }
+
+    @Bean
+    @SneakyThrows
+    public Path importDirectoryPath(@Value("WEB-INF/import/") String importFolderName,
+                                    ServletContext servletContext) {
+        final Path importDirectoryPath = Path.of(servletContext.getRealPath("/"), importFolderName);
+
+        if (!Files.exists(importDirectoryPath)) {
+            Files.createDirectory(importDirectoryPath);
+        }
+
+        return importDirectoryPath;
     }
 }

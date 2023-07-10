@@ -9,10 +9,7 @@ import com.imcode.imcms.domain.component.ImportToLocalTextDocumentTemplateResolv
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.*;
@@ -30,16 +27,23 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.function.TriFunction;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -570,8 +574,8 @@ class MappingConfig {
 			ImportToLocalTextDocumentTemplateResolver templateResolver,
 			ImportToLocalCategoryResolver categoryResolver,
 			ImportToLocalRolePermissionResolver rolePermissionResolver,
-            ImportToLocalDocumentURLResolver importToLocalDocumentURLResolver
-
+            ImportToLocalDocumentURLResolver importToLocalDocumentURLResolver,
+            Function<ImportFileDTO, DocumentFileDTO> importFileToDocumentFile
 	){
 		return importDocument -> {
 			final UberDocumentDTO document = new UberDocumentDTO();
@@ -586,6 +590,11 @@ class MappingConfig {
 			if (document.getType().equals(Meta.DocumentType.TEXT)) {
 				document.setTemplate(templateResolver.resolve(importDocument.getTemplate()));
 			}
+
+            if (document.getType().equals(Meta.DocumentType.FILE)){
+                final List<DocumentFileDTO> files = importDocument.getFiles().stream().map(importFileToDocumentFile).toList();
+                document.setFiles(files);
+            }
 
 			document.setCategories(importDocument.getCategories().stream()
 					.map(categoryResolver::resolve)
@@ -698,4 +707,83 @@ class MappingConfig {
 		};
 	}
 
+    @Bean
+    public Function<ImportFileDTO, DocumentFileDTO> importFileToDocumentFile(Path importDirectoryPath){
+        return importFile -> {
+            final String filename = importFile.getFilename();
+            final Path filePath = importDirectoryPath.resolve("files/" + filename);
+
+            final DocumentFileDTO file = new DocumentFileDTO();
+            file.setFilename(filename);
+            file.setMimeType(importFile.getMime());
+            file.setDefaultFile(importFile.isDefault());
+
+            final FileItem fileItem = new DiskFileItemFactory().createItem("", importFile.getMime(), false, filename);
+
+            try (final InputStream inputStream = Files.newInputStream(filePath);
+                 final OutputStream outputStream = fileItem.getOutputStream()) {
+
+                inputStream.transferTo(outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            final MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+            file.setMultipartFile(multipartFile);
+
+            return file;
+        };
+    }
+
+    @Bean
+    public TriFunction<ImportTextDTO, Integer, Language, Text> importTextToText() {
+        return (importText, docId, language) -> {
+            final TextDTO textDTO = new TextDTO();
+
+            textDTO.setDocId(docId);
+            textDTO.setType(Text.Type.valueOf(importText.getType()));
+            textDTO.setHtmlFilteringPolicy(Text.HtmlFilteringPolicy.ALLOW_ALL);
+            textDTO.setLangCode(language.getCode());
+            textDTO.setText(importText.getText());
+            textDTO.setIndex(importText.getIndex());
+
+            return textDTO;
+        };
+    }
+
+    @Bean
+    public TriFunction<ImportImageDTO, Integer, Language, ImageDTO> importImageToImage() {
+        return (importImage, docId, language) -> {
+            final ImageDTO image = new ImageDTO();
+            image.setDocId(docId);
+            image.setLangCode(language.getCode());
+            image.setIndex(importImage.getIndex());
+            image.setName(StringUtils.defaultString(importImage.getName()));
+
+            image.setWidth(importImage.getWidth());
+            image.setHeight(importImage.getHeight());
+            image.setBorder(importImage.getBorder());
+            image.setTarget(importImage.getTarget());
+            image.setAlign(importImage.getAlign());
+            image.setAlternateText(importImage.getAltText());
+            image.setLowResolutionUrl(importImage.getLowResolutionUrl());
+            image.setPath(importImage.getImageUrl());
+            image.setLinkUrl(image.getLinkUrl());
+            image.setType(importImage.getType());
+            image.setFormat(Format.findFormat(importImage.getFormat()));
+            image.setRotateAngle(importImage.getRotateAngle());
+            image.setCropRegion(new ImageCropRegionDTO(importImage.getCropX1(), importImage.getCropY1(), importImage.getCropX2(), importImage.getCropY2()));
+            image.setArchiveImageId(importImage.getArchiveImageId());
+            image.setResize(Resize.getByOrdinal(importImage.getResize()));
+
+            final SpaceAroundDTO spaceAround = new SpaceAroundDTO();
+            spaceAround.setTop(importImage.getVerticalSpace());
+            spaceAround.setBottom(importImage.getVerticalSpace());
+            spaceAround.setLeft(importImage.getHorizontalSpace());
+            spaceAround.setRight(importImage.getHorizontalSpace());
+            image.setSpaceAround(spaceAround);
+
+            return image;
+        };
+    }
 }

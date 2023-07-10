@@ -1,12 +1,9 @@
-package com.imcode.imcms.domain.factory;
+package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.domain.dto.ImportMenuDTO;
-import com.imcode.imcms.domain.dto.ImportMenuItemDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.BasicImportDocumentInfoService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.enums.TypeSort;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -16,26 +13,30 @@ import java.util.Optional;
 
 @Log4j2
 @Component
-@RequiredArgsConstructor
-public class MenuImportMapper {
-
+public class MenuImporter {
 	private final MenuService menuService;
-	private final MenuItemImportMapper menuItemImportMapper;
+	private final BasicImportDocumentInfoService basicImportDocumentInfoService;
 
-	public boolean mapAndSave(int docId, ImportMenuDTO importMenu) {
+	public MenuImporter(MenuService menuService,
+	                    BasicImportDocumentInfoService basicImportDocumentInfoService) {
+		this.menuService = menuService;
+		this.basicImportDocumentInfoService = basicImportDocumentInfoService;
+	}
+
+	public boolean importMenu(int docId, ImportMenuDTO importMenu) {
 		final List<Integer> skippedMenuItems = new ArrayList<>();
 		final List<MenuItemDTO> menuItems = new ArrayList<>();
 
-		final TypeSort typeSort = getTypeSortBySortOrder(importMenu.getTypeSort());
-
 		for (ImportMenuItemDTO importMenuItem : importMenu.getMenuItems()) {
-			final Optional<MenuItemDTO> mappedImportMenuItem = menuItemImportMapper.map(importMenuItem);
+			final Optional<MenuItemDTO> mappedImportMenuItem = importMenuItemToMenuItem(importMenuItem);
 			if (mappedImportMenuItem.isEmpty()) {
 				skippedMenuItems.add(importMenuItem.getDocumentId());
 			} else {
 				menuItems.add(mappedImportMenuItem.get());
 			}
 		}
+
+		final TypeSort typeSort = getTypeSortBySortOrder(importMenu.getTypeSort());
 
 		if (typeSort.equals(TypeSort.TREE_SORT) || typeSort.equals(TypeSort.MANUAL)) {
 			for (MenuItemDTO menuItem : menuItems) {
@@ -64,10 +65,10 @@ public class MenuImportMapper {
 		return true;
 	}
 
-	public boolean mapAndSave(int docId, List<ImportMenuDTO> importMenuList) {
+	public boolean importMenu(int docId, List<ImportMenuDTO> importMenuList) {
 		boolean result = true;
 		for (ImportMenuDTO importMenu : importMenuList) {
-			if (!mapAndSave(docId, importMenu) && result) {
+			if (!importMenu(docId, importMenu) && result) {
 				result = false;
 			}
 		}
@@ -101,6 +102,21 @@ public class MenuImportMapper {
 		}
 
 		return children;
+	}
+
+	private Optional<MenuItemDTO> importMenuItemToMenuItem(ImportMenuItemDTO importMenuItem) {
+		final Optional<BasicImportDocumentInfoDTO> basicImportDocumentInfo = basicImportDocumentInfoService.getById(importMenuItem.getDocumentId());
+
+		if (basicImportDocumentInfo.isEmpty() || basicImportDocumentInfo.get().getMetaId() == null) {
+			return Optional.empty();
+		}
+
+		final MenuItemDTO menuItem = new MenuItemDTO();
+
+		menuItem.setDocumentId(basicImportDocumentInfo.get().getMetaId());
+		menuItem.setSortOrder(importMenuItem.getSortOrder());
+
+		return Optional.of(menuItem);
 	}
 
 }

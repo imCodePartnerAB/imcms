@@ -8,9 +8,11 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ImportFileDTO {
-	private Integer id;
+	private String id;
+	private String variantName;
 	private String filename;
 	private String mime;
+	private Boolean createdAsImage;
 	private Integer size;
 	@JsonProperty("default")
 	private boolean isDefault;
