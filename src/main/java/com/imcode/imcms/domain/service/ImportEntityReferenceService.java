@@ -18,4 +18,6 @@ public interface ImportEntityReferenceService {
 	ImportEntityReferenceDTO getByName(String name);
 
 	Optional<ImportEntityReferenceDTO> getById(Integer id);
+
+	boolean existsByName(String name);
 }

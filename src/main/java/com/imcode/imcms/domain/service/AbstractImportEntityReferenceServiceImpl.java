@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.api.exception.ImportEntityReferenceAlreadyExistsException;
 import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.model.AbstractImportEntityReference;
 import com.imcode.imcms.model.ImportEntityReferenceType;
@@ -32,10 +31,6 @@ public abstract class AbstractImportEntityReferenceServiceImpl<T extends Abstrac
 
 	@Override
 	public ImportEntityReferenceDTO create(ImportEntityReferenceDTO entity) {
-		if (importEntityReferenceRepository.existsByName(entity.getName())) {
-			throw new ImportEntityReferenceAlreadyExistsException(entity.getName(), entity.getType());
-		}
-
 		return new ImportEntityReferenceDTO(importEntityReferenceRepository.save(AbstractImportEntityReference.of(entity).toTyped()));
 	}
 
@@ -65,5 +60,10 @@ public abstract class AbstractImportEntityReferenceServiceImpl<T extends Abstrac
 	@Override
 	public Optional<ImportEntityReferenceDTO> getById(Integer id) {
 		return importEntityReferenceRepository.findById(id).map(ImportEntityReferenceDTO::new);
+	}
+
+	@Override
+	public boolean existsByName(String name) {
+		return importEntityReferenceRepository.existsByName(name);
 	}
 }

@@ -16,4 +16,5 @@ public interface ImportEntityReferenceManagerService {
 
 	List<ImportEntityReferenceDTO> getAllReferencesByType(ImportEntityReferenceType type);
 
+	boolean existsByName(String name, ImportEntityReferenceType type);
 }
