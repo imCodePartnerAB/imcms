@@ -29,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
@@ -334,12 +335,24 @@ public class DocumentMapper implements DocumentGetter {
         return allDocumentTypeIdsAndNamesInUsersLanguage;
     }
 
-    public Iterator getDocumentsIterator(final IntRange idRange) {
-        return new DocumentsIterator(getDocumentIds(idRange));
+    public Iterator getDocumentsIterator(final IntRange range) {
+        return getDocumentsIteratorInRange(range);
     }
 
-    public Iterator getDocumentsIterator(final Integer[] documentIds){
-        return new DocumentsIterator(getDocumentIds(documentIds));
+    public Iterator getDocumentsIteratorInRange(final IntRange idRange) {
+        return new DocumentsIterator(getDocumentIdsInRange(idRange));
+    }
+
+    public Iterator getDocumentsIteratorByTypeInRange(final IntRange idRange, final DocumentTypeDomainObject type) {
+        return new DocumentsIterator(getDocumentIdsByTypeInRange(idRange, type));
+    }
+
+    public Iterator getDocumentsIteratorIn(final Integer[] documentIds){
+        return new DocumentsIterator(getDocumentIdsIn(documentIds));
+    }
+
+    public Iterator getDocumentsIteratorByTypeIn(final Integer[] documentIds, final DocumentTypeDomainObject type){
+        return new DocumentsIterator(getDocumentIdsByTypeIn(documentIds, type));
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
@@ -357,26 +370,46 @@ public class DocumentMapper implements DocumentGetter {
         return documentMenuPairs;
     }
 
-    private int[] getDocumentIds(IntRange idRange) {
+    private int[] getDocumentIdsInRange(IntRange idRange) {
         String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id";
         String[] params = new String[]{
                 "" + idRange.getMinimumInteger(),
                 "" + idRange.getMaximumInteger()
         };
-        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
-        int[] documentIds = new int[documentIdStrings.length];
-        for (int i = 0; i < documentIdStrings.length; i++) {
-            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
-        }
-        return documentIds;
+
+        return getDocumentIds(sqlSelectIds, params);
     }
 
-    private int[] getDocumentIds(Integer[] ids){
+    private int[] getDocumentIdsByTypeInRange(IntRange idRange, DocumentTypeDomainObject type) {
+        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? AND doc_type = ? ORDER BY meta_id";
+        String[] params = new String[]{
+                String.valueOf(idRange.getMinimumInteger()),
+                String.valueOf(idRange.getMaximumInteger()),
+                String.valueOf(type.getId())
+        };
+
+        return getDocumentIds(sqlSelectIds, params);
+    }
+
+    private int[] getDocumentIdsIn(Integer[] ids){
         String[] placeholders = new String[ids.length];
         Arrays.fill(placeholders, "?");
         String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id in (" + String.join(", ", placeholders) + ") ORDER BY meta_id";
 
-        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, ids, Utility.STRING_ARRAY_HANDLER));
+        return getDocumentIds(sqlSelectIds, ids);
+    }
+
+    private int[] getDocumentIdsByTypeIn(Integer[] ids, DocumentTypeDomainObject type){
+        String[] placeholders = new String[ids.length];
+        Arrays.fill(placeholders, "?");
+        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id in (" + String.join(", ", placeholders) + ") AND doc_type = ? ORDER BY meta_id";
+        Integer[] params = ArrayUtils.add(ids, type.getId());
+
+        return getDocumentIds(sqlSelectIds, params);
+    }
+
+    private int[] getDocumentIds(String sqlSelectIds, Object[] params) {
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -570,7 +603,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 	public List<DocumentDomainObject> getDocuments(IntRange idRange){
-		return documentGetter.getDocuments(Arrays.stream(getDocumentIds(idRange)).boxed().collect(Collectors.toList()));
+		return documentGetter.getDocuments(Arrays.stream(getDocumentIdsInRange(idRange)).boxed().collect(Collectors.toList()));
 	}
 
     public Set<SectionDomainObject> getSections(Collection<Integer> sectionIds) {

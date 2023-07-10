@@ -40,15 +40,18 @@ public class ExportDocuments extends HttpServlet {
 
 		final DocumentExportService documentExportService = Imcms.getServices().getDocumentExportService();
 		final boolean skipExported = Boolean.parseBoolean(req.getParameter("skipExported"));
+		final boolean exportImages = Boolean.parseBoolean(req.getParameter("exportImages"));
+		final boolean exportFiles = Boolean.parseBoolean(req.getParameter("exportFiles"));
 
-		if (StringUtils.isNotEmpty(documentsList)){
-			final Integer[] array = Arrays.stream(documentsList.split(",")).map(Integer::valueOf).toArray(Integer[]::new);
-			documentExportService.exportDocuments(array, skipExported, user);
+		if (StringUtils.isNotEmpty(documentsList)) {
+			final Integer[] documentsId = Arrays.stream(documentsList.split(",")).map(Integer::valueOf).toArray(Integer[]::new);
+			documentExportService.exportDocuments(documentsId, skipExported, exportImages, exportFiles, user);
+
 			resp.sendError(HttpServletResponse.SC_OK);
 			return;
 		}
 
-		documentExportService.exportDocuments(Integer.parseInt(startIdString), Integer.parseInt(endIdString), skipExported, user);
+		documentExportService.exportDocuments(Integer.parseInt(startIdString), Integer.parseInt(endIdString), skipExported, exportImages, exportFiles, user);
 		resp.sendError(HttpServletResponse.SC_OK);
 	}
 
@@ -65,7 +68,7 @@ public class ExportDocuments extends HttpServlet {
 
 		if (Boolean.parseBoolean(req.getParameter("download"))) {
 			try (final OutputStream outputStream = resp.getOutputStream();
-			     final InputStream inputStream = Files.newInputStream(exportZip)) {
+				 final InputStream inputStream = Files.newInputStream(exportZip)) {
 				final byte[] bytes = new byte[1024];
 
 				resp.setContentType("application/zip");

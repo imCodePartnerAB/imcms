@@ -54,9 +54,9 @@ public class ListDocuments extends HttpServlet {
         if (req.getParameter(PARAMETER_BUTTON__LIST) != null) {
             if (list.length > 0) {
                 formData.list = list;
-                formData.documentsIterator = documentMapper.getDocumentsIterator(formData.list);
+                formData.documentsIterator = documentMapper.getDocumentsIteratorIn(formData.list);
             } else {
-                formData.documentsIterator = documentMapper.getDocumentsIterator(formData.selectedRange);
+                formData.documentsIterator = documentMapper.getDocumentsIteratorInRange(formData.selectedRange);
             }
         }
 

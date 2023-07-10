@@ -3,13 +3,11 @@ package com.imcode.imcms.domain.dto.export;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import imcode.server.document.textdocument.*;
-import imcode.util.image.Format;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocumentDomainObject> {
 
@@ -46,38 +44,43 @@ public class TextDocumentSerializer extends AbstractDocumentSerializer<TextDocum
 
 		gen.writeArrayFieldStart("images");
 
-		final Map<Integer, ImageDomainObject> map = images;
-//				.entrySet()
-//				.stream()
-//				.filter(entry -> !entry.getValue().getSource().getClass().isInstance(NullImageSource.class))
-//				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-		for (Map.Entry<Integer, ImageDomainObject> imageEntry : map.entrySet()) {
+		for (Map.Entry<Integer, ImageDomainObject> imageEntry : images.entrySet()) {
+			final Integer index = imageEntry.getKey();
 			final ImageDomainObject image = imageEntry.getValue();
-			gen.writeStartObject();
+			final ImageSource imageSource = image.getSource();
 
-			gen.writeNumberField("index", imageEntry.getKey());
-			writeNullable("name", image.getName(), gen);
-			writeNullable("generated_filename", image.getGeneratedFilename(), gen);
-			gen.writeNumberField("border", image.getBorder());
-			writeNullable("format", Optional.ofNullable(image.getFormat()).map(Format::getFormat).orElse(null), gen);
-			gen.writeStringField("align", image.getAlign());
-			gen.writeStringField("target", image.getTarget());
-			writeNullable("path", image.getUrlPath(""), gen);
-			gen.writeNumberField("width", image.getWidth());
-			gen.writeNumberField("height", image.getHeight());
-			gen.writeNumberField("horizontal_space", image.getHorizontalSpace());
-			gen.writeNumberField("angle", image.getRotateDirection().getAngle());
-//			gen.writeNumberField("", image.getSource().getName());
-//			gen.writeNumberField("", image.getRotateDirection().getLeftDirection().getAngle());
-//			gen.writeNumberField("", image.getRotateDirection().getRightDirection().getAngle());
-			writeNullable("alt_text", image.getAlternateText(), gen);
-//			writeNullable("archive_image_id", image.getArchiveImageId(), null, gen);
-			gen.writeObjectField("archive_image_id", image.getArchiveImageId());
-			writeNullable("link_url", image.getLinkUrl(), gen);
-			writeNullable("low_resolution_url", image.getLowResolutionUrl(), gen);
+			if (StringUtils.isNotBlank(imageSource.toStorageString())) {
+				gen.writeStartObject();
 
-			gen.writeEndObject();
+				//name in db
+				gen.writeNumberField("index", index);
+				gen.writeStringField("name", image.getName());
+				gen.writeStringField("generated_filename", image.getGeneratedFilename());
+
+				gen.writeNumberField("width", image.getWidth());
+				gen.writeNumberField("height", image.getHeight());
+				gen.writeNumberField("border", image.getBorder());
+				gen.writeNumberField("vertical_space", image.getVerticalSpace());
+				gen.writeNumberField("horizontal_space", image.getHorizontalSpace());
+				gen.writeStringField("target", image.getTarget());
+				gen.writeStringField("align", image.getAlign());
+				gen.writeStringField("alt_text", image.getAlternateText());
+				gen.writeStringField("low_resolution_url", image.getLowResolutionUrl());
+				gen.writeStringField("image_url", imageSource.toStorageString());
+				gen.writeStringField("link_url", image.getLinkUrl());
+				gen.writeNumberField("type", imageSource.getTypeId());
+				gen.writeStringField("format", (image.getFormat() != null ? image.getFormat().getFormat() : null));
+				gen.writeNumberField("rotate_angle", image.getRotateDirection().getAngle());
+
+				final ImageDomainObject.CropRegion region = image.getCropRegion();
+				gen.writeNumberField("crop_x1", region.getCropX1());
+				gen.writeNumberField("crop_y1", region.getCropY1());
+				gen.writeNumberField("crop_x2", region.getCropX2());
+				gen.writeNumberField("crop_y2", region.getCropY2());
+				gen.writeNumberField("resize", (image.getResize() != null ? image.getResize().getOrdinal() : 0));
+
+				gen.writeEndObject();
+			}
 		}
 		gen.writeEndArray();
 	}
