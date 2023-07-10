@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ public interface ImageFileService {
 
     List<ImageFileDTO> saveNewImageFiles(String folder, List<MultipartFile> files) throws IOException;
 
+	ImageFileDTO saveNewImageFile(String folder, Path filePath) throws IOException;
+
     List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException;
 
     List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath);
@@ -26,4 +29,6 @@ public interface ImageFileService {
 	ImageFileDTO moveImageFile(String destinationFolder, String filePath) throws IOException;
 
     ImageFileDTO editCommentMetadata(String path, ExifDTO.CustomExifDTO customExif) throws IOException;
+
+	boolean exists(String imagePath);
 }

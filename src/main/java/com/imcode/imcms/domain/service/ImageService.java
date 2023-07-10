@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.List;
 import java.util.Set;
@@ -34,6 +33,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
     void saveImage(ImageDTO imageDTO);
 
     void regenerateImages();
+
+	void regenerateImage(ImageDTO imageDTO);
 
     /**
      * Returns a set of non-empty image links for latest document version and specified language

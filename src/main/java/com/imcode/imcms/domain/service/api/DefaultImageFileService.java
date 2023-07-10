@@ -27,6 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,17 +67,7 @@ class DefaultImageFileService implements ImageFileService {
 
         // do not rewrite using Java Stream API, file transfer can be long operation in cycle.
         for (MultipartFile file : files) {
-            int copiesCount = 1;
-            final String originalFilename = Utility.normalizeString(file.getOriginalFilename())
-                    .replace("(", "").replace(")", "");
-            StoragePath destination = targetFolderPath.resolve(FILE, originalFilename);
-
-            while (storageClient.exists(destination)) {
-                final String baseName = FilenameUtils.getBaseName(originalFilename);
-                final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
-                destination = targetFolderPath.resolve(FILE, newName);
-                copiesCount++;
-            }
+            final StoragePath destination = getDestinationFolder(targetFolderPath, file.getOriginalFilename());
 
             storageClient.put(destination, file.getInputStream());
             mapAndAddToList.apply(destination);
@@ -84,7 +76,17 @@ class DefaultImageFileService implements ImageFileService {
         return imageFileDTOS;
     }
 
-    private StoragePath getTargetFolder(String folder) {
+	@Override
+	public ImageFileDTO saveNewImageFile(String folder, Path filePath) throws IOException {
+        final StoragePath targetFolderPath = getTargetFolder(folder);
+        final StoragePath destination = getDestinationFolder(targetFolderPath, filePath.getFileName().toString());
+
+        storageClient.put(destination, Files.newInputStream(filePath));
+
+        return storagePathToImageFileDTO.apply(destination);
+	}
+
+	private StoragePath getTargetFolder(String folder) {
         StoragePath targetFolderPath = storageImagesPath;
 
         if (!(folder == null || folder.isEmpty())) {
@@ -97,6 +99,22 @@ class DefaultImageFileService implements ImageFileService {
             }
         }
         return targetFolderPath;
+    }
+
+    private StoragePath getDestinationFolder(StoragePath targetFolderPath, String filename){
+        int copiesCount = 1;
+        final String originalFilename = Utility.normalizeString(filename)
+                .replace("(", "").replace(")", "");
+        StoragePath destination = targetFolderPath.resolve(FILE, originalFilename);
+
+        while (storageClient.exists(destination)) {
+            final String baseName = FilenameUtils.getBaseName(originalFilename);
+            final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
+            destination = targetFolderPath.resolve(FILE, newName);
+            copiesCount++;
+        }
+
+        return destination;
     }
 
     @Override
@@ -166,5 +184,13 @@ class DefaultImageFileService implements ImageFileService {
 
         return storagePathToImageFileDTO.apply(storagePath);
     }
+
+	@Override
+	public boolean exists(String imagePath) {
+        final String originalFilename = Utility.normalizeString(FilenameUtils.getName(imagePath))
+                .replace("(", "").replace(")", "");
+        final StoragePath storagePath = storageImagesPath.resolve(FILE, FilenameUtils.getPath(imagePath), originalFilename);
+        return storageClient.exists(storagePath);
+	}
 
 }

@@ -8,7 +8,10 @@ import com.imcode.imcms.domain.factory.ImageInTextFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.ImageJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
@@ -252,7 +255,8 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 });
     }
 
-    private void regenerateImage(ImageDTO imageDTO){
+    @Override
+    public void regenerateImage(ImageDTO imageDTO){
         final StoragePath path = StoragePath.get(SourceFile.FileType.FILE,
                 ImcmsImageUtils.imagesPath,
                 ImcmsConstants.IMAGE_GENERATED_FOLDER,

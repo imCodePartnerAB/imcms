@@ -28,4 +28,6 @@ public interface ImageFolderService {
     ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);
 
     List<ImageFolderItemUsageDTO> checkFolder(ImageFolderDTO folderToCheck);
+
+    boolean exists(ImageFolderDTO folderToCheck);
 }

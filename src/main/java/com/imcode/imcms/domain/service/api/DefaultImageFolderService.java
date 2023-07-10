@@ -15,7 +15,6 @@ import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import com.imcode.imcms.storage.exception.SuchStorageFileExistsException;
 import imcode.server.ImcmsConstants;
 import imcode.util.image.Format;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -170,5 +168,13 @@ class DefaultImageFolderService implements ImageFolderService {
         }
 
         return usages;
+    }
+
+	@Override
+	public boolean exists(ImageFolderDTO folderToCheck) {
+        final String imageFolderRelativePath = folderToCheck.getPath();
+        final StoragePath folderToCheckPath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
+
+        return storageClient.exists(folderToCheckPath);
     }
 }
