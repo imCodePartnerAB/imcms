@@ -21,10 +21,10 @@
 
 .imcms-tabs__advanced-button--enabled{
     background-image: url(/imcms/images/icon_several_arrows_up.png);
-    background-color: #fbfbfb;
-    -webkit-box-shadow: inset 0px 0px 10px #e5e5e566;
-    -moz-box-shadow: inset 0px 0px 10px #e5e5e566;
-    box-shadow: inset 0px 0px 10px #e5e5e566;
+    background-color: #f8f8f8;
+    -webkit-box-shadow: inset 0 0 10px #c1c1c14f;
+    -moz-box-shadow: inset 0 0 10px #c1c1c14f;
+    box-shadow: inset 0 0 10px #c1c1c14f;
 }
 
 .imcms-tabs__tab--disabled {
