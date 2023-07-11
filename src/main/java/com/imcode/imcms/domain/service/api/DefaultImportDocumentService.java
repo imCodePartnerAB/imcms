@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -192,7 +195,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 	private class ImportDocumentsTask implements Runnable {
 		private final int[] importDocsId;
 		private final boolean autoImportMenus;
-		private final Set<Integer> importDocumentIdsUnderImporting = new HashSet<>();
+		private final List<Integer> importDocumentIdsUnderImporting = new ArrayList<>();
 
 		private static final String DOCUMENT_UPDATED_MSG_PATTERN = "Document updated, importDocId: {}, docId: {}";
 		private static final String DOCUMENT_IMPORTED_MSG_PATTERN = "Document imported, importDocId: {}, docId: {}";

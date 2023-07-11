@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.domain.dto.ImportCategoryDTO;
+import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.ImportEntityReferenceManagerService;
 import com.imcode.imcms.model.Category;
@@ -24,9 +24,7 @@ public class ImportToLocalCategoryResolver {
 
 		CategoryDTO category;
 		if (categoryReferenceLinkedEntityId != null) {
-			category = categoryService.getById(categoryReferenceLinkedEntityId)
-					.map(CategoryDTO::new)
-					.orElse(null);
+			category = categoryService.getById(categoryReferenceLinkedEntityId).map(CategoryDTO::new).orElse(null);
 		} else if (!categoryService.existsByName(name)) {
 			category = new CategoryDTO();
 			category.setName(name);

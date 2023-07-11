@@ -57,10 +57,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
     private final ImageCacheManager imageCacheManager;
+	private final BasicImportDocumentInfoService basicImportDocumentInfoService;
 
     private DeleterByDocumentId[] docContentServices = {};
 
-    DefaultDocumentService(TextDocumentTemplateRepository textDocumentTemplateRepository, MetaRepository metaRepository,
+    DefaultDocumentService(TextDocumentTemplateRepository textDocumentTemplateRepository,
+                           MetaRepository metaRepository,
                            BiFunction<Meta, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
@@ -72,7 +74,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices,
                            MenuService menuService, Function<Menu, MenuDTO> menuToMenuDTO,
                            Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
-                           ImageCacheManager imageCacheManager) {
+                           ImageCacheManager imageCacheManager,
+                           BasicImportDocumentInfoService basicImportDocumentInfoService) {
 
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.metaRepository = metaRepository;
@@ -88,6 +91,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.menuToMenuDTO = menuToMenuDTO;
         this.imageJPAToImageDTO = imageJPAToImageDTO;
         this.imageCacheManager = imageCacheManager;
+	    this.basicImportDocumentInfoService = basicImportDocumentInfoService;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
 
@@ -98,6 +102,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                 imageService,
                 loopService,
                 commonContentService,
+		        basicImportDocumentInfoService
         };
     }
 

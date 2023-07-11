@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface BasicImportDocumentInfoService {
+public interface BasicImportDocumentInfoService extends DeleterByDocumentId {
 	BasicImportDocumentInfoDTO create(int id, ImportDocumentStatus status);
 
 	BasicImportDocumentInfoDTO save(BasicImportDocumentInfoDTO basicImportDocument);
