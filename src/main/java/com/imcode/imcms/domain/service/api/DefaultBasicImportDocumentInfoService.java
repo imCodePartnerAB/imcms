@@ -96,6 +96,11 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 		return basicImportDocumentInfoRepository.findMetaId(importDocId);
 	}
 
+	@Override
+	public void deleteByDocId(Integer docIdToDelete) {
+		basicImportDocumentInfoRepository.deleteByMetaId(docIdToDelete);
+	}
+
 	private BasicImportDocumentInfoDTO saveBasicImportDocument(BasicImportDocumentInfoDTO basicImportDocument) {
 		return new BasicImportDocumentInfoDTO(basicImportDocumentInfoRepository.save(new BasicImportDocumentInfoJPA(basicImportDocument)));
 	}

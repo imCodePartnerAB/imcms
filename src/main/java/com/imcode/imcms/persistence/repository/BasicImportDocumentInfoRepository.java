@@ -30,4 +30,6 @@ public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicIm
 
 	@Query("select b.metaId from BasicImportDocumentInfoJPA b where b.id=:importDocId")
 	Integer findMetaId(@Param("importDocId") Integer importDocId);
+
+	void deleteByMetaId(Integer docIdToDelete);
 }

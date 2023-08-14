@@ -596,9 +596,8 @@ class MappingConfig {
                 document.setFiles(files);
             }
 
-			document.setCategories(importDocument.getCategories().stream()
-					.map(categoryResolver::resolve)
-					.collect(Collectors.toSet()));
+            final Set<Category> categories = importDocument.getCategories().stream().map(categoryResolver::resolve).collect(Collectors.toSet());
+            document.setCategories(categories);
 
 			document.setRoleIdToPermission(rolePermissionResolver.resolve(importDocument.getRoles()));
 
