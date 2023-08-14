@@ -3,7 +3,7 @@ Index and Cache Management
 
 ImCMS uses indexing technology to quickly find documents, files, etc. and caching technology to speed up the system.
 
-.. image:: _static/index-cache.png
+.. image:: _static/admin-index-cache.png
 
 **Reindex documents** - you can try to reindex all documents in the system if you have some problem while searching.
 
