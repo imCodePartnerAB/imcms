@@ -1,6 +1,7 @@
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
-    <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
+<%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
     Imcms = {
         expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
@@ -36,8 +37,18 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
-        }
+        },
+        availableLanguages: []
     };
+
+    <c:forEach var="language" items="${availableLanguages}" varStatus="i">
+        Imcms.availableLanguages[${i.index}] = {
+            code: "${language.code}",
+            name: "${language.name}",
+            nativeName: "${language.nativeName}",
+            enabled: "${language.enabled}"
+        }
+    </c:forEach>
 
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
@@ -48,6 +59,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
+    <%--@elvariable id="availableLanguages" type="java.util.List<com.imcode.imcms.model.Language>"--%>
     <%--@elvariable id="documentationLink" type="java.lang.String"--%>
     <%--@elvariable id="isSuperAdmin" type="boolean"--%>
     <%--@elvariable id="hasFileAdminAccess" type="boolean"--%>

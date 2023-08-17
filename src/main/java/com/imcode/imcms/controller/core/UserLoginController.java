@@ -48,6 +48,7 @@ class UserLoginController {
         final String languageCode = languageService.isLanguageAvailableByCode(requestedLangCode) ? requestedLangCode : getUserLanguageFromCookie(request.getCookies()).getCode();
 
 		modelAndView.addObject("userLanguage", languageCode);
+        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
 		writeUserLanguageCookie(response, languageCode);
 
         return modelAndView;

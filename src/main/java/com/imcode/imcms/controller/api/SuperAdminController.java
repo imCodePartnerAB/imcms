@@ -232,6 +232,7 @@ class SuperAdminController {
 
     private void addMinimumModelData(HttpServletRequest request, ModelAndView mav) {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("availableLanguages", languageService.getAvailableLanguages());
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
         mav.addObject("documentationLink", documentationLink);

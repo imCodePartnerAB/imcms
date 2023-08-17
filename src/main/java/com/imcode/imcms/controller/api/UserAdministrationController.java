@@ -4,10 +4,7 @@ import com.imcode.imcms.domain.component.UserLockValidator;
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
-import com.imcode.imcms.domain.service.UserCreationService;
-import com.imcode.imcms.domain.service.UserEditorService;
-import com.imcode.imcms.domain.service.UserRolesService;
-import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -35,19 +32,22 @@ class UserAdministrationController {
     private final UserService userService;
     private final UserRolesService userRolesService;
     private final UserLockValidator userLockValidator;
+    private final LanguageService languageService;
 
     @Autowired
     public UserAdministrationController(UserCreationService userCreationService,
                                         UserEditorService userEditorService,
                                         UserService userService,
                                         UserRolesService userRolesService,
-                                        UserLockValidator userLockValidator) {
+                                        UserLockValidator userLockValidator,
+                                        LanguageService languageService) {
 
         this.userCreationService = userCreationService;
         this.userEditorService = userEditorService;
         this.userService = userService;
         this.userRolesService = userRolesService;
         this.userLockValidator = userLockValidator;
+        this.languageService = languageService;
     }
 
     @GetMapping("/edition/{userId}")
@@ -65,6 +65,7 @@ class UserAdministrationController {
         modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
+        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
         modelAndView.addObject("isBlockedNow", userLockValidator.isUserBlocked(user));
         return modelAndView;
     }
@@ -101,6 +102,7 @@ class UserAdministrationController {
         modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
+        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
         return modelAndView;
     }
 
@@ -157,6 +159,7 @@ class UserAdministrationController {
         modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
+        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
     }
 
     private List<String> extractErrorMessageKeys(UserValidationResult validationResult) {
