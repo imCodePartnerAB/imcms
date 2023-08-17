@@ -4,10 +4,10 @@
  */
 define("imcms-flags-builder",
     [
-        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-i18n-texts", "imcms-overlays-builder",
+        "imcms-bem-builder", "imcms", "jquery", "imcms-i18n-texts", "imcms-overlays-builder",
 	    'imcms-selects-builder'
     ],
-    function (bemBuilder, languagesRestApi, imcms, $, texts, overlays,selectsBuilder) {
+    function (bemBuilder, imcms, $, texts, overlays,selectsBuilder) {
 
         texts = texts.languageFlags;
 
@@ -127,19 +127,6 @@ define("imcms-flags-builder",
                 const $result = flagsBEM.buildBlock("<div>", [], {
 	                class: "imcms-flags-container"
                 });
-
-                languagesRestApi.getAvailableLangs()
-                    .done(languages => {
-	                    if (languages.length > 3) {
-		                    $result.append(buildFlagsSelect($result, languages, flagBuilderDataProducer, currentLanguageCode));
-	                    } else {
-		                    $result.append(mapLanguagesToFlags(languages, flagBuilderDataProducer));
-	                    }
-
-	                    $result.setActive(currentLanguageCode);
-                    })
-                    .fail(() => console.error(texts.error.loadFailed));
-
                 $result.setActive = function (langCode) {
                     const $flags = $(this);
 
@@ -149,6 +136,14 @@ define("imcms-flags-builder",
                     $flags.find("." + activeClass).removeClass(activeClass);
                     $flags.find("." + languageFlagClass).addClass(activeClass);
                 };
+
+                const languages = imcms.availableLanguages;
+                if (languages.length > 3) {
+                    $result.append(buildFlagsSelect($result, languages, flagBuilderDataProducer, currentLanguageCode));
+                } else if (languages.length > 1) {
+                    $result.append(mapLanguagesToFlags(languages, flagBuilderDataProducer));
+                }
+                $result.setActive(currentLanguageCode);
 
                 $result.hideLangFlagsAndCheckbox = addDisplayMode({
                     "display": "none"
