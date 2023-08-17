@@ -1,10 +1,6 @@
-.cache-settings,
-.cache-remove-document-row{
-    padding: 10px 0 5px 0;
-}
-
+.cache-settings__title,
 .init-data__title {
-    margin-bottom: 10px;
+    padding: 10px 0;
 }
 
 .cache-remove-document-row {
