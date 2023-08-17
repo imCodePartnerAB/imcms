@@ -1,9 +1,9 @@
 define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-choose-image-builder", "imcms-i18n-texts", "jquery",
-        "imcms-page-info-tab", "imcms-documents-rest-api", "imcms-modal-window-builder"
+        "imcms-page-info-tab", "imcms-documents-rest-api", "imcms-modal-window-builder", "imcms"
     ],
-    function (BEM, components, chooseImage, texts, $, PageInfoTab, documentRestApi, modal) {
+    function (BEM, components, chooseImage, texts, $, PageInfoTab, documentRestApi, modal, imcms) {
 
         texts = texts.pageInfo.title;
 
@@ -62,8 +62,6 @@ define("imcms-appearance-tab-builder",
 		        setValue: (alias) => $documentAlias.setValue(alias)
 	        })
 
-	        $aliasBlock.css("padding", "0");
-
 	        return $aliasBlock;
         }
 
@@ -111,7 +109,11 @@ define("imcms-appearance-tab-builder",
 			        checked: commonContent.enabled ? "checked" : undefined
 		        }),
 		        $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [$checkbox]),
-		        $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"checkboxes": $checkboxWrapper}]),
+		        $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>",
+					[{"checkboxes": $checkboxWrapper}], {
+					class: 'common-content-language-checkbox'
+				}),
+
 		        $aliasBlock = buildDocumentAliasBlock(commonContent),
 		        $pageTitle = components.texts.textBox("<div>", {
 			        name: "title",
@@ -135,7 +137,13 @@ define("imcms-appearance-tab-builder",
 	            pageTitle: $pageTitle,
 	            menuText: $menuText
             });
-	        return [$checkboxContainer, $aliasBlock, $pageTitleContainer, $menuTextContainer, buildHorizontalLine()];
+
+			let $docCommonContent = [$checkboxContainer, $aliasBlock, $pageTitleContainer, $menuTextContainer, buildHorizontalLine()]
+			if(!(imcms.availableLanguages.length > 1)){
+				$docCommonContent.shift();
+			}
+
+	        return $docCommonContent;
         }
 
         function buildCommonContentsContainer() {
@@ -201,13 +209,27 @@ define("imcms-appearance-tab-builder",
 	    AppearanceTab.prototype.isDocumentTypeSupported = () => {
 		    return true; // all supported
 	    };
-        AppearanceTab.prototype.tabElementsFactory = () => [
-	        buildCommonContentsContainer(),
-	        buildSelectTargetForDocumentLink(),
-	        buildBlockForMissingLangSetting(),
-	        buildHorizontalLine(),
-	        buildUseDefaultLanguageAliasForAllLanguagesBlock()
-        ];
+		AppearanceTab.prototype.tabElementsFactory = () => {
+			let $commonContentsContainer = buildCommonContentsContainer(),
+				$selectTargetForDocumentLink = buildSelectTargetForDocumentLink(),
+				$blockForMissingLangSetting = buildBlockForMissingLangSetting(),
+				$horizontalLine = buildHorizontalLine(),
+				$defaultLanguageAliasForAllLanguagesBlock = buildUseDefaultLanguageAliasForAllLanguagesBlock()
+
+			if(!(imcms.availableLanguages.length > 1)){
+				$blockForMissingLangSetting.hide();
+				$horizontalLine.hide();
+				$defaultLanguageAliasForAllLanguagesBlock.hide();
+			}
+
+			return [
+				$commonContentsContainer,
+				$selectTargetForDocumentLink,
+				$blockForMissingLangSetting,
+				$horizontalLine,
+				$defaultLanguageAliasForAllLanguagesBlock
+			];
+		}
         AppearanceTab.prototype.fillTabDataFromDocument = document => {
 	        tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
 	        tabData.$showIn.selectValue(document.target);

@@ -76,6 +76,10 @@ define('imcms-metadata-tab-builder',
 			const $languageTitle = components.texts.titleText("<div>", commonContent.language.name),
 				$addRow = buildMetadataRowAdd(commonContent, $metadataBody);
 
+			if(!(imcms.availableLanguages.length > 1)){
+				$languageTitle.hide();
+			}
+
 			return new BEM({
 				block: 'imcms-metadata-head'
 			}).buildBlock("<div>", [
