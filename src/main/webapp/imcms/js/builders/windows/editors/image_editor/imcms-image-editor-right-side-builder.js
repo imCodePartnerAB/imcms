@@ -561,6 +561,10 @@ define(
 
                     const $buttons = $('<div>', {html: [$advancedModeBtn, $imageHistoryBtn]});
 
+                    if(!(imcms.availableLanguages.length > 1)) {
+                        $allLangs.empty();
+                    }
+
                     return editableControlsBEM.buildBlock("<div>", [
                         {"text-box": $altTextContainer},
                         {"text-box": $imageLinkTextBox},
