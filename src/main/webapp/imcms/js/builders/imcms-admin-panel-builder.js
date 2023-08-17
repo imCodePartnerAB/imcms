@@ -5,10 +5,10 @@
 define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
-        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
+        "jquery", "imcms", "imcms-events", "imcms-top-panel-visibility-initiator",
         "imcms-i18n-texts", "imcms-admin-panel-settings-builder", "imcms-modal-window-builder"
     ],
-    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
+    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events,
               panelVisibility, texts, panelSettings, modal) {
 
         let $panelContainer, $panel;

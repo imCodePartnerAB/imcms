@@ -1,14 +1,7 @@
-.preview-template-css-container {
-	position: relative;
+.common-content-language-checkbox{
+	padding-bottom: 0 !important;
 }
 
-.preview-template-css-container .preview-template-css-container__preview-btn {
-	display: inline-block;
-}
-
-.preview-template-css-container .preview-template-css-container__description-icon {
-	position: absolute;
-	bottom: 13px;
-	width: 12px;
-	height: 12px;
+.common-content-language-checkbox .imcms-checkbox__label{
+	margin-bottom: 0;
 }
