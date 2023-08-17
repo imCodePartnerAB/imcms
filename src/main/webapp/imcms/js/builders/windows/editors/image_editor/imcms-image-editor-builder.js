@@ -188,9 +188,8 @@ define(
             imageDataContainers.$altText.$input.val(imageData.alternateText);
             imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
-            if (image.allLanguages !== undefined) {
-                imageDataContainers.$allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
-            }
+            imageDataContainers.$allLanguagesCheckBox.find("input")
+                .prop('checked', image.allLanguages === undefined ? true : image.allLanguages);
         }
 
         function loadData(opts) {
