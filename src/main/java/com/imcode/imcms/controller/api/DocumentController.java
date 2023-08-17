@@ -11,6 +11,7 @@ import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,11 @@ class DocumentController {
     @PostMapping
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public Document create(@RequestBody UberDocumentDTO createMe) {
+        if(!Utility.isMoreThanOneLanguageAvailable()){
+            createMe.getCommonContents().get(0).setEnabled(true);
+            createMe.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+        }
+
         return documentService.save(createMe);
     }
 
@@ -91,6 +97,12 @@ class DocumentController {
         if(!Imcms.getUser().isSuperAdmin() && !hasEditPermission(user, document)){
             updateMe.setRestrictedPermissions(document.getRestrictedPermissions());
             updateMe.setProperties(document.getProperties());
+        }
+
+        if(!Utility.isMoreThanOneLanguageAvailable()){
+            updateMe.getCommonContents().get(0).setEnabled(true);
+            updateMe.setDisabledLanguageShowMode(document.getDisabledLanguageShowMode());
+            updateMe.setDefaultLanguageAliasEnabled(document.isDefaultLanguageAliasEnabled());
         }
 
         return documentService.save(updateMe);

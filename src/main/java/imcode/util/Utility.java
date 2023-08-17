@@ -668,6 +668,10 @@ public class Utility {
 				.orElseGet(languageService::getDefaultLanguage);
 	}
 
+	public static boolean isMoreThanOneLanguageAvailable(){
+		return Imcms.getServices().getLanguageService().getAvailableLanguages().size() > 1;
+	}
+
 	public static void logGDPR(int editableUserId, String message){
 		int byId = Imcms.getUser().isDefaultUser() ? editableUserId : Imcms.getUser().getId();
 		logGDPR.info(String.format("- User id: %d - Account id: %d - %s", byId, editableUserId, message));
