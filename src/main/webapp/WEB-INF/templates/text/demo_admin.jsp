@@ -134,7 +134,7 @@ ${"-->"}
 <%--@elvariable id="isSuperAdmin" type="boolean"--%>
 <%--@elvariable id="accessToAdminPages" type="boolean"--%>
 <c:if test="${isSuperAdmin or accessToAdminPages}">
-    <div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
+    <div id="imcmsAdminSpecial" data-link-text="Site specific" data-title-text="Site specific title" class="imcms-collapsible imcms-collapsible-hidden">
         <div id="imcmsAdminSpecialInner">
             <ul id="imcmsAdminTabs">
                 <li data-for="page" class="tab-active">For this page</li>

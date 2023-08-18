@@ -26,16 +26,17 @@ define(
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
 
-                const text = $imcmsAdminSpecial.data('link-text');
-                addLinkToSpecialAdmin(text);
+                const textTab = $imcmsAdminSpecial.data('link-text');
+                const textTitle = $imcmsAdminSpecial.data('title-text');
+                addLinkToSpecialAdmin(textTab, textTitle);
             }
         }
 
-        function addLinkToSpecialAdmin(text) {
-            const linkText = text || texts.special;
+        function addLinkToSpecialAdmin(textTab, textTitle) {
+            const linkText = textTab || texts.special;
             const $imcms = $('#imcms-admin');
             const $link = $("<li>", {
-                title: texts.specialTitle,
+                title: textTitle || texts.specialTitle,
                 "class": "imcms-panel__item imcms-panel__item--specific",
                 text: linkText
             });

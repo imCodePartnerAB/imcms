@@ -25,11 +25,12 @@ In order to add additional tab, you have to:
 
     .. code-block:: html
 
-        <div id="imcmsAdminSpecial" data-link-text="Site specific 222" class="imcms-collapsible imcms-collapsible-hidden">
+        <div id="imcmsAdminSpecial" class="imcms-collapsible imcms-collapsible-hidden">
             ...
         </div>
 
     ``data-link-text`` - tab name.
+    ``data-title-text`` - tab title.
 
 2. Initialize tab and functionality. Be sure to use the following function to initialize the tab. You can also pass a function with initialization of your own logic.
 
@@ -64,7 +65,7 @@ Usage Example
     <body>
 
     <imcms:ifAdmin>
-        <div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
+        <div id="imcmsAdminSpecial" data-link-text="Site specific" data-title-text="Site specific title" class="imcms-collapsible imcms-collapsible-hidden">
             <div id="imcmsAdminSpecialInner">
                 <ul id="imcmsAdminTabs">
                     <li data-for="widgets" class="tab-active">Widgets</li>
