@@ -1,0 +1,28 @@
+.imcms-link-button{
+    height: 100%;
+    width: fit-content;
+    justify-content: unset;
+    padding: 0;
+}
+
+.imcms-link-button .imcms-button--neutral{
+    margin: 0;
+}
+
+.imcms-link-icon{
+    background: url(/imcms/images/image_editor/icon_open_in_new_hover.svg) no-repeat center;
+    height: 16px;
+    width: 16px;
+    background-size: 16px;
+    padding: 0;
+    margin-right: 3px;
+    transition: background .3s;
+}
+
+.imcms-button--neutral:hover .imcms-button--neutral__icon {
+    background: url(/imcms/images/image_editor/icon_open_in_new.svg) no-repeat center;
+    height: 16px;
+    width: 16px;
+    background-size: 16px;
+    transition: background .3s;
+}

@@ -182,6 +182,7 @@ module.exports = {
                             'imcms-flags-builder',
                             'imcms-checkboxes-builder',
                             'imcms-radio-buttons-builder',
+                            'imcms-link-button-builder',
                             'imcms-selects-builder',
                             'imcms-texts-builder',
                             'imcms-switch-builder',

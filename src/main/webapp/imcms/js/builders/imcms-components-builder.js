@@ -10,6 +10,7 @@ module.exports = {
     flags: require('imcms-flags-builder'),
     checkboxes: require('imcms-checkboxes-builder'),
     radios: require('imcms-radio-buttons-builder'),
+    link: require('imcms-link-button-builder'),
     selects: require('imcms-selects-builder'),
     texts: require('imcms-texts-builder'),
     keywords: require('imcms-keywords-builder'),
