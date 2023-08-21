@@ -108,7 +108,10 @@ const texts = {
             confirmMessageOnSaveAndPublish: "Spara ändringar och publicera den här versionen?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
             oneLanguageShouldBeEnabled: "Minst ett språk måste vara aktiverat!",
+            documentation: "Detaljer om användning",
+            documentationLink: "user-documentation/document-management/page-info/index.html",
             title: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#title-tab",
                 name: "Rubrik",
                 title: "Rubrik",
                 menuText: "Menytext",
@@ -127,6 +130,7 @@ const texts = {
 	            useDefaultLanguageAlias: "Använd standardspråkalias för alla språk!"
             },
             lifeCycle: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#life-cycle-tab",
                 name: "Livscykel",
                 status: {
                     title: "Status",
@@ -157,12 +161,13 @@ const texts = {
                 publisher: "Utgivare",
                 currentVersion: "Aktuell version:",
                 versionHasChanges: "Denna arbetsversion har ändringar",
-                publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera № ",
+                publishMessage: "Tryck \"Spara och publicera\" för att publicera № ",
                 error: {
                     userLoadFailed: 'Misslyckades med att hämta utgivare. Försök igen'
                 }
             },
             appearance: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#appearance-tab",
                 name: "Utseende",
                 template: "Mall",
                 defaultChildTemplate: "Standardmall för nya dokument",
@@ -170,6 +175,7 @@ const texts = {
 	            previewTemplateCSSBtnInfo: 'Klicka och den fungerande versionen av mallens css-stilar kommer att tillämpas på den aktuella sidan!'
             },
 	        metadata: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#metadata-tab",
 		        name: "SID INFO",
 		        content: "Innehåll",
 		        select: "Metatagg",
@@ -177,6 +183,7 @@ const texts = {
                 add: "LÄGG TILL+"
 	        },
             keywords: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#keywords-tab",
                 name: "Nyckelord",
                 title: "Nyckelord",
                 placeholder: "nyckelord",
@@ -184,12 +191,14 @@ const texts = {
                 disableSearch: "Inaktivera sökning"
             },
             categories: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#categories-tab",
                 name: "Kategorier",
                 error: {
                     loadFailed: "Misslyckades med att hämta kategorier. Vänligen försök igen."
                 }
             },
             access: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#access-tab",
                 name: "Behörigheter",
                 role: "roll",
                 view: "läsa/se",
@@ -205,6 +214,7 @@ const texts = {
                 }
             },
             permissions: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
                 name: "Behörighetsinställningar",
                 editText: "Redigera text",
                 editMenu: "Redigera meny",
@@ -213,6 +223,7 @@ const texts = {
                 editDocInfo: "Redigera sid-info"
             },
             status: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#status-tab",
                 name: "Status",
                 created: "Skapad",
                 modified: "Ändrad",
@@ -222,6 +233,7 @@ const texts = {
                 by: "Av"
             },
             cache: {
+                documentationLink: "developer-documentation/cache.html",
                 name: 'Cache',
                 cacheSettings: "Cache inställningar",
                 cacheForUnauthorizedUsers: 'Cache för obehöriga användare',
@@ -233,6 +245,7 @@ const texts = {
                 }
             },
             file: {
+                documentationLink: "user-documentation/document-management/page-info/file-document.html",
                 name: "Filer",
                 upload: "Ladda upp",
                 id: "ID",
@@ -240,10 +253,12 @@ const texts = {
                 isDefault: "Standard"
             },
             url: {
+                documentationLink: "user-documentation/document-management/page-info/url-document.html",
                 name: "URL",
                 title: "URL"
             },
             properties: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#properties-tab",
                 name: 'Egenskaper',
                 add: 'Lägg till',
                 key: 'Egendomsnamn',
@@ -252,7 +267,7 @@ const texts = {
             buttons: {
                 ok: "ok",
                 cancel: "avbryt",
-                saveAndPublish: "spara och publicera den här versionen",
+                saveAndPublish: "spara och publicera",
                 next: "nästa",
             },
             error: {
@@ -699,7 +714,10 @@ const texts = {
         superAdmin: {
             head: 'SuperAdmin',
             oldInterface: 'Äldre gränssnitt',
+            documentation: 'Detaljer om användning',
+            documentationLink: "user-documentation/admin-settings/index.html",
             users: {
+                documentationLink: "user-documentation/admin-settings/users.html",
                 name: 'Användare',
                 searchFilter: {
                     byName: {
@@ -733,6 +751,7 @@ const texts = {
                 },
             },
             roles: {
+                documentationLink: "user-documentation/admin-settings/roles.html",
                 name: 'Roller',
                 title: 'Roller: administration',
                 createNewRole: 'Skapa ny roll',
@@ -770,6 +789,7 @@ const texts = {
                 }
             },
             ipAccess: {
+                documentationLink: "user-documentation/admin-settings/ip-access.html",
                 name: 'IP-åtkomst',
                 title: 'IP-åtkomst',
                 createNewRule: 'Ny',
@@ -800,6 +820,7 @@ const texts = {
                 }
             },
             versionControl: {
+                documentationLink: "user-documentation/admin-settings/version-control.html",
                 name: 'Version Control',
                 title: 'Version Control',
                 versionId: 'Version ID',
@@ -816,6 +837,7 @@ const texts = {
                 }
             },
             deleteDocs: {
+                documentationLink: "user-documentation/admin-settings/delete-documents.html",
                 name: 'Radera dokument',
                 title: 'Ta bort dokument med id',
                 deleteConfirmation: 'VARNING: Dokumentet och dess data kommer att raderas. Är du säker?',
@@ -850,6 +872,7 @@ const texts = {
                 }
             },
             documentsImport: {
+                documentationLink: "user-documentation/admin-settings/import.html",
                 name: "Importera dokument",
                 selectionWindowContainer: {
                     aliasControlCard: "Kontrollalias",
@@ -927,6 +950,7 @@ const texts = {
                 }
             },
             files: {
+                documentationLink: "user-documentation/admin-settings/files.html",
                 name: 'Filer',
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
@@ -1005,6 +1029,7 @@ const texts = {
                 }
             },
 	        templatesCSS: {
+                documentationLink: "user-documentation/admin-settings/template-css.html",
 		        name: 'Mallar CSS',
 		        editorTitle: 'Mall CSS Editor',
 		        templatesSelectTitle: 'Välj mall',
@@ -1032,6 +1057,7 @@ const texts = {
                 name: 'Sök'
             },
             linkValidator: {
+                documentationLink: "user-documentation/admin-settings/link-validator.html",
                 name: 'Länk Validator',
                 titleOnlyBrokenLinks: "Lista endast brutna länkar",
                 brokenLinks: "Lista bara brutna länkar",
@@ -1054,10 +1080,12 @@ const texts = {
                 }
             },
             imagesTab: {
+                documentationLink: "user-documentation/editors/image/image-library.html",
                 title: 'Bilder',
                 label: 'Länk till bildbibliotek'
             },
             categories: {
+                documentationLink: "user-documentation/admin-settings/categories.html",
                 name: 'Kategorier',
                 createButtonName: "Skapa",
                 removeButtonName: "Radera",
@@ -1098,6 +1126,7 @@ const texts = {
                 }
             },
             profiles: {
+                documentationLink: "user-documentation/admin-settings/profiles.html",
                 name: 'Profiler',
                 title: 'Profiler',
                 createButton: "Skapa ny profil",
@@ -1127,6 +1156,7 @@ const texts = {
                 }
             },
             systemProperties: {
+                documentationLink: "user-documentation/admin-settings/system-properties.html",
                 name: 'Systemegenskaper',
                 nameInputTitle: 'Namn',
                 emailInputTitle: 'E-post',
@@ -1169,6 +1199,7 @@ const texts = {
                 }
             },
             temporalContent: {
+                documentationLink: "user-documentation/admin-settings/index-cache.html",
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Indexera om innehållet',
@@ -1315,7 +1346,10 @@ const texts = {
             confirmMessageOnSaveAndPublish: "Save changes and publish this version?",
             confirmMessageOnCancel: "Do you really want to exit?",
             oneLanguageShouldBeEnabled: "At least one language must be enabled!",
+            documentation: "Usage details",
+            documentationLink: "user-documentation/document-management/page-info/index.html",
             title: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#title-tab",
                 name: "Title",
                 title: "Title",
                 menuText: "Menu text",
@@ -1334,6 +1368,7 @@ const texts = {
 	            useDefaultLanguageAlias: "Use default language alias for all languages!"
             },
             lifeCycle: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#life-cycle-tab",
                 name: "Life Cycle",
                 status: {
                     title: "Status",
@@ -1364,12 +1399,13 @@ const texts = {
                 publisher: "Publisher",
                 currentVersion: "Current version:",
                 versionHasChanges: "This offline version has changes.",
-                publishMessage: "Please press \"Save and publish this version\" to publish as version № ",
+                publishMessage: "Please press \"Save and publish\" to publish as version № ",
                 error: {
                     userLoadFailed: 'Failed to fetch publishers. Try again'
                 }
             },
             appearance: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#appearance-tab",
                 name: "Appearance",
                 template: "Template",
                 defaultChildTemplate: "Default child template",
@@ -1377,6 +1413,7 @@ const texts = {
 	            previewTemplateCSSBtnInfo: 'Click and the working version of template css styles will be applied on current page!'
             },
 	        metadata: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#metadata-tab",
 		        name: "Metadata",
 		        content: "Content",
 		        select: "Meta tag",
@@ -1384,6 +1421,7 @@ const texts = {
                 add: "ADD+"
 	        },
             keywords: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#keywords-tab",
                 name: "Keywords",
                 title: "Keywords",
                 placeholder: "keyword",
@@ -1391,12 +1429,14 @@ const texts = {
                 disableSearch: "Disable search"
             },
             categories: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#categories-tab",
                 name: "Categories",
                 error: {
                     loadFailed: "Failed to fetch categories. Try gain"
                 }
             },
             access: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#access-tab",
                 name: "Access",
                 role: "role",
                 view: "view",
@@ -1412,6 +1452,7 @@ const texts = {
                 }
             },
             permissions: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
                 name: "Permission settings",
                 editText: "Edit text",
                 editMenu: "Edit menu",
@@ -1420,6 +1461,7 @@ const texts = {
                 editDocInfo: "Edit doc info"
             },
             status: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#status-tab",
                 name: "Status",
                 created: "Created",
                 modified: "Modified",
@@ -1429,6 +1471,7 @@ const texts = {
                 by: "By"
             },
             cache: {
+                documentationLink: "developer-documentation/cache.html",
                 name: 'Cache',
                 cacheSettings: "Cache settings",
                 cacheForUnauthorizedUsers: 'Cache for unauthorized users',
@@ -1440,6 +1483,7 @@ const texts = {
                 }
             },
             file: {
+                documentationLink: "user-documentation/document-management/page-info/file-document.html",
                 name: "Files",
                 upload: "Upload",
                 id: "ID",
@@ -1447,10 +1491,12 @@ const texts = {
                 isDefault: "Default"
             },
             url: {
+                documentationLink: "user-documentation/document-management/page-info/url-document.html",
                 name: "URL",
                 title: "URL"
             },
             properties: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#properties-tab",
                 name: 'Properties',
                 add: 'Add',
                 key: 'Property name',
@@ -1459,7 +1505,7 @@ const texts = {
             buttons: {
                 ok: "ok",
                 cancel: "cancel",
-                saveAndPublish: "save and publish this version",
+                saveAndPublish: "save and publish",
                 next: "next",
             },
             error: {
@@ -1470,6 +1516,7 @@ const texts = {
 	            noAccess: "No access to page info"
             },
             allData:{
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#all-data-tab",
                 name: 'All Data',
                 edit: 'Edit',
                 errorGettingData: 'Error getting all data!',
@@ -1907,7 +1954,10 @@ const texts = {
         superAdmin: {
             head: 'SuperAdmin',
             oldInterface: 'Old interface',
+            documentation: 'Usage details',
+            documentationLink: "user-documentation/admin-settings/index.html",
             users: {
+                documentationLink: "user-documentation/admin-settings/users.html",
                 name: 'Users',
                 searchFilter: {
                     byName: {
@@ -1941,6 +1991,7 @@ const texts = {
                 },
             },
             roles: {
+                documentationLink: "user-documentation/admin-settings/roles.html",
                 name: 'Roles',
                 title: 'Roles administration',
                 createNewRole: 'Create new role',
@@ -1978,6 +2029,7 @@ const texts = {
                 }
             },
             ipAccess: {
+                documentationLink: "user-documentation/admin-settings/ip-access.html",
                 name: 'IP Access',
                 title: 'IP Access',
                 createNewRule: 'New',
@@ -2008,6 +2060,7 @@ const texts = {
                 }
             },
             versionControl: {
+                documentationLink: "user-documentation/admin-settings/version-control.html",
                 name: 'Version Control',
                 title: 'Version Control',
                 versionId: 'Version ID',
@@ -2024,6 +2077,7 @@ const texts = {
                 }
             },
             deleteDocs: {
+                documentationLink: "user-documentation/admin-settings/delete-documents.html",
                 name: 'Delete Documents',
                 title: 'Delete document by id',
                 deleteConfirmation: 'WARNING: Document and it\'s data will be deleted. Are you sure?',
@@ -2058,6 +2112,7 @@ const texts = {
                 }
             },
 	        documentsImport: {
+                documentationLink: "user-documentation/admin-settings/import.html",
 		        name: "Import Documents",
                 selectionWindowContainer:{
                     aliasControlCard:"Control alias",
@@ -2135,6 +2190,7 @@ const texts = {
                 }
 	        },
             files: {
+                documentationLink: "user-documentation/admin-settings/files.html",
                 name: 'Files',
                 upload: 'Upload',
                 rename: 'Change name',
@@ -2213,6 +2269,7 @@ const texts = {
                 }
             },
 	        templatesCSS: {
+                documentationLink: "user-documentation/admin-settings/template-css.html",
 		        name: 'Templates CSS',
 		        editorTitle: 'Template CSS Editor',
 		        templatesSelectTitle: 'Choose template',
@@ -2240,6 +2297,7 @@ const texts = {
                 name: 'Search'
             },
             linkValidator: {
+                documentationLink: "user-documentation/admin-settings/link-validator.html",
                 name: 'Link Validator',
                 titleOnlyBrokenLinks: 'List only broken links',
                 brokenLinks: 'List only broken links',
@@ -2262,10 +2320,12 @@ const texts = {
                 }
             },
             imagesTab: {
+                documentationLink: "user-documentation/editors/image/image-library.html",
                 title: 'Images',
                 label: 'Link to images library'
             },
             categories: {
+                documentationLink: "user-documentation/admin-settings/categories.html",
                 name: 'Categories',
                 createButtonName: "Create",
                 removeButtonName: "Remove",
@@ -2306,6 +2366,7 @@ const texts = {
                 }
             },
             profiles: {
+                documentationLink: "user-documentation/admin-settings/profiles.html",
                 name: 'Profiles',
                 title: 'Profiles',
                 createButton: 'Create new profile',
@@ -2335,6 +2396,7 @@ const texts = {
                 }
             },
             systemProperties: {
+                documentationLink: "user-documentation/admin-settings/system-properties.html",
                 name: 'System Properties',
                 nameInputTitle: 'Name',
                 emailInputTitle: 'E-mail',
@@ -2377,6 +2439,7 @@ const texts = {
                 }
             },
             temporalContent: {
+                documentationLink: "user-documentation/admin-settings/index-cache.html",
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindex documents',
@@ -2523,7 +2586,10 @@ const texts = {
             confirmMessageOnSaveAndPublish: "Vil du lagre endringer og publisere denne versjonen?",
             confirmMessageOnCancel: "Vil du virkelig slutte?",
             oneLanguageShouldBeEnabled: "Minst ett språk må være aktivert!",
+            documentation: "Detaljer om bruk",
+            documentationLink: "user-documentation/document-management/page-info/index.html",
             title: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#title-tab",
                 name: "Overskrift",
                 title: "Overskrift",
                 menuText: "Menytekst",
@@ -2542,6 +2608,7 @@ const texts = {
                 useDefaultLanguageAlias: "Bruk standardspråkalias for alle språk!"
             },
             lifeCycle: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#life-cycle-tab",
                 name: "Livssyklus",
                 status: {
                     title: "Status",
@@ -2572,12 +2639,13 @@ const texts = {
                 publisher: "Forlegger",
                 currentVersion: "Gjeldende versjon:",
                 versionHasChanges: "Denne fungerende versjonen har endringer",
-                publishMessage: "Trykk \"Lagre og publiser denne versjonen\" for å publisere",
+                publishMessage: "Trykk \"Lagre og publiser\" for å publisere",
                 error: {
                     userLoadFailed: 'Kunne ikke hente utgiveren. Prøv igjen'
                 }
             },
             appearance: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#appearance-tab",
                 name: "Utseende",
                 template: "Mal",
                 defaultChildTemplate: "Standard mal for nye dokumenter",
@@ -2585,6 +2653,7 @@ const texts = {
                 previewTemplateCSSBtnInfo: 'Klikk og arbeidsversjonen av mal css-stiler vil bli brukt på gjeldende side!'
             },
             metadata: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#metadata-tab",
                 name: "Metadata",
                 content: "Content",
                 select: "Meta tag",
@@ -2592,6 +2661,7 @@ const texts = {
                 add: "LEGGE TIL+"
             },
             keywords: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#keywords-tab",
                 name: "Nøkkelord",
                 title: "Nøkkelord",
                 placeholder: "nøkkelord",
@@ -2599,12 +2669,14 @@ const texts = {
                 disableSearch: "Deaktiver søk"
             },
             categories: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#categories-tab",
                 name: "Kategorier",
                 error: {
                     loadFailed: "Kunne ikke hente kategorier. Vær så snill, prøv på nytt."
                 }
             },
             access: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#access-tab",
                 name: "Tillatelser",
                 role: "rolle",
                 view: "lese/se",
@@ -2620,6 +2692,7 @@ const texts = {
                 }
             },
             permissions: {
+                documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
                 name: "Tillatelsesinnstillinger",
                 editText: "Rediger tekst",
                 editMenu: "Rediger menyen",
@@ -2628,6 +2701,7 @@ const texts = {
                 editDocInfo: "Rediger sideinformasjon"
             },
             status: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#status-tab",
                 name: "Status",
                 created: "Opprettet",
                 modified: "Endret",
@@ -2637,6 +2711,7 @@ const texts = {
                 by: "Av"
             },
             cache: {
+                documentationLink: "developer-documentation/cache.html",
                 name: 'Cache',
                 cacheSettings: "Bufferinnstillinger",
                 cacheForUnauthorizedUsers: 'Buffer for uautoriserte brukere',
@@ -2648,6 +2723,7 @@ const texts = {
                 }
             },
             file: {
+                documentationLink: "user-documentation/document-management/page-info/file-document.html",
                 name: "Filer",
                 upload: "Laste opp",
                 id: "ID",
@@ -2655,10 +2731,12 @@ const texts = {
                 isDefault: "Standard"
             },
             url: {
+                documentationLink: "user-documentation/document-management/page-info/url-document.html",
                 name: "URL",
                 title: "URL"
             },
             properties: {
+                documentationLink: "user-documentation/document-management/page-info/base.html#properties-tab",
                 name: 'Egenskaper',
                 add: 'Legge til',
                 key: 'Eiendomsnavn',
@@ -2667,7 +2745,7 @@ const texts = {
             buttons: {
                 ok: "ok",
                 cancel: "avbryt",
-                saveAndPublish: "lagre og publiser denne versjonen",
+                saveAndPublish: "lagre og publiser",
                 next: "neste",
             },
             error: {
@@ -3116,7 +3194,10 @@ const texts = {
         superAdmin: {
             head: 'SuperAdmin',
             oldInterface: 'Eldre grensesnitt',
+            documentation: 'Detaljer om bruk',
+            documentationLink: "user-documentation/admin-settings/index.html",
             users: {
+                documentationLink: "user-documentation/admin-settings/users.html",
                 name: 'Bruker',
                 searchFilter: {
                     byName: {
@@ -3150,6 +3231,7 @@ const texts = {
                 },
             },
             roles: {
+                documentationLink: "user-documentation/admin-settings/roles.html",
                 name: 'Roller',
                 title: 'Roller: administrasjon',
                 createNewRole: 'Opprett ny rolle',
@@ -3187,6 +3269,7 @@ const texts = {
                 }
             },
             ipAccess: {
+                documentationLink: "user-documentation/admin-settings/ip-access.html",
                 name: 'IP-tilgang',
                 title: 'IP-tilgang',
                 createNewRule: 'Ny',
@@ -3217,6 +3300,7 @@ const texts = {
                 }
             },
             versionControl: {
+                documentationLink: "user-documentation/admin-settings/version-control.html",
                 name: 'Version Control',
                 versionId: 'Version ID',
                 login: 'User Login',
@@ -3232,6 +3316,7 @@ const texts = {
                 }
             },
             deleteDocs: {
+                documentationLink: "user-documentation/admin-settings/delete-documents.html",
                 name: 'Slett dokumenter',
                 title: 'Slett dokument med id',
                 deleteConfirmation: 'ADVARSEL: Dokumentet og dets data vil bli slettet. Er du sikker?',
@@ -3266,6 +3351,7 @@ const texts = {
                 }
             },
             documentsImport: {
+                documentationLink: "user-documentation/admin-settings/import.html",
                 name: "Import Documents",
                 selectionWindowContainer:{
                     aliasControlCard:"Control alias",
@@ -3343,6 +3429,7 @@ const texts = {
                 }
             },
             files: {
+                documentationLink: "user-documentation/admin-settings/files.html",
                 name: 'Filer',
                 upload: 'Last opp',
                 rename: 'Endre navn',
@@ -3421,6 +3508,7 @@ const texts = {
                 }
             },
             templatesCSS: {
+                documentationLink: "user-documentation/admin-settings/template-css.html",
                 name: 'Maler CSS',
                 editorTitle: 'Mal CSS Editor',
                 templatesSelectTitle: 'Velg mal',
@@ -3448,6 +3536,7 @@ const texts = {
                 name: 'Søk'
             },
             linkValidator: {
+                documentationLink: "user-documentation/admin-settings/link-validator.html",
                 name: 'Link Validator',
                 titleOnlyBrokenLinks: "Vis kun ødelagte lenker",
                 brokenLinks: "Vis kun ødelagte lenker",
@@ -3470,10 +3559,12 @@ const texts = {
                 },
             },
             imagesTab: {
+                documentationLink: "user-documentation/editors/image/image-library.html",
                 title: 'Bilder',
                 label: 'Link til bildebibliotek'
             },
             categories: {
+                documentationLink: "user-documentation/admin-settings/categories.html",
                 name: 'Kategorier',
                 createButtonName: "Skape",
                 removeButtonName: "Slett",
@@ -3514,6 +3605,7 @@ const texts = {
                 }
             },
             profiles: {
+                documentationLink: "user-documentation/admin-settings/profiles.html",
                 name: 'Profiler',
                 title: 'Profiler',
                 createButton: "Opprett ny profil",
@@ -3543,6 +3635,7 @@ const texts = {
                 }
             },
             systemProperties: {
+                documentationLink: "user-documentation/admin-settings/system-properties.html",
                 name: 'System egenskaper',
                 nameInputTitle: 'Navn',
                 emailInputTitle: 'E-post',
@@ -3585,6 +3678,7 @@ const texts = {
                 }
             },
             temporalContent: {
+                documentationLink: "user-documentation/admin-settings/index-cache.html",
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindekser innholdet',
