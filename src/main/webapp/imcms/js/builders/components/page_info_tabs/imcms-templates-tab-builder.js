@@ -110,6 +110,8 @@ define("imcms-templates-tab-builder",
             tabData.$defaultChildTemplateSelect.selectFirst();
         };
 
+        TemplatesTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new TemplatesTab(texts.name, docTypes.TEXT);
     }
 );

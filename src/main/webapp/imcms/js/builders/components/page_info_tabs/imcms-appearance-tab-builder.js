@@ -278,6 +278,8 @@ define("imcms-appearance-tab-builder",
         };
         AppearanceTab.prototype.isValid = () => tabData.commonContents.reduce((isChecked, commonContent) => isChecked || commonContent.checkbox.isChecked(), false);
 
+		AppearanceTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new AppearanceTab(texts.name);
     }
 );

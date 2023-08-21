@@ -4,7 +4,7 @@ define(
         "imcms-page-info-tab", 'imcms', 'imcms-all-data-document-rest-api', 'imcms-modal-window-builder'],
     function (BEM, components, texts, $, PageInfoTab, imcms, allDataDocumentRestApi, modal) {
 
-        localization = texts.pageInfo.allData;
+        const localization = texts.pageInfo.allData;
 
         let $documentTextDataContainer = $('<div>', {
             'class': 'imcms-all-data-text-container'
@@ -367,6 +367,8 @@ define(
 		    $documentLoopDataContainer.empty();
 		    $documentImageDataContainer.empty();
 	    };
+
+        AllDataTab.prototype.getDocLink = () => localization.documentationLink;
 
         return new AllDataTab(localization.name);
         }

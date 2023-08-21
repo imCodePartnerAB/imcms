@@ -154,6 +154,8 @@
             }
         };
 
+        PropertiesTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new PropertiesTab(texts.name);
     }
 );

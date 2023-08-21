@@ -52,6 +52,8 @@ define("imcms-keywords-tab-builder",
             tabData.$searchDisableCheckbox.setChecked(false);
         };
 
+        KeywordsTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new KeywordsTab(texts.name);
     }
 );

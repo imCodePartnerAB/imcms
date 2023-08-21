@@ -127,6 +127,8 @@ define(
             tabData.$permissionsWrapper.empty();
         };
 
+        PermissionsTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new PermissionsTab(texts.name, docTypes.TEXT);
     }
 );

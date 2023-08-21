@@ -184,5 +184,7 @@ define('imcms-metadata-tab-builder',
 			tabData.$metadataContainer.empty();
 		};
 
+		MetadataTab.prototype.getDocLink = () => texts.documentationLink;
+
 		return new MetadataTab(texts.name, docTypes.TEXT);
 	});

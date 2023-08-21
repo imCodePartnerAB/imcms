@@ -41,6 +41,8 @@ define("imcms-url-tab-builder",
             tabData = {};
         };
 
+        UrlTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new UrlTab(texts.name, docTypes.URL);
     }
 );

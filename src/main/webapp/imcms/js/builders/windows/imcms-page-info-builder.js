@@ -21,7 +21,7 @@ define("imcms-page-info-builder",
 
         let windowPageInfoTabsBuilder;
 
-        let panels$, documentDTO, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
+        let panels$, documentDTO, $usageDetails, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
         let $title = $('<a>');
 
         let versionNo;
@@ -35,6 +35,13 @@ define("imcms-page-info-builder",
 
         function buildPageInfoPanels(docId) {
             return windowPageInfoTabsBuilder.getAllTabBuilders().map((tabBuilder, index) => tabBuilder.buildTab(index, docId));
+        }
+
+        function openDocumentationWindow(){
+            const currentTabIndex = parseInt(windowPageInfoTabsBuilder.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
+            const docLink = imcms.documentationLink +
+                windowPageInfoTabsBuilder.getAllTabBuilders()[currentTabIndex].getDocLink();
+            window.open(docLink)
         }
 
         function closePageInfo() {
@@ -188,6 +195,11 @@ define("imcms-page-info-builder",
                 style: 'display: none',
             });
 
+            $usageDetails = components.link.buildLinkButton({
+                title: texts.documentation,
+                onClick: openDocumentationWindow
+            });
+
             const $cancelBtn = components.buttons.negativeButton({
                 text: texts.buttons.cancel,
                 click: closePageInfo
@@ -195,7 +207,7 @@ define("imcms-page-info-builder",
 
             $loadingAnimation = $('<div>').addClass('pageInfo loading-animation').css("display", "none");
 
-            const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation];
+            const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation, $usageDetails];
 
             if (imcms.isSuperAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);

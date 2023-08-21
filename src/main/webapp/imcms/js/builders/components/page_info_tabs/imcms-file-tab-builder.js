@@ -182,6 +182,8 @@ define("imcms-file-tab-builder",
             tabData = {};
         };
 
+        FilesTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new FilesTab(texts.name, docTypes.FILE);
     }
 );

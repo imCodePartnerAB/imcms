@@ -265,6 +265,8 @@ define("imcms-life-cycle-tab-builder",
             tabData.$hasNewerVersionInfoBlock.css("display", "none");
         };
 
+        LifeCycleTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new LifeCycleTab(texts.name);
     }
 );

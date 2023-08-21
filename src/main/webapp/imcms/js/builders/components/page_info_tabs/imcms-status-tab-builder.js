@@ -130,6 +130,8 @@ define("imcms-status-tab-builder",
             });
         };
 
+        StatusTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new StatusTab(texts.name);
     }
 );

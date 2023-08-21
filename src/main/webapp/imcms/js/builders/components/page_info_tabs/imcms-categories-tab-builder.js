@@ -148,6 +148,8 @@ define("imcms-categories-tab-builder",
             tabData.$categoriesContainer.empty();
         };
 
+        CategoriesTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new CategoriesTab(texts.name);
     }
 );

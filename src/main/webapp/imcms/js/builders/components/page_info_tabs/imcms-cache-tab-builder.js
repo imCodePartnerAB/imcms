@@ -133,6 +133,8 @@ define('imcms-cache-tab-builder',
 			tabData.$checkboxCacheForAuthorizedUsers.setChecked(false);
 		};
 
+		CacheTab.prototype.getDocLink = () => texts.documentationLink;
+
 	    return new CacheTab(texts.name);
     }
 );

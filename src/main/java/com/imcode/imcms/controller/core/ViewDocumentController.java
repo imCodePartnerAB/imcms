@@ -57,6 +57,7 @@ public class ViewDocumentController {
     private final boolean isVersioningAllowed;
     private final PublicDocumentsCache publicDocumentsCache;
     private final LanguageService languageService;
+    private final String documentationLink;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
@@ -68,7 +69,8 @@ public class ViewDocumentController {
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
                            PublicDocumentsCache publicDocumentsCache,
-                           LanguageService languageService) {
+                           LanguageService languageService,
+                           @Value("${documentation-host}") String documentationLink) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
@@ -81,6 +83,7 @@ public class ViewDocumentController {
         this.isVersioningAllowed = isVersioningAllowed;
         this.publicDocumentsCache = publicDocumentsCache;
         this.languageService = languageService;
+        this.documentationLink = documentationLink;
     }
 
     @RequestMapping({"", "/"})
@@ -208,6 +211,7 @@ public class ViewDocumentController {
         mav.addObject("accessToAdminPages", rolePermissions.isAccessToAdminPages());
         mav.addObject("accessToDocumentEditor", rolePermissions.isAccessToDocumentEditor());
         mav.addObject("accessToPublishCurrentDoc", accessService.hasUserPublishAccess(user, docId));
+        mav.addObject("documentationLink", documentationLink);
 
         return mav;
     }

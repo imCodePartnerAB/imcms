@@ -2,7 +2,10 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 23.06.18
  */
-define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowBuilder) {
+define('imcms-page-info-tab',
+    [
+        'imcms-window-tab-builder', 'imcms-i18n-texts'
+    ], function (TabWindowBuilder, texts) {
 
     const PageInfoTab = function (name, supportedDocumentType) {
         TabWindowBuilder.call(this, name);
@@ -24,6 +27,8 @@ define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowB
         // override
     };
     PageInfoTab.prototype.isValid = () => true;
+
+    PageInfoTab.prototype.getDocLink = () => texts.pageInfo.documentationLink;
 
     return PageInfoTab;
 });

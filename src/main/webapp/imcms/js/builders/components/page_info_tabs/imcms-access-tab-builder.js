@@ -316,6 +316,8 @@ define("imcms-access-tab-builder",
             tabData.$rolesField.css("display", "none");
         };
 
+        AccessTab.prototype.getDocLink = () => texts.documentationLink;
+
         return new AccessTab(texts.name);
     }
 );
