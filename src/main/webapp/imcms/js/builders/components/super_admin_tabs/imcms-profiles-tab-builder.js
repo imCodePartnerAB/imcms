@@ -80,7 +80,15 @@ define(
             return $titleRow;
         }
 
-        return new SuperAdminTab(texts.name, [
+        const ProfilesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        ProfilesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        ProfilesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new ProfilesAdminTab(texts.name, [
             buildTitleText(),
             buildCreateButton(),
             buildProfileContainer()

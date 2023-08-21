@@ -148,7 +148,15 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        return new SuperAdminTab(texts.name, [
+        const DocVersionsAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        DocVersionsAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        DocVersionsAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new DocVersionsAdminTab(texts.name, [
             buildVersionTableBlock()
         ]);
     }

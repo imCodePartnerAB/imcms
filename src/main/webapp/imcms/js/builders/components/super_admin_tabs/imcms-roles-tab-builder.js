@@ -247,7 +247,15 @@ define(
             return fieldWrapper.wrap($externalRolesContainer);
         }
 
-        return new SuperAdminTab(texts.name, [
+        const RolesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        RolesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        RolesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new RolesAdminTab(texts.name, [
             buildTabTitle(),
             buildCreateNewRoleButton(),
             buildRolesContainer(),

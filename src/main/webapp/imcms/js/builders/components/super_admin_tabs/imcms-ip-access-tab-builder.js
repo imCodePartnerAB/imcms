@@ -106,7 +106,15 @@ define(
             return $titleRow;
         }
 
-        return new SuperAdminTab(texts.name, [
+        const IpAccessAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        IpAccessAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        IpAccessAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new IpAccessAdminTab(texts.name, [
             buildTabTitle(),
             buildCreateNewRuleButton(),
             buildRulesContainer()

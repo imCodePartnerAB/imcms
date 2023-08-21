@@ -71,13 +71,24 @@
 .imcms-pop-up-super-admin-modal__right-side {
     width: 80%;
     padding: 30px 60px;
-    height: 95%;
+    height: calc(95% - 43px);
+}
+
+.imcms-pop-up-super-admin-modal__footer {
+    height: 5%;
+    width: 80%;
+    padding: 0 60px;
 }
 
 @media screen and (max-width: 1040px){
     .imcms-pop-up-super-admin-modal__right-side {
         width: 80%;
         padding: 20px 30px;
+    }
+
+    .imcms-pop-up-super-admin-modal__footer{
+        width: 80%;
+        padding: 0 30px;
     }
 }
 
@@ -86,6 +97,11 @@
         width: 80%;
         padding: 20px 20px;
     }
+
+    .imcms-pop-up-super-admin-modal__footer{
+        width: 80%;
+        padding: 0 20px;
+    }
 }
 
 @media screen and (max-width: 800px){
@@ -93,12 +109,22 @@
         width: 82%;
         padding: 10px 10px;
     }
+
+    .imcms-pop-up-super-admin-modal__footer{
+        width: 82%;
+        padding: 0 10px;
+    }
 }
 
 @media screen and (max-width: 700px){
     .imcms-pop-up-super-admin-modal__right-side {
         width: 85%;
         padding: 10px 10px;
+    }
+
+    .imcms-pop-up-super-admin-modal__footer{
+        width: 85%;
+        padding: 0 10px;
     }
 }
 
@@ -1008,7 +1034,7 @@
 }
 
 .imcms-doc-basket-table-block__table {
-    height: 500px;
+    height: 480px;
     overflow-y: auto;
     background-color: #ececec;
     border: solid 1px #d1d2c6;

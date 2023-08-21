@@ -384,7 +384,15 @@ define(
 			onEnterKeyPressed: onWriteToTemplateCSSEditArea
 		});
 
-		return new SuperAdminTab(texts.name, [
+		const TemplateCSSAdminTab = function (name, tabElements) {
+			SuperAdminTab.call(this, name, tabElements);
+		};
+
+		TemplateCSSAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+		TemplateCSSAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+		return new TemplateCSSAdminTab(texts.name, [
 			buildTabTitle(),
 			buildTemplatesSelectContainer(),
 			buildTemplateCSSEditAreaContainer(),

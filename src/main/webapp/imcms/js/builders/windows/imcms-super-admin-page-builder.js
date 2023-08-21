@@ -12,6 +12,8 @@ define(
 
         texts = texts.superAdmin;
 
+        const TAB_INDEX_ATTRIBUTE = 'data-window-id';
+
         let panels$;
 
         function buildSuperAdminPanels() {
@@ -46,6 +48,22 @@ define(
             window.close()
         }
 
+        function openDocumentationWindow(){
+            const currentTabIndex = parseInt(superAdminTabs.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
+            const docLink = imcms.documentationLink +
+                superAdminTabs.getAllTabBuilders()[currentTabIndex].getDocLink();
+            window.open(docLink)
+        }
+
+        function buildSuperAdminFooterButtons() {
+            const $usageDetails = components.link.buildLinkButton({
+                title: texts.documentation,
+                onClick: openDocumentationWindow
+            });
+
+            return [$usageDetails];
+        }
+
         function buildSuperAdmin() {
             panels$ = buildSuperAdminPanels();
 
@@ -54,7 +72,8 @@ define(
                 elements: {
                     'head': buildHead(),
                     'left-side': superAdminTabs.buildWindowTabs(panels$),
-                    'right-side': $('<div>', {'class': 'imcms-right-side'}).append(panels$)
+                    'right-side': $('<div>', {'class': 'imcms-right-side'}).append(panels$),
+                    'footer': $("<div>", {"class": "imcms-footer"}).append(buildSuperAdminFooterButtons())
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-info-page'

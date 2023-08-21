@@ -1167,7 +1167,15 @@ define(
 			}
 		}
 
-		return new SuperAdminTab(texts.name,
+		const ImportDocumentsAdminTab = function (name, tabElements) {
+			SuperAdminTab.call(this, name, tabElements);
+		};
+
+		ImportDocumentsAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+		ImportDocumentsAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+		return new ImportDocumentsAdminTab(texts.name,
 			[
 				buildSelectionWindowContainer(),
 				buildSectionsContainer()

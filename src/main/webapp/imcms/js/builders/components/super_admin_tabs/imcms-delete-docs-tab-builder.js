@@ -233,6 +233,14 @@ define(
         let tabElements = [buildDeleteDocsBlock()];
         if(imcms.isSuperAdmin) tabElements.push(buildBasketBlock());
 
-        return new SuperAdminTab(texts.name, tabElements);
+        const DeleteDocsAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        DeleteDocsAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        DeleteDocsAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new DeleteDocsAdminTab(texts.name, tabElements);
     }
 );

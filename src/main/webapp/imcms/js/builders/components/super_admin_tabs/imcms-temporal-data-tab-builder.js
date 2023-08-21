@@ -471,8 +471,15 @@ define(
             }).buildBlockStructure('<div>');
         }
 
+        const TemporalAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
 
-        return new SuperAdminTab(texts.name, [
+        TemporalAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        TemporalAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new TemporalAdminTab(texts.name, [
             buildReindexRow(),
             buildPublicDocumentCacheRow(),
             buildStaticContentRow(),

@@ -232,7 +232,15 @@ define(
             return components.buttons.buttonsContainer('<div>', [$button]);
         }
 
-        return new SuperAdminTab(texts.name, [
+        const UserTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        UserTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        UserTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new UserTab(texts.name, [
             buildSearchRow(),
             buildSearchResultTitle(),
             $searchResultContainer = buildSearchResultContainer(),

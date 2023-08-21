@@ -201,7 +201,15 @@ define(
             return $moveCopyFilesContainer;
         }
 
-        return new SuperAdminTab(texts.name, [
+        const FilesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        FilesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        FilesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new FilesAdminTab(texts.name, [
             buildTableFilesContainer(),
             buildButtonsActionContainer(),
             buildMoveCopyFilesContainer(),

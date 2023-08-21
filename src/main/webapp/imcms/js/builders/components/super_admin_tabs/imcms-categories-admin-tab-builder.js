@@ -572,7 +572,15 @@ define(
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
-        return new SuperAdminTab(texts.name, [
+        const CategoriesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        CategoriesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        CategoriesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new CategoriesAdminTab(texts.name, [
             buildDropListCtgTypesContainer(),
             buildCategoryCreateContainer()
         ]);

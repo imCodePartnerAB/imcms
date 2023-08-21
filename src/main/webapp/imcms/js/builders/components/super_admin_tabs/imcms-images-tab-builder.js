@@ -11,7 +11,15 @@ define(
             return $imageLibraryButton || ($imageLibraryButton = $imageLibraryButton = imageEditor.buildSelectImageBtnContainer())
         }
 
-        return new SuperAdminTab(texts.title, [
+        const ImagesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        ImagesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        ImagesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new ImagesAdminTab(texts.title, [
             getImageLibraryButton()
         ]);
     }

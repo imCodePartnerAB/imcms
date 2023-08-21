@@ -288,7 +288,15 @@ define(
 		    return email === '' ? true : emailRegex.test(email);
 	    }
 
-        return new SuperAdminTab(texts.name, [
+        const SystemPropertiesAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        SystemPropertiesAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        SystemPropertiesAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new SystemPropertiesAdminTab(texts.name, [
             buildPageRow(),
             buildSystemMessageRow(),
             buildServerMasterRow(),

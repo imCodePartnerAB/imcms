@@ -212,7 +212,15 @@ define(
             });
         }
 
-        return new SuperAdminTab(texts.name, [
+        const LinkValidatorAdminTab = function (name, tabElements) {
+            SuperAdminTab.call(this, name, tabElements);
+        };
+
+        LinkValidatorAdminTab.prototype = Object.create(SuperAdminTab.prototype);
+
+        LinkValidatorAdminTab.prototype.getDocLink = () => texts.documentationLink;
+
+        return new LinkValidatorAdminTab(texts.name, [
             buildTitleText(),
             buildLinkParamsContainer(),
             buildFilterOnlyBrokenLinks(),
