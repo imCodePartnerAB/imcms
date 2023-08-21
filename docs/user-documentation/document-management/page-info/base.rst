@@ -26,7 +26,6 @@ What can you do using this tab:
 * Enable/disable the language for the document.
 * Specify alias for each language separately or use one alias for all languages by enabling the **Use default language alias for all languages** checkbox. Besides, you can use the document id as an alias.
 * Specify the title on the page for each language separately.
-* Specify the title in the menu for each language separately.
 * Choose how to open a document from a menu (in new window, in same frame, etc).
 * Select the behavior when the user tries to enter the page using the disabled language (do not show the page, show the page with the default language).
 
