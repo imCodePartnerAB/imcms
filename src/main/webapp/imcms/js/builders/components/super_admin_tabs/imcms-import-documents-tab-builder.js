@@ -658,12 +658,12 @@ define(
 						$listBtn.off('click').on('click', $listInputContainer.onListBtnClick);
 						$listInputContainer.show();
 						$rangeInputContainer.hide();
-						$resultContainer.css("height", "530");
+						$resultContainer.css("height", "510px");
 					} else {
 						$listBtn.off('click').on('click', $rangeInputContainer.onListBtnClick);
 						$rangeInputContainer.css("display", "inline");
 						$listInputContainer.hide()
-						$resultContainer.css("height", "635px");
+						$resultContainer.css("height", "615px");
 					}
 				}
 			});
@@ -811,7 +811,7 @@ define(
 		}
 
 		function buildImportSection() {
-			const $resultContainer = $('<div>', {'class': 'table-import-documents', 'style': 'height:520px'});
+			const $resultContainer = $('<div>', {'class': 'table-import-documents', 'style': 'height:500px'});
 			const $progressBar = buildProgressBar();
 			const $builder = new ImportDocumentListBuilder($resultContainer);
 			const $listBtn = buildListDocumentsBtn();
@@ -833,14 +833,14 @@ define(
 						$importBtn.off('click').on('click', $listInputContainer.onImportBtnClick);
 						$listInputContainer.show();
 						$rangeInputContainer.hide();
-						$resultContainer.css("height", "520px");
+						$resultContainer.css("height", "500px");
 
 					} else {
 						$listBtn.off('click').on('click', $rangeInputContainer.onListBtnClick);
 						$importBtn.off('click').on('click', $rangeInputContainer.onImportBtnClick);
 						$rangeInputContainer.css("display", "inline");
 						$listInputContainer.hide()
-						$resultContainer.css("height", "605px");
+						$resultContainer.css("height", "585px");
 					}
 				}
 			});
@@ -852,7 +852,7 @@ define(
 					"range-input": $rangeInputContainer,
 					"list-input": $listInputContainer,
 					"container":$("<div>").append($importBtn).append($autoImportMenusCheckbox),
-						"progress-bar": $progressBar,
+					"progress-bar": $progressBar,
 					"result-container": $resultContainer
 				}
 			}).buildBlockStructure("<section>", {});
@@ -1167,8 +1167,8 @@ define(
 			}
 		}
 
-		const ImportDocumentsAdminTab = function (name, tabElements) {
-			SuperAdminTab.call(this, name, tabElements);
+		const ImportDocumentsAdminTab = function (name, tabElements, attributes) {
+			SuperAdminTab.call(this, name, tabElements, attributes);
 		};
 
 		ImportDocumentsAdminTab.prototype = Object.create(SuperAdminTab.prototype);

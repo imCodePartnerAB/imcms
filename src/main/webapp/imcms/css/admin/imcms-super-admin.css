@@ -621,9 +621,8 @@
 }
 
 .table-import-documents {
-	height: 530px;
 	overflow: auto;
-	min-height: 520px;
+	height: 510px;
     margin: 0 5px 0 5px;
 }
 
@@ -1896,7 +1895,7 @@
 }
 
 .import-entity-references-section .import-entity-references-section__import-entity-reference-container{
-    height: 680px;
+    height: 665px;
     overflow: auto;
     width: 100%;
     background-color: ghostwhite;

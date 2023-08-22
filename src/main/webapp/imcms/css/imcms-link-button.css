@@ -7,6 +7,8 @@
 
 .imcms-link-button .imcms-button--neutral{
     margin: 0;
+    text-align: left;
+    word-break: break-word;
 }
 
 .imcms-link-icon{

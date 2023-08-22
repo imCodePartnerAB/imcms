@@ -43,6 +43,10 @@
         height: 720px;
         width: 750px;
     }
+
+    .imcms-pop-up-modal .imcms-link-button .imcms-link-icon{
+        display: none;
+    }
 }
 
 @media screen and (max-width: 750px) {
