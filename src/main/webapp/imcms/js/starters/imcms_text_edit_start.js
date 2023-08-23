@@ -23,6 +23,7 @@ $(function () {
     const $editedTag = $('.imcms-editor-content--text:first');
     const editorData = $editedTag.data();
 
+    const returnUrl = $("#return-url").val();
     const toolbarContent = [
         {
             type: 'id',
@@ -47,7 +48,7 @@ $(function () {
         },
         {
             type: 'close',
-            link: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId
+            link: returnUrl ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId
         }
     ];
 

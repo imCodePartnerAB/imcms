@@ -27,6 +27,7 @@
 </head>
 <body>
 
+<input type="hidden" id="return-url" value="${returnUrl}">
 <input id="targetDocId" type="hidden" value="${targetDocId}">
 <input type="hidden" id="return-url" value="${returnUrl}">
 
