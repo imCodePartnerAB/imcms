@@ -42,7 +42,7 @@ define("imcms-standalone-editor-toolbar-builder",
                         if (item.link &&
                             ((item.showIfSeparate && window.opener) || (!item.showIfSeparate && !window.opener))) {
 
-                            onClose = () => window.location = item.link;
+                            onClose = () => window.location.replace(`/api/redirect?returnUrl=${item.link}`);
                         } else if (window.opener) {
                             onClose = () => window.close();
                         } else break;

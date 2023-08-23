@@ -16,7 +16,7 @@ $(function () {
 
     function onPageInfoClosed() {
         const returnUrl = $("#return-url").val();
-        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
+        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${docId}`);
     }
 
     events.on("page info closed", onPageInfoClosed);

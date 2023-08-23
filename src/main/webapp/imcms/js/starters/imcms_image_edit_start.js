@@ -16,7 +16,7 @@ const texts = require("imcms-i18n-texts");
 $(() => {
     events.on("enable text editor blur", () => {
         const returnUrl = $("#return-url").val();
-        window.location.href = (returnUrl) ? returnUrl : (imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId);
+        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
     });
 
     const $editedTag = $(imageEditorInitData.EDIT_AREA_SELECTOR);
@@ -41,7 +41,7 @@ $(() => {
             type: 'language'
         }, {
             type: 'close',
-            link: (returnUrl) ? returnUrl : "",
+            link: (returnUrl) ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId,
             showIfSeparate: true
         }
     ];

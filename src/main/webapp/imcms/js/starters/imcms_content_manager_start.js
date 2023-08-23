@@ -15,7 +15,7 @@ imcms.disableContentManagerSaveButton = true;
 
 events.on("content manager closed", () => {
     const returnUrl = $("#return-url").val();
-    window.location = (returnUrl) ? returnUrl : imcms.contextPath;
+    window.location.replace(`/api/redirect?returnUrl=${returnUrl}`);
 });
 
 $(function () {
