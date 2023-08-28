@@ -4,6 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
+<%@ attribute name="id" required="false" %>
 <%@ attribute name="index" required="true" type="java.lang.Integer" %>
 <%@ attribute name="document" required="false" type="java.lang.String" %>
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
@@ -29,6 +30,18 @@
 <%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
 
 <c:if test="${!isDocNew || editOptions.editMenu}">
+	<%--  set id var in order to use autoscroll ?meta_id#image-1001-1 or #image-1  --%>
+	<c:if test="${empty id}">
+		<c:choose>
+			<c:when test="${empty document}">
+				<c:set var="id" value="menu-${index}"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="id" value="menu-${document}-${index}"/>
+			</c:otherwise>
+		</c:choose>
+	</c:if>
+
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
     <jsp:doBody var="tagContentBody"/>
     <c:set var="isTagBodyEmpty" value="${empty tagContentBody}"/>
@@ -101,7 +114,7 @@
 
 	        <c:choose>
 		        <c:when test="${showMode == 'small'}">
-			        <div class="imcms-editor-area--small imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+			        <div class="imcms-editor-area--small imcms-editor-area--menu" id="${id}" data-doc-id="${targetDocId}"${externalPart}
 			             data-menu-index="${index}">
 						<div class="imcms-editor-body">
 							<div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
@@ -117,7 +130,7 @@
 			        </div>
 		        </c:when>
 		        <c:otherwise>
-			        <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+			        <div class="imcms-editor-area imcms-editor-area--menu" id="${id}" data-doc-id="${targetDocId}"${externalPart}
 			             data-menu-index="${index}">
 				        <c:if test="${not empty label && isShowlabel}">
 					        <div class="imcms-editor-area__text-label">${label}</div>

@@ -5,6 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ attribute name="no" required="false" type="java.lang.Object" %>
+<%@ attribute name="id" required="false" %>
 <%@ attribute name="index" required="false" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>
@@ -21,6 +22,18 @@
 <c:if test="${!isDocNew || editOptions.editText}">
     <c:if test="${empty index}">
         <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
+    </c:if>
+
+    <%--  set id var in order to use autoscroll ?meta_id#image-1001-1 or #image-1  --%>
+    <c:if test="${empty id}">
+        <c:choose>
+            <c:when test="${empty document}">
+                <c:set var="id" value="text-${index}"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="id" value="text-${document}-${index}"/>
+            </c:otherwise>
+        </c:choose>
     </c:if>
 
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
@@ -173,7 +186,7 @@
             ${pre}
 	        <c:choose>
 		        <c:when test="${showMode == 'small'}">
-			        <div class="imcms-editor-area--small imcms-editor-area--text">
+			        <div class="imcms-editor-area--small imcms-editor-area--text" id="${id}">
 				        <c:if test="${not empty label && isShowlabel}">
 					        <div class="imcms-editor-area__text-label">${label}</div>
 				        </c:if>
@@ -198,7 +211,7 @@
 			        </div>
 		        </c:when>
 		        <c:otherwise>
-			        <div class="imcms-editor-area imcms-editor-area--text">
+			        <div class="imcms-editor-area imcms-editor-area--text" id="${id}">
 				        <c:if test="${not empty label && isShowlabel}">
 					        <div class="imcms-editor-area__text-label">${label}</div>
 				        </c:if>

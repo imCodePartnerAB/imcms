@@ -5,6 +5,7 @@
 
 <%@ taglib prefix="imcms" uri="imcms" %>
 
+<%@ attribute name="id" required="false" %>
 <%@ attribute name="index" required="true" type="java.lang.Integer" %>
 <%@ attribute name="document" type="java.lang.Integer" %>
 <%@ attribute name="label" %>
@@ -27,6 +28,17 @@
 <%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
 
 <c:if test="${!isDocNew || editOptions.editLoop}">
+	<c:if test="${empty id}">
+		<c:choose>
+			<c:when test="${empty document}">
+				<c:set var="id" value="loop-${index}"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="id" value="loop-${document}-${index}"/>
+			</c:otherwise>
+		</c:choose>
+	</c:if>
+
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
 	<c:set var="versionNo" value="${pageContext.request.getParameter('version-no')}"/>
@@ -85,7 +97,9 @@
 	        <c:choose>
 		        <c:when test="${showMode == 'small'}">
 
-			        <div class="imcms-editor-area--small imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+			        <div class="imcms-editor-area--small imcms-editor-area--loop"
+						 id="${id}"
+						 data-doc-id="${targetDocId}"${externalPart}
 			             data-index="${index}">
 						<div class="imcms-editor-body">
 							<div class="imcms-editor-area__content imcms-editor-content"
@@ -101,7 +115,9 @@
 			        </div>
 		        </c:when>
 		        <c:otherwise>
-					<div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+					<div class="imcms-editor-area imcms-editor-area--loop"
+						 id="${id}"
+						 data-doc-id="${targetDocId}"${externalPart}
 						 data-index="${index}">
 						<c:if test="${not empty label && isShowlabel}">
 							<div class="imcms-editor-area__text-label">${label}</div>

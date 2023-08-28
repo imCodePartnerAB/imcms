@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ attribute name="no" required="false" type="java.lang.Object" %><%-- old index name --%>
+<%@ attribute name="id" required="false" %>
 <%@ attribute name="index" required="false" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="style" required="false" %>
@@ -32,6 +33,18 @@
 <c:if test="${!isDocNew || editOptions.editImage}">
     <c:if test="${empty index}">
         <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
+    </c:if>
+
+    <%--  set id var in order to use autoscroll ?meta_id#image-1001-1 or #image-1  --%>
+    <c:if test="${empty id}">
+        <c:choose>
+            <c:when test="${empty document}">
+                <c:set var="id" value="image-${index}"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="id" value="image-${document}-${index}"/>
+            </c:otherwise>
+        </c:choose>
     </c:if>
 
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
@@ -110,7 +123,7 @@
                 <c:if test="${not empty href}">
                     <a${href} target="_blank">
                 </c:if>
-                    <img src="${imagesPath}?path=${imgPath}"${classes}${styles}${alt}/>
+                    <img id="${id}" src="${imagesPath}?path=${imgPath}"${classes}${styles}${alt}/>
                 <c:if test="${not empty href}">
                     </a>
                 </c:if>
@@ -118,7 +131,7 @@
             </c:when>
             <c:otherwise>
                 ${pre}
-                    <img src="${contextPath}/imcms/images/icon_missing_image.png"/>
+                    <img id="${id}" src="${contextPath}/imcms/images/icon_missing_image.png"/>
                 ${post}
             </c:otherwise>
         </c:choose>
@@ -159,6 +172,7 @@
 	        <c:choose>
 	            <c:when test="${showMode == 'small'}">
 		            <div class="imcms-editor-area--small imcms-editor-area--image"
+                         id="${id}"
 		                 data-doc-id="${targetDocId}"${externalPart}${style}
 		                 data-lang-code="${language}" data-index="${no}"${loopPart}>
                         <div class="imcms-editor-body">
@@ -174,6 +188,7 @@
 	            </c:when>
 		        <c:otherwise>
 			        <div class="imcms-editor-area imcms-editor-area--image"
+                         id="${id}"
 			             data-doc-id="${targetDocId}"${externalPart}${style}
 			             data-lang-code="${language}" data-index="${no}"${loopPart}>
 				        <c:if test="${not empty label && isShowlabel}">
