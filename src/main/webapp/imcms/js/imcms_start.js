@@ -7,6 +7,7 @@ import '../css/imcms-imports_files.css';
  * 07.08.17.
  */
 const panelBuilder = require('imcms-admin-panel-builder');
+const pageInfoBuilder = require("imcms-page-info-builder");
 const events = require('imcms-events');
 const sessionTimeoutManagement = require('imcms-session-timeout-management');
 const dateFormatter = require('date-format');
@@ -42,6 +43,15 @@ function detectActivePanelButton() {
     return 'public';
 }
 
+function buildPageInfoOnLoad() {
+    const anchor = window.location.hash.substring(1);
+    const docId = imcms.document.id;
+
+    if (anchor === "page-info") {
+        pageInfoBuilder.build(docId);
+    }
+}
+
 $(() => {
     panelBuilder.buildPanel({
         active: detectActivePanelButton()
@@ -51,5 +61,7 @@ $(() => {
         const editorsInit = require('imcms-editors-initializer');
         $(editorsInit.initEditors);
     }
+
+    buildPageInfoOnLoad();
 });
 
