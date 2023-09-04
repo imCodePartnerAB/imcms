@@ -254,12 +254,12 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 				importDocumentImages(metaId, language, importDocument.getImages());
 
 				final boolean menusImported = importMenuDocuments(metaId, importDocument);
-				if (menusImported) {
+//				if (menusImported) {
 					defaultDelegatingByTypeDocumentService.publishDocument(metaId, Imcms.getUser().getId());
 					log.info("Document {} published", metaId);
-				} else {
-					log.warn("Document {} not published because of problems with menu importing", metaId);
-				}
+//				} else {
+//					log.warn("Document {} not published because of problems with menu importing", metaId);
+//				}
 
 				basicImportDocument.setMetaId(metaId);
 				basicImportDocument.setStatus(IMPORTED);

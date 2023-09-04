@@ -609,6 +609,7 @@ class MappingConfig {
 			document.setTarget(importDocument.getTarget());
 
 			document.setImported(true);
+			document.setVisible(true);
 			document.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
 			document.setPublicationStatus(APPROVED);
 

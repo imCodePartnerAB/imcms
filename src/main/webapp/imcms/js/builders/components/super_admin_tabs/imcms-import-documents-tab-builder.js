@@ -248,7 +248,7 @@ define(
 			);
 		}
 
-		function buildRangeInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn) {
+		function buildRangeInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox, $listBtn) {
 			const $startIdInput = buildStartIdInput();
 			const $endIdInput = buildEndIdInput();
 			const $basicImportDocumentsInfoFilter = buildBasicImportDocumentsInfoFilter();
@@ -317,7 +317,7 @@ define(
 					endId: endId
 				}
 
-				handleImportBtnClick($progressBar, $listBtn, importDocIdRange, null,$autoImportMenusCheckbox);
+				handleImportBtnClick($progressBar, $listBtn, importDocIdRange, null, $autoImportMenusCheckbox);
 			}
 
 			function onRemoveAliasesBtnClick() {
@@ -364,7 +364,7 @@ define(
 			return $rangeInputContainer;
 		}
 
-		function buildListInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox,$listBtn) {
+		function buildListInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox, $listBtn) {
 			const $metaIdListSelect = buildMultipleEmptySelect();
 			const $metaIdInput = buildMetaIdInput();
 			const $addButton = buildAddMetaIdBtn($metaIdInput, $metaIdListSelect);
@@ -431,7 +431,7 @@ define(
 			}
 
 			function onImportBtnClick() {
-				handleImportBtnClick($progressBar, $listBtn, null, $metaIdListSelect.getImportDocIds(),$autoImportMenusCheckbox);
+				handleImportBtnClick($progressBar, $listBtn, null, $metaIdListSelect.getImportDocIds(), $autoImportMenusCheckbox);
 			}
 
 			function onRemoveAliasesBtnClick() {
@@ -511,6 +511,7 @@ define(
 					tab.$sections.append($section);
 				}
 				tab.$sectionsContainer.show();
+				tab.tabbedContent.init()
 			}
 
 			const $uploadDocumentsCard = new BEM({
@@ -640,11 +641,12 @@ define(
 				elements: {
 					"upload-area": $uploadArea
 				}
-			}).buildBlockStructure("<section>", {});
+			}).buildBlockStructure("<section>", {"data-type": "UPLOAD_SECTION"});
 		}
 
 		function buildEditImportedDocumentsSection() {
-			const $resultContainer = $('<div>', {'class': 'table-import-documents'});
+			// const $resultContainer = $('<div>', {'class': 'table-import-documents'});
+			const $resultContainer = tab.$editArea;
 			const $builder = new ImportDocumentListBuilder($resultContainer);
 			const $listBtn = buildListDocumentsBtn();
 
@@ -658,13 +660,12 @@ define(
 						$listBtn.off('click').on('click', $listInputContainer.onListBtnClick);
 						$listInputContainer.show();
 						$rangeInputContainer.hide();
-						$resultContainer.css("height", "510px");
 					} else {
 						$listBtn.off('click').on('click', $rangeInputContainer.onListBtnClick);
 						$rangeInputContainer.css("display", "inline");
 						$listInputContainer.hide()
-						$resultContainer.css("height", "615px");
 					}
+					tab.$editArea.toggleClass("edit-documents");
 				}
 			});
 
@@ -676,9 +677,8 @@ define(
 					"range-input": $rangeInputContainer,
 					"list-input": $listInputContainer,
 					"list-button": $listBtn,
-					"result-container": $resultContainer
 				}
-			}).buildBlockStructure("<section>", {});
+			}).buildBlockStructure("<section>", {"data-type": "EDIT_DOCUMENTS_SECTION"});
 		}
 
 		function buildImportEntityReferencesSection() {
@@ -799,19 +799,18 @@ define(
 					'category-type': buildButton(texts.importEntityReferenceSection.categoryTypeReferences, ImportEntityType.CATEGORY_TYPE),
 				}
 			}).buildBlockStructure('<div>', {});
-			const $importEntityReferenceContainer = $("<div>");
+			const $importEntityReferenceContainer = tab.$editArea;
 
 			return new BEM({
 				block: "import-entity-references-section",
 				elements: {
 					"import-entity-reference-buttons": $importEntityReferenceButtons,
-					"import-entity-reference-container": $importEntityReferenceContainer
 				}
-			}).buildBlockStructure("<section>", {});
+			}).buildBlockStructure("<section>", {"data-type": "REFERENCES_SECTION"});
 		}
 
 		function buildImportSection() {
-			const $resultContainer = $('<div>', {'class': 'table-import-documents', 'style': 'height:500px'});
+			const $resultContainer = tab.$editArea;
 			const $progressBar = buildProgressBar();
 			const $builder = new ImportDocumentListBuilder($resultContainer);
 			const $listBtn = buildListDocumentsBtn();
@@ -820,8 +819,8 @@ define(
 			});
 			const $autoImportMenusCheckbox = components.checkboxes.imcmsCheckbox("<div>", {text: "Auto import menus"});
 
-			const $rangeInputContainer = buildRangeInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn);
-			const $listInputContainer = buildListInputContainer($resultContainer, $builder, $progressBar,$autoImportMenusCheckbox, $listBtn);
+			const $rangeInputContainer = buildRangeInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox, $listBtn);
+			const $listInputContainer = buildListInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox, $listBtn);
 
 			$listBtn.off('click').on('click', $listInputContainer.onListBtnClick);
 			$importBtn.off('click').on('click', $listInputContainer.onImportBtnClick);
@@ -833,15 +832,14 @@ define(
 						$importBtn.off('click').on('click', $listInputContainer.onImportBtnClick);
 						$listInputContainer.show();
 						$rangeInputContainer.hide();
-						$resultContainer.css("height", "500px");
 
 					} else {
 						$listBtn.off('click').on('click', $rangeInputContainer.onListBtnClick);
 						$importBtn.off('click').on('click', $rangeInputContainer.onImportBtnClick);
 						$rangeInputContainer.css("display", "inline");
 						$listInputContainer.hide()
-						$resultContainer.css("height", "585px");
 					}
+					tab.$editArea.toggleClass("import");
 				}
 			});
 
@@ -851,11 +849,10 @@ define(
 					"switch-input-type-button": $switchInputTypeButton,
 					"range-input": $rangeInputContainer,
 					"list-input": $listInputContainer,
-					"container":$("<div>").append($importBtn).append($autoImportMenusCheckbox),
+					"container": $("<div>").append($importBtn).append($autoImportMenusCheckbox),
 					"progress-bar": $progressBar,
-					"result-container": $resultContainer
 				}
-			}).buildBlockStructure("<section>", {});
+			}).buildBlockStructure("<section>", {"data-type": "IMPORT_SECTION"});
 		}
 
 		function buildControlAliasSection() {
@@ -900,7 +897,7 @@ define(
 					"replace-aliases-button": $replaceAliasesBtn,
 					"progress-bar": $progressBar,
 				}
-			}).buildBlockStructure("<section>", {});
+			}).buildBlockStructure("<section>", {"data-type": "ALIAS_SECTION"});
 		}
 
 		function buildSectionsContainer() {
@@ -939,6 +936,7 @@ define(
 				elements: {
 					"back-button": tab.$backBtn,
 					"sections": tab.$sections = $("<div>"),
+					"edit-area": tab.$editArea = $("<div>"),
 					"control-buttons": $controlButtons
 				}
 			})
@@ -972,6 +970,10 @@ define(
 				this.current = 0;
 			}
 
+			init() {
+				this.#toggleSections();
+			}
+
 			disableControls() {
 				this.$prevButton.attr("disabled", true).addClass("disable");
 				this.$nextButton.attr("disabled", true).addClass("disable");
@@ -990,10 +992,36 @@ define(
 
 			#toggleSections() {
 				this.$sections.children().each((index, section) => {
-					//display: none
 					$(section).hide();
 				});
-				$(this.$sections.children()[this.current]).show();
+				const $currentSection = $(this.$sections.children()[this.current]);
+
+				if ($currentSection.data("type") === "REFERENCES_SECTION") {
+					$currentSection.find("button").first().click();
+					tab.$editArea.addClass("references");
+				}
+
+				if ($currentSection.data("type") !== "UPLOAD_SECTION") {
+					tab.$editArea.show();
+				}
+
+				if ($currentSection.data("type") === "UPLOAD_SECTION" || $currentSection.data("type") === "ALIAS_SECTION") {
+					tab.$editArea.hide();
+				}
+
+				const $listInputs = $(".list-input__meta-id-list-select");
+				const $editDocumentsInput = $listInputs.first();
+				const $importDocumentsInput = $listInputs.last();
+				if ($currentSection.data("type") === "IMPORT_SECTION") {
+					const $options = $editDocumentsInput.children().clone();
+					$importDocumentsInput.append($options);
+				}
+
+				if ($currentSection.data("type") !== "IMPORT_SECTION") {
+					$importDocumentsInput.empty();
+				}
+
+				$currentSection.show();
 			}
 
 			#togglePrev() {
@@ -1017,9 +1045,10 @@ define(
 					this.current++
 				}
 				// this.toggleTabs();
-				this.#toggleSections();
 				this.#toggleNext();
 				this.#togglePrev();
+				tab.$editArea.removeClass("edit-documents import references").empty();
+				this.#toggleSections();
 			}
 
 			prev() {
@@ -1027,9 +1056,10 @@ define(
 					this.current--
 				}
 				// this.toggleTabs();
-				this.#toggleSections();
 				this.#toggleNext();
 				this.#togglePrev();
+				tab.$editArea.removeClass("edit-documents import references").empty();
+				this.#toggleSections();
 			}
 		}
 
