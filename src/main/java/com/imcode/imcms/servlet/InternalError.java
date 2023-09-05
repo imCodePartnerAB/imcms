@@ -67,15 +67,17 @@ public class InternalError extends HttpServlet {
 
         int userId = Optional.ofNullable(Utility.getLoggedOnUser(request))
                 .map(UserDomainObject::getId)
-                .orElse(2);
+               .orElse(2);
+        String errorId;
         try {
             String responseJson = sendError((Throwable) exception, request, userId);
-            String errorId = logError(responseJson, userId);
-            request.setAttribute("errorId", errorId);
+            errorId = logError(responseJson, (Throwable) exception, userId);
         } catch (Exception e) {
-            request.setAttribute("errorId", 0);
+            errorId = "0";
+            logError((Throwable) exception, errorId, userId);
         }
 
+        request.setAttribute("errorId", errorId);
         request.getRequestDispatcher(ERROR_500_VIEW_URL).forward(request, response);
     }
 
@@ -169,16 +171,20 @@ public class InternalError extends HttpServlet {
         return requestInfo;
     }
 
-    private String logError(String response, int userId) throws IOException {
+    private String logError(String response, Throwable exception, int userId) throws IOException {
         HashMap<String, Object> responseMap = new ObjectMapper().readValue(response, HashMap.class);
         String errorId = (String) responseMap.get("error_id");
         String state = (String) responseMap.get("state");
         if (state.equals("new")) {
-            LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
+            logError(exception, errorId, userId);
         } else {
             LOGGER.info("Error with id " + errorId + " is already reported");
         }
         return errorId;
+    }
+
+    private void logError(Throwable exception, String errorId, int userId) {
+        LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};", exception);
     }
 
     private HttpClient createHttpClient() throws Exception {
