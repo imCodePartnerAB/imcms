@@ -2,12 +2,14 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.DocumentContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentDataDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
@@ -34,6 +36,8 @@ public class DocumentDataControllerTest  extends AbstractControllerTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
     @Autowired
+    private LanguageDataInitializer languageDataInitializer;
+    @Autowired
     private DocumentService<DocumentDTO> documentService;
 
     @BeforeEach
@@ -45,6 +49,9 @@ public class DocumentDataControllerTest  extends AbstractControllerTest {
         userSuperAdmin.setLanguageIso639_2("eng");
         userSuperAdmin.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(userSuperAdmin);
+
+        final Language currentLanguage = languageDataInitializer.createData().get(0);
+        Imcms.setLanguage(currentLanguage);
     }
 
     @Override

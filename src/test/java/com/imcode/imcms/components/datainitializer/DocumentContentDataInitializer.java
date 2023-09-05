@@ -38,8 +38,10 @@ public class DocumentContentDataInitializer extends TestDataCleaner{
 
     public DocumentDataDTO createData(Version version) {
         Language language = languageDataInitializer.createData().get(0);
-        Imcms.setLanguage(language);
+        return createData(version, List.of(language));
+    }
 
+    public DocumentDataDTO createData(Version version, List<Language> languages) {
         final int indexLoopWithContent = 1;
 
         final LoopDTO loopDTO = new LoopDTO(version.getDocId(), indexLoopWithContent, Collections.emptyList());
@@ -49,33 +51,37 @@ public class DocumentContentDataInitializer extends TestDataCleaner{
 
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(indexLoopWithContent, 1);
 
-        final TextDTO textDTO = new TextDTO(textDataInitializer.createText(1, version, "test Text"));
-        final TextDTO textDTO2 = new TextDTO(textDataInitializer.createText(2, version, "test Text2"));
+        final List<TextDTO> textsDTOList = new ArrayList<>();
+        final List<TextDTO> textsDTOLoopList = new ArrayList<>();
 
-        final TextDTO textInLoop = new TextDTO(textDataInitializer.createText(3, new LanguageJPA(language), version, "test Text3 in Loop", loopEntryRef));
+        final List<ImageDTO> imagesDTOList = new ArrayList<>();
+        final List<ImageDTO> imagesDTOLoopList = new ArrayList<>();
 
-        final ImageDTO imageDTO = imageJPAToImageDTO.apply(imageDataInitializer.createData(1, version));
-        final ImageDTO imageDTO2 = imageJPAToImageDTO.apply(imageDataInitializer.createData(2, version));
+        for(Language language: languages){
+            textsDTOList.add(new TextDTO(textDataInitializer.createText(1, new LanguageJPA(language), version, "test Text" + language.getCode())));
+            textsDTOList.add(new TextDTO(textDataInitializer.createText(2, new LanguageJPA(language), version, "test Text2" + language.getCode())));
 
-        final ImageDTO imageInLoop = imageJPAToImageDTO.apply(imageDataInitializer.generateImage(3, new LanguageJPA(language), version, loopEntryRef));
+            textsDTOLoopList.add(new TextDTO(textDataInitializer.createText(3, new LanguageJPA(language), version, "test Text3 in Loop" + language.getCode(), loopEntryRef)));
 
-        MenuDTO menuDTO = menuDataInitializer.createData(true,1, version, null, 3);
+            imagesDTOList.add(imageJPAToImageDTO.apply(imageDataInitializer.generateImage(1, new LanguageJPA(language), version, null)));
+            imagesDTOList.add(imageJPAToImageDTO.apply(imageDataInitializer.generateImage(2, new LanguageJPA(language), version, null)));
 
-        List<TextDTO> textsDTOList = Arrays.asList(textDTO, textDTO2);
-        List<ImageDTO> imagesDTOList = Arrays.asList(imageDTO, imageDTO2);
-        List<MenuDTO> menusDTOList = Collections.singletonList(menuDTO);
-        Set<LoopDTO> loopsDTOList = new HashSet(Arrays.asList(loopDTO, loopDTO2));
-        LoopDataDTO loopDataDTO = new LoopDataDTO(Collections.singletonList(textInLoop), Collections.singletonList(imageInLoop));
+            imagesDTOLoopList.add(imageJPAToImageDTO.apply(imageDataInitializer.generateImage(3, new LanguageJPA(language), version, loopEntryRef)));
+        }
 
-        return new DocumentDataDTO(textsDTOList, imagesDTOList, menusDTOList, loopsDTOList, loopDataDTO, Collections.emptySet());
+        final List<MenuDTO> menusDTOList = Collections.singletonList(menuDataInitializer.createData(true, 1, version, null, 3));
+        final Set<LoopDTO> loopsDTOList = Set.of(loopDTO, loopDTO2);
+        final LoopDataDTO loopDataDTO = new LoopDataDTO(loopsDTOList, textsDTOLoopList, imagesDTOLoopList);
+
+        return new DocumentDataDTO(textsDTOList, imagesDTOList, menusDTOList, loopDataDTO, Collections.emptySet());
     }
 
     public DocumentDataDTO createData() {
         Imcms.setLanguage(languageDataInitializer.createData().get(0));
 
         return new DocumentDataDTO(Collections.emptyList(), Collections.emptyList(),
-                            Collections.emptyList(), Collections.emptySet(),
-                            new LoopDataDTO(Collections.emptyList(), Collections.emptyList()),
+                            Collections.emptyList(),
+                            new LoopDataDTO(Collections.emptySet(), Collections.emptyList(), Collections.emptyList()),
                             Collections.emptySet());
     }
 
