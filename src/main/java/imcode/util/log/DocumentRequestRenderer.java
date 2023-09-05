@@ -37,7 +37,7 @@ public class DocumentRequestRenderer  {
 
         int metaId = document.getId();
         int docType = document.getDocumentTypeId();
-        String headline = document.getHeadline();
+        String headline = document.getHeadline() != null ? document.getHeadline() : "";
 
         StringBuffer result = new StringBuffer();
         result.append('/');
