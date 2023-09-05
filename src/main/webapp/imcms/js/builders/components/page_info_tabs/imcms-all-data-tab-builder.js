@@ -33,7 +33,7 @@ define(
 			    buildTextList(dataDocumentDTO.textsDTO);
 			    buildMenuList(dataDocumentDTO.menusDTO);
 			    buildCategoryList(dataDocumentDTO.categoriesDTO);
-				buildLoopList(dataDocumentDTO.loopsDTO, dataDocumentDTO.loopDataDTO);
+				buildLoopList(dataDocumentDTO.loopDataDTO);
 			    buildImageList(dataDocumentDTO.imagesDTO);
 		     });
 
@@ -152,7 +152,8 @@ define(
                 }).buildBlockStructure('<div>');
             }
 
-            function buildLoopList(loopsData, loopsContentData){
+            function buildLoopList(loopsContentData){
+                let loopsData = loopsContentData.loopsDTO;
 
                 if (loopsData === undefined || loopsData === null || loopsData.length === 0){
                     $documentLoopDataContainer.append(buildTextTitle(localization.loop.title));
