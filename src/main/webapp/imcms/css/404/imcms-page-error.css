@@ -12,6 +12,7 @@
     top: 100px;
     left: 50%;
     z-index: 10005;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 .imcms-page-error-head {
