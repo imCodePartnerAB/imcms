@@ -4,5 +4,5 @@ import com.imcode.imcms.domain.dto.DocumentDataDTO;
 
 public interface DocumentDataService {
 
-    DocumentDataDTO getDataByDocId(Integer id);
+    DocumentDataDTO getDataByDocIdAndAvailableLangs(Integer id);
 }

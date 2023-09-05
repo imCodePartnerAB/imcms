@@ -29,7 +29,7 @@ public class DocumentDataController {
     @GetMapping("/all-data/{id}")
     @CheckAccess(docPermission = AccessContentType.DOC_INFO)
     public DocumentDataDTO getAllData(@PathVariable Integer id) {
-        return documentDataService.getDataByDocId(id);
+        return documentDataService.getDataByDocIdAndAvailableLangs(id);
     }
 
     @GetMapping("/versions/{id}")

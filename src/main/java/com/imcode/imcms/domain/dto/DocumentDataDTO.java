@@ -15,7 +15,6 @@ public class DocumentDataDTO {
     private List<TextDTO> textsDTO;
     private List<ImageDTO> imagesDTO;
     private List<MenuDTO> menusDTO;
-    private Set<LoopDTO> loopsDTO;
     private LoopDataDTO loopDataDTO;
     private Set<CategoryDTO> categoriesDTO;
 }

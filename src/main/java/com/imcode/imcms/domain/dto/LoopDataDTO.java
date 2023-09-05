@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,7 @@ import java.util.List;
 public class LoopDataDTO {
     private static final long serialVersionUID = 2674993018443685749L;
 
+    private Set<LoopDTO> loopsDTO;
     private List<TextDTO> textsDTO;
     private List<ImageDTO> imagesDTO;
 
