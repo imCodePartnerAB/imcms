@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="imcode.util.Utility" %>
+<%@ page import="imcode.server.Imcms" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
@@ -44,7 +45,10 @@
         <div class="imcms-field">
             <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/3" bundle="${resource_property}"/>
             <br>
-            <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/4" bundle="${resource_property}"/>
+            <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/4" bundle="${resource_property}">
+                <fmt:param value="<%=Imcms.getServices().getSystemData().getWebMaster()%>"/>
+                <fmt:param value="<%=Imcms.getServices().getSystemData().getWebMasterAddress()%>"/>
+            </fmt:message>
             <h3><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/6" bundle="${resource_property}"/>
                 ${errorId}
             </h3>
