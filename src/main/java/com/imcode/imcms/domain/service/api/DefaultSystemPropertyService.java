@@ -43,6 +43,7 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
         propertyGetById.setValue(systemProperty.getValue());
 
         final SystemProperty savedProperty = systemPropertyRepository.save(propertyGetById);
+        systemPropertyRepository.flush();
 
         Imcms.getServices().reloadSystemData();
         return savedProperty;
