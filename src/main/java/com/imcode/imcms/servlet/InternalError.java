@@ -73,6 +73,9 @@ public class InternalError extends HttpServlet {
             String responseJson = sendError((Throwable) exception, request, userId);
             errorId = logError(responseJson, (Throwable) exception, userId);
         } catch (Exception e) {
+
+            LOGGER.error("Exception when sending an error to ICM", e);
+
             errorId = "0";
             logError((Throwable) exception, errorId, userId);
         }
