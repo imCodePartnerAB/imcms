@@ -109,9 +109,10 @@ define(
                     $imageInfoPath.text(path.normalize(`${imageData.path}`)).show();
                     $imageSizeInfo.show();
                     $noImageInfo.hide();
+                    $advancedModeBtn.show();
                 } else {
                     $editableControls.children().not(".imcms-editable-controls-area__buttons").not(".imcms-history-mode").hide();
-                    $(".imcms-image-advanced-button").hide();
+                    $advancedModeBtn.hide();
 
                     $imageInfoPath.hide();
                     $imageSizeInfo.hide();
