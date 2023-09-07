@@ -57,7 +57,13 @@ module.exports = class WindowTabsBuilder {
             $tab.addClass(ACTIVE_TAB_CLASS_NAME);
 
             this.panels$.forEach(($panel, number) => {
-                (index === number) ? $panel.slideDown() : $panel.slideUp();
+
+                if(index === number){
+                    $panel.slideDown();
+                    $panel.closest(".imcms-right-side").animate({ scrollTop: 0 }, 200);
+                }else{
+                    $panel.slideUp();
+                }
             });
         } else {
             $tab.removeClass(ACTIVE_TAB_CLASS_NAME);
