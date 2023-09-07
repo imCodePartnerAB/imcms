@@ -21,7 +21,7 @@ define('imcms-metadata-tab-builder',
 		}
 
 		function fetchMetaTags() {
-			metaTagsRestApi.readAll()
+			tabData.readMetaTagsRequest = metaTagsRestApi.readAll()
 				.done(metaTags => {
 					tabData.metaTags = metaTags;
 					tabData.$metaTags = metaTags.map(metaTag => ({
@@ -157,8 +157,10 @@ define('imcms-metadata-tab-builder',
 		];
 
 		MetadataTab.prototype.fillTabDataFromDocument = (document) => {
-			tabData.document = document;
-			tabData.$metadataContainer.append(document.commonContents.map(buildMetadata));
+			tabData.readMetaTagsRequest.then(() => {
+				tabData.document = document;
+				tabData.$metadataContainer.append(document.commonContents.map(buildMetadata));
+			});
 		};
 
 		MetadataTab.prototype.saveData = (document) => {
