@@ -23,6 +23,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     isInWasteBasket: Imcms.isInWasteBasket,
     isSuperAdmin: Imcms.isSuperAdmin,
 	hasFileAdminAccess: Imcms.hasFileAdminAccess,
+    isImageEditorAltTextRequired: Imcms.isImageEditorAltTextRequired,
     documentationLink: Imcms.documentationLink,
     editOptions: {
         isEditDocInfo: Imcms.editOptions.isEditDocInfo,
