@@ -185,6 +185,7 @@ class MappingConfig {
             Optional.ofNullable(image.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(dto::setLoopEntryRef);
             dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
             dto.setInText(image.isInText());
+            //IMCMS-506 altText should always contain a value
             dto.setAlternateText(StringUtils.defaultIfEmpty(image.getAlternateText().trim(), " "));
             dto.setLinkUrl(image.getLinkUrl());
             dto.setBorder(image.getBorder());
@@ -765,7 +766,7 @@ class MappingConfig {
             image.setBorder(importImage.getBorder());
             image.setTarget(importImage.getTarget());
             image.setAlign(importImage.getAlign());
-            image.setAlternateText(importImage.getAltText());
+            image.setAlternateText(StringUtils.defaultString(importImage.getAltText(), " "));
             image.setLowResolutionUrl(importImage.getLowResolutionUrl());
             image.setPath(importImage.getImageUrl());
             image.setLinkUrl(image.getLinkUrl());
