@@ -58,6 +58,7 @@ public class ViewDocumentController {
     private final PublicDocumentsCache publicDocumentsCache;
     private final LanguageService languageService;
     private final String documentationLink;
+    private final boolean isImageEditorAltTextRequired;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
@@ -70,7 +71,8 @@ public class ViewDocumentController {
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
                            PublicDocumentsCache publicDocumentsCache,
                            LanguageService languageService,
-                           @Value("${documentation-host}") String documentationLink) {
+                           @Value("${documentation-host}") String documentationLink,
+                           @Value("${image.editor.alt-text.required}") boolean isImageEditorAltTextRequired) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
@@ -84,6 +86,7 @@ public class ViewDocumentController {
         this.publicDocumentsCache = publicDocumentsCache;
         this.languageService = languageService;
         this.documentationLink = documentationLink;
+        this.isImageEditorAltTextRequired = isImageEditorAltTextRequired;
     }
 
     @RequestMapping({"", "/"})
@@ -212,6 +215,7 @@ public class ViewDocumentController {
         mav.addObject("accessToDocumentEditor", rolePermissions.isAccessToDocumentEditor());
         mav.addObject("accessToPublishCurrentDoc", accessService.hasUserPublishAccess(user, docId));
         mav.addObject("documentationLink", documentationLink);
+        mav.addObject("isImageEditorAltTextRequired", isImageEditorAltTextRequired);
 
         return mav;
     }
