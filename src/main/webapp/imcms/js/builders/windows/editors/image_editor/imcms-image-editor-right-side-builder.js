@@ -155,7 +155,8 @@ define(
 
                     const $textBox = components.texts.textBox("<div>", {
                         text: texts.altText,
-                        name: "altText"
+                        name: "altText",
+                        required: imcms.isImageEditorAltTextRequired
                     });
 
                     opts.imageDataContainers.$altText = $altText = $textBox;
@@ -768,16 +769,24 @@ define(
                                     imageWindowBuilder.closeWindow();
                                 }
                             })
-                            .fail(() => modal.buildErrorWindow(texts.error.createFailed));
+                            .fail((response) => {
+                                if (response.status === 400) {
+                                    modal.buildErrorWindow(texts.altTextRequired);
+                                    return;
+                                }
+                                modal.buildErrorWindow(texts.error.createFailed)
+                            });
                     }
                 }
 
                 function saveAndClose() {
-                    if (!$altText.$input.val()) {
-                        modal.buildModalWindow(texts.altTextConfirm, callBackAltText);
-
-                    } else {
+                    //trim because altText always has value " " IMCMS-506
+                    if ($altText.$input.val().trim()) {
                         callBackAltText(true);
+                    } else if (imcms.isImageEditorAltTextRequired) {
+                        modal.buildWarningWindow(texts.altTextRequired);
+                    } else {
+                        modal.buildModalWindow(texts.altTextConfirm, callBackAltText);
                     }
                 }
 

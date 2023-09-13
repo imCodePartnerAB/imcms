@@ -4,6 +4,7 @@ import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.component.ImageCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.exception.ImageAlternateTextRequiredException;
 import com.imcode.imcms.domain.factory.ImageInTextFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
@@ -20,8 +21,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.util.ImcmsImageUtils;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,7 @@ import static imcode.server.ImcmsConstants.OTHER_CACHE_NAME;
 import static imcode.server.ImcmsConstants.PUBLIC_CACHE_NAME;
 import static java.util.stream.Collectors.*;
 
+@Log4j2
 @Transactional
 @Service("imageService")
 class DefaultImageService extends AbstractVersionedContentService<ImageJPA, ImageRepository> implements ImageService {
@@ -51,6 +55,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     private final StorageClient storageClient;
 
     private final ImageCacheManager imageCacheManager;
+    private final boolean isImageEditorAltTextRequired;
 
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
@@ -59,7 +64,8 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                         ImageInTextFactory imageInTextFactory,
                         Function<ImageJPA, ImageDTO> imageJPAToImageDTO,
                         @Qualifier("imageStorageClient") StorageClient storageClient,
-                        ImageCacheManager imageCacheManager) {
+                        ImageCacheManager imageCacheManager,
+                        @Value("${image.editor.alt-text.required}") boolean isImageEditorAltTextRequired) {
 
         super(imageRepository);
         this.versionService = versionService;
@@ -73,6 +79,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         this.storageClient = storageClient;
 
         this.imageCacheManager = imageCacheManager;
+        this.isImageEditorAltTextRequired = isImageEditorAltTextRequired;
     }
 
     @Override
@@ -177,6 +184,11 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
 	@CacheEvict(cacheNames = OTHER_CACHE_NAME, key = "#imageDTO.docId+'-'+#imageDTO.langCode+'-'+#imageDTO.index+'-'+#imageDTO.loopEntryRef")
     @Override
     public void saveImage(ImageDTO imageDTO) {
+        if (isImageEditorAltTextRequired && StringUtils.isBlank(imageDTO.getAlternateText())){
+            log.error("Failed to save image: alt text missing!");
+            throw new ImageAlternateTextRequiredException();
+        }
+
         final Integer docId = imageDTO.getDocId();
         final Version version = versionService.getDocumentWorkingVersion(docId);
 
