@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -138,15 +139,11 @@ class DefaultImageFolderService implements ImageFolderService {
     @Override
     public ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages) {
         final StoragePath folderPath = storageImagesPath.resolve(DIRECTORY, folderToGetImages.getPath());
-        final List<StoragePath> filesPath = storageClient.listPaths(folderPath);
 
-        final List<ImageFileDTO> folderFiles = new ArrayList<>();
-
-        for(StoragePath filePath: filesPath){
-            if (Format.isImage(FilenameUtils.getExtension(filePath.toString()))) {
-                folderFiles.add(storagePathToImageFileDTO.apply(filePath));
-            }
-        }
+        final List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
+                .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
+                .map(storagePathToImageFileDTO)
+                .collect(Collectors.toList());
 
         folderToGetImages.setFiles(folderFiles);
         return folderToGetImages;

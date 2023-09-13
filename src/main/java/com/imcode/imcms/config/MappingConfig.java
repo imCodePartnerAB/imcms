@@ -517,13 +517,13 @@ class MappingConfig {
                         .sorted(Comparator.comparing(StoragePath::getName))
                         .collect(Collectors.toList());
 
-                for (StoragePath path : filesPath) {
+                filesPath.parallelStream().forEach(path -> {
                     if (path.getType() == DIRECTORY && !path.equals(generatedImagesPath)) {
                         subFolders.add(this.apply(path, false));
                     } else if (isRoot && Format.isImage(FilenameUtils.getExtension(path.getName()))) {
                         folderFiles.add(storagePathToImageFileDTO.apply(path));
                     }
-                }
+                });
 
                 imageFolderDTO.setFiles(folderFiles);
                 imageFolderDTO.setFolders(subFolders);
