@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageHistoryRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Config;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +34,20 @@ public class DefaultImageHistoryService implements ImageHistoryService {
     private final UserService userService;
     private final TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA;
     private final Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO;
+    private final int contentHistoryRecordsSize;
 
-
-    public DefaultImageHistoryService(ImageHistoryRepository imageHistoryRepository, LanguageService languageService, UserService userService, TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA, Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO) {
+    public DefaultImageHistoryService(ImageHistoryRepository imageHistoryRepository,
+                                      LanguageService languageService,
+                                      UserService userService,
+                                      TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA,
+                                      Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO,
+                                      Config config) {
         this.imageHistoryRepository = imageHistoryRepository;
         this.languageService = languageService;
         this.userService = userService;
         this.imageDTOToImageJPA = imageDTOToImageJPA;
         this.imageHistoryJPAToImageHistoryDTO = imageHistoryJPAToImageHistoryDTO;
+        this.contentHistoryRecordsSize = config.getContentHistoryRecordsSize();
     }
 
     @Override
@@ -51,7 +58,8 @@ public class DefaultImageHistoryService implements ImageHistoryService {
                 LocalDateTime.now()
         );
 
-        imageHistoryRepository.save(mappedHistory);
+        final ImageHistoryJPA save = imageHistoryRepository.save(mappedHistory);
+        clearHistoryIfLimitExceeded(save);
     }
 
     @Override
@@ -62,7 +70,8 @@ public class DefaultImageHistoryService implements ImageHistoryService {
                 LocalDateTime.now()
         );
 
-        imageHistoryRepository.save(mappedHistory);
+        final ImageHistoryJPA save = imageHistoryRepository.save(mappedHistory);
+        clearHistoryIfLimitExceeded(save);
     }
 
     @Override
@@ -83,5 +92,12 @@ public class DefaultImageHistoryService implements ImageHistoryService {
                 .sorted(Comparator.comparing(ImageHistoryJPA::getModifiedAt).reversed())
                 .map(imageHistoryJPAToImageHistoryDTO)
                 .collect(Collectors.toList());
+    }
+
+    private void clearHistoryIfLimitExceeded(ImageHistoryJPA save){
+        final Integer loopIndex = Optional.ofNullable(save.getLoopEntryRef()).map(LoopEntryRefJPA::getLoopIndex).orElse(null);
+        final Integer loopEntryIndex = Optional.ofNullable(save.getLoopEntryRef()).map(LoopEntryRefJPA::getLoopEntryIndex).orElse(null);
+        imageHistoryRepository.clearHistoryIfLimitExceeded(save.getVersion().getDocId(), save.getIndex(), save.getLanguage().getId(),
+                loopIndex, loopEntryIndex, contentHistoryRecordsSize);
     }
 }

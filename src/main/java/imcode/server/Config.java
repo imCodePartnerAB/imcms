@@ -46,6 +46,7 @@ public class Config {
     private long indexingSchedulePeriodInMinutes;
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100;
+    private int contentHistoryRecordsSize;
     private String keyStorePath;
     private String keyStoreType;
     private String workaroundUriEncoding;
@@ -221,6 +222,14 @@ public class Config {
 
     public void setDocumentCacheMaxSize(int documentCacheMaxSize) {
         this.documentCacheMaxSize = documentCacheMaxSize;
+    }
+
+    public int getContentHistoryRecordsSize() {
+        return contentHistoryRecordsSize;
+    }
+
+    public void setContentHistoryRecordsSize(int contentHistoryRecordsSize) {
+        this.contentHistoryRecordsSize = contentHistoryRecordsSize;
     }
 
     public String getKeyStorePath() {
