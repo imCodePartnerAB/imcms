@@ -24,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @Transactional
@@ -104,6 +103,98 @@ public class ImageHistoryServiceTest extends WebAppSpringTestConfig {
         final List<ImageHistoryDTO> actual = imageHistoryService.getAll(imageDTO);
 
         assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void saveImageHistory_When_HistoryRecordsLimitExceeded_Expect_SavedAndOutdatedRecordDeleted() {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
+
+        final int contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            imageHistoryService.save(image);
+        }
+
+        final List<ImageHistoryDTO> imageHistoryDTOsBeforeLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsBeforeLimitExceeded.size());
+
+        imageHistoryService.save(image);
+
+        final List<ImageHistoryDTO> imageHistoryDTOsAfterLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsAfterLimitExceeded.size());
+
+        ImageHistoryDTO outdatedRecord = imageHistoryDTOsBeforeLimitExceeded.get(imageHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(imageHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
+    }
+
+    @Test
+    public void saveImageHistory_When_HistoryRecordsLimitExceeded_And_LoopIsNull_Expect_SavedAndOutdatedRecordDeleted() {
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
+
+        final int contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            imageHistoryService.save(image);
+        }
+
+        final List<ImageHistoryDTO> imageHistoryDTOsBeforeLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsBeforeLimitExceeded.size());
+
+        imageHistoryService.save(image);
+
+        final List<ImageHistoryDTO> imageHistoryDTOsAfterLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsAfterLimitExceeded.size());
+
+        ImageHistoryDTO outdatedRecord = imageHistoryDTOsBeforeLimitExceeded.get(imageHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(imageHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
+    }
+
+    @Test
+    public void saveImageHistory_When_UsedDTOObject_And_HistoryRecordsLimitExceeded_Expect_SavedAndOutdatedRecordDeleted() {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
+        final Version version = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+
+        long contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            imageHistoryService.save(imageDTO, languageRepository.findByCode(ImcmsConstants.ENG_CODE), version);
+        }
+
+        final List<ImageHistoryDTO> imageHistoryDTOsBeforeLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsBeforeLimitExceeded.size());
+
+        imageHistoryService.save(imageDTO, languageRepository.findByCode(ImcmsConstants.ENG_CODE), version);
+
+        final List<ImageHistoryDTO> imageHistoryDTOsAfterLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsAfterLimitExceeded.size());
+
+        ImageHistoryDTO outdatedRecord = imageHistoryDTOsBeforeLimitExceeded.get(imageHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(imageHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
+    }
+
+    @Test
+    public void saveImageHistory_When_UsedDTOObject_And_HistoryRecordsLimitExceeded_And_LoopIsNull_Expect_SavedAndOutdatedRecordDeleted() {
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
+        final Version version = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+
+        long contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            imageHistoryService.save(imageDTO, languageRepository.findByCode(ImcmsConstants.ENG_CODE), version);
+        }
+
+        final List<ImageHistoryDTO> imageHistoryDTOsBeforeLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsBeforeLimitExceeded.size());
+
+        imageHistoryService.save(imageDTO, languageRepository.findByCode(ImcmsConstants.ENG_CODE), version);
+
+        final List<ImageHistoryDTO> imageHistoryDTOsAfterLimitExceeded = imageHistoryService.getAll(imageDTO);
+        assertEquals(contentHistoryRecordsSize, imageHistoryDTOsAfterLimitExceeded.size());
+
+        ImageHistoryDTO outdatedRecord = imageHistoryDTOsBeforeLimitExceeded.get(imageHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(imageHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
     }
 
     @Test

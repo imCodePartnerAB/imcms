@@ -24,7 +24,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @Transactional
@@ -73,6 +73,53 @@ public class TextHistoryServiceTest extends WebAppSpringTestConfig {
         final int actual = textHistoryRepository.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void saveTextHistory_When_HistoryRecordsLimitExceeded_Expect_SavedAndOutdatedRecordDeleted(){
+        assertTrue(textHistoryRepository.findAll().isEmpty());
+
+        final int contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+
+        final List<TextDTO> textDTOs = textList(contentHistoryRecordsSize + 1);
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            textHistoryService.save(textDTOs.get(i));
+        }
+
+        final List<TextHistoryDTO> textHistoryDTOsBeforeLimitExceeded = textHistoryService.getAll(textDTOs.get(0));
+        assertEquals(contentHistoryRecordsSize, textHistoryDTOsBeforeLimitExceeded.size());
+
+        textHistoryService.save(textDTOs.get(contentHistoryRecordsSize));
+
+        final List<TextHistoryDTO> textHistoryDTOsAfterLimitExceeded = textHistoryService.getAll(textDTOs.get(0));
+        assertEquals(contentHistoryRecordsSize, textHistoryDTOsAfterLimitExceeded.size());
+
+        TextHistoryDTO outdatedRecord = textHistoryDTOsBeforeLimitExceeded.get(textHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(textHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
+    }
+
+    @Test
+    public void saveTextHistory_When_HistoryRecordsLimitExceeded_And_LoopIsNull_Expect_SavedAndOutdatedRecordDeleted(){
+        assertTrue(textHistoryRepository.findAll().isEmpty());
+
+        final int contentHistoryRecordsSize = Imcms.getServices().getConfig().getContentHistoryRecordsSize();
+
+        final List<TextDTO> textDTOs = textList(contentHistoryRecordsSize + 1);
+        textDTOs.forEach(textDTO -> textDTO.setLoopEntryRef(null));
+        for(int i=0; i<contentHistoryRecordsSize; i++){
+            textHistoryService.save(textDTOs.get(i));
+        }
+
+        final List<TextHistoryDTO> textHistoryDTOsBeforeLimitExceeded = textHistoryService.getAll(textDTOs.get(0));
+        assertEquals(contentHistoryRecordsSize, textHistoryDTOsBeforeLimitExceeded.size());
+
+        textHistoryService.save(textDTOs.get(contentHistoryRecordsSize));
+
+        final List<TextHistoryDTO> textHistoryDTOsAfterLimitExceeded = textHistoryService.getAll(textDTOs.get(0));
+        assertEquals(contentHistoryRecordsSize, textHistoryDTOsAfterLimitExceeded.size());
+
+        TextHistoryDTO outdatedRecord = textHistoryDTOsBeforeLimitExceeded.get(textHistoryDTOsBeforeLimitExceeded.size() - 1);
+        assertFalse(textHistoryDTOsAfterLimitExceeded.contains(outdatedRecord));
     }
 
     @Test

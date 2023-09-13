@@ -6,20 +6,16 @@ import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class TextHistoryJPARepositoryTest extends WebAppSpringTestConfig {
@@ -156,5 +152,72 @@ public class TextHistoryJPARepositoryTest extends WebAppSpringTestConfig {
         assertEquals(expected, defaultTextHistory);
         assertEquals(savedTextHistory_1, textHistory_1);
         assertEquals(savedTextHistory_2, textHistory_2);
+    }
+
+    @Test
+    public void clearHistoryIfLimitExceeded_When_LoopIsNull_Expect_OutdatedHistoryDeleted() {
+        assertTrue(textHistoryRepository.findAll().isEmpty());
+
+        final int historySize = 5;
+        final int limit = 2;
+
+        final List<TextHistoryJPA> textHistoryList = new ArrayList<>();
+        for (int i = 0; i < historySize; i++) {
+            final TextHistoryJPA newTextHistory = new TextHistoryJPA(textHistoryJPA);
+            newTextHistory.setId(null);
+            newTextHistory.setDocId(textHistoryJPA.getDocId());
+            newTextHistory.setLanguage(textHistoryJPA.getLanguage());
+            newTextHistory.setModifiedDt(new Date());
+            newTextHistory.setModifiedBy(textHistoryJPA.getModifiedBy());
+
+            textHistoryList.add(textHistoryRepository.save(newTextHistory));
+        }
+
+        assertEquals(historySize, textHistoryRepository.findAll().size());
+
+        textHistoryRepository.clearHistoryIfLimitExceeded(textHistoryJPA.getDocId(), textHistoryJPA.getIndex(), textHistoryJPA.getLanguage().getId(),
+                null, null, limit);
+
+        final List<TextHistoryJPA> textHistoryListAfterClear = textHistoryRepository.findAll();
+
+        assertEquals(limit, textHistoryListAfterClear.size());
+        assertTrue(textHistoryList.stream().limit(historySize - limit).noneMatch(textHistoryListAfterClear::contains));
+        assertTrue(textHistoryList.stream().skip(Math. abs(limit - historySize)).allMatch(textHistoryListAfterClear::contains));
+    }
+
+    @Test
+    public void clearHistoryIfLimitExceeded_When_LoopIsNotNull_Expect_OutdatedHistoryDeleted() {
+        assertTrue(textHistoryRepository.findAll().isEmpty());
+
+        final int historySize = 5;
+        final int limit = 2;
+
+        final LoopEntryRefJPA loopEntryRefJPA = new LoopEntryRefJPA();
+        loopEntryRefJPA.setLoopIndex(1);
+        loopEntryRefJPA.setLoopEntryIndex(1);
+
+        final List<TextHistoryJPA> textHistoryList = new ArrayList<>();
+        for (int i = 0; i < historySize; i++) {
+            final TextHistoryJPA newTextHistory = new TextHistoryJPA(textHistoryJPA);
+            newTextHistory.setId(null);
+            newTextHistory.setDocId(textHistoryJPA.getDocId());
+            newTextHistory.setLanguage(textHistoryJPA.getLanguage());
+            newTextHistory.setModifiedDt(new Date());
+            newTextHistory.setModifiedBy(textHistoryJPA.getModifiedBy());
+            newTextHistory.setLoopEntryRef(loopEntryRefJPA);
+
+            textHistoryList.add(textHistoryRepository.save(newTextHistory));
+        }
+
+        assertEquals(historySize, textHistoryRepository.findAll().size());
+
+        textHistoryRepository.clearHistoryIfLimitExceeded(textHistoryJPA.getDocId(), textHistoryJPA.getIndex(), textHistoryJPA.getLanguage().getId(),
+                loopEntryRefJPA.getLoopIndex(), loopEntryRefJPA.getLoopEntryIndex(), limit);
+
+        final List<TextHistoryJPA> textHistoryListAfterClear = textHistoryRepository.findAll();
+
+        assertEquals(limit, textHistoryListAfterClear.size());
+        assertTrue(textHistoryList.stream().limit(historySize - limit).noneMatch(textHistoryListAfterClear::contains));
+        assertTrue(textHistoryList.stream().skip(Math. abs(limit - historySize)).allMatch(textHistoryListAfterClear::contains));
     }
 }
