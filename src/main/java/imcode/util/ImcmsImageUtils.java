@@ -451,17 +451,21 @@ public class ImcmsImageUtils {
     }
 
     public static ExifDTO getExif(InputStream inputStream) throws ImageProcessingException, IOException {
-        inputStream = new BufferedInputStream(inputStream, inputStream.available());
-        inputStream.mark(Integer.MAX_VALUE);
-
         final ExifDTO exifDTO = new ExifDTO();
-        exifDTO.setAllExifInfo(getExifInfo(inputStream));
 
-        try{
+        try {
+            inputStream = new BufferedInputStream(inputStream, inputStream.available());
+            inputStream.mark(Integer.MAX_VALUE);
+
+            exifDTO.setAllExifInfo(getExifInfo(inputStream));
+
             inputStream.reset();
             exifDTO.setCustomExif(ExifDTO.CustomExifDTO.mapToCustomExif(getCommentMetadata(inputStream)));
-        }catch (Exception e){
+        } catch (Exception e) {
+            if (exifDTO.getAllExifInfo() == null) exifDTO.setAllExifInfo(Collections.emptyList());
             exifDTO.setCustomExif(new ExifDTO.CustomExifDTO());
+
+            log.error("Exception while getting Exif info", e);
         }
 
         return exifDTO;
