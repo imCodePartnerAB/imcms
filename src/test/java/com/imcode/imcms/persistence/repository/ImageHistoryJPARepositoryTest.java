@@ -4,16 +4,14 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import imcode.server.ImcmsConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,4 +123,60 @@ public class ImageHistoryJPARepositoryTest extends WebAppSpringTestConfig {
         assertEquals(expectedSv, imageHistory_sv);
     }
 
+    @Test
+    public void clearHistoryIfLimitExceeded_When_LoopIsNotNull_Expect_OutdatedHistoryDeleted() {
+        assertTrue(imageHistoryRepository.findAll().isEmpty());
+
+        final int historySize = 5;
+        final int limit = 2;
+
+        final LoopEntryRefJPA loopEntryRefJPA = new LoopEntryRefJPA();
+        loopEntryRefJPA.setLoopIndex(1);
+        loopEntryRefJPA.setLoopEntryIndex(1);
+
+        final User user = userService.getUser(1);
+
+        final List<ImageHistoryJPA> imageHistoryList = new ArrayList<>();
+        for (int i=0; i < historySize; i++) {
+            imageHistoryList.add(imageDataInitializer.generateImageHistory(IMAGE_INDEX, swedish, version,
+                    loopEntryRefJPA, user));
+        }
+
+        assertEquals(historySize, imageHistoryRepository.findAll().size());
+
+        imageHistoryRepository.clearHistoryIfLimitExceeded(version.getDocId(), IMAGE_INDEX, swedish.getId(),
+                loopEntryRefJPA.getLoopIndex(), loopEntryRefJPA.getLoopEntryIndex(), limit);
+
+        final List<ImageHistoryJPA> imageHistoryListAfterClear = imageHistoryRepository.findAll();
+
+        assertEquals(limit, imageHistoryListAfterClear.size());
+        assertTrue(imageHistoryList.stream().limit(historySize - limit).noneMatch(imageHistoryListAfterClear::contains));
+        assertTrue(imageHistoryList.stream().skip(Math. abs(limit - historySize)).allMatch(imageHistoryListAfterClear::contains));
+    }
+
+    @Test
+    public void clearHistoryIfLimitExceeded_When_LoopIsNull_Expect_OutdatedHistoryDeleted() {
+        assertTrue(imageHistoryRepository.findAll().isEmpty());
+
+        final int historySize = 5;
+        final int limit = 2;
+
+        final User user = userService.getUser(1);
+
+        final List<ImageHistoryJPA> imageHistoryList = new ArrayList<>();
+        for (int i = 0; i < historySize; i++) {
+            imageHistoryList.add(imageDataInitializer.generateImageHistory(IMAGE_INDEX, swedish, version, null, user));
+        }
+
+        assertEquals(historySize, imageHistoryRepository.findAll().size());
+
+        imageHistoryRepository.clearHistoryIfLimitExceeded(version.getDocId(), IMAGE_INDEX, swedish.getId(),
+                null, null, limit);
+
+        final List<ImageHistoryJPA> imageHistoryListAfterClear = imageHistoryRepository.findAll();
+
+        assertEquals(limit, imageHistoryListAfterClear.size());
+        assertTrue(imageHistoryList.stream().limit(historySize - limit).noneMatch(imageHistoryListAfterClear::contains));
+        assertTrue(imageHistoryList.stream().skip(Math. abs(limit - historySize)).allMatch(imageHistoryListAfterClear::contains));
+    }
 }
