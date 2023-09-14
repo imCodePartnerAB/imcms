@@ -6,10 +6,7 @@ import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
-import com.imcode.imcms.domain.service.UserCreationService;
-import com.imcode.imcms.domain.service.UserEditorService;
-import com.imcode.imcms.domain.service.UserRolesService;
-import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
@@ -45,6 +42,8 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     private UserRolesService userRolesService;
     @Mock
     private UserLockValidator userLockValidator;
+    @Mock
+    private LanguageService languageService;
 
     @InjectMocks
     private UserAdministrationController controller;
