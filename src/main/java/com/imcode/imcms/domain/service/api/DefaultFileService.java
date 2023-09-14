@@ -239,6 +239,8 @@ public class DefaultFileService implements FileService {
         checkActionsAllowed(location, false);
 
         if (StringUtils.isNotBlank(location.toString())) {
+	        if (!isTemplatePath(location) && Files.exists(location)) renameOldFiles(location);
+
             Path writeFilePath = writeMode == null ? Files.write(location, content) : Files.write(location, content, writeMode);
 
             if(isTemplatePath(location) && Files.exists(location)) createAndSaveTemplate(location);
@@ -284,7 +286,7 @@ public class DefaultFileService implements FileService {
             throw new FileAccessDeniedException("File access denied!");
         }
     }
-    
+
     private void checkAccessAllowed(Path path, boolean excludeRoot) {
         String normalizedPath = path.normalize().toString();
         final String finalNormalize = StringUtils.isBlank(normalizedPath)
@@ -312,7 +314,7 @@ public class DefaultFileService implements FileService {
         final String extension = FilenameUtils.getExtension(path.toString());
         return Files.isDirectory(path) || changeableExtensions.contains(extension) || Format.isImage(extension);
     }
-    
+
 
     private boolean isTemplatePath(Path path) {
         return path.startsWith(templateService.getTemplateDirectory().toPath());
@@ -368,4 +370,19 @@ public class DefaultFileService implements FileService {
         log.error(errorMessage);
         throw new TemplateFileException(errorMessage);
     }
+
+	private void renameOldFiles(Path location) throws IOException {
+		final String filePath = location.toFile().getAbsolutePath();
+		final String baseName = FilenameUtils.getBaseName(filePath);
+		final String extension = FilenameUtils.getExtension(filePath);
+		final String fullPath = FilenameUtils.getFullPath(filePath);
+
+		int copiesCount = 1;
+		String newNameOldFile;
+		do {
+			newNameOldFile = baseName + '-' + copiesCount++ + '.' + extension;
+		} while (Files.exists(Path.of(fullPath + newNameOldFile)));
+
+		renameFile(location, newNameOldFile);
+	}
 }
