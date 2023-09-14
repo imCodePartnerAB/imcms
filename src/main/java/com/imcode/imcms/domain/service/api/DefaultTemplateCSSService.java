@@ -10,8 +10,10 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemplateCSSService;
 import com.imcode.imcms.model.CommonContent;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperties;
 
@@ -258,7 +260,8 @@ public class DefaultTemplateCSSService implements TemplateCSSService {
 	}
 
 	private String getCurrentUserName() {
-		return Imcms.getUser() == null ? "imcode" : Imcms.getUser().getFullName();
+		final UserDomainObject user = Imcms.getUser();
+		return (user != null && StringUtils.isNotBlank(user.getFullName())) ? user.getFullName() : "imcode";
 	}
 
 	private boolean checkIfExistsOnSVN(String templateName, Long revision) {
