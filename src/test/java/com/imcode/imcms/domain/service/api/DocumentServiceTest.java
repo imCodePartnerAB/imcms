@@ -117,6 +117,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     private DocumentMapper documentMapper;
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+    @Autowired
+    private BasicImportDocumentInfoService basicImportDocumentInfoService;
 
     @Autowired
     private Config config;
@@ -156,7 +158,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 menuService,
                 menuToMenuDTO,
                 imageJPAImageDTO,
-                imageCacheManager);
+                imageCacheManager,
+                basicImportDocumentInfoService);
         ((DefaultDocumentService) documentService).init();
     }
 

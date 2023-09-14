@@ -90,24 +90,24 @@ public class BasicImportDocumentInfoServiceTest extends WebAppSpringTestConfig {
 			assertNotNull(basicImportDocumentInfoService.create(i, ImportDocumentStatus.IMPORT));
 		}
 
-		assertEquals(1, basicImportDocumentInfoService.getAll(0, 0).getSize());
-		assertEquals(3, basicImportDocumentInfoService.getAll(0, 2).getSize());
-		assertEquals(5, basicImportDocumentInfoService.getAll(0, 5).getSize());
+		assertEquals(1, basicImportDocumentInfoService.getAllInRange(0, 0).getSize());
+		assertEquals(3, basicImportDocumentInfoService.getAllInRange(0, 2).getSize());
+		assertEquals(5, basicImportDocumentInfoService.getAllInRange(0, 5).getSize());
 	}
 
 	@Test
-	public void getAllBasicImportDocumentInfoWithinRange_And_FilterSkipWithImported_Expect_CorrectResult() {
+	public void getAllBasicImportDocumentInfoWithinRange_With_SkipImportedFilter_Expect_CorrectResult() {
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID, ImportDocumentStatus.IMPORT));
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID + 1, ImportDocumentStatus.IMPORT));
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID + 2, ImportDocumentStatus.SKIP));
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID + 3, ImportDocumentStatus.IMPORTED));
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID + 4, ImportDocumentStatus.IMPORTED));
 
-		assertEquals(5, basicImportDocumentInfoService.getAll(DEFAULT_ID, DEFAULT_ID + 4).getSize());
-		assertEquals(5, basicImportDocumentInfoService.getAll(DEFAULT_ID, DEFAULT_ID + 4, false, false).getSize());
-		assertEquals(3, basicImportDocumentInfoService.getAll(DEFAULT_ID, DEFAULT_ID + 4, true, false).getSize());
-		assertEquals(4, basicImportDocumentInfoService.getAll(DEFAULT_ID, DEFAULT_ID + 4, false, true).getSize());
-		assertEquals(2, basicImportDocumentInfoService.getAll(DEFAULT_ID, DEFAULT_ID + 4, true, true).getSize());
+		assertEquals(5, basicImportDocumentInfoService.getAllInRange(DEFAULT_ID, DEFAULT_ID + 4).getSize());
+		assertEquals(5, basicImportDocumentInfoService.getAllInRange(DEFAULT_ID, DEFAULT_ID + 4, false, false).getSize());
+		assertEquals(3, basicImportDocumentInfoService.getAllInRange(DEFAULT_ID, DEFAULT_ID + 4, true, false).getSize());
+		assertEquals(4, basicImportDocumentInfoService.getAllInRange(DEFAULT_ID, DEFAULT_ID + 4, false, true).getSize());
+		assertEquals(2, basicImportDocumentInfoService.getAllInRange(DEFAULT_ID, DEFAULT_ID + 4, true, true).getSize());
 	}
 
 	@Test

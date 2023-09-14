@@ -338,7 +338,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveFile_When_FileExistAndNotOverWrite_Expected_CorrectException() throws IOException {
+    public void saveFile_When_FileExist_Expected_CorrectRenamingOldFiles() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile2 = pathDir.resolve(testFileName);
@@ -348,8 +348,12 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile2);
 
         final String testText = "bla-bla-bla";
-        assertThrows(FileAlreadyExistsException.class, () -> fileService.saveFile(
-                pathFile2, testText.getBytes(), StandardOpenOption.CREATE_NEW));
+
+        assertDoesNotThrow(()->{
+            fileService.saveFile(pathFile2, testText.getBytes(), StandardOpenOption.CREATE_NEW);
+        });
+
+        assertTrue(Files.exists(pathDir.resolve("fileNameTest-1.jsp")));
     }
 
     @Test
