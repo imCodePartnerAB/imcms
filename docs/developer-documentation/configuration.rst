@@ -225,6 +225,11 @@ Document
     # Document ids that protected from deletion
     DeleteProtectedMetaIds=
 
+.. code-block:: properties
+
+    # The max number of records in the history for each content item.
+    ContentHistoryRecordsSize=5
+
 --------
 Language
 --------
@@ -232,9 +237,9 @@ Language
 .. code-block:: properties
 
     # The language used when no language preference is known.
-    DefaultLanguage=swe
+    DefaultLanguage=sv
     # Available languages. Need to use 2 letters language codes (en;sv) with ';' delimiter
-    AvailableLanguages=en;sv;de
+    AvailableLanguages=sv
 
 -----
 Image
@@ -252,6 +257,9 @@ Image
     # This path should lead to where ImageMagick is installed, and is required only on windows.
     # For example: C:\\Program Files\\ImageMagick-6.9.6-Q16
     ImageMagickPath =
+
+    #controls whether alt text in image editor is mandatory
+    image.editor.alt-text.required = false
 
 ***********
 Compression
