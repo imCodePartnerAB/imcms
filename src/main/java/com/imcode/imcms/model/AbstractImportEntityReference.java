@@ -22,7 +22,7 @@ public abstract class AbstractImportEntityReference implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
 
-	@Column(name = "name", nullable = false, unique = true)
+	@Column(name = "name", nullable = false, unique = true, updatable = false)
 	protected String name;
 
 	@Column(name = "linked_entity_id")
