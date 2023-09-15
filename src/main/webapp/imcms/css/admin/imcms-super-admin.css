@@ -32,6 +32,26 @@
     }
 }
 
+@media screen and (max-height: 1200px){
+    .sections-container .sections-container__edit-area{
+        height: 68%;
+    }
+
+    .sections-container .sections-container__edit-area.references{
+        height: 88%;
+    }
+}
+
+@media screen and (max-height: 970px){
+    .sections-container .sections-container__edit-area{
+        height: 63%;
+    }
+
+    .sections-container .sections-container__edit-area.references{
+        height: 84%;
+    }
+}
+
 .imcms-head__exit {
     position: absolute;
     top: 13px;
