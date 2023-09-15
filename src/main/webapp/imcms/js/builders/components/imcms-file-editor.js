@@ -20,6 +20,8 @@ define(
         let $documentsContainer;
         let selectedFiles;
         let selectedFilesRows;
+        let currentFolder;
+        let currentFileEditor;
 
         initData();
 
@@ -563,7 +565,9 @@ define(
             }
         }
 
-        function onDirectoryDblClick($fileRow, file) {
+        function onDirectoryDblClick($fileRow, file, callback) {
+            currentFileEditor = this;
+            currentFolder = file;
             getAllSubFilesContainers().forEach(container =>
                 deleteAllHighlightingInSubFilesContainer(container)
             );
@@ -613,6 +617,7 @@ define(
                      return file1.editable ? -1 : 1;
                  }).forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
 
+                callback ? callback() : '';
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
@@ -960,13 +965,19 @@ define(
                 formData.append("targetDirectory", targetDirectoryPath);
 
                 fileRestApi.upload(formData).done(uploadedFiles => {
-                    changeCountFiles(this.targetSubFilesContainerIndex, uploadedFiles.length);
+                    const callback = () => {
+                        const $currentSubFiles = $("." + currentFileEditor.subFilesClassName).children();
 
-                    uploadedFiles.forEach(file => {
-                        currentFile = file;
-                        $fileSourceRow = integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow);
-                        $fileSourceRow.addClass(newFileHighlightingClassName);
-                    });
+                        uploadedFiles.forEach(file => {
+                            $currentSubFiles.filter((index, fileRow) => {
+                                const fileRowFilename = $(fileRow).find(".file-row__file-name").text();
+                                return fileRowFilename === file.fileName;
+                            }).addClass(newFileHighlightingClassName);
+                        });
+                    }
+
+                    onDirectoryDblClick.call(currentFileEditor, null, currentFolder, callback);
+
                 }).fail(() => modal.buildErrorWindow(texts.error.uploadError));
             });
         }
