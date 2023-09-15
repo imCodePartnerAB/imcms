@@ -239,7 +239,7 @@ public class DefaultFileService implements FileService {
         checkActionsAllowed(location, false);
 
         if (StringUtils.isNotBlank(location.toString())) {
-	        if (!isTemplatePath(location) && Files.exists(location)) renameOldFiles(location);
+	        if (!isTemplatePath(location) && Files.exists(location)) renameExistingFile(location);
 
             Path writeFilePath = writeMode == null ? Files.write(location, content) : Files.write(location, content, writeMode);
 
@@ -371,7 +371,7 @@ public class DefaultFileService implements FileService {
         throw new TemplateFileException(errorMessage);
     }
 
-	private void renameOldFiles(Path location) throws IOException {
+	private void renameExistingFile(Path location) throws IOException {
 		final String filePath = location.toFile().getAbsolutePath();
 		final String baseName = FilenameUtils.getBaseName(filePath);
 		final String extension = FilenameUtils.getExtension(filePath);
