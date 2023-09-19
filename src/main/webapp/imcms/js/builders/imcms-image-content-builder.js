@@ -90,20 +90,29 @@ define("imcms-image-content-builder",
         }
 
         const folderControlsBuilder = {
-            remove: folder => components.controls.remove(removeFolder.bind(folder))
-                .attr("title", texts.deleteFolderImage),
+            remove: folder => components.controls.remove((e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removeFolder.call(folder);
+            }).attr("title", texts.deleteFolderImage),
 
-            edit: (folder, level) => components.controls.edit(setRenameFolder(folder, level))
-                .attr("title", texts.editFolderImage),
+            edit: (folder, level) => components.controls.edit((e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setRenameFolder(folder, level);
+            }).attr("title", texts.editFolderImage),
 
-            create: (folder, level) =>
-                components.controls.create(setCreateFolder(folder, level)).attr("title", texts.createFolderImage),
+            create: (folder, level) => components.controls.create(function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                setCreateFolder.call(this, folder, level);
+            }).attr("title", texts.createFolderImage),
 
-            check: folder => {
-                return components.controls
-                    .check(setCheckFolder(folder))
-                    .attr("title", texts.checkFolderImagesUsage);
-            }
+            check: folder => components.controls.check((e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCheckFolder(folder);
+            }).attr("title", texts.checkFolderImagesUsage)
         };
 
         function buildRootControls(rootFile) {
@@ -201,40 +210,34 @@ define("imcms-image-content-builder",
         }
 
         function setRenameFolder(folder, level) {
-            return function renameFolder() {
-                const $folderRenamingBlock = buildFolderRenamingBlock(folder, level);
-                folder.$folder.children(".imcms-folders__folder").after($folderRenamingBlock);
-            };
+            const $folderRenamingBlock = buildFolderRenamingBlock(folder, level);
+            folder.$folder.children(".imcms-folders__folder").after($folderRenamingBlock);
         }
 
         function setCreateFolder(folder, level) {
-            return function createFolder() {
-                showFolderCreationBlock(folder, level);
+            showFolderCreationBlock(folder, level);
 
-                const $openFolderBtn = $(this).parent()
-                    .parent()
-                    .children(".imcms-folder__btn");
+            const $openFolderBtn = $(this).parent()
+                .parent()
+                .children(".imcms-folder__btn");
 
-                if ($openFolderBtn.hasClass("imcms-folder-btn--open")) {
-                    return;
-                }
+            if ($openFolderBtn.hasClass("imcms-folder-btn--open")) {
+                return;
+            }
 
-                openSubFolders.call($openFolderBtn[0]);
-            };
+            openSubFolders.call($openFolderBtn[0]);
         }
 
         function setCheckFolder(folder) {
-            return () => {
-                imageFoldersREST.check({"path": folder.path})
-                    .done(response => {
-                        $imagesContainer.find('.imcms-control--warning').remove();
-                        response.forEach(usedImage => {
-                            let $image = $imagesContainer.children(`[data-image-name="${usedImage.imageName}"]`);
-                            buildImageUsageInfoIcon($image, usedImage.usages);
-                        });
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.error.checkFailed));
-            };
+            imageFoldersREST.check({"path": folder.path})
+                .done(response => {
+                    $imagesContainer.find('.imcms-control--warning').remove();
+                    response.forEach(usedImage => {
+                        let $image = $imagesContainer.children(`[data-image-name="${usedImage.imageName}"]`);
+                        buildImageUsageInfoIcon($image, usedImage.usages);
+                    });
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.checkFailed));
         }
 
         function buildImageUsageInfoIcon($image, usages) {
@@ -389,8 +392,11 @@ define("imcms-image-content-builder",
         }
 
         function openSubFolders(e) {
-			e.preventDefault();
-			e.stopPropagation();
+            if(e){
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             const $button = $(this);
             const $subFolders = $button.toggleClass(OPENED_FOLDER_BTN_CLASS)
                 .parent() // fixme: bad idea!
@@ -425,8 +431,6 @@ define("imcms-image-content-builder",
         }
 
         function loadImages(folder) {
-            console.log(folder)
-            console.log(folder)
             imageFoldersREST.read({"path": folder.path})
                 .done(
                     imagesFolder => {
@@ -822,8 +826,6 @@ define("imcms-image-content-builder",
 	    }
 
         function loadImageFoldersContent(imagesRootFolder) {
-            console.log("imagesRootFolder")
-            console.log(imagesRootFolder)
             viewModel.root = imagesRootFolder;
             viewModel.root.imagesAreLoaded = true;
 
