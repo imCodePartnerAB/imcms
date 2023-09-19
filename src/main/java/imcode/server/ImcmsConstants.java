@@ -166,7 +166,8 @@ ImcmsConstants {
 
     public static final String IMAGE_GENERATED_FOLDER = "generated";
 
-    //Should be same as at web.xml to support cache clean at TemporalDataService
+    public static final String IMAGE_FOLDER_CACHE_NAME = "ImageFolderCache";
+    //Should be same as at web.xml to support cache clean at TemporalDataService.
     public static final String OTHER_CACHE_NAME = "OtherContentCachingFilter";
     public static final String STATIC_CACHE_NAME = "StaticContentCachingFilter";
     public static final String PUBLIC_CACHE_NAME = "PublicDocumentsCache";

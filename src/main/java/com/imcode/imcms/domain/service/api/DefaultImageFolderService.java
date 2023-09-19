@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.ImageFolderCacheManager;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
@@ -41,6 +42,7 @@ class DefaultImageFolderService implements ImageFolderService {
 
     private final ImageFileService imageFileService;
 	private final ImageService imageService;
+    private final ImageFolderCacheManager imageFolderCacheManager;
 
     private final StorageClient storageClient;
     private final StoragePath storageImagesPath;
@@ -49,11 +51,13 @@ class DefaultImageFolderService implements ImageFolderService {
     DefaultImageFolderService(BiFunction<StoragePath, Boolean, ImageFolderDTO> storagePathToImageFolderDTO,
                               Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO,
                               ImageFileService imageFileService, ImageService imageService,
+                              ImageFolderCacheManager ImageFolderCacheManager,
                               @Qualifier("imageStorageClient") StorageClient storageClient, @Value("${ImagePath}") String imagesPath) {
 	    this.storagePathToImageFolderDTO = storagePathToImageFolderDTO;
         this.storagePathToImageFileDTO = storagePathToImageFileDTO;
         this.imageFileService = imageFileService;
 	    this.imageService = imageService;
+        this.imageFolderCacheManager = ImageFolderCacheManager;
         this.storageClient = storageClient;
         this.storageImagesPath = StoragePath.get(DIRECTORY, imagesPath);
         this.storageGeneratedImagesPath = storageImagesPath.resolve(DIRECTORY, ImcmsConstants.IMAGE_GENERATED_FOLDER);
@@ -67,7 +71,15 @@ class DefaultImageFolderService implements ImageFolderService {
 
     @Override
     public ImageFolderDTO getImageFolder() {
-        return storagePathToImageFolderDTO.apply(storageImagesPath, true);
+        if(imageFolderCacheManager.existInCache(storageImagesPath)){
+            return imageFolderCacheManager.getCache(storageImagesPath);
+        }
+
+        final ImageFolderDTO imageFolder = storagePathToImageFolderDTO.apply(storageImagesPath, true);
+
+        imageFolderCacheManager.cache(storageImagesPath, imageFolder);
+
+        return imageFolder;
     }
 
     @Override
@@ -80,6 +92,9 @@ class DefaultImageFolderService implements ImageFolderService {
         }
 
         storageClient.create(newFolderPath);
+
+        imageFolderCacheManager.invalidate(newFolderPath.getParentPath());
+        imageFolderCacheManager.invalidate(storageImagesPath);
     }
 
     @Override
@@ -109,6 +124,10 @@ class DefaultImageFolderService implements ImageFolderService {
 	    });
 
         storageClient.move(folderPath, newFolderPath);
+
+        imageFolderCacheManager.invalidate(folderPath);
+        imageFolderCacheManager.invalidate(folderPath.getParentPath());
+        imageFolderCacheManager.invalidate(storageImagesPath);
     }
 
     @Override
@@ -133,6 +152,10 @@ class DefaultImageFolderService implements ImageFolderService {
             final String imageFolderRelativePath = deleteMe.getPath();
             final StoragePath folderToDeletePath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
             storageClient.delete(folderToDeletePath, true);
+
+            imageFolderCacheManager.invalidate(folderToDeletePath);
+            imageFolderCacheManager.invalidate(folderToDeletePath.getParentPath());
+            imageFolderCacheManager.invalidate(storageImagesPath);
         }
     }
 
@@ -140,12 +163,19 @@ class DefaultImageFolderService implements ImageFolderService {
     public ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages) {
         final StoragePath folderPath = storageImagesPath.resolve(DIRECTORY, folderToGetImages.getPath());
 
+        if(imageFolderCacheManager.existInCache(folderPath)){
+            return imageFolderCacheManager.getCache(folderPath);
+        }
+
         final List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
                 .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
                 .map(storagePathToImageFileDTO)
                 .collect(Collectors.toList());
 
         folderToGetImages.setFiles(folderFiles);
+
+        imageFolderCacheManager.cache(folderPath, folderToGetImages);
+
         return folderToGetImages;
     }
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.component.ImageFolderCacheManager;
 import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
@@ -42,19 +43,24 @@ import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 @Transactional
 class DefaultImageFileService implements ImageFileService {
 
-    private final Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO;
     private final ImageService imageService;
+    private final ImageFolderCacheManager imageFolderCacheManager;
     private final ImageCacheMapper imageCacheMapper;
+
     private final StorageClient storageClient;
     private final StoragePath storageImagesPath;
 
+    private final Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO;
+
     DefaultImageFileService(Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO,
                             ImageService imageService,
+                            ImageFolderCacheManager imageFolderCacheManager,
                             @Value("${ImagePath}") String imagesPath, ImageCacheMapper imageCacheMapper,
                             @Qualifier("imageStorageClient") StorageClient storageClient) {
         this.storagePathToImageFileDTO = storagePathToImageFileDTO;
 	    this.imageService = imageService;
-        this.storageImagesPath = StoragePath.get(FILE, imagesPath);
+        this.imageFolderCacheManager = imageFolderCacheManager;
+        this.storageImagesPath = StoragePath.get(DIRECTORY, imagesPath);
         this.imageCacheMapper = imageCacheMapper;
         this.storageClient = storageClient;
     }
@@ -73,6 +79,8 @@ class DefaultImageFileService implements ImageFileService {
             mapAndAddToList.apply(destination);
         }
 
+        imageFolderCacheManager.invalidate(targetFolderPath);
+
         return imageFileDTOS;
     }
 
@@ -82,6 +90,8 @@ class DefaultImageFileService implements ImageFileService {
         final StoragePath destination = getDestinationFolder(targetFolderPath, filePath.getFileName().toString());
 
         storageClient.put(destination, Files.newInputStream(filePath));
+
+        imageFolderCacheManager.invalidate(targetFolderPath);
 
         return storagePathToImageFileDTO.apply(destination);
 	}
@@ -124,7 +134,10 @@ class DefaultImageFileService implements ImageFileService {
         List<ImageFileUsageDTO> usages = getImageFileUsages(imageFileDTOPath);
         if (usages.isEmpty()) {
             //No usages found. Can safely remove file
-            storageClient.delete(storageImagesPath.resolve(FILE, imageFileDTOPath), true);
+            final StoragePath pathToDelete = storageImagesPath.resolve(FILE, imageFileDTOPath);
+            storageClient.delete(pathToDelete, true);
+
+            imageFolderCacheManager.invalidate(pathToDelete.getParentPath());
         }
         return usages;
     }
@@ -166,6 +179,9 @@ class DefaultImageFileService implements ImageFileService {
 
         storageClient.move(imageFilePath, destinationImageFilePath);
 
+        imageFolderCacheManager.invalidate(imageFilePath.getParentPath());
+        imageFolderCacheManager.invalidate(destinationImageFilePath.getParentPath());
+
         return storagePathToImageFileDTO.apply(destinationImageFilePath);
 	}
 
@@ -181,6 +197,8 @@ class DefaultImageFileService implements ImageFileService {
         try(InputStream inputStream = new ByteArrayInputStream(Objects.requireNonNull(content))){
             storageClient.put(storagePath, inputStream);
         }
+
+        imageFolderCacheManager.invalidate(storagePath.getParentPath());
 
         return storagePathToImageFileDTO.apply(storagePath);
     }

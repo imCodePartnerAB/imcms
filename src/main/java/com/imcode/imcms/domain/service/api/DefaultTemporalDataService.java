@@ -9,6 +9,7 @@ import com.imcode.imcms.persistence.entity.DataOfTimeLastUseJPA;
 import com.imcode.imcms.persistence.repository.TemporalTimeLastUseRepository;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import net.sf.ehcache.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,7 +83,9 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public void invalidateOtherContentCache() {
-        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
+        final CacheManager cacheManager = getCacheManager(null);
+        cacheManager.getEhcache(OTHER_CACHE_NAME).removeAll();
+        cacheManager.getEhcache(IMAGE_FOLDER_CACHE_NAME).removeAll();
 
         final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(OTHER_CACHE_NAME);
 
