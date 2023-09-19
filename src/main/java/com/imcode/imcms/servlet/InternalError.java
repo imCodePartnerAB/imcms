@@ -5,6 +5,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -95,8 +96,7 @@ public class InternalError extends HttpServlet {
                 .orElse(Imcms.ERROR_LOGGER_URL);
 
         String jdbcUrl = properties.getProperty("JdbcUrl");
-        String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
-                jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+        String dbName = StringUtils.substringAfterLast(StringUtils.substringBefore(jdbcUrl, '?'), '/');
 
         HttpClient httpClient = createHttpClient();
 
