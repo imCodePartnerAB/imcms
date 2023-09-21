@@ -46,12 +46,8 @@ public abstract class AbstractDocumentSerializer<T extends DocumentDomainObject>
 		final ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
 
 		gen.writeStartObject();
-		//id
 		gen.writeNumberField("id", value.getId());
 		gen.writeStringField("type", value.getDocumentType().getName().toLocalizedString("eng"));
-
-		serializeContent(value, gen, provider);
-
 		gen.writeStringField("default_language", Imcms.getDefaultLanguage());
 		writeNullable("headline", value.getHeadline(), gen);
 		writeNullable("menu_text", value.getMenuText(), gen);
@@ -92,6 +88,8 @@ public abstract class AbstractDocumentSerializer<T extends DocumentDomainObject>
 		writeKeywords(value, gen, provider);
 		writeRolePermissions(value, gen, provider);
 		writeProperties(value, gen, provider);
+
+		serializeContent(value, gen, provider);
 
 		gen.writeEndObject();
 	}

@@ -15,6 +15,7 @@ import java.util.Map;
 public class DocumentExportHistory {
 	private Integer start;
 	private Integer end;
+	private Integer[] documentList;
 	private Map<Integer, ExportStatus> documents = new HashMap<>();
 
 	public DocumentExportHistory(IntRange range) {
@@ -22,9 +23,17 @@ public class DocumentExportHistory {
 		this.end = range.getMaximumInteger();
 	}
 
+	public DocumentExportHistory(Integer[] documentList) {
+		this.documentList = documentList;
+	}
+
 	@JsonIgnore
 	public IntRange getRange() {
 		return new IntRange(start, end);
+	}
+
+	public Integer[] getDocumentList() {
+		return documentList;
 	}
 
 	public ExportStatus getStatus(Integer id) {

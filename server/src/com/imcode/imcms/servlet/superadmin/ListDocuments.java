@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class ListDocuments extends HttpServlet {
@@ -21,6 +22,7 @@ public class ListDocuments extends HttpServlet {
     public static final String PARAMETER__LIST_START = "start";
     public static final String PARAMETER__LIST_END = "end";
 	public static final String PARAMETER__EXPORT_DOCUMENTS = "export";
+	public static final String PARAMETER__LIST = "documentsList";
 
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
 
@@ -39,21 +41,33 @@ public class ListDocuments extends HttpServlet {
         String startString = req.getParameter(PARAMETER__LIST_START);
         String endString = req.getParameter(PARAMETER__LIST_END);
 	    String exportString = req.getParameter(PARAMETER__EXPORT_DOCUMENTS);
+	    String[] listString = req.getParameterValues(PARAMETER__LIST);
 
         int start = null != startString ? Integer.parseInt(startString) : allDocumentsRange.getMinimumInteger();
         int end = null != endString ? Integer.parseInt(endString) : allDocumentsRange.getMaximumInteger();
+        Integer[] list = listString != null ? Arrays.stream(listString).map(Integer::valueOf).distinct().toArray(Integer[]::new) : new Integer[]{};
 	    boolean export = Boolean.parseBoolean(exportString);
 
         FormData formData = new FormData();
-        formData.selectedRange = new IntRange(start, end);
         DocumentMapper documentMapper = imcref.getDocumentMapper();
+        formData.selectedRange = new IntRange(start, end);
         if (req.getParameter(PARAMETER_BUTTON__LIST) != null) {
-            formData.documentsIterator = documentMapper.getDocumentsIterator(formData.selectedRange);
+            if (list.length > 0) {
+                formData.list = list;
+                formData.documentsIterator = documentMapper.getDocumentsIteratorIn(formData.list);
+            } else {
+                formData.documentsIterator = documentMapper.getDocumentsIteratorInRange(formData.selectedRange);
+            }
         }
 
         req.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, formData);
 	    req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/" + (export ? "export/export_" : "") + "document_list.jsp").forward(req, res);
 
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 
     private int getMaxDocumentId(ImcmsServices imcref) {
@@ -69,6 +83,8 @@ public class ListDocuments extends HttpServlet {
     public static class FormData {
 
         public IntRange selectedRange;
+
+        public Integer[] list;
 
         public Iterator documentsIterator;
     }

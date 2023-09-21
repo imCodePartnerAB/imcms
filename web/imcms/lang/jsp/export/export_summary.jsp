@@ -17,18 +17,23 @@
 
 	<table border="0" cellspacing="0" cellpadding="2" width="680" id="documentsTable">
 		<tr>
-			<td><b><? global/Page_alias ?>&nbsp;</b></td>
-			<td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
-			<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
-			<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
-			<td><b></b></td>
+			<td style="width: 20%"><b><? global/Page_alias ?>&nbsp;</b></td>
+			<td style="width: 5%"><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
+			<td style="width: 5%"><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+			<td style="width: 64%"><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+			<td style="width: 1%"><b></b></td>
 		</tr>
 		<%
 
 			final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 			final UserDomainObject user = Utility.getLoggedOnUser(request);
 			final Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user);
-			final Iterator iterator = documentMapper.getDocumentsIterator(history.getRange());
+			Iterator iterator;
+			if (history.getDocumentList() != null) {
+				iterator = documentMapper.getDocumentsIteratorIn(history.getDocumentList());
+			} else {
+				iterator = documentMapper.getDocumentsIteratorInRange(history.getRange());
+			}
 
 			while (iterator.hasNext()) {
 				final DocumentDomainObject document = (DocumentDomainObject) iterator.next();
@@ -88,10 +93,10 @@
 		</tr>
 		<%
 			}%>
+		<tfoot>
 		<tr>
 			<td colspan="6">#gui_hr( "blue" )</td>
 		</tr>
-		<tfoot>
 		<tr>
 			<td colspan="5" align="right">
 				<div style="display: inline-block;">
