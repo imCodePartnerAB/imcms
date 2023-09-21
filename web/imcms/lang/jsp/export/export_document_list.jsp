@@ -254,6 +254,30 @@
 			})
 	}
 
+	$metaIdInput.addEventListener("paste",function (e) {
+		e.preventDefault();
+
+		const data = (e.clipboardData || window.clipboardData).getData("text");
+		data.split(" ").forEach(metaId => {
+			if (!document.getElementById(metaId) && !isNaN(parseInt(metaId))) {
+				const $option = document.createElement("option");
+				$option.value = metaId;
+				$option.innerHTML = metaId;
+
+				$documentsListSelect.appendChild($option);
+
+				const $input = document.createElement("input");
+				$input.value = metaId;
+				$input.id = metaId;
+				$input.hidden = true;
+				$input.name = "documentsList";
+				$form.appendChild($input);
+			}
+		})
+
+		$metaIdInput.value = "";
+	})
+
 	$exportBtn?.addEventListener('click', (e) => {
 		e.preventDefault();
 		disableButtons();
