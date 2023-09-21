@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
@@ -10,7 +9,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -40,6 +38,7 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -64,10 +63,15 @@ public class InternalError extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser(request);
 
         try {
-            sendError(exceptionFromRequest, request, user.getId());
+            String responseJson = sendError(exceptionFromRequest, request, user.getId());
+
+            String errorId = logError(responseJson, exceptionFromRequest, user.getId());
+            request.setAttribute("error-id", errorId);
         } catch (Exception e) {
+            LOGGER.error("Exception when sending an error to ICM", e);
+
+            logError(exceptionFromRequest, "0", user.getId());
             request.setAttribute("error-id", 0);
-            LOGGER.warn("Problem with the error sending. ", e);
         }
 
         request.setAttribute("javax.servlet.error.exception", null);
@@ -78,7 +82,7 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher("/imcms/500.jsp").forward(request, response);
     }
 
-    private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws Exception {
+    private String sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws Exception {
         final Database database = Imcms.getServices().getDatabase();
 
         final Throwable causeThrowable = throwable.getCause();
@@ -104,8 +108,7 @@ public class InternalError extends HttpServlet {
         final String serverName = request.getServerName();
         final String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
 
-        final int endIndex = jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length();
-        final String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"), endIndex);
+        final String dbName = StringUtils.substringAfterLast(StringUtils.substringBefore(jdbcUrl, "?"), "/");
 
         String imcmsVersion;
         try {
@@ -152,20 +155,23 @@ public class InternalError extends HttpServlet {
         final HttpPost httpPost = new HttpPost(errorLoggerUrl);
         httpPost.setEntity(new UrlEncodedFormEntity(params));
 
-        final HttpEntity entity = createHttpClient().execute(httpPost).getEntity();
-        final JsonObject jsonResponse = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
+        return EntityUtils.toString(createHttpClient().execute(httpPost).getEntity());
+    }
 
-        final String state = jsonResponse.get("state").getAsString();
-        final String errorId = jsonResponse.get("error_id").getAsString();
-
+    private String logError(String response, Throwable exception, int userId) throws IOException {
+        HashMap<String, Object> responseMap = new ObjectMapper().readValue(response, HashMap.class);
+        String errorId = (String) responseMap.get("error_id");
+        String state = (String) responseMap.get("state");
         if (state.equals("new")) {
-            LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
+            logError(exception, errorId, userId);
         } else {
             LOGGER.info("Error with id " + errorId + " is already reported");
         }
+        return errorId;
+    }
 
-        request.setAttribute("error-id", errorId);
-
+    private void logError(Throwable exception, String errorId, int userId) {
+        LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};", exception);
     }
 
     private Long generateHash(String persistenceMessage,
