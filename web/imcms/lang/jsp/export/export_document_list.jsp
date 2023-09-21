@@ -254,30 +254,6 @@
 			})
 	}
 
-	$metaIdInput.addEventListener("paste",function (e) {
-		e.preventDefault();
-
-		const data = (e.clipboardData || window.clipboardData).getData("text");
-		data.split(" ").forEach(metaId => {
-			if (!document.getElementById(metaId) && !isNaN(parseInt(metaId))) {
-				const $option = document.createElement("option");
-				$option.value = metaId;
-				$option.innerHTML = metaId;
-
-				$documentsListSelect.appendChild($option);
-
-				const $input = document.createElement("input");
-				$input.value = metaId;
-				$input.id = metaId;
-				$input.hidden = true;
-				$input.name = "documentsList";
-				$form.appendChild($input);
-			}
-		})
-
-		$metaIdInput.value = "";
-	})
-
 	$exportBtn?.addEventListener('click', (e) => {
 		e.preventDefault();
 		disableButtons();
@@ -318,6 +294,23 @@
 		})
 	}
 
+	$metaIdInput.addEventListener("paste",function (e) {
+		e.preventDefault();
+
+		const data = (e.clipboardData || window.clipboardData).getData("text");
+		data.split(" ").forEach(metaId => {
+			if (!document.getElementById(metaId) && !isNaN(parseInt(metaId))) {
+				const $option = buildMetaIdOption(metaId);
+				$documentsListSelect.appendChild($option);
+
+				const $input = buildMetaIdInput(metaId);
+				$form.appendChild($input);
+			}
+		})
+
+		$metaIdInput.value = "";
+	})
+
 	$addMetaIdBtn.addEventListener('click', (e) => {
 		e.preventDefault();
 		const metaId = $metaIdInput.value;
@@ -332,20 +325,32 @@
 			return;
 		}
 
+		const $option = buildMetaIdOption(metaId);
+		$documentsListSelect.appendChild($option);
+
+		const $input = buildMetaIdInput(metaId);
+		$form.appendChild($input);
+
+		$metaIdInput.value = "";
+	})
+	
+	function buildMetaIdOption(metaId) {
 		const $option = document.createElement("option");
 		$option.value = metaId;
 		$option.innerHTML = metaId;
 
-		$documentsListSelect.appendChild($option);
-		$metaIdInput.value = "";
+		return $option
+	}
 
+	function buildMetaIdInput(metaId) {
 		const $input = document.createElement("input");
 		$input.value = metaId;
 		$input.id = metaId;
 		$input.hidden = true;
 		$input.name = "documentsList";
-		$form.appendChild($input);
-	})
+
+		return $input;
+	}
 
 	$deleteMetaIdBtn.addEventListener('click', (e) => {
 		e.preventDefault();
