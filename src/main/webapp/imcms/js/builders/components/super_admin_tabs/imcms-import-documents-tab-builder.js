@@ -3,11 +3,11 @@ define(
 	["imcms-window-builder", "imcms-super-admin-tab", "imcms-bem-builder", "jquery", 'imcms-components-builder',
 		'imcms-import-documents-rest-api', 'imcms-modal-window-builder', 'imcms-basic-import-documents-info-rest-api',
 		'imcms-import-entity-reference-rest-api', 'imcms-roles-rest-api', 'imcms-templates-rest-api',
-		'imcms-categories-rest-api', 'imcms-category-types-rest-api', 'imcms-i18n-texts'],
+		'imcms-categories-rest-api', 'imcms-category-types-rest-api', 'imcms-i18n-texts', 'imcms-overlays-builder'],
 	function (WindowBuilder, SuperAdminTab, BEM, $, components,
 			  importDocumentsRestApi, modal, basicImportDocumentsInfoRestApi,
 			  importEntityReferenceRestApi, rolesRestApi, templatesRestApi,
-			  categoriesRestApi, categoryTypesRestApi, texts) {
+			  categoriesRestApi, categoryTypesRestApi, texts,overlays) {
 		texts = texts.superAdmin.documentsImport;
 
 		let tab = {};
@@ -149,10 +149,29 @@ define(
 			return $select;
 		}
 
-		function buildMetaIdInput() {
-			return components.texts.textInput({
+		function buildMetaIdInput($metaIdListSelect) {
+			const $metaIdInput= components.texts.textInput({
 				placeholder: texts.controls.listInput.docIdInput
 			});
+
+			$metaIdInput.on("paste", function (e) {
+				e.preventDefault();
+
+				const data = (e.clipboardData || window.clipboardData || window.event.clipboardData).getData("text");
+				data.split(" ").forEach(metaId => {
+					if (!isNaN(parseInt(metaId))) {
+						const $metaIdOption = buildMetaIdOption(metaId);
+
+						$metaIdListSelect.append($metaIdOption);
+					}
+				})
+
+				$metaIdInput.val('');
+			});
+
+			overlays.defaultTooltip($metaIdInput, "You can paste ids separated by space/gap!", {placement: 'bottom'});
+
+			return $metaIdInput;
 		}
 
 		function buildAddMetaIdBtn($metaIdInput, $metaIdListSelect) {
@@ -166,14 +185,18 @@ define(
 						return;
 					}
 
-					const $metaIdOption = $("<option>", {
-						value: metaId,
-						text: metaId
-					});
+					const $metaIdOption = buildMetaIdOption(metaId);
 
 					$metaIdListSelect.append($metaIdOption);
 					$metaIdInput.val('');
 				}
+			});
+		}
+
+		function buildMetaIdOption(metaId){
+			return  $metaIdOption = $("<option>", {
+				value: metaId,
+				text: metaId
 			});
 		}
 
@@ -366,7 +389,7 @@ define(
 
 		function buildListInputContainer($resultContainer, $builder, $progressBar, $autoImportMenusCheckbox, $listBtn) {
 			const $metaIdListSelect = buildMultipleEmptySelect();
-			const $metaIdInput = buildMetaIdInput();
+			const $metaIdInput = buildMetaIdInput($metaIdListSelect);
 			const $addButton = buildAddMetaIdBtn($metaIdInput, $metaIdListSelect);
 			const $removeButton = buildRemoveMetaIdBtn($metaIdListSelect);
 
