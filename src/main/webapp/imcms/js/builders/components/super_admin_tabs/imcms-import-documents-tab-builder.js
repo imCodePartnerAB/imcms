@@ -180,14 +180,23 @@ define(
 				click: () => {
 					const metaId = $metaIdInput.val();
 
-					if (isNaN(parseInt(metaId))) {
-						alert(texts.controls.listInput.addButton.warning);
-						return;
+					const $metaIdsList = metaId.split(" ");
+					if ($metaIdsList.length > 1) {
+						$metaIdsList.forEach(metaId => {
+							if (!isNaN(parseInt(metaId))) {
+								const $metaIdOption = buildMetaIdOption(metaId);
+
+								$metaIdListSelect.append($metaIdOption);
+							}
+						})
+					} else {
+						if (isNaN(parseInt(metaId))) {
+							alert(texts.controls.listInput.addButton.warning);
+							return;
+						}
+						const $metaIdOption = buildMetaIdOption(metaId);
+						$metaIdListSelect.append($metaIdOption);
 					}
-
-					const $metaIdOption = buildMetaIdOption(metaId);
-
-					$metaIdListSelect.append($metaIdOption);
 					$metaIdInput.val('');
 				}
 			});
