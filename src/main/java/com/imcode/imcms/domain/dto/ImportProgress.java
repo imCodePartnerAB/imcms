@@ -30,4 +30,8 @@ public class ImportProgress {
 		totalSize = -1;
 		progress.set(-1);
 	}
+
+	public void finish() {
+		progress.set(totalSize);
+	}
 }

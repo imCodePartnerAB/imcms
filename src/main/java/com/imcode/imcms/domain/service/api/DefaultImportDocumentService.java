@@ -213,7 +213,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 			importDocumentIdsUnderImporting.clear();
 			documentMapper.invalidateDocuments(getMetaIds(importDocsId));
 			documentsCache.invalidateCache();
-
+			progress.finish();
 			log.info("Importing documents thread end!");
 		}
 

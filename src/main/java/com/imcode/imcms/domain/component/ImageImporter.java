@@ -9,13 +9,16 @@ import com.imcode.imcms.domain.service.ImageFolderService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.model.Language;
 import imcode.util.Utility;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.function.TriFunction;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Log4j2
 @Component
 public class ImageImporter {
 	private final Path importDirectoryPath;
@@ -36,6 +39,14 @@ public class ImageImporter {
 	}
 
 	public void importDocumentImage(Integer docId, Language language, ImportImageDTO importImage) throws IOException {
+		final Path imageRealPath = importDirectoryPath.resolve("images/" + importImage.getImageUrl());
+		if (!Files.exists(imageRealPath)) {
+			importImage.setImageUrl(null);
+			log.error(String.format("No import image with path: %s, skipping this image!", imageRealPath));
+			return;
+		}
+
+
 		final String targetFolder = FilenameUtils.getPath(importImage.getImageUrl());
 
 		createTargetFolder(targetFolder);
