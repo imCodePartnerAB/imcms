@@ -1090,6 +1090,10 @@
     border-bottom: solid 1px #dad5d5;
 }
 
+.imcms-doc-basket-info-row {
+    cursor: pointer;
+}
+
 .imcms-doc-basket-title-row__meta-id,
 .imcms-doc-basket-info-row__meta-id{
     width: 10%;
@@ -1119,6 +1123,7 @@
     overflow: hidden;
 }
 
+.imcms-doc-basket-title-row__checkbox .imcms-checkbox__label,
 .imcms-doc-basket-info-row__checkbox .imcms-checkbox__label {
     width: 0;
 }

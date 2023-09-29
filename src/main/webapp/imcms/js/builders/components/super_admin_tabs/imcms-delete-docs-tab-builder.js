@@ -98,9 +98,16 @@ define(
 
         function deleteFromTable(ids){
             ids.forEach(id => $(`[data-id='${id}']`).remove());
+            docsInTable = docsInTable.filter(doc => !ids.includes(doc.id));
         }
 
         function prepareBasketTableTitleRow(){
+            let $checkbox = components.checkboxes.imcmsCheckbox('<div>', {
+                change: () => {
+                    docsInTable.forEach(doc => doc.checkbox.setChecked($checkbox.isChecked()))
+                }
+            });
+
             return new BEM({
                 block: 'imcms-doc-basket-title-row',
                 elements: {
@@ -108,7 +115,7 @@ define(
                     'headline': $('<div>', {text: texts.basket.headline}),
                     'user-login': $('<div>', {text: texts.basket.userLogin}),
                     'added-date': $('<div>', {text: texts.basket.addedDate}),
-                    'checkbox': $('<div>')  //stub for page markup
+                    'checkbox': $checkbox
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-title'
@@ -147,7 +154,8 @@ define(
                     'checkbox': $checkbox
                 }
             }).buildBlockStructure('<div>', {
-                'data-id': doc.id
+                'data-id': doc.id,
+                click: () => $checkbox.setChecked(!$checkbox.isChecked())
             });
         }
 
