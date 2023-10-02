@@ -400,7 +400,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     public boolean hasUserAccessToDoc(Meta meta) {
         if (meta == null) throw new DocumentNotExistException();
 
-        if (meta.getVisible()) return true;
+        if (meta.getVisible() || isSuperAdmin()) return true;
 
         final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
 

@@ -51,8 +51,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final Meta meta = metaRepository.findById(docId)
 		        .orElseThrow(() -> new DocumentNotExistException(docId));
 
-        return (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers()) ||
-                (!user.isDefaultUser() && meta.getLinkableByOtherUsers());
+        return user.hasUserAccessToDoc(meta) ||
+                (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers());
     }
 
     @Override
@@ -180,9 +180,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         return (isDocumentApproved(meta)
                 && isNotArchivedYet(meta)
                 && isNotUnPublishedYet(meta)
-                && isAlreadyPublished(meta)
-                && Imcms.getUser().hasUserAccessToDoc(meta)
-        );
+                && isAlreadyPublished(meta));
     }
 
     private boolean isDocumentApproved(Meta meta) {

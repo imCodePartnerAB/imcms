@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -349,22 +346,26 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()));
 
-        final Function<Integer, Version> versionReceiver = versionService::getLatestVersion;
-        final List<MenuItemDTO> filteredMenuItems = sortedMenuItems.stream()
-                .filter(menuItemDTO -> status == MenuItemsStatus.ALL ||
-                        (documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId()) &&
-                                documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(),  user)))
-                .filter(isMenuItemAccessibleForLang(language, versionReceiver))
-                .peek(menuItemDTO -> {
-                    if (status == MenuItemsStatus.ALL) return;
-                    final List<MenuItemDTO> children = menuItemDTO.getChildren()
-                            .stream()
-                            .filter(childrenMenuItemDTO -> documentMenuService.isPublicMenuItem(childrenMenuItemDTO.getDocumentId()))
-                            .collect(Collectors.toList());
+        final Predicate<MenuItemDTO> menuItemAccessFilter = menuItemDTO ->
+                (status == MenuItemsStatus.ALL || (documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId()) &&
+                        documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))) &&
+                        isMenuItemAccessibleForLang(language, versionService::getLatestVersion).test(menuItemDTO);
 
-                    menuItemDTO.setChildren(children);
-                })
+        final List<MenuItemDTO> filteredMenuItems = sortedMenuItems.stream()
+                .filter(menuItemAccessFilter)
                 .collect(Collectors.toList());
+
+        filteredMenuItems.forEach(new Consumer<>(){
+            @Override
+            public void accept(MenuItemDTO menuItemDTO) {
+                List<MenuItemDTO> filteredChildrenMenuItems = menuItemDTO.getChildren().stream()
+                        .filter(menuItemAccessFilter)
+                        .collect(Collectors.toList());
+                menuItemDTO.setChildren(filteredChildrenMenuItems);
+
+                filteredChildrenMenuItems.forEach(this);
+            }
+        });
 
         final MenuDTO menuDTO = menu.map(menuToMenuDTO).orElse(new MenuDTO());
 
@@ -472,10 +473,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             return isLanguageEnabled || (!isCurrentLangDefault && isAllowedToShowWithDefaultLanguage);
         };
 
-    }
-
-    private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
-        return documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId());
     }
 
     private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
