@@ -823,13 +823,6 @@ define("imcms-menu-editor-builder",
                     }
                 }
 
-                function changeVisibility() {
-                    const $menuVisibility = $oldMenuItem.find(".imcms-document-item__info--menuVisibility").first();
-                    const menuVisibilityText = getMenuElementVisibility(document);
-                    $menuVisibility.text(menuVisibilityText.title);
-                    components.overlays.changeTooltipText($menuVisibility, menuVisibilityText.tooltip);
-                }
-
                 function toggleClass() {
                     const menuItemClass = "imcms-document-items__document-item";
                     const $menuItem = $oldMenuItem.find("." + menuItemClass).first();
@@ -844,7 +837,6 @@ define("imcms-menu-editor-builder",
                 changeTitle();
                 changeStatus();
                 changeStar();
-                changeVisibility();
                 toggleClass();
 
                 documentEditorBuilder.updateDocumentInList(document);
@@ -1061,7 +1053,7 @@ define("imcms-menu-editor-builder",
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
             const $publishedDate = components.texts.titleText('<div>', menuElement.publishedDate, {
-                class: 'imcms-grid-col-22',
+                class: 'imcms-grid-col-3',
             });
             $publishedDate.modifiers = ['date'];
             components.overlays.defaultTooltip(
@@ -1070,7 +1062,7 @@ define("imcms-menu-editor-builder",
             );
 
             const $modifiedDate = components.texts.titleText('<div>', menuElement.modifiedDate, {
-                class: 'imcms-grid-col-22',
+                class: 'imcms-grid-col-3',
             });
             components.overlays.defaultTooltip(
                 $modifiedDate,
@@ -1080,7 +1072,7 @@ define("imcms-menu-editor-builder",
             const $star = menuElement.hasNewerVersion
                 ? components.controls.star()
                 : components.controls.star().css({'filter': 'grayscale(100%) brightness(140%)'});
-            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-20');
+            const $currentVersion = $('<div>').append($star).addClass('imcms-grid-col-1');
             components.overlays.defaultTooltip(
                 $currentVersion,
                 documentEditorBuilder.getDocumentVersionTexts(menuElement.hasNewerVersion).tooltip
@@ -1089,17 +1081,10 @@ define("imcms-menu-editor-builder",
 
             const documentStatusTexts = docStatus.getDocumentStatusTexts(menuElement.documentStatus, menuElement.publishedDate);
             const $documentStatus = components.texts.titleText("<div>", documentStatusTexts.title, {
-                class: 'imcms-grid-col-21'
+                class: 'imcms-grid-col-13'
             });
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
-
-            const menuVisibilityText = getMenuElementVisibility(menuElement);
-            const $menuVisibility = components.texts.titleText("<div>", menuVisibilityText.title, {
-                class: 'imcms-grid-col-19'
-            });
-            $menuVisibility.modifiers = ['menuVisibility'];
-            components.overlays.defaultTooltip($menuVisibility, menuVisibilityText.tooltip);
 
             const elements = [$docId, $titleText];
             let childrenIcon = "";
@@ -1118,7 +1103,7 @@ define("imcms-menu-editor-builder",
                     break;
             }
 
-            elements.push($currentVersion, $documentStatus, $menuVisibility);
+            elements.push($currentVersion, $documentStatus);
 
             const controls = [buildMoveControl(sortType), buildMenuItemControls(menuElement, isMultiRemoveModeEnabled())];
 
@@ -1143,30 +1128,6 @@ define("imcms-menu-editor-builder",
 		            $(this).css("cursor", (!$numberingTypeSortFlag.isChecked() && sortType === TREE_SORT) ? "ns-resize" : "default");
 	            }
             });
-        }
-
-        function getMenuElementVisibility(menuElement){
-            let visibilityTitle;
-            let visibilityTooltip;
-
-            if(menuElement.linkableByOtherUsers && menuElement.linkableForUnauthorizedUsers){
-                visibilityTitle = texts.visibility.title.both;
-                visibilityTooltip = texts.visibility.tooltip.both;
-            } else if(menuElement.linkableByOtherUsers){
-                visibilityTitle = texts.visibility.title.authorized;
-                visibilityTooltip = texts.visibility.tooltip.authorized;
-            } else if(menuElement.linkableForUnauthorizedUsers){
-                visibilityTitle = texts.visibility.title.unauthorized;
-                visibilityTooltip = texts.visibility.tooltip.unauthorized;
-            } else {
-                visibilityTitle = "—";
-                visibilityTooltip = texts.visibility.tooltip.nobody;
-            }
-
-            return {
-                title: visibilityTitle,
-                tooltip: visibilityTooltip
-            };
         }
 
 	    function onInputBlur(events) {
@@ -1357,7 +1318,7 @@ define("imcms-menu-editor-builder",
                 $modifiedDateHead.modifiers = ["date"];
 
                 const $versionColumnHead = $("<div>", {
-                    class: "imcms-grid-col-20",
+                    class: "imcms-grid-col-1",
                     text: texts.version
                 });
                 $versionColumnHead.modifiers = ["currentVersion"];
@@ -1367,12 +1328,6 @@ define("imcms-menu-editor-builder",
                     text: texts.status
                 });
                 $statusColumnHead.modifiers = ["status"];
-
-                const $menuVisibilityColumnHead = $("<div>", {
-                    class: "imcms-grid-col-19",
-                    text: texts.visibility.name
-                });
-                $menuVisibilityColumnHead.modifiers = ["menuVisibility"];
 
                 const containerHeadTitle = [$sortOrderColumnHead, $idColumnHead, $titleColumnHead];
 
@@ -1387,7 +1342,7 @@ define("imcms-menu-editor-builder",
                         break;
                 }
 
-                containerHeadTitle.push($versionColumnHead, $statusColumnHead, $menuVisibilityColumnHead);
+                containerHeadTitle.push($versionColumnHead, $statusColumnHead);
 
                 return new BEM({
                     block: "imcms-document-list-titles",

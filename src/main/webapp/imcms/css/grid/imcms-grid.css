@@ -32,10 +32,7 @@
 .imcms-grid-col-15,
 .imcms-grid-col-16,
 .imcms-grid-col-17,
-.imcms-grid-col-18,
-.imcms-grid-col-19,
-.imcms-grid-col-20,
-.imcms-grid-col-21{
+.imcms-grid-col-18{
     float: left;
 }
 
@@ -52,7 +49,7 @@
 .imcms-document-list-titles__title--col-3,
 .imcms-document-item__info--col-3,
 .imcms-grid-col-3 {
-    width: 19%;
+    width: 25%;
 }
 
 .imcms-document-editor-head-tools__tool--grid-col-4,
@@ -120,20 +117,4 @@
 
 .imcms-grid-col-18 {
     width: 5%;
-}
-
-.imcms-grid-col-19 {
-    width: 5%;
-}
-
-.imcms-grid-col-20 {
-    width: 6%;
-}
-
-.imcms-grid-col-21 {
-    width: 15%;
-}
-
-.imcms-grid-col-22{
-    width: 22%;
 }
