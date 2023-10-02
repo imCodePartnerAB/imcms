@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,10 +64,14 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
-        return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language),
-                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language)
-        );
+        if (Imcms.getUser().isDefaultUser()) {
+            return documentLoaderCachingProxy.getPublicMenuItems(
+                    getKey(menuIndex, docId, language),
+                    () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language)
+            );
+        } else {
+            return defaultMenuService.getPublicMenuItems(docId, menuIndex, language);
+        }
     }
 
     @Override
@@ -85,9 +90,13 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       String attributes, String treeKey, String wrap) {
-        return documentLoaderCachingProxy.getPublicMenuAsHtml(
-                getKey(menuIndex, docId, language, true, attributes, treeKey, wrap),
-                () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap));
+        if (Imcms.getUser().isDefaultUser()) {
+            return documentLoaderCachingProxy.getPublicMenuAsHtml(
+                    getKey(menuIndex, docId, language, true, attributes, treeKey, wrap),
+                    () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap));
+        } else {
+            return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
+        }
     }
 
     @Override
@@ -104,9 +113,13 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public String getPublicMenuAsHtml(int docId, int menuIndex) {
-        return documentLoaderCachingProxy.getPublicMenuAsHtml(
-                getKey(menuIndex, docId, null, true),
-                () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex));
+        if (Imcms.getUser().isDefaultUser()) {
+            return documentLoaderCachingProxy.getPublicMenuAsHtml(
+                    getKey(menuIndex, docId, null, true),
+                    () -> defaultMenuService.getPublicMenuAsHtml(docId, menuIndex));
+        } else {
+            return defaultMenuService.getPublicMenuAsHtml(docId, menuIndex);
+        }
     }
 
     @Override
