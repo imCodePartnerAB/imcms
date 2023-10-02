@@ -129,6 +129,21 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, String language) {
+        return getPreviewMenuItems(docId, menuIndex, Version.WORKING_VERSION_INDEX, language);
+    }
+
+    @Override
+    public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, int versionNo, String language) {
+        final Version version = versionService.findByDocIdAndNo(docId, versionNo);
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+
+        setHasNewerVersionsInItems(menuItemsOf);
+
+        return menuItemsOf;
+    }
+
+    @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         final Version version = versionService.getLatestVersion(docId);
         final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
@@ -152,6 +167,24 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         setHasNewerVersionsInItems(menuItemsOf);
 
+        final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
+
+        return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);
+    }
+
+    @Override
+    public String getPreviewMenuAsHtml(int docId, int menuIndex, String language,
+                                       String attributes, String treeKey, String wrap) {
+        return getPreviewMenuAsHtml(docId, menuIndex, Version.WORKING_VERSION_INDEX, language, attributes, treeKey, wrap);
+    }
+
+    @Override
+    public String getPreviewMenuAsHtml(int docId, int menuIndex, int versionNo, String language,
+                                       String attributes, String treeKey, String wrap) {
+        final Version version = versionService.findByDocIdAndNo(docId, versionNo);
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+
+        setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);

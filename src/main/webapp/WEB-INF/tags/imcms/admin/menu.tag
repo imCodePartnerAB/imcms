@@ -50,14 +50,20 @@
 	<c:choose>
 		<c:when test="${versionNo ne null and isPreviewMode}">
 			<c:set var="menuItems"
-				   value="${isTagBodyEmpty ? menuService.getVisibleMenuAsHtml(targetDocId, index, versionNo, language, attributes, treeKey, wrap) :
-				   		menuService.getVisibleMenuItems(targetDocId, index, versionNo, language)}"
+				   value="${isTagBodyEmpty ? menuService.getPreviewMenuAsHtml(targetDocId, index, versionNo, language, attributes, treeKey, wrap) :
+				   		menuService.getPreviewMenuItems(targetDocId, index, versionNo, language)}"
 				   scope="request"/>
 		</c:when>
-		<c:when test="${isEditMode or isPreviewMode}">
+		<c:when test="${isEditMode}">
 			<c:set var="menuItems"
 				   value="${isTagBodyEmpty ? menuService.getVisibleMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap) :
 						menuService.getVisibleMenuItems(targetDocId, index, language)}"
+				   scope="request"/>
+		</c:when>
+		<c:when test="${isPreviewMode}">
+			<c:set var="menuItems"
+				   value="${isTagBodyEmpty ? menuService.getPreviewMenuAsHtml(targetDocId, index, language, attributes, treeKey, wrap) :
+						menuService.getPreviewMenuItems(targetDocId, index, language)}"
 				   scope="request"/>
 		</c:when>
 		<c:otherwise>

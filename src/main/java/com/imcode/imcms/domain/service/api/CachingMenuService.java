@@ -63,6 +63,16 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, String language) {
+        return defaultMenuService.getPreviewMenuItems(docId, menuIndex, language);
+    }
+
+    @Override
+    public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, int versionNo, String language) {
+        return defaultMenuService.getPreviewMenuItems(docId, menuIndex, versionNo, language);
+    }
+
+    @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         if (Imcms.getUser().isDefaultUser()) {
             return documentLoaderCachingProxy.getPublicMenuItems(
@@ -85,6 +95,16 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public String getVisibleMenuAsHtml(int docId, int menuIndex, int versionNo, String language, String attributes, String treeKey, String wrap) {
         return defaultMenuService.getVisibleMenuAsHtml(docId, menuIndex, versionNo, language, attributes, treeKey, wrap);
+    }
+
+    @Override
+    public String getPreviewMenuAsHtml(int docId, int menuIndex, String language, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getPreviewMenuAsHtml(docId, menuIndex, language, attributes, treeKey, wrap);
+    }
+
+    @Override
+    public String getPreviewMenuAsHtml(int docId, int menuIndex, int versionNo, String language, String attributes, String treeKey, String wrap) {
+        return defaultMenuService.getPreviewMenuAsHtml(docId, menuIndex, versionNo, language, attributes, treeKey, wrap);
     }
 
     @Override
