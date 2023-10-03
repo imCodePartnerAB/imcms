@@ -9,17 +9,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Menu is a one-level navigation control between documents.
@@ -85,21 +76,14 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public MenuItemDomainObject[] getMenuItemsUserCanSee(UserDomainObject user) {
-        List<MenuItemDomainObject> menuItemsUserCanSee = getMenuItemsVisibleToUser(user);
+    public MenuItemDomainObject[] getMenuItemsUserCanSeeWhenEditingMenus(UserDomainObject user) {
+        List<MenuItemDomainObject> menuItemsUserCanSee = getMenuItemsVisibleToUserWhenEditingMenus(user);
         return menuItemsUserCanSee.toArray(new MenuItemDomainObject[menuItemsUserCanSee.size()]);
+
     }
 
-    List<MenuItemDomainObject> getMenuItemsVisibleToUser(UserDomainObject user) {
-        MenuItemDomainObject[] menuItemsArray = getMenuItems();
-        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<>(this.menuItems.size());
-        for (MenuItemDomainObject menuItem : menuItemsArray) {
-            if (user.canSeeDocumentWhenEditingMenus(menuItem.getDocument())) {
-                menuItemsUserCanSee.add(menuItem);
-            }
-        }
-        menuItemsUserCanSee.sort(getMenuItemComparatorForSortOrder(sortOrder));
-        return menuItemsUserCanSee;
+    List<MenuItemDomainObject> getMenuItemsVisibleToUserWhenEditingMenus(UserDomainObject user) {
+        return getMenuItemsAndFilter(user::canSeeDocumentWhenEditingMenus);
     }
 
     /**
@@ -109,9 +93,25 @@ public class MenuDomainObject implements Cloneable, Serializable {
      * @return Menu items pointing to active documents.
      */
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
-        List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
+        List<MenuItemDomainObject> menuItems = getMenuItemsAccessibleToUser(user);
         CollectionUtils.filter(menuItems, menuItem -> menuItem.getDocument().isActive());
         return menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
+    }
+
+    List<MenuItemDomainObject> getMenuItemsAccessibleToUser(UserDomainObject user) {
+        return getMenuItemsAndFilter(user::canAccess);
+    }
+
+    List<MenuItemDomainObject> getMenuItemsAndFilter(Predicate<DocumentDomainObject> accessFilter) {
+        MenuItemDomainObject[] menuItemsArray = getMenuItems();
+        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<>(this.menuItems.size());
+        for (MenuItemDomainObject menuItem : menuItemsArray) {
+            if (accessFilter.test(menuItem.getDocument())) {
+                menuItemsUserCanSee.add(menuItem);
+            }
+        }
+        menuItemsUserCanSee.sort(getMenuItemComparatorForSortOrder(sortOrder));
+        return menuItemsUserCanSee;
     }
 
     public MenuItemDomainObject getMenuItemByDocId(Integer docId) {
