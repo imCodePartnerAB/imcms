@@ -13,6 +13,9 @@ import imcode.server.user.UserDomainObject;
  * 13.02.18.
  */
 public interface AccessService {
+
+    boolean hasUserViewAccess(UserDomainObject user, Integer documentId);
+
     boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessContentType accessContentType);
 
     boolean hasUserPublishAccess(UserDomainObject user, int docId);

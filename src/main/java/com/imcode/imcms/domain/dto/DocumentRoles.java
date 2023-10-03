@@ -26,7 +26,7 @@ public class DocumentRoles {
         return documentRoles.stream()
                 .map(DocumentRole::getPermission)
                 .min(Comparator.naturalOrder())
-                .orElse(Meta.Permission.VIEW);
+                .orElse(Meta.Permission.NONE);
     }
 
     public Meta getDocument() {

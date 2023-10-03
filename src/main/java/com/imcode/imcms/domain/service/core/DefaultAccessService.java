@@ -66,6 +66,12 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
+    public boolean hasUserViewAccess(UserDomainObject user, Integer documentId) {
+        return documentService.get(documentId).isVisible() ||
+                documentRolesService.getDocumentRoles(documentId, user).getMostPermission().isAtLeastAsPrivilegedAs(Permission.VIEW);
+    }
+
+    @Override
     public boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessContentType accessContentType) {
         final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, user);
 
