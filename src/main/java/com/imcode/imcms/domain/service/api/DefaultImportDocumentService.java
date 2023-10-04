@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,19 +56,19 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 	private final ImportProgress progress = new ImportProgress();
 
 	public DefaultImportDocumentService(Path importDirectoryPath,
-	                                    ObjectMapper mapper,
-	                                    TextService textService,
-	                                    CommonContentService commonContentService,
-	                                    BasicImportDocumentInfoService basicImportDocumentInfoService,
-	                                    DocumentMapper documentMapper,
-	                                    DocumentsCache documentsCache,
-	                                    LanguageService languageService,
-	                                    MenuImporter menuImporter,
-	                                    ImageImporter imageImporter,
-	                                    DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService,
-	                                    BiConsumer<ImportDocumentDTO, Document> updateFromImported,
-	                                    Function<ImportDocumentDTO, UberDocumentDTO> importDocumentToDocument,
-	                                    TriFunction<ImportTextDTO, Integer, Language, Text> importTextToText) {
+										ObjectMapper mapper,
+										TextService textService,
+										CommonContentService commonContentService,
+										BasicImportDocumentInfoService basicImportDocumentInfoService,
+										DocumentMapper documentMapper,
+										DocumentsCache documentsCache,
+										LanguageService languageService,
+										MenuImporter menuImporter,
+										ImageImporter imageImporter,
+										DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService,
+										BiConsumer<ImportDocumentDTO, Document> updateFromImported,
+										Function<ImportDocumentDTO, UberDocumentDTO> importDocumentToDocument,
+										TriFunction<ImportTextDTO, Integer, Language, Text> importTextToText) {
 
 		this.importDirectoryPath = importDirectoryPath;
 		this.mapper = mapper;
@@ -119,7 +116,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 		final String alias = "import/" + importDocId;
 
 		commonContentService.removeAlias(alias);
-		Imcms.getServices().getDocumentMapper().invalidateDocument(basicImportDocumentInfoService.toMetaId(importDocId));
+		basicImportDocumentInfoService.toMetaId(importDocId).ifPresent(Imcms.getServices().getDocumentMapper()::invalidateDocument);
 		log.info(String.format("Alias: %s in document with id(rb4): %d has been removed!", alias, importDocId));
 
 	}
@@ -143,14 +140,15 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 	@Override
 	public void replaceAlias(int importDocId) {
 		final String alias = "/import/" + importDocId;
-		final int metaId = basicImportDocumentInfoService.toMetaId(importDocId);
 
 		final List<Text> textsContainingAlias = textService.getTextsContaining(alias);
-		textsContainingAlias.forEach(text -> {
-			final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
-			text.setText(modifiedText);
+		basicImportDocumentInfoService.toMetaId(importDocId).ifPresent(metaId -> {
+			textsContainingAlias.forEach(text -> {
+				final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
+				text.setText(modifiedText);
 
-			textService.save(text);
+				textService.save(text);
+			});
 		});
 		log.info(String.format("Alias: %s in document texts with id(rb4): %d has been replaced to: %s!", alias, importDocId, importDocId));
 
@@ -211,9 +209,9 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 			}
 
 			importDocumentIdsUnderImporting.clear();
+			progress.finish();
 			documentMapper.invalidateDocuments(getMetaIds(importDocsId));
 			documentsCache.invalidateCache();
-			progress.finish();
 			log.info("Importing documents thread end!");
 		}
 
@@ -248,24 +246,23 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 				}
 
 				final Integer metaId = defaultDelegatingByTypeDocumentService.save(document).getId();
+				basicImportDocument.setMetaId(metaId);
 				final Language language = languageService.findByCode(LanguageMapper.convert639_2to639_1(importDocument.getDefaultLanguage()));
 
 				importDocumentTexts(metaId, language, importDocument.getTexts());
 				importDocumentImages(metaId, language, importDocument.getImages());
+				importMenuDocuments(metaId, importDocument);
 
-				final boolean menusImported = importMenuDocuments(metaId, importDocument);
-//				if (menusImported) {
-					defaultDelegatingByTypeDocumentService.publishDocument(metaId, Imcms.getUser().getId());
-					log.info("Document {} published", metaId);
-//				} else {
-//					log.warn("Document {} not published because of problems with menu importing", metaId);
-//				}
+				defaultDelegatingByTypeDocumentService.publishDocument(metaId, Imcms.getUser().getId());
+				log.info("Document {} published", metaId);
 
-				basicImportDocument.setMetaId(metaId);
 				basicImportDocument.setStatus(IMPORTED);
 				log.info(!status.equals(UPDATE) ? DOCUMENT_IMPORTED_MSG_PATTERN : DOCUMENT_UPDATED_MSG_PATTERN, importDocId, metaId);
 			} catch (Exception e) {
 				basicImportDocument.setStatus(FAILED);
+				if (basicImportDocument.getMetaId() != null) {
+					defaultDelegatingByTypeDocumentService.deleteByDocId(basicImportDocument.getMetaId());
+				}
 				log.error(String.format("Import failed, importDocId: %s", importDocId), e);
 			} finally {
 				progress.increment();
@@ -308,8 +305,10 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 		private int[] getMetaIds(int[] importDocsId) {
 			return Arrays.stream(importDocsId)
-					.map(basicImportDocumentInfoService::toMetaId)
-					.filter(Objects::nonNull)
+					.mapToObj(basicImportDocumentInfoService::toMetaId)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.mapToInt(Integer::intValue)
 					.toArray();
 		}
 	}
