@@ -382,7 +382,7 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {
-        return !isDefaultUser() && document.isLinkableByOtherUsers() && canEdit(document);
+        return !isDefaultUser() && document.isLinkableByOtherUsers();
     }
 
     public Set<PhoneNumber> getPhoneNumbers() {

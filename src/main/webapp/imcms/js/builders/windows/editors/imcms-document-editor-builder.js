@@ -52,6 +52,7 @@ define('imcms-document-editor-builder',
         const sortProperty = 'page.property';
         const sortDirection = 'page.direction';
         const roleIdProperty = 'roleId';
+        const linkableByOtherUsers = 'linkableByOtherUsers';
 
         const pageSkip = 'page.skip';
 
@@ -298,7 +299,7 @@ define('imcms-document-editor-builder',
                 block: 'imcms-document-editor-head-tools',
                 elements: {
                     'tool': [
-                        (opts.inMenu && !imcms.accessToDocumentEditor) ||$newDocButtonContainer,
+                        (opts.inMenu && !imcms.accessToDocumentEditor) || $newDocButtonContainer,
                         $searchContainer,
                         $usersFilter,
                         $categoriesFilter,
@@ -1362,6 +1363,14 @@ define('imcms-document-editor-builder',
             return docs;
         }
 
+        function initMenuEditor(ids){
+            if(!imcms.isSuperAdmin){
+                searchQueryObj[linkableByOtherUsers] = true;
+            }
+
+            initMenuDocuments(ids);
+        }
+
         function initMenuDocuments(ids){
             const allDocIds = docs.map(doc => doc.documentId || doc.id);
 
@@ -1487,6 +1496,7 @@ define('imcms-document-editor-builder',
             searchQueryObj[userId] = null;
             searchQueryObj[categoriesId] = {};
             searchQueryObj[roleIdProperty] = null;
+            searchQueryObj[linkableByOtherUsers] = null;
 
             sendSearchDocRequest = true;
 
@@ -1516,7 +1526,7 @@ define('imcms-document-editor-builder',
             clearData,
             buildDocument,
             incrementDocumentNumber,
-            initMenuDocuments,
+            initMenuEditor,
             addDocumentToList,
             updateDocumentInList,
             getDocumentVersionTexts,

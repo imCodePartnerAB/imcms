@@ -28,6 +28,8 @@ public class SearchQueryDTO implements Serializable {
      */
     private Integer roleId;
 
+    private Boolean linkableByOtherUsers;
+
     public SearchQueryDTO(String term) {
         this.term = term;
     }

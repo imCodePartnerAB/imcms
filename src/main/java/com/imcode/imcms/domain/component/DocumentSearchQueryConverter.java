@@ -46,6 +46,10 @@ public class DocumentSearchQueryConverter {
             solrQuery.addFilterQuery(userFilter);
         }
 
+        if(searchQuery.getLinkableByOtherUsers() != null){
+            solrQuery.addFilterQuery(DocumentIndex.FIELD__LINKABLE_OTHER + ":" + searchQuery.getLinkableByOtherUsers());
+        }
+
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
         if(limitSearch){
