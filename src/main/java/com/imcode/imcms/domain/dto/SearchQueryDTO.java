@@ -17,6 +17,8 @@ public class SearchQueryDTO implements Serializable {
 
     private String term;
 
+    private SearchRange searchRange = SearchRange.ALL;
+
     private Integer userId;
 
     private List<Integer> categoriesId;
@@ -32,5 +34,10 @@ public class SearchQueryDTO implements Serializable {
 
     public SearchQueryDTO(String term) {
         this.term = term;
+    }
+
+    public enum SearchRange {
+        ALL,
+        BASIC
     }
 }

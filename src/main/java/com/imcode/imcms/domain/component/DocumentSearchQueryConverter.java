@@ -10,10 +10,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Order;
@@ -25,7 +22,7 @@ public class DocumentSearchQueryConverter {
         final UserDomainObject searchingUser = Imcms.getUser();
         final StringBuilder indexQuery = new StringBuilder();
 
-        indexQuery.append(termToDefaultQuery(searchQuery.getTerm(), searchingUser.getLanguage()));
+        indexQuery.append(termToDefaultQuery(searchQuery.getTerm(), searchQuery.getSearchRange(), searchingUser.getLanguage()));
 
         if (searchQuery.getCategoriesId() != null) {
             final String categoriesIdStringValues = searchQuery.getCategoriesId()
@@ -79,7 +76,7 @@ public class DocumentSearchQueryConverter {
         return solrQuery;
     }
 
-    private String termToDefaultQuery(String term, String language){
+    private String termToDefaultQuery(String term, SearchQueryDTO.SearchRange searchRange, String language){
         if(StringUtils.isBlank(term)) return "*:*";
 
         if(!term.startsWith("\"") && !term.endsWith("\"")){
@@ -94,18 +91,31 @@ public class DocumentSearchQueryConverter {
         }
 
         final String finalTerm = term;
-        return Arrays.stream(new String[]{
-				        DocumentIndex.FIELD__META_ID,
-				        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
-				        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
-				        DocumentIndex.FIELD__META_TEXT,
-				        DocumentIndex.FIELD__KEYWORD,
-				        DocumentIndex.FIELD__TEXT,
-				        DocumentIndex.FIELD__META_ALIAS + "_" + language,
-				        DocumentIndex.FIELD_META_ALIAS + "_" + language,
-				        DocumentIndex.FIELD__URL})
+        return getSearchFieldsByRange(searchRange, language).stream()
                         .map(field -> String.format("%s:(%s)", field, finalTerm))
                         .collect(Collectors.joining(" "));
+    }
+
+    private List<String> getSearchFieldsByRange(SearchQueryDTO.SearchRange searchRange, String language) {
+        switch (searchRange) {
+            case BASIC:
+                return List.of(DocumentIndex.FIELD__META_ID,
+                        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
+                        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
+                        DocumentIndex.FIELD__META_ALIAS + "_" + language,
+                        DocumentIndex.FIELD_META_ALIAS + "_" + language);
+            case ALL:
+            default:
+                return List.of(DocumentIndex.FIELD__META_ID,
+                        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
+                        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
+                        DocumentIndex.FIELD__META_TEXT,
+                        DocumentIndex.FIELD__KEYWORD,
+                        DocumentIndex.FIELD__TEXT,
+                        DocumentIndex.FIELD__META_ALIAS + "_" + language,
+                        DocumentIndex.FIELD_META_ALIAS + "_" + language,
+                        DocumentIndex.FIELD__URL);
+        }
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {

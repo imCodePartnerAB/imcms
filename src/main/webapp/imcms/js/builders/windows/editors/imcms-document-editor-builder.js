@@ -47,6 +47,7 @@ define('imcms-document-editor-builder',
         const defaultPageSize = 100;
 
         const term = 'term';
+        const searchRange = 'searchRange';
         const userId = 'userId';
         const categoriesId = 'categoriesId';
         const sortProperty = 'page.property';
@@ -1367,6 +1368,7 @@ define('imcms-document-editor-builder',
             if(!imcms.isSuperAdmin){
                 searchQueryObj[linkableByOtherUsers] = true;
             }
+            searchQueryObj[searchRange] = 'BASIC';
 
             initMenuDocuments(ids);
         }
@@ -1493,6 +1495,7 @@ define('imcms-document-editor-builder',
             // setting default values
             searchQueryObj[pageSkip] = currentDocumentNumber = 0;
             searchQueryObj[term] = '';
+            searchQueryObj[searchRange] = null;
             searchQueryObj[userId] = null;
             searchQueryObj[categoriesId] = {};
             searchQueryObj[roleIdProperty] = null;
