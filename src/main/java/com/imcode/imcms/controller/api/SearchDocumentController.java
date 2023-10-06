@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.Imcms;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,6 @@ public class SearchDocumentController {
 
     @GetMapping("/{id}")
     public DocumentStoredFieldsDTO getDocument(@PathVariable Integer id){
-        return searchDocumentService.searchDocuments("id:" + id, false).get(0);
+        return searchDocumentService.searchDocuments(DocumentIndex.FIELD__ID + ":" + id, false).get(0);
     }
 }

@@ -1,6 +1,8 @@
 package imcode.server.document.index;
 
 import com.imcode.imcms.api.SearchResult;
+import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
@@ -83,10 +85,14 @@ public interface DocumentIndex {
 
 	/**
 	 * Searches documents.
+	 * @deprecated - Use better {@link SearchDocumentService#searchDocuments(String)}
 	 */
 	@Deprecated
 	List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
+	/**
+	 * * @deprecated - Use better {@link SearchDocumentService#searchDocuments(String, PageRequestDTO)}
+	 */
 	@Deprecated
 	SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
 
