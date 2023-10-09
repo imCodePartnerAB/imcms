@@ -131,6 +131,11 @@ public abstract class AbstractControllerTest {
                 .content(asJson(content));
     }
 
+    protected MockHttpServletRequestBuilder getPostRequestBuilderWithoutContent(String path) {
+        return MockMvcRequestBuilders.post(controllerPath() + path)
+                .contentType(MediaType.APPLICATION_JSON);
+    }
+
     protected MockHttpServletRequestBuilder getDeleteRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.delete(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -141,6 +146,16 @@ public abstract class AbstractControllerTest {
         return MockMvcRequestBuilders.put(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(content));
+    }
+
+    protected MockHttpServletRequestBuilder getPutRequestBuilderWithoutContent(){
+        return MockMvcRequestBuilders.put(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    protected MockHttpServletRequestBuilder getPutRequestBuilderWithoutContent(String path){
+        return MockMvcRequestBuilders.put(controllerPath() + path)
+                .contentType(MediaType.APPLICATION_JSON);
     }
 
     protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content, String path) {
