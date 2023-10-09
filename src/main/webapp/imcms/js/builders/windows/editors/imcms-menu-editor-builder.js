@@ -964,11 +964,9 @@ define("imcms-menu-editor-builder",
                 });
         }
 
-        function reorderMenuListBySortNumber(menuItems, isOldValMoreCurrent, menuItemId, highlight) {
+        function reorderMenuListBySortNumber(menuItems, menuItemId, highlight) {
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             getDeepSortedItemsBySortNumber(menuItems);
-
-            swapSameItemSortNumber(menuItems, isOldValMoreCurrent);
 
             const mappedMenuItems = menuItems.map(menuItem => mapToMenuItemWithAllFields(menuItem));
 
@@ -1002,7 +1000,7 @@ define("imcms-menu-editor-builder",
         }
 
         function parseIndex(index) {
-            return index.split('.').map(n => parseInt(n) - 1);
+            return index.split('.').map(n => Math.max(parseInt(n) - 1, 0));
         }
 
         function parseValue(value) {
@@ -1183,10 +1181,9 @@ define("imcms-menu-editor-builder",
 		    }, items);
 
 		    const splicedElem = foundElement.splice(parsedIndex[parsedIndex.length - 1], 1)[0];
+            placementElement.splice(parsedValue.pop(), 0, splicedElem);
 
-		    placementElement.push(splicedElem);
-
-		    reorderMenuListBySortNumber(items, isCheckOldValueMoreThanCurrentValue(currentIndex, currentValue), documentId, true);
+		    reorderMenuListBySortNumber(items, documentId, true);
 	    }
 
 	    function onInputEnterPressed(e) {
@@ -1206,26 +1203,6 @@ define("imcms-menu-editor-builder",
                 if (hasChildren) {
                     dataTreeKey = isEmptySortNumber ? dataTreeKey : currentMenuItem.sortOrder;
                     setSortNumbersInMenuItems(menuElements[i].children, dataTreeKey);
-                }
-            }
-        }
-
-        function swapSameItemSortNumber(menuItems, oldValMoreCurrent) {
-            let duplicate;
-            menuItems.forEach((item, index, array) => {
-                if (item.children.length) {
-                    swapSameItemSortNumber(item.children, oldValMoreCurrent);
-                }
-                duplicate = array.map(item => item.sortOrder).indexOf(item.sortOrder) !== index ? item : duplicate
-            });
-
-            const foundSameItemIndex = menuItems.findIndex(item => item === duplicate);
-
-            if (foundSameItemIndex !== -1) {
-                if (oldValMoreCurrent) {
-                    const sameItem = menuItems[foundSameItemIndex];
-                    menuItems[foundSameItemIndex] = menuItems[foundSameItemIndex - 1];
-                    menuItems[foundSameItemIndex - 1] = sameItem;
                 }
             }
         }
