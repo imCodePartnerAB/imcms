@@ -20,9 +20,11 @@ public class DocumentSearchQueryConverter {
 
     public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery, boolean limitSearch) {
         final UserDomainObject searchingUser = Imcms.getUser();
+        final String currentLanguage = Imcms.getLanguage().getCode();
+
         final StringBuilder indexQuery = new StringBuilder();
 
-        indexQuery.append(termToDefaultQuery(searchQuery.getTerm(), searchQuery.getSearchRange(), searchingUser.getLanguage()));
+        indexQuery.append(termToDefaultQuery(searchQuery.getTerm(), searchQuery.getSearchRange(), currentLanguage));
 
         if (searchQuery.getCategoriesId() != null) {
             final String categoriesIdStringValues = searchQuery.getCategoriesId()

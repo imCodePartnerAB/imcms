@@ -13,6 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 public class SearchQueryDTO implements Serializable {
 
+    public enum SearchRange {
+        ALL,
+        BASIC
+    }
+
     private static final long serialVersionUID = -3236215724457387659L;
 
     private String term;
@@ -36,8 +41,10 @@ public class SearchQueryDTO implements Serializable {
         this.term = term;
     }
 
-    public enum SearchRange {
-        ALL,
-        BASIC
+    public void setSearchRange(SearchRange searchRange) {
+        if(searchRange != null){
+            this.searchRange = searchRange;
+        }
     }
+
 }
