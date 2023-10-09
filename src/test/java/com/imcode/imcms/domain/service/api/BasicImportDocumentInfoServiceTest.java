@@ -140,13 +140,13 @@ public class BasicImportDocumentInfoServiceTest extends WebAppSpringTestConfig {
 
 	@Test
 	public void toMetaIdFromId_When_InfoNonExists_Expect_CorrectResult() {
-		assertNull(basicImportDocumentInfoService.toMetaId(DEFAULT_ID));
+		assertTrue(basicImportDocumentInfoService.toMetaId(DEFAULT_ID).isEmpty());
 	}
 
 	@Test
 	public void toMetaIdFromId_When_ImportDocumentNotImportedYet_Expect_CorrectResult() {
 		assertNotNull(basicImportDocumentInfoService.create(DEFAULT_ID, ImportDocumentStatus.IMPORT));
-		assertNull(basicImportDocumentInfoService.toMetaId(DEFAULT_ID));
+		assertTrue(basicImportDocumentInfoService.toMetaId(DEFAULT_ID).isEmpty());
 	}
 
 	@Test
@@ -158,9 +158,9 @@ public class BasicImportDocumentInfoServiceTest extends WebAppSpringTestConfig {
 		basicImportDocumentInfoDTO.setStatus(ImportDocumentStatus.IMPORTED);
 		basicImportDocumentInfoService.save(basicImportDocumentInfoDTO);
 
-		final Integer metaId = basicImportDocumentInfoService.toMetaId(DEFAULT_ID);
+		final Optional<Integer> metaId = basicImportDocumentInfoService.toMetaId(DEFAULT_ID);
 
-		assertNotNull(metaId);
-		assertEquals(DEFAULT_META_ID, metaId);
+		assertTrue(metaId.isPresent());
+		assertEquals(DEFAULT_META_ID, metaId.get());
 	}
 }
