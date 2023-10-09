@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -39,6 +40,7 @@ class WebConfig implements WebMvcConfigurer {
     public CommonsMultipartResolver multipartResolver(Properties imcmsProperties) {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(Long.parseLong(imcmsProperties.getProperty("ImageArchiveMaxImageUploadSize")));
+        multipartResolver.setSupportedMethods(HttpMethod.POST.name(), HttpMethod.PUT.name());
         return multipartResolver;
     }
 
