@@ -37,32 +37,6 @@ public abstract class DocumentPageFlow extends PageFlow {
 
     public abstract DocumentDomainObject getDocument();
 
-    @Override
-    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (null != request.getParameter(REQUEST_PARAMETER__UNIQUE_ALIAS)) {
-            String documentAlias = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS);
-
-            if (StringUtils.isBlank(documentAlias)) {
-                final String title = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE);
-                documentAlias = StringUtils.defaultString(title)
-                        .trim()
-                        .toLowerCase()
-                        .replaceAll("[äå]", "a")
-                        .replaceAll("ö", "o")
-                        .replaceAll("é", "e")
-                        .replaceAll(" +", "-")
-                        .replaceAll("[^\\w\\-]+", "");
-            }
-
-            request.setAttribute(REQUEST_PARAMETER__UNIQUE_ALIAS, Imcms.getServices().getDocumentMapper().getUniqueAlias(documentAlias));
-            dispatchToFirstPage(request, response);
-            return;
-        }
-
-        super.dispatch(request, response);
-    }
-
-
     private synchronized void saveDocument(HttpServletRequest request) {
         try {
             saveDocumentCommand.saveDocument(getDocument(), Utility.getLoggedOnUser(request));

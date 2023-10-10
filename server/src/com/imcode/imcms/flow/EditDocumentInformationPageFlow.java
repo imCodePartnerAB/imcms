@@ -19,6 +19,7 @@ import imcode.util.DateConstants;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -376,6 +377,32 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
         });
         userFinder.forward(request, response);
+    }
+
+    @Override
+    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (null != request.getParameter(REQUEST_PARAMETER__UNIQUE_ALIAS)) {
+            String documentAlias = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS);
+
+            if (StringUtils.isBlank(documentAlias)) {
+                final String title = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE);
+                documentAlias = StringUtils.defaultString(title)
+                        .trim()
+                        .toLowerCase()
+                        .replaceAll("[äå]", "a")
+                        .replaceAll("ö", "o")
+                        .replaceAll("é", "e")
+                        .replaceAll(" +", "-")
+                        .replaceAll("[^\\w\\-]+", "");
+            }
+
+            request.setAttribute(REQUEST_PARAMETER__UNIQUE_ALIAS, Imcms.getServices().getDocumentMapper().getUniqueAlias(documentAlias));
+            setDocumentAttributesFromRequestParameters(document, request, errors);
+            dispatchToFirstPage(request, response);
+            return;
+        }
+
+        super.dispatch(request, response);
     }
 
     protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

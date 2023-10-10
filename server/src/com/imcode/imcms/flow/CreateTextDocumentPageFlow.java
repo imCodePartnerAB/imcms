@@ -16,6 +16,16 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         super(document, returnCommand, saveNewDocumentCommand);
     }
 
+    @Override
+    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (null != request.getParameter(REQUEST_PARAMETER__UNIQUE_ALIAS)) {
+            editDocumentInformationPageFlow.dispatch(request, response);
+            return;
+        }
+
+        super.dispatch(request, response);
+    }
+
     protected void dispatchOkFromDocumentInformation(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) getDocument();
         if (null != request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS)) {
