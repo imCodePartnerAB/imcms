@@ -672,6 +672,25 @@ public class DocumentMapper implements DocumentGetter {
         ImageCacheManager.clearCacheEntries(metaId, fileNo);
     }
 
+    public boolean existsByAlias(String alias) {
+        final String script = "SELECT DISTINCT COUNT(*) FROM document_properties WHERE key_name = 'imcms.document.alias' AND LOWER(value) = LOWER(?)";
+
+        final int count = Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>(script, new Object[]{StringUtils.defaultString(alias)}, Utility.SINGLE_STRING_HANDLER)));
+
+        return count != 0;
+    }
+
+    public String getUniqueAlias(String alias){
+        if (!existsByAlias(alias)) {
+            return alias;
+        }
+
+        int i = 1;
+        while (existsByAlias(alias + "-" + i++)) ;
+
+        return alias + "-" + (i - 1);
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;

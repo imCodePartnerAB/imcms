@@ -2,6 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
+import imcode.server.Imcms;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
+    public static final String REQUEST_PARAMETER__UNIQUE_ALIAS = "uniqueAlias";
     protected final DocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
     protected DocumentPageFlow(DispatchCommand returnCommand,
@@ -33,6 +35,20 @@ public abstract class DocumentPageFlow extends PageFlow {
     }
 
     public abstract DocumentDomainObject getDocument();
+
+    @Override
+    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (null != request.getParameter(REQUEST_PARAMETER__UNIQUE_ALIAS)) {
+            final String documentAlias = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS);
+
+            request.setAttribute(REQUEST_PARAMETER__UNIQUE_ALIAS, Imcms.getServices().getDocumentMapper().getUniqueAlias(documentAlias));
+            dispatchToFirstPage(request, response);
+            return;
+        }
+
+        super.dispatch(request, response);
+    }
+
 
     private synchronized void saveDocument(HttpServletRequest request) {
         try {
