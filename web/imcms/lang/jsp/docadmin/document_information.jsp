@@ -216,9 +216,10 @@ function checkFocus() {
 				aliasInfoPath = request.getContextPath() + "/" ;
 			} %>
 			<td width="10%" nowrap="nowrap"><%= aliasInfoPath %>&nbsp;</td>
-			<td width="80%" align="right"><input type="text"
+			<td width="70%" align="right"><input type="text"
 				name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255"
-				value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getAlias() ), "" ) %>" style="width:99%;" /></td>
+				value="<%= ObjectUtils.defaultIfNull( ObjectUtils.defaultIfNull(request.getAttribute(DocumentPageFlow.REQUEST_PARAMETER__UNIQUE_ALIAS), StringEscapeUtils.escapeHtml( document.getAlias() )), "" ) %>" style="width:99%;" /></td>
+			<td align="right" style="padding-left:5px;"><input type="submit" class="imcmsFormBtnSmall" name="<%= DocumentPageFlow.REQUEST_PARAMETER__UNIQUE_ALIAS %>" value=" <? global/Suggest_alias ?> "></td>
 			<td align="right" style="padding-left:5px;"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_ALIAS_LIST %>" value=" <? global/view ?> "></td>
 		</tr>
 		</table></td>
