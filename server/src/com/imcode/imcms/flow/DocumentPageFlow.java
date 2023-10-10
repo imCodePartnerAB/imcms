@@ -12,6 +12,7 @@ import imcode.util.HttpSessionUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,19 @@ public abstract class DocumentPageFlow extends PageFlow {
     @Override
     public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (null != request.getParameter(REQUEST_PARAMETER__UNIQUE_ALIAS)) {
-            final String documentAlias = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS);
+            String documentAlias = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS);
+
+            if (StringUtils.isBlank(documentAlias)) {
+                final String title = request.getParameter(EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE);
+                documentAlias = StringUtils.defaultString(title)
+                        .trim()
+                        .toLowerCase()
+                        .replaceAll("[äå]", "a")
+                        .replaceAll("ö", "o")
+                        .replaceAll("é", "e")
+                        .replaceAll(" +", "-")
+                        .replaceAll("[^\\w\\-]+", "");
+            }
 
             request.setAttribute(REQUEST_PARAMETER__UNIQUE_ALIAS, Imcms.getServices().getDocumentMapper().getUniqueAlias(documentAlias));
             dispatchToFirstPage(request, response);
