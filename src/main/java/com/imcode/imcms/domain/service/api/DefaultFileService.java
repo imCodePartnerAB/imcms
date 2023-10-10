@@ -4,6 +4,7 @@ import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
+import com.imcode.imcms.domain.exception.FileOperationFailureException;
 import com.imcode.imcms.domain.exception.TemplateFileException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -171,7 +173,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<SourceFile> moveFile(List<Path> src, Path target) throws IOException {
+    public List<SourceFile> moveFile(List<Path> src, Path target) throws FileOperationFailureException, IOException {
         src.forEach(path -> checkActionsAllowed(path, true));
         src.forEach(path -> {
             if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be moved! Got path: " + path);
@@ -180,10 +182,48 @@ public class DefaultFileService implements FileService {
         if(isTemplatePath(target)) throwTemplateException("Files cannot be moved to the folder with templates! Got path: " + target);
 
         final List<SourceFile> files = new ArrayList<>();
+        final List<SourceFile> conflictFiles = new ArrayList<>();
         for (Path srcPath : src) {
-            files.add(fileToSourceFile.apply(Files.move(srcPath, target.resolve(srcPath.getFileName())), false));
+            final Path targetPath = target.resolve(srcPath.getFileName());
+
+            try {
+                files.add(fileToSourceFile.apply(Files.move(srcPath, targetPath), false));
+            } catch (FileAlreadyExistsException e) {
+                conflictFiles.add(fileToSourceFile.apply(srcPath, false));
+            }
         }
+
+        if (!conflictFiles.isEmpty()) {
+            throw new FileOperationFailureException(conflictFiles);
+        }
+
         return files;
+    }
+
+    @Override
+    public SourceFile moveFileWithRename(Path src, Path target, String newFilename) throws FileOperationFailureException, IOException {
+        checkActionsAllowed(src, true);
+        if (isTemplatePath(src))
+            throwTemplateException("Folder with templates or templates cannot be moved! Got path: " + src);
+
+        checkAccessAllowed(target, false);
+        if (isTemplatePath(target))
+            throwTemplateException("Files cannot be moved to the folder with templates! Got path: " + target);
+
+        if (Files.isDirectory(src)) {
+            log.error("Supports only files, not directories");
+            throw new FileOperationFailureException("Supports only files, not directories", List.of(fileToSourceFile.apply(src, false)));
+        }
+
+        final Path targetPath = target.resolve(newFilename);
+        try {
+            Files.move(src, targetPath);
+        } catch (FileAlreadyExistsException e) {
+            log.error("Supports only files, not directories", e);
+            throw new FileOperationFailureException("Supports only files, not directories", e, List.of(fileToSourceFile.apply(src, false)));
+        }
+
+        return fileToSourceFile.apply(targetPath, false);
     }
 
     @Override
@@ -210,7 +250,28 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException {
+    public SourceFile defaultRename(Path path) throws IOException {
+        final String filePath = path.toFile().getAbsolutePath();
+        final String baseName = FilenameUtils.getBaseName(filePath);
+        final String extension = FilenameUtils.getExtension(filePath);
+        final String fullPath = FilenameUtils.getFullPath(filePath);
+
+        int copiesCount = 1;
+        String newNameOldFile;
+        do {
+            newNameOldFile = baseName + '-' + copiesCount++ + '.' + extension;
+        } while (Files.exists(Path.of(fullPath + newNameOldFile)));
+
+        return renameFile(path, newNameOldFile);
+    }
+
+    @Override
+    public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException, FileOperationFailureException {
+        return copyFile(src, target, false);
+    }
+
+    @Override
+    public List<SourceFile> copyFile(List<Path> src, Path target, boolean overwrite) throws IOException, FileOperationFailureException {
         src.forEach(path -> checkActionsAllowed(path, false));
         src.forEach(path -> {
             if(isTemplatePath(path)) throwTemplateException("Folder with templates or templates cannot be copied! Got path: " + path);
@@ -219,19 +280,60 @@ public class DefaultFileService implements FileService {
         if(isTemplatePath(target)) throwTemplateException("Files cannot be copied to the folder with templates! Got path: " + target);
 
         final List<SourceFile> files = new ArrayList<>();
+        final List<SourceFile> conflictFiles = new ArrayList<>();
+
         Path targetPath;
         for (Path srcPath : src) {
             targetPath = target.resolve(srcPath.getFileName());
 
-            if(Files.isDirectory(srcPath)){
+            if (Files.isDirectory(srcPath)) {
                 org.apache.commons.io.FileUtils.copyDirectory(srcPath.toFile(), targetPath.toFile());
-            }else{
-                Files.copy(srcPath, target.resolve(srcPath.getFileName()));
+            } else {
+                try {
+                    if (overwrite) {
+                        Files.copy(srcPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    } else {
+                        Files.copy(srcPath, targetPath);
+                    }
+                } catch (FileAlreadyExistsException e) {
+                    conflictFiles.add(fileToSourceFile.apply(srcPath, false));
+                }
             }
 
             files.add(fileToSourceFile.apply(targetPath, false));
         }
+
+        if (!conflictFiles.isEmpty()){
+            throw new FileOperationFailureException(conflictFiles);
+        }
+
         return files;
+    }
+
+    @Override
+    public SourceFile copyFileWithRename(Path src, Path target, String newFilename) throws FileOperationFailureException, IOException {
+        checkActionsAllowed(src, false);
+        if (isTemplatePath(src))
+            throwTemplateException("Folder with templates or templates cannot be copied! Got path: " + src);
+
+        checkAccessAllowed(target, false);
+        if (isTemplatePath(target))
+            throwTemplateException("Files cannot be copied to the folder with templates! Got path: " + target);
+
+        if (Files.isDirectory(src)) {
+            log.error("Supports only files, not directories");
+            throw new FileOperationFailureException("Supports only files, not directories", List.of(fileToSourceFile.apply(src, false)));
+        }
+
+        final Path targetPath = target.resolve(newFilename);
+        try {
+            Files.copy(src, targetPath);
+        } catch (FileAlreadyExistsException e) {
+            log.error("Supports only files, not directories", e);
+            throw new FileOperationFailureException("Supports only files, not directories", e, List.of(fileToSourceFile.apply(src, false)));
+        }
+
+        return fileToSourceFile.apply(targetPath, false);
     }
 
     @Override
@@ -239,8 +341,6 @@ public class DefaultFileService implements FileService {
         checkActionsAllowed(location, false);
 
         if (StringUtils.isNotBlank(location.toString())) {
-	        if (!isTemplatePath(location) && Files.exists(location)) renameExistingFile(location);
-
             Path writeFilePath = writeMode == null ? Files.write(location, content) : Files.write(location, content, writeMode);
 
             if(isTemplatePath(location) && Files.exists(location)) createAndSaveTemplate(location);
@@ -274,6 +374,15 @@ public class DefaultFileService implements FileService {
             log.error(errorMessage);
             throw new EmptyFileNameException(errorMessage);
         }
+    }
+
+    @Override
+    public List<SourceFile> existsAll(List<String> paths) {
+        return paths.stream()
+                .filter(this::exists)
+                .map(Path::of)
+                .map(path -> fileToSourceFile.apply(path, false))
+                .toList();
     }
 
     /**
@@ -371,18 +480,4 @@ public class DefaultFileService implements FileService {
         throw new TemplateFileException(errorMessage);
     }
 
-	private void renameExistingFile(Path location) throws IOException {
-		final String filePath = location.toFile().getAbsolutePath();
-		final String baseName = FilenameUtils.getBaseName(filePath);
-		final String extension = FilenameUtils.getExtension(filePath);
-		final String fullPath = FilenameUtils.getFullPath(filePath);
-
-		int copiesCount = 1;
-		String newNameOldFile;
-		do {
-			newNameOldFile = baseName + '-' + copiesCount++ + '.' + extension;
-		} while (Files.exists(Path.of(fullPath + newNameOldFile)));
-
-		renameFile(location, newNameOldFile);
-	}
 }

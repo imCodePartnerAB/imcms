@@ -776,11 +776,10 @@ define(
             const name = currentFile.fileType === 'FILE' ? editFileNameField.getValue() : editDirectoryNameField.getValue();
             const currentFullPath = this.getTargetDirectoryPath() + "/" + name;
 
-            const fileToSaveWithContent = {
-                fileName: name,
-                fullPath: currentFullPath,
-                content: contentTextArea.getValue()
-            };
+            const fileToSaveWithContent = new FormData();
+            fileToSaveWithContent.append("filename", name);
+            fileToSaveWithContent.append("fullPath", currentFullPath);
+            fileToSaveWithContent.append("content", contentTextArea.getValue());
 
             fileRestApi.change(fileToSaveWithContent).done(file => {
                 currentFile.contents = file.contents;
@@ -934,13 +933,21 @@ define(
                 fileType: isDirectory ? 'DIRECTORY' : 'FILE'
             };
 
-            fileRestApi.create(fileToSave).done(newFile => {
-                changeCountFiles(this.targetSubFilesContainerIndex, 1);
+            fileRestApi.exists({path: currentFullPath})
+                .done(fileExists => {
+                    if (fileExists) {
+                        modal.buildErrorWindow(texts.error.fileAlreadyExists);
+                        return;
+                    }
 
-                currentFile = newFile;
-                $fileSourceRow = integrateFileInContainerAsRow(newFile, targetSubFilesContainer, this.transformFileToRow);
-                $fileSourceRow.addClass(newFileHighlightingClassName);
-            }).fail(() => modal.buildErrorWindow(texts.error.createError));
+                    fileRestApi.create(fileToSave).done(newFile => {
+                        changeCountFiles(this.targetSubFilesContainerIndex, 1);
+
+                        currentFile = newFile;
+                        $fileSourceRow = integrateFileInContainerAsRow(newFile, targetSubFilesContainer, this.transformFileToRow);
+                        $fileSourceRow.addClass(newFileHighlightingClassName);
+                    }).fail(() => modal.buildErrorWindow(texts.error.createError));
+                })
         }
 
         function uploadFile() {
@@ -954,8 +961,8 @@ define(
             $fileInput.change(() => {
                 let formData = new FormData();
 
-                let files = $fileInput.prop('files');
-                Array.from(files).forEach(file => {
+                let files =  Array.from($fileInput.prop('files'));
+                files.forEach(file => {
                     const fileName = file.name.split(' ');
                     formData.append(fileName.join('_'), file)
                 });
@@ -964,32 +971,64 @@ define(
                 const targetDirectoryPath = getDirPathBySubFilesContainer(targetSubFilesContainer);
                 formData.append("targetDirectory", targetDirectoryPath);
 
-                fileRestApi.upload(formData).done(uploadedFiles => {
-                    const callback = () => {
-                        const $currentSubFiles = $("." + currentFileEditor.subFilesClassName).children();
+                const paths = files.map(file => targetDirectoryPath + '/' + file.name).join(",");
+                fileRestApi.existsAll({paths: paths})
+                    .done(files => {
+                        if (files.length) {
+                            modal.buildWarningWindow(texts.error.duplicateFiles, () => {
+                                const duplicateFileResolver = new DuplicateFileResolver(files);
+                                duplicateFileResolver.resolveForUpload(formData)
+                                    .then(uploadFiles)
+                                    .catch(console.error);
+                            });
+                        } else {
+                            uploadFiles(formData);
+                        }
+                    });
+            });
+        }
 
-                        uploadedFiles.forEach(file => {
-                            $currentSubFiles.filter((index, fileRow) => {
-                                const fileRowFilename = $(fileRow).find(".file-row__file-name").text();
-                                return fileRowFilename === file.fileName;
-                            }).addClass(newFileHighlightingClassName);
-                        });
-                    }
+        function uploadFiles(formData) {
+            // because 1 param always there
+            if (Array.from(formData.keys()).length === 1) return;
 
-                    onDirectoryDblClick.call(currentFileEditor, null, currentFolder, callback);
-
-                }).fail(() => modal.buildErrorWindow(texts.error.uploadError));
+            fileRestApi.upload(formData).done(uploadedFiles => {
+                refreshCurrentFolder(() => highlightNewFiles(uploadedFiles));
+            }).fail((response) => {
+                modal.buildErrorWindow(texts.error.uploadError)
             });
         }
 
         function moveFile() {
             const targetSubFilesContainer = this.getTargetSubFilesContainer();
+            const targetDirectory=getDirPathBySubFilesContainer(targetSubFilesContainer);
 
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
-                target: getDirPathBySubFilesContainer(targetSubFilesContainer)
+                target:targetDirectory
             };
 
+            const pathsToCheck = selectedFiles.map(file => targetDirectory + '/' + file.fileName).join(",");
+            fileRestApi.existsAll({paths: pathsToCheck})
+                .done(files => {
+                    if (files.length) {
+                        modal.buildWarningWindow(texts.error.duplicateFiles, callback => {
+                            new DuplicateFileResolver(selectedFiles)
+                                .resolveForMove(targetDirectory)
+                                .then(modifiedFiles => {
+                                    if (modifiedFiles.length) {
+                                        paths.src = modifiedFiles.map(file => file.fullPath).toString();
+                                        moveFiles.call(this, paths, targetSubFilesContainer)
+                                    }
+                                })
+                        })
+                    } else {
+                        moveFiles.call(this, paths, targetSubFilesContainer);
+                    }
+                })
+        }
+
+        function moveFiles(paths, targetSubFilesContainer) {
             fileRestApi.move(paths).done(files => {
                 changeCountFiles(this.targetSubFilesContainerIndex, files.length);
                 changeCountFiles(this.targetSubFilesContainerIndex === 0 ? 1 : 0, 0-files.length);
@@ -1018,31 +1057,421 @@ define(
 
         function copyFile() {
             const targetSubFilesContainer = this.getTargetSubFilesContainer();
+            const targetDirectory = getDirPathBySubFilesContainer(targetSubFilesContainer);
 
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
-                target: getDirPathBySubFilesContainer(targetSubFilesContainer)
+                target: targetDirectory
             };
 
+            const pathsToCheck = selectedFiles.map(file => targetDirectory + '/' + file.fileName).join(",");
+            fileRestApi.existsAll({paths: pathsToCheck})
+                .done(files => {
+
+                    if (files.length) {
+                        modal.buildWarningWindow(texts.error.duplicateFiles, callback => {
+                            new DuplicateFileResolver(selectedFiles)
+                                .resolveForCopy(targetDirectory)
+                                .then(modifiedFiles => {
+                                    if (modifiedFiles.length) {
+                                        paths.src = modifiedFiles.map(file => file.fullPath).toString();
+                                        copyFiles.call(this, paths, targetSubFilesContainer)
+                                    }
+                                })
+                        })
+                    } else {
+                        copyFiles.call(this, paths, targetSubFilesContainer);
+                    }
+                })
+        }
+
+        function copyFiles(paths, targetSubFilesContainer) {
             fileRestApi.copy(paths).done(newFiles => {
-                changeCountFiles(this.targetSubFilesContainerIndex, newFiles.length);
+                refreshCurrentFolder(() => highlightNewFiles(newFiles));
+            }).fail(() => modal.buildErrorWindow(texts.error.copyError));
+        }
 
-                selectedFiles = newFiles;
-                selectedFilesRows = [];
+        function highlightNewFiles(files) {
+            const $currentSubFiles = $("." + currentFileEditor.subFilesClassName).children();
 
-                const allSubFilesContainers = getAllSubFilesContainers();
-                if (getDirPathByIndex(0) !== getDirPathByIndex(1)) {
-                    newFiles.forEach(file =>
-                        selectedFilesRows.push(
-                            integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow)
-                        )
-                    );
+            files.forEach(file => {
+                $currentSubFiles.filter((index, fileRow) => {
+                    const fileRowFilename = $(fileRow).find(".file-row__file-name").text();
+                    return fileRowFilename === file.fileName;
+                }).addClass(newFileHighlightingClassName);
+            })
+        }
+
+        function refreshCurrentFolder(callback) {
+            onDirectoryDblClick.call(currentFileEditor, null, currentFolder, callback);
+        }
+
+        class DuplicateFileResolver{
+            constructor(files) {
+                this._files = files;
+                this._current = 0;
+                this._canBuildNext = true;
+                this._newFiles = [];
+            }
+
+            async resolveForUpload(formData) {
+                this._formData = formData;
+
+                while (this._canBuildNext) {
+                    await this.#buildForUpload();
                 }
 
-                allSubFilesContainers.forEach(container =>
-                    updateHighlighting(container, selectedFilesRows)
-                );
-            }).fail(() => modal.buildErrorWindow(texts.error.copyError));
+                if (this._newFiles.length) {
+                    refreshCurrentFolder(() => highlightNewFiles(this._newFiles));
+                }
+
+                return this._formData;
+            }
+
+            async resolveForCopy(targetDirectory){
+                this._targetDirectory = targetDirectory;
+                while (this._canBuildNext) {
+                    await this.#buildForCopy();
+                }
+
+                if (this._newFiles.length) {
+                    refreshCurrentFolder(() => highlightNewFiles(this._newFiles));
+                }
+
+                return this._files;
+            }
+
+            async resolveForMove(targetDirectory){
+                this._targetDirectory = targetDirectory;
+                while (this._canBuildNext) {
+                    await this.#buildForMove();
+                }
+
+                if (this._newFiles.length) {
+                    refreshCurrentFolder(() => highlightNewFiles(this._newFiles));
+                }
+
+                return this._files;
+            }
+
+            #next() {
+                const file = this._files[this._current++];
+                if (!file) {
+                    this._canBuildNext = false;
+                    return null;
+                }
+
+                return file;
+            }
+
+            #addToNewFiles(file){
+                this._newFiles.push(file);
+            }
+
+            #removeCurrentFile(file) {
+                this._files.splice(this._files.indexOf(file), 1);
+            }
+
+            #removeFromFormData(filename){
+                this._formData.delete(filename)
+            }
+
+            #buildOverwriteButton(onClick){
+                return  components.buttons.positiveButton({
+                    text: texts.overwrite,
+                    click: onClick
+                });
+            }
+
+            #buildCancelButton(onClick){
+                return components.buttons.negativeButton({
+                    text: texts.cancel,
+                    click: onClick
+                });
+            }
+
+            #buildDefaultRenameButton(onClick){
+                return components.buttons.positiveButton({
+                    text: texts.defaultRename,
+                    click: onClick
+                })
+            }
+
+            #buildChooseFilenameButton(onClick) {
+                return components.buttons.positiveButton({
+                    text: texts.chooseFilename,
+                    click: onClick
+                });
+            }
+
+            #buildFilenameRow(filename){
+                return components.texts.infoText("<div>", texts.title.filename + filename).css("display", "inline-block");
+            }
+
+            #buildEditFilenameField(filename){
+                const $editFileNameField = buildFileNameField(texts.title.newFilename)
+                    .css({
+                        "width": "80%",
+                        "display": "inline-block"
+                    });
+
+                $editFileNameField.setValue(filename);
+
+                return $editFileNameField;
+            }
+
+            #buildSelect(){
+                const $select = components.selects.imcmsSelect('<div>', {
+                    id: 'eugene',
+                    name: 'eugene',
+                    text:texts.title.selectTitle,
+                    emptySelect: false
+                }, [
+                    {
+                        'data-value': "CURRENT",
+                        text: texts.title.current
+                    },
+                    {
+                        'data-value': "EXISTING",
+                        text: texts.title.existing
+                    }
+                ]).css({
+                    "width": "20%",
+                    "display": "inline-block",
+
+                });
+                $select.find(".imcms-drop-down-list").css("width", "90%");
+                $select.selectValue("CURRENT");
+                return $select;
+            }
+
+            #buildForUpload() {
+                const file = this.#next();
+                if (!file) {
+                    return Promise.resolve();
+                }
+
+                return new Promise((resolve, reject) => {
+                    const $overwriteButton = this.#buildOverwriteButton(() => {
+                        const fileToSaveWithContent = new FormData();
+                        const filename = file.fileName;
+                        fileToSaveWithContent.append("filename", filename);
+                        fileToSaveWithContent.append("fullPath", file.fullPath);
+                        fileToSaveWithContent.append(filename, this._formData.get(filename));
+
+                        fileRestApi.change(fileToSaveWithContent)
+                            .done(() => {
+                                this.#addToNewFiles(file);
+                                this.#removeFromFormData(file.fileName);
+                                this.#removeCurrentFile(file);
+                                resolve();
+                            });
+                    });
+
+                    const $defaultRenameButton = this.#buildDefaultRenameButton(() => {
+                        const data = {path: file.fullPath};
+                        fileRestApi.defaultRename(data)
+                            .done(() => {
+                                this.#addToNewFiles(file);
+                                resolve();
+                            });
+                    });
+
+                    const $chooseFilenameButton = this.#buildChooseFilenameButton(() => {
+                        const $filename = this.#buildFilenameRow(file.fileName);
+                        const $select = this.#buildSelect();
+                        const $editFileNameField = this.#buildEditFilenameField(file.fileName);
+
+                        modal.buildEditFileModalWindow($filename, $editFileNameField, $select, confirmed => {
+                            if (!confirmed) {
+                                this.#removeFromFormData(file.fileName);
+                                this.#removeCurrentFile(file);
+                                resolve();
+                                return;
+                            }
+
+                            const selectedValue = $select.getSelectedValue();
+                            const newFilename = $editFileNameField.getValue();
+                            if (selectedValue === "CURRENT") {
+                                this._formData.append(newFilename, this._formData.get(file.fileName));
+                                this._formData.delete(file.fileName);
+                                this.#addToNewFiles({fileName:newFilename});
+                                resolve();
+                            } else {
+                                const data = {
+                                    src: file.fullPath,
+                                    newName: newFilename,
+                                };
+                                fileRestApi.rename(data).done(() => {
+                                    resolve();
+                                });
+                            }
+                        });
+                    });
+
+                    const $cancelButton = this.#buildCancelButton(() => {
+                        this.#removeFromFormData(file.fileName);
+                        this.#removeCurrentFile(file);
+                        resolve();
+                    });
+
+                    const $buttons = [$overwriteButton, $defaultRenameButton, $chooseFilenameButton, $cancelButton];
+                    modal.buildModalWindowWithButtonGroup(texts.title.chooseAction + file.fileName, $buttons);
+                });
+            }
+
+            #buildForCopy() {
+                const file = this.#next();
+                if (!file) {
+                    return Promise.resolve();
+                }
+
+                if (file.fileType === 'DIRECTORY') {
+                    modal.buildErrorWindow(texts.error.onlyFilesSupported, callback => {
+                        return Promise.resolve()
+                    });
+                    return;
+                }
+
+                return new Promise((resolve, reject) => {
+                    const $overwriteButton = this.#buildOverwriteButton(() => {
+                        const params = {
+                            src: file.fullPath,
+                            target: this._targetDirectory,
+                            overwrite: true
+                        };
+
+                        fileRestApi.copy(params)
+                            .done(() => {
+                                this.#addToNewFiles(file);
+                                this.#removeCurrentFile(file);
+                                resolve();
+                            });
+                    });
+
+                    const $defaultRenameButton = this.#buildDefaultRenameButton(() => {
+                        const data = {path: this._targetDirectory + '/' + file.fileName};
+                        fileRestApi.defaultRename(data)
+                            .done((file) => {
+                                resolve();
+                            });
+                    });
+
+                    const $chooseFilenameButton = this.#buildChooseFilenameButton(() => {
+                        const $filename = this.#buildFilenameRow(file.fileName);
+                        const $select = this.#buildSelect();
+                        const $editFileNameField = this.#buildEditFilenameField(file.fileName);
+
+                        modal.buildEditFileModalWindow($filename, $editFileNameField, $select, confirmed => {
+                            if (!confirmed) {
+                                this.#removeCurrentFile(file);
+                                resolve();
+                            }
+
+                            const selectedValue = $select.getSelectedValue();
+                            const newFilename = $editFileNameField.getValue();
+                            if (selectedValue === "CURRENT") {
+                                const formData=new FormData();
+                                formData.append("src", file.fullPath);
+                                formData.append("target", this._targetDirectory);
+                                formData.append("newFilename", newFilename);
+
+                                fileRestApi.copyWithRename(formData)
+                                    .done(() => {
+                                        this.#addToNewFiles({fileName:newFilename});
+                                        this.#removeCurrentFile(file);
+                                        resolve();
+                                    })
+                            } else {
+                                const data = {
+                                    src: this._targetDirectory + '/' + file.fileName,
+                                    newName: newFilename,
+                                };
+                                fileRestApi.rename(data).done(() => {
+                                    resolve();
+                                });
+                            }
+                        });
+                    });
+
+                    const $cancelButton = this.#buildCancelButton(() => {
+                        this.#removeCurrentFile(file);
+                        resolve();
+                    });
+
+                    const $buttons = [$overwriteButton, $defaultRenameButton, $chooseFilenameButton, $cancelButton];
+                    modal.buildModalWindowWithButtonGroup(texts.title.chooseAction + file.fileName, $buttons);
+                });
+            }
+
+            #buildForMove(){
+                const file = this.#next();
+                if (!file) {
+                    return Promise.resolve();
+                }
+
+                if (file.fileType === 'DIRECTORY') {
+                    modal.buildErrorWindow(texts.error.onlyFilesSupported, callback => {
+                        return Promise.resolve()
+                    });
+                    return;
+                }
+
+                return new Promise((resolve, reject) => {
+                    const $defaultRenameButton = this.#buildDefaultRenameButton(() => {
+                        const data = {path: this._targetDirectory + '/' + file.fileName};
+                        fileRestApi.defaultRename(data)
+                            .done((file) => {
+                                resolve();
+                            });
+                    });
+
+                    const $chooseFilenameButton = this.#buildChooseFilenameButton(() => {
+                        const $filename = this.#buildFilenameRow(file.fileName);
+                        const $select = this.#buildSelect();
+                        const $editFileNameField = this.#buildEditFilenameField(file.fileName);
+
+                        modal.buildEditFileModalWindow($filename, $editFileNameField, $select, confirmed => {
+                            if (!confirmed) {
+                                this.#removeCurrentFile(file);
+                                resolve();
+                            }
+
+                            const selectedValue = $select.getSelectedValue();
+                            const newFilename = $editFileNameField.getValue();
+                            if (selectedValue === "CURRENT") {
+                                const formData=new FormData();
+                                formData.append("src", file.fullPath);
+                                formData.append("target", this._targetDirectory);
+                                formData.append("newFilename", newFilename);
+
+                                fileRestApi.moveWithRename(formData)
+                                    .done(() => {
+                                        this.#addToNewFiles(file);
+                                        this.#removeCurrentFile(file);
+                                        resolve();
+                                    })
+                            } else {
+                                const data = {
+                                    src: this._targetDirectory + '/' + file.fileName,
+                                    newName: newFilename,
+                                };
+                                fileRestApi.rename(data).done(() => {
+                                    resolve();
+                                });
+                            }
+                        });
+                    });
+
+                    const $cancelButton = this.#buildCancelButton(() => {
+                        this.#removeCurrentFile(file);
+                        resolve();
+                    });
+
+                    const $buttons = [$defaultRenameButton, $chooseFilenameButton, $cancelButton];
+                    modal.buildModalWindowWithButtonGroup(texts.title.chooseAction + file.fileName, $buttons);
+                });
+            }
         }
 
         function addTemplateToGroup() {

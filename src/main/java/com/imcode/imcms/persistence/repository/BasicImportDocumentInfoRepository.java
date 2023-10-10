@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -29,7 +30,7 @@ public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicIm
 	boolean isImported(@Param("id") Integer id);
 
 	@Query("select b.metaId from BasicImportDocumentInfoJPA b where b.id=:importDocId")
-	Integer findMetaId(@Param("importDocId") Integer importDocId);
+	Optional<Integer> findMetaId(@Param("importDocId") Integer importDocId);
 
 	void deleteByMetaId(Integer docIdToDelete);
 }

@@ -92,7 +92,7 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 	}
 
 	@Override
-	public Integer toMetaId(int importDocId) {
+	public Optional<Integer> toMetaId(int importDocId) {
 		return basicImportDocumentInfoRepository.findMetaId(importDocId);
 	}
 

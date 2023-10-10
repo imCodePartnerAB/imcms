@@ -960,6 +960,10 @@ const texts = {
                 moveLeft: 'Flytta vänster',
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
+                overwrite:'Skriva över',
+                cancel: 'Annullera',
+                defaultRename: 'Byt namn som standard',
+                chooseFilename:'Välj filnamn',
                 warnDeleteMessage: 'Vill du verkligen ta bort filen?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
@@ -981,7 +985,13 @@ const texts = {
                     titleByCopy: 'Kopiera fil',
                     titleContent: 'Filinnehåll',
                     titleEditContent: 'Redigera filinnehåll!',
-                    replaceTemplate: 'Välj mall'
+                    replaceTemplate: 'Välj mall',
+                    filename:"Filnamn: ",
+                    newFilename:'Nytt filnamn',
+                    selectTitle: 'Aktuell/Befintlig fil',
+                    current: 'NUVARANDE',
+                    existing:'EXISTERANDE',
+                    chooseAction:'Välj vad du ska göra med: ',
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
@@ -1005,7 +1015,10 @@ const texts = {
                     deleteGroupFromTemplate: 'Det gick inte att ta bort gruppen från mallen!',
                     replaceTemplate: 'Det gick inte att ersätta mallen!',
                     noOtherTemplates: 'Inga andra mallar',
-                    loadTemplates: 'Det gick inte att ladda mallar!'
+                    loadTemplates: 'Det gick inte att ladda mallar!',
+                    fileAlreadyExists:'Filen finns redan med ett sådant namn!',
+                    duplicateFiles: 'Det finns filer med dubbletter av namn!',
+                    onlyFilesSupported:'Endast filer stöds!'
                 },
                 documentData: {
                     docsNumber: 'Antal dokument: ',
@@ -2201,6 +2214,10 @@ const texts = {
                 moveLeft: 'Move left',
                 copyRight: 'Copy right',
                 copyLeft: 'Copy left',
+                overwrite:'Overwrite',
+                cancel: 'Cancel',
+                defaultRename: 'Default rename',
+                chooseFilename:'Choose filename',
                 warnDeleteMessage: 'Do you really want to delete the file?',
                 warnEditMessage: 'Do you really edit content file?',
                 warnViewDocMessage: 'Do you want to redirect on current document?',
@@ -2222,7 +2239,13 @@ const texts = {
                     titleByCopy: 'Buttons for copy file',
                     titleContent: 'File content',
                     titleEditContent: 'Edit file content!',
-                    replaceTemplate: 'Choose template'
+                    replaceTemplate: 'Choose template',
+                    filename:"Filename: ",
+                    newFilename:'New filename',
+                    selectTitle: 'Current/Existing file',
+                    current: 'CURRENT',
+                    existing:'EXISTING',
+                    chooseAction:'Choose what to do with: ',
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
@@ -2246,7 +2269,10 @@ const texts = {
                     deleteGroupFromTemplate: 'Failed to delete group from template!',
                     replaceTemplate: 'Failed to replace template!',
                     noOtherTemplates: 'No other templates!',
-                    loadTemplates: 'Failed to load templates!'
+                    loadTemplates: 'Failed to load templates!',
+                    fileAlreadyExists:'File already exists with such name!',
+                    duplicateFiles: 'There are files with duplicate names!',
+                    onlyFilesSupported:'Only files supported!'
                 },
                 documentData: {
                     docsNumber: 'Number of documents: ',
@@ -3441,6 +3467,10 @@ const texts = {
                 moveLeft: 'Gå til venstre',
                 copyRight: 'Kopier til høyre',
                 copyLeft: 'Kopier til venstre',
+                overwrite:'Overskriv',
+                cancel: 'Avbryt',
+                defaultRename: 'Standard endre navn',
+                chooseFilename:'Velg filnavn',
                 warnDeleteMessage: 'Er du sikker på at du vil slette filen?',
                 warnEditMessage: 'Redigerer du virkelig innholdsfilen?',
                 warnViewDocMessage: 'Vil du omdirigere på gjeldende dokument?',
@@ -3462,7 +3492,13 @@ const texts = {
                     titleByCopy: 'Kopier fil',
                     titleContent: 'Filinnhold',
                     titleEditContent: 'Rediger filinnhold!',
-                    replaceTemplate: 'Velg mal'
+                    replaceTemplate: 'Velg mal',
+                    filename:"Filnavn: ",
+                    newFilename:'Nytt filnavn',
+                    selectTitle: 'Gjeldende/eksisterende fil',
+                    current: 'NÅVÆRENDE',
+                    existing:'EKSISTERENDE',
+                    chooseAction:'Velg hva du skal gjøre med: ',
                 },
                 error: {
                     loadError: 'Kunne ikke laste inn filer. Prøv igjen!',
@@ -3486,7 +3522,10 @@ const texts = {
                     deleteGroupFromTemplate: 'Kunne ikke slette gruppen fra malen!',
                     replaceTemplate: 'Kunne ikke erstatte malen!',
                     noOtherTemplates: 'Ingen andre maler!',
-                    loadTemplates: 'Kunne ikke laste inn maler!'
+                    loadTemplates: 'Kunne ikke laste inn maler!',
+                    fileAlreadyExists:'Filen eksisterer allerede med et slikt navn!',
+                    duplicateFiles: 'Det er filer med dupliserte navn!',
+                    onlyFilesSupported:'Kun filer støttes!'
                 },
                 documentData: {
                     docsNumber: 'Antall dokumenter: ',
