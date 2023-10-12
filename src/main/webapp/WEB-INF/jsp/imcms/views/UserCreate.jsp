@@ -239,6 +239,16 @@ ${"-->"}
 
             <div class="imcms-field">
                 <div class="imcms-text-box">
+                    <label for="twoFactoryAuthenticationEnabled" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/15"
+                            bundle="${resource_property}"/></label>
+                    <input id="twoFactoryAuthenticationEnabled" type="checkbox" name="twoFactoryAuthenticationEnabled"
+                           value="1"${editedUser.twoFactoryAuthenticationEnabled ? 'checked' : ''}>
+                </div>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
                     <label class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/1001" bundle="${resource_property}"/></label>
                     <div class="imcms-roles-checkboxes">
