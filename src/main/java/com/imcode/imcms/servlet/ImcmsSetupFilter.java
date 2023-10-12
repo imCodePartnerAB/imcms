@@ -7,6 +7,7 @@ import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -218,9 +219,11 @@ public class ImcmsSetupFilter implements Filter {
             writeUserLanguageCookie(response, language.getCode());
 
         } else if (commonContentService.existsByAlias(documentIdString)) {
-            language = commonContentService.getByAlias(documentIdString).get().getLanguage();
-            writeUserLanguageCookie(response, language.getCode());
-
+            final DocumentDomainObject document = services.getDocumentMapper().getDocument(documentIdString);
+            if (document != null && !document.isDefaultLanguageAliasEnabled()) {    //don't change the user language if the document has one common alias
+                language = commonContentService.getByAlias(documentIdString).get().getLanguage();
+                writeUserLanguageCookie(response, language.getCode());
+            }
 		}
 
         return (language == null) ? getUserLanguageFromCookie(request.getCookies()) : language;
