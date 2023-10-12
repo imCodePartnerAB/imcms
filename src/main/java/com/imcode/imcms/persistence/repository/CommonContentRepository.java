@@ -26,6 +26,14 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 
 	Optional<CommonContentJPA> findFirstByAlias(String alias);
 
+	@Query(value = "SELECT * FROM imcms_doc_i18n_meta t1\n" +
+			"         INNER JOIN (SELECT doc_id, MAX(version_no) AS max_version\n" +
+			"                     FROM imcms_doc_i18n_meta\n" +
+			"                     GROUP BY doc_id) t2 ON t1.doc_id = t2.doc_id AND\n" +
+			"                                            (t1.version_no = t2.max_version OR t1.version_no = 0) AND\n" +
+			"                                            alias = :#{#alias}", nativeQuery = true)
+	List<CommonContentJPA> findByAliasAndMaxWorkingVersion(@Param("alias") String alias);
+
     @Override
     @Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")
     List<CommonContentJPA> findByVersion(@Param("version") Version version);

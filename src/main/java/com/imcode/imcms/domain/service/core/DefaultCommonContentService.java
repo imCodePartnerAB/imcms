@@ -103,8 +103,32 @@ public class DefaultCommonContentService
 	        return new CommonContentJPA(commonContent);
         }).collect(Collectors.toSet());
 
+        removeDuplicateAlias(toSave);
+
 	    repository.saveAll(toSave);
 	    super.updateWorkingVersion(docId);
+    }
+
+    private <T extends CommonContent> void removeDuplicateAlias(Collection<T> commonContentCollection){
+        //Check for duplicate aliases in the received data
+        final Map<String, List<CommonContent>> duplicates = commonContentCollection.stream()
+                .collect(Collectors.groupingBy(CommonContent::getAlias));
+        duplicates.forEach((key, values) -> {
+            if (values.size() > 1) values.forEach(value -> value.setAlias(""));
+        });
+
+        commonContentCollection.forEach(commonContent -> {
+            final String alias = commonContent.getAlias();
+            if (StringUtils.isNotBlank(alias)) {
+                //Check for duplication of aliases in other documents
+                boolean hasDuplicateAliasInAnotherDocs = getByAliasAndMaxWorkingVersion(alias).stream()
+                        .anyMatch(c -> !c.getDocId().equals(commonContent.getDocId()));
+
+                if (hasDuplicateAliasInAnotherDocs) {
+                    commonContent.setAlias("");
+                }
+            }
+        });
     }
 
     @Override
@@ -127,7 +151,7 @@ public class DefaultCommonContentService
 
         repository.deleteByVersion(versionService.getDocumentWorkingVersion(version.getDocId()));
         repository.flush();
-        repository.saveAll(saveCommonContents);
+        save(version.getDocId(), saveCommonContents);
     }
 
     @Override
@@ -184,6 +208,10 @@ public class DefaultCommonContentService
         newCommonContent.setVersionNo(version.getNo());
 
         return newCommonContent;
+    }
+
+    private List<CommonContent> getByAliasAndMaxWorkingVersion(String alias){
+        return repository.findByAliasAndMaxWorkingVersion(alias).stream().map(CommonContentDTO::new).collect(toList());
     }
 
     private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {

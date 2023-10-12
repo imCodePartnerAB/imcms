@@ -134,16 +134,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     public DocumentDTO save(DocumentDTO saveMe) {
 	    final boolean isNew = (saveMe.getId() == null);
 
-	    saveMe.getCommonContents().forEach(commonContent -> {
-		    final String alias = commonContent.getAlias();
-		    if (!Objects.equals(alias, "")) {
-                final Optional<CommonContent> dbCommonContent = commonContentService.getByAlias(alias);
-			    if (dbCommonContent.isPresent() && !dbCommonContent.get().getId().equals(commonContent.getId())) {
-				    commonContent.setAlias("");
-			    }
-		    }
-	    });
-
         final Map<Integer, Meta.Permission> roleIdToPermission = saveMe.getRoleIdToPermission();
         roleIdToPermission.remove(Roles.USER.getId());
         saveMe.setRoleIdToPermission(roleIdToPermission);
