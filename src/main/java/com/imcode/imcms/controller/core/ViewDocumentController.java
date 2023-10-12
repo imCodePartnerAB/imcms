@@ -11,6 +11,7 @@ import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
@@ -198,6 +200,7 @@ public class ViewDocumentController {
 
         mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
+        mav.addObject("publicAlias", getPublicAlias(textDocument));
         mav.addObject("language", language);
         mav.addObject("availableLanguages", languageService.getAvailableLanguages());
         mav.addObject("isSuperAdmin", user.isSuperAdmin());
@@ -218,6 +221,23 @@ public class ViewDocumentController {
         mav.addObject("isImageEditorAltTextRequired", isImageEditorAltTextRequired);
 
         return mav;
+    }
+
+    private String getPublicAlias(DocumentDomainObject document){
+        Function<DocumentDomainObject, String> checkAliasEnabled = documentDomainObject ->
+                documentDomainObject.isDefaultLanguageAliasEnabled() || documentDomainObject.getCommonContent().getEnabled() ?
+                        documentDomainObject.getAlias() : "";
+
+        if(document.getVersionNo() == Version.WORKING_VERSION_INDEX){
+            final DocumentDomainObject defaultDocument = documentMapper.getDefaultDocument(document.getId(), document.getLanguage().getCode());
+            if(defaultDocument.getVersionNo() != Version.WORKING_VERSION_INDEX){
+                return checkAliasEnabled.apply(defaultDocument);
+            }
+        }else{
+            return checkAliasEnabled.apply(document);
+        }
+
+        return "";
     }
 
     private TextDocumentDomainObject getTextDocument(String docId, HttpServletRequest request) {

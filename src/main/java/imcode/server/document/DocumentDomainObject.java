@@ -499,15 +499,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getLifeCyclePhaseAtTime(this, new Date());
 	}
 
-	public String getAlias() {
-//		final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
-//		final CommonContent defaultLanguageCommonContent = Imcms.getServices().getCommonContentService().getOrCreate(getId(), versionNo, defaultLanguageCode);
-//
-//		final String alias = isDefaultLanguageAliasEnabled() ? defaultLanguageCommonContent.getAlias() : commonContent.getAlias();
-//
-//		return StringUtils.defaultIfBlank(alias, null);
-        return commonContent.getAlias();
-	}
+    public String getAlias() {
+        if (isDefaultLanguageAliasEnabled()) {
+            final Language defaultLanguageCode = Imcms.getServices().getLanguageService().getDefaultLanguage();
+            return Imcms.getServices().getCommonContentService().
+                    getOrCreate(getId(), versionNo, defaultLanguageCode).getAlias();
+        } else {
+            return commonContent.getAlias();
+        }
+    }
 
 	public void setAlias(String alias) {
 		setCommonContent(DocumentCommonContent.builder(getCommonContent()).alias(alias).build());

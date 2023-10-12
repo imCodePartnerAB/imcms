@@ -39,6 +39,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
         hasNewerVersion: Imcms.document.hasNewerVersion,
         headline: Imcms.document.headline,
         alias: Imcms.document.alias,
+        publicAlias: Imcms.publicAlias,
     },
     language: {
         name: Imcms.language.name,

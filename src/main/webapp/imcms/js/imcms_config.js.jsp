@@ -34,6 +34,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             headline: "${StringEscapeUtils.escapeEcmaScript(currentDocument.headline)}",
             alias: "${currentDocument.alias}"
         },
+        publicAlias: "${publicAlias}",
         language: {
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
@@ -52,6 +53,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     </c:forEach>
 
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
+    <%--@elvariable id="publicAlias" type="java.lang.String"--%>
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
     <%--@elvariable id="isInWasteBasket" type="boolean"--%>
     <%--@elvariable id="isEditMode" type="boolean"--%>
