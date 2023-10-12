@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
@@ -57,6 +58,7 @@ public class DocGetterCallback implements Serializable {
                     .stream()
                     .filter(langToContent -> langToContent.getValue().getEnabled())
                     .map(Map.Entry::getKey)
+                    .map(LanguageDTO::new)
                     .collect(Collectors.toCollection(ArrayList::new));
 
             if (docLanguages.isEmpty()) {
