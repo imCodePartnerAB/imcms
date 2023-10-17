@@ -131,6 +131,16 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
+    public List<DocumentDTO> get(Collection<Integer> docIds) {
+        final List<Meta> allMetaByIds = metaRepository.findAllById(docIds);
+        final Map<Integer, List<CommonContent>> docIdCommonContenMap = commonContentService.getOrCreateCommonContents(docIds);
+
+        return allMetaByIds.stream()
+                .map(meta -> documentMapping.apply(meta, docIdCommonContenMap.get(meta.getId())))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public DocumentDTO save(DocumentDTO saveMe) {
 	    final boolean isNew = (saveMe.getId() == null);
 

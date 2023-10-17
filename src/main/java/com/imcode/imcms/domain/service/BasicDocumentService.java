@@ -1,10 +1,12 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.model.Document;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,6 +18,11 @@ public interface BasicDocumentService<D extends Document> extends VersionedDocum
     long countDocuments();
 
     D get(int docId) throws DocumentNotExistException;
+
+    /**
+     * Get the latest version documents by ids
+     */
+    List<DocumentDTO> get(Collection<Integer> docIds);
 
     SolrInputDocument index(int docId);
 
