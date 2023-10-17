@@ -5,10 +5,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface CommonContentService extends VersionedContentService, DeleterByDocumentId {
     /**
@@ -20,6 +17,14 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
      * @return a {@code List} of all common contents
      */
     List<CommonContent> getOrCreateCommonContents(int docId, int versionNo);
+
+    /**
+     * Get common contents for latest version
+     * If common content of non working version is {@code null} it creates new common content based on working.
+     *
+     * @return a {@code Map} in which the key is docId and the value is List of common contents
+     */
+    Map<Integer, List<CommonContent>> getOrCreateCommonContents(Collection<Integer> docIds);
 
     /**
      * Gets common content for working or published versions.

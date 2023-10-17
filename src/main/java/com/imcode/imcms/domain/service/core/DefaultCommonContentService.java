@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -65,6 +66,41 @@ public class DefaultCommonContentService
                 .sorted(languageComparator)
                 .map(language -> getOrCreate(docId, versionNo, language))
                 .collect(toList());
+    }
+
+    @Override
+    public Map<Integer, List<CommonContent>> getOrCreateCommonContents(Collection<Integer> docIds){
+        final List<LanguageJPA> availableLanguages = languageService.getAvailableLanguages().stream()
+                .map(LanguageJPA::new)
+                .toList();
+
+        final Map<Integer, List<CommonContent>> docIdCommonContentMap = repository.findByDocIdsAndLangsAndLatestVersion(docIds, availableLanguages).stream()
+                .map(CommonContentDTO::new)
+                .collect(groupingBy(CommonContent::getDocId));
+
+        docIdCommonContentMap.forEach((key, value) -> {
+            availableLanguages.stream()
+                    .filter(lang -> value.stream().noneMatch(content -> content.getLanguage().getCode().equals(lang.getCode())))
+                    .forEach(missingLang -> {
+                        final int versionNo = value.get(0).getVersionNo();
+
+                        CommonContent missingCommonContent;
+                        if (versionNo == WORKING_VERSION_INDEX) {
+                            missingCommonContent = Value.with(new CommonContentDTO(), commonContentDTO -> {
+                                commonContentDTO.setEnabled(true);
+                                commonContentDTO.setLanguage(missingLang);
+                                commonContentDTO.setDocId(key);
+                                commonContentDTO.setVersionNo(versionNo);
+                            });
+                        } else {
+                            missingCommonContent = createFromWorkingVersion(key, versionNo, missingLang);
+                        }
+
+                        value.add(missingCommonContent);
+                    });
+        });
+
+        return docIdCommonContentMap;
     }
 
     @Override
