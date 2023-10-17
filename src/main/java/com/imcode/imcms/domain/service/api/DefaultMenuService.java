@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.DataIsNotValidException;
 import com.imcode.imcms.components.MenuHtmlConverter;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.*;
@@ -37,11 +38,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final DocumentMenuService documentMenuService;
     private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
+    private final BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private final LanguageService languageService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDTO;
-    private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
-    private final CommonContentService commonContentService;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
     private final MenuHtmlConverter menuHtmlConverter;
 
@@ -54,30 +54,28 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                        Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
                        Function<Menu, MenuDTO> menuToMenuDTO,
+                       BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
-                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
-                       CommonContentService commonContentService,
                        Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
                        MenuHtmlConverter menuHtmlConverter) {
 
         super(menuRepository);
         this.versionService = versionService;
         this.documentMenuService = documentMenuService;
-        this.menuItemToMenuItemDtoWithLang = menuItemToMenuItemDtoWithLang;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
         this.menuItemToDTO = menuItemToDTO;
         this.languageService = languageService;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
-        this.commonContentService = commonContentService;
         this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuHtmlConverter = menuHtmlConverter;
         this.menuToMenuDTO = menuToMenuDTO;
+        this.menuAndDocumentsToMenuDTO = menuAndDocumentsToMenuDTO;
     }
 
     @Override
     public MenuDTO getMenuDTO(int docId, int menuIndex, String language, String typeSort) {
         final Version version = versionService.getDocumentWorkingVersion(docId);
-        final MenuDTO menuDTO = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language, false);
+        final MenuDTO menuDTO = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language);
         final List<MenuItemDTO> menuItemsOf = menuDTO.getMenuItems();
 
         typeSort = menuDTO.getTypeSort();
@@ -121,7 +119,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, int versionNo, String language){
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -136,7 +134,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, int versionNo, String language) {
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -146,7 +144,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         final Version version = versionService.getLatestVersion(docId);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -163,7 +161,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public String getVisibleMenuAsHtml(int docId, int menuIndex, int versionNo, String language,
                                 String attributes, String treeKey, String wrap){
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
 
@@ -182,7 +180,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public String getPreviewMenuAsHtml(int docId, int menuIndex, int versionNo, String language,
                                        String attributes, String treeKey, String wrap) {
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
@@ -194,7 +192,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public String getPublicMenuAsHtml(int docId, int menuIndex, String language,
                                       String attributes, String treeKey, String wrap) {
         final Version version = versionService.getLatestVersion(docId);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems();
+        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
         setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
@@ -211,7 +209,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public String getVisibleMenuAsHtml(int docId, int menuIndex, int versionNo){
         final String language = Imcms.getUser().getLanguage();
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = convertItemsToFlatList(getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language, true).getMenuItems(), true);
+        final List<MenuItemDTO> menuItemsOf = convertItemsToFlatList(getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems(), true);
 
         setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
@@ -226,7 +224,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final String language = Imcms.getUser().getLanguage();
         final Version version = versionService.getLatestVersion(docId);
         List<MenuItemDTO> menuItemsOf = convertItemsToFlatList(
-                getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language, true).getMenuItems(),
+                getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems(),
                 true);
 
         setHasNewerVersionsInItems(menuItemsOf);
@@ -362,48 +360,55 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         repository.saveAll(saveMenus);
     }
 
-    private MenuDTO getMenuDTO(int menuIndex, Version version, MenuItemsStatus status, String langCode, boolean isVisible) {
+    private MenuDTO getMenuDTO(int menuIndex, Version version, MenuItemsStatus status, String langCode) {
         final Language language = languageService.findByCode(langCode);
         final Optional<Menu> menu = Optional.ofNullable(repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version));
         final UserDomainObject user = Imcms.getUser();
 
-        final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
-                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
-                : menuItemToDTO;
+        final MenuDTO menuDTO;
+        final Map<Integer, DocumentDTO> documentMap;
+        if(menu.isPresent()){
+            List<DocumentDTO> docs = Imcms.getServices().getDocumentService().get(
+                    menu.get().getMenuItems().stream().map(MenuItem::getDocumentId).collect(Collectors.toList())
+            );
 
-        final List<MenuItemDTO> sortedMenuItems = getSortedMenuItemsBySortOrder(menu
-                .map(Menu::getMenuItems)
-                .orElseGet(LinkedHashSet::new)
-                .stream()
-                .map(menuItemFunction)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+            menuDTO = menuAndDocumentsToMenuDTO.apply(menu.get(), docs);
+            documentMap = docs.stream().collect(Collectors.toMap(DocumentDTO::getId, Function.identity()));
+        }else{
+            menuDTO = new MenuDTO();
+            menuDTO.setMenuItems(Collections.emptyList());
 
-        final Predicate<MenuItemDTO> menuItemAccessFilter = menuItemDTO ->
-                (status == MenuItemsStatus.ALL || (documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId()) &&
-                        documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))) &&
-                        isMenuItemAccessibleForLang(language, versionService::getLatestVersion).test(menuItemDTO);
+            documentMap = Collections.emptyMap();
+        }
+
+        final List<MenuItemDTO> sortedMenuItems = getSortedMenuItemsBySortOrder(menuDTO.getMenuItems());
+
+        final Predicate<MenuItemDTO> menuItemAccessFilter = menuItemDTO -> {
+            final DocumentDTO documentDTO = documentMap.get(menuItemDTO.getDocumentId());
+            return (status == MenuItemsStatus.ALL || (documentMenuService.isPublicMenuItem(documentDTO) &&
+                    documentMenuService.hasUserAccessToDoc(documentDTO, user))) &&
+                    isMenuItemAccessibleForLang(language, documentDTO).test(menuItemDTO);
+        };
 
         final List<MenuItemDTO> filteredMenuItems = sortedMenuItems.stream()
                 .filter(menuItemAccessFilter)
                 .collect(Collectors.toList());
 
+        //filter child menu elements
         filteredMenuItems.forEach(new Consumer<>(){
             @Override
             public void accept(MenuItemDTO menuItemDTO) {
                 List<MenuItemDTO> filteredChildrenMenuItems = menuItemDTO.getChildren().stream()
                         .filter(menuItemAccessFilter)
                         .collect(Collectors.toList());
-                menuItemDTO.setChildren(filteredChildrenMenuItems);
 
                 filteredChildrenMenuItems.forEach(this);
+
+                menuItemDTO.setChildren(filteredChildrenMenuItems);
             }
         });
 
-        final MenuDTO menuDTO = menu.map(menuToMenuDTO).orElse(new MenuDTO());
-
         menuDTO.setMenuItems(filteredMenuItems);
-
         return menuDTO;
     }
 
@@ -488,20 +493,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return newMenuItems2;
     }
 
-    private Predicate<MenuItemDTO> isMenuItemAccessibleForLang(Language language, Function<Integer, Version> versionReceiver) {
+    private Predicate<MenuItemDTO> isMenuItemAccessibleForLang(Language language, DocumentDTO documentDTO) {
         return menuItemDTO -> {
-            final int versionNo = versionService.getVersion(menuItemDTO.getDocumentId(), versionReceiver).getNo();
-
-            final List<CommonContent> menuItemDocContent = commonContentService.getOrCreateCommonContents(menuItemDTO.getDocumentId(), versionNo);
-
-            final List<Language> enabledLanguages = menuItemDocContent.stream()
-                    .filter(item -> item.getLanguage().isEnabled())
+            final List<Language> enabledLanguages = documentDTO.getCommonContents().stream()
+                    .filter(CommonContent::isEnabled)
                     .map(CommonContent::getLanguage)
-                    .collect(Collectors.toList());
+                    .filter(Language::isEnabled)
+                    .toList();
 
             final boolean isLanguageEnabled = enabledLanguages.contains(language);
             final boolean isCurrentLangDefault = language.getCode().equals(Imcms.getServices().getLanguageMapper().getDefaultLanguage());
-            final boolean isAllowedToShowWithDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(menuItemDTO.getDocumentId()).equals(SHOW_IN_DEFAULT_LANGUAGE);
+            final boolean isAllowedToShowWithDefaultLanguage = documentDTO.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE);
 
             return isLanguageEnabled || (!isCurrentLangDefault && isAllowedToShowWithDefaultLanguage);
         };

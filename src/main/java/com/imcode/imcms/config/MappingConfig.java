@@ -69,6 +69,11 @@ class MappingConfig {
     }
 
     @Bean
+    public BiFunction<MenuItem, DocumentDTO, MenuItemDTO> menuItemAndDocumentToMenuItemDTO(DocumentMenuService documentMenuService) {
+        return documentMenuService::getMenuItemDTO;
+    }
+
+    @Bean
     public UnaryOperator<MenuItem> toMenuItemsWithoutId() {
         return menuItem -> {
             final MenuItem newMenuItem = new MenuItem();
@@ -80,56 +85,29 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang(
-            CommonContentService commonContentService,
-            Function<MenuItem, MenuItemDTO> menuItemToDTO,
-            LanguageService languageService,
-            VersionService versionService,
-            DocumentMenuService documentMenuService
-    ) {
-        return (menuItem, language) -> {
-
-            final Integer docId = menuItem.getDocumentId();
-            final Version latestVersion = versionService.getLatestVersion(docId);
-            final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
-                    .stream()
-                    .filter(CommonContent::isEnabled)
-                    .collect(Collectors.toList());
-
-            if (enabledCommonContents.size() == 0) {
-                return null;
-            }
-
-            final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
-                    documentMenuService.getDisabledLanguageShowMode(docId)
+    public Function<Menu, MenuDTO> menuToMenuDTO(BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO) {
+        return menu -> {
+            //don't use DocumentService injection to avoid the unresolvable circular reference problem
+            final List<DocumentDTO> docs = Imcms.getServices().getDocumentService().get(
+                    menu.getMenuItems().stream().map(MenuItem::getDocumentId).toList()
             );
 
-            final Language defaultLanguage = Imcms.getServices().getLanguageService().getDefaultLanguage();
-
-            if (!isLanguageEnabled(enabledCommonContents, language) &&
-                    (!isShowInDefaultLanguage || !isLanguageEnabled(enabledCommonContents, defaultLanguage))) {
-                return null;
-            }
-
-            return menuItemToDTO.apply(menuItem);
+            return menuAndDocumentsToMenuDTO.apply(menu, docs);
         };
     }
 
-    private boolean isLanguageEnabled(List<CommonContent> commonContents, Language language) {
-        return commonContents.stream()
-                .anyMatch(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()));
-    }
-
     @Bean
-    public Function<Menu, MenuDTO> menuToMenuDTO(Function<MenuItem, MenuItemDTO> menuItemToDTO) {
-        return menu -> {
+    public BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO(BiFunction<MenuItem, DocumentDTO, MenuItemDTO> menuItemAndDocumentToMenuItemDTO) {
+        return (menu, docs) -> {
+            final Map<Integer, DocumentDTO> idDocMap = docs.stream().collect(Collectors.toMap(DocumentDTO::getId, Function.identity()));
+
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
             menuDTO.setTypeSort(menu.getTypeSort());
-            menuDTO.setMenuItems(menu.getMenuItems()
-                    .stream()
-                    .map(menuItemToDTO).collect(Collectors.toList()));
+            menuDTO.setMenuItems(menu.getMenuItems().stream()
+                    .map(menuItem -> menuItemAndDocumentToMenuItemDTO.apply(menuItem, idDocMap.get(menuItem.getDocumentId())))
+                    .collect(Collectors.toList()));
 
             return menuDTO;
         };

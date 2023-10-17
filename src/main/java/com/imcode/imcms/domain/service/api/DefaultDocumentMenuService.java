@@ -19,9 +19,7 @@ import imcode.util.Utility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -56,6 +54,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     @Override
+    public boolean hasUserAccessToDoc(DocumentDTO documentDTO, UserDomainObject user){
+        return user.hasUserAccessToDoc(documentDTO) ||
+                (user.isDefaultUser() && documentDTO.isLinkableForUnauthorizedUsers());
+    }
+
+    @Override
     public Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId) {
 	    return metaRepository.getOne(documentId).getDisabledLanguageShowMode();
     }
@@ -63,39 +67,41 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     @Override
     public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
 	    final Integer docId = menuItem.getDocumentId();
+        final Version currentVersion = versionService.getLatestVersion(docId);
+
 	    final Meta metaDocument = metaRepository.getOne(docId);
-
-        final Version currentVersion = versionService.getCurrentVersion(docId);
-
         final List<CommonContent> commonContentList = commonContentService
                 .getOrCreateCommonContents(docId, currentVersion.getNo());
 
-        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, commonContentList);
+        return getMenuItemDTO(menuItem, metaToDocumentDTO.apply(metaDocument, commonContentList));
+    }
 
-        final List<CommonContent> enabledCommonContents = documentDTO.getCommonContents().stream()
+    @Override
+    public MenuItemDTO getMenuItemDTO(MenuItem menuItem, DocumentDTO doc){
+        final List<CommonContent> enabledCommonContents = doc.getCommonContents().stream()
                 .filter(CommonContent::isEnabled)
                 .collect(Collectors.toList());
 
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
-        menuItemDTO.setDocumentId(docId);
-        menuItemDTO.setType(documentDTO.getType());
-        menuItemDTO.setTitle(getHeadlineInCorrectLanguage(enabledCommonContents, documentDTO.getDisabledLanguageShowMode()));
-        menuItemDTO.setMenuText(getMenuTextInCorrectLanguage(enabledCommonContents, documentDTO.getDisabledLanguageShowMode()));
-	    menuItemDTO.setLink("/" + documentDTO.getName());
-	    menuItemDTO.setTarget(documentDTO.getTarget());
-        menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
-        menuItemDTO.setCreatedDate(Utility.convertDateToLocalDateTime(documentDTO.getCreated().getFormattedDate()));
-        menuItemDTO.setPublishedDate(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate()));
-        menuItemDTO.setModifiedDate(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate()));
-        menuItemDTO.setCreatedBy(documentDTO.getCreated().getBy());
-        menuItemDTO.setPublishedBy(documentDTO.getPublished().getBy());
-        menuItemDTO.setModifiedBy(documentDTO.getModified().getBy());
-	    menuItemDTO.setHasNewerVersion(documentDTO.getCurrentVersion().getId() == WORKING_VERSION_NO);
-	    menuItemDTO.setIsDefaultLanguageAliasEnabled(documentDTO.isDefaultLanguageAliasEnabled());
-	    menuItemDTO.setIsShownTitle(getIsShownTitle(documentDTO));
+        menuItemDTO.setDocumentId(doc.getId());
+        menuItemDTO.setType(doc.getType());
+        menuItemDTO.setTitle(getHeadlineInCorrectLanguage(enabledCommonContents, doc.getDisabledLanguageShowMode()));
+        menuItemDTO.setMenuText(getMenuTextInCorrectLanguage(enabledCommonContents, doc.getDisabledLanguageShowMode()));
+        menuItemDTO.setLink("/" + doc.getName());
+        menuItemDTO.setTarget(doc.getTarget());
+        menuItemDTO.setDocumentStatus(doc.getDocumentStatus());
+        menuItemDTO.setCreatedDate(Utility.convertDateToLocalDateTime(doc.getCreated().getFormattedDate()));
+        menuItemDTO.setPublishedDate(Utility.convertDateToLocalDateTime(doc.getPublished().getFormattedDate()));
+        menuItemDTO.setModifiedDate(Utility.convertDateToLocalDateTime(doc.getModified().getFormattedDate()));
+        menuItemDTO.setCreatedBy(doc.getCreated().getBy());
+        menuItemDTO.setPublishedBy(doc.getPublished().getBy());
+        menuItemDTO.setModifiedBy(doc.getModified().getBy());
+        menuItemDTO.setHasNewerVersion(doc.getCurrentVersion().getId() == WORKING_VERSION_NO);
+        menuItemDTO.setIsDefaultLanguageAliasEnabled(doc.isDefaultLanguageAliasEnabled());
+        menuItemDTO.setIsShownTitle(getIsShownTitle(doc));
         menuItemDTO.setSortOrder(menuItem.getSortOrder());
-        menuItemDTO.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
-        menuItemDTO.setLinkableForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
+        menuItemDTO.setLinkableByOtherUsers(doc.isLinkableByOtherUsers());
+        menuItemDTO.setLinkableForUnauthorizedUsers(doc.isLinkableForUnauthorizedUsers());
 
         return menuItemDTO;
     }
@@ -183,22 +189,43 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
                 && isAlreadyPublished(meta));
     }
 
+    @Override
+    public boolean isPublicMenuItem(DocumentDTO documentDTO) {
+        return (isDocumentApproved(documentDTO)
+                && isNotArchivedYet(documentDTO)
+                && isNotUnPublishedYet(documentDTO)
+                && isAlreadyPublished(documentDTO));
+    }
+
     private boolean isDocumentApproved(Meta meta) {
         return Meta.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
     }
 
+    private boolean isDocumentApproved(DocumentDTO documentDTO) {
+        return Meta.PublicationStatus.APPROVED.equals(documentDTO.getPublicationStatus());
+    }
+
     private boolean isNotArchivedYet(Meta meta) {
-        final Date archivedDatetime = meta.getArchivedDatetime();
-        return Utility.isDateInFutureOrNull.test(archivedDatetime);
+        return Utility.isDateInFutureOrNull.test(meta.getArchivedDatetime());
+    }
+
+    private boolean isNotArchivedYet(DocumentDTO documentDTO) {
+        return Utility.isDateInFutureOrNull.test(documentDTO.getArchived().getFormattedDate());
     }
 
     private boolean isNotUnPublishedYet(Meta meta) {
-        final Date publicationEndDatetime = meta.getPublicationEndDatetime();
-        return Utility.isDateInFutureOrNull.test(publicationEndDatetime);
+        return Utility.isDateInFutureOrNull.test(meta.getPublicationEndDatetime());
+    }
+
+    private boolean isNotUnPublishedYet(DocumentDTO documentDTO) {
+        return Utility.isDateInFutureOrNull.test(documentDTO.getPublicationEnd().getFormattedDate());
     }
 
     private boolean isAlreadyPublished(Meta meta) {
-        final Date publicationStartDatetime = meta.getPublicationStartDatetime();
-        return Utility.isDateInPast.test(publicationStartDatetime);
+        return Utility.isDateInPast.test(meta.getPublicationStartDatetime());
+    }
+
+    private boolean isAlreadyPublished(DocumentDTO documentDTO) {
+        return Utility.isDateInPast.test(documentDTO.getPublished().getFormattedDate());
     }
 }

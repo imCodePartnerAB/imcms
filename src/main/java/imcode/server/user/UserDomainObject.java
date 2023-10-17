@@ -1,7 +1,7 @@
 package imcode.server.user;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.PasswordResetDTO;
-import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Roles;
@@ -399,10 +399,16 @@ public class UserDomainObject extends UserData implements Cloneable, Serializabl
 
     public boolean hasUserAccessToDoc(Meta meta) {
         if (meta == null) throw new DocumentNotExistException();
+        return hasUserAccessToDoc(meta.getVisible(), meta.getRoleIdToPermission());
+    }
 
-        if (meta.getVisible() || isSuperAdmin()) return true;
+    public boolean hasUserAccessToDoc(DocumentDTO documentDTO) {
+        if (documentDTO == null) throw new DocumentNotExistException();
+        return hasUserAccessToDoc(documentDTO.isVisible(), documentDTO.getRoleIdToPermission());
+    }
 
-        final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
+    private boolean hasUserAccessToDoc(boolean isVisible, Map<Integer, Permission> docPermissions) {
+        if (isVisible || isSuperAdmin()) return true;
 
         return getRoleIds().stream()
                 .map(docPermissions::get)
