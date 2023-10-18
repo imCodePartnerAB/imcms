@@ -36,14 +36,15 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
+    private final LanguageService languageService;
+    private final MenuHtmlConverter menuHtmlConverter;
+
+    private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
+    private final BiFunction<MenuItem, DocumentDTO, MenuItemDTO> menuItemAndDocumentToMenuItemDTO;
     private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
-    private final LanguageService languageService;
-    private final Function<MenuItem, MenuItemDTO> menuItemToDTO;
-    private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
-    private final MenuHtmlConverter menuHtmlConverter;
 
     private final String REGEX_ANY_NUMBER = "\\.(?:\\b|-)([1-9]{1,2}[0]?|100)\\b";
 
@@ -53,21 +54,22 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                        Function<MenuItem, MenuItemDTO> menuItemToDTO,
                        Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
+                       MenuHtmlConverter menuHtmlConverter,
+                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
+                       BiFunction<MenuItem, DocumentDTO, MenuItemDTO> menuItemAndDocumentToMenuItemDTO,
                        Function<Menu, MenuDTO> menuToMenuDTO,
                        BiFunction<Menu, List<DocumentDTO>, MenuDTO> menuAndDocumentsToMenuDTO,
-                       UnaryOperator<MenuItem> toMenuItemsWithoutId,
-                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
-                       MenuHtmlConverter menuHtmlConverter) {
+                       UnaryOperator<MenuItem> toMenuItemsWithoutId) {
 
         super(menuRepository);
         this.versionService = versionService;
         this.documentMenuService = documentMenuService;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
-        this.menuItemToDTO = menuItemToDTO;
         this.languageService = languageService;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
-        this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuHtmlConverter = menuHtmlConverter;
+        this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
+        this.menuItemAndDocumentToMenuItemDTO = menuItemAndDocumentToMenuItemDTO;
         this.menuToMenuDTO = menuToMenuDTO;
         this.menuAndDocumentsToMenuDTO = menuAndDocumentsToMenuDTO;
     }
@@ -76,37 +78,34 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public MenuDTO getMenuDTO(int docId, int menuIndex, String language, String typeSort) {
         final Version version = versionService.getDocumentWorkingVersion(docId);
         final MenuDTO menuDTO = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language);
-        final List<MenuItemDTO> menuItemsOf = menuDTO.getMenuItems();
 
         typeSort = menuDTO.getTypeSort();
-
         if (StringUtils.isBlank(typeSort)) {
             typeSort = String.valueOf(TREE_SORT); //default value
         }
 
-        setHasNewerVersionsInItems(menuItemsOf);
-
-        menuDTO.setMenuItems(getSortingMenuItemsByTypeSort(typeSort, menuItemsOf));
+        menuDTO.setMenuItems(getSortingMenuItemsByTypeSort(typeSort, menuDTO.getMenuItems()));
 
         return menuDTO;
     }
 
     @Override
     public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO, String langCode) {
-
         final String typeSort = menuDTO.getTypeSort();
 
         final List<MenuItemDTO> menuItems = menuDTO.getMenuItems().stream()
                 .flatMap(MenuItemDTO::flattened)
                 .collect(Collectors.toList());
 
-        //double map because from client to fetch itemsDTO which have only doc id and no more info..
-        final List<MenuItemDTO> menuItemsDTO = getSortedMenuItemsBySortOrder(menuItems.stream()
-                .map(menuItemDtoToMenuItem)
-                .map(menuItemToDTO)
-                .collect(Collectors.toList()));
+        final Map<Integer, DocumentDTO> documentDTOs = Imcms.getServices().getDocumentService().get(
+                menuItems.stream().map(MenuItemDTO::getDocumentId).toList()
+        ).stream().collect(Collectors.toMap(DocumentDTO::getId, Function.identity()));
 
-        setHasNewerVersionsInItems(menuItemsDTO);
+        //double map because from client to fetch itemsDTO which have only doc id and no more info..
+        final List<MenuItemDTO> menuItemsDTO = menuItems.stream()
+                .map(menuItemDtoToMenuItem)
+                .map(menuItem -> menuItemAndDocumentToMenuItemDTO.apply(menuItem, documentDTOs.get(menuItem.getDocumentId())))
+                .toList();
 
         return getSortingMenuItemsByTypeSort(typeSort, menuItemsDTO);
     }
@@ -119,11 +118,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, int versionNo, String language){
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems();
-
-        setHasNewerVersionsInItems(menuItemsOf);
-
-        return menuItemsOf;
+        return getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems();
     }
 
     @Override
@@ -134,21 +129,13 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPreviewMenuItems(int docId, int menuIndex, int versionNo, String language) {
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
-
-        setHasNewerVersionsInItems(menuItemsOf);
-
-        return menuItemsOf;
+        return getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
     }
 
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language) {
         final Version version = versionService.getLatestVersion(docId);
-        final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
-
-        setHasNewerVersionsInItems(menuItemsOf);
-
-        return menuItemsOf;
+        return getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
     }
 
     @Override
@@ -162,8 +149,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                                 String attributes, String treeKey, String wrap){
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
         final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems();
-
-        setHasNewerVersionsInItems(menuItemsOf);
 
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
@@ -182,7 +167,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
         final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
-        setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);
@@ -194,7 +178,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Version version = versionService.getLatestVersion(docId);
         final List<MenuItemDTO> menuItemsOf = getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems();
 
-        setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(docId, menuIndex, startedMenuItems, attributes, treeKey, wrap);
@@ -211,7 +194,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Version version = versionService.findByDocIdAndNo(docId, versionNo);
         final List<MenuItemDTO> menuItemsOf = convertItemsToFlatList(getMenuDTO(menuIndex, version, MenuItemsStatus.ALL, language).getMenuItems(), true);
 
-        setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
@@ -227,7 +209,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 getMenuDTO(menuIndex, version, MenuItemsStatus.PUBLIC, language).getMenuItems(),
                 true);
 
-        setHasNewerVersionsInItems(menuItemsOf);
         final List<MenuItemDTO> startedMenuItems = getFirstMenuItemsOf(getMenuItemsWithIndex(menuItemsOf));
 
         return menuHtmlConverter.convertToMenuHtml(
@@ -447,7 +428,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final List<MenuItemDTO> newMenuItems = new ArrayList<>();
 
         sortedMenuItems.forEach(mainItemDTO -> {
-
             final List<MenuItemDTO> children = sortedMenuItems.stream()
                     .filter(item -> item.getSortOrder().matches(mainItemDTO.getSortOrder().concat(REGEX_ANY_NUMBER)))
                     .collect(Collectors.toList());
@@ -465,14 +445,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private boolean checkToContainsMenuItemInNewList(List<MenuItemDTO> newMenuItems, List<MenuItemDTO> children) {
-        final List<Integer> ids = newMenuItems.stream()
+        final Set<Integer> ids = newMenuItems.stream()
                 .flatMap(MenuItemDTO::flattened)
                 .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        final List<Integer> childrenIds = children.stream()
+        final Set<Integer> childrenIds = children.stream()
                 .map(MenuItemDTO::getDocumentId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return ids.containsAll(childrenIds);
     }
 
@@ -508,14 +488,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             return isLanguageEnabled || (!isCurrentLangDefault && isAllowedToShowWithDefaultLanguage);
         };
 
-    }
-
-    private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
-        items.stream()
-                .flatMap(MenuItemDTO::flattened)
-                .peek(docItem ->
-                        docItem.setHasNewerVersion(versionService.hasNewerVersion(docItem.getDocumentId()))
-                );
     }
 
     private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
@@ -560,13 +532,15 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     private List<MenuItemDTO> convertItemsToFlatList(List<MenuItemDTO> menuItems, boolean isSetEmptyChildren) {
-        return menuItems.stream()
+        List<MenuItemDTO> result = menuItems.stream()
                 .flatMap(MenuItemDTO::flattened)
                 .distinct()
-                .peek(item -> {
-                    if (isSetEmptyChildren && !item.getChildren().isEmpty()) item.setChildren(Collections.emptyList());
-                })
                 .collect(Collectors.toList());
+        result.forEach(item -> {
+            if (isSetEmptyChildren && !item.getChildren().isEmpty()) item.setChildren(Collections.emptyList());
+        });
+
+        return result;
     }
 
     private List<MenuItemDTO> getMenuItemsWithIndex(List<MenuItemDTO> menuItems) {

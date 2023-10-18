@@ -67,11 +67,11 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     @Override
     public MenuItemDTO getMenuItemDTO(MenuItem menuItem) {
 	    final Integer docId = menuItem.getDocumentId();
-        final Version currentVersion = versionService.getLatestVersion(docId);
+        final Version latestVersion = versionService.getLatestVersion(docId);
 
 	    final Meta metaDocument = metaRepository.getOne(docId);
         final List<CommonContent> commonContentList = commonContentService
-                .getOrCreateCommonContents(docId, currentVersion.getNo());
+                .getOrCreateCommonContents(docId, latestVersion.getNo());
 
         return getMenuItemDTO(menuItem, metaToDocumentDTO.apply(metaDocument, commonContentList));
     }
