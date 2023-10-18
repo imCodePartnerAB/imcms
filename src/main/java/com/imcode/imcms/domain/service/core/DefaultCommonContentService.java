@@ -146,11 +146,14 @@ public class DefaultCommonContentService
     }
 
     private <T extends CommonContent> void removeDuplicateAlias(Collection<T> commonContentCollection){
+        final String emptyAlias = "";
+
         //Check for duplicate aliases in the received data
         final Map<String, List<CommonContent>> duplicates = commonContentCollection.stream()
+                .filter(cc -> StringUtils.isNotBlank(cc.getAlias()))
                 .collect(Collectors.groupingBy(CommonContent::getAlias));
         duplicates.forEach((key, values) -> {
-            if (values.size() > 1) values.forEach(value -> value.setAlias(""));
+            if (values.size() > 1) values.forEach(value -> value.setAlias(emptyAlias));
         });
 
         commonContentCollection.forEach(commonContent -> {
@@ -161,7 +164,7 @@ public class DefaultCommonContentService
                         .anyMatch(c -> !c.getDocId().equals(commonContent.getDocId()));
 
                 if (hasDuplicateAliasInAnotherDocs) {
-                    commonContent.setAlias("");
+                    commonContent.setAlias(emptyAlias);
                 }
             }
         });
