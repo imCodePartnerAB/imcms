@@ -38,7 +38,7 @@ public class AuditDTO implements Serializable {
             return null;
         } else {
             String fixedTime = time.matches(TIME_NO_SECONDS_REGEX) ? time + ":00" : time;
-            return DATETIME_DOC_FORMAT.parse(date + " " + fixedTime);
+            return DATETIME_DOC_FORMAT.get().parse(date + " " + fixedTime);
         }
     }
 
@@ -48,8 +48,8 @@ public class AuditDTO implements Serializable {
             return;
         }
 
-        setDate(DATE_FORMAT.format(dateTime));
-        setTime(TIME_FORMAT.format(dateTime));
+        setDate(DATE_FORMAT.get().format(dateTime));
+        setTime(TIME_FORMAT.get().format(dateTime));
     }
 
 }

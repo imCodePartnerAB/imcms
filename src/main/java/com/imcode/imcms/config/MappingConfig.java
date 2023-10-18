@@ -424,7 +424,7 @@ class MappingConfig {
                 imageFileDTO.setPath(imagesStoragePath.relativize(storagePath).toString());
 
                 final Date lastModifiedDate = new Date(imageFile.lastModified());
-                final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+                final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.get().format(lastModifiedDate);
                 imageFileDTO.setUploaded(formattedDate);
 
                 imageFileDTO.setSize(formatFileSize(imageFile.size()));
