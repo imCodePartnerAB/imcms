@@ -31,6 +31,8 @@ define("imcms-menu-editor-builder",
         const classButtonOff = "imcms-button--switch-off";
         const multiRemoveControlClass = 'imcms-document-item__multi-remove-controls';
 
+        const menuItemsListSelector = '.imcms-menu-items-list';
+
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         const $title = $('<a>');
         const localizeTypesSort = [
@@ -74,6 +76,10 @@ define("imcms-menu-editor-builder",
             isMouseDown = false,
             isPasted = false
         ;
+
+        function get$menuItemsList() {
+            return $(menuItemsListSelector);
+        }
 
         function reloadMenuOnPage() {
             reloadElement($tag.find(".imcms-editor-content"));
@@ -206,6 +212,9 @@ define("imcms-menu-editor-builder",
             const $originItem = $(".imcms-menu-items--is-drag");
             const $originItemParent = $originItem.parent("[data-menu-items-lvl]");
             const $originDropItem = $(".imcms-menu-items--is-drop");
+            //save scroll position
+            const menuItemsListScrollPosition = get$menuItemsList().scrollTop();
+
             $frame.remove();
             toggleUserSelect(false);
             isMouseDown = false;
@@ -217,6 +226,7 @@ define("imcms-menu-editor-builder",
                 $originDropItem.find(".children-triangle").first().click();
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
 	            reorderMenuListBySortNumber(getAllMenuItems());
+                get$menuItemsList().scrollTop(menuItemsListScrollPosition);
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
             }
@@ -239,7 +249,7 @@ define("imcms-menu-editor-builder",
         }
 
         function getMenuDocByObjId(objId) {
-            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
             let menuDoc = null;
 
             menuDocs.each(function () {
@@ -252,8 +262,18 @@ define("imcms-menu-editor-builder",
         }
 
         function getFirstItemInMenuArea() {
-            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
             return menuDocs.first();
+        }
+
+        function getLastItemInMenuArea() {
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
+            return menuDocs.last();
+        }
+
+        function getLastParentItemInMenuArea() {
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items[data-menu-items-lvl='1']");
+            return menuDocs.last();
         }
 
         function getMenuItemsParam(menuDocs) {
@@ -270,19 +290,19 @@ define("imcms-menu-editor-builder",
         }
 
         function disableHighlightingMenuDoc() {
-            $(".imcms-menu-items-list").find(".imcms-menu-items").css({
+            get$menuItemsList().find(".imcms-menu-items").css({
                 "border": "none"
             });
         }
 
         function highlightMenuDoc() {
-            $(".imcms-menu-items-list").find('.imcms-menu-items--is-drop').css({
+            get$menuItemsList().find('.imcms-menu-items--is-drop').css({
                 'border': '1px dashed red'
             });
         }
 
         function removedPreviousItemFrame() {
-            const $menuTree = $(".imcms-menu-items-list"),
+            const $menuTree = get$menuItemsList(),
                 $frame = $(".imcms-menu-items--frame"),
                 $frameParent = $(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]");
             let frameCopies
@@ -347,12 +367,12 @@ define("imcms-menu-editor-builder",
 
             const typeSort = document.getElementById('type-sort').value;
 
-            removedPreviousItemFrame();
 
             if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
                 isPasted = false;
-                return
+                return;
             }
+            removedPreviousItemFrame();
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
             $origin.removeClass("imcms-document-items-list__document-items")
@@ -368,13 +388,6 @@ define("imcms-menu-editor-builder",
                     changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                     addShowHideBtn(menuDoc);
                 } else {
-	                const originalMenuItemLvl = $frame.attr("data-menu-items-lvl");
-	                const newMenuItemLvl = menuDoc.attr("data-menu-items-lvl");
-
-	                if (typeSort === TREE_SORT && originalMenuItemLvl === newMenuItemLvl) {
-		                return;
-	                }
-
 	                menuDoc.after($origin);
 	                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                 }
@@ -461,7 +474,7 @@ define("imcms-menu-editor-builder",
         }
 
         function detectPasteArea($frame) {
-            const itemTree = $(".imcms-menu-items-list"),
+            const itemTree = get$menuItemsList(),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 frameTop = $frame.position().top
             ;
@@ -485,12 +498,6 @@ define("imcms-menu-editor-builder",
 	            }
             });
 
-            if (frameTop < topPointMenu) {
-                menuDoc = getFirstItemInMenuArea();
-                placeStatus = false;
-                insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-            }
-
             // highlightingMenuDoc
             if (placeStatus !== null) {
                 highlightMenuDoc();
@@ -499,25 +506,55 @@ define("imcms-menu-editor-builder",
 
         function moveFrame(event) {
             const $frame = $(".imcms-menu-items--frame");
+            const $menuEditor = $(".imcms-menu-editor");
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
             mouseCoords.deltaPageX = mouseCoords.newPageX - mouseCoords.pageX;
             mouseCoords.deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
 
-            if (Math.abs(mouseCoords.deltaPageX) > 7 || Math.abs(mouseCoords.deltaPageY) > 7) {
-                if (isMouseDown && detectTargetArea(event)) {
-                    $frame.css({
-                        "top": mouseCoords.newPageY,
-                        "left": mouseCoords.newPageX
-                    });
-                    detectPasteArea($frame);
-                } else {
-                    disableDrag($frame);
+            if (isMouseDown) {
+                $frame.css({
+                    'top': isStandaloneEditor() ? mouseCoords.newPageY - parseInt($menuEditor.css("top"), 10) : mouseCoords.newPageY,
+                    'left':  mouseCoords.newPageX
+                });
+
+                if (Math.abs(mouseCoords.deltaPageX) > 7 || Math.abs(mouseCoords.deltaPageY) > 7) {
+                    const frameTop = $frame.position().top;
+                    const $menuEditorBody = $('.imcms-menu-editor__body')
+
+                    if (detectTargetArea(event)) {
+                        detectPasteArea($frame);
+                    } else if (frameTop < get$menuItemsList().offset().top) {
+                        get$menuItemsList().scrollTop(get$menuItemsList().scrollTop() - 20);
+
+                        const $origin = $(".imcms-menu-items--is-drag").clone(true)
+                        removedPreviousItemFrame();
+
+                        $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
+                        $origin.removeClass("imcms-document-items-list__document-items")
+                            .addClass("imcms-document-items-list__document-items");
+
+                        const menuDoc = getFirstItemInMenuArea();
+                        $origin.attr("data-menu-items-lvl", 1);
+                        $origin.insertBefore(menuDoc);
+                        highlightMenuDoc();
+                    } else if (frameTop > $menuEditorBody.outerHeight(true)) {
+                        get$menuItemsList().scrollTop(get$menuItemsList().scrollTop() + 20);
+                        const $origin = $(".imcms-menu-items--is-drag").clone(true)
+                        removedPreviousItemFrame();
+
+                        $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
+                        $origin.removeClass("imcms-document-items-list__document-items")
+                            .addClass("imcms-document-items-list__document-items");
+
+                        const menuDoc = getLastParentItemInMenuArea();
+                        $origin.attr("data-menu-items-lvl", 1);
+                        $origin.insertAfter(menuDoc);
+                        highlightMenuDoc();
+                    }
                 }
             }
-
-
         }
 
         function closeSubItems(elem) {
@@ -564,7 +601,7 @@ define("imcms-menu-editor-builder",
                 top: $originItem.position().top,
                 left: $originItem.position().left
             };
-            $menuArea = $(".imcms-menu-items-list");
+            $menuArea = get$menuItemsList();
             menuAreaProp = {
                 top: $menuArea.position().top,
                 left: $menuArea.position().left,
@@ -577,7 +614,7 @@ define("imcms-menu-editor-builder",
                 "position": "absolute",
                 "z-index": 11001,
                 "width": "40%",
-                "top": event.clientY,
+                "top": isStandaloneEditor() ? event.clientY - parseInt($menuEditorArea.css("top"), 10) : event.clientY,
                 "left": event.clientX
             });
 
@@ -626,45 +663,11 @@ define("imcms-menu-editor-builder",
             let $menuElement
             ;
 
-            if (($dataInput.attr('data-frame-top') < topPointMenu
-                || $dataInput.attr("data-type-sort") === TREE_SORT
-                || $dataInput.attr("data-type-sort") === MANUAL)
-                && getAllMenuItems().length !== 0) {
-                $menuElement = buildMenuItemTree(menuElementsTree, {
-                    level: 1,
-                    sortType: $dataInput.attr("data-type-sort")
-                });
-                $menuElementsContainer.find("[data-menu-items-lvl=1]").first().before($menuElement);
-            } else {
-                if ($dataInput.attr("data-parent-id") !== "") {
-                    if ($dataInput.attr("data-insert-place") === "true") {
-                        $menuElement = buildMenuItemTree(menuElementsTree, {
-                            level: level + 1,
-                            sortType: $dataInput.attr("data-type-sort"),
-                        });
-                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
-
-                        const parent = $menuElement.parent();
-                        if (parent.find(".children-triangle").length === 0) {
-                            parent.find(".imcms-menu-item").first().find(".imcms-document-item__info").first().before(
-                                buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open")
-                            );
-                        }
-                    } else {
-                        $menuElement = buildMenuItemTree(menuElementsTree, {
-                            level,
-                            sortType: $dataInput.attr("data-type-sort")
-                        });
-                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").before($menuElement);
-                    }
-                } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, {
-                        level,
-                        sortType: $dataInput.attr("data-type-sort")
-                    });
-                    $menuElementsContainer.find(".imcms-menu-items-list").append($menuElement);
-                }
-            }
+            $menuElement = buildMenuItemTree(menuElementsTree, {
+                level,
+                sortType: $dataInput.attr("data-type-sort")
+            });
+            $menuElementsContainer.find(".imcms-menu-items-list").append($menuElement);
             $menuElement.addClass("imcms-document-items-list__document-items");
             $menuElement.addClass("imcms-doc-item-copy");
             let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
@@ -1030,7 +1033,7 @@ define("imcms-menu-editor-builder",
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
                 href: '/' + menuElement.documentId,
                 target: '_blank',
-                class: 'imcms-grid-col-1',
+	            style: 'font-weight:normal',
             });
             $docId.modifiers = ['id'];
             components.overlays.defaultTooltip(
@@ -1044,7 +1047,7 @@ define("imcms-menu-editor-builder",
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
                 href: "/" + menuElement.documentId,
-                class: 'imcms-flex--flex-1',
+	            style: 'font-weight:normal',
             });
             $titleText.modifiers = ['title'];
             !menuElement.title && $titleText.modifiers.push("notShownTitle");
@@ -1084,7 +1087,13 @@ define("imcms-menu-editor-builder",
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
 
-            const elements = [$docId, $titleText];
+	        prepareLinkToBeDraggable($docId);
+	        prepareLinkToBeDraggable($titleText);
+
+	        const $draggableDocId = $('<div>').append($docId).addClass('imcms-grid-col-1');
+	        const $draggableTitleText = $('<div>').append($titleText).addClass("imcms-flex--flex-1");
+
+	        const elements = [$draggableDocId, $draggableTitleText];
             let childrenIcon = "";
             if (menuElement.children.length) {
                 childrenIcon = (buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open"));
@@ -1123,10 +1132,32 @@ define("imcms-menu-editor-builder",
 		            }
 	            },
 	            "mouseover": function () {
-		            $(this).css("cursor", (!$numberingTypeSortFlag.isChecked() && sortType === TREE_SORT) ? "ns-resize" : "default");
+		            $(this).css("cursor", (!$numberingTypeSortFlag.isChecked() && sortType === TREE_SORT) ? "pointer" : "default");
 	            }
             });
         }
+
+	    function prepareLinkToBeDraggable($linkElement) {
+		    $linkElement.on({
+			    "mousedown": function (downEvent) {
+				    const $this = $(this);
+				    const container = $this.parents()[3];
+				    sortByDragging(container, true);
+
+				    $this.on("mousemove", function (moveEvent) {
+					    $this.on("dragstart", function (dragEvent) {
+						    isMouseDown = true;
+						    closeSubItems($($this.parents()[2]))
+					    })
+				    })
+
+				    $this.on("drag", function (dragEvent) {
+					    dragEvent.target = $this.parents()[2];
+					    handleDragWhenSort(dragEvent)
+				    })
+			    }
+		    })
+	    }
 
 	    function onInputBlur(events) {
 		    function removeAndAddClassForInCorrectData($input, isAdd) {
@@ -1374,7 +1405,7 @@ define("imcms-menu-editor-builder",
         }
 
         function changeControlsByMultiRemove() {
-            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
             const enabledMultiRemove = isMultiRemoveModeEnabled();
             const controlsClass = enabledMultiRemove
                 ? 'imcms-document-item__multi-remove-controls'
@@ -1444,7 +1475,7 @@ define("imcms-menu-editor-builder",
 
 
         function removeEnabledMenuItems() {
-            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
 
             menuDocs.each(function () {
                 const $item = $(this).first();
@@ -1476,7 +1507,7 @@ define("imcms-menu-editor-builder",
         let mapTypesSort = new Map();
 
         function toggleNumberingSortFields(isChecked) {
-            const menuDocs = $(".imcms-menu-items-list").find(".imcms-menu-items");
+            const menuDocs = get$menuItemsList().find(".imcms-menu-items");
 
             const toggleCommand = isChecked
                 ? $element => $element.show()
@@ -1708,6 +1739,10 @@ define("imcms-menu-editor-builder",
             });
 
             $title.attr('href', linkData)
+        }
+
+        function isStandaloneEditor(){
+            return $(".standalone-editor-body").length !== 0;
         }
 
         let $menuEditorContainer;
