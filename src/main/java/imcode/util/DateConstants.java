@@ -12,7 +12,11 @@ public class DateConstants {
 
     public final static String TIME_NO_SECONDS_REGEX = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
 
-    public final static DateFormat DATETIME_DOC_FORMAT = new SimpleDateFormat(DATETIME_FORMAT_STRING);
-    public final static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-    public final static DateFormat TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_STRING);
+    public static final ThreadLocal<DateFormat> DATETIME_DOC_FORMAT =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat(DATETIME_FORMAT_STRING));
+    public static final ThreadLocal<DateFormat> DATE_FORMAT =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat(DATE_FORMAT_STRING));
+    public static final ThreadLocal<DateFormat> TIME_FORMAT =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat(TIME_FORMAT_STRING));
+
 }

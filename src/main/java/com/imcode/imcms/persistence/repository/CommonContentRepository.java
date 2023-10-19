@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,12 @@ import java.util.Optional;
 public interface CommonContentRepository extends JpaRepository<CommonContentJPA, Integer>, VersionedContentRepository<CommonContentJPA> {
 
     List<CommonContentJPA> findByDocIdAndVersionNo(int docId, int versionNo);
+
+	@Query("SELECT c FROM CommonContentJPA c\n" +
+			"WHERE c.docId IN (?1)\n" +
+			"  AND c.language IN (?2)\n" +
+			"  AND c.versionNo = (SELECT max(ic.versionNo) FROM CommonContentJPA ic WHERE ic.docId = c.docId)")
+	List<CommonContentJPA> findByDocIdsAndLangsAndLatestVersion(Collection<Integer> docIds, List<LanguageJPA> languages);
 
     @Modifying
     void deleteByDocId(int docId);

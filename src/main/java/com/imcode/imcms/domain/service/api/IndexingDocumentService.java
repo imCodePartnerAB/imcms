@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -12,6 +13,8 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
+import java.util.List;
 
 @Service("documentService")
 public class IndexingDocumentService implements DelegatingByTypeDocumentService {
@@ -42,6 +45,11 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     @Override
     public Document get(int docId) throws DocumentNotExistException {
         return defaultDelegatingByTypeDocumentService.get(docId);
+    }
+
+    @Override
+    public List<DocumentDTO> get(Collection<Integer> docIds){
+        return defaultDelegatingByTypeDocumentService.get(docIds);
     }
 
     @Override

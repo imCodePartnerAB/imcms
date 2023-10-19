@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -85,6 +86,11 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         fileDocument.setFiles(documentFiles);
 
         return fileDocument;
+    }
+
+    @Override
+    public List<DocumentDTO> get(Collection<Integer> docIds){
+        return defaultDocumentService.get(docIds);
     }
 
     @Override
