@@ -78,25 +78,27 @@ public class DefaultCommonContentService
                 .map(CommonContentDTO::new)
                 .collect(groupingBy(CommonContent::getDocId));
 
+        // Check the availability of common content for all requested documents
+        Set<Integer> missingDocs = new HashSet<>(docIds);
+        missingDocs.removeAll(docIdCommonContentMap.keySet());
+        missingDocs.forEach(id -> {
+            final Version latestVersion = versionService.getLatestVersion(id);
+
+            List<CommonContent> missingCommonContent = new ArrayList<>();
+            availableLanguages.forEach(lang -> {
+                missingCommonContent.add(createByVersion(id, latestVersion.getNo(), lang));
+            });
+
+            docIdCommonContentMap.put(id, missingCommonContent);
+        });
+
+        // Check that each document has common content in all available languages
         docIdCommonContentMap.forEach((key, value) -> {
             availableLanguages.stream()
                     .filter(lang -> value.stream().noneMatch(content -> content.getLanguage().getCode().equals(lang.getCode())))
                     .forEach(missingLang -> {
                         final int versionNo = value.get(0).getVersionNo();
-
-                        CommonContent missingCommonContent;
-                        if (versionNo == WORKING_VERSION_INDEX) {
-                            missingCommonContent = Value.with(new CommonContentDTO(), commonContentDTO -> {
-                                commonContentDTO.setEnabled(true);
-                                commonContentDTO.setLanguage(missingLang);
-                                commonContentDTO.setDocId(key);
-                                commonContentDTO.setVersionNo(versionNo);
-                            });
-                        } else {
-                            missingCommonContent = createFromWorkingVersion(key, versionNo, missingLang);
-                        }
-
-                        value.add(missingCommonContent);
+                        value.add(createByVersion(key, versionNo, missingLang));
                     });
         });
 
@@ -107,19 +109,7 @@ public class DefaultCommonContentService
     public CommonContent getOrCreate(int docId, int versionNo, Language language) {
         final Optional<CommonContent> oCommonContent = getCommonContent(docId, versionNo, language);
 
-        if (oCommonContent.isPresent()) {
-            return oCommonContent.get();
-
-        } else if (versionNo == WORKING_VERSION_INDEX) {
-            return Value.with(new CommonContentDTO(), commonContentDTO -> {
-                commonContentDTO.setEnabled(true);
-                commonContentDTO.setLanguage(language);
-                commonContentDTO.setDocId(docId);
-                commonContentDTO.setVersionNo(versionNo);
-            });
-        }
-
-        return createFromWorkingVersion(docId, versionNo, language);
+        return oCommonContent.orElseGet(() -> createByVersion(docId, versionNo, language));
     }
 
 	@Override
@@ -259,6 +249,19 @@ public class DefaultCommonContentService
         );
 
         return Optional.ofNullable(commonContentJPA).map(CommonContentDTO::new);
+    }
+
+    private CommonContent createByVersion(int docId, int versionNo, Language language){
+        if (versionNo != WORKING_VERSION_INDEX) {
+            return createFromWorkingVersion(docId, versionNo, language);
+        }
+
+        return Value.with(new CommonContentDTO(), commonContentDTO -> {
+            commonContentDTO.setEnabled(true);
+            commonContentDTO.setLanguage(language);
+            commonContentDTO.setDocId(docId);
+            commonContentDTO.setVersionNo(versionNo);
+        });
     }
 
     private CommonContent createFromWorkingVersion(int docId, int versionNo, Language language) {
