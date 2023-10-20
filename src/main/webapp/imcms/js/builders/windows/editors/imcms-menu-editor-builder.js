@@ -539,6 +539,7 @@ define("imcms-menu-editor-builder",
                         $origin.attr("data-menu-items-lvl", 1);
                         $origin.insertBefore(menuDoc);
                         highlightMenuDoc();
+                        isPasted = true;
                     } else if (frameTop > $menuEditorBody.outerHeight(true)) {
                         get$menuItemsList().scrollTop(get$menuItemsList().scrollTop() + 20);
                         const $origin = $(".imcms-menu-items--is-drag").clone(true)
@@ -552,6 +553,7 @@ define("imcms-menu-editor-builder",
                         $origin.attr("data-menu-items-lvl", 1);
                         $origin.insertAfter(menuDoc);
                         highlightMenuDoc();
+                        isPasted = true;
                     }
                 }
             }
