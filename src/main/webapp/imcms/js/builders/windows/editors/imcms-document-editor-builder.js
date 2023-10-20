@@ -1423,7 +1423,7 @@ define('imcms-document-editor-builder',
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
-                    && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
+                    && (($this.scrollTop() + Math.ceil(innerHeight)) >= scrollHeight)) {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
                 errorMsg.slideUp();
