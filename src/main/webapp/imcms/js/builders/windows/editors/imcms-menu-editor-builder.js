@@ -1707,7 +1707,13 @@ define("imcms-menu-editor-builder",
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
             $menuElementsContainer.append($menuElementsTree);
 
-            documentEditorBuilder.initMenuEditor(menuElementsTree.map(doc => doc.documentId));
+            let documentIds = [];
+            let extractMenuItemDocumentIds = function(menuItem){
+                documentIds.push(menuItem.documentId);
+                menuItem.children.forEach(extractMenuItemDocumentIds);
+            };
+            menuElementsTree.forEach(extractMenuItemDocumentIds);
+            documentEditorBuilder.initMenuEditor(documentIds);
 
             $documentEditor = documentEditorBuilder.buildBody(opts);
             $documentsContainer.append($documentEditor);
