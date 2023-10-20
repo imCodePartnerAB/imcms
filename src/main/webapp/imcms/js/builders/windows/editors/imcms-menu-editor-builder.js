@@ -366,13 +366,12 @@ define("imcms-menu-editor-builder",
             ;
 
             const typeSort = document.getElementById('type-sort').value;
-
+            removedPreviousItemFrame();
 
             if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
                 isPasted = false;
                 return;
             }
-            removedPreviousItemFrame();
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
             $origin.removeClass("imcms-document-items-list__document-items")
