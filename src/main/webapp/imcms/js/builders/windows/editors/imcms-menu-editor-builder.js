@@ -1033,9 +1033,10 @@ define("imcms-menu-editor-builder",
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
                 href: '/' + menuElement.documentId,
                 target: '_blank',
-	            style: 'font-weight:normal',
+	            class: 'imcms-grid-col-1'
             });
             $docId.modifiers = ['id'];
+	        prepareLinkToBeDraggable($docId);
             components.overlays.defaultTooltip(
                 $docId,
                 documentEditorBuilder.getIdTooltipText(menuElement.documentId, menuElement.createdDate, menuElement.createdBy),
@@ -1047,9 +1048,10 @@ define("imcms-menu-editor-builder",
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
                 href: "/" + menuElement.documentId,
-	            style: 'font-weight:normal',
+	            class:'imcms-flex--flex-1'
             });
             $titleText.modifiers = ['title'];
+	        prepareLinkToBeDraggable($titleText);
             !menuElement.title && $titleText.modifiers.push("notShownTitle");
             title && components.overlays.defaultTooltip($titleText, title, {placement: 'right'});
 
@@ -1087,13 +1089,7 @@ define("imcms-menu-editor-builder",
             $documentStatus.modifiers = ['status'];
             components.overlays.defaultTooltip($documentStatus, documentStatusTexts.tooltip);
 
-	        prepareLinkToBeDraggable($docId);
-	        prepareLinkToBeDraggable($titleText);
-
-	        const $draggableDocId = $('<div>').append($docId).addClass('imcms-grid-col-1');
-	        const $draggableTitleText = $('<div>').append($titleText).addClass("imcms-flex--flex-1");
-
-	        const elements = [$draggableDocId, $draggableTitleText];
+	        const elements = [$docId, $titleText];
             let childrenIcon = "";
             if (menuElement.children.length) {
                 childrenIcon = (buildChildrenTriangle().addClass("imcms-document-item__btn imcms-document-item__btn--open"));
@@ -1137,27 +1133,27 @@ define("imcms-menu-editor-builder",
             });
         }
 
-	    function prepareLinkToBeDraggable($linkElement) {
-		    $linkElement.on({
-			    "mousedown": function (downEvent) {
-				    const $this = $(this);
-				    const container = $this.parents()[3];
-				    sortByDragging(container, true);
+        function prepareLinkToBeDraggable($linkElement) {
+            $linkElement.on({
+                "mousedown": function (downEvent) {
+                    const $this = $(this);
+                    const container = $this.parents()[2];
+                    sortByDragging(container, true);
 
-				    $this.on("mousemove", function (moveEvent) {
-					    $this.on("dragstart", function (dragEvent) {
-						    isMouseDown = true;
-						    closeSubItems($($this.parents()[2]))
-					    })
-				    })
+                    $this.on("mousemove", function (moveEvent) {
+                        $this.on("dragstart", function (dragEvent) {
+                            isMouseDown = true;
+                            closeSubItems($($this.parents()[1]))
+                        })
+                    })
 
-				    $this.on("drag", function (dragEvent) {
-					    dragEvent.target = $this.parents()[2];
-					    handleDragWhenSort(dragEvent)
-				    })
-			    }
-		    })
-	    }
+                    $this.on("drag", function (dragEvent) {
+                        dragEvent.target = $this.parents()[1];
+                        handleDragWhenSort(dragEvent)
+                    })
+                }
+            })
+        }
 
 	    function onInputBlur(events) {
 		    function removeAndAddClassForInCorrectData($input, isAdd) {
