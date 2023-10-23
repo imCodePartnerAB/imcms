@@ -45,17 +45,19 @@ public class DocumentSearchQueryConverter {
             solrQuery.addFilterQuery(userFilter);
         }
 
-        if(searchQuery.getLinkableByOtherUsers() != null){
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__LINKABLE_OTHER + ":" + searchQuery.getLinkableByOtherUsers());
-        }
-
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
         if(limitSearch){
             Integer roleId = searchQuery.getRoleId();
-
             Set<Integer> roleIds = roleId != null ? Collections.singleton(roleId) : searchingUser.getRoleIds();
-            addFilters(roleIds, solrQuery);
+
+            StringJoiner orFilterJoiner = new StringJoiner(" || ", "(", ")");
+            orFilterJoiner.add(generateFilters(roleIds));
+            if(searchQuery.getLinkableByOtherUsers() != null){
+                orFilterJoiner.add(DocumentIndex.FIELD__LINKABLE_OTHER + ":" + searchQuery.getLinkableByOtherUsers());
+            }
+
+            solrQuery.addFilterQuery(orFilterJoiner.toString());
         }
 
         return solrQuery;
@@ -73,7 +75,7 @@ public class DocumentSearchQueryConverter {
         searchQueryDTO.setPage(page);
         prepareSolrQueryPaging(searchQueryDTO, solrQuery);
 
-        if(limitSearch) addFilters(user.getRoleIds(), solrQuery);
+        if(limitSearch) solrQuery.addFilterQuery(generateFilters(user.getRoleIds()));
 
         return solrQuery;
     }
@@ -139,18 +141,18 @@ public class DocumentSearchQueryConverter {
 	    solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
     }
 
-    private void addFilters(Set<Integer> roleIds, SolrQuery solrQuery) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":" + true);
+    private String generateFilters(Set<Integer> roleIds) {
+        StringJoiner roleJoiner = new StringJoiner(" || ", "(", ")");
+        roleIds.forEach(roleId -> roleJoiner.add(DocumentIndex.FIELD__ROLE_ID + ":" + roleId));
 
-            StringJoiner filterJoiner = new StringJoiner(" || ", "(", ")");
-            filterJoiner.add(DocumentIndex.FIELD__VISIBLE + ":" + true);
+        StringJoiner accessFilterJoiner = new StringJoiner(" || ", "(", ")");
+        accessFilterJoiner.add(DocumentIndex.FIELD__VISIBLE + ":" + true);
+        accessFilterJoiner.add(roleJoiner.toString());
 
-            StringJoiner roleJoiner = new StringJoiner(" || ", "(", ")");
-            for(Integer roleId: roleIds){
-                roleJoiner.add(Integer.toString(roleId));
-            }
-            filterJoiner.add(DocumentIndex.FIELD__ROLE_ID + ":" + roleJoiner);
+        StringJoiner searchAndAccessFilter = new StringJoiner(" AND ", "(", ")");
+        searchAndAccessFilter.add(DocumentIndex.FIELD__SEARCH_ENABLED + ":" + true);
+        searchAndAccessFilter.add(accessFilterJoiner.toString());
 
-            solrQuery.addFilterQuery(filterJoiner.toString());
+        return searchAndAccessFilter.toString();
     }
 }
