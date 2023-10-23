@@ -310,7 +310,7 @@ public class Document implements Serializable {
     }
 
     public boolean isVisibleInMenusForAuthorizedUsers(User user) {
-        return user.getInternal().canAccess(internalDocument);
+        return internalDocument.isLinkedForUnauthorizedUsers() || user.getInternal().canAccess(internalDocument);
     }
 
     public boolean isLinkableByOtherUsers() {

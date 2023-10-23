@@ -49,14 +49,12 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final Meta meta = metaRepository.findById(docId)
 		        .orElseThrow(() -> new DocumentNotExistException(docId));
 
-        return user.hasUserAccessToDoc(meta) ||
-                (user.isDefaultUser() && meta.getLinkedForUnauthorizedUsers());
+        return meta.getLinkedForUnauthorizedUsers() || user.hasUserAccessToDoc(meta);
     }
 
     @Override
     public boolean hasUserAccessToDoc(DocumentDTO documentDTO, UserDomainObject user){
-        return user.hasUserAccessToDoc(documentDTO) ||
-                (user.isDefaultUser() && documentDTO.isLinkableForUnauthorizedUsers());
+        return documentDTO.isLinkableForUnauthorizedUsers() || user.hasUserAccessToDoc(documentDTO);
     }
 
     @Override
