@@ -366,13 +366,12 @@ define("imcms-menu-editor-builder",
             ;
 
             const typeSort = document.getElementById('type-sort').value;
-
+            removedPreviousItemFrame();
 
             if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
                 isPasted = false;
                 return;
             }
-            removedPreviousItemFrame();
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
             $origin.removeClass("imcms-document-items-list__document-items")
@@ -539,6 +538,7 @@ define("imcms-menu-editor-builder",
                         $origin.attr("data-menu-items-lvl", 1);
                         $origin.insertBefore(menuDoc);
                         highlightMenuDoc();
+                        isPasted = true;
                     } else if (frameTop > $menuEditorBody.outerHeight(true)) {
                         get$menuItemsList().scrollTop(get$menuItemsList().scrollTop() + 20);
                         const $origin = $(".imcms-menu-items--is-drag").clone(true)
@@ -552,6 +552,7 @@ define("imcms-menu-editor-builder",
                         $origin.attr("data-menu-items-lvl", 1);
                         $origin.insertAfter(menuDoc);
                         highlightMenuDoc();
+                        isPasted = true;
                     }
                 }
             }
