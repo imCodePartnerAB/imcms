@@ -206,8 +206,8 @@ const texts = {
                 restricted_1: "begränsad 1",
                 restricted_2: "begränsad 2",
                 addRole: "Lägg till roll",
-                linkableByOtherUsers: "Synlighet i menyer för behöriga användare",
-                linkableForUnauthorizedUsers: "Synlighet i menyer för obehöriga användare",
+                linkableByOtherUsers: "Dela ut dokumentet för andra administratörer",
+                linkableForUnauthorizedUsers: "Visa länk för obehöriga användare",
                 visible: "LÄSA/SE för alla användare",
                 error: {
                     loadFailed: "Misslyckades med att hämta roller. Vänligen försök igen."
@@ -1458,8 +1458,8 @@ const texts = {
                 restricted_1: "restricted 1",
                 restricted_2: "restricted 2",
                 addRole: "Add role",
-                linkableByOtherUsers: "Visibility in menus for authorized users",
-                linkableForUnauthorizedUsers: "Visibility in menus for unauthorized users",
+                linkableByOtherUsers: "Share the document with other administrators",
+                linkableForUnauthorizedUsers: "Show link to unauthorized users",
                 visible: "VIEW for all users",
                 error: {
                     loadFailed: "Failed to fetch roles. Try gain"
@@ -2712,8 +2712,8 @@ const texts = {
                 restricted_1: "begrenset 1",
                 restricted_2: "begrenset 2",
                 addRole: "Legg til rolle",
-                linkableByOtherUsers: "Kan kobles til av andre brukere",
-                linkableForUnauthorizedUsers: "Kan kobles sammen for uautoriserte brukere",
+                linkableByOtherUsers: "Jaa asiakirja muiden ylläpitäjien kanssa",
+                linkableForUnauthorizedUsers: "Näytä linkki luvattomille käyttäjille",
                 visible: "VIS for alle brukere",
                 error: {
                     loadFailed: "Kunne ikke hente roller. Vær så snill, prøv på nytt."
