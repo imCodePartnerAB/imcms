@@ -1,5 +1,7 @@
 package imcode.util;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.components.CSRFTokenManager;
@@ -8,9 +10,15 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.domain.component.TextContentFilter;
+import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.SessionInfoDTO;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.Phone;
+import com.imcode.imcms.model.PhoneType;
+import com.imcode.imcms.model.PhoneTypes;
+import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -701,6 +709,44 @@ public class Utility {
 		}
 
 		return fieldNames;
+	}
+
+	public static List<Phone> collectPhoneNumbers(UserFormData userData, User user) {
+
+		final String[] userPhoneNumbers = userData.getUserPhoneNumber();
+		final Integer[] userPhoneNumberTypes = userData.getUserPhoneNumberType();
+
+		if ((userPhoneNumbers == null)
+				|| (userPhoneNumberTypes == null)
+				|| (userPhoneNumbers.length <= 0)
+				|| (userPhoneNumberTypes.length <= 0)
+				|| (userPhoneNumbers.length != userPhoneNumberTypes.length)) { // actually I don't know what to do if arrays have different length, however null and zero-length is fine
+			return Collections.emptyList();
+		}
+
+		List<Phone> numbers = new ArrayList<>();
+
+		for (int i = 0; i < userPhoneNumbers.length; i++) {
+			try {
+				final String userPhoneNumber = userPhoneNumbers[i];
+				final PhoneType numberType = PhoneTypes.getPhoneTypeById(userPhoneNumberTypes[i]);
+				numbers.add(new PhoneDTO(userPhoneNumber, user, numberType));
+
+			} catch (Exception e) {
+				log.error("Something wrong with phone numbers.", e);
+			}
+		}
+
+		return numbers;
+	}
+
+	public static boolean isMobilePhoneNumberValid(String phoneNumber) {
+		try {
+			PhoneNumberUtil.getInstance().parse(phoneNumber, "");
+			return true;
+		} catch (NumberParseException e) {
+			return false;
+		}
 	}
 
 }

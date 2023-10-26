@@ -275,38 +275,8 @@ class DefaultUserService implements UserService {
     }
 
     void updateUserPhones(UserFormData userData, User user) {
-        final List<Phone> phoneNumbers = collectPhoneNumbers(userData, user);
+        final List<Phone> phoneNumbers = Utility.collectPhoneNumbers(userData, user);
         phoneService.updateUserPhones(phoneNumbers, user.getId());
-    }
-
-    List<Phone> collectPhoneNumbers(UserFormData userData, User user) {
-
-        final String[] userPhoneNumbers = userData.getUserPhoneNumber();
-        final Integer[] userPhoneNumberTypes = userData.getUserPhoneNumberType();
-
-        if ((userPhoneNumbers == null)
-                || (userPhoneNumberTypes == null)
-                || (userPhoneNumbers.length <= 0)
-                || (userPhoneNumberTypes.length <= 0)
-                || (userPhoneNumbers.length != userPhoneNumberTypes.length))
-        { // actually I don't know what to do if arrays have different length, however null and zero-length is fine
-            return Collections.emptyList();
-        }
-
-        List<Phone> numbers = new ArrayList<>();
-
-        for (int i = 0; i < userPhoneNumbers.length; i++) {
-            try {
-                final String userPhoneNumber = userPhoneNumbers[i];
-                final PhoneType numberType = PhoneTypes.getPhoneTypeById(userPhoneNumberTypes[i]);
-                numbers.add(new PhoneDTO(userPhoneNumber, user, numberType));
-
-            } catch (Exception e) {
-                log.error("Something wrong with phone numbers.", e);
-            }
-        }
-
-        return numbers;
     }
 
     private void updateUserRoles(UserFormData userData, User user) {
