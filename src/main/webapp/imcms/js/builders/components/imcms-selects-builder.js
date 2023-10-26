@@ -331,10 +331,12 @@ define("imcms-selects-builder",
 
                 return $resultImcmsSelect;
             },
-            makeImcmsSelect: function ($existingSelect) {
-                $existingSelect.find('.imcms-drop-down-list__select-item').click(toggleSelect);
+            makeImcmsSelect: function ($existingSelect, onSelected) {
+                $existingSelect.find('.imcms-drop-down-list__select-item').off("click").click(toggleSelect);
                 $existingSelect.find(DROP_DOWN_LIST__ITEM__CLASS_$).each(function () {
-                    $(this).click(onOptionSelected)
+                    $(this).off("click").click(function () {
+                        onOptionSelected.call(this, onSelected)
+                    });
                 });
 
                 bindApi($existingSelect, $existingSelect.find('input[type=hidden]'));
