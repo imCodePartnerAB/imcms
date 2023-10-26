@@ -74,7 +74,7 @@ public class SmsService {
 		try {
 			final URIBuilder smsRequest = new URIBuilder(gatewayUrl);
 
-			smsRequest.addParameter("destination", recipient);
+			smsRequest.addParameter("destination", formatPhoneNumber(recipient));
 			smsRequest.addParameter("username", gatewayUsername);
 			smsRequest.addParameter("password", gatewayPassword);
 			smsRequest.addParameter("message", message);
@@ -135,5 +135,9 @@ public class SmsService {
 		return Optional.ofNullable(element.getElementsByTagName(tagName).item(0))
 				.filter(node -> node.getTextContent() != null && !node.getTextContent().isBlank())
 				.isPresent();
+	}
+
+	private String formatPhoneNumber(String recipient) {
+		return recipient.startsWith("+") ? recipient.substring(recipient.indexOf("+") + 1) : recipient;
 	}
 }
