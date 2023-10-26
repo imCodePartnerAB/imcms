@@ -744,11 +744,13 @@ const texts = {
                 error: {
                     loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
                     updateFailed: 'Misslyckades med att uppdatera användaren. Försök igen',
-                    searchFailed: 'Misslyckades med att söka efter användare. Försök igen'
+                    searchFailed: 'Misslyckades med att söka efter användare. Försök igen',
+                    invalidMobilePhoneNumber: 'Ogiltigt mobilnummer!'
                 },
                 tooltip: {
                     archiveUser: 'Till arkivanvändare',
                     editUser: 'Redigera',
+                    mobilePhoneNumberTip: 'Mobilnummer måste innehålla + och landskod!'
                 },
             },
             roles: {
@@ -1998,11 +2000,13 @@ const texts = {
                 error: {
                     loadRolesFailed: 'Failed to fetch roles. Try again',
                     updateFailed: 'Failed to update user. Try again',
-                    searchFailed: 'Failed to search for users. Try again'
+                    searchFailed: 'Failed to search for users. Try again',
+                    invalidMobilePhoneNumber: 'Invalid mobile phone number!'
                 },
                 tooltip: {
                     archiveUser: 'Archive user',
                     editUser: 'Edit',
+                    mobilePhoneNumberTip: "Mobile phone number must contain + and country code!"
                 },
             },
             roles: {
@@ -3252,11 +3256,13 @@ const texts = {
                 error: {
                     loadRolesFailed: 'Kunne ikke hente roller. Prøv igjen',
                     updateFailed: 'Kunne ikke oppdatere brukeren. Prøv igjen',
-                    searchFailed: 'Kunne ikke søke etter bruker. Prøv igjen'
+                    searchFailed: 'Kunne ikke søke etter bruker. Prøv igjen',
+                    invalidMobilePhoneNumber: 'Ugyldig mobilnummer!'
                 },
                 tooltip: {
                     archiveUser: 'For å arkivere brukere',
                     editUser: 'Redigere',
+                    mobilePhoneNumberTip: 'Mobilnummer må inneholde + og landskode!'
                 },
             },
             roles: {
