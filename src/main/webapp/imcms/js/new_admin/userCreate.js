@@ -94,6 +94,14 @@ function bindOnDeleteClicked($phoneRow) {
 
 function bindOnSaveClick($phoneRow) {
     return function () {
+
+        const phoneType = $phoneRow.find('input[name=userPhoneNumberType]').val();
+        const phone = $phoneRow.find('input[name=userPhoneNumber]').val().trim();
+
+        if (Number.parseInt(phoneType) === 3 && !isMobilePhoneNumberValid(phone)) {
+            alert(texts.superAdmin.users.error.invalidMobilePhoneNumber);
+            return;
+        }
         $(this).hide();
 
         $phoneRow.find('.imcms-select,.imcms-input--phone')
@@ -132,7 +140,7 @@ function addPhone(e) {
         type: 'button'
     });
 
-    $newRow.find('.imcms-label')
+	const $phoneTypeSelect = $newRow.find('.imcms-label')
         .text('')
         .removeAttr('for')
         .end()
@@ -149,8 +157,9 @@ function addPhone(e) {
         .attr('name', 'userPhoneNumber')
         .val(phone)
         .end()
-        .find('#phone-type-select')
-        .removeAttr('id')
+        .find('#phone-type-select');
+
+	$phoneTypeSelect.removeAttr('id')
         .end()
         .find('#button-add-phone')
         .remove()
@@ -158,7 +167,19 @@ function addPhone(e) {
         .find('.imcms-text-box')
         .append();
 
+    initPhoneNumberTypeImcmsSelect($newRow);
+
+	const phoneType = $phoneTypeSelect.find('input[name=userPhoneNumberType]').val();
+	if (Number.parseInt(phoneType) === 3 && !isMobilePhoneNumberValid(phone)) {
+		alert(texts.superAdmin.users.error.invalidMobilePhoneNumber);
+		return;
+	}
+
     $newRow.append($saveButton, $editContainer).insertAfter($phoneTypeContainer);
+    if (Number.parseInt(phoneType) === 3) {
+        const $phoneNumberInput = $newRow.find(".imcms-input--phone");
+        components.overlays.defaultTooltip($phoneNumberInput, texts.superAdmin.users.tooltip.mobilePhoneNumberTip, {placement: 'bottom'});
+    }
 }
 
 function filterNonDigits(e) {
@@ -170,11 +191,36 @@ function filterNonDigits(e) {
     );
 }
 
+function isMobilePhoneNumberValid(mobilePhoneNumber) {
+    return /^\+[1-9]{1}[0-9]{3,14}$/gm.test(mobilePhoneNumber);
+}
+
+function onPhoneNumberTypeOptionClick(phoneNumberType) {
+    if (Number.parseInt(phoneNumberType) === 3) {
+        this.attr({
+            "placeholder": "Ex: +46846401211",
+        });
+        components.overlays.defaultTooltip(this, texts.superAdmin.users.tooltip.mobilePhoneNumberTip, {placement: 'bottom'});
+        return;
+    }
+    this.attr({
+        "placeholder": "",
+    });
+    components.overlays.disable(this);
+}
+
+function initPhoneNumberTypeImcmsSelect($row) {
+    const $select = $row.find('.imcms-select');
+    const $phoneNumberInput = $row.find(".imcms-input--phone");
+
+    components.selects.makeImcmsSelect($select, (phoneNumberType) => {
+        onPhoneNumberTypeOptionClick.call($phoneNumberInput, phoneNumberType);
+    });
+}
+
 $(function () {
     $('input[name=login]').focus();
     loadLanguages();
-
-    components.selects.makeImcmsSelect($('#phone-type-select'));
 
     $('.imcms-info-head__close').click(onRedirectSuperAdminPage);
 
@@ -190,10 +236,10 @@ $(function () {
     });
 
 
-    $('.imcms-text-box--existing-phone-box').each(function () {
+    $('.imcms-text-box--phone-box').each(function () {
         const $row = $(this);
 
-        components.selects.makeImcmsSelect($row.find('.imcms-select'));
+        initPhoneNumberTypeImcmsSelect($row);
 
         $row.find('.imcms-button--save').click(bindOnSaveClick($row));
         $row.find('.imcms-control--remove').click(bindOnDeleteClicked($row));
