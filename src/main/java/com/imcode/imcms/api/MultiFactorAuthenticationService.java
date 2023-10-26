@@ -9,6 +9,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -49,6 +50,7 @@ public class MultiFactorAuthenticationService {
 	private final UserLockValidator lockValidator;
 	private static final String COOKIE_NAME_2FA = "2fa";
 	private final LocalizedMessage ERROR_NO_PHONE_NUMBER_FOUND = new LocalizedMessage("templates/login/2fa/phone-not-found");
+	private final LocalizedMessage ERROR_INVALID_PHONE_NUMBER = new LocalizedMessage("templates/login/2fa/invalid-phone-number");
 	private final LocalizedMessage ERROR_WRONG_CODE = new LocalizedMessage("templates/login/2fa/incorrect-code");
 	private final LocalizedMessage ERROR_CODE_NOT_SENT = new LocalizedMessage("templates/login/2fa/code-not-sent");
 	private final LocalizedMessage AUTHORIZATION_CODE_MESSAGE = new LocalizedMessage("templates/login/2fa/authorization_code/message");
@@ -72,6 +74,12 @@ public class MultiFactorAuthenticationService {
 		if (phoneNumber.isEmpty() && !useEmailIfPhoneMissing) {
 			addErrorMessage(ERROR_NO_PHONE_NUMBER_FOUND);
 			mainLog.info("->User " + user.getId() + " cannot finish authorization: No phone number found.");
+			return;
+		}
+
+		if (phoneNumber.isPresent() && !Utility.isMobilePhoneNumberValid(phoneNumber.get().getNumber())) {
+			addErrorMessage(ERROR_INVALID_PHONE_NUMBER);
+			mainLog.info("->User " + user.getId() + " cannot finish authorization: Invalid phone number found. Update it!");
 			return;
 		}
 
