@@ -13,6 +13,7 @@ import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
+import imcode.util.Utility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +53,7 @@ class DefaultUserServiceTest {
         userData.setUserPhoneNumber(new String[0]);
         userData.setUserPhoneNumberType(new Integer[0]);
 
-        final List<Phone> phones = userService.collectPhoneNumbers(userData, mock(User.class));
+        final List<Phone> phones = Utility.collectPhoneNumbers(userData, mock(User.class));
 
         Assertions.assertTrue(phones.isEmpty());
     }
@@ -63,7 +64,7 @@ class DefaultUserServiceTest {
         userData.setUserPhoneNumber(null);
         userData.setUserPhoneNumberType(null);
 
-        final List<Phone> phones = userService.collectPhoneNumbers(userData, mock(User.class));
+        final List<Phone> phones = Utility.collectPhoneNumbers(userData, mock(User.class));
 
         Assertions.assertTrue(phones.isEmpty());
     }
@@ -86,7 +87,7 @@ class DefaultUserServiceTest {
         userData.setUserPhoneNumber(userPhoneNumbers);
         userData.setUserPhoneNumberType(userPhoneNumberTypes);
 
-        final List<Phone> phones = userService.collectPhoneNumbers(userData, user);
+        final List<Phone> phones = Utility.collectPhoneNumbers(userData, user);
 
         final String[] phoneNumbers = phones.stream()
                 .map(Phone::getNumber)
