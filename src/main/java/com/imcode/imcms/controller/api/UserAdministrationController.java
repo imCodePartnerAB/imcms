@@ -170,6 +170,7 @@ class UserAdministrationController {
         if (validationResult.isEmptyUserRoles()) errorMessageKeys.add("error/user_must_have_at_least_one_role");
         if (!validationResult.isEmailValid()) errorMessageKeys.add("error/email_is_invalid");
         if (validationResult.isEmailAlreadyTaken()) errorMessageKeys.add("error/email_is_taken");
+        if (!validationResult.isMobilePhoneNumberValid()) errorMessageKeys.add("error/mobile_phone_number_invalid");
         if (validationResult.isLoginAlreadyTaken())
             errorMessageKeys.add("error/servlet/AdminUserProps/username_already_exists");
 

@@ -2,11 +2,15 @@ package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Phone;
+import com.imcode.imcms.model.PhoneTypes;
 import imcode.server.ImcmsConstants;
+import imcode.util.Utility;
 import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Data
@@ -25,6 +29,7 @@ public abstract class UserValidationResult {
     private boolean emailValid = true;
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
+    private boolean mobilePhoneNumberValid = true;
 
     private boolean validUserData;
 
@@ -33,6 +38,7 @@ public abstract class UserValidationResult {
         validatePasswords(userData);
         validateEmail(userData, userService);
         validateUserRoles(userData.getRoleIds());
+        validatePhoneNumbers(userData);
         sumUpValidation();
     }
 
@@ -50,11 +56,17 @@ public abstract class UserValidationResult {
                 && !emailAlreadyTaken
                 && !emptyUserRoles
                 && !passwordTooWeak
+                && !mobilePhoneNumberValid
         ;
     }
 
     private void validateUserRoles(int[] roleIds) {
         this.emptyUserRoles = ArrayUtils.isEmpty(roleIds);
+    }
+
+    private void validatePhoneNumbers(UserFormData userData){
+        final List<Phone> phones = Utility.collectPhoneNumbers(userData, null);
+        validateMobilePhoneNumber(phones);
     }
 
     protected abstract void validateEmail(UserFormData userData, UserService userService);
@@ -81,4 +93,11 @@ public abstract class UserValidationResult {
 
     protected abstract void validateLoginName(UserFormData userData, UserService userService);
 
+    protected void validateMobilePhoneNumber(List<Phone> phones) {
+        phones.stream().filter(phone -> phone.getPhoneType().getId().equals(PhoneTypes.MOBILE.getId()))
+                .findAny()
+                .ifPresent(phone -> {
+                    setMobilePhoneNumberValid(Utility.isMobilePhoneNumberValid(phone.getNumber()));
+                });
+    }
 }
