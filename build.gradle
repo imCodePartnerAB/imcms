@@ -157,7 +157,8 @@ dependencies {
     implementation "com.fasterxml:classmate:1.5.1"
     implementation 'com.mysql:mysql-connector-j:8.0.31'
 
-    implementation 'org.tmatesoft.svnkit:svnkit:1.10.9'
+    implementation 'org.tmatesoft.svnkit:svnkit:1.10.11'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.23'
 
     testImplementation 'com.jayway.jsonpath:json-path-assert:2.7.0'
     testImplementation 'org.dbunit:dbunit:2.7.3'
