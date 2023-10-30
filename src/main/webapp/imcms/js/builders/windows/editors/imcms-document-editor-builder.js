@@ -1224,16 +1224,17 @@ define('imcms-document-editor-builder',
                 {placement: 'right'}
             );
 
-            let title;
+            let title, alias;
             if (savedFlag) {
                 const content = document.commonContents.filter(content => content.enabled)
                     .filter(enableContent => enableContent.language.code === imcms.language.code)
                     .shift();
 
                 title = content ? content.headline : texts.notShownInSelectedLang;
-
+                alias = content ? content.alias : "";
             } else {
                 title = document.isShownTitle ? document.title : texts.notShownInSelectedLang;
+                alias = document.alias;
             }
             const $docItemTitle = components.texts.titleText('<a>', title, {
                 href: '/' + document.id,
@@ -1243,11 +1244,11 @@ define('imcms-document-editor-builder',
             (!document.isShownTitle && undefined !== document.isShownTitle) && $docItemTitle.modifiers.push('notShownTitle');
             title && components.overlays.defaultTooltip($docItemTitle, title);
 
-            const $docItemAlias = components.texts.titleText('<div>', document.alias && ('/' + document.alias), {
+            const $docItemAlias = components.texts.titleText('<div>', alias && ('/' + alias), {
                 class: 'imcms-flex--flex-2',
             });
             $docItemAlias.modifiers = ['alias'];
-            document.alias && components.overlays.defaultTooltip($docItemAlias, '/' + document.alias);
+            alias && components.overlays.defaultTooltip($docItemAlias, '/' + alias);
 
             let docModifiedDate;
             let docModifiedBy;
