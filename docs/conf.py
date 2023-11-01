@@ -30,6 +30,7 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
+    'sphinx_rtd_theme'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -128,7 +129,7 @@ def setup(app):
 	app.add_css_file('custom.css')
 	app.add_js_file('wedc.js')
 
-#html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
