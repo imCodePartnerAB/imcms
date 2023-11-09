@@ -66,13 +66,11 @@ In order to make a **document visible to a authorized** user in a menu, you have
 
 1. Make sure the document is **published**. You can check it in **State** column.
 2. Enable **VIEW for all users** or give **VIEW** for one of the user's roles.
-3. Enable **Visibility in the menu for authorized users**. You can check it in **Vis** column.
 
 In order to make a **document visible to a unauthorized** user in a menu, you have to:
 
 1. Make sure the document is **published**. You can check it in **State** column.
-2. Enable **VIEW for all users**.
-3. Enable **Visibility in the menu for unauthorized users**. You can check it in **Vis** column.
+2. Enable **VIEW for all users**. Or use **Show link to unauthorized users** to show document to all users, but note that a user who does not have access cannot visit the document.
 
 .. seealso:: Read more about access control :doc:`here </user-documentation/access-control>`.
 
@@ -89,6 +87,10 @@ You can *remove an item* in two ways:
 
 1. Move the mouse cursor over the item and click **X** that appears.
 2. Enable **Multi-remove**, select items and click **Remove**.
+
+.. note:: Admin must have access to a document that he wants to add to the menu.
+    Or this document must have enabled **Share the document with other administrators**.
+    Read more about access control :doc:`here </user-documentation/access-control>`.
 
 -----------------
 Menu Item Sorting
@@ -126,10 +128,7 @@ Manage by dragging
 
 Disable the **Sort by numbers** checkbox under the dropdown list of sort options.
 
-In order to change an item position, you have to:
-
-1. Move the mouse cursor over the item closest to the right side.
-2. When the mouse cursor becomes |move|, hold and drag up or down.
+In order to change an item position, you have to hold the mouse on the document (anywhere, but not |nest|) and move up or down.
 
 *Tree sort* sorting allows to nest items. In order to nest an item, you have to:
 
@@ -137,7 +136,7 @@ In order to change an item position, you have to:
 2. Hold the mouse cursor on |nest| that appears on the left.
 3. Drag an item to another item.
 
-In order to nest an item, you have to:
+In order to pull out an item, you have to:
 
 1. Move the mouse cursor over the item.
 2. Hold the mouse cursor on |nest| that appears on the left.

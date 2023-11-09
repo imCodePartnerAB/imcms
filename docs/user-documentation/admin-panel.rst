@@ -30,7 +30,7 @@ Panel Features
 
 .. |documentsIcon| image:: admin-panel/_static/documents.png
 
-.. |adminManagerIcon| image:: admin-panel/_static/admin.png
+.. |adminManagerIcon| image:: admin-panel/_static/system.png
 
 .. |logoutIcon| image:: admin-panel/_static/logout.png
 
@@ -47,7 +47,7 @@ Panel Features
 +--------------------+----------------------------------------------------------------------------------------------------------------+
 + |pageInfoIcon|     + Page Info - open the :doc:`Page Info</user-documentation/document-management/page-info/base>`.                 +
 +--------------------+----------------------------------------------------------------------------------------------------------------+
-+ |siteSpecific|     + Site Specific (optional) - open additional functionality written by the developer.                             +
++ |siteSpecific|     + Admin (optional) - open additional functionality written by the developer.                                     +
 +--------------------+----------------------------------------------------------------------------------------------------------------+
 + |documentsIcon|    + Document Manager - open the :doc:`Document Manager</user-documentation/document-management/document-manager>`. +
 +--------------------+----------------------------------------------------------------------------------------------------------------+

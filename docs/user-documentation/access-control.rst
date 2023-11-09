@@ -61,8 +61,8 @@ Location *Page Info* -> *Access* and *Permission Settings* tabs
 
 * **VIEW for all users** - **VIEW** for all users - all users can see page the document, the document when searching and in the menu.
 
-* **Visibility in the menu for authorized users** - visibility of this document in the menu for authorized users (menu admins see all items).
-* **Visibility in the menu for unauthorized users** - visibility of this document in the menu for unauthorized users.
+* **Share the document with other administrators** - allow other administrators to add the document to the menu even if they don't have access to the document.
+* **Show link to unauthorized users** - show the document in the menu even if the user doesn't have access to the document.
 
 ------------------
 
@@ -81,8 +81,9 @@ In order to make a **document visible** to a specific user **when searching**, y
 1. Enable **VIEW for all users** or give **VIEW** for one of the user's roles.
 2. **Disable** *Disable search*.
 
-In order to make a **document visible** to a specific user **in a menu**, you have to:
+In order to make a **document visible in a menu**, you have to:
 
 1. Make sure the document is **published**.
-2. Enable **VIEW for all users** or give **VIEW** for one of the user's roles.
-3. Enable **Visibility in the menu for authorized users**.
+2. Give users access to the document.
+	* Enable **VIEW for all users** - show document to all users. Or Enable **Show link to unauthorized users** - show document to all users, but note that a user who does not have access cannot visit the document.
+	* Give **VIEW** for one of the user's roles - show document to users who have the specified role.

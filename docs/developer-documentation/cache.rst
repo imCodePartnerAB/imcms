@@ -81,7 +81,7 @@ API
     Check out the API :doc:`here </developer-documentation/api/documentsCache>`.
 
 .. seealso:: You can manage all types of cache using ``DefaultTemporalDataService`` class.
-    Check out the API :doc:`here </developer-documentation/api/defaultTemporalDataService>`.
+    Check out the API :doc:`here </developer-documentation/api/temporalDataService>`.
 
 How you can get ``EhCacheCacheManager``:
 

@@ -151,11 +151,15 @@ To apply the previous image, click on it in the list. To cancel - click **Cancel
 
 To close the history table click **Hide history** button.
 
+.. note:: Max number of records in the history can be configured by developers.
+
 ----------------
 Image Attributes
 ----------------
 
-**Alt text** - the text to be displayed instead of the image if the upload fails. There is an example below
+**Alt text** - the text to be displayed instead of the image if the upload fails. There is an example below.
+
+.. note:: Whether this field is required can be configured by developers.
 
 .. image:: _static/editor/alt-text-example.png
 

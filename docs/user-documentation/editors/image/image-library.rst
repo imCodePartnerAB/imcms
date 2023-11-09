@@ -30,6 +30,9 @@ You can open the library in two ways:
 
 .. image:: _static/library/library.png
 
+.. warning:: If you face some problems with the *Image Library*, you can try to clean *Other* cache.
+    Read how to clean cache :doc:`here </user-documentation/admin-settings/index-cache>`.
+
 ------------
 Choose Image
 ------------

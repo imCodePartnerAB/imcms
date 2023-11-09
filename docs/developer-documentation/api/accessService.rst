@@ -18,6 +18,14 @@ Methods
 
 .. code-block:: java
 
+    boolean hasUserViewAccess(UserDomainObject user, Integer documentId);
+
+check the user's access to view the document.
+
+------------------
+
+.. code-block:: java
+
     boolean hasUserPublishAccess(UserDomainObject user, int docId);
 
 check the user's access to the publication of the document.

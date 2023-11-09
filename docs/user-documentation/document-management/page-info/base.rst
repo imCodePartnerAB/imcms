@@ -99,9 +99,9 @@ To do this, add a role and enable the required permission type.
 
 **VIEW for all users** - **VIEW** for all users - all users can see page the document, the document when searching and in the menu.
 
-**Visibility in the menu for authorized users** - visibility of this document in the menu for authorized users (menu admins see all items).
+**Share the document with other administrators** - allow other administrators to add the document to the menu even if they don't have access to the document.
 
-**Visibility in the menu for unauthorized users** - visibility of this document in the menu for unauthorized users.
+**Show link to unauthorized users** - show the document in the menu even if the user doesn't have access to the document.
 
 .. seealso:: Read more about access control :doc:`here </user-documentation/access-control>`
 

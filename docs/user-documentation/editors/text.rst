@@ -135,3 +135,5 @@ In order to *revert back to the previous version* of the text in this editor,
 you have to find and select the required version on the left and click **Write to text field**.
 
 **View Source** - view the source code.
+
+.. note:: Max number of records in the history can be configured by developers.
