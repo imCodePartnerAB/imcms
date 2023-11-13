@@ -241,6 +241,11 @@ Language
     # Available languages. Need to use 2 letters language codes (en;sv) with ';' delimiter
     AvailableLanguages=sv
 
+    # The language used when no gui admin language preference is known.
+    i18n.default.admin.language=sv
+    # Available gui admin languages. Use 2 letters language codes (en;sv) with ';' delimiter
+    i18n.available.admin.language=sv;en
+
 -----
 Image
 -----
@@ -423,6 +428,7 @@ SVN – SVNService
 
     # SVN credentials, if you work locally do not specify any of these properties.
 
+    svn.use=true
     # Remote SVN repository URL.
     svn.url=
     # User credentials.
