@@ -13,7 +13,6 @@ Imcms.initSiteSpecific = function (addEventsToSpecialAdmin) {
 module.exports = { // all stuff reassigned for code highlight/completion purposes
     initSiteSpecific: Imcms.initSiteSpecific,
     expiredSessionTimeInMillis: Imcms.expiredSessionTimeInMillis,
-    userLanguage: Imcms.userLanguage,
     contextPath: Imcms.contextPath,
     imagesPath: Imcms.imagesPath,
     version: Imcms.version,
@@ -41,12 +40,15 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
         alias: Imcms.document.alias,
         publicAlias: Imcms.publicAlias,
     },
+    userLanguage: Imcms.userLanguage,
+    defaultAdminLanguage: Imcms.defaultAdminLanguage,
+    availableAdminLanguages: Imcms.availableAdminLanguages,
+    availableLanguages: Imcms.availableLanguages,
     language: {
         name: Imcms.language.name,
         nativeName: Imcms.language.nativeName,
         code: Imcms.language.code,
     },
-    availableLanguages: Imcms.availableLanguages,
     browserInfo: {
         isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
     }

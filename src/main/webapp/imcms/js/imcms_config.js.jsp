@@ -5,7 +5,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
 
     Imcms = {
         expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
-        userLanguage: "${userLanguage}",
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
         version: "${version}",
@@ -35,13 +34,30 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             alias: "${currentDocument.alias}"
         },
         publicAlias: "${publicAlias}",
+        userLanguage: "${userLanguage}",
+        defaultAdminLanguage: {
+            code: "${defaultAdminLanguage.code}",
+            name: "${defaultAdminLanguage.name}",
+            nativeName: "${defaultAdminLanguage.nativeName}",
+            enabled: "${defaultAdminLanguage.enabled}"
+        },
+        availableAdminLanguages: [],
+        availableLanguages: [],
         language: {
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
-        },
-        availableLanguages: []
+        }
     };
+
+    <c:forEach var="language" items="${availableAdminLanguages}" varStatus="i">
+        Imcms.availableAdminLanguages[${i.index}] = {
+            code: "${language.code}",
+            name: "${language.name}",
+            nativeName: "${language.nativeName}",
+            enabled: "${language.enabled}"
+        }
+    </c:forEach>
 
     <c:forEach var="language" items="${availableLanguages}" varStatus="i">
         Imcms.availableLanguages[${i.index}] = {
@@ -62,6 +78,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
+    <%--@elvariable id="defaultAdminLanguage" type="com.imcode.imcms.model.Language"--%>
+    <%--@elvariable id="availableAdminLanguages" type="java.util.List<com.imcode.imcms.model.Language>"--%>
     <%--@elvariable id="availableLanguages" type="java.util.List<com.imcode.imcms.model.Language>"--%>
     <%--@elvariable id="documentationLink" type="java.lang.String"--%>
     <%--@elvariable id="isSuperAdmin" type="boolean"--%>

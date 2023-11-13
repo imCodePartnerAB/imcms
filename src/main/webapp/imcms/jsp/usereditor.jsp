@@ -151,6 +151,7 @@
                 </div>
             </div>
 
+            <input id="current-lang" type="hidden" value="${editedUser.language}">
             <div id="languages-select-container" data-text="<fmt:message key="templates/sv/AdminUserResp.htm/30" bundle="${resource_property}"/>"
                  class="imcms-field"><%-- content is set via js --%></div>
 

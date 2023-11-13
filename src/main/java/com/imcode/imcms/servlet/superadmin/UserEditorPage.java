@@ -321,6 +321,7 @@ public class UserEditorPage extends OkCancelPage {
         request.setAttribute("loggedOnUser", loggedOnUser);
         request.setAttribute("errorMessage", errorMessage);
         request.setAttribute("userLanguage", Utility.getUserLanguageFromCookie(request.getCookies()).getCode());
+        request.setAttribute("availableAdminLanguages", Imcms.getServices().getLanguageService().getAvailableAdminLanguages());
         super.forward(request, response);
     }
 

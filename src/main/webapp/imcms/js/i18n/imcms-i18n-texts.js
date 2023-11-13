@@ -3774,4 +3774,4 @@ const texts = {
     },
 };
 
-module.exports = texts[imcms.userLanguage] ? texts[imcms.userLanguage] : texts['en'];
+module.exports = texts[imcms.userLanguage] ? texts[imcms.userLanguage] : texts[imcms.defaultAdminLanguage.code];

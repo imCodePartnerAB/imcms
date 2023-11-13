@@ -8,7 +8,6 @@ import '../../css/imcms-edit-user-page.css';
  */
 const $ = require('jquery');
 const components = require('imcms-components-builder');
-const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
 let texts = require("imcms-i18n-texts");
@@ -62,12 +61,12 @@ function loadLanguages() {
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
-    let languages = imcms.availableLanguages.map(lang => ({
+    let languages = imcms.availableAdminLanguages.map(lang => ({
         'data-value': lang.code,
         text: lang.name
     }));
     components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
-    $select.selectValue('sv');
+    $select.selectValue(imcms.defaultAdminLanguage.code);
 }
 
 function bindOnEditClicked($phoneRow) {

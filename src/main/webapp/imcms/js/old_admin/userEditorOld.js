@@ -56,17 +56,14 @@ function loadLanguages() {
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
-    languagesRestApi.getAvailableLangs()
-        .done(languages => {
-            languages = languages.map(lang => ({
-                'data-value': lang.code,
-                text: lang.name
-            }));
+    let langCode = $('#user-edit-form').find("#current-lang").val();
 
-            components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
-            $select.selectValue(imcms.userLanguage);
-        })
-        .fail(() => modal.buildErrorWindow(texts.languageFlags.error.loadFailed));
+    let languages = imcms.availableAdminLanguages.map(lang => ({
+        'data-value': lang.code,
+        text: lang.name
+    }));
+    components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
+    $select.selectValue(langCode);
 }
 
 function bindOnEditClicked($phoneRow) {
