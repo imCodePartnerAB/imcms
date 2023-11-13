@@ -15,7 +15,7 @@ import static imcode.util.Utility.getUserLanguageFromCookie;
 import static imcode.util.Utility.writeUserLanguageCookie;
 
 @Controller
-class UserLoginController {
+public class UserLoginController {
 
 	private final LanguageService languageService;
 
@@ -48,7 +48,6 @@ class UserLoginController {
         final String languageCode = languageService.isLanguageAvailableByCode(requestedLangCode) ? requestedLangCode : getUserLanguageFromCookie(request.getCookies()).getCode();
 
 		modelAndView.addObject("userLanguage", languageCode);
-        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
 		writeUserLanguageCookie(response, languageCode);
 
         return modelAndView;

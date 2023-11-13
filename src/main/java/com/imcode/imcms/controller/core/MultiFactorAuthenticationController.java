@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.MultiFactorAuthenticationService;
 import com.imcode.imcms.servlet.VerifyUser;
-import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
 import org.springframework.stereotype.Controller;
@@ -30,10 +29,7 @@ public class MultiFactorAuthenticationController {
 	@RequestMapping
 	public ModelAndView goTo2FaPage(HttpServletRequest request) {
 		final ModelAndView modelAndView = new ModelAndView("MFA");
-
 		modelAndView.addObject("userLanguage", Utility.getUserLanguageFromCookie(request.getCookies()).getCode());
-		modelAndView.addObject("availableLanguages", Imcms.getServices().getLanguageService().getAvailableLanguages());
-
 		return modelAndView;
 	}
 

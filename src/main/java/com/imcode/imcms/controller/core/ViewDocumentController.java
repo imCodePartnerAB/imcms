@@ -14,7 +14,6 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -54,13 +53,10 @@ public class ViewDocumentController {
     private final AccessService accessService;
     private final DocumentWasteBasketService documentWasteBasketService;
     private final PathMatcher pathMatcher;
-    private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
     private final PublicDocumentsCache publicDocumentsCache;
     private final LanguageService languageService;
-    private final String documentationLink;
-    private final boolean isImageEditorAltTextRequired;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
@@ -68,13 +64,10 @@ public class ViewDocumentController {
                            AccessService accessService,
                            DocumentWasteBasketService documentWasteBasketService,
                            PathMatcher pathMatcher,
-                           @Qualifier("storageImagePath") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed,
                            PublicDocumentsCache publicDocumentsCache,
-                           LanguageService languageService,
-                           @Value("${documentation-host}") String documentationLink,
-                           @Value("${image.editor.alt-text.required}") boolean isImageEditorAltTextRequired) {
+                           LanguageService languageService) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
@@ -82,13 +75,10 @@ public class ViewDocumentController {
         this.accessService = accessService;
         this.documentWasteBasketService = documentWasteBasketService;
         this.pathMatcher = pathMatcher;
-        this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
         this.publicDocumentsCache = publicDocumentsCache;
         this.languageService = languageService;
-        this.documentationLink = documentationLink;
-        this.isImageEditorAltTextRequired = isImageEditorAltTextRequired;
     }
 
     @RequestMapping({"", "/"})
@@ -197,16 +187,10 @@ public class ViewDocumentController {
         }
 
         mav.setViewName(viewName);
-
-        mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
         mav.addObject("publicAlias", getPublicAlias(textDocument));
         mav.addObject("language", language);
-        mav.addObject("availableLanguages", languageService.getAvailableLanguages());
-        mav.addObject("isSuperAdmin", user.isSuperAdmin());
         mav.addObject("isEditMode", isEditMode);
-        mav.addObject("contextPath", request.getContextPath());
-        mav.addObject("imagesPath", imagesPath);
         mav.addObject("isVersioningAllowed", isVersioningAllowed);
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("isInWasteBasket", textDocument.isInWasteBasket());
@@ -217,8 +201,6 @@ public class ViewDocumentController {
         mav.addObject("accessToAdminPages", rolePermissions.isAccessToAdminPages());
         mav.addObject("accessToDocumentEditor", rolePermissions.isAccessToDocumentEditor());
         mav.addObject("accessToPublishCurrentDoc", accessService.hasUserPublishAccess(user, docId));
-        mav.addObject("documentationLink", documentationLink);
-        mav.addObject("isImageEditorAltTextRequired", isImageEditorAltTextRequired);
 
         return mav;
     }

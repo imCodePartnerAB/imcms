@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/user")
-class UserAdministrationController {
+public class UserAdministrationController {
 
     private final UserCreationService userCreationService;
     private final UserEditorService userEditorService;
@@ -62,10 +62,6 @@ class UserAdministrationController {
 
         final ModelAndView modelAndView = new ModelAndView("UserEdit");
         modelAndView.addObject("editedUser", user);
-        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
-        modelAndView.addObject("loggedOnUser", loggedOnUser);
-        modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
-        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
         modelAndView.addObject("isBlockedNow", userLockValidator.isUserBlocked(user));
         return modelAndView;
     }
@@ -96,14 +92,7 @@ class UserAdministrationController {
 
     @GetMapping("/creation")
     public ModelAndView goToCreateUser() {
-        final UserDomainObject loggedOnUser = Imcms.getUser();
-        final ModelAndView modelAndView = new ModelAndView("UserCreate");
-
-        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
-        modelAndView.addObject("loggedOnUser", loggedOnUser);
-        modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
-        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
-        return modelAndView;
+        return new ModelAndView("UserCreate");
     }
 
     @PostMapping("/create")
@@ -152,14 +141,8 @@ class UserAdministrationController {
     }
 
     private void setModelStuff(UserValidationResult validationResult, UserFormData userData, ModelAndView modelAndView) {
-        final UserDomainObject loggedOnUser = Imcms.getUser();
-
         modelAndView.addObject("editedUser", userData);
         modelAndView.addObject("errorMessages", extractErrorMessageKeys(validationResult));
-        modelAndView.addObject("isSuperAdmin", loggedOnUser.isSuperAdmin());
-        modelAndView.addObject("loggedOnUser", loggedOnUser);
-        modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
-        modelAndView.addObject("availableLanguages", languageService.getAvailableLanguages());
     }
 
     private List<String> extractErrorMessageKeys(UserValidationResult validationResult) {

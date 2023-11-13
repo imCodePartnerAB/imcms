@@ -14,8 +14,6 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,26 +31,19 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/admin")
-class SuperAdminController {
+public class SuperAdminController {
 
-    private final String imagesPath;
     private final TextService textService;
     private final AccessService accessService;
     private final LanguageService languageService;
-    private final String documentationLink;
 
-
-    SuperAdminController(@Qualifier("storageImagePath") String imagesPath,
-                         TextService textService,
+    SuperAdminController(TextService textService,
                          AccessService accessService,
-                         LanguageService languageService,
-                         @Value("${documentation-host}") String documentationLink) {
+                         LanguageService languageService) {
 
-        this.imagesPath = imagesPath;
         this.textService = textService;
         this.accessService = accessService;
         this.languageService = languageService;
-        this.documentationLink = documentationLink;
     }
 
     @RequestMapping("/manager")
@@ -62,8 +53,6 @@ class SuperAdminController {
 
         mav.setViewName("AdminManager");
         addMinimumModelData(request, mav);
-        mav.addObject("imagesPath", imagesPath);
-        mav.addObject("isSuperAdmin", user.isSuperAdmin());
         mav.addObject("hasFileAdminAccess", accessService.hasUserFileAdminAccess(user.getId()));
         return mav;
     }
@@ -102,10 +91,8 @@ class SuperAdminController {
         final UserDomainObject user = Imcms.getUser();
         final RestrictedPermission userEditPermission = accessService.getPermission(user, metaId);
 
-        mav.addObject("isSuperAdmin", user.isSuperAdmin());
         mav.addObject("editOptions", userEditPermission);
         mav.addObject("isEditMode", true);
-
     }
 
     @RequestMapping("/image")
@@ -131,7 +118,6 @@ class SuperAdminController {
 
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("langCode", language.getCode());
-        mav.addObject("imagesPath", imagesPath);
         addCommonModelData(metaId, index, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
@@ -178,7 +164,6 @@ class SuperAdminController {
 
         mav.setViewName("EditDocInfo");
         addCommonModelData(metaId, returnUrl, request, mav);
-        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
         return mav;
     }
 
@@ -192,7 +177,6 @@ class SuperAdminController {
         mav.setViewName("EditDocuments");
         mav.addObject("accessToDocumentEditor", accessService.getTotalRolePermissionsByUser(Imcms.getUser()).isAccessToDocumentEditor());
         addCommonModelData(returnUrl, request, mav);
-        mav.addObject("isSuperAdmin", Imcms.getUser().isSuperAdmin());
         mav.addObject("currentDocument", new TextDocumentDomainObject(getLanguage(langCode, request.getCookies())));
 
         return mav;
@@ -205,7 +189,6 @@ class SuperAdminController {
                                     ModelAndView mav) {
 
         mav.setViewName("EditContent");
-        mav.addObject("imagesPath", imagesPath);
         addCommonModelData(returnUrl, request, mav);
 
         return mav;
@@ -231,11 +214,7 @@ class SuperAdminController {
     }
 
     private void addMinimumModelData(HttpServletRequest request, ModelAndView mav) {
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
-        mav.addObject("availableLanguages", languageService.getAvailableLanguages());
-        mav.addObject("contextPath", request.getContextPath());
         mav.addObject("disableExternal", true);
-        mav.addObject("documentationLink", documentationLink);
     }
 
     private Language getLanguage(String langCode, Cookie[] cookies){
