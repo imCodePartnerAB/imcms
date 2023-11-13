@@ -16,6 +16,8 @@ import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static imcode.server.ImcmsConstants.LANGUAGE_CACHE_NAME;
 
 @Transactional
 @Service("languageService")
@@ -66,6 +70,7 @@ class DefaultLanguageService implements LanguageService {
         return code;
     }
 
+    @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "#code")
     @Override
     public Language findByCode(String code) {
         code = convertLanguage(code);
@@ -84,6 +89,7 @@ class DefaultLanguageService implements LanguageService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "'availableAdminLanguages'")
     @Override
     public List<Language> getAvailableAdminLanguages() {
         return languageRepository.findAll()
@@ -93,6 +99,7 @@ class DefaultLanguageService implements LanguageService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "'defaultAdminLanguage'")
     @Override
     public Language getDefaultAdminLanguage() {
         return findByCode(defaultAdminLanguage);
@@ -122,7 +129,8 @@ class DefaultLanguageService implements LanguageService {
 		return availableLanguages.contains(code);
 	}
 
-	@Override
+    @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "'availableLanguages'")
+    @Override
     public List<Language> getAvailableLanguages() {
         return languageRepository.findAll()
                 .stream()
@@ -131,12 +139,14 @@ class DefaultLanguageService implements LanguageService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "'defaultLanguage'")
     @Override
     public Language getDefaultLanguage() {
         return new LanguageDTO(findByCode(defaultLang));
     }
 
     //be careful with this! This remove language on the whole system!
+    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME)
     @Override
     public void deleteByCode(String code) {
         final LanguageJPA foundLanguage = languageRepository.findByCode(convertLanguage(code));
@@ -153,6 +163,7 @@ class DefaultLanguageService implements LanguageService {
         languageRepository.delete(foundLanguage);
     }
 
+    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME)
     @Override
     public void save(Language language) {
         final String nameLanguage = language.getName();

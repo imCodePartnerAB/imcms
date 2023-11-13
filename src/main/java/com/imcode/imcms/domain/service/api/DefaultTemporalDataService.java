@@ -86,6 +86,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
         final CacheManager cacheManager = getCacheManager(null);
         cacheManager.getEhcache(OTHER_CACHE_NAME).removeAll();
         cacheManager.getEhcache(IMAGE_FOLDER_CACHE_NAME).removeAll();
+        cacheManager.getEhcache(LANGUAGE_CACHE_NAME).removeAll();
 
         final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(OTHER_CACHE_NAME);
 

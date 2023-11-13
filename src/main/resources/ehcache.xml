@@ -46,4 +46,13 @@
            memoryStoreEvictionPolicy="LRU">
         <persistence strategy="distributed"/>
     </cache>
+
+    <cache name="LanguageCache"
+           maxEntriesLocalHeap="1000"
+           timeToIdleSeconds="2629744"
+           timeToLiveSeconds="2629744"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="distributed"/>
+    </cache>
 </ehcache>
