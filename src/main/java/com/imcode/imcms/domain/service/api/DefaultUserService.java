@@ -215,7 +215,7 @@ class DefaultUserService implements UserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected User saveAndGetUser(UserFormData userData) {
         final String userLangCode = userData.getLangCode();
-        if (!languageService.isAdminLanguage(userLangCode)) {
+        if (!languageService.isAdminAvailableLanguage(userLangCode)) {
             log.info(String.format("Language  as %s does not support in admin lang, so will set to %s", userLangCode, ENG_CODE));
             userData.setLangCode(ENG_CODE);
         }

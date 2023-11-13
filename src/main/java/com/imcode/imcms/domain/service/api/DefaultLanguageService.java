@@ -35,17 +35,27 @@ class DefaultLanguageService implements LanguageService {
     private final DocumentService<DocumentDTO> documentService;
     private final CommonContentService commonContentService;
 
-    @Value("#{'${AvailableLanguages}'.split(';')}")
-    private List<String> availableLanguages;
-    @Value("#{'${DefaultLanguage}'}")
-    private String defaultLang;
+    private final List<String> availableLanguages;
+    private final String defaultLang;
+
+    private final List<String> availableAdminLanguages;
+    private final String defaultAdminLanguage;
 
     DefaultLanguageService(LanguageRepository languageRepository,
                            @Lazy DocumentService<DocumentDTO> documentService,
-                           @Lazy CommonContentService commonContentService) {
+                           @Lazy CommonContentService commonContentService,
+                           @Value("#{'${AvailableLanguages}'.split(';')}") List<String> availableLanguages,
+                           @Value("#{'${DefaultLanguage}'}") String defaultLang,
+                           @Value("#{'${i18n.available.admin.language}'.split(';')}") List<String> availableAdminLanguages,
+                           @Value("#{'${i18n.default.admin.language}'}") String defaultAdminLanguage) {
         this.languageRepository = languageRepository;
         this.documentService = documentService;
         this.commonContentService = commonContentService;
+
+        this.availableLanguages = availableLanguages.stream().map(this::convertLanguage).toList();
+        this.defaultLang = convertLanguage(defaultLang);
+        this.availableAdminLanguages = availableAdminLanguages.stream().map(this::convertLanguage).toList();
+        this.defaultAdminLanguage = convertLanguage(defaultAdminLanguage);;
     }
 
     private String convertLanguage(String code) {
@@ -75,6 +85,20 @@ class DefaultLanguageService implements LanguageService {
     }
 
     @Override
+    public List<Language> getAvailableAdminLanguages() {
+        return languageRepository.findAll()
+                .stream()
+                .filter(lang -> availableAdminLanguages.contains(convertLanguage(lang.getCode())))
+                .map(LanguageDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Language getDefaultAdminLanguage() {
+        return findByCode(defaultAdminLanguage);
+    }
+
+    @Override
     public List<String> getAllAdminLangCode() { // maybe in future we can fetch langs admin from db..
         return Arrays.asList(ImcmsConstants.ENG_CODE, ImcmsConstants.SWE_CODE, ImcmsConstants.NOR_CODE);
     }
@@ -84,6 +108,13 @@ class DefaultLanguageService implements LanguageService {
         code = convertLanguage(code);
 
         return getAllAdminLangCode().contains(code);
+    }
+
+    @Override
+    public boolean isAdminAvailableLanguage(String code) {
+        code = convertLanguage(code);
+
+        return availableAdminLanguages.contains(code);
     }
 
 	@Override
