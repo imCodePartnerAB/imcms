@@ -318,12 +318,10 @@ test {
 }
 
 war {
-    exclude "dependency_path_resolver.js"
     exclude "node_modules"
     exclude "js"
     exclude ".babelrc"
     exclude "package-lock.json"
-    exclude "base.config.js"
     exclude "webpack.config.js"
     exclude "prod.config.js"
 
