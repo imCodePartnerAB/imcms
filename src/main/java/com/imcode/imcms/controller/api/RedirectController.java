@@ -80,6 +80,6 @@ public class RedirectController {
 	}
 
 	private String toRedirectUrl(ServletUriComponentsBuilder uriComponentsBuilder, String url) {
-		return uriComponentsBuilder.replacePath(servletContext.getContextPath() + url).build().toString();
+		return uriComponentsBuilder.replacePath(servletContext.getContextPath() + (url.startsWith("/") ? url : '/' + url)).build().toString();
 	}
 }

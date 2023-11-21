@@ -42,7 +42,7 @@ public class MultiFactorAuthenticationController {
 			final HttpSession session=request.getSession();
 			session.setAttribute(VerifyUser.REQUEST_PARAMETER__EDIT_USER, request.getAttribute(VerifyUser.REQUEST_PARAMETER__EDIT_USER));
 
-			response.sendRedirect("/servlet/VerifyUser");
+			response.sendRedirect(request.getContextPath() + "/servlet/VerifyUser");
 			return;
 		}
 

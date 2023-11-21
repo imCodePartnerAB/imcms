@@ -11,6 +11,6 @@ public class StartDoc extends HttpServlet {
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // just redirect to new controller
-        response.sendRedirect("/");
+        response.sendRedirect(request.getContextPath() + "/");
     }
 }
