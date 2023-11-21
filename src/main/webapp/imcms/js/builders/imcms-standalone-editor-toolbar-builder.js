@@ -2,6 +2,7 @@
  * Created by Dmytro Zemlianskyi from Ubrainians for imCode
  * 14.09.18.
  */
+const imcms = require("imcms");
 define("imcms-standalone-editor-toolbar-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "jquery"
@@ -42,7 +43,7 @@ define("imcms-standalone-editor-toolbar-builder",
                         if (item.link &&
                             ((item.showIfSeparate && window.opener) || (!item.showIfSeparate && !window.opener))) {
 
-                            onClose = () => window.location.replace(`/api/redirect?returnUrl=${item.link}`);
+                            onClose = () => window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${item.link}`);
                         } else if (window.opener) {
                             onClose = () => window.close();
                         } else break;

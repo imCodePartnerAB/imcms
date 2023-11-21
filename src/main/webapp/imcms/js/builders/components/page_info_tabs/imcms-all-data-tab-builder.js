@@ -1,3 +1,4 @@
+const imcms = require("imcms");
 define(
     'imcms-all-data-tab-builder',
     ["imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery",
@@ -290,7 +291,7 @@ define(
                     langInLink = '&lang=' + lang;
                 }
 
-                return '/api/admin/' + nameItem + '?meta-id=' + docId + indexInLink +
+                return imcms.contextPath + '/api/admin/' + nameItem + '?meta-id=' + docId + indexInLink +
                     loopIndexInLink + loopEntryIndexInLink + langInLink;
             }
 

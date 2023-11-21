@@ -338,7 +338,7 @@ define("imcms-loop-editor-builder",
 	    function addHeadData(opts) {
 		    $title = $('<a>');
 
-		    let linkData = "/api/admin/loop?meta-id="
+		    let linkData = imcms.contextPath + "/api/admin/loop?meta-id="
 			    + opts.docId
 			    + "&index=" + opts.index;
 

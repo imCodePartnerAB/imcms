@@ -242,7 +242,7 @@ define("imcms-page-info-builder",
                 $saveAndPublishBtn.css("display", "block");
             }
 
-            const linkData = '/api/admin/page-info?meta-id=' + documentDTO.id;
+            const linkData = imcms.contextPath + '/api/admin/page-info?meta-id=' + documentDTO.id;
 
             const newDocText = documentDTO.type === docTypes.TEXT
                 ? texts.newDocument.text

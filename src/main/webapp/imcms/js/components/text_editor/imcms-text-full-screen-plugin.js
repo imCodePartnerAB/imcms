@@ -2,6 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 09.02.18
  */
+const imcms = require("imcms");
 define(
     "imcms-text-full-screen-plugin",
     ["jquery", "tinymce", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder',
@@ -41,7 +42,7 @@ define(
                         }
 
                         if ($editorBody.attr('data-loop-entry-ref.loop-index')) {
-                            const linkData = '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                            const linkData = imcms.contextPath + '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
                                 + '&index=' + $editorBody.attr('data-index')
                                 + '&loop-index=' + $editorBody.attr('data-loop-entry-ref.loop-index')
                                 + '&loop-entry-index=' + $editorBody.attr('data-loop-entry-ref.loop-entry-index');
@@ -50,7 +51,7 @@ define(
                             viewUrl.attr('href', linkData)
 
                         } else {
-                            const linkData = '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                            const linkData = imcms.contextPath + '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
                                 + '&index=' + $editorBody.attr('data-index');
                             viewUrl.text(texts.textEditor + ': ' + linkData);
 
@@ -91,7 +92,7 @@ define(
                         : $textEditor.toggleClass('imcms-mce-fullscreen-inline');
 
                     if ($textEditor.attr('data-loop-entry-ref.loop-index')) {
-                        const linkData = '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                        const linkData = imcms.contextPath + '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
                             + '&index=' + $textEditor.attr('data-index')
                             + '&loop-index=' + $textEditor.attr('data-loop-entry-ref.loop-index')
                             + '&loop-entry-index=' + $textEditor.attr('data-loop-entry-ref.loop-entry-index');
@@ -99,7 +100,7 @@ define(
 
                         viewUrl.attr('href', linkData)
                     } else {
-                        const linkData = '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                        const linkData = imcms.contextPath + '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
                             + '&index=' + $textEditor.attr('data-index');
                         viewUrl.text(texts.textEditor + ': ' + linkData);
 

@@ -5,6 +5,7 @@ const texts = require('imcms-i18n-texts').editors.image;
 const bodyHeadBuilder = require('imcms-image-editor-body-head-builder');
 const BEM = require('imcms-bem-builder');
 const components = require('imcms-components-builder');
+const imcms = require("imcms");
 
 
 const $imageLinkInfo = $('<a>', {
@@ -59,7 +60,7 @@ module.exports = {
             ${texts.imageName}${$tag.attr('data-index')} - ${texts.teaser}`);
         }
 
-        let linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
+        let linkData = imcms.contextPath + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
             + '&index=' + $tag.attr('data-index');
 
         if ($tag.attr('data-loop-index')) {

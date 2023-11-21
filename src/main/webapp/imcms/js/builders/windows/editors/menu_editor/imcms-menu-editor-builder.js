@@ -3,16 +3,18 @@
  * And Pavlenko Victor from Ubrainians for imCode
  * 10.08.17.
  */
+const imcms = require("imcms");
 define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", 'imcms-document-status'
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", 'imcms-document-status',
+        'imcms-menu-editor-utils'
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder, docStatus) {
+              docProfileSelectBuilder, docStatus, menuEditorUtils) {
 
         const documentBuilderTexts = texts.editors.document;
         texts = texts.editors.menu;
@@ -366,7 +368,7 @@ define("imcms-menu-editor-builder",
             ;
 
             const typeSort = document.getElementById('type-sort').value;
-            removedPreviousItemFrame();
+            removedPreviousItemFrame();ds
 
             if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
                 isPasted = false;
@@ -379,7 +381,7 @@ define("imcms-menu-editor-builder",
 
             if (frameTop < topPointMenu) { // top point in first item frame menu
                 menuDoc.before($origin);
-                changeDataLevelTheTopDoc($origin, 0, null)
+                menuEditorUtils.changeDataLevelTheTopDoc($origin, 0, null)
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
 	                slideUpMenuDocIfItClose(menuDoc);
@@ -452,26 +454,6 @@ define("imcms-menu-editor-builder",
 				!element.classList.contains("children-triangle");
 		}
 
-        function changeDataLevelTheTopDoc($origin, functionUsages, diff) { //todo re-build improve this shit!
-            let menuDocLvl = parseInt($origin.attr("data-menu-items-lvl"));
-            let difference;
-            if (functionUsages === 0) {
-                difference = menuDocLvl - 1;
-                menuDocLvl = 1;
-            } else {
-                menuDocLvl = menuDocLvl - diff;
-                difference = diff;
-            }
-            functionUsages++;
-
-            $origin.attr("data-menu-items-lvl", menuDocLvl);
-            $origin.children().each(function () {
-                if ($(this).attr("data-menu-items-lvl")) {
-                    changeDataLevelTheTopDoc($(this), functionUsages, difference);
-                }
-            });
-        }
-
         function detectPasteArea($frame) {
             const itemTree = get$menuItemsList(),
                 menuDocs = itemTree.find(".imcms-menu-item"),
@@ -514,7 +496,7 @@ define("imcms-menu-editor-builder",
 
             if (isMouseDown) {
                 $frame.css({
-                    'top': isStandaloneEditor() ? mouseCoords.newPageY - parseInt($menuEditor.css("top"), 10) : mouseCoords.newPageY,
+                    'top': menuEditorUtils.isStandaloneEditor() ? mouseCoords.newPageY - parseInt($menuEditor.css("top"), 10) : mouseCoords.newPageY,
                     'left':  mouseCoords.newPageX
                 });
 
@@ -615,7 +597,7 @@ define("imcms-menu-editor-builder",
                 "position": "absolute",
                 "z-index": 11001,
                 "width": "40%",
-                "top": isStandaloneEditor() ? event.clientY - parseInt($menuEditorArea.css("top"), 10) : event.clientY,
+                "top": menuEditorUtils.isStandaloneEditor() ? event.clientY - parseInt($menuEditorArea.css("top"), 10) : event.clientY,
                 "left": event.clientX
             });
 
@@ -1019,6 +1001,7 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMenuItem(menuElement, {sortType}) {
+            console.log(menuElement)
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortOrder,
@@ -1032,7 +1015,7 @@ define("imcms-menu-editor-builder",
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
-                href: '/' + menuElement.documentId,
+                href: imcms.contextPath + '/' + menuElement.documentId,
                 target: '_blank',
 	            class: 'imcms-grid-col-1'
             });
@@ -1048,7 +1031,7 @@ define("imcms-menu-editor-builder",
                 ? menuElement.title
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
-                href: "/" + menuElement.documentId,
+                href: imcms.contextPath + "/" + menuElement.documentId,
 	            class:'imcms-flex--flex-1'
             });
             $titleText.modifiers = ['title'];
@@ -1729,7 +1712,7 @@ define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            let linkData = "/api/admin/menu?meta-id="
+            let linkData = imcms.contextPath + "/api/admin/menu?meta-id="
                 + opts.docId
                 + "&index=" + opts.menuIndex;
 
@@ -1742,10 +1725,6 @@ define("imcms-menu-editor-builder",
             });
 
             $title.attr('href', linkData)
-        }
-
-        function isStandaloneEditor(){
-            return $(".standalone-editor-body").length !== 0;
         }
 
         let $menuEditorContainer;
@@ -1782,6 +1761,10 @@ define("imcms-menu-editor-builder",
         return {
             setTag: function ($editedTag) {
                 $tag = $editedTag;
+                return this;
+            },
+            standalone:function () {
+                menuEditorUtils.setStandaloneEditor();
                 return this;
             },
             build: function (opts) {

@@ -1,3 +1,4 @@
+const imcms = require("imcms");
 define(
     'imcms-doc-versions-tab-builder',
     [
@@ -81,7 +82,7 @@ define(
 
             let $review = components.buttons.neutralButton({
                 text: texts.reviewButton,
-                click: () => window.open(reviewLink + docVersion.no, '_blank')
+                click: () => window.open(imcms.contextPath + reviewLink + docVersion.no, '_blank')
             });
 
             let $reset = components.buttons.neutralButton({
