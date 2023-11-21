@@ -3,11 +3,11 @@ define(
 	["imcms-window-builder", "imcms-super-admin-tab", "imcms-bem-builder", "jquery", 'imcms-components-builder',
 		'imcms-import-documents-rest-api', 'imcms-modal-window-builder', 'imcms-basic-import-documents-info-rest-api',
 		'imcms-import-entity-reference-rest-api', 'imcms-roles-rest-api', 'imcms-templates-rest-api',
-		'imcms-categories-rest-api', 'imcms-category-types-rest-api', 'imcms-i18n-texts', 'imcms-overlays-builder'],
+		'imcms-categories-rest-api', 'imcms-category-types-rest-api', 'imcms-i18n-texts', 'imcms-overlays-builder', 'imcms'],
 	function (WindowBuilder, SuperAdminTab, BEM, $, components,
 			  importDocumentsRestApi, modal, basicImportDocumentsInfoRestApi,
 			  importEntityReferenceRestApi, rolesRestApi, templatesRestApi,
-			  categoriesRestApi, categoryTypesRestApi, texts,overlays) {
+			  categoriesRestApi, categoryTypesRestApi, texts,overlays, imcms) {
 		texts = texts.superAdmin.documentsImport;
 
 		let tab = {};
@@ -549,7 +549,7 @@ define(
 			const $uploadDocumentsCard = new BEM({
 				block: "upload-documents-card",
 				elements: {
-					"icon": $("<img src='/imcms/images/import_documents/upload_icon.svg'>"),
+					"icon": $("<div class='upload-documents-card__icon'>"),
 					"title": components.texts.titleText("<div>", texts.selectionWindowContainer.uploadDocumentsCard)
 				}
 			}).buildBlockStructure("<div>", {});
@@ -557,7 +557,7 @@ define(
 			const $editDocumentsCard = new BEM({
 				block: "edit-documents-card",
 				elements: {
-					"icon": $("<img src='/imcms/images/import_documents/edit_icon.svg'>"),
+					"icon": $("<div class='edit-documents-card__icon'>"),
 					"title": components.texts.titleText("<div>", texts.selectionWindowContainer.editDocumentsCard)
 				}
 			}).buildBlockStructure("<div>", {});
@@ -565,7 +565,7 @@ define(
 			const $aliasControlCard = new BEM({
 				block: "alias-control-card",
 				elements: {
-					"icon": $("<img src='/imcms/images/import_documents/document_edit_icon.svg'>"),
+					"icon": $("<div class='alias-control-card__icon'>"),
 					"title": components.texts.titleText("<div>", texts.selectionWindowContainer.aliasControlCard)
 				}
 			}).buildBlockStructure("<div>", {});

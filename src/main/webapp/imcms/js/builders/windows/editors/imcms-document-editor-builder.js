@@ -9,11 +9,11 @@ define('imcms-document-editor-builder',
         'imcms-categories-rest-api', 'imcms-window-builder', 'jquery', 'imcms', 'imcms-modal-window-builder',
         'imcms-document-type-select-window-builder', 'imcms-i18n-texts', 'imcms-events',
         'imcms-document-profile-select-window-builder', 'imcms-document-copy-rest-api',
-        'imcms-document-status', 'imcms-modal-window-builder'
+        'imcms-document-status', 'imcms-modal-window-builder','imcms-menu-editor-utils'
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docBasketRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, docStatus, modal) {
+              docProfileSelectBuilder, docCopyRestApi, docStatus, modal, menuEditorUtils) {
 
         const textNone = texts.none;
         texts = texts.editors.document;
@@ -652,7 +652,7 @@ define('imcms-document-editor-builder',
 
             $frame.addClass('imcms-document-items--frame');
             $frame.css({
-                "top": isStandaloneEditor() ? event.clientY - parseInt($menuEditor.css("top"), 10) : event.clientY,
+                "top": menuEditorUtils.isStandaloneEditor() ? event.clientY - parseInt($menuEditor.css("top"), 10) : event.clientY,
                 "left": event.clientX
             });
 
@@ -829,7 +829,7 @@ define('imcms-document-editor-builder',
 
             if (isMouseDown) {
                 $frame.css({
-                    'top': isStandaloneEditor() ? mouseCoords.newPageY - parseInt($menuEditor.css("top"), 10) : mouseCoords.newPageY,
+                    'top': menuEditorUtils.isStandaloneEditor() ? mouseCoords.newPageY - parseInt($menuEditor.css("top"), 10) : mouseCoords.newPageY,
                     'left':  mouseCoords.newPageX
                 });
 
@@ -1005,7 +1005,7 @@ define('imcms-document-editor-builder',
 
             if (frameTop < topPointMenu) { // top point in first item frame menu
                 menuDoc.before($menuDocItemCopy);
-                changeDataLevelTheTopDoc($menuDocItemCopy, 0, null)
+                menuEditorUtils.changeDataLevelTheTopDoc($menuDocItemCopy, 0, null)
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
                     slideUpMenuDocIfItClose(menuDoc);
@@ -1017,26 +1017,6 @@ define('imcms-document-editor-builder',
                     changeDataDocumentLevel(menuDoc, $menuDocItemCopy, placeStatus, typeSort);
                 }
             }
-        }
-
-        function changeDataLevelTheTopDoc($origin, functionUsages, diff) { //todo re-build improve this shit!
-            let menuDocLvl = parseInt($origin.attr("data-menu-items-lvl"));
-            let difference;
-            if (functionUsages === 0) {
-                difference = menuDocLvl - 1;
-                menuDocLvl = 1;
-            } else {
-                menuDocLvl = menuDocLvl - diff;
-                difference = diff;
-            }
-            functionUsages++;
-
-            $origin.attr("data-menu-items-lvl", menuDocLvl);
-            $origin.children().each(function () {
-                if ($(this).attr("data-menu-items-lvl")) {
-                    changeDataLevelTheTopDoc($(this), functionUsages, difference);
-                }
-            });
         }
 
         function addShowHideBtn(menuDoc) {
@@ -1214,7 +1194,7 @@ define('imcms-document-editor-builder',
         function buildDocItem(document, opts, savedFlag) {
 
             const $docItemId = components.texts.titleText('<a>', document.id, {
-                href: '/' + document.id,
+                href: imcms.contextPath + '/' + document.id,
                 class: 'imcms-grid-col-18',
             });
             $docItemId.modifiers = ['id'];
@@ -1237,7 +1217,7 @@ define('imcms-document-editor-builder',
                 alias = document.alias;
             }
             const $docItemTitle = components.texts.titleText('<a>', title, {
-                href: '/' + document.id,
+                href: imcms.contextPath + '/' + document.id,
                 class: 'imcms-flex--flex-3',
             });
             $docItemTitle.modifiers = ['title'];
@@ -1442,7 +1422,7 @@ define('imcms-document-editor-builder',
         function buildHead() {
             let $head = documentWindowBuilder.buildHead(texts.title);
 
-            const linkData = '/api/admin/documents';
+            const linkData = imcms.contextPath + '/api/admin/documents';
             const titleUrl = $('<a>', {
                 text: ' : ' + linkData,
                 href: linkData
@@ -1598,10 +1578,6 @@ define('imcms-document-editor-builder',
                     })
                 });
             });
-        }
-
-        function isStandaloneEditor(){
-            return $(".standalone-editor-body").length !== 0;
         }
 
         function putToWasteBasket(docIds){
