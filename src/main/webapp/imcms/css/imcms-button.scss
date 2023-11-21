@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-button {
     border: 1px solid transparent;
     -webkit-border-radius: 23px;
@@ -41,15 +43,15 @@
 }
 
 .imcms-button--locked {
-    background: url("/imcms/images/admin_panel/icon_locked.png") CENTER CENTER NO-REPEAT;
+    background: url("#{$context-path}/imcms/images/admin_panel/icon_locked.png") CENTER CENTER NO-REPEAT;
 }
 
 .imcms-button--unlocked {
-    background: url("/imcms/images/admin_panel/icon_unlocked.png") CENTER CENTER NO-REPEAT;
+    background: url("#{$context-path}/imcms/images/admin_panel/icon_unlocked.png") CENTER CENTER NO-REPEAT;
 }
 
 .imcms-button--up {
-    background: url("/imcms/images/admin_panel/icon_up.png") CENTER CENTER NO-REPEAT;
+    background: url("#{$context-path}/imcms/images/admin_panel/icon_up.png") CENTER CENTER NO-REPEAT;
 }
 
 .imcms-button--positive {
@@ -113,7 +115,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 /*****************************************/
 .imcms-button--drop-down {
-    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/icon_arrow_down.png") no-repeat center;
     display: block;
     padding: 0;
     position: absolute;
@@ -122,7 +124,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--increment {
-    background: url("/imcms/images/icon_arrow_up.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/icon_arrow_up.png") no-repeat center;
     padding: 0;
     position: absolute;
     width: 6px;
@@ -130,7 +132,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--decrement {
-    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/icon_arrow_down.png") no-repeat center;
     padding: 0;
     position: absolute;
     width: 6px;
@@ -139,7 +141,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-normal {
     display: block;
-    background: url("/imcms/images/window/icon_window_size_normal.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/window/icon_window_size_normal.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -148,7 +150,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-auto {
     display: block;
-    background: url("/imcms/images/window/icon_window_size_auto.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/window/icon_window_size_auto.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -157,7 +159,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-maximize {
     display: block;
-    background: url("/imcms/images/window/icon_window_size_maximize.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/window/icon_window_size_maximize.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -166,7 +168,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--close {
     display: block;
-    background: url("/imcms/images/window/icon_window_close.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/window/icon_window_close.png") no-repeat center;
     width: 15px;
     height: 15px;
     padding: 0;
@@ -184,7 +186,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--prev {
-    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/icon_arrow_down.png") no-repeat center;
     display: block;
     padding: 0;
     width: 6px;
@@ -197,7 +199,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--next {
-    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/icon_arrow_down.png") no-repeat center;
     display: block;
     padding: 0;
     width: 6px;
@@ -210,7 +212,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--proportions {
-    background: transparent url("/imcms/images/image_editor/icon_lock_proportions.png") no-repeat center;
+    background: transparent url("#{$context-path}/imcms/images/image_editor/icon_lock_proportions.png") no-repeat center;
     border: 1px solid transparent;
     border-radius: 5px;
     display: block;
@@ -225,7 +227,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--open-in-new-window {
-    background: #fff url("/imcms/images/image_editor/icon_open_in_new.svg") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_open_in_new.svg") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -235,11 +237,11 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--open-in-new-window:hover {
-    background: url("/imcms/images/image_editor/icon_open_in_new_hover.svg") no-repeat center;
+    background: url("#{$context-path}/imcms/images/image_editor/icon_open_in_new_hover.svg") no-repeat center;
 }
 
 .imcms-button--edit-metadata {
-    background: #fff url("/imcms/images/image_editor/icon_metadata.svg") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_metadata.svg") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -249,11 +251,11 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--edit-metadata:hover {
-    background: url("/imcms/images/image_editor/icon_metadata_hover.svg") no-repeat center;
+    background: url("#{$context-path}/imcms/images/image_editor/icon_metadata_hover.svg") no-repeat center;
 }
 
 .imcms-button--zoom-plus {
-    background: #fff url("/imcms/images/image_editor/icon_zoom_plus.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_zoom_plus.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -263,7 +265,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--fit {
-    background: #fff url("/imcms/images/image_editor/icon_fit.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_fit.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -273,7 +275,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--zoom-minus {
-    background: #fff url("/imcms/images/image_editor/icon_zoom_minus.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_zoom_minus.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -283,7 +285,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--zoom-reset {
-    background: #fff url("/imcms/images/image_editor/icon_zoom_reset.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_zoom_reset.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -293,7 +295,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--rotation {
-    background: #fff url("/imcms/images/image_editor/icon_rotate.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_rotate.png") no-repeat center;
     background-size: contain;
     border: 1px solid #d3d8de;
     border-radius: 5px;
@@ -304,7 +306,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--rotate-left {
-    background: #fff url("/imcms/images/image_editor/icon_rotation_left.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_rotation_left.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -314,7 +316,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--rotate-right {
-    background: #fff url("/imcms/images/image_editor/icon_rotation_right.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_rotation_right.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -334,7 +336,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--revert {
-    background: #fff url("/imcms/images/image_editor/icon_revert.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_revert.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -344,7 +346,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--crop {
-    background: #fff url("/imcms/images/image_editor/icon_crop.png") no-repeat center;
+    background: #fff url("#{$context-path}/imcms/images/image_editor/icon_crop.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -366,19 +368,19 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--align-center {
-    background-image: url("/imcms/images/image_editor/icon_text-decoration_center.png");
+    background-image: url("#{$context-path}/imcms/images/image_editor/icon_text-decoration_center.png");
 }
 
 .imcms-button--align-left {
-    background-image: url("/imcms/images/image_editor/icon_text-decoration_left.png");
+    background-image: url("#{$context-path}/imcms/images/image_editor/icon_text-decoration_left.png");
 }
 
 .imcms-button--align-right {
-    background-image: url("/imcms/images/image_editor/icon_text-decoration_right.png");
+    background-image: url("#{$context-path}/imcms/images/image_editor/icon_text-decoration_right.png");
 }
 
 .imcms-button--search {
-    background: url("/imcms/images/icon_search.png") no-repeat center center;
+    background: url("#{$context-path}/imcms/images/icon_search.png") no-repeat center center;
     display: block;
     margin: 0;
     padding: 0;
@@ -394,9 +396,9 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--switch-on {
-    background: url("/imcms/images/controls/button_on.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/controls/button_on.png") no-repeat center;
 }
 
 .imcms-button--switch-off {
-    background: url("/imcms/images/controls/button_off.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/controls/button_off.png") no-repeat center;
 }

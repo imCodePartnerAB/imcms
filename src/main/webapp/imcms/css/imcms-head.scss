@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-head {
 	background-color: #389ecf;
 	-webkit-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
@@ -12,7 +14,7 @@
 }
 
 .imcms-head__logo {
-	background: url(/imcms/images/icon_logo_main_white.png) no-repeat 0 0;
+	background: url("#{$context-path}/imcms/images/icon_logo_main_white.png") no-repeat 0 0;
 	background-size: contain;
 	text-indent: -99999px;
 	display: block;

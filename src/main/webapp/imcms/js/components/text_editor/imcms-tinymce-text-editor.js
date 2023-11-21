@@ -74,7 +74,7 @@ define(
             inline: true,
             inline_boundaries: false,
             toolbar_items_size: 'small',
-            content_css: imcms.contextPath + '/imcms/css/imcms-text_editor.css',
+            content_css: imcms.contextPath + '/dist/imcms-text_editor.css',
             menubar: false,
             statusbar: false,
             force_br_newlines: false,

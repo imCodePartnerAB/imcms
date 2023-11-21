@@ -1,0 +1,199 @@
+@import "variables";
+
+.imcms-control {
+    background: no-repeat center;
+    cursor: pointer;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.imcms-control--move {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_reverse_move.png");
+}
+
+.imcms-control--vertical_move {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_up_down_move_control.svg");
+    opacity: 0.4;
+}
+
+.imcms-control--vertical_move:hover {
+    opacity: 1;
+    /* Black to blue (#009FDC) */
+    filter: invert(55%) sepia(97%) saturate(4160%) hue-rotate(169deg) brightness(99%) contrast(101%);
+}
+
+.imcms-control--download {
+    background-image: url("#{$context-path}#{$context-path}/imcms/images/controls/icon_download.svg");
+}
+
+.imcms-control--create {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_create.png");
+}
+
+.imcms-control--edit {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_reverse_edit.png");
+}
+
+.imcms-control--plus {
+    background-image: url("#{$context-path}/imcms/images/controls/icon-controls-add.svg");
+}
+
+.imcms-control--archive {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_control_save_archive.png");
+}
+
+.imcms-control--check {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_check.svg");
+}
+
+.user-properties .imcms-control--check{
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_reverse_check.png");
+}
+
+.imcms-control--check:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_check_hover.svg");
+}
+
+.imcms-control--edit.imcms-control--menu {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_menu_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--menu:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_menu_edit_hover.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--loop {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_loop_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--loop:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_loop_edit_hover.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--image {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_image_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--image:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_image_edit_hover.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--info{
+	background-image: url("#{$context-path}/imcms/images/icon_info.svg");
+	background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--info:hover{
+	background-image: url("#{$context-path}/imcms/images/icon_info_hover.svg");
+	background-size: contain;
+}
+
+.imcms-control--copy {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_copy.png");
+    background-size: cover;
+}
+
+.imcms-control--remove {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_reverse_remove.png");
+}
+
+.imcms-control--warning {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_controll_warning.svg");
+}
+
+.imcms-control--error {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_controll_error.svg");
+}
+
+.imcms-control--left {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_arrow_action_left.svg");
+}
+
+.imcms-control--right {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_arrow_action_right.svg");
+}
+
+.imcms-folder__controls .imcms-control--move {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_move.png");
+}
+
+.imcms-folder__controls .imcms-control--create {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_create.png");
+}
+
+.imcms-folder__controls .imcms-control--edit {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_edit.png");
+}
+
+.imcms-panel-named__control-close,
+.imcms-folder__controls .imcms-control--remove {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_remove.png");
+}
+
+.imcms-control--move:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_move_hover.png");
+}
+
+.imcms-control--create:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_create_hover.png");
+}
+
+.imcms-control--edit:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_edit_hover.png");
+}
+
+.imcms-control--copy:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_copy_hover.png");
+    background-size: cover;
+}
+
+.imcms-control--remove:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_remove_hover.png");
+}
+
+.imcms-control--archive:hover {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_control_save_archive_hover.png");
+}
+
+.imcms-control--add {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_add_file.svg");
+}
+
+.imcms-control--upload {
+    background-image: url("#{$context-path}/imcms/images/controls/icon_upload_file.svg");
+}
+
+.imcms-control--sort-asc {
+    background-image: url("#{$context-path}/imcms/images/controls/sorting/icon_sort_asc.svg");
+}
+
+.imcms-control--sort-desc {
+    background-image: url("#{$context-path}/imcms/images/controls/sorting/icon_sort_desc.svg");
+}
+
+.imcms-control--images {
+    background-size: contain;
+    background-image: url("#{$context-path}/imcms/images/controls/icon_images_white.png");
+}
+
+.imcms-control--star {
+    background-size: contain;
+    background-image: url("#{$context-path}/imcms/images/controls/icon_newer_version.png");
+}
+
+.imcms-control--trash {
+    background-size: contain;
+    background-image: url("#{$context-path}/imcms/images/trash.svg");
+}
+
+.imcms-control--permalink {
+    background-size: contain;
+    background-image: url("#{$context-path}/imcms/images/controls/icon_permalink.png");
+}

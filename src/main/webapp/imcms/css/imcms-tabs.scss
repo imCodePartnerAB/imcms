@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-tabs__tab,
 .imcms-tabs__advanced-tab,
 .imcms-tabs__advanced-button{
@@ -12,7 +14,7 @@
 }
 
 .imcms-tabs__advanced-button{
-    background-image: url(/imcms/images/icon_several_arrows_down.png);
+    background-image: url("#{$context-path}/imcms/images/icon_several_arrows_down.png");
     background-repeat: no-repeat;
     background-position-x: 90%;
     background-position-y: 50%;
@@ -20,7 +22,7 @@
 }
 
 .imcms-tabs__advanced-button--enabled{
-    background-image: url(/imcms/images/icon_several_arrows_up.png);
+    background-image: url("#{$context-path}/imcms/images/icon_several_arrows_up.png");
     background-color: #f8f8f8;
     -webkit-box-shadow: inset 0 0 10px #c1c1c14f;
     -moz-box-shadow: inset 0 0 10px #c1c1c14f;

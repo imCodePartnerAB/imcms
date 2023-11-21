@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-editor-area,
 .imcms-editor-area__text-label {
     border: 0;
@@ -59,7 +61,7 @@
     width: 36px;
     height: 14px;
     margin-right: 5px;
-    background: transparent url(/imcms/images/icon_logo_main_white.png) 0 0 no-repeat;
+    background: transparent url("#{$context-path}/imcms/images/icon_logo_main_white.png") 0 0 no-repeat;
     background-size: cover;
 }
 

@@ -1,3 +1,5 @@
+@import "../variables";
+
 .admin-panel-settings-list {
     position: absolute;
     top: 90px;
@@ -56,7 +58,7 @@
     display: block;
     float: right;
     content: "";
-    background: url("/imcms/images/admin_panel/icon_check.png") no-repeat center center;
+    background: url("#{$context-path}/imcms/images/admin_panel/icon_check.png") no-repeat center center;
     position: relative;
     top: -2px;
     background-size: contain;

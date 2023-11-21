@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-link-button{
     height: 100%;
     width: fit-content;
@@ -12,7 +14,7 @@
 }
 
 .imcms-link-icon{
-    background: url(/imcms/images/image_editor/icon_open_in_new_hover.svg) no-repeat center;
+    background: url("#{$context-path}/imcms/images/image_editor/icon_open_in_new_hover.svg") no-repeat center;
     height: 16px;
     width: 16px;
     background-size: 16px;
@@ -22,7 +24,7 @@
 }
 
 .imcms-button--neutral:hover .imcms-button--neutral__icon {
-    background: url(/imcms/images/image_editor/icon_open_in_new.svg) no-repeat center;
+    background: url("#{$context-path}/imcms/images/image_editor/icon_open_in_new.svg") no-repeat center;
     height: 16px;
     width: 16px;
     background-size: 16px;

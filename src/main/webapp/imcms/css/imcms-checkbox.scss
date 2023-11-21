@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-checkbox__checkbox {
     display: none;
 }
@@ -25,7 +27,7 @@
 }
 
 .imcms-checkbox__checkbox:checked + .imcms-checkbox__label:before {
-    background: #42b070 url("/imcms/images/icon_checkbox_chek.png") no-repeat 1px 2px;
+    background: #42b070 url("#{$context-path}/imcms/images/icon_checkbox_chek.png") no-repeat 1px 2px;
     border-color: #ebedef;
 }
 

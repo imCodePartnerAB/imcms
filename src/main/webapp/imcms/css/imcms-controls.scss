@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-main-folders-controls {
     cursor: pointer;
 	border: 2px transparent solid;
@@ -74,7 +76,7 @@
 }
 
 .imcms-panel-named__close:hover {
-    background-image: url("/imcms/images/controls/icon_folder_controll_remove_hover.png");
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_remove_hover.png");
 }
 
 .imcms-main-folders-controls__name {

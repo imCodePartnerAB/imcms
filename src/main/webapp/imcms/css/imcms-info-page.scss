@@ -1,3 +1,5 @@
+@import "variables";
+
 .imcms-info-page {
     background-color: #f3f5f7;
     -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
@@ -23,7 +25,7 @@
 }
 
 .imcms-info__logo, .imcms-head__logo {
-    background: url(/imcms/images/icon_logo_main_white.png) no-repeat 0 0;
+    background: url("#{$context-path}/imcms/images/icon_logo_main_white.png") no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
@@ -35,7 +37,7 @@
 }
 
 .imcms-info-head__close {
-    background: url("/imcms/images/controls/icon_folder_controll_remove.png") no-repeat center;
+    background: url("#{$context-path}/imcms/images/controls/icon_folder_controll_remove.png") no-repeat center;
     position: absolute;
     height: 100%;
     top: 0;

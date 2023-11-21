@@ -1,4 +1,5 @@
-@import url("../imcms-info-page.css");
+@import "../imcms-info-page";
+@import "../variables";
 
 * {
     font-family: 'Source Sans Pro', sans-serif;
@@ -772,13 +773,13 @@
 .imcms-control.imcms-control--check.link-info-row__link-host-found,
 .imcms-control.imcms-control--check.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--check.link-info-row__link-page-found {
-    background-image: url("/imcms/images/controls/icon_folder_controll_check_hover.svg");
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_check_hover.svg");
 }
 
 .imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--remove.link-info-row__link-page-found,
 .imcms-control.imcms-control--remove.link-info-row__link-host-found {
-    background-image: url("/imcms/images/controls/icon_folder_controll_remove_hover.png");
+    background-image: url("#{$context-path}/imcms/images/controls/icon_folder_controll_remove_hover.png");
 }
 
 .category-type-editor,
@@ -1721,8 +1722,24 @@
 .upload-documents-card .upload-documents-card__icon,
 .edit-documents-card .edit-documents-card__icon,
 .selection-window-container .alias-control-card__icon {
-    width: 50px;
+    width: 100%;
+    height: 50px;
     margin-top: 5px;
+}
+
+.upload-documents-card .upload-documents-card__icon {
+    background: url("#{$context-path}/imcms/images/import_documents/upload_icon.svg") no-repeat center;
+    background-size: 50px 50px;
+}
+
+.edit-documents-card .edit-documents-card__icon {
+    background: url("#{$context-path}/imcms/images/import_documents/edit_icon.svg") no-repeat center;
+    background-size: 50px 50px;
+}
+
+.alias-control-card .alias-control-card__icon {
+    background: url("#{$context-path}/imcms/images/import_documents/document_edit_icon.svg") no-repeat center;
+    background-size: 50px 50px;
 }
 
 .sections-container{

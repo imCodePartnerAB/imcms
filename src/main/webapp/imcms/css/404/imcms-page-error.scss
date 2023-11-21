@@ -1,4 +1,6 @@
-.imcms-modal-admin {
+@import "../variables";
+
+.imcms-page-error {
     background-color: #f3f5f7;
     -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
     -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
@@ -12,9 +14,10 @@
     top: 100px;
     left: 50%;
     z-index: 10005;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
-.imcms-modal-admin-head {
+.imcms-page-error-head {
     background-color: #389ecf;
     text-align: center;
     display: block;
@@ -24,7 +27,7 @@
 }
 
 .imcms-login__logo {
-    background: url(/imcms/images/icon_logo_main_white.png) no-repeat 0 0;
+    background: url("#{$context-path}/imcms/images/icon_logo_main_white.png") no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
@@ -35,29 +38,32 @@
     width: 69px;
 }
 
-.imcms-modal-admin-body {
-    display: block;
-    padding: 20px 20px 0;
-    width: 100%;
-}
-
-.imcms-modal-admin__error-msg {
-    font-weight: 700;
-    font-size: 15px;
-}
-
-.imcms-modal-admin form {
-    margin: 0;
-}
-
-.imcms-modal-admin-footer {
-    text-align: right;
+.imcms-page-error-body {
     display: block;
     padding: 20px;
     width: 100%;
 }
 
-.imcms-modal-admin-footer__button {
+.imcms-page-error-body__form {
     display: inline-block;
-    margin: 0 10px;
+    margin-bottom: 0;
+}
+
+.imcms-page-error-body__button {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.imcms-page-error a {
+    color: #0b94d8;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    transition: color .3s;
+}
+.imcms-page-error a:hover {
+    color: #0b65a2;
+}
+
+.imcms-page-error .imcms-title {
+    text-align: center;
 }
