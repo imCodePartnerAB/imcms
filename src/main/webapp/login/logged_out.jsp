@@ -10,9 +10,9 @@
 <html>
 <head>
 	<title><fmt:message key="templates/login/logged_out.html/1" bundle="${resource_property}"/></title>
-	<link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-logout.css">
+	<link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-logout.css">
 </head>
 <body>
 <div class="imcms-info-page">

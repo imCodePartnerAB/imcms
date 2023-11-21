@@ -6,6 +6,8 @@
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 
 <imcms:ifAdmin>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/imcms-imports_files.css">
+
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>

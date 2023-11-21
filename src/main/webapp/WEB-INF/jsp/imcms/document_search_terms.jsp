@@ -10,7 +10,7 @@
 <html>
 <head>
     <title><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/></title>
-    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/dist/imcms_admin.css">
     <link rel="stylesheet" type="text/css" media="all"
           href="<%=request.getContextPath()%>/js/jscalendar/skins/aqua/theme.css.jsp"/>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jscalendar/calendar.js"></script>

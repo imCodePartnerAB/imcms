@@ -24,9 +24,9 @@ final String siteUrl = StringUtils.isNotBlank(host) ? host + request.getContextP
 <head>
 	<title><fmt:message key="service_unavailable_error_page/headline" bundle="${resource_property}"/></title>
 
-	<link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-	<link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
-	<link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/404/imcms-page-error.css">
+	<link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
+	<link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-imports_files.css">
+	<link rel="stylesheet" type="text/css" href="${contextPath}/dist/404/imcms-page-error.css">
 </head>
 <body bgcolor="#FFFFFF">
 <div class="imcms-page-error">

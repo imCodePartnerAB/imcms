@@ -23,6 +23,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direct Image Editor</title>
+    <link rel="stylesheet" href="${contextPath}/dist/imcms-imports_files.css">
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>

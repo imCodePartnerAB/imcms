@@ -12,12 +12,12 @@
 <head>
     <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1" bundle="${resource_property}"/></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/404/imcms-page-error.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/404/imcms-page-error.css">
 
     <link rel="stylesheet" type="text/css"
-          href="${pageContext.servletContext.contextPath}/imcms/css/imcms_admin.css">
+          href="${pageContext.servletContext.contextPath}/dist/imcms_admin.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body bgcolor="#FFFFFF">

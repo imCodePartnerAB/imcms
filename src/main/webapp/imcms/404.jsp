@@ -13,9 +13,9 @@
 <head>
     <title><fmt:message key="templates/sv/no_page.html/1" bundle="${resource_property}"/></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/404/imcms-page-error.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/404/imcms-page-error.css">
 
 </head>
 <body bgcolor="#FFFFFF">

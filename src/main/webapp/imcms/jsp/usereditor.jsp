@@ -22,6 +22,9 @@
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1" bundle="${resource_property}"/></title>
+    <link rel="stylesheet" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" href="${contextPath}/dist/imcms-edit-user-page.css">
     <script src="${contextPath}/dist/imcms_admin.js"></script>
     <script><jsp:include page="/imcms/js/imcms_config.js.jsp"/></script>
     <script src="${contextPath}/dist/userEditorOld.js"></script>

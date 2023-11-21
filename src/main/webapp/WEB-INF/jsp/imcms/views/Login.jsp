@@ -18,6 +18,9 @@ ${"-->"}
 <head>
     <meta charset="UTF-8">
     <title><fmt:message key="templates/login/index.html/1" bundle="${resource_property}"/></title>
+    <link rel="stylesheet" href="${cp}/dist/imcms_admin.css">
+    <link rel="stylesheet" href="${cp}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" href="${cp}/dist/imcms-login-page.css">
     <script>
         <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>

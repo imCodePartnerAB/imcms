@@ -24,10 +24,13 @@ ${"-->"}
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1" bundle="${resource_property}"/></title>
-        <script>
-            <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
-        </script>
-        <script src="${contextPath}/dist/userEditorNew.js"></script>
+    <link rel="stylesheet" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" href="${contextPath}/dist/imcms-edit-user-page.css">
+    <script>
+		<jsp:include page="/imcms/js/imcms_config.js.jsp"/>
+    </script>
+    <script src="${contextPath}/dist/userEditorNew.js"></script>
 </head>
 <body>
 <div class="imcms-info-page imcms-info-page__edit-user">

@@ -20,7 +20,7 @@
 <html>
 <head>
     <title><fmt:message key="webapp/imcms/lang/jsp/document_references.jsp/heading"/></title>
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
     <%--<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_api.js"></script>--%>
 </head>
 <body>

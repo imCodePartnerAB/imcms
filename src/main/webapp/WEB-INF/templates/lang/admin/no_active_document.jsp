@@ -7,7 +7,7 @@
     <title><? templates/sv/no_active_document.html/1 ?></title>
 
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
 
 
 </head>

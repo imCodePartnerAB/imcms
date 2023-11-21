@@ -10,7 +10,7 @@
 
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
     <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 </head>
 <body>

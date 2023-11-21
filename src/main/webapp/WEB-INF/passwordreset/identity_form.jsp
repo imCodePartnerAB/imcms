@@ -18,9 +18,9 @@
 <html>
 <head>
     <title><fmt:message key="passwordreset.title" bundle="${resource_property}"/></title>
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/modal_window/imcms-modal-admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/dist/modal_window/imcms-modal-admin.css">
     <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 </head>
 <body>
