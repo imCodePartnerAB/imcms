@@ -4,23 +4,28 @@
  */
 
 const pathResolver = require('./dependency_path_resolver');
+const scssBaseConfig=require("./scss.base.config");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: {
-        imcms_admin: './imcms/js/imcms_admin.js',
-        imcms_start: './imcms/js/imcms_start.js',
-        imcms_admin_manager_start: './imcms/js/starters/imcms_admin_manager_start.js',
-        imcms_content_manager_start: './imcms/js/starters/imcms_content_manager_start.js',
-        imcms_doc_info_edit_start: './imcms/js/starters/imcms_doc_info_edit_start.js',
-        imcms_doc_manager_start: './imcms/js/starters/imcms_doc_manager_start.js',
-        imcms_image_edit_start: './imcms/js/starters/imcms_image_edit_start.js',
-        imcms_loop_edit_start: './imcms/js/starters/imcms_loop_edit_start.js',
-        imcms_menu_edit_start: './imcms/js/starters/imcms_menu_edit_start.js',
-        imcms_text_edit_start: './imcms/js/starters/imcms_text_edit_start.js',
-        imcms_login_start: './imcms/js/starters/imcms_login_start.js',
-        userCreate: './imcms/js/new_admin/userCreate.js',
-        userEditorNew: './imcms/js/new_admin/userEditorNew.js',
-        userEditorOld: './imcms/js/old_admin/userEditorOld.js'
+        ...{
+            imcms_admin: './imcms/js/imcms_admin.js',
+            imcms_start: './imcms/js/imcms_start.js',
+            imcms_admin_manager_start: './imcms/js/starters/imcms_admin_manager_start.js',
+            imcms_content_manager_start: './imcms/js/starters/imcms_content_manager_start.js',
+            imcms_doc_info_edit_start: './imcms/js/starters/imcms_doc_info_edit_start.js',
+            imcms_doc_manager_start: './imcms/js/starters/imcms_doc_manager_start.js',
+            imcms_image_edit_start: './imcms/js/starters/imcms_image_edit_start.js',
+            imcms_loop_edit_start: './imcms/js/starters/imcms_loop_edit_start.js',
+            imcms_menu_edit_start: './imcms/js/starters/imcms_menu_edit_start.js',
+            imcms_text_edit_start: './imcms/js/starters/imcms_text_edit_start.js',
+            imcms_login_start: './imcms/js/starters/imcms_login_start.js',
+            userCreate: './imcms/js/new_admin/userCreate.js',
+            userEditorNew: './imcms/js/new_admin/userEditorNew.js',
+            userEditorOld: './imcms/js/old_admin/userEditorOld.js'
+        },
+        ...pathResolver.resolveCSSPaths("./imcms/css", scssBaseConfig.entry)
     },
     module: {
         rules: [
@@ -34,16 +39,8 @@ module.exports = {
                     }
                 }
             }, {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            url: false
-                        }
-                    }
-                ]
+                test: /\.(s?)css$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader',]
             }
         ]
     },
@@ -101,6 +98,7 @@ module.exports = {
                         'check-browser',
                         'css-utils',
                         'js-utils',
+                        'imcms-walk-directory-recursively'
                     ]
                 },
                 editor_initializer: {
@@ -219,8 +217,11 @@ module.exports = {
                                 'imcms-image-editor-left-side-builder',
                                 'imcms-image-editor-body-head-builder',
                             ],
-                            '': [
+                            menu_editor: [
                                 'imcms-menu-editor-builder',
+                                'imcms-menu-editor-utils'
+                            ],
+                            '': [
                                 'imcms-document-editor-builder',
                                 'imcms-loop-editor-builder',
                             ]
