@@ -31,5 +31,30 @@ module.exports = {
             return destination
 
         })(structure, {}, jsDirectory)
+    },
+    resolveCSSPaths(baseDirectory, structure, extension = ".scss", separator = '/') {
+        return (function resolveObj(resource, destination, path) {
+            Object.keys(resource).forEach(dir => {
+                const value = resource[dir];
+
+                switch (value.constructor) {
+                    case Object:
+                        resolveObj(value, destination, path + separator + dir);
+                        return;
+
+                    case Array:
+                        value.forEach(module => destination[separator + (dir ? (dir + separator) : '') + module] =
+                            path + separator + (dir ? (dir + separator) : '') + module + extension
+                        );
+                        return;
+
+                    case String :
+                        destination[[dir, value].join(separator)] = [path, dir, value].join(separator) + extension;
+                }
+            });
+
+            return destination
+
+        })(structure, {}, baseDirectory)
     }
 };
