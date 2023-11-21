@@ -1,5 +1,3 @@
-import '../css/imcms-imports_files.css';
-
 /**
  * Init script for admin functionality
  *

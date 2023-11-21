@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for menu edit view.
  *
@@ -18,12 +16,12 @@ const texts = require("imcms-i18n-texts");
 $(function () {
     events.on("menu editor closed", () => {
         const returnUrl = $("#return-url").val();
-        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
+        window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
     });
 
     const $editedTag = $(menuEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
-    menuEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
+    menuEditorInitData.editorBuilder.standalone().setTag($editedTag).build(editorData);
 
     const returnUrl = $("#return-url").val();
     const toolbarContent = [
@@ -42,7 +40,7 @@ $(function () {
 	    },
         {
             type: 'close',
-            link: (returnUrl) ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId,
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
             showIfSeparate: true
         }
     ];

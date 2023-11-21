@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for loop edit view.
  *
@@ -18,7 +16,7 @@ const texts = require("imcms-i18n-texts");
 $(function () {
     events.on("loop editor closed", () => {
         const returnUrl = $("#return-url").val();
-        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
+        window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
     });
 
     const $editedTag = $(loopEditorInitData.EDIT_AREA_SELECTOR);
@@ -41,7 +39,7 @@ $(function () {
 	    },
         {
             type: 'close',
-            link: (returnUrl) ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId,
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
             showIfSeparate: true
         }
     ];

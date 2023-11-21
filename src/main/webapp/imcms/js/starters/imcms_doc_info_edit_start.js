@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for page info edit view.
  *
@@ -16,7 +14,7 @@ $(function () {
 
     function onPageInfoClosed() {
         const returnUrl = $("#return-url").val();
-        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${docId}`);
+        window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${returnUrl}&metaId=${docId}`);
     }
 
     events.on("page info closed", onPageInfoClosed);

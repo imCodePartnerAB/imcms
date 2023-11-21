@@ -1,7 +1,3 @@
-import '../../css/imcms_admin.css';
-import '../../css/imcms-imports_files.css';
-import '../../css/imcms-login-page.css';
-
 const imcms = require('imcms');
 const $ = require('jquery');
 const auth = require('imcms-authentication');

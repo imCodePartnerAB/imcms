@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for image edit view.
  *
@@ -16,7 +14,7 @@ const texts = require("imcms-i18n-texts");
 $(() => {
     events.on("enable text editor blur", () => {
         const returnUrl = $("#return-url").val();
-        window.location.replace(`/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
+        window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${returnUrl}&metaId=${editorData.docId}`);
     });
 
     const $editedTag = $(imageEditorInitData.EDIT_AREA_SELECTOR);
@@ -41,7 +39,7 @@ $(() => {
             type: 'language'
         }, {
             type: 'close',
-            link: (returnUrl) ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId,
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
             showIfSeparate: true
         }
     ];

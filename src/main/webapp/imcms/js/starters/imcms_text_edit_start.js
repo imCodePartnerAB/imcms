@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for text edit view.
  *

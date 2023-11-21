@@ -1,5 +1,3 @@
-import '../../css/imcms-imports_files.css';
-
 /**
  * Starter for document manager view.
  *
@@ -15,7 +13,7 @@ const $ = require("jquery");
 
 events.on("document-editor-closed", () => {
     const returnUrl = $("#return-url").val();
-	window.location.replace(`/api/redirect?returnUrl=${returnUrl}`);
+	window.location.replace(`${imcms.contextPath}/api/redirect?returnUrl=${returnUrl}`);
 });
 
 $(function () {
@@ -26,7 +24,7 @@ $(function () {
 		},
 		{
 			type: 'close',
-			link: (returnUrl) ? returnUrl : "",
+			link: imcms.contextPath + ((returnUrl) ? returnUrl : ""),
 			showIfSeparate: true
 		}
 	];

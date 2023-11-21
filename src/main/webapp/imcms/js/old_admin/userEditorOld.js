@@ -2,11 +2,6 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 18.06.18
  */
-
-import '../../css/imcms_admin.css';
-import '../../css/imcms-imports_files.css';
-import '../../css/imcms-edit-user-page.css';
-
 const $ = require('jquery');
 const components = require('imcms-components-builder');
 const languagesRestApi = require('imcms-languages-rest-api');
