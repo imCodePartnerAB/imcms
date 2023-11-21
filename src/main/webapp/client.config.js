@@ -17,5 +17,6 @@ module.exports = {
     entry: {
         main: './css/test.scss'
     },
+	rebuildImcmsCSS: false,
     destination: 'dist-css'
 };
