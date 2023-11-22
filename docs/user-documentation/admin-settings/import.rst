@@ -9,17 +9,21 @@ In this article:
 
 .. |idRange| image:: _static/import/start-end-ids.png
 
-.. |list| image:: _static/import/list-button.png
+.. |list-documents| image:: _static/import/list-documents-button.png
 
 .. |filter| image:: _static/import/filter-options.png
 
-.. |import| image:: _static/import/import-btn.png
+.. |import-documents| image:: _static/import/import-documents-button.png
 
 .. |successExport| image:: _static/import/success-export.png
 
 .. |excludedExport| image:: _static/import/excluded-export.png
 
 .. |failedExport| image:: _static/import/failed-export.png
+
+.. |remove-alias| image:: _static/import/remove-alias-button.png
+
+.. |replace-alias| image:: _static/import/replace-alias-button.png
 
 ----------------
 Export Documents
@@ -79,25 +83,42 @@ This value saved in database so every user that has access to this page will see
 Import Documents
 ----------------
 
-.. image:: _static/import/import.png
+.. image:: _static/import/import-tab.png
 
-|upload| - used to upload zipped documents in json format.
+- **Upload documents** – Includes upload section where you can upload .zip.
+- **Edit documents** – Sections without upload section.
+- **Control alias** – Separated section where you can manage aliases.
 
-|idRange| - user can specify id range. Can be empty for list button(e.g. ...-…, 1-…, ...-999). Cannot be empty for import button. User has to specify range.
+************************
+Upload documents section
+************************
 
-|list| - used to show basic import documents info within range.
+.. image:: _static/import/upload-documents-section.png
 
-|filter| - used to filter basic import documents by status.
+- **Upload documents button** used to upload .zip.
+- **Dotted area** supports drag & drop.
 
-|import| - used to import documents within range.
+**********************
+Edit documents section
+**********************
 
-*******************************
-Import entity reference manager
-*******************************
+.. image:: _static/import/edit-documents-section.png
 
-Import entity reference manager used for each import entity reference(role, category, category type, template).
+|list-documents| - used to show basic import documents info within range.
 
-.. image:: _static/import/import-entity-reference-manager.png
+******************************
+Edit import references section
+******************************
+
+.. image:: _static/import/edit-import-references-section.png
+
+************************
+Import documents section
+************************
+
+.. image:: _static/import/import-documents-section.png
+
+|import-documents| - used to import documents within range.
 
 .. note::
     If no category or category type specified – then new one with import name will be created in system.
@@ -106,9 +127,23 @@ Import entity reference manager used for each import entity reference(role, cate
 
     If no template specified then default one will be used. User has to upload template by himself.
 
+|idRange| - user can specify id range. Can be empty for list button(e.g. ...-…, 1-…, ...-999). Cannot be empty for import button. User has to specify range.
+
+|filter| - used to filter basic import documents by status.
+
 Import statuses:
 
 - **IMPORTED** – means document imported and can be updated using UPDATE statuses.
 - **UPDATE** – document will be updated from id.json file. You can import it many as many times as you want.
 - **SKIP** – document will be skipped during import.
 - **FAILED** – document importation failed. Check logs for more info.
+
+*************
+Control alias
+*************
+
+.. image:: _static/import/control-alias.png
+
+|remove-alias| - removes the aliases within a given range (/import/1001 - /import/3400) for pages having an alias starting with /import.
+
+|replace-alias|-  looks in all menus and text fields and replaces all links that has the prefix /import/ to the metaid on the new site. I.e. if the document 1234 is exported and the new page on RB6 is 1100, then all links that goes to /import/1234 should be replaced to /1100.
