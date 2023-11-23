@@ -228,7 +228,7 @@ public class ImcmsImageUtils {
         if (StringUtils.isNotBlank(imageUrl)) {
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();
-            String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, imageUrl);
+            String documentIdString = Utility.extractDocumentIdentifier(imageUrl);
             DocumentDomainObject document = documentMapper.getDocument(documentIdString);
             if (document instanceof FileDocumentDomainObject) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));

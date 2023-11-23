@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.service.BasicImportDocumentInfoService;
 import com.imcode.imcms.domain.service.LinkValidationService;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
+import imcode.util.Utility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class ImportToLocalDocumentURLResolver {
 			return DocumentUrlDTO.createDefaultWithUrl(url);
 		}
 
-		final String documentIdString = ImcmsSetupFilter.getDocumentIdString(Imcms.getServices(), url);
+		final String documentIdString = Utility.extractDocumentIdentifier(url);
 		try {
 			final int id = Integer.parseInt(documentIdString);
 			final Optional<Integer> metaId = basicImportDocumentInfoService.toMetaId(id);

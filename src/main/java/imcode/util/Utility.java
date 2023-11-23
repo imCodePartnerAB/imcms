@@ -280,6 +280,10 @@ public class Utility {
 		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING).format(oneWeekAgo);
 	}
 
+	/**
+	 * @deprecated use {@link #extractDocumentIdentifier(String)} instead
+	 */
+	@Deprecated
 	public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {
 		if (null == document) {
 			return null;
@@ -287,6 +291,10 @@ public class Utility {
 		return request.getContextPath() + getContextRelativePathToDocument(document);
 	}
 
+	/**
+	 * @deprecated use {@link #extractDocumentIdentifier(String)} instead
+	 */
+	@Deprecated
 	public static String getContextRelativePathToDocument(DocumentDomainObject document) {
 		if (null == document) {
 			return null;
@@ -294,12 +302,29 @@ public class Utility {
 		return getContextRelativePathToDocumentWithName(document.getName());
 	}
 
+	/**
+	 * @deprecated use {@link #extractDocumentIdentifier(String)} instead
+	 */
+	@Deprecated
 	public static String getContextRelativePathToDocumentWithName(String name) {
 		String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
 		if (StringUtils.isBlank(documentPathPrefix)) {
 			documentPathPrefix = "/";
 		}
 		return documentPathPrefix + name;
+	}
+
+	public static String extractDocumentIdentifier(String path){
+		final String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
+
+		String documentId = null;
+		if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)){
+			documentId = path.substring(documentPathPrefix.length());
+
+			if (documentId.endsWith("/")) documentId = documentId.substring(0, documentId.length() - 1);
+			if (documentId.contains("/")) documentId = StringUtils.substringAfterLast(documentId, "/");
+		}
+		return documentId;
 	}
 
 	private static String formatHtmlDatetimeWithSpecial(Date datetime, String nullable) {

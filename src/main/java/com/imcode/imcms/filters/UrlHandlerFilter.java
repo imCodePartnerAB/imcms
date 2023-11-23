@@ -40,7 +40,7 @@ public class UrlHandlerFilter implements Filter {
         final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
         if (resourcePaths == null || resourcePaths.size() == 0) {
-            final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
+            final String documentIdString = Utility.extractDocumentIdentifier(path);
             final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
             final DocumentDomainObject document = services.getDocumentMapper().getVersionedDocument(documentIdString, langCode, request);
 

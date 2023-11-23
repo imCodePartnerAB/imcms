@@ -67,7 +67,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             final Set<String> resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
             if (resourcePaths == null || resourcePaths.size() == 0) {
-                final String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, path);
+                final String documentIdString = Utility.extractDocumentIdentifier(path);
                 final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
                 final boolean isDefaultUser = Imcms.getUser().isDefaultUser();
 

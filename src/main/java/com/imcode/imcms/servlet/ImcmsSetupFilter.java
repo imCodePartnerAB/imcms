@@ -48,18 +48,6 @@ public class ImcmsSetupFilter implements Filter {
     private final Logger logger = LogManager.getLogger(getClass());
     private FilterDelegate filterDelegate;
 
-    public static String getDocumentIdString(ImcmsServices service, String path) {
-        String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
-        String documentIdString = null;
-        if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
-            documentIdString = path.substring(documentPathPrefix.length());
-            if (documentIdString.endsWith("/")) {
-                documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
-            }
-        }
-        return documentIdString;
-    }
-
     public static void updateUserDocGetterCallback(HttpServletRequest request, UserDomainObject user) {
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
         docGetterCallback.setLanguage(Imcms.getLanguage());
@@ -207,7 +195,7 @@ public class ImcmsSetupFilter implements Filter {
 
     private static Language updateUserRelatedLanguageAndWriteLangCookie(HttpServletRequest request, HttpServletResponse response, ImcmsServices services) {
         final String path = Utility.updatePathIfEmpty(Utility.decodePathFromRequest(request, Imcms.getDefaultFallbackDecoder()));
-        final String documentIdString = getDocumentIdString(Imcms.getServices(), path);
+        final String documentIdString = Utility.extractDocumentIdentifier(path);
 
         final CommonContentService commonContentService = services.getCommonContentService();
 		final LanguageService languageService = services.getLanguageService();
