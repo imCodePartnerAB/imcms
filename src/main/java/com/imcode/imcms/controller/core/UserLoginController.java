@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.domain.service.LanguageService;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,7 @@ public class UserLoginController {
                                       HttpServletResponse response) {
 
         final ModelAndView modelAndView = new ModelAndView("Login");
+        final String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
 
         String nextUrlParam = null;
 
@@ -38,7 +40,7 @@ public class UserLoginController {
             nextUrlParam = nextUrl;
 
         } else if (nextMeta != null) {
-            nextUrlParam = request.getContextPath() + "/" + nextMeta;
+            nextUrlParam = request.getContextPath() + documentPathPrefix + nextMeta;
         }
 
         if (nextUrlParam != null) {

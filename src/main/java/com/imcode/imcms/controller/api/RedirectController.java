@@ -29,15 +29,21 @@ public class RedirectController {
 	}
 
 	@GetMapping
-	public RedirectView validateReturnUrl(@RequestParam String returnUrl, @RequestParam(required = false) String metaId) {
+	public RedirectView validateReturnUrl(@RequestParam(required = false) String returnUrl, @RequestParam(required = false) String metaId) {
 		final ServletUriComponentsBuilder uriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
+		final String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
 
-		if (StringUtils.isNotEmpty(returnUrl) && (documentMapper.toDocumentId(returnUrl) != null || isInternal(returnUrl))) {
-			return new RedirectView(toRedirectUrl(uriComponentsBuilder, returnUrl));
-		}
+		if (StringUtils.isNotEmpty(returnUrl)) {
+			if (documentMapper.toDocumentId(returnUrl) != null) {
+				return new RedirectView(toRedirectUrl(uriComponentsBuilder, documentPathPrefix + returnUrl));
+			}
 
-		if (StringUtils.isNotEmpty(returnUrl) && isInSubDomain(returnUrl, uriComponentsBuilder)) {
-			return new RedirectView(returnUrl);
+			if (hasProtocol(returnUrl)) {
+				return new RedirectView(toRedirectUrl(uriComponentsBuilder, returnUrl));
+			}
+			if (isInSubDomain(returnUrl, uriComponentsBuilder)) {
+				return new RedirectView(returnUrl);
+			}
 		}
 
 		if (StringUtils.isNotEmpty(metaId)) {
@@ -45,10 +51,10 @@ public class RedirectController {
 		}
 
 		final int startDocument = Imcms.getServices().getSystemData().getStartDocument();
-		return new RedirectView(toRedirectUrl(uriComponentsBuilder, String.valueOf(startDocument)));
+		return new RedirectView(toRedirectUrl(uriComponentsBuilder, documentPathPrefix + startDocument));
 	}
 
-	private boolean isInternal(String url) {
+	private boolean hasProtocol(String url) {
 		return !url.startsWith("http://") && !url.startsWith("https://");
 	}
 
