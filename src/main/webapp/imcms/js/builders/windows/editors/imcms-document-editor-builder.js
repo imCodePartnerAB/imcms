@@ -1194,7 +1194,7 @@ define('imcms-document-editor-builder',
         function buildDocItem(document, opts, savedFlag) {
 
             const $docItemId = components.texts.titleText('<a>', document.id, {
-                href: imcms.contextPath + '/' + document.id,
+                href: imcms.contextPath + imcms.documentPathPrefix + document.id,
                 class: 'imcms-grid-col-18',
             });
             $docItemId.modifiers = ['id'];
@@ -1217,7 +1217,7 @@ define('imcms-document-editor-builder',
                 alias = document.alias;
             }
             const $docItemTitle = components.texts.titleText('<a>', title, {
-                href: imcms.contextPath + '/' + document.id,
+                href: imcms.contextPath + imcms.documentPathPrefix + document.id,
                 class: 'imcms-flex--flex-3',
             });
             $docItemTitle.modifiers = ['title'];

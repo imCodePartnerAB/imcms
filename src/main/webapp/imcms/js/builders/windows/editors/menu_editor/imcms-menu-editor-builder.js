@@ -1001,7 +1001,6 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMenuItem(menuElement, {sortType}) {
-            console.log(menuElement)
             const $numberingSortBox = components.texts.textBox('<div>', {
                 class: 'imcms-flex--m-auto',
                 value: menuElement.sortOrder,
@@ -1015,7 +1014,7 @@ define("imcms-menu-editor-builder",
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
-                href: imcms.contextPath + '/' + menuElement.documentId,
+                href: imcms.contextPath + imcms.documentPathPrefix + menuElement.documentId,
                 target: '_blank',
 	            class: 'imcms-grid-col-1'
             });
@@ -1031,7 +1030,7 @@ define("imcms-menu-editor-builder",
                 ? menuElement.title
                 : documentBuilderTexts.notShownInSelectedLang;
             const $titleText = components.texts.titleText('<a>', title, {
-                href: imcms.contextPath + "/" + menuElement.documentId,
+                href: imcms.contextPath + imcms.documentPathPrefix + menuElement.documentId,
 	            class:'imcms-flex--flex-1'
             });
             $titleText.modifiers = ['title'];
