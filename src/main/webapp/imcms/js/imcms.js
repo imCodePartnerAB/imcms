@@ -14,6 +14,7 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     initSiteSpecific: Imcms.initSiteSpecific,
     expiredSessionTimeInMillis: Imcms.expiredSessionTimeInMillis,
     contextPath: Imcms.contextPath,
+    documentPathPrefix: Imcms.documentPathPrefix,
     imagesPath: Imcms.imagesPath,
     version: Imcms.version,
     isEditMode: Imcms.isEditMode,

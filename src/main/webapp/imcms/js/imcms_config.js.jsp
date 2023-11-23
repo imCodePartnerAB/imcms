@@ -6,6 +6,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     Imcms = {
         expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
         contextPath: "${pageContext.request.contextPath}",
+        documentPathPrefix: "${documentPathPrefix}",
         imagesPath: "${imagesPath}",
         version: "${version}",
         isEditMode: ${isEditMode or false},
@@ -77,6 +78,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
     <%--@elvariable id="hasNewerVersion" type="boolean"--%>
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
+    <%--@elvariable id="documentPathPrefix" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
     <%--@elvariable id="defaultAdminLanguage" type="com.imcode.imcms.model.Language"--%>
     <%--@elvariable id="availableAdminLanguages" type="java.util.List<com.imcode.imcms.model.Language>"--%>

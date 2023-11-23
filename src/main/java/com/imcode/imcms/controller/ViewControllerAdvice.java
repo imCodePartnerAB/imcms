@@ -45,6 +45,7 @@ public class ViewControllerAdvice {
         final UserDomainObject loggedOnUser = Imcms.getUser();
 
         model.addAttribute("contextPath", request.getContextPath());
+        model.addAttribute("documentPathPrefix", Imcms.getServices().getConfig().getDocumentPathPrefix());
         model.addAttribute("defaultAdminLanguage", languageService.getDefaultAdminLanguage());
         model.addAttribute("availableAdminLanguages", languageService.getAvailableAdminLanguages());
         model.addAttribute("availableLanguages", languageService.getAvailableLanguages());
