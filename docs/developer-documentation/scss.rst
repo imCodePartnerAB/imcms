@@ -11,9 +11,9 @@ Introduction
 
 ImCMS uses sass compiler to build and optimize css files with usage of variables.
 
-------------
+---------------------------------------
 Client(side project) SCSS configuration
-------------
+---------------------------------------
 
 If you want ImCMS to compile your \*.scss files, do the following:
 
