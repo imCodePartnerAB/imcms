@@ -33,8 +33,9 @@ class IndexBuildingThread extends Thread {
     }
 
     public void run() {
-        DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
+        DefaultDirectoryIndex newIndex = null;
         try(CloseableThreadContext.Instance ignored=CloseableThreadContext.push(Thread.currentThread().getName());) {
+            newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
             acceptUpdatesRef.set(true);
             newIndex.rebuild();
             considerDocumentsAddedOrRemovedDuringIndexing(newIndex);
@@ -43,7 +44,9 @@ class IndexBuildingThread extends Thread {
             log.fatal("Failed to index all documents.", e);
         } finally {
             acceptUpdatesRef.set(false);
-            backgroundIndexBuilder.notifyRebuildComplete(newIndex);
+            if(newIndex != null){
+                backgroundIndexBuilder.notifyRebuildComplete(newIndex);
+            }
         }
     }
 

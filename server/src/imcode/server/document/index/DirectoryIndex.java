@@ -1,8 +1,12 @@
 package imcode.server.document.index;
 
-public interface DirectoryIndex extends DocumentIndex {
+import java.io.Closeable;
+
+public interface DirectoryIndex extends DocumentIndex, Closeable {
 
     boolean isInconsistent();
 
     void delete();
+
+    void close();
 }

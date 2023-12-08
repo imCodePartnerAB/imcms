@@ -39,11 +39,13 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
+    private final IndexWriterCloseable indexWriter;
     private boolean isIndexBuildingThreadAlive;
 
-    DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
+    DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) throws IOException {
         this.directory = directory;
         this.indexDocumentFactory = indexDocumentFactory;
+        this.indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
     }
 
     public static void addCustomDocRepository(String name, DocumentRepository documentRepository) {
@@ -107,18 +109,18 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
         try {
-            removeDocument(document);
-            addDocument(document);
+            indexWriter.updateDocument(new Term("meta_id", "" + document.getId()),
+                    indexDocumentFactory.createIndexDocument(document));
+            indexWriter.commit();
         } catch (IOException e) {
             throw new IndexException(e);
         }
     }
 
     public void removeDocument(DocumentDomainObject document) throws IndexException {
-        try (final IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.APPEND)) {
-
+        try {
             indexWriter.deleteDocuments(new Term("meta_id", "" + document.getId()));
-
+            indexWriter.commit();
         } catch (Exception e) {
             throw new IndexException(e);
         }
@@ -168,9 +170,12 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         return new SearchResult<>(documentList, totalCount, nextSkip);
     }
 
-    private void addDocument(DocumentDomainObject document) throws IOException {
-        try (IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.APPEND)) {
+    private void addDocument(DocumentDomainObject document) {
+        try {
             addDocumentToIndex(document, indexWriter);
+            indexWriter.commit();
+        }catch (Exception e){
+            throw new IndexException(e);
         }
     }
 
@@ -187,7 +192,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void indexDocuments() throws IOException {
-        try (IndexWriterCloseable indexWriter = createIndexWriter(IndexWriterConfig.OpenMode.CREATE)) {
+        try {
             isIndexBuildingThreadAlive = true;
             for (Map.Entry<String, DocumentRepository> nameToRepositoryEntry : nameToCustomDocRepository.entrySet()) {
                 final String repositoryName = nameToRepositoryEntry.getKey();
@@ -199,6 +204,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
                 log.info("Indexing docs from " + repositoryName + " document repository finished.");
             }
         }finally {
+            indexWriter.commit();
             isIndexBuildingThreadAlive = false;
         }
     }
@@ -261,11 +267,22 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         try {
             log.info("Deleting index directory " + directory);
 
+            close();
             if (directory.exists()) {
                 FileUtils.forceDelete(directory);
             }
         } catch (IOException e) {
             throw new IndexException(e);
+        }
+    }
+
+    public void close() {
+        try {
+            if (indexWriter.isOpen()) {
+                indexWriter.close();
+            }
+        } catch (IOException e) {
+            log.error("Exception while closing directory index", e);
         }
     }
 

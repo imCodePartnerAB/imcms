@@ -40,7 +40,12 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         long indexModifiedTime = 0;
         if (null != indexDirectory) {
             indexModifiedTime = indexDirectory.lastModified();
-            index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
+            try{
+                index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
+            }catch (IOException e){
+                rebuildBecauseOfError("Exception while creating directory index", new IndexException(e));
+            }
+
         } else {
             rebuildBecauseOfError("No existing index.", null);
         }
@@ -131,7 +136,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         return indexRebuildSchedulePeriodInMilliseconds > 0;
     }
 
-    public synchronized void indexDocument(DocumentDomainObject document) {
+    public void indexDocument(DocumentDomainObject document) {
         log.debug("Adding document.");
         backgroundIndexBuilder.addDocument(document);
         try {
@@ -144,7 +149,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    public synchronized void removeDocument(DocumentDomainObject document) {
+    public void removeDocument(DocumentDomainObject document) {
         log.debug("Removing document.");
         backgroundIndexBuilder.removeDocument(document);
         try {
@@ -232,6 +237,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         DirectoryIndex oldIndex = index;
         index = newIndex;
         if (!oldIndex.equals(index)) {
+            oldIndex.close();
             oldIndex.delete();
         }
     }
@@ -243,6 +249,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         public void delete() {
+
+        }
+
+        public void close() {
 
         }
 
