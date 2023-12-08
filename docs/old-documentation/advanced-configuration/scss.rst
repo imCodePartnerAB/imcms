@@ -46,42 +46,46 @@ If you want ImCMS to compile your \*.scss files, do the following:
 
     .. code-block:: xml
 
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
-            <executions>
-                <execution>
-                    <id>install webpack</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>exec</goal>
-                    </goals>
-                    <configuration>
-                        <executable>npm</executable>
-                        <workingDirectory>${project.build.directory}/${project.build.finalName}</workingDirectory>
-                        <arguments>
-                            <argument>install</argument>
-                        </arguments>
-                    </configuration>
-                </execution>
-                <execution>
-                    <id>build scss</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>exec</goal>
-                    </goals>
-                    <configuration>
-                        <executable>npm</executable>
-                        <workingDirectory>${project.build.directory}/${project.build.finalName}</workingDirectory>
-                        <arguments>
-                            <argument>run</argument>
-                            <argument>build:scss</argument>
-                        </arguments>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+        	<plugin>
+        		<groupId>com.github.eirslett</groupId>
+        		<artifactId>frontend-maven-plugin</artifactId>
+        		<version>1.15.0</version>
+        		<configuration>
+        			<workingDirectory>${project.build.directory}/${project.build.finalName}</workingDirectory>
+        			<installDirectory>${project.build.directory}/</installDirectory>
+                          <nodeVersion>v16.17.0</nodeVersion>
+                          <npmVersion>8.15.0</npmVersion>
+        		</configuration>
+        		<executions>
+        			<execution>
+        				<id>install-node-and-npm</id>
+        				<phase>package</phase>
+        				<goals>
+        					<goal>install-node-and-npm</goal>
+        				</goals>
+        			</execution>
+        			<execution>
+        				<id>install webpack</id>
+        				<phase>package</phase>
+        				<goals>
+        					<goal>npm</goal>
+        				</goals>
+        				<configuration>
+        					<arguments>install webpack</arguments>
+        				</configuration>
+        			</execution>
+        			<execution>
+        				<id>build scss</id>
+        				<phase>package</phase>
+        				<goals>
+        					<goal>npm</goal>
+        				</goals>
+        				<configuration>
+        					<arguments>run build:scss</arguments>
+        				</configuration>
+        			</execution>
+        		</executions>
+        	</plugin>
 
 That's all you need, on next ``package`` phase in maven scss will be compiled into css, check in maven destination directory.
 If something vent wrong, check `here <https://svn.imcode.com/imcode/customers/imcms/trunk>`_, I've managed it to work.
