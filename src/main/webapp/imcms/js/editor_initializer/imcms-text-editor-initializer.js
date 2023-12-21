@@ -19,6 +19,7 @@ define('imcms-text-editor-initializer',
 
             if ($target.closest(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$).length) return;
             if ($target.closest('.text-history').length) return;
+            if ($target.closest('.imcms-editor-toolbar').length) return;
 
             $activeTextArea.removeClass(textEditorUtils.ACTIVE_EDIT_AREA_CLASS)
                 .find('.mce-edit-focus')
