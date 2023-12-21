@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.component.ImageFolderCacheManager;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
@@ -44,6 +45,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     private ImageDataInitializer imageDataInitializer;
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+    @Autowired
+    private ImageFolderCacheManager imageFolderCacheManager;
 
     @Autowired
     @Qualifier("imageStorageClient")
@@ -73,6 +76,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     public void clearTestData() {
         imageDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
+        clearImageFolderCache();
     }
 
     @Test
@@ -476,6 +480,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
             testImageFile.put(new FileInputStream(testFile));
 
+            clearImageFolderCache();
+
             imageDataInitializer.createAllAvailableImageContent(true, testImageFileName, testImageFileName);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
@@ -545,6 +551,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             storageClient.put(testImageFilePath, new FileInputStream(testFile));
             assertTrue(storageClient.exists(testImageFilePath));
 
+            clearImageFolderCache();
+
             imageDataInitializer.createAllAvailableImageContent(
                     true, testImageUrl, testImageUrl
             );
@@ -603,6 +611,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertEquals(1, imageFileUsagesDTOS.get(0).getUsages().size());
             assertEquals(1, imageFileUsagesDTOS.get(1).getUsages().size());
         }
+    }
+
+    private void clearImageFolderCache(){
+        imageFolderCacheManager.invalidate();
     }
 
 }

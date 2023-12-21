@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.domain.component.ImageFolderCacheManager;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
@@ -45,6 +46,8 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private ImageFolderService imageFolderService;
+    @Autowired
+    private ImageFolderCacheManager imageFolderCacheManager;
 	@Autowired
 	private ImageService imageService;
     @Autowired
@@ -72,6 +75,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
     public void clearTestData() {
         imageDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
+        clearImageFolderCache();
     }
 
     @Test
@@ -564,6 +568,8 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(testImage.create());
             assertTrue(testImage.exists());
 
+            clearImageFolderCache();
+
             imageDataInitializer.createAllAvailableImageContent(
                     false, testImageName, testImageName
             );
@@ -594,6 +600,8 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertFalse(testImage2File.exists());
             assertTrue(testImage2File.create());
             assertTrue(testImage2File.exists());
+
+            clearImageFolderCache();
 
             imageDataInitializer.createAllAvailableImageContent(
                     false, testImage1Name, testImage2Name
@@ -683,4 +691,8 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
 	private void removeUserDomainObject() {
 		Imcms.removeUser();
 	}
+
+    private void clearImageFolderCache(){
+        imageFolderCacheManager.invalidate();
+    }
 }
