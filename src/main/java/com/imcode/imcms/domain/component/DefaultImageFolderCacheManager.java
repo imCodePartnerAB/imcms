@@ -20,22 +20,33 @@ public class DefaultImageFolderCacheManager implements ImageFolderCacheManager{
         this.cache = CacheManager.getCacheManager(null).getEhcache(IMAGE_FOLDER_CACHE_NAME);
     }
 
+    @Override
     public ImageFolderDTO getCache(StoragePath storagePath){
         return Optional.ofNullable(cache.get(generateKey(storagePath)))
                 .map(e -> (ImageFolderDTO) e.getObjectValue())
                 .orElse(null);
     }
 
+    @Override
     public boolean existInCache(StoragePath storagePath){
         return cache.isKeyInCache(generateKey(storagePath));
     }
 
+    @Override
     public void cache(StoragePath storagePath, ImageFolderDTO imageFolder){
         cache.put(new Element(generateKey(storagePath), imageFolder));
     }
 
-    public void invalidate(StoragePath storagePath){
-        cache.remove(generateKey(storagePath));
+    @Override
+    public void invalidate(StoragePath... storagePaths){
+        for(StoragePath storagePath: storagePaths){
+            cache.remove(generateKey(storagePath));
+        }
+    }
+
+    @Override
+    public void invalidate(){
+        cache.removeAll();
     }
 
     private String generateKey(StoragePath storagePath){

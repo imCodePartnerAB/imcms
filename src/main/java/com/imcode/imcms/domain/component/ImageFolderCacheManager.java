@@ -11,6 +11,8 @@ public interface ImageFolderCacheManager {
 
     void cache(StoragePath storagePath, ImageFolderDTO imageFolder);
 
-    void invalidate(StoragePath storagePath);
+    void invalidate(StoragePath... storagePaths);
+
+    void invalidate();
 
 }

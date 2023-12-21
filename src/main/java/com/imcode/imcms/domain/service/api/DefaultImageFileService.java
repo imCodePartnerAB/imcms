@@ -179,8 +179,7 @@ class DefaultImageFileService implements ImageFileService {
 
         storageClient.move(imageFilePath, destinationImageFilePath);
 
-        imageFolderCacheManager.invalidate(imageFilePath.getParentPath());
-        imageFolderCacheManager.invalidate(destinationImageFilePath.getParentPath());
+        imageFolderCacheManager.invalidate(imageFilePath.getParentPath(), destinationImageFilePath.getParentPath());
 
         return storagePathToImageFileDTO.apply(destinationImageFilePath);
 	}

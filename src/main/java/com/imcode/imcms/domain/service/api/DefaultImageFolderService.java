@@ -93,8 +93,7 @@ class DefaultImageFolderService implements ImageFolderService {
 
         storageClient.create(newFolderPath);
 
-        imageFolderCacheManager.invalidate(newFolderPath.getParentPath());
-        imageFolderCacheManager.invalidate(storageImagesPath);
+        imageFolderCacheManager.invalidate(newFolderPath.getParentPath(), storageImagesPath);
     }
 
     @Override
@@ -125,9 +124,7 @@ class DefaultImageFolderService implements ImageFolderService {
 
         storageClient.move(folderPath, newFolderPath);
 
-        imageFolderCacheManager.invalidate(folderPath);
-        imageFolderCacheManager.invalidate(folderPath.getParentPath());
-        imageFolderCacheManager.invalidate(storageImagesPath);
+        imageFolderCacheManager.invalidate(folderPath, folderPath.getParentPath(), storageImagesPath);
     }
 
     @Override
@@ -153,9 +150,7 @@ class DefaultImageFolderService implements ImageFolderService {
             final StoragePath folderToDeletePath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
             storageClient.delete(folderToDeletePath, true);
 
-            imageFolderCacheManager.invalidate(folderToDeletePath);
-            imageFolderCacheManager.invalidate(folderToDeletePath.getParentPath());
-            imageFolderCacheManager.invalidate(storageImagesPath);
+            imageFolderCacheManager.invalidate(folderToDeletePath, folderToDeletePath.getParentPath(), storageImagesPath);
         }
     }
 
