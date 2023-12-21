@@ -24,7 +24,12 @@ $(function () {
     menuEditorInitData.editorBuilder.standalone().setTag($editedTag).build(editorData);
 
     const returnUrl = $("#return-url").val();
+    const adminDocLink = "/servlet/AdminDoc?meta_id=" + editorData.docId;
     const toolbarContent = [
+        {
+            type: 'logo',
+            link: adminDocLink
+        },
         {
             type: 'id',
             text: texts.toolbar.documentId + editorData.docId,
@@ -34,16 +39,21 @@ $(function () {
             type: 'index',
             text: texts.toolbar.elementIndex + editorData.menuIndex,
             title: texts.toolbar.elementIndexTitle,
-        },
-	    {
+        }, {
+            type: 'label',
+            text: editorData.label ? ('Label ' + editorData.label) : ''
+        }, {
 			type: 'language'
 	    },
         {
             type: 'close',
-            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : adminDocLink),
             showIfSeparate: true
         }
     ];
 
-    toolbarBuilder.buildPanel(toolbarContent);
+    $("body")
+        .css("margin", "0")
+        .addClass("standalone-editor-body")
+        .prepend(toolbarBuilder.buildPanel(toolbarContent));
 });

@@ -30,5 +30,8 @@ $(function () {
 	];
 
     documentEditorBuilder.build();
-	toolbarBuilder.buildPanel(toolbarContent);
+	$("body")
+		.css("margin", "0")
+		.addClass("standalone-editor-body")
+		.prepend(toolbarBuilder.buildPanel(toolbarContent));
 });

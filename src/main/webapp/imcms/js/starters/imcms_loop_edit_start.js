@@ -23,7 +23,12 @@ $(function () {
     var editorData = $editedTag.data();
 
     const returnUrl = $("#return-url").val();
+    const adminDocLink = "/servlet/AdminDoc?meta_id=" + editorData.docId;
     const toolbarContent = [
+        {
+            type: 'logo',
+            link: adminDocLink
+        },
         {
             type: 'id',
             text: texts.toolbar.documentId + editorData.docId,
@@ -33,17 +38,22 @@ $(function () {
             type: 'index',
             text: texts.toolbar.elementIndex + editorData.index,
             title: texts.toolbar.elementIndexTitle,
-        },
-	    {
+        }, {
+            type: 'label',
+            text: editorData.label ? ('Label ' + editorData.label) : ''
+        }, {
 		    type: 'language'
 	    },
         {
             type: 'close',
-            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : adminDocLink),
             showIfSeparate: true
         }
     ];
 
     loopEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
-    toolbarBuilder.buildPanel(toolbarContent);
+    $("body")
+        .css("margin", "0")
+        .addClass("standalone-editor-body")
+        .prepend(toolbarBuilder.buildPanel(toolbarContent));
 });

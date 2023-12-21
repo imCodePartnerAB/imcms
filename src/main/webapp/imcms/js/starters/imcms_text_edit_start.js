@@ -15,14 +15,19 @@ const texts = require("imcms-i18n-texts");
 imcms.textEditorFullScreenEnabled = true;
 
 $(function () {
-    textEditorInitializer.initEditor({autoFocus: true});
+    textEditorInitializer.initEditor({autoFocus: true, standalone: true});
     imageEditorInitializer.initEditor();
 
     const $editedTag = $('.imcms-editor-content--text:first');
     const editorData = $editedTag.data();
 
     const returnUrl = $("#return-url").val();
+    const adminDocLink = "/servlet/AdminDoc?meta_id=" + editorData.docId;
     const toolbarContent = [
+        {
+            type: 'logo',
+            link: adminDocLink
+        },
         {
             type: 'id',
             text: texts.toolbar.documentId + editorData.docId,
@@ -46,9 +51,13 @@ $(function () {
         },
         {
             type: 'close',
-            link: returnUrl ? returnUrl : imcms.contextPath + "/servlet/AdminDoc?meta_id=" + editorData.docId
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : adminDocLink),
         }
     ];
 
-    toolbarBuilder.buildPanel(toolbarContent);
+
+    $("body")
+        .css("margin", "0")
+        .addClass("standalone-editor-body")
+        .prepend(toolbarBuilder.buildPanel(toolbarContent));
 });

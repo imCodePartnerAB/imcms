@@ -23,8 +23,12 @@ $(() => {
     imageEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 
     const returnUrl = $("#return-url").val();
+    const adminDocLink = "/servlet/AdminDoc?meta_id=" + editorData.docId;
     const toolbarContent = [
         {
+            type: 'logo',
+            link: adminDocLink
+        }, {
             type: 'id',
             text: texts.toolbar.documentId + editorData.docId,
             title: texts.toolbar.documentIdTitle,
@@ -39,10 +43,13 @@ $(() => {
             type: 'language'
         }, {
             type: 'close',
-            link: imcms.contextPath + ((returnUrl) ? returnUrl : "/servlet/AdminDoc?meta_id=" + editorData.docId),
+            link: imcms.contextPath + ((returnUrl) ? returnUrl : adminDocLink),
             showIfSeparate: true
         }
     ];
 
-    toolbarBuilder.buildPanel(toolbarContent);
+    $("body")
+        .css("margin", "0")
+        .addClass("standalone-editor-body")
+        .prepend(toolbarBuilder.buildPanel(toolbarContent));
 });
