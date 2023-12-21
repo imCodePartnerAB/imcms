@@ -117,7 +117,7 @@ class DefaultDocumentRolesServiceTest {
         assertTrue(roles.hasNoRoles());
         assertEquals(roles.getDocument(), testDoc);
         assertTrue(roles.getPermissions().isEmpty());
-        assertEquals(roles.getMostPermission(), Meta.Permission.VIEW);
+        assertEquals(roles.getMostPermission(), Meta.Permission.NONE);
     }
 
     @Test

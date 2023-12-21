@@ -6,7 +6,6 @@ import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
@@ -18,9 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -191,7 +188,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
         final boolean noUserFilter = Arrays.stream(solrQuery.getFilterQueries())
-                .noneMatch(filterQueryValue -> filterQueryValue.startsWith(DocumentIndex.FIELD__CREATOR_ID));
+                .noneMatch(filterQueryValue -> filterQueryValue.contains(DocumentIndex.FIELD__CREATOR_ID));
 
         assertTrue(noUserFilter);
     }
@@ -202,7 +199,8 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
-        final boolean isUserFilter = Arrays.asList(solrQuery.getFilterQueries()).contains(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID);
+        final boolean isUserFilter = Arrays.stream(solrQuery.getFilterQueries())
+                .anyMatch(queryString -> queryString.contains(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID));
 
         assertTrue(isUserFilter);
     }
@@ -212,9 +210,24 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
-        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
-                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+        String expectedFilter = buildFilterQueryWithLinkableByOther(true, Imcms.getUser().getRoleIds(), null);
+
+        assertEquals(1, filters.size());
+        assertEquals(expectedFilter, filters.get(0));
+    }
+
+    @Test
+    public void convert_When_UserIsNotSuperAdmin_And_LimitSearchIsTrue_AndLinkableByOtherUsersIsTrue_Expect_LinkableByOtherUsersAddedToFilters() {
+        boolean linkableByOtherUsers = true;
+        searchQueryDTO.setLinkableByOtherUsers(linkableByOtherUsers);
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
+        final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
+
+        final String expectedFilter = buildFilterQueryWithLinkableByOther(true, Imcms.getUser().getRoleIds(), linkableByOtherUsers);
+
+        assertEquals(1, filters.size());
+        assertEquals(expectedFilter, filters.get(0));
     }
 
     @Test
@@ -232,9 +245,10 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
-        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
-                DocumentIndex.FIELD__ROLE_ID + ":(" + roleId + "))"));
+        final String expectedFilter = buildFilterQueryWithLinkableByOther(true, Collections.singleton(roleId), null);
+
+        assertEquals(1, filters.size());
+        assertEquals(expectedFilter, filters.get(0));
     }
 
     @Test
@@ -288,9 +302,10 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
-        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
-                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+        final String expectedFilter = buildFilterQuery(true, Imcms.getUser().getRoleIds());
+
+        assertEquals(1, filters.size());
+        assertEquals(expectedFilter, filters.get(0));
     }
 
     @Test
@@ -333,9 +348,10 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
-        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains("(" + DocumentIndex.FIELD__VISIBLE + ":true || " +
-                DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + "))"));
+        final String expectedFilter = buildFilterQuery(true, Imcms.getUser().getRoleIds());
+
+        assertEquals(1, filters.size());
+        assertEquals(expectedFilter, filters.get(0));
     }
 
     @Test
@@ -348,4 +364,34 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         assertNull(solrQuery.getFilterQueries());
     }
+
+    private String buildFilterQueryWithLinkableByOther(boolean searchEnabled, Set<Integer> roleIds, Boolean linkableByOther){
+        StringBuilder filterQuery = new StringBuilder();
+        filterQuery.append("(");
+        filterQuery.append(buildFilterQuery(searchEnabled, roleIds));
+
+        if(linkableByOther != null){
+            filterQuery.append(" || " + DocumentIndex.FIELD__LINKABLE_OTHER + ":" + linkableByOther);
+        }
+
+        filterQuery.append(")");
+
+        return filterQuery.toString();
+    }
+
+    private String buildFilterQuery(boolean searchEnabled, Set<Integer> roleIds){
+        StringBuilder filterQuery = new StringBuilder();
+        filterQuery.append("(");
+        filterQuery.append(DocumentIndex.FIELD__SEARCH_ENABLED + ":" + searchEnabled);
+        filterQuery.append(" AND ");
+
+        StringJoiner roleJoiner = new StringJoiner(" || ", " || (", ")");
+        roleIds.forEach(roleId -> roleJoiner.add("role_id:" + roleId.toString()));
+
+        filterQuery.append("(" + DocumentIndex.FIELD__VISIBLE + ":true" + roleJoiner + ")");
+        filterQuery.append(")");
+
+        return filterQuery.toString();
+    }
+
 }
