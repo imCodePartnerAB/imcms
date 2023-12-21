@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -82,14 +83,18 @@ public class DefaultCommonContentService
         Set<Integer> missingDocs = new HashSet<>(docIds);
         missingDocs.removeAll(docIdCommonContentMap.keySet());
         missingDocs.forEach(id -> {
-            final Version latestVersion = versionService.getLatestVersion(id);
+            try{
+                final Version latestVersion = versionService.getLatestVersion(id);
 
-            List<CommonContent> missingCommonContent = new ArrayList<>();
-            availableLanguages.forEach(lang -> {
-                missingCommonContent.add(createByVersion(id, latestVersion.getNo(), lang));
-            });
+                List<CommonContent> missingCommonContent = new ArrayList<>();
+                availableLanguages.forEach(lang -> {
+                    missingCommonContent.add(createByVersion(id, latestVersion.getNo(), lang));
+                });
 
-            docIdCommonContentMap.put(id, missingCommonContent);
+                docIdCommonContentMap.put(id, missingCommonContent);
+            }catch (DocumentNotExistException e){
+                //just skip non-existent doc
+            }
         });
 
         // Check that each document has common content in all available languages

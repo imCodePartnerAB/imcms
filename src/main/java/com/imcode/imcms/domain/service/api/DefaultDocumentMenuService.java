@@ -117,7 +117,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
             return headlineInCurrentLanguage.get();
         }
 
-        if (disabledLanguageShowMode == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
+        if (disabledLanguageShowMode != Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
             return "";
         }
 
@@ -144,7 +144,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
             return menuTextInCurrentLanguage.get();
         }
 
-        if (disabledLanguageShowMode == Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
+        if (disabledLanguageShowMode != Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE) {
             return "";
         }
 
