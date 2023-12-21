@@ -9,12 +9,14 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.RoleRepository;
 import imcode.server.Imcms;
@@ -33,9 +35,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static imcode.server.ImcmsConstants.ENG_CODE;
+import static imcode.server.ImcmsConstants.SWE_CODE;
 import static imcode.server.user.UserDomainObject.DEFAULT_USER_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -43,6 +50,9 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
+    private LanguageService languageService;
 
     @Autowired
     private MetaRepository metaRepository;
@@ -62,7 +72,6 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     private Meta meta;
 
     final UserDomainObject defaultUser = new UserDomainObject(DEFAULT_USER_ID);
-    final UserDomainObject notDefaultUser = new UserDomainObject(3);
 
     @BeforeEach
     public void setUp() {
@@ -90,37 +99,66 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void hasUserAccessToDoc_When_LinkedForUnauthorizedUsersIsTrue_And_UserIsDefault_Expect_True() {
-        meta.setLinkedForUnauthorizedUsers(true);
-        metaRepository.save(meta);
+    public void hasUserAccessToDoc_When_LinkedForUnauthorizedUsersIsTrue_Expect_AllUsersHaveAccess() {
+        final UserDomainObject notDefaultUser = new UserDomainObject(3);
 
-        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
-    }
-
-    @Test
-    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsTrue_And_UserIsNotDefault_Expect_True() {
-        meta.setLinkableByOtherUsers(true);
+        meta.setLinkedForUnauthorizedUsers(false);
+        meta.setVisible(false);
+        meta.setRoleIdToPermission(Collections.emptyMap());
         metaRepository.saveAndFlush(meta);
 
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
+
+        meta.setLinkedForUnauthorizedUsers(true);
+        metaRepository.saveAndFlush(meta);
+
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
         assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
     }
 
     @Test
-    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsTrue_And_LinkedForUnauthorizedUsersIsFalse_And_UserIsDefault_Expect_False() {
-        meta.setLinkableByOtherUsers(true);
+    public void hasUserAccessToDoc_When_DocumentIsVisible_Expect_AllUsersHaveAccess() {
+        final UserDomainObject notDefaultUser = new UserDomainObject(3);
+
         meta.setLinkedForUnauthorizedUsers(false);
+        meta.setVisible(false);
+        meta.setRoleIdToPermission(Collections.emptyMap());
         metaRepository.saveAndFlush(meta);
 
         assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
+
+        meta.setVisible(true);
+        metaRepository.saveAndFlush(meta);
+
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
     }
 
     @Test
-    public void hasUserAccessToDoc_When_LinkableByOtherUsersIsFalse_And_LinkedForUnauthorizedUsersIsTrue_And_UserIsDefault_Expect_False() {
-        meta.setLinkableByOtherUsers(false);
-        meta.setLinkedForUnauthorizedUsers(true);
-        metaRepository.save(meta);
+    public void hasUserAccessToDoc_When_SpecificUserHasPermission_Expect_SpecificUserHasAccess_And_AnotherUsersDoNot() {
+        final UserDomainObject notDefaultUserWithPermission = new UserDomainObject(3);
+        final RoleJPA testRole = roleRepository.save(new RoleJPA("test-role"));
+        notDefaultUserWithPermission.setRoleIds(Collections.singleton(testRole.getId()));
 
-        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUser));
+        final UserDomainObject notDefaultUserWithoutPermission = new UserDomainObject(4);
+
+        meta.setLinkedForUnauthorizedUsers(false);
+        meta.setVisible(false);
+        meta.setRoleIdToPermission(Collections.emptyMap());
+        metaRepository.saveAndFlush(meta);
+
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUserWithoutPermission));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUserWithPermission));
+
+        meta.setRoleIdToPermission(new HashMap<>(Collections.singletonMap(testRole.getId(), Permission.EDIT)));
+        metaRepository.saveAndFlush(meta);
+
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), defaultUser));
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUserWithoutPermission));
+        assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), notDefaultUserWithPermission));
     }
 
     @Test
@@ -152,17 +190,20 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
 	@Test
 	public void getMenuItemDTO_When_AliasIsSetAndDefaultLanguageAliasDisabled_Expect_CorrectAliasInLink() {
-		final String enAlias = "alias-en";
+        final Language defaultLang = languageService.getDefaultLanguage();
+        final Language svLang = languageService.findByCode(SWE_CODE);
+        Imcms.setLanguage(svLang);
+
+        final String enAlias = "alias-en";
 		final String svAlias = "alias-sv";
 		final Integer docId = meta.getId();
 
-		meta.setDefaultLanguageAliasEnabled(false);
-
 		final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDefaultLanguageAliasEnabled(false);
 		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
 		final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(SWE_CODE)).findFirst().get();
 
 		commonContentEn.setAlias(enAlias);
 		commonContentSv.setAlias(svAlias);
@@ -177,6 +218,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
 		assertThat(menuItemDTO.getDocumentId(), is(docId));
 		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+        assertThat(defaultLang, not(svLang));
+        assertThat(Imcms.getLanguage(), is(svLang));
 		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
@@ -190,13 +233,12 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		final String svAlias = "alias-sv";
 		final Integer docId = meta.getId();
 
-		meta.setDefaultLanguageAliasEnabled(true);
-
 		final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDefaultLanguageAliasEnabled(true);
 		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
 		final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(SWE_CODE)).findFirst().get();
 
 		commonContentEn.setAlias(enAlias);
 		commonContentSv.setAlias(svAlias);
@@ -211,7 +253,8 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
 		assertThat(menuItemDTO.getDocumentId(), is(docId));
 		assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
-		assertThat(menuItemDTO.getLink(), is("/" + svAlias));
+        assertThat(languageService.getDefaultLanguage().getCode(), is(ENG_CODE));
+		assertThat(menuItemDTO.getLink(), is("/" + enAlias));
 		assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
 		assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
 		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
@@ -222,11 +265,10 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 	public void getMenuItemDTO_When_NoAliasAndDefaultLanguageAliasEnabled_Expect_DocIdInLink() {
 		final Integer docId = meta.getId();
 
-		meta.setDefaultLanguageAliasEnabled(true);
-
 		final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDefaultLanguageAliasEnabled(true);
 		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
 
 		commonContentEn.setAlias(null);
 
@@ -251,11 +293,10 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 	public void getMenuItemDTO_When_AliasIsEmptyAndDefaultLanguageAliasEnabled_Expect_DefaultLanguageAliasInLink() {
 		final Integer docId = meta.getId();
 
-		meta.setDefaultLanguageAliasEnabled(true);
-
 		final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDefaultLanguageAliasEnabled(true);
 		final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
-				.filter(content -> content.getLanguage().getCode().equals("en")).findFirst().get();
+				.filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
 
 		commonContentEn.setAlias("");
 
@@ -275,6 +316,124 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 		assertThat(menuItemDTO.getPublishedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getPublished().getFormattedDate())));
 		assertThat(menuItemDTO.getModifiedDate(), is(Utility.convertDateToLocalDateTime(documentDTO.getModified().getFormattedDate())));
 	}
+
+    @Test
+    public void getMenuItemDTO_When_CommonContentForCurrentLanguageIsEnabled_Expect_TitleAndMenuTextInCurrentLanguage(){
+        final Language defaultLang = languageService.getDefaultLanguage();
+        final Language svLang = languageService.findByCode(SWE_CODE);
+        Imcms.setLanguage(svLang);
+
+        final String enHeadline = "headline-en";
+        final String enMenuText = "menuText-en";
+        final String svHeadline = "headline-sv";
+        final String svMenuText = "menuText-sv";
+        final Integer docId = meta.getId();
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+        final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
+        final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(SWE_CODE)).findFirst().get();
+
+        commonContentEn.setHeadline(enHeadline);
+        commonContentEn.setMenuText(enMenuText);
+        commonContentSv.setHeadline(svHeadline);
+        commonContentSv.setMenuText(svMenuText);
+
+        documentService.save(documentDTO);
+
+        final MenuItem menuItem = new MenuItem();
+        menuItem.setSortOrder("1");
+        menuItem.setDocumentId(docId);
+
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+        assertThat(menuItemDTO.getDocumentId(), is(docId));
+        assertThat(defaultLang, not(svLang));
+        assertThat(Imcms.getLanguage(), is(svLang));
+        assertThat(menuItemDTO.getTitle(), is(svHeadline));
+        assertThat(menuItemDTO.getMenuText(), is(svMenuText));
+    }
+
+    @Test
+    public void getMenuItemDTO_When_CommonContentForCurrentLanguageIsDisabled_And_DisabledLanguageShowModeIsDO_NOT_SHOW_Expect_TitleAndMenuTextAreEmpty(){
+        final Language defaultLang = languageService.getDefaultLanguage();
+        final Language svLang = languageService.findByCode(SWE_CODE);
+        Imcms.setLanguage(svLang);
+
+        final String enHeadline = "headline-en";
+        final String enMenuText = "menuText-en";
+        final String svHeadline = "headline-sv";
+        final String svMenuText = "menuText-sv";
+        final Integer docId = meta.getId();
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDisabledLanguageShowMode(DO_NOT_SHOW);
+        final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
+        final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(SWE_CODE)).findFirst().get();
+
+        commonContentEn.setHeadline(enHeadline);
+        commonContentEn.setMenuText(enMenuText);
+        commonContentSv.setHeadline(svHeadline);
+        commonContentSv.setMenuText(svMenuText);
+        commonContentSv.setEnabled(false);
+
+        documentService.save(documentDTO);
+
+        final MenuItem menuItem = new MenuItem();
+        menuItem.setSortOrder("1");
+        menuItem.setDocumentId(docId);
+
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+        assertThat(menuItemDTO.getDocumentId(), is(docId));
+        assertThat(defaultLang.getCode(), is(ENG_CODE));
+        assertThat(Imcms.getLanguage(), is(svLang));
+        assertTrue(StringUtils.isBlank(menuItemDTO.getTitle()));
+        assertTrue(StringUtils.isBlank(menuItemDTO.getMenuText()));
+    }
+
+    @Test
+    public void getMenuItemDTO_When_CommonContentForCurrentLanguageIsDisabled_And_DisabledLanguageShowModeIsSHOW_IN_DEFAULT_LANGUAGE_Expect_TitleAndMenuTextInDefaultLanguage(){
+        final Language defaultLang = languageService.getDefaultLanguage();
+        final Language svLang = languageService.findByCode(SWE_CODE);
+        Imcms.setLanguage(svLang);
+
+        final String enHeadline = "headline-en";
+        final String enMenuText = "menuText-en";
+        final String svHeadline = "headline-sv";
+        final String svMenuText = "menuText-sv";
+        final Integer docId = meta.getId();
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        final CommonContent commonContentEn = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(ENG_CODE)).findFirst().get();
+        final CommonContent commonContentSv = documentDTO.getCommonContents().stream()
+                .filter(content -> content.getLanguage().getCode().equals(SWE_CODE)).findFirst().get();
+
+        commonContentEn.setHeadline(enHeadline);
+        commonContentEn.setMenuText(enMenuText);
+        commonContentSv.setHeadline(svHeadline);
+        commonContentSv.setMenuText(svMenuText);
+        commonContentSv.setEnabled(false);
+
+        documentService.save(documentDTO);
+
+        final MenuItem menuItem = new MenuItem();
+        menuItem.setSortOrder("1");
+        menuItem.setDocumentId(docId);
+
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem);
+
+        assertThat(menuItemDTO.getDocumentId(), is(docId));
+        assertThat(defaultLang.getCode(), is(ENG_CODE));
+        assertThat(Imcms.getLanguage(), is(svLang));
+        assertThat(menuItemDTO.getTitle(), is(enHeadline));
+        assertThat(menuItemDTO.getMenuText(), is(enMenuText));
+    }
 
 	@Test
 	public void isPublicMenuItem_When_MetaHasStatusNew_Expect_False() {

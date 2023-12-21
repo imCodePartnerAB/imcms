@@ -1,29 +1,27 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentMetadataInitializer;
-import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
+import org.apache.commons.lang3.function.TriFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +35,9 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CommonContentService commonContentService;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
@@ -56,6 +57,8 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private CommonContentRepository commonContentRepository;
 
+    final TriFunction<String, String, Integer, String> generateAlias = (alias, langCode, versionNo) -> alias + "_" + langCode + "_" + versionNo;
+
     @BeforeEach
     public void setUp() {
         tearDown();
@@ -64,6 +67,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     @AfterEach
     public void tearDown() {
         commonContentDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -87,6 +91,86 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
             assertNotNull(commonContentService.getOrCreate(DOC_ID, newVersion, languageDTO));
         }
+    }
+
+    @Test
+    public void getOrCreateCommonContentMultiple_When_CommonContentsExist_Expect_MapDocIdAndCommonContentDTOs() {
+        final Map<Integer, List<CommonContent>> createdCommonContents =
+                documentDataInitializer.createDocumentsData(3, true, true).stream()
+                        .collect(Collectors.toMap(DocumentDTO::getId, DocumentDTO::getCommonContents));
+
+        final Set<Integer> docIds = createdCommonContents.keySet();
+        final Map<Integer, List<CommonContent>> receivedCommonContents =
+                commonContentService.getOrCreateCommonContents(docIds);
+
+        assertEquals(createdCommonContents, receivedCommonContents);
+    }
+
+    @Test
+    public void getOrCreateCommonContentMultiple_When_OneDocumentHasPublishedVersion_Expect_MapDocIdAndLatestVersionCommonContents() {
+        final List<DocumentDTO> documentDTOs = documentDataInitializer.createDocumentsData(3, true, true);
+
+        DocumentDTO publishedDocumentDTO = documentDTOs.get(0);
+        versionDataInitializer.createData(LATEST_VERSION_INDEX, publishedDocumentDTO.getId());
+        final List<CommonContentJPA> publishedCommonContents = publishedDocumentDTO.getCommonContents().stream()
+                .map(commonContent -> {
+                    final Language language = commonContent.getLanguage();
+                    String alias = generateAlias.apply("alias", language.getCode(), LATEST_VERSION_INDEX);
+                    String headline = "headline_" + language.getCode() + "_" + LATEST_VERSION_INDEX;
+                    String menuText = "menuText_" + language.getCode() + "_" + LATEST_VERSION_INDEX;
+
+                    return new CommonContentJPA(
+                            commonContent.getDocId(), alias, new LanguageJPA(language), headline, menuText, true, LATEST_VERSION_INDEX);
+                })
+                .toList();
+        final List<CommonContentJPA> savedPublishedCommonContents = commonContentRepository.saveAll(publishedCommonContents);
+
+        final Map<Integer, List<CommonContent>> expectedCommonContents = documentDTOs.stream()
+                .collect(Collectors.toMap(DocumentDTO::getId, DocumentDTO::getCommonContents));
+        expectedCommonContents.put(publishedDocumentDTO.getId(), savedPublishedCommonContents
+                .stream().map(commonContentJPA -> (CommonContent) new CommonContentDTO(commonContentJPA)).toList());
+
+        final Set<Integer> docIds = expectedCommonContents.keySet();
+        final Map<Integer, List<CommonContent>> receivedCommonContents =
+                commonContentService.getOrCreateCommonContents(docIds);
+
+        assertEquals(expectedCommonContents, receivedCommonContents);
+    }
+
+    @Test
+    public void getOrCreateCommonContentMultiple_When_OneDocumentDoesNotHaveCommonContents_Expect_CreatedMissingCommonContents() {
+        final DocumentDTO document = documentDataInitializer.createData();
+
+        final DocumentDTO documentWithoutCommonContent = documentDataInitializer.createData();
+        commonContentRepository.deleteByDocId(documentWithoutCommonContent.getId());
+
+        final List<LanguageDTO> availableLangs = languageDataInitializer.createData();
+        final List<Integer> docIds = List.of(document.getId(), documentWithoutCommonContent.getId());
+
+        final Map<Integer, List<CommonContent>> receivedCommonContents =
+                commonContentService.getOrCreateCommonContents(docIds);
+
+        assertEquals(docIds.size(), receivedCommonContents.size());
+        boolean hasCommonContentsForAllAvailableLangs = receivedCommonContents.entrySet().stream()
+                .allMatch(commonContent -> commonContent.getValue().size() == availableLangs.size());
+        assertTrue(hasCommonContentsForAllAvailableLangs);
+    }
+
+    @Test
+    public void getMultiple_When_OneDocumentDoesNotExist_Expect_MapWithoutNonexistentDoc() {
+        final int numberOfExistingDocument = 3;
+
+        final Map<Integer, List<CommonContent>> createdCommonContents =
+                documentDataInitializer.createDocumentsData(numberOfExistingDocument, true, true).stream()
+                        .collect(Collectors.toMap(DocumentDTO::getId, DocumentDTO::getCommonContents));
+        final int nonexistentDocId = 1000;
+
+        final Set<Integer> docIds = new HashSet<>(createdCommonContents.keySet());
+        docIds.add(nonexistentDocId);
+        final Map<Integer, List<CommonContent>> receivedCommonContents =
+                commonContentService.getOrCreateCommonContents(docIds);
+
+        assertEquals(numberOfExistingDocument, receivedCommonContents.size());
     }
 
     @Test
@@ -140,7 +224,59 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void setAsWorking_Expected_CopyCommonDataFromSpecificVersionToWorkingVersion(){
+    public void saveCommonContent_When_CommonContentsHaveDuplicateAlias_Expect_SavedWithEmptyAliases() {
+        versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+
+        final String duplicateAlias = "duplicateAlias";
+
+        final List<CommonContent> commonContentList = languageDataInitializer.createData()
+                .stream()
+                .map(languageDTO -> Value.with(new CommonContentDTO(), contentDTO -> {
+                    contentDTO.setVersionNo(WORKING_VERSION_INDEX);
+                    contentDTO.setDocId(DOC_ID);
+                    contentDTO.setLanguage(languageDTO);
+                    contentDTO.setAlias(duplicateAlias);
+                }))
+                .collect(Collectors.toList());
+
+        commonContentService.save(DOC_ID, commonContentList);
+
+        for (CommonContent commonContent : commonContentList) {
+            final CommonContent savedCommonContent = commonContentService.getOrCreate(
+                    DOC_ID, WORKING_VERSION_INDEX, commonContent.getLanguage()
+            );
+            assertTrue(savedCommonContent.getAlias().isEmpty());
+        }
+    }
+
+    @Test
+    public void saveCommonContent_When_CommonContentWithSameAliasAlreadyExists_Expect_SavedWithEmptyAlias() {
+        final String duplicateAlias = "duplicateAlias";
+        final LanguageDTO languageDTO = languageDataInitializer.createData().get(0);
+
+        final Integer newDocId = documentDataInitializer.createData().getId();
+        final CommonContent commonContentNewDoc = commonContentService.getOrCreate(newDocId, WORKING_VERSION_INDEX, languageDTO);
+        commonContentNewDoc.setAlias(duplicateAlias);
+        commonContentService.save(newDocId, List.of(commonContentNewDoc));
+
+        final CommonContent savedCommonContentNewDoc = commonContentService.getOrCreate(newDocId, WORKING_VERSION_INDEX, languageDTO);
+        assertEquals(duplicateAlias, savedCommonContentNewDoc.getAlias());
+
+        versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+        final CommonContentDTO commonContentWithSameAlias = Value.with(new CommonContentDTO(), commonContentDTO -> {
+            commonContentDTO.setVersionNo(WORKING_VERSION_INDEX);
+            commonContentDTO.setDocId(DOC_ID);
+            commonContentDTO.setLanguage(languageDTO);
+            commonContentDTO.setAlias(duplicateAlias);
+        });
+        commonContentService.save(DOC_ID, List.of(commonContentWithSameAlias));
+
+        final CommonContent savedContentWithSameAlias = commonContentService.getOrCreate(DOC_ID, WORKING_VERSION_INDEX, languageDTO);
+        assertTrue(savedContentWithSameAlias.getAlias().isEmpty());
+    }
+
+    @Test
+    public void setAsWorking_Expected_CopyCommonDataFromSpecificVersionToWorkingVersion() {
         final int version1 = LATEST_VERSION_INDEX;
         final int version2 = 2;
 
@@ -158,7 +294,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
             CommonContentJPA content = new CommonContentJPA();
             content.setVersionNo(WORKING_VERSION_INDEX);
             content.setEnabled(true);
-            content.setAlias(aliasText);
+            content.setAlias(generateAlias.apply(aliasText, languageDTO.getCode(), WORKING_VERSION_INDEX));
             content.setMenuText(menuText);
             content.setHeadline(headline);
             content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
@@ -167,13 +303,13 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
             CommonContentJPA contentVersion1 = new CommonContentJPA(content);
             contentVersion1.setVersionNo(version1);
-            contentVersion1.setAlias(aliasText + version1);
+            contentVersion1.setAlias(generateAlias.apply(aliasText, languageDTO.getCode(), version1));
             contentVersion1.setMenuText(menuText + version1);
             contentVersion1.setHeadline(headline + version1);
 
             CommonContentJPA contentVersion2 = new CommonContentJPA(content);
             contentVersion2.setVersionNo(version2);
-            contentVersion2.setAlias(aliasText + version2);
+            contentVersion2.setAlias(generateAlias.apply(aliasText, languageDTO.getCode(), version2));
             contentVersion2.setMenuText(menuText + version2);
             contentVersion2.setHeadline(headline + version2);
 
@@ -216,7 +352,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
             CommonContentJPA content = new CommonContentJPA();
             content.setVersionNo(WORKING_VERSION_INDEX);
             content.setEnabled(true);
-            content.setAlias(aliasText);
+            content.setAlias(generateAlias.apply(aliasText, languageDTO.getCode(), WORKING_VERSION_INDEX));
             content.setMenuText(menuText);
             content.setHeadline(headline);
             content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));
@@ -225,7 +361,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
             CommonContentJPA contentVersion2 = new CommonContentJPA(content);
             contentVersion2.setVersionNo(version2);
-            contentVersion2.setAlias(aliasText + version2);
+            contentVersion2.setAlias(generateAlias.apply(aliasText, languageDTO.getCode(), version2));
             contentVersion2.setMenuText(menuText + version2);
             contentVersion2.setHeadline(headline + version2);
 
@@ -249,7 +385,9 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
                     content.setId(null);
                     content.setVersionNo(null);
                     return content;
-                }).collect(Collectors.toList());
+                })
+                .sorted(Comparator.comparing(o -> o.getLanguage().getCode()))
+                .toList();
 
         List<CommonContentDTO> bDTO = b.stream()
                 .map(contentJPA -> {
@@ -257,7 +395,9 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
                     content.setId(null);
                     content.setVersionNo(null);
                     return content;
-                }).collect(Collectors.toList());
+                })
+                .sorted(Comparator.comparing(o -> o.getLanguage().getCode()))
+                .toList();
 
         return aDTO.equals(bDTO);
     }
@@ -285,7 +425,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
             CommonContentJPA content = new CommonContentJPA();
             content.setVersionNo(WORKING_VERSION_INDEX);
             content.setEnabled(true);
-            content.setAlias("alias" + languageDTO.getCode());
+            content.setAlias(generateAlias.apply("alias", languageDTO.getCode(), WORKING_VERSION_INDEX));
             content.setMenuText("menuText" + languageDTO.getCode());
             content.setHeadline("headline" + languageDTO.getCode());
             content.setDocumentMetadataList(documentMetadataInitializer.createDTO(languageDTO));

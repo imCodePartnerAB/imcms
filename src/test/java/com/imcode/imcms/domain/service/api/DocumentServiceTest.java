@@ -248,6 +248,53 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getMultiple_When_DocumentsExist_Expect_ListDocuments() {
+        final List<DocumentDTO> expectedDocs = documentDataInitializer.createDocumentsData(
+                10, true, true);
+
+        final List<DocumentDTO> actualDocs = documentService.get(
+                expectedDocs.stream().map(DocumentDTO::getId).collect(Collectors.toList())
+        );
+        assertEquals(expectedDocs, actualDocs);
+    }
+
+    @Test
+    public void getMultiple_When_DocumentHasOnlyWorkingVersion_Expect_ListWithWorkingVersionDocument(){
+        final DocumentDTO documentWorkingVersion = documentDataInitializer.createData();
+
+        final int latestVersionNo = versionService.getLatestVersion(documentWorkingVersion.getId()).getNo();
+        assertEquals(Version.WORKING_VERSION_INDEX, latestVersionNo);
+
+        final List<DocumentDTO> expectedDocs = List.of(documentWorkingVersion);
+        final List<DocumentDTO> actualDocs = documentService.get(List.of(documentWorkingVersion.getId()));
+
+        assertEquals(expectedDocs, actualDocs);
+    }
+
+    @Test
+    public void getMultiple_When_DocumentIsPublished_Expect_ListWithPublishedVersionDocument(){
+        final DocumentDTO documentWorkingVersion = documentDataInitializer.createData();
+                    
+        assertTrue(documentService.publishDocument(documentWorkingVersion.getId(), Imcms.getUser().getId()));
+
+        final int latestVersionNo = versionService.getLatestVersion(documentWorkingVersion.getId()).getNo();
+        assertNotEquals(Version.WORKING_VERSION_INDEX, latestVersionNo);
+
+        final List<DocumentDTO> expectedDocs = List.of(documentService.get(documentWorkingVersion.getId(), latestVersionNo));
+        final List<DocumentDTO> actualDocs = documentService.get(List.of(documentWorkingVersion.getId()));
+        assertEquals(expectedDocs, actualDocs);
+    }
+
+    @Test
+    public void getMultiple_When_OneDocumentDoesNotExist_Expect_ListWithoutNonexistentDoc(){
+        final DocumentDTO createdDoc = documentDataInitializer.createData();
+        int nonexistentDocId = 1000;
+
+        final List<DocumentDTO> documentDTOS = documentService.get(List.of(createdDoc.getId(), nonexistentDocId));
+        assertEquals(1, documentDTOS.size());
+    }
+
+    @Test
     public void save_With_Target_Expect_Saved() {
         final String testTarget = "_test";
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
@@ -907,16 +954,18 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         AtomicBoolean isEnabledSwitcher = new AtomicBoolean(false);
 
         for (int i = 1; i <= 2; i++) {
+            int finalI = i;
+
             final String head = "head" + i;
             final String menuText = "menu text" + i;
-	        final String alias = "alias" + i;
+            final Function<String, String> generateAlias = (lang) -> "alias" + finalI + lang;
             final boolean isEnabled = isEnabledSwitcher.getAndSet(!isEnabledSwitcher.get());
 
             publishedDoc.getCommonContents().forEach(commonContent -> {
                 commonContent.setHeadline(head);
                 commonContent.setEnabled(isEnabled);
                 commonContent.setMenuText(menuText);
-	            commonContent.setAlias(alias);
+	            commonContent.setAlias(generateAlias.apply(commonContent.getLanguage().getCode()));
             });
 
             documentService.save(publishedDoc);
@@ -926,7 +975,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
                 assertEquals(menuText, commonContent.getMenuText());
-				assertEquals(alias, commonContent.getAlias());
+				assertEquals(generateAlias.apply(commonContent.getLanguage().getCode()), commonContent.getAlias());
             });
 
             isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
@@ -938,7 +987,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
                 assertEquals(menuText, commonContent.getMenuText());
-				assertEquals(alias, commonContent.getAlias());
+				assertEquals(generateAlias.apply(commonContent.getLanguage().getCode()), commonContent.getAlias());
             });
         }
     }

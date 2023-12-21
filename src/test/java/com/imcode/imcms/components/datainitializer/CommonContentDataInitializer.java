@@ -44,12 +44,26 @@ public class CommonContentDataInitializer extends TestDataCleaner {
         LanguageJPA se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
 
+        String aliasEn = "alias_en";
+        String aliasSE = "alias_se";
+
+        String aliasEnResult = aliasEn;
+        String aliasSEResult = aliasSE;
+
+        int index = 0;
+
+        while(commonContentRepository.existsByAlias(aliasEnResult) && commonContentRepository.existsByAlias(aliasSEResult)){
+            index++;
+            aliasEnResult = aliasEn + "_" + index;
+            aliasSEResult = aliasSE + "_" + index;
+        }
+
         return Arrays.asList(
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-		                version.getDocId(), "alias_en", en, "headline_en", "menuText_en", isEnabledEngContent, version.getNo()
+		                version.getDocId(), aliasEnResult, en, "headline_en", "menuText_en", isEnabledEngContent, version.getNo()
                 )),
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-		                version.getDocId(), "alias_se", se, "headline_se", "menuText_se", isEnabledSweContent, version.getNo()
+		                version.getDocId(), aliasSEResult, se, "headline_se", "menuText_se", isEnabledSweContent, version.getNo()
                 ))
         );
     }
