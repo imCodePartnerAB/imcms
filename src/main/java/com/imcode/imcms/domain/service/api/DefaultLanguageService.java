@@ -146,7 +146,7 @@ class DefaultLanguageService implements LanguageService {
     }
 
     //be careful with this! This remove language on the whole system!
-    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME)
+    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME, allEntries = true)
     @Override
     public void deleteByCode(String code) {
         final LanguageJPA foundLanguage = languageRepository.findByCode(convertLanguage(code));
@@ -163,7 +163,7 @@ class DefaultLanguageService implements LanguageService {
         languageRepository.delete(foundLanguage);
     }
 
-    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME)
+    @CacheEvict(cacheNames = LANGUAGE_CACHE_NAME, allEntries = true)
     @Override
     public void save(Language language) {
         final String nameLanguage = language.getName();
