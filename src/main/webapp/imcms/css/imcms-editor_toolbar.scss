@@ -1,3 +1,5 @@
+@import "variables";
+
 .standalone-editor-body .imcms-editor-window {
     top: 50px;
     height: calc(100% - 50px);
@@ -14,6 +16,7 @@
 
 .imcms-editor-toolbar {
     height: 50px;
+    background-color: #389ECF;
 }
 
 .imcms-editor-toolbar-panel__item {
@@ -22,10 +25,11 @@
     margin-right: 30px;
     height: 40px;
 
-    color: #587380;
+    color: white;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
     text-transform: uppercase;
+    line-height: 3;
 }
 
 .imcms-editor-toolbar-panel__item .imcms-flag {
@@ -55,6 +59,15 @@
 .imcms-editor-toolbar-panel--close-button{
     float: right;
     margin-right: 5px;
+}
+
+.imcms-standalone-editor-toolbar__logo {
+  background: url("#{$context-path}/imcms/images/icon_logo_main_black.png") no-repeat 0 0;
+  background-size: contain;
+  text-indent: -99999px;
+  display: block;
+  width: 115px;
+  margin: 5px 0 0 5px;
 }
 
 @media screen and (max-width: 1800px) {
