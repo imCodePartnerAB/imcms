@@ -9,8 +9,6 @@ define("imcms-standalone-editor-toolbar-builder",
     ],
     function (BEM, componentsBuilder, $) {
 
-        let $panelContainer, $panel;
-
         function buildFlags() {
             return componentsBuilder.flags.flagsContainer(language => ["<div>", {
                 text: language.code,
@@ -49,8 +47,13 @@ define("imcms-standalone-editor-toolbar-builder",
                         } else break;
 
                         $itemContainer = $("<div>")
-                            .append(componentsBuilder.buttons.closeButton().click(onClose))
+                            .append(componentsBuilder.buttons.closeButton().click(onClose).css("margin-top","15px"))
                             .addClass("imcms-editor-toolbar-panel--close-button");
+                        break;
+                    case 'logo':
+                        $itemContainer=$("<a>")
+                            .attr("href", item.link)
+                            .addClass("imcms-standalone-editor-toolbar__logo")
                         break;
                     default:
                         $itemContainer.append(
@@ -68,26 +71,18 @@ define("imcms-standalone-editor-toolbar-builder",
             const panelAttributes = {
                 id: "imcms-editor-toolbar-panel",
             };
-            return $panel = toolbarBEM.buildBlock("<div>", toolbarElements, panelAttributes, "item");
+            return toolbarBEM.buildBlock("<div>", toolbarElements, panelAttributes, "item");
 
         }
 
         return {
             buildPanel: itemsToDisplay => {
-                if ($panelContainer) {
-                    return;
-                }
-
-                $panelContainer = $("<div>", {
+                return $("<div>", {
                     "id": "imcms-editor-toolbar",
                     "class": "imcms-editor-toolbar",
                     html: createToolbarPanel(itemsToDisplay)
                 });
-
-                $("body")
-                    .addClass("standalone-editor-body")
-                    .prepend($panelContainer);
-            }
+            },
         }
     }
 );
