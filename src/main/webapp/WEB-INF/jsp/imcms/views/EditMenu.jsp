@@ -29,8 +29,8 @@
 
 <input type="hidden" id="return-url" value="${returnUrl}">
 <div class="imcms-editor-area imcms-editor-area--menu"
-     data-doc-id="${targetDocId}" data-menu-index="${index}">
-    <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+     data-doc-id="${targetDocId}" data-menu-index="${index}" data-label="${label}">
+    <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId} data-label="${label}""
          data-menu-index="${index}"></div>
 </div>
 

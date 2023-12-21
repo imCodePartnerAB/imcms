@@ -30,9 +30,8 @@
 
 <input type="hidden" id="return-url" value="${returnUrl}">
 <input id="targetDocId" type="hidden" value="${targetDocId}">
-<input type="hidden" id="return-url" value="${returnUrl}">
 
-<imcms:text document="${targetDocId}" index="${index}"/>
+<imcms:text document="${targetDocId}" index="${index}" label="${label}" standalone="true"/>
 
 </body>
 </html>

@@ -61,6 +61,7 @@ public class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.TEXT)
     public ModelAndView editText(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "label", required = false) String label,
                                  @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
@@ -82,7 +83,7 @@ public class SuperAdminController {
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("language", language.getCode());
-        addCommonModelData(metaId, index, returnUrl, request, mav);
+        addCommonModelData(metaId, index, label, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
     }
@@ -99,6 +100,7 @@ public class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.IMAGE)
     public ModelAndView editImage(@RequestParam("meta-id") int metaId,
                                   @RequestParam int index,
+                                  @RequestParam(value = "label", required = false) String label,
                                   @RequestParam(value = "lang", required = false) String langCode,
                                   @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                   @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
@@ -118,7 +120,7 @@ public class SuperAdminController {
 
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("langCode", language.getCode());
-        addCommonModelData(metaId, index, returnUrl, request, mav);
+        addCommonModelData(metaId, index, label, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, language));
         return mav;
     }
@@ -127,6 +129,7 @@ public class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.MENU)
     public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "label", required = false) String label,
                                  @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
@@ -134,7 +137,7 @@ public class SuperAdminController {
 
         mav.setViewName("EditMenu");
         addObjectModelViewData(mav, metaId);
-        addCommonModelData(metaId, index, returnUrl, request, mav);
+        addCommonModelData(metaId, index, label, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, getLanguage(langCode, request.getCookies())));
 
         return mav;
@@ -144,13 +147,14 @@ public class SuperAdminController {
     @CheckAccess(docPermission = AccessContentType.LOOP)
     public ModelAndView editLoop(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "label", required = false) String label,
                                  @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
         mav.setViewName("EditLoop");
-        addCommonModelData(metaId, index, returnUrl, request, mav);
+	    addCommonModelData(metaId, index, label, returnUrl, request, mav);
         mav.addObject("currentDocument", new TextDocumentDomainObject(metaId, getLanguage(langCode, request.getCookies())));
 
         return mav;
@@ -194,10 +198,11 @@ public class SuperAdminController {
         return mav;
     }
 
-    private void addCommonModelData(Integer metaId, Integer index, String returnUrl, HttpServletRequest request,
+    private void addCommonModelData(Integer metaId, Integer index, String label, String returnUrl, HttpServletRequest request,
                                     ModelAndView mav) {
 
         mav.addObject("index", index);
+        mav.addObject("label", label);
         addCommonModelData(metaId, returnUrl, request, mav);
     }
 
