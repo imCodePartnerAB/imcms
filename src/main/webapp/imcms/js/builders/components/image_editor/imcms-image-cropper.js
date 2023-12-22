@@ -152,8 +152,8 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
 	newHeight = getValidCropHeightTop(newHeight);
 
 	if (imageResize.isSaveProportionsEnabled()) {
-		const proportionsK = imageResize.getProportionsCoefficient().toFixed(2);
-		const newProportionsK = (newWidth / newHeight).toFixed(2);
+		const proportionsK = imageResize.getProportionsCoefficient();
+		const newProportionsK = (newWidth / newHeight);
 
 		if (proportionsK !== newProportionsK) {
 			if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -209,8 +209,8 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(2);
-	    const newProportionsK = (newWidth / newHeight).toFixed(2);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight);
 
 	    if (proportionsK !== newProportionsK) {
 		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -273,8 +273,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(2);
-	    const newProportionsK = (newWidth / newHeight).toFixed(2);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight);
 
 	    if (proportionsK !== newProportionsK) {
 		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
@@ -341,8 +341,8 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-	    const proportionsK = imageResize.getProportionsCoefficient().toFixed(2);
-	    const newProportionsK = (newWidth / newHeight).toFixed(2);
+	    const proportionsK = imageResize.getProportionsCoefficient();
+	    const newProportionsK = (newWidth / newHeight);
 
 	    if (proportionsK !== newProportionsK) {
 		    if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
