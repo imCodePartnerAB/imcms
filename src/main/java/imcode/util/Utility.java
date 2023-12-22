@@ -322,7 +322,6 @@ public class Utility {
 			documentId = path.substring(documentPathPrefix.length());
 
 			if (documentId.endsWith("/")) documentId = documentId.substring(0, documentId.length() - 1);
-			if (documentId.contains("/")) documentId = StringUtils.substringAfterLast(documentId, "/");
 		}
 		return documentId;
 	}

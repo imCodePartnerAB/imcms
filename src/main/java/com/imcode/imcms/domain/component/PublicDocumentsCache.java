@@ -53,11 +53,26 @@ public class PublicDocumentsCache implements DocumentsCache {
     @Override
     public String calculateKey(HttpServletRequest request) {
         String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
-        String docIdentifier = Utility.extractDocumentIdentifier(Utility.updatePathIfEmpty(path));
+        String docIdentifier = extractDocIdentifier(path);
         String qsIdentifier = buildGetPostQueryStrings(request);
         String documentIdString = docIdentifier + qsIdentifier;
         String langCode = Imcms.getLanguage().getCode();
         return calculateKey(documentIdString, langCode, Imcms.getUser().isDefaultUser());
+    }
+
+    private String extractDocIdentifier(String path) {
+        String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
+        String documentId = null;
+
+        if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
+            documentId = path.substring(documentPathPrefix.length());
+
+            if (documentId.endsWith("/")) documentId = documentId.substring(0, documentId.length() - 1);
+            if (documentId.contains("/")) documentId = StringUtils.substringAfterLast(documentId, "/");
+            if ("".equals(documentId)) documentId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
+        }
+
+        return documentId;
     }
 
     @Override
