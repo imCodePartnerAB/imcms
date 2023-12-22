@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 @Service
@@ -404,9 +404,8 @@ public class DefaultFileService implements FileService {
 
         boolean access = false;
         for (Path pathRoot : rootPaths) {
-            try {
-                access = Files.walk(pathRoot)
-                        .anyMatch(pathWalk -> !(excludeRoot && pathWalk.toString().equals(pathRoot.toString())) && Paths.get(finalNormalize).startsWith(pathWalk));
+            try (Stream<Path> paths = Files.walk(pathRoot)){
+                access = paths.anyMatch(pathWalk -> !(excludeRoot && pathWalk.toString().equals(pathRoot.toString())) && Paths.get(finalNormalize).startsWith(pathWalk));
                 if (access) break;
             } catch (IOException e) {
                 log.warn("There is no such file in the project. Got path: " + pathRoot);

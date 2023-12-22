@@ -100,7 +100,7 @@ define("imcms-image-metadata-builder",
         function buildExifInfoFooter() {
             return WindowBuilder.buildFooter([
                 components.buttons.negativeButton({
-                    text: texts.customExifButton,
+                    text: texts.allExifButton,
                     click: toggleExifInfoMode
                 })
             ]);
@@ -115,12 +115,12 @@ define("imcms-image-metadata-builder",
                 case exifMode.CUSTOM:
                     exifInfoWindowData.$bodyContent.append(exifInfoWindowData.$allExifInfo);
                     exifInfoWindowData.currentExifMode = exifMode.ALL;
-                    $toggleButton.text(texts.allExifButton);
+                    $toggleButton.text(texts.customExifButton);
                     break;
                 case exifMode.ALL:
                     exifInfoWindowData.$bodyContent.append(exifInfoWindowData.$customExifInfo);
                     exifInfoWindowData.currentExifMode = exifMode.CUSTOM;
-                    $toggleButton.text(texts.customExifButton);
+                    $toggleButton.text(texts.allExifButton);
                     break;
             }
         }
