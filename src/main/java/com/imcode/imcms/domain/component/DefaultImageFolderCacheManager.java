@@ -8,6 +8,7 @@ import net.sf.ehcache.Element;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static imcode.server.ImcmsConstants.IMAGE_FOLDER_CACHE_NAME;
 
@@ -18,6 +19,18 @@ public class DefaultImageFolderCacheManager implements ImageFolderCacheManager{
 
     public DefaultImageFolderCacheManager(){
         this.cache = CacheManager.getCacheManager(null).getEhcache(IMAGE_FOLDER_CACHE_NAME);
+    }
+
+    @Override
+    public ImageFolderDTO getOrPut(StoragePath storagePath, Supplier<ImageFolderDTO> imageFolderSupplier) {
+        if(existInCache(storagePath))
+            return getCache(storagePath);
+
+        final ImageFolderDTO imageFolder = imageFolderSupplier.get();
+
+        cache(storagePath, imageFolder);
+
+        return imageFolder;
     }
 
     @Override

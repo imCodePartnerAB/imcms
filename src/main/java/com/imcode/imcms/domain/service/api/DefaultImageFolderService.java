@@ -71,15 +71,9 @@ class DefaultImageFolderService implements ImageFolderService {
 
     @Override
     public ImageFolderDTO getImageFolder() {
-        if(imageFolderCacheManager.existInCache(storageImagesPath)){
-            return imageFolderCacheManager.getCache(storageImagesPath);
-        }
-
-        final ImageFolderDTO imageFolder = storagePathToImageFolderDTO.apply(storageImagesPath, true);
-
-        imageFolderCacheManager.cache(storageImagesPath, imageFolder);
-
-        return imageFolder;
+        return imageFolderCacheManager.getOrPut(storageImagesPath, () ->
+                storagePathToImageFolderDTO.apply(storageImagesPath, true)
+        );
     }
 
     @Override
@@ -158,20 +152,17 @@ class DefaultImageFolderService implements ImageFolderService {
     public ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages) {
         final StoragePath folderPath = storageImagesPath.resolve(DIRECTORY, folderToGetImages.getPath());
 
-        if(imageFolderCacheManager.existInCache(folderPath)){
-            return imageFolderCacheManager.getCache(folderPath);
-        }
+        return imageFolderCacheManager.getOrPut(folderPath, () -> {
+                    List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
+                            .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
+                            .map(storagePathToImageFileDTO)
+                            .collect(Collectors.toList());
 
-        final List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
-                .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
-                .map(storagePathToImageFileDTO)
-                .collect(Collectors.toList());
+                    folderToGetImages.setFiles(folderFiles);
 
-        folderToGetImages.setFiles(folderFiles);
-
-        imageFolderCacheManager.cache(folderPath, folderToGetImages);
-
-        return folderToGetImages;
+                    return folderToGetImages;
+                }
+        );
     }
 
     @Override
