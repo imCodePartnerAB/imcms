@@ -429,7 +429,7 @@ class MappingConfig {
 
                 imageFileDTO.setSize(formatFileSize(imageFile.size()));
 
-                final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile.getContent());
+                final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile.getContent(), imageFileDTO.getFormat());
                 if (imageDimension != null) {
                     imageFileDTO.setWidth(imageDimension.width);
                     imageFileDTO.setHeight(imageDimension.height);
