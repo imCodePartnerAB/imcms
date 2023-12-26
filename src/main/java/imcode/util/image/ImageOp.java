@@ -304,6 +304,11 @@ public class ImageOp {
         return this;
     }
 
+    public ImageOp autoOrient(){
+        args.add("-auto-orient");
+        return this;
+    }
+
     public ImageOp info(){
         args.add("info:");
         return this;
