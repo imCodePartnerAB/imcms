@@ -4,7 +4,9 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.icc.IccDirectory;
 import com.imcode.imcms.components.exception.CompressionImageException;
 import com.imcode.imcms.components.impl.compressor.image.DefaultImageCompressor;
@@ -16,16 +18,12 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.ImageCropRegion;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.*;
-import imcode.util.image.Filter;
-import imcode.util.image.Format;
-import imcode.util.image.ImageOp;
-import imcode.util.image.Resize;
+import imcode.util.image.*;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 import lombok.SneakyThrows;
@@ -188,6 +186,47 @@ public class ImcmsImageUtils {
         return filename + suffix;
     }
 
+    public static Dimension getImageDimension(InputStream imgInputStream, Format format) {
+        Dimension imageDimension = null;
+
+        try {
+            final InputStream bufferedInputStream = new BufferedInputStream(imgInputStream, imgInputStream.available());
+            bufferedInputStream.mark(Integer.MAX_VALUE);
+
+            imageDimension = getImageDimension(bufferedInputStream);
+
+            // Check Exif tag Orientation. If it shows the image is rotated to the left or right, we need to correct
+            // the resulting width and height.
+            if (imageDimension != null && (format == Format.JPEG || format == Format.JPG)) {
+
+                bufferedInputStream.reset();
+                final ExifOrientation exifOrientation = getExifOrientation(bufferedInputStream);
+                if (exifOrientation == ExifOrientation.LEFT || exifOrientation == ExifOrientation.FLIPPED_LEFT ||
+                        exifOrientation == ExifOrientation.RIGHT || exifOrientation == ExifOrientation.FLIPPED_RIGHT) {
+
+                    imageDimension.setSize(imageDimension.getHeight(), imageDimension.getWidth());  //swap width and height
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error reading image dimension", e);
+        }
+
+        return imageDimension;
+    }
+
+    public static ExifOrientation getExifOrientation(InputStream imgInputStream)
+            throws ImageProcessingException, MetadataException, IOException {
+
+        final Metadata metadata = ImageMetadataReader.readMetadata(imgInputStream);
+        final ExifIFD0Directory exifDirectory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+        if (exifDirectory != null && exifDirectory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+            final int orientation = exifDirectory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            return ExifOrientation.fromValue(orientation);
+        }
+
+        return null;
+    }
+
     /**
      * Gets image dimensions for given image input stream
      *
@@ -329,6 +368,10 @@ public class ImcmsImageUtils {
 
     private static byte[] generateImage(File imageFile, ImageData image) {
         final ImageOp operationGenerateImage = new ImageOp(imageMagickPath).input(imageFile);
+
+        if(image.getFormat() == Format.JPEG){
+            operationGenerateImage.autoOrient();    //reset EXIF "Orientation" setting to generate correctly
+        }
 
         setCropRegion(image, operationGenerateImage);
         setSize(image, operationGenerateImage);

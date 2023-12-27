@@ -103,7 +103,7 @@ define(
                 spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
-                $fileFormat.selectValue(imageData.format);
+                $fileFormat.selectValue(imageData.format === "JPG" ? "JPEG" : imageData.format);
                 if (checkExistImageData(imageData)) {
                     $editableControls.children().not(".imcms-advanced-mode").not(".imcms-history-mode").show();
                     $imageInfoPath.text(path.normalize(`${imageData.path}`)).show();

@@ -90,13 +90,17 @@ public class PublicDocumentsCache implements DocumentsCache {
 		if (cache == null) return;
 
 		for (String language : languages) {
-            cache.removeAll(List.of(calculateKey(String.valueOf(id), language, true),
-                    calculateKey(String.valueOf(id), language, false)));
+            cache.removeAll(List.of(
+                    calculateKey(String.valueOf(id), language, true),
+                    calculateKey(String.valueOf(id), language, false),
+                    calculateKey(String.valueOf(id), language)));
 
 			if (CollectionUtils.isNotEmpty(aliases)) {
 				for (String alias : aliases) {
-					cache.removeAll(List.of(calculateKey(alias, language, true),
-                            calculateKey(alias, language, false)));
+					cache.removeAll(List.of(
+                            calculateKey(alias, language, true),
+                            calculateKey(alias, language, false),
+                            calculateKey(String.valueOf(id), language)));
 				}
 			}
 		}
