@@ -402,7 +402,10 @@ public class ImcmsImageUtils {
     }
 
     public static String getCommentMetadata(InputStream inputStream){
-        return new String(new ImageOp(imageMagickPath).format("%c").input(inputStream, 0).infoProcess());
+        final byte[] result = new ImageOp(imageMagickPath).identify().format("%c").input(inputStream, 0).identifyProcess();
+        return Optional.ofNullable(result)
+                .map(String::new)
+                .orElse("");
     }
 
     public static ExifDTO getExif(ImageSource imageSource){
@@ -420,15 +423,23 @@ public class ImcmsImageUtils {
         return null;
     }
 
-    private static Integer getNumberOfColors(File imageFile){
-        final ImageOp operationGetColors = new ImageOp(imageMagickPath).input(imageFile);
-        String separator = ";";
-        setNumberOfColorsToGet(separator, operationGetColors);
-        return Arrays.stream(new String(operationGetColors.infoProcess()).split(separator))
-                .map(Integer::parseInt)
+    private static Integer getNumberOfColors(File imageFile) {
+        final String separator = ";";
 
-                .max(Integer::compareTo)
-                .orElse(null);
+        final ImageOp operationGetColors = new ImageOp(imageMagickPath).identify();
+        setNumberOfColorsToGet(separator, operationGetColors);
+        operationGetColors.input(imageFile);
+
+        final byte[] result = operationGetColors.identifyProcess();
+
+        if (result != null) {
+            return Arrays.stream(new String(result).split(separator))
+                    .map(Integer::parseInt)
+                    .max(Integer::compareTo)
+                    .orElse(null);
+        }
+
+        return null;
     }
 
     /**

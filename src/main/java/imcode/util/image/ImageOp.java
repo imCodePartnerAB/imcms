@@ -155,6 +155,12 @@ public class ImageOp {
         return null;
     }
 
+    public ImageOp identify() {
+        args.set(0, addQuotes(getApplicationPath(ImcmsImageUtils.imageMagickPath, "identify")));
+
+        return this;
+    }
+
     public ImageOp input(byte[] data) {
         inputData = data;
         args.add("-[0]");
@@ -333,6 +339,10 @@ public class ImageOp {
 
     public byte[] infoProcess(){
         this.info();
+        return processToByteArray(args);
+    }
+
+    public byte[] identifyProcess(){
         return processToByteArray(args);
     }
 
