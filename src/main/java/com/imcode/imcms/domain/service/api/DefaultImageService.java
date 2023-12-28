@@ -23,6 +23,7 @@ import imcode.util.ImcmsImageUtils;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -43,6 +44,11 @@ import static java.util.stream.Collectors.*;
 @Transactional
 @Service("imageService")
 class DefaultImageService extends AbstractVersionedContentService<ImageJPA, ImageRepository> implements ImageService {
+
+    //@Cachable works by proxy class, only external method calls coming in through the proxy are intercepted.
+    //In order to use the cache when we call a method inside own class, we need to use the autowired bean of this class.
+    @Autowired
+    private ImageService self;
 
     private final VersionService versionService;
     private final LanguageService languageService;
@@ -89,7 +95,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             return imageInTextFactory.createWithIndex(dataHolder);
         }
 
-        return getImage(
+        return self.getImage(
                 dataHolder.getDocId(),
                 dataHolder.getIndex(),
                 dataHolder.getLangCode(),
@@ -118,15 +124,17 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         return getImage(docId, index, langCode, loopEntryRef, versionService.getLatestVersion(docId));
     }
 
-	@Override
-	public List<ImageDTO> getLoopImages(int docId, String langCode, int loopIndex) {
-		final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(langCode));
+    @Override
+    public List<ImageDTO> getLoopImages(int docId, String langCode, int loopIndex) {
+        final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(langCode));
 
-		return repository.findByVersionAndLanguageAndLoopIndex(versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
-				.stream()
-				.map(imageJPAToImageDTO)
-				.collect(Collectors.toList());
-	}
+        return repository.findByVersionAndLanguageAndLoopIndex(
+                        versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
+                .parallelStream()
+                .map(imageJPA ->    //use cache
+                        self.getImage(docId, imageJPA.getIndex(), langCode, new LoopEntryRefDTO(imageJPA.getLoopEntryRef()))
+                ).toList();
+    }
 
 	@Override
     public List<ImageJPA> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
