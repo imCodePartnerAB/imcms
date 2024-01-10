@@ -415,164 +415,166 @@ function init(_imageData) {
         top: 0,
         left: 0,
     });
-    cropArea.getImage().attr('src', src);
-    cropArea.getCroppingImage().attr('src', src);
 
-    let isMouseDown = false;
-    let isResizing = false;
+    cropArea.getCroppingImage().on("load", function () {
+        let isMouseDown = false;
+        let isResizing = false;
 
-    imageData = _imageData;
-    $imageEditor = $('.imcms-image_editor');
+        imageData = _imageData;
+        $imageEditor = $('.imcms-image_editor');
 
-    angleBorderSize = angles.getBorderSize();
+        angleBorderSize = angles.getBorderSize();
 
-    imageCoords = cropArea.getImage().offset();
-    imageCoords.top -= angleBorderSize;
-    imageCoords.left -= angleBorderSize;
+        imageCoords = cropArea.getImage().offset();
+        imageCoords.top -= angleBorderSize;
+        imageCoords.left -= angleBorderSize;
 
-    const original = imageResize.getOriginal();
-    const originImageWidth = original.width;
-    const originImageHeight = original.height;
+        const original = imageResize.getOriginal();
+        const originImageWidth = original.width;
+        const originImageHeight = original.height;
 
-    if (!originImageWidth || !originImageHeight) return;
+        if (!originImageWidth || !originImageHeight) return;
 
-    const $croppingArea = cropArea.getCroppingArea();
-    let cropRegion = imageData.cropRegion && {...imageData.cropRegion};
+        const $croppingArea = cropArea.getCroppingArea();
+        let cropRegion = imageData.cropRegion && {...imageData.cropRegion};
 
-    if (cropRegion) {
-        if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
-        if (cropRegion.cropY1 < 0) cropRegion.cropY1 = 0;
-        if (cropRegion.cropX2 <= 1) cropRegion.cropX2 = originImageWidth;
-        if (cropRegion.cropY2 <= 1) cropRegion.cropY2 = originImageHeight;
-    } else {
-        cropRegion = {
-            cropX1: 0,
-            cropY1: 0,
-            cropX2: originImageWidth,
-            cropY2: originImageHeight
+        if (cropRegion) {
+            if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
+            if (cropRegion.cropY1 < 0) cropRegion.cropY1 = 0;
+            if (cropRegion.cropX2 <= 1) cropRegion.cropX2 = originImageWidth;
+            if (cropRegion.cropY2 <= 1) cropRegion.cropY2 = originImageHeight;
+        } else {
+            cropRegion = {
+                cropX1: 0,
+                cropY1: 0,
+                cropX2: originImageWidth,
+                cropY2: originImageHeight
+            };
+        }
+
+        croppingAreaParams = {
+            height: cropRegion.cropY2 - cropRegion.cropY1,
+            width: cropRegion.cropX2 - cropRegion.cropX1
         };
-    }
 
-    croppingAreaParams = {
-        height: cropRegion.cropY2 - cropRegion.cropY1,
-        width: cropRegion.cropX2 - cropRegion.cropX1
-    };
+        removeCroppingListeners();
 
-    removeCroppingListeners();
+        setElementWidthHeight(cropArea.getCroppingImage(), originImageWidth, originImageHeight);
+        setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
+        setElementTopLeft($croppingArea, cropRegion.cropY1, cropRegion.cropX1);
+        setElementTopLeft(cropArea.getCroppingImage(), -cropRegion.cropY1, -cropRegion.cropX1);
 
-    setElementWidthHeight(cropArea.getCroppingImage(), originImageWidth, originImageHeight);
-    setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
-    setElementTopLeft($croppingArea, cropRegion.cropY1, cropRegion.cropX1);
-    setElementTopLeft(cropArea.getCroppingImage(), -cropRegion.cropY1, -cropRegion.cropX1);
+        const fixedTop = cropRegion.cropY1 - angleBorderSize;
+        const fixedLeft = cropRegion.cropX1 - angleBorderSize;
+        const fixedRight = originImageWidth - cropRegion.cropX2 - angleBorderSize;
+        const fixedBottom = originImageHeight - cropRegion.cropY2 - angleBorderSize;
 
-    const fixedTop = cropRegion.cropY1 - angleBorderSize;
-    const fixedLeft = cropRegion.cropX1 - angleBorderSize;
-    const fixedRight = originImageWidth - cropRegion.cropX2 - angleBorderSize;
-    const fixedBottom = originImageHeight - cropRegion.cropY2 - angleBorderSize;
+        const zoomVal = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
+        if (!isNaN(zoomVal)) {
+            let angleWidthHeight = Math.round(1000 / Number(zoomVal * 100));
+            let angleBorderWidth = Math.round(100 / Number(zoomVal * 100));
+            $croppingBlock.find('.imcms-angle').each(function () {
+                const $angle = $(this).first();
+                $angle.css({
+                    'width': angleWidthHeight,
+                    'height': angleWidthHeight,
+                    'border-width': angleBorderWidth,
+                })
+            })
+        }
 
-    const zoomVal = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
-    if (!isNaN(zoomVal)) {
-	    let angleWidthHeight = Math.round(1000 / Number(zoomVal * 100));
-	    let angleBorderWidth = Math.round(100 / Number(zoomVal * 100));
-	    $croppingBlock.find('.imcms-angle').each(function () {
-		    const $angle = $(this).first();
-		    $angle.css({
-			    'width': angleWidthHeight,
-			    'height': angleWidthHeight,
-			    'border-width': angleBorderWidth,
-		    })
-	    })
-    }
+        angles.showAll();
 
-    angles.showAll();
+        angles.topLeft.setTopLeft(fixedTop, fixedLeft);
+        angles.topRight.setTopRight(fixedTop, fixedRight);
+        angles.bottomLeft.setBottomLeft(fixedBottom, fixedLeft);
+        angles.bottomRight.setBottomRight(fixedBottom, fixedRight);
 
-    angles.topLeft.setTopLeft(fixedTop, fixedLeft);
-    angles.topRight.setTopRight(fixedTop, fixedRight);
-    angles.bottomLeft.setBottomLeft(fixedBottom, fixedLeft);
-    angles.bottomRight.setBottomRight(fixedBottom, fixedRight);
+        $croppingArea.on('mousedown', event => (isMouseDown = (event.which === 1)) && setCursor("move"));
 
-    $croppingArea.on('mousedown', event => (isMouseDown = (event.which === 1)) && setCursor("move"));
+        let resizeAngleName; // topLeft, topRight, bottomRight, bottomLeft
 
-    let resizeAngleName; // topLeft, topRight, bottomRight, bottomLeft
-
-    function getAngleMouseDownEvent(angleName, cursor) {
-        return event => {
-            if (event.which === 1) {
-                isResizing = true;
-                resizeAngleName = angleName;
-                isMouseDown = true;
-                setCursor(cursor);
+        function getAngleMouseDownEvent(angleName, cursor) {
+            return event => {
+                if (event.which === 1) {
+                    isResizing = true;
+                    resizeAngleName = angleName;
+                    isMouseDown = true;
+                    setCursor(cursor);
+                }
             }
         }
-    }
 
-    angles.topLeft.$angle.on('mousedown', getAngleMouseDownEvent("topLeft", "nw-resize"));
-    angles.topRight.$angle.on('mousedown', getAngleMouseDownEvent("topRight", "ne-resize"));
-    angles.bottomRight.$angle.on('mousedown', getAngleMouseDownEvent("bottomRight", "se-resize"));
-    angles.bottomLeft.$angle.on('mousedown', getAngleMouseDownEvent("bottomLeft", "sw-resize"));
+        angles.topLeft.$angle.on('mousedown', getAngleMouseDownEvent("topLeft", "nw-resize"));
+        angles.topRight.$angle.on('mousedown', getAngleMouseDownEvent("topRight", "ne-resize"));
+        angles.bottomRight.$angle.on('mousedown', getAngleMouseDownEvent("bottomRight", "se-resize"));
+        angles.bottomLeft.$angle.on('mousedown', getAngleMouseDownEvent("bottomLeft", "sw-resize"));
 
-    $imageEditor.on('mouseup', event => {
-        if ((event.which === 1) && isMouseDown) {
-            isMouseDown = false;
-            isResizing = false;
-            setCursor("");
+        $imageEditor.on('mouseup', event => {
+            if ((event.which === 1) && isMouseDown) {
+                isMouseDown = false;
+                isResizing = false;
+                setCursor("");
+            }
+        });
+
+        function setCursor(cursorValue) {
+            [
+                angles.topLeft.$angle,
+                angles.topRight.$angle,
+                angles.bottomRight.$angle,
+                angles.bottomLeft.$angle,
+                cropArea.getCroppingArea(),
+                $imageEditor
+
+            ].forEach($element => $element.css("cursor", cursorValue));
         }
+
+        let prevX, prevY;
+
+        $imageEditor.on('mousemove', event => {
+            if (!isMouseDown) {
+                prevX = undefined;
+                prevY = undefined;
+                return;
+            }
+            const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
+            const newX = ~~getValidCoordX(event.clientX / zoomValue);
+            const newY = ~~getValidCoordY(event.clientY / zoomValue);
+
+            if (prevX === undefined || prevY === undefined) {
+                prevX = newX;
+                prevY = newY;
+                return;
+            }
+
+            const deltaX = prevX - newX;
+            const deltaY = prevY - newY;
+
+            prevX = newX;
+            prevY = newY;
+
+            if (isResizing) {
+                resizeCropper[resizeAngleName](deltaX, deltaY);
+
+            } else {
+                const croppingAreaTop = cropArea.getCroppingArea().getTop();
+                const croppingAreaLeft = cropArea.getCroppingArea().getLeft();
+
+                let newLeft = croppingAreaLeft - deltaX;
+                let newTop = croppingAreaTop - deltaY;
+
+                newLeft = getValidLeftOnMove(newLeft);
+                newTop = getValidTopOnMove(newTop);
+
+                moveCropArea(newTop, newLeft);
+            }
+        });
+
+        $imageEditor.on("dragstart", () => false);
+        cropArea.getImage().attr('src', src);
     });
-
-    function setCursor(cursorValue) {
-        [
-            angles.topLeft.$angle,
-            angles.topRight.$angle,
-            angles.bottomRight.$angle,
-            angles.bottomLeft.$angle,
-            cropArea.getCroppingArea(),
-            $imageEditor
-
-        ].forEach($element => $element.css("cursor", cursorValue));
-    }
-
-    let prevX, prevY;
-
-    $imageEditor.on('mousemove', event => {
-	    if (!isMouseDown) {
-		    prevX = undefined;
-		    prevY = undefined;
-		    return;
-	    }
-	    const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
-	    const newX = ~~getValidCoordX(event.clientX / zoomValue);
-	    const newY = ~~getValidCoordY(event.clientY / zoomValue);
-
-	    if (prevX === undefined || prevY === undefined) {
-		    prevX = newX;
-		    prevY = newY;
-		    return;
-	    }
-
-	    const deltaX = prevX - newX;
-	    const deltaY = prevY - newY;
-
-        prevX = newX;
-        prevY = newY;
-
-        if (isResizing) {
-            resizeCropper[resizeAngleName](deltaX, deltaY);
-
-        } else {
-            const croppingAreaTop = cropArea.getCroppingArea().getTop();
-            const croppingAreaLeft = cropArea.getCroppingArea().getLeft();
-
-            let newLeft = croppingAreaLeft - deltaX;
-            let newTop = croppingAreaTop - deltaY;
-
-            newLeft = getValidLeftOnMove(newLeft);
-            newTop = getValidTopOnMove(newTop);
-
-            moveCropArea(newTop, newLeft);
-        }
-    });
-
-    $imageEditor.on("dragstart", () => false);
+    cropArea.getCroppingImage().attr('src', src);
 }
 
 function removeEventListeners($element, eventsArr) {
@@ -580,7 +582,7 @@ function removeEventListeners($element, eventsArr) {
 }
 
 function removeCroppingListeners() {
-    removeEventListeners(cropArea.getCroppingArea(), ["mousedown", "mouseup"]);
+    removeEventListeners(cropArea.getCroppingArea(), ["mousedown", "mouseup", "load"]);
     angles.forEach($angle => removeEventListeners($angle, ["mousedown", "mouseup"]));
     removeEventListeners($imageEditor, ["mousemove", "mouseup", "dragstart"]);
 }
@@ -600,7 +602,8 @@ function destroy() {
         cropArea.getCroppingArea()
 
     ].forEach($element => $element.removeAttr("style"));
-
+    cropArea.getImage().removeAttr("src");
+    cropArea.getCroppingImage().removeAttr("src");
     removeCroppingListeners();
     angles.hideAll();
 
