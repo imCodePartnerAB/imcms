@@ -752,7 +752,10 @@ define("imcms-image-content-builder",
             let $imgContainer = buildImage(imageFile, folder).css("display", "block");
 
             let $img = $imgContainer.find('img');
-            $img.attr("src", $img.data("src")).removeAttr("data-src").removeAttr("style");
+	        $img.on("load", () => {
+		        $img.removeAttr("data-src").removeAttr("style");
+	        })
+	        $img.attr("src", $img.data("src"));
 
             return $imgContainer;
         }
