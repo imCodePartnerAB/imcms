@@ -99,6 +99,7 @@ define(
                         }
 
                         imageContentBuilder.onImageUpload(formData);
+                        $(this).val('');
                     }
                 });
 

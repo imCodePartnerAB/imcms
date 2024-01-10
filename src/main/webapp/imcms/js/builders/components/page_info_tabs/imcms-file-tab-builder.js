@@ -137,6 +137,7 @@ define("imcms-file-tab-builder",
                     }
 
                     appendFiles(transformFilesToDTO(this.files));
+                    $(this).val('');
                 }
             });
 
