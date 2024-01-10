@@ -18,7 +18,8 @@ let proportionsCoefficient;
 let selectedImgActive = false; // default value
 let existsCropRegion = true;
 
-let maxWidth, maxHeight, minWidth, minHeight;
+let maxWidth, maxHeight, minWidth, minHeight, recursionDepth = 0;
+const MAX_RECURSION_DEPTH = 20;
 
 function trimToMaxMinWidth(newWidth) {
     if (newWidth === 0) newWidth = 1;
@@ -85,7 +86,6 @@ function setHeight(newHeight, isOriginal) {
         } else {
             const oldHeight = $image.height();
             const k = newHeight / oldHeight;
-
             const newImageTop = k * previewImage.getBackgroundPositionY();
             const newImageBackgroundHeight = k * previewImage.getBackgroundHeight();
 
@@ -119,6 +119,14 @@ function updateWidthProportionally(newHeight, isOriginal) {
 	const proportionalWidth = ~~(newHeight * proportionsCoefficient);
 	const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
+    if (recursionDepth >= MAX_RECURSION_DEPTH) {
+        console.debug("Max recursion depth reached. Aborting.");
+        setWidth(proportionalWidth, isOriginal);
+        return;
+    }
+
+    recursionDepth += 1;
+
 	(fixedWidth === proportionalWidth)
 		? setWidth(proportionalWidth, isOriginal)
 		: setWidthProportionally(proportionalWidth, isOriginal); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
@@ -127,6 +135,14 @@ function updateWidthProportionally(newHeight, isOriginal) {
 function updateHeightProportionally(newWidth, isOriginal) {
 	const proportionalHeight = ~~(newWidth / proportionsCoefficient);
 	const fixedHeight = trimToMaxMinHeight(proportionalHeight);
+
+    if (recursionDepth >= MAX_RECURSION_DEPTH) {
+        console.debug("Max recursion depth reached. Aborting.");
+        setHeight(proportionalHeight, isOriginal);
+        return;
+    }
+
+    recursionDepth += 1;
 
 	(fixedHeight === proportionalHeight)
 		? setHeight(proportionalHeight, isOriginal)
@@ -480,6 +496,7 @@ module.exports = {
 	    const currentWidth = isOriginal ? currentSize.width : currentPrevSize.width;
 	    const currentHeight = isOriginal ? currentSize.height : currentPrevSize.height;
 
+        recursionDepth = 0;
 	    setHeightProportionally(currentHeight, isOriginal);
 	    setWidthProportionally(currentWidth, isOriginal);
     },
