@@ -111,22 +111,20 @@ function onImageLoad() {
     const shadowLayout = getShadowLayout();
     const zoomValue = parseFloat(imageZoom.getRelativeZoomValueByOriginalImg());
 
-    setTimeout(() => {
-        const width = $img.width();
-        const height = $img.height();
+    const width = $img.width();
+    const height = $img.height();
 
-        const transformStyle = imageZoom.getUpdatedTransformString(zoomValue, $img);
+    const transformStyle = imageZoom.getUpdatedTransformString(zoomValue, $img);
 
-        shadowLayout.css({
-            width,
-            height,
-        });
+    shadowLayout.css({
+        width,
+        height,
+    });
 
-	    $croppingWrap.css({
-		    transform: transformStyle,
-		    width,
-		    height,
-	    });
+    $croppingWrap.css({
+        transform: transformStyle,
+        width,
+        height,
     });
 }
 
