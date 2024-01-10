@@ -99,68 +99,68 @@ define(
 
             originalImage.setImageSource(imageData, () => {
                 initSize(imageData, true);
+                //load preview image only when original is ready due to recursion in imcms-image-resize => updateSizing()
+                prevImageArea.setPreviewImageSource(imageData, onPreviewImageLoad);
             });
+        }
 
-            prevImageArea.setPreviewImageSource(imageData, () => {
-                const style = $tag.data('style');
-                const resultStyleObj = {};
+        function onPreviewImageLoad () {
+            const style = $tag.data('style');
+            const resultStyleObj = {};
 
-                editSizeControls.getDisplaySizeBlock().css('display', 'none');
-                if (style) {
-                    style.split(';')
-                        .map(x => x.trim())
-                        .filter(x => !!x)
-                        .forEach(x => {
-                            const styleKeyAndValue = x.split(':').map(x => x.trim());
-                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
-                        });
+            editSizeControls.getDisplaySizeBlock().css('display', 'none');
+            if (style) {
+                style.split(';')
+                    .map(x => x.trim())
+                    .filter(x => !!x)
+                    .forEach(x => {
+                        const styleKeyAndValue = x.split(':').map(x => x.trim());
+                        resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                    });
 
-                    let maxWidth = resultStyleObj['max-width'];
+                let maxWidth = resultStyleObj['max-width'];
 
-                    if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
-                        imageData.width = Math.min(imageData.width, maxWidth);
-                        imageResize.setMaxWidth(maxWidth);
-                    }
-
-                    let maxHeight = resultStyleObj['max-height'];
-
-                    if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
-                        imageData.height = Math.min(imageData.height, maxHeight);
-                        imageResize.setMaxHeight(maxHeight);
-                    }
-
-                    let width = parseInt(resultStyleObj.width);
-
-                    if (width) {
-                        imageData.width = width;
-                        imageResize.setMaxWidth(width);
-                        imageResize.setMinWidth(width);
-                        editSizeControls.getWantedWidthControl().getInput().attr('disabled', 'disabled');
-                    }
-
-                    let height = parseInt(resultStyleObj.height);
-
-                    if (height) {
-                        imageData.height = height;
-                        imageResize.setMaxHeight(height);
-                        imageResize.setMinHeight(height);
-                        editSizeControls.getWantedHeightControl().getInput().attr('disabled', 'disabled');
-                    }
-
-                    if (imageResize.isProportionsLockedByStyle()) {
-                        imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
-                        imageResize.setFinalPreviewImageData(imageData);
-                    }
-
-                    if (maxWidth || maxHeight || height || width) {
-                        editSizeControls.getDisplaySizeBlock().css('display', 'flex');
-                    }
+                if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
+                    imageData.width = Math.min(imageData.width, maxWidth);
+                    imageResize.setMaxWidth(maxWidth);
                 }
 
-                initSize(imageData, false);
-                imageResize.disabledSelectedImageFlag();
-                prevImageArea.getPreviewImage().show();
-            });
+                let maxHeight = resultStyleObj['max-height'];
+
+                if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
+                    imageData.height = Math.min(imageData.height, maxHeight);
+                    imageResize.setMaxHeight(maxHeight);
+                }
+
+                let width = parseInt(resultStyleObj.width, 10);
+                if (width) {
+                    imageData.width = width;
+                    imageResize.setMaxWidth(width);
+                    imageResize.setMinWidth(width);
+                    editSizeControls.getWantedWidthControl().getInput().attr('disabled', 'disabled');
+                }
+
+                let height = parseInt(resultStyleObj.height, 10);
+                if (height) {
+                    imageData.height = height;
+                    imageResize.setMaxHeight(height);
+                    imageResize.setMinHeight(height);
+                    editSizeControls.getWantedHeightControl().getInput().attr('disabled', 'disabled');
+                }
+
+                if (imageResize.isProportionsLockedByStyle()) {
+                    imageResize.setCurrentPreviewSize(imageData.width, imageData.height);
+                    imageResize.setFinalPreviewImageData(imageData);
+                }
+
+                if (maxWidth || maxHeight || height || width) {
+                    editSizeControls.getDisplaySizeBlock().css('display', 'flex');
+                }
+            }
+
+            initSize(imageData, false);
+            imageResize.disabledSelectedImageFlag();
+            prevImageArea.getPreviewImage().show();
         }
 
         function fillData(image) {
