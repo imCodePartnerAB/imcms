@@ -24,9 +24,8 @@ module.exports = {
         imageData.size = null;
 
         const actualImage = new Image();
-        actualImage.src = src;
 
-        actualImage.onload = function () {
+        $(actualImage).on("load",function () {
 	        $image.css({'background-size': `${this.width}px ${this.height}px`,});
             const $heightWidthBlock = $('.imcms-image-toolbar__img-origin-size');
             $heightWidthBlock.show();
@@ -36,7 +35,9 @@ module.exports = {
             require('imcms-image-resize').setOriginal(this.width, this.height);
 
             onLoad && onLoad.call();
-        };
+        });
+
+        actualImage.src = src;
     },
 
     setBackgroundPositionX(newPositionX) {

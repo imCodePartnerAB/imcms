@@ -52,15 +52,16 @@ module.exports = {
         $previewImg.css('background-image', `url('${src}')`);
 
         const actualImage = new Image();
-        actualImage.src = src;
 
-        actualImage.onload = function () {
+        $(actualImage).on("load", function () {
 	        $previewImg.css({'background-size': `${this.width}px ${this.height}px`});
             require('imcms-image-resize').setPreview(imageData.width, imageData.height);
             require('imcms-image-resize').setFinalPreviewImageData(imageData);
 
             onLoad && onLoad.call();
-        };
+        });
+
+        actualImage.src = src;
     },
 
     setBackgroundPositionX(newPositionX) {
