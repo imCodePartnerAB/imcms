@@ -57,13 +57,12 @@
 
 .imcms-menu-sort__type-sort-numbering {
 	position: absolute;
-	top: 11%;
-	margin-top: 5px;
+	bottom: 0;
 }
 
-.imcms-menu-head-row__type-sort-block{
+.imcms-menu-head-row__type-sort-block {
 	width: 75%;
-display: flex;
+	display: flex;
 	margin-right: 2%;
 }
 .imcms-menu-head-row__switch-multi-delete {
@@ -76,23 +75,25 @@ display: flex;
 .imcms-menu-editor-head {
 	display: flex;
 	justify-content: space-between;
-	height: 11%;
+	position: relative;
+	height: 100px;
 }
 
 .imcms-menu-head-row {
     display: flex;
-    align-items: center;
 }
 
 .imcms-menu-editor-head__first-line {
 	width: 10%;
 	margin: 0 1% 0 1%;
+	padding-top: 34px;
 }
 
 .imcms-menu-editor-head__second-line {
 	width: 90%;
 	justify-content: space-between;
 	/*margin-left: 5%;*/
+	padding-top: 20px;
 }
 
 .imcms-menu-editor-head .imcms-field .imcms-select__label {
