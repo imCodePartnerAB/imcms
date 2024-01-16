@@ -2725,7 +2725,7 @@ const texts = {
             },
             permissions: {
                 documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
-                name: "Tillatelsesinnstillinger",
+                name: "Tillåtelse",
                 editText: "Rediger tekst",
                 editMenu: "Rediger menyen",
                 editImage: "Rediger bilde",
