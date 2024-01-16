@@ -368,7 +368,7 @@ define("imcms-menu-editor-builder",
             ;
 
             const typeSort = document.getElementById('type-sort').value;
-            removedPreviousItemFrame();ds
+            removedPreviousItemFrame();
 
             if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
                 isPasted = false;
