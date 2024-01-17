@@ -397,6 +397,11 @@ define("imcms-menu-editor-builder",
             isPasted = true;
         }
 
+        const dragDetails = {
+            x: null,
+            y: null
+        }
+
 	    function sortByDragging(container, enable) {
 		    const $container = $(container).children().toArray().filter(entry => !entry.classList.contains("imcms-menu-item"));
 		    $container.forEach(entry => {
@@ -407,6 +412,8 @@ define("imcms-menu-editor-builder",
 					    'dragstart': function () {
 						    isMouseDown = true;
 						    closeSubItems($(this))
+                            //because of firefox bug we need to store these coords globally )
+                            trackUserDragOverCoords();
 					    },
 					    'dragend': function (e) {
 						    isMouseDown = false;
@@ -421,16 +428,24 @@ define("imcms-menu-editor-builder",
 		    })
 	    }
 
+        function trackUserDragOverCoords() {
+            const onDragoverListener = function (e) {
+                dragDetails.x = e.clientX;
+                dragDetails.y = e.clientY;
+            }
+
+            window.removeEventListener('dragover', onDragoverListener);
+            window.addEventListener('dragover', onDragoverListener);
+        }
+
 	    function handleDragWhenSort(e) {
 		    e.preventDefault();
 		    const selectedItem = e.target,
-			    list = selectedItem.parentNode,
-			    x = e.clientX,
-			    y = e.clientY;
+			    list = selectedItem.parentNode;
 
 			//need to disable drag when tag <a> dragging
 		    if (isMenuElementAllowedToDragSort(selectedItem)) {
-			    const elementFromPoint = document.elementFromPoint(x, y);
+			    const elementFromPoint = document.elementFromPoint(dragDetails.x, dragDetails.y);
 			    let swapItem = elementFromPoint === null ? selectedItem : $(elementFromPoint).parents()[1];
 			    selectedItem.classList.add("imcms-menu-items--is-drop");
 
