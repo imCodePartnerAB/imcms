@@ -29,11 +29,14 @@ public abstract class UserValidationResult {
     private boolean emailValid = true;
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
-    private boolean mobilePhoneNumberValid = true;
+    private boolean mobilePhoneNumbersValid = true;
+    private boolean twoFactoryAuthenticationEnabled;
+    private boolean mobilePhoneNumberMissing;
 
     private boolean validUserData;
 
     protected UserValidationResult(UserFormData userData, UserService userService) {
+        setTwoFactoryAuthenticationEnabled(userData.isTwoFactoryAuthenticationEnabled());
         validateLoginName(userData, userService);
         validatePasswords(userData);
         validateEmail(userData, userService);
@@ -56,7 +59,8 @@ public abstract class UserValidationResult {
                 && !emailAlreadyTaken
                 && !emptyUserRoles
                 && !passwordTooWeak
-                && !mobilePhoneNumberValid
+                && mobilePhoneNumbersValid
+                && (!twoFactoryAuthenticationEnabled || !mobilePhoneNumberMissing)
         ;
     }
 
@@ -94,10 +98,18 @@ public abstract class UserValidationResult {
     protected abstract void validateLoginName(UserFormData userData, UserService userService);
 
     protected void validateMobilePhoneNumber(List<Phone> phones) {
-        phones.stream().filter(phone -> phone.getPhoneType().getId().equals(PhoneTypes.MOBILE.getId()))
-                .findAny()
-                .ifPresent(phone -> {
-                    setMobilePhoneNumberValid(Utility.isMobilePhoneNumberValid(phone.getNumber()));
-                });
+        final List<Phone> mobilePhoneNumbers = phones
+                .stream()
+                .filter(phone -> phone.getPhoneType().getId().equals(PhoneTypes.MOBILE.getId())).toList();
+
+        if (!mobilePhoneNumbers.isEmpty()) {
+            final boolean mobilePhoneNumbersValid = mobilePhoneNumbers
+                    .stream()
+                    .allMatch(phone -> Utility.isMobilePhoneNumberValid(phone.getNumber()));
+
+            setMobilePhoneNumbersValid(mobilePhoneNumbersValid);
+        } else {
+            setMobilePhoneNumberMissing(true);
+        }
     }
 }
