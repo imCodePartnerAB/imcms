@@ -107,9 +107,10 @@ define(
                     icon: 'fullscreen',
                     cmd: 'mceFullscreen',
                     title: title,
-                    onPostRender: () => {
+                    onPostRender: function () {
                         if (imcms.textEditorFullScreenEnabled) {
-
+                            this.disabled(true);
+                            this.active(true);
                         }
                     }
                 });
