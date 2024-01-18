@@ -36,6 +36,8 @@ ${"-->"}
            value="<fmt:message key="templates/sv/AdminUserResp.htm/2/1" bundle="${resource_property}"/>"/>
     <input type="hidden" id="pass-verification-failed-text"
            value="<fmt:message key="templates/sv/AdminUserResp.htm/2/2" bundle="${resource_property}"/>"/>
+    <input type="hidden" id="mobile-phone-required"
+           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/3" bundle="${resource_property}"/>"/>
 
     <div class="imcms-info-head">
         <a href="https://www.imcms.net/" class="imcms-info__logo"></a>

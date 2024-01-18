@@ -153,9 +153,12 @@ public class UserAdministrationController {
         if (validationResult.isEmptyUserRoles()) errorMessageKeys.add("error/user_must_have_at_least_one_role");
         if (!validationResult.isEmailValid()) errorMessageKeys.add("error/email_is_invalid");
         if (validationResult.isEmailAlreadyTaken()) errorMessageKeys.add("error/email_is_taken");
-        if (!validationResult.isMobilePhoneNumberValid()) errorMessageKeys.add("error/mobile_phone_number_invalid");
+        if (!validationResult.isMobilePhoneNumbersValid()) errorMessageKeys.add("error/mobile_phone_number_invalid");
         if (validationResult.isLoginAlreadyTaken())
             errorMessageKeys.add("error/servlet/AdminUserProps/username_already_exists");
+        if (validationResult.isTwoFactoryAuthenticationEnabled() && validationResult.isMobilePhoneNumberMissing()) {
+            errorMessageKeys.add("error/mobile_phone_number_missing_with_enabled_2FA");
+        }
 
         if (validationResult.isPassword1TooLong()
                 || validationResult.isPassword1TooShort()
