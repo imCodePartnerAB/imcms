@@ -11,7 +11,9 @@ const BEM = require('imcms-bem-builder');
 const userPropertiesRestAPI = require('imcms-user-properties-rest-api');
 
 const superAdminRoleId = 1;
-
+const PHONES = {
+    MOBILE: 3
+}
 function unBlockingUser() {
     const $form = $('#user-edit-form');
     const blockingFlag = $form.find('#flagControlBlocking');
@@ -30,6 +32,9 @@ function onSubmit(e) {
     const $form = $('#user-edit-form');
     const valuePass = $form.find('input[name=password]').val();
     const valuePass2 = $form.find('input[name=password2]').val();
+    const $2faInput = $form.find('input[name=twoFactoryAuthenticationEnabled]');
+    const $mobilePhoneTypeInput = $form.find(`input[value=${PHONES.MOBILE}][name=userPhoneNumberType]`);
+
     if (!$form.find('input[name=login]').val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
@@ -37,6 +42,10 @@ function onSubmit(e) {
     } else if (valuePass !== valuePass2) {
         e.preventDefault();
         alert($('#pass-verification-failed-text').val());
+        return;
+    } else if ($2faInput.is(':checked') && $mobilePhoneTypeInput.length === 0) {
+        e.preventDefault();
+        alert($('#mobile-phone-required').val());
         return;
     }
 

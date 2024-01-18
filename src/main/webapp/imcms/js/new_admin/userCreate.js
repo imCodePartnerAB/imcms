@@ -6,6 +6,9 @@ const $ = require('jquery');
 const components = require('imcms-components-builder');
 const imcms = require('imcms');
 const modal = require("imcms-modal-window-builder");
+const PHONES = {
+    MOBILE: 3
+}
 let texts = require("imcms-i18n-texts");
 
 const superAdminRoleId = 1;
@@ -20,6 +23,14 @@ function onSubmit(e) {
         || !$pass2.val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
+        return;
+    }
+
+    const $2faInput = $form.find('input[name=twoFactoryAuthenticationEnabled]');
+    const $mobilePhoneTypeInput = $form.find(`input[value=${PHONES.MOBILE}][name=userPhoneNumberType]`);
+    if ($2faInput.is(':checked') && $mobilePhoneTypeInput.length === 0) {
+        e.preventDefault();
+        alert($('#mobile-phone-required').val());
         return;
     }
 
