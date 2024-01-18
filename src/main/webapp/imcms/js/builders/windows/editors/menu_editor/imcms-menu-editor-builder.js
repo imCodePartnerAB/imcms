@@ -1025,7 +1025,13 @@ define("imcms-menu-editor-builder",
 
 	        $numberingSortBox.$input.blur(onInputBlur).keypress(onInputEnterPressed);
 
-	        (sortType === MANUAL || sortType === TREE_SORT) ? $numberingTypeSortFlag.show() : $numberingTypeSortFlag.hide();
+            if((sortType === MANUAL || sortType === TREE_SORT)){
+                $numberingTypeSortFlag.show();
+            }else{
+                $numberingTypeSortFlag.setChecked(false);
+                $numberingTypeSortFlag.hide();
+            }
+
             $numberingTypeSortFlag.isChecked() ? $numberingSortBox.show() : $numberingSortBox.hide();
 
             const $docId = components.texts.titleText('<a>', menuElement.documentId, {
@@ -1696,6 +1702,7 @@ define("imcms-menu-editor-builder",
             prevType = typeSort;
             $menuElementsContainer.append(buildEditorContainer(opts));
 
+            $typesSortSelect.getSelect().selectValue(typeSort)
             addHighlightToSelectItemByLastSavedType($('#type-sort').val(), typeSort);
 
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
