@@ -215,7 +215,7 @@ const texts = {
             },
             permissions: {
                 documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
-                name: "Behörighet",
+                name: "Behörighet (Inst)",
                 editText: "Redigera text",
                 editMenu: "Redigera meny",
                 editImage: "Redigera bild",
@@ -266,6 +266,7 @@ const texts = {
             },
             buttons: {
                 ok: "ok",
+                save: "spara",
                 cancel: "avbryt",
                 saveAndPublish: "spara och publicera",
                 next: "nästa",
@@ -1520,6 +1521,7 @@ const texts = {
             },
             buttons: {
                 ok: "ok",
+                save: "save",
                 cancel: "cancel",
                 saveAndPublish: "save and publish",
                 next: "next",
@@ -2725,7 +2727,7 @@ const texts = {
             },
             permissions: {
                 documentationLink: "user-documentation/document-management/page-info/text-document.html#permission-settings-tab",
-                name: "Tillåtelse",
+                name: "Tillåtelse (Innst)",
                 editText: "Rediger tekst",
                 editMenu: "Rediger menyen",
                 editImage: "Rediger bilde",
@@ -2776,6 +2778,7 @@ const texts = {
             },
             buttons: {
                 ok: "ok",
+                save: "lagre",
                 cancel: "avbryt",
                 saveAndPublish: "lagre og publiser",
                 next: "neste",

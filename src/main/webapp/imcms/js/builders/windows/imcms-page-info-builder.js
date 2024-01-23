@@ -175,7 +175,7 @@ define("imcms-page-info-builder",
 
         function buildPageInfoFooterButtons() {
             $saveBtn = components.buttons.positiveButton({
-                text: texts.buttons.ok,
+                text: texts.buttons.save,
                 click: ifValidDocInfo(confirmSaving),
                 style: 'display: none',
             });
