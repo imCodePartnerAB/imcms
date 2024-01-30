@@ -55,8 +55,6 @@ define("imcms-page-info-builder",
         function saveAndClose(onDocumentSavedCallback) {
             windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
 
-            //Clear modified info before send to API
-            documentDTO.modified = {id: ""};
 	        const commonContents = documentDTO.commonContents;
 
             $loadingAnimation.show();

@@ -99,13 +99,23 @@ define("imcms-life-cycle-tab-builder",
             });
         }
 
+        function buildModifiedDateTimeContainer() {
+            return buildDateTimeContainer({
+                title: texts.modified.title,
+                dateTitle: texts.modified.dateTitle,
+                timeTitle: texts.modified.timeTitle,
+                savedDateTimeTitle: texts.modified.dateTimeTitle,
+                dataTitle: statusRowsNames[1]
+            });
+        }
+
         function buildArchivedDateTimeContainer() {
             return buildDateTimeContainer({
                 title: texts.archived.title,
                 dateTitle: texts.archived.dateTitle,
                 timeTitle: texts.archived.timeTitle,
                 savedDateTimeTitle: texts.archived.dateTimeTitle,
-                dataTitle: statusRowsNames[1]
+                dataTitle: statusRowsNames[2]
             });
         }
 
@@ -115,7 +125,7 @@ define("imcms-life-cycle-tab-builder",
                 dateTitle: texts.publicationEnd.dateTitle,
                 timeTitle: texts.publicationEnd.timeTitle,
                 savedDateTimeTitle: texts.publicationEnd.dateTimeTitle,
-                dataTitle: statusRowsNames[2]
+                dataTitle: statusRowsNames[3]
             });
         }
 
@@ -185,8 +195,14 @@ define("imcms-life-cycle-tab-builder",
             tabData["$" + rowName + "DateTime"].setDate(date).setTime(time);
         }
 
+        function setStatusEditorRowData(rowName, date, time){
+            tabData["$" + rowName + "Date"].setDate(date);
+            tabData["$" + rowName + "Time"].setTime(time);
+        }
+
         var statusRowsNames = [
             "published",
+            "modified",
             "archived",
             "publicationEnd"
         ];
@@ -203,6 +219,7 @@ define("imcms-life-cycle-tab-builder",
         LifeCycleTab.prototype.tabElementsFactory = () => [
             buildDocStatusSelect(),
             buildPublishedDateTimeContainer(),
+            buildModifiedDateTimeContainer(),
             buildArchivedDateTimeContainer(),
             buildPublishEndDateTimeContainer(),
             buildPublisherSelectRow(),
@@ -225,6 +242,8 @@ define("imcms-life-cycle-tab-builder",
             statusRowsNames.forEach(rowName => {
                 setStatusInfoRowDataFromDocument(rowName, document);
             });
+            // modified date -- remove the date from editor fields, but show the current value (to notice changes in fields)
+            setStatusEditorRowData(statusRowsNames[1], '', '');
 
             tabData.$publisherSelect.selectValue(document.published.id);
 

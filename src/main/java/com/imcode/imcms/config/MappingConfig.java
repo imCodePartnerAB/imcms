@@ -296,8 +296,10 @@ class MappingConfig {
 			        ? currentDateTime : creation.getFormattedDate();
 	        meta.setCreatedDatetime(createdDatetime);
 
-	        meta.setModifierId(currentUserId);
-	        meta.setModifiedDatetime(currentDateTime);
+            final Date receivedModifiedDate = documentDTO.getModified().getFormattedDate();
+            final Date modifiedDate = receivedModifiedDate != null ? receivedModifiedDate : currentDateTime;
+            meta.setModifierId(currentUserId);
+            meta.setModifiedDatetime(modifiedDate);
 
 	        final AuditDTO archivationDto = documentDTO.getArchived();
 	        final Date archivationDate = archivationDto.getFormattedDate();

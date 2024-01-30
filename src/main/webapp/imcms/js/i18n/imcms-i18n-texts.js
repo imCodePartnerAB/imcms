@@ -146,6 +146,12 @@ const texts = {
                     timeTitle: "Ange publicerad tid",
                     dateTimeTitle: "Sparad datum / tid"
                 },
+                modified: {
+                    title: "Ändrad",
+                    dateTitle: "Ställ in ändrad datum",
+                    timeTitle: "Ställ in ändrad tid",
+                    dateTimeTitle: "Sparad ändrad datum-tid"
+                },
                 archived: {
                     title: "Arkiverat ",
                     dateTitle: "Ange datum för arkivering",
@@ -1400,6 +1406,12 @@ const texts = {
                     dateTitle: "Set publish date",
                     timeTitle: "Set publish time",
                     dateTimeTitle: "Saved publish date-time"
+                },
+                modified: {
+                    title: "Modified",
+                    dateTitle: "Set modified date",
+                    timeTitle: "Set modified time",
+                    dateTimeTitle: "Saved modified date-time"
                 },
                 archived: {
                     title: "Archived",
@@ -2657,6 +2669,12 @@ const texts = {
                     dateTitle: "Angi publiseringsdato",
                     timeTitle: "Angi publisert tid",
                     dateTimeTitle: "Lagret dato/klokkeslett"
+                },
+                modified: {
+                    title: "Modified",
+                    dateTitle: "Set modified date",
+                    timeTitle: "Set modified time",
+                    dateTimeTitle: "Saved modified date-time"
                 },
                 archived: {
                     title: "Arkivert ",
