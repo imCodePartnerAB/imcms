@@ -134,9 +134,9 @@ ImcmsConstants {
     public static final String REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT = "d";
 
     /**
-     * Overrides default return URL which is used when a user leaves the editor or an add-on page.
+     * Overrides default return URL which is used when a user leaves the editor or an add-on page. Used in editors on frontend.
      */
-    public static final String REQUEST_PARAM__RETURN_URL = "imcms.return.url";
+    public static final String REQUEST_PARAM__RETURN_URL = "return";
     /**
      * Request param to preview working document version
      */

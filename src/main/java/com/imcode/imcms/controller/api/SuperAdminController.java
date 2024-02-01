@@ -11,6 +11,7 @@ import com.imcode.imcms.security.AccessContentType;
 import com.imcode.imcms.security.AccessRoleType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -65,7 +66,7 @@ public class SuperAdminController {
                                  @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
-                                 @RequestParam(value = "return", required = false) String returnUrl,
+                                 @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
@@ -104,7 +105,7 @@ public class SuperAdminController {
                                   @RequestParam(value = "lang", required = false) String langCode,
                                   @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                   @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
-                                  @RequestParam(value = "return", required = false) String returnUrl,
+                                  @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                   HttpServletRequest request,
                                   ModelAndView mav) {
 
@@ -131,7 +132,7 @@ public class SuperAdminController {
                                  @RequestParam int index,
                                  @RequestParam(value = "label", required = false) String label,
                                  @RequestParam(value = "lang", required = false) String langCode,
-                                 @RequestParam(value = "return", required = false) String returnUrl,
+                                 @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
@@ -149,7 +150,7 @@ public class SuperAdminController {
                                  @RequestParam int index,
                                  @RequestParam(value = "label", required = false) String label,
                                  @RequestParam(value = "lang", required = false) String langCode,
-                                 @RequestParam(value = "return", required = false) String returnUrl,
+                                 @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
@@ -163,7 +164,7 @@ public class SuperAdminController {
     @RequestMapping("/page-info")
     @CheckAccess(docPermission = AccessContentType.DOC_INFO)
     public ModelAndView editDocInfo(@RequestParam("meta-id") int metaId,
-                                    @RequestParam(value = "return", required = false) String returnUrl,
+                                    @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                     HttpServletRequest request, ModelAndView mav) {
 
         mav.setViewName("EditDocInfo");
@@ -174,7 +175,7 @@ public class SuperAdminController {
     @RequestMapping("/documents")
     @CheckAccess(role = AccessRoleType.DOCUMENT_EDITOR)
     public ModelAndView editDocuments(HttpServletRequest request,
-                                      @RequestParam(value = "return", required = false) String returnUrl,
+                                      @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                       @RequestParam(value = "lang", required = false) String langCode,
                                       ModelAndView mav) {
 
@@ -189,7 +190,7 @@ public class SuperAdminController {
     @RequestMapping("/content")
     @CheckAccess(role = AccessRoleType.ADMIN_PAGES)
     public ModelAndView editContent(HttpServletRequest request,
-                                    @RequestParam(value = "return", required = false) String returnUrl,
+                                    @RequestParam(value = ImcmsConstants.REQUEST_PARAM__RETURN_URL, required = false) String returnUrl,
                                     ModelAndView mav) {
 
         mav.setViewName("EditContent");
