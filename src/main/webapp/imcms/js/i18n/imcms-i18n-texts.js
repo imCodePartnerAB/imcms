@@ -883,79 +883,79 @@ const texts = {
             },
             documentsImport: {
                 documentationLink: "user-documentation/admin-settings/import.html",
-                name: "Importera dokument",
+                name: "Importer Dokumenter",
                 selectionWindowContainer: {
                     aliasControlCard: "Kontrollalias",
-                    editDocumentsCard: "Redigera dokument",
-                    uploadDocumentsCard: "Ladda upp dokument"
+                    editDocumentsCard: "Rediger dokumenter",
+                    uploadDocumentsCard: "Last opp dokumenter"
                 },
                 controlAliasSection: {
-                    removeAliases: "Ta bort alias",
-                    replaceAliases: "Byt ut alias",
-                    replaceFail: "Det gick inte att ersätta alias",
-                    removeFail: "Det gick inte att ta bort alias"
+                    removeAliases: "Fjern aliaser",
+                    replaceAliases: "Bytt aliaser",
+                    replaceFail: "Kunne ikke bytte aliaser",
+                    removeFail: "Kunne ikke fjerne aliaser"
                 },
                 importSection: {
-                    importButton: "Importera dokument",
-                    importFail: "Det gick inte att importera dokument!"
+                    importButton: "Importer dokumenter",
+                    importFail: "Kunne ikke importere dokumenter!"
                 },
                 importEntityReferenceSection: {
-                    roleReferences: "Rollreferenser",
-                    templateReferences: "Mallreferenser",
-                    categoryReferences: "Kategorireferenser",
-                    categoryTypeReferences: "Kategoritypreferenser",
-                    roleReferenceTitle: "roll",
-                    templateReferenceTitle: "mall",
-                    categoryReferenceTitle: "kategori",
-                    categoryTypeReferenceTitle: "kategorityp",
+                    roleReferences: "Rollereferanser",
+                    templateReferences: "Malreferanser",
+                    categoryReferences: "Kategorireferanser",
+                    categoryTypeReferences: "Kategoritypereferanser",
+                    roleReferenceTitle: "rolle",
+                    templateReferenceTitle: "mal",
+                    categoryReferenceTitle: "kategoritype",
+                    categoryTypeReferenceTitle: "kategoritype",
                     roleReferenceTitlePlural: "roller",
-                    templateReferenceTitlePlural: "mallar",
+                    templateReferenceTitlePlural: "maler",
                     categoryReferenceTitlePlural: "kategorier",
                     categoryTypeReferenceTitlePlural: "kategorityper",
-                    success: "Sparad...",
-                    fail: "Misslyckades...",
+                    success: "Lagret...",
+                    fail: "Feilet...",
                 },
                 uploadDocumentsSection: {
-                    uploadButton: "Ladda upp dokument",
-                    uploadFail: "Det gick inte att ladda upp!",
+                    uploadButton: "Last opp dokumenter",
+                    uploadFail: "Kunne ikke laste opp!",
                 },
                 importDocumentListBuilder: {
                     titles: {
-                        id: "Importera dokument-ID",
+                        id: "Importer dokumentID",
                         metaId: "Meta ID",
                         status: "Status"
                     }
                 },
                 controls: {
-                    previous: "<-- Tidigare",
-                    next: "Nästa -->",
-                    switchInputType: "Ändra inmatningstyp",
+                    previous: "<-- Forrige",
+                    next: "Neste -->",
+                    switchInputType: "Endre inndatatype",
                     rangeInput: {
-                        name: "Ange start- och slutdokument-id(rb4)",
+                        name: "Oppgi start- og sluttdokumentid(rb4)",
                         startId: "Start ID",
-                        endId: "End ID",
-                        warning: "Ge räckvidd!"
+                        endId: "Slutt ID",
+                        warning: "Oppgi spenn!"
                     },
                     listInput: {
-                        name: "Tillhandahåll dokument doc id(rb4)",
-                        docIdInput: "Ange dokument-id(rb4)",
+                        name: "Oppgi dokumentenes dokumentid(rb4)",
+                        docIdInput: "Skriv dokumentid(rb4)",
                         removeButton: {
-                            name: "Avlägsna",
-                            warning: "Välj alternativ/er först"
+                            name: "Fjern",
+                            warning: "Velg alternativ/er først"
                         },
                         addButton: {
-                            name: "Lägg till",
-                            warning: "Ange endast dokument-id"
+                            name: "Legg til",
+                            warning: "Skriv bare inn dokumentid"
                         }
                     },
                     listButton: {
-                        name: "Lista dokument",
-                        fail: "Det gick inte att lista dokument!",
+                        name: "List ut dokumenter",
+                        fail: "Kunne ikke liste ut dokumenter!",
                     },
                     filter: {
-                        name: "Filtrera",
-                        excludeImported: "Uteslut importerade",
-                        excludeSkipped: "Uteslut överhoppad"
+                        name: "Filter",
+                        excludeImported: "Utelukk importerte",
+                        excludeSkipped: "Utelukk droppede"
                     }
                 }
             },
@@ -2671,10 +2671,10 @@ const texts = {
                     dateTimeTitle: "Lagret dato/klokkeslett"
                 },
                 modified: {
-                    title: "Modified",
-                    dateTitle: "Set modified date",
-                    timeTitle: "Set modified time",
-                    dateTimeTitle: "Saved modified date-time"
+                    title: "Endret",
+                    dateTitle: "Sett endringsdato",
+                    timeTitle: "Sett endringstid",
+                    dateTimeTitle: "Lagret endret dato-tid"
                 },
                 archived: {
                     title: "Arkivert ",
@@ -2871,10 +2871,10 @@ const texts = {
                     },
                     question: 'Er du sikker på at du vil slette disse dokumentene? Dette kan ikke angres!',
                     question2: 'Du kan ikke tilbakestille dette dokumentet! Fjerne?',
-                    multiRemoveInfo: 'Remove',
-                    actions: 'Action',
-                    removeAction: 'Delete',
-                    putToBasketAction: 'Waste basket',
+                    multiRemoveInfo: 'Fjern',
+                    actions: 'Utfør',
+                    removeAction: 'Slett',
+                    putToBasketAction: 'Søppelkurv',
                     copy: {
                         title: "Kopiere",
                         confirmMessage: "Vil du virkelig kopiere (all informasjon i dokumentet vil bli kopiert) doc med id ",
@@ -2918,8 +2918,8 @@ const texts = {
                     categoriesLoadFailed: 'Kunne ikke hente kategorier. Prøv igjen',
                     copyDocumentFailed: 'Dokumentet kunne ikke kopieres. Prøv igjen',
                     removeDocumentFailed: 'Kunne ikke slette dokumentet. Prøv igjen',
-                    removeProtectedDocumentFailed: 'It is not allowed to delete documents',
-                    putToWasteBasketFailed: 'Failed to put documents to the waste basket'
+                    removeProtectedDocumentFailed: 'Det er ikke tillatt å slette dokumenter',
+                    putToWasteBasketFailed: 'Kunne ikke legge dokumentet i søppelkurven'
                 }
             },
             newDocument: {
@@ -3036,7 +3036,7 @@ const texts = {
                 add: "LEGGE TIL+",
                 cancelChanges: "Avbryt endringer",
                 openImage: "Åpne bildet i nytt vindu",
-                editMetadata: "Edit metadata",
+                editMetadata: "Rediger metadata",
                 sortBy: 'Sorter etter',
                 sorting: {
                     default: 'Standard',
@@ -3155,24 +3155,24 @@ const texts = {
                 }
             },
             imageMetadata: {
-                titleMetadataEditor: 'Image Metadata',
-                titleExifInfo: 'Exif Info',
-                save: 'Save',
-                cancel: 'Cancel',
-                photographer: 'Photographer',
-                resolution: 'Resolution (w x h)',
-                originalFileSize: 'Original size',
-                originalFileType: 'Original file type',
-                uploadedBy: 'Uploaded by',
-                modifiedDate: 'Modified date',
+                titleMetadataEditor: 'Bilde Metadata',
+                titleExifInfo: 'Exif Informasjon',
+                save: 'Lagre',
+                cancel: 'Avbryt',
+                photographer: 'Fotograf',
+                resolution: 'Oppløsning (b x h)',
+                originalFileSize: 'Original størrelse',
+                originalFileType: 'Original filtype',
+                uploadedBy: 'Lastet opp av',
+                modifiedDate: 'Endret dato',
                 copyright: 'Copyright',
-                licensePeriod: 'License period',
-                titleAllExifMode: 'All Exif Information',
-                titleCustomExifMode: 'Custom Metadata',
-                customExifButton: 'Switch to custom metadata',
-                allExifButton: 'Switch to all exif',
+                licensePeriod: 'Lisensperiode',
+                titleAllExifMode: 'All Exif Informasjon',
+                titleCustomExifMode: 'Egendefinert Metadata',
+                customExifButton: 'Bytt til egndefinert metadata',
+                allExifButton: 'Bytt til all exif',
                 error: {
-                    saveMetadataFailed: 'Failed to save metadata'
+                    saveMetadataFailed: 'Kunne ikke lagre metadata'
                 }
             },
             text: {
@@ -3191,7 +3191,7 @@ const texts = {
                 disapproved: "Ikke godkjent",
                 archived: "Arkivert",
                 passed: "Fullført",
-                wasteBasket: "W basket"
+                wasteBasket: "Søppelkurv"
             },
             tooltip: {
                 published: "Dokumentet er publisert",
@@ -3199,8 +3199,8 @@ const texts = {
                 inProcess: "Dokumentet er nytt og under konstruksjon",
                 disapproved: "Ikke godkjent",
                 archived: "Arkivert",
-                passed: "Publication end",
-                wasteBasket: "The document in the waste basket"
+                passed: "Publiseringsslutt",
+                wasteBasket: "Dokumentet i søppelkurven"
             },
         },
         languageFlags: {
@@ -3357,18 +3357,18 @@ const texts = {
             },
             versionControl: {
                 documentationLink: "user-documentation/admin-settings/version-control.html",
-                name: 'Version Control',
-                versionId: 'Version ID',
-                login: 'User Login',
-                publicationDate: 'Publication Date',
-                reviewButton: 'Review',
-                resetButton: 'Reset',
-                input: 'Find versions by document ID',
-                findButton: 'Find',
-                resetSuccess: 'Document version has been reset to ',
+                name: 'Versjonskontroll',
+                versionId: 'VersjonsID',
+                login: 'Logg inn',
+                publicationDate: 'Publiseringsdato',
+                reviewButton: 'Vis',
+                resetButton: 'Nullstill',
+                input: 'Finn versjoner etter versjonsID',
+                findButton: 'Finn',
+                resetSuccess: 'Dolumentversjon har blitt nullstilt til ',
                 error: {
-                    findFailed: 'Failed to fetch document versions',
-                    resetFailed: 'Failed to reset document version '
+                    findFailed: 'Klarte ikke å hente dokumentversjon',
+                    resetFailed: 'Klarte ikke å nullstille dokumentversjon '
                 }
             },
             deleteDocs: {
@@ -3384,19 +3384,19 @@ const texts = {
                     removeProtectedDocumentFailed: 'Det er ikke tillatt å slette dokumenter'
                 },
                 basket: {
-                    title: 'Waste Basket',
+                    title: 'Søppelkurv',
                     metaId: 'Id',
-                    headline: 'Headline',
-                    addedDate: 'Added date',
-                    userLogin: 'Username',
-                    input: 'Put document to the waste basket by id',
-                    putButton: "Put",
-                    restoreButton: 'Restore',
-                    deleteButton: 'Delete',
+                    headline: 'Overskrift',
+                    addedDate: 'Lagt til',
+                    userLogin: 'Brukernavn',
+                    input: 'Legg dokument i søppelkurven etter id',
+                    putButton: "Legg",
+                    restoreButton: 'Gjenopprett',
+                    deleteButton: 'Slett',
                     error: {
-                        readFailed: 'Failed to fetch documents from the waste basket',
-                        putFailed: 'Failed to put the document',
-                        restoreFailed: 'Failed to restore the document from the waste basket'
+                        readFailed: 'Kunne ikke hente dokumenter fra søppelkurven',
+                        putFailed: 'Kunne ikke legge dokumentet',
+                        restoreFailed: 'Kunne ikke gjenopprette dokumentet fra søppelkurven'
                     }
                 }
             },
@@ -3788,7 +3788,7 @@ const texts = {
             hourMinute: 'tt:mm',
         },
         windowTabs: {
-            advancedButton: 'Advanced menu'
+            advancedButton: 'Avansert meny'
         },
         save: "Lagre",
         none: 'Ingen'
