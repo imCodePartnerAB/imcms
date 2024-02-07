@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
+import static com.imcode.imcms.domain.service.api.DefaultFileService.RENAMED_FILE_FORMAT;
 
 @Service
 @Transactional
@@ -119,7 +120,9 @@ class DefaultImageFileService implements ImageFileService {
 
         while (storageClient.exists(destination)) {
             final String baseName = FilenameUtils.getBaseName(originalFilename);
-            final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
+            final String extension = FilenameUtils.getExtension(originalFilename);
+            final String newName = String.format(RENAMED_FILE_FORMAT, baseName, copiesCount, extension);
+
             destination = targetFolderPath.resolve(FILE, newName);
             copiesCount++;
         }

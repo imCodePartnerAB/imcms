@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 @Service
 @Transactional
 public class DefaultFileService implements FileService {
+    public static final String RENAMED_FILE_FORMAT = "%s.%03d.%s";
 
     private final DocumentService<DocumentDTO> documentService;
     private final TemplateService templateService;
@@ -259,7 +260,7 @@ public class DefaultFileService implements FileService {
         int copiesCount = 1;
         String newNameOldFile;
         do {
-            newNameOldFile = baseName + '-' + copiesCount++ + '.' + extension;
+            newNameOldFile = String.format(RENAMED_FILE_FORMAT, baseName, copiesCount++, extension);
         } while (Files.exists(Path.of(fullPath + newNameOldFile)));
 
         return renameFile(path, newNameOldFile);
