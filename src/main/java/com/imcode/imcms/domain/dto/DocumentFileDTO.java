@@ -6,6 +6,7 @@ import imcode.util.io.InputStreamSource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
@@ -39,6 +40,10 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
     public DocumentFileDTO(DocumentFile from) {
         super(from);
+    }
+
+    public String getOriginalFilename() {
+        return StringUtils.defaultIfBlank(originalFilename, filename);
     }
 
     @Override

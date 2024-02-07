@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +61,10 @@ public class DocumentFileJPA extends DocumentFile {
 
     public DocumentFileJPA(DocumentFile from) {
         super(from);
+    }
+
+    public String getOriginalFilename() {
+        return StringUtils.defaultIfBlank(originalFilename, filename);
     }
 
 }

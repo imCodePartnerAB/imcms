@@ -11,13 +11,11 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
-import imcode.util.Utility;
 import imcode.util.io.EmptyInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 import imcode.util.io.StorageInputStreamSource;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +42,8 @@ class DefaultDocumentFileService
         implements DocumentFileService {
 
     public static final Logger LOG = LogManager.getLogger(DefaultDocumentFileService.class);
+    public static final String FILE_UPLOAD_FORMAT = "%d.%d";
+
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
     private final StorageClient fileDocumentStorageClient;
@@ -71,10 +71,9 @@ class DefaultDocumentFileService
 
     @Override
     public <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId) {
-        setDocAndFileIds(saveUs, docId);
-        resolveDuplicatedIds(saveUs);
+        setMandatoryFields(saveUs, docId);
         deleteNoMoreUsedDocumentFiles(saveUs, docId);
-        saveNewFiles(saveUs);
+        saveNewFiles(saveUs, docId);
 
         if(saveUs.isEmpty() && !getByDocId(docId).isEmpty()) super.updateWorkingVersion(docId); // when user deletes all files
         return saveDocumentFiles(saveUs);
@@ -226,16 +225,28 @@ class DefaultDocumentFileService
                 .forEach(documentFile -> documentFile.setFileId(documentFile.getFilename() + counter.addAndGet(1)));
     }
 
-    private <T extends DocumentFile> void setDocAndFileIds(List<T> saveUs, int docId) {
-        saveUs.forEach(documentFile -> {
-            documentFile.setDocId(docId);
-            documentFile.setOriginalFilename(StringUtils.defaultIfBlank(documentFile.getOriginalFilename(), documentFile.getFilename()));
-            final String fileId = documentFile.getFileId();
+    private <T extends DocumentFile> void setMandatoryFields(List<T> saveUs, int docId) {
+        final Set<String> usedFileIds = saveUs.stream().map(DocumentFile::getFileId).filter(StringUtils::isNotBlank).collect(Collectors.toSet());
 
+        for (DocumentFile documentFile : saveUs) {
+            documentFile.setDocId(docId);
+            //before update filename contained original filename so we have to  move it to originalFilename field in order to preserve original filenames in existing files
+            documentFile.setOriginalFilename(StringUtils.defaultIfBlank(documentFile.getOriginalFilename(), documentFile.getFilename()));
+
+            final String fileId = documentFile.getFileId();
             if (StringUtils.isBlank(fileId)) {
-                documentFile.setFileId(documentFile.getFilename());
+                final AtomicInteger counter = new AtomicInteger(1);
+
+                String generatedFileId = counter.toString();
+                while (usedFileIds.contains(generatedFileId)) {
+                    counter.incrementAndGet();
+                    generatedFileId = counter.toString();
+                }
+
+                documentFile.setFileId(generatedFileId);
+                usedFileIds.add(generatedFileId);
             }
-        });
+        }
     }
 
     private <T extends DocumentFile> void deleteNoMoreUsedDocumentFiles(List<T> saveUs, int docId) {
@@ -269,35 +280,29 @@ class DefaultDocumentFileService
         }
     }
 
-    private <T extends DocumentFile> void saveNewFiles(List<T> saveUs) {
+    private <T extends DocumentFile> void saveNewFiles(List<T> saveUs, int docId) {
         // do not rewrite using Java Stream API, file transfer can be long operation. in cycle.
-        for (DocumentFile documentFile : saveUs) {
-            final MultipartFile file = documentFile.getMultipartFile();
+        for (final DocumentFile documentFile : saveUs) {
+            final MultipartFile multipartFile = documentFile.getMultipartFile();
 
-            if (file == null) {
+            if (multipartFile == null) {
                 continue;
             }
 
-            int copiesCount = 1;
-            String originalFilename = Utility.normalizeString(file.getOriginalFilename());
-            originalFilename = originalFilename.replace("(", "").replace(")", "");
-            StoragePath destination = storageFileDocumentDirectoryPath.resolve(FILE, originalFilename);
+            int copiesCount = 0;
+            String storageFilename = FILE_UPLOAD_FORMAT.formatted(docId, copiesCount);
+            StoragePath storagePath = storageFileDocumentDirectoryPath.resolve(FILE, storageFilename);
 
-            while (fileDocumentStorageClient.exists(destination)) {
-                final String baseName = FilenameUtils.getBaseName(originalFilename);
-                final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
-                destination = storageFileDocumentDirectoryPath.resolve(FILE, newName);
-                copiesCount++;
+            while (fileDocumentStorageClient.exists(storagePath)) {
+                storageFilename = FILE_UPLOAD_FORMAT.formatted(docId, ++copiesCount);
+                storagePath = storageFileDocumentDirectoryPath.resolve(FILE, storageFilename);
             }
 
-            if (documentFile.getFileId().equals(originalFilename))
-                documentFile.setFileId(destination.getName());
+            documentFile.setFilename(storageFilename);
+            documentFile.setInputStreamSource(new StorageInputStreamSource(storagePath, fileDocumentStorageClient));
 
-            documentFile.setFilename(destination.getName());
-            documentFile.setInputStreamSource(new StorageInputStreamSource(destination, fileDocumentStorageClient));
-
-            try (InputStream multipartInputStream = file.getInputStream()){
-                fileDocumentStorageClient.put(destination, multipartInputStream);
+            try (InputStream multipartInputStream = multipartFile.getInputStream()) {
+                fileDocumentStorageClient.put(storagePath, multipartInputStream);
             } catch (IOException e) {
                 LOG.error("Error while saving Document File.", e);
             }
