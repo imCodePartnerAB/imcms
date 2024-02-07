@@ -23,6 +23,9 @@ class LocalUserCreationValidatorTest {
     @Mock
     private UserService userService;
 
+    private final String MOBILE_PHONE_NUMBER_SWE_VALID = "+46160369766";
+    private final String MOBILE_PHONE_NUMBER_SWE_INVALID = "46160369766";
+
     @InjectMocks
     private LocalUserCreationValidator userValidator;
 
@@ -310,5 +313,41 @@ class LocalUserCreationValidatorTest {
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         assertFalse(validationResult.isPasswordTooWeak());
+    }
+
+    @Test
+    void validate_With_Enabled2FA_And_EmptyMobilePhoneNumber_Expect_MobilePhoneNumberIsMissingTrue(){
+        final UserFormData userFormData = new UserFormData();
+        userFormData.setTwoFactoryAuthenticationEnabled(true);
+        userFormData.setUserPhoneNumber(new String[]{});
+        userFormData.setUserPhoneNumberType(new Integer[]{});
+
+        final UserValidationResult validationResult = userValidator.validate(userFormData);
+
+        assertTrue(validationResult.isMobilePhoneNumberMissing());
+    }
+
+    @Test
+    void validate_With_Enabled2FA_And_InvalidMobilePhoneNumber_Expect_MobilePhoneNumbersIsValidFalse(){
+        final UserFormData userFormData = new UserFormData();
+        userFormData.setTwoFactoryAuthenticationEnabled(true);
+        userFormData.setUserPhoneNumber(new String[]{MOBILE_PHONE_NUMBER_SWE_INVALID});
+        userFormData.setUserPhoneNumberType(new Integer[]{3});
+
+        final UserValidationResult validationResult = userValidator.validate(userFormData);
+
+        assertFalse(validationResult.isMobilePhoneNumbersValid());
+    }
+
+    @Test
+    void validate_With_Enabled2FA_And_OneMobilePhoneNumberValid_And_OtherMobilePhoneNumberInvalid_Expect_MobilePhoneNumbersIsValidFalse(){
+        final UserFormData userFormData = new UserFormData();
+        userFormData.setTwoFactoryAuthenticationEnabled(true);
+        userFormData.setUserPhoneNumber(new String[]{MOBILE_PHONE_NUMBER_SWE_VALID, MOBILE_PHONE_NUMBER_SWE_INVALID});
+        userFormData.setUserPhoneNumberType(new Integer[]{3, 3});
+
+        final UserValidationResult validationResult = userValidator.validate(userFormData);
+
+        assertFalse(validationResult.isMobilePhoneNumbersValid());
     }
 }
