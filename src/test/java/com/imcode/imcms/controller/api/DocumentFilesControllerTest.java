@@ -100,7 +100,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
         documentFileJPA.setDocId(createdDocId);
         documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
-        documentFileJPA.setFilename(filename);
+        documentFileJPA.setFilename("");
         documentFileJPA.setOriginalFilename(filename);
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
 
@@ -127,7 +127,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
         assertNotNull(savedFiles);
         assertEquals(savedFiles.size(), newFiles.size());
 
-        for (DocumentFileDTO documentFileDTO : newFiles) {
+        for (DocumentFileDTO documentFileDTO : savedFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
             final StoragePath savedFilePath = StoragePath.get(FILE, filesPath, documentFileDTO.getFilename());
             assertTrue(storageClient.exists(savedFilePath));

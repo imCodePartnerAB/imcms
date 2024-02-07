@@ -35,6 +35,7 @@ import java.util.function.BiFunction;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
+import static com.imcode.imcms.domain.service.api.DefaultFileService.RENAMED_FILE_FORMAT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -517,7 +518,7 @@ public class FileControllerTest extends AbstractControllerTest {
         assertEquals(2, Files.list(pathDir).count());
 
         assertFalse(Files.exists(pathFile));
-        assertTrue(Files.exists(pathDir.resolve("fileName-1.txt")));
+        assertTrue(Files.exists(pathDir.resolve(RENAMED_FILE_FORMAT.formatted("fileName", 1, "txt"))));
     }
 
     @Test
