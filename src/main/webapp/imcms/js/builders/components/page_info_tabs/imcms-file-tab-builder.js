@@ -7,9 +7,9 @@
 define("imcms-file-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "jquery", "imcms-i18n-texts",
-        "imcms-page-info-tab"
+        "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
-    function (BEM, components, docTypes, $, texts, PageInfoTab) {
+    function (BEM, components, docTypes, $, texts, PageInfoTab, modal) {
 
         texts = texts.pageInfo.file;
 
@@ -51,7 +51,7 @@ define("imcms-file-tab-builder",
                 block: "file-row",
                 elements: {
                     "id": components.texts.textInput({value: file.fileId}),
-                    "name": components.texts.infoText("<div>", file.filename),
+                    "name": components.texts.infoText("<div>", file.originalFilename),
                     "default": $isDefaultFileRadioBtn,
                     "delete": components.controls.remove(() => {
                         $row.remove();
@@ -65,6 +65,7 @@ define("imcms-file-tab-builder",
             }).buildBlockStructure("<div>", {
                 "class": "files-container-body__file-row",
                 "data-file-id": file.id,
+                "data-filename": file.filename,
                 "data-file-type": file.mimeType
             }));
         }
@@ -89,7 +90,8 @@ define("imcms-file-tab-builder",
             return {
                 id: null,
                 fileId: "",
-                filename: file.name,
+                filename: "",
+                originalFilename: file.name,
                 mimeType: file.type,
                 defaultFile: false
             }
@@ -109,7 +111,8 @@ define("imcms-file-tab-builder",
                         id: $fileRow.data("fileId"),
                         docId: docId,
                         fileId: $fileRow.find(".file-row__id").val(),
-                        filename: $fileRow.find(".file-row__name").text(),
+                        filename: $fileRow.data("filename"),
+                        originalFilename: $fileRow.find(".file-row__name").text(),
                         mimeType: $fileRow.data("fileType"),
                         defaultFile: $fileRow.find("input[name=isDefaultFile]").is(":checked")
                     }
@@ -132,11 +135,22 @@ define("imcms-file-tab-builder",
                 change: function () {
                     tabData.formData = tabData.formData || new FormData();
 
+                    const filesToBuild = [];
                     for (let i = 0; i < this.files.length; i++) {
-                        tabData.formData.append('files', this.files[i]);
+                        const file = this.files[i];
+
+                        const duplicateFileLength = $filesListContainerBody.children().toArray().filter(fileRowDOM => $(fileRowDOM).find(".file-row__name").text() === file.name).length;
+                        if (!tabData.formData.has(file.name) && duplicateFileLength === 0) {
+                            filesToBuild.push(file);
+                            tabData.formData.append('files', file);
+                        }
                     }
 
-                    appendFiles(transformFilesToDTO(this.files));
+                    if (filesToBuild.length !== this.files.length) {
+                        modal.buildWarningWindow("There are files with duplicate names you have tried to upload. Please change their names before upload!");
+                    }
+
+                    appendFiles(transformFilesToDTO(filesToBuild));
                     $(this).val('');
                 }
             });
