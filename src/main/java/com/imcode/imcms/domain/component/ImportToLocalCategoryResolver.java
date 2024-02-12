@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.ImportCategoryDTO;
 import com.imcode.imcms.domain.dto.ImportEntityReferenceDTO;
 import com.imcode.imcms.domain.service.CategoryService;
@@ -22,6 +23,8 @@ public class ImportToLocalCategoryResolver {
 		final ImportEntityReferenceDTO categoryReference = importEntityReferenceManagerService.getReference(name, ImportEntityReferenceType.CATEGORY);
 		final Integer categoryReferenceLinkedEntityId = categoryReference.getLinkedEntityId();
 
+		final CategoryTypeDTO categoryTypeDTO = categoryTypeResolver.resolve(importCategory.getCategoryType());
+
 		CategoryDTO category;
 		if (categoryReferenceLinkedEntityId != null) {
 			category = categoryService.getById(categoryReferenceLinkedEntityId).map(CategoryDTO::new).orElse(null);
@@ -29,11 +32,11 @@ public class ImportToLocalCategoryResolver {
 			category = new CategoryDTO();
 			category.setName(name);
 			category.setDescription(importCategory.getDescription());
-			category.setType(categoryTypeResolver.resolve(importCategory.getCategoryType()));
+			category.setType(categoryTypeDTO);
 
 			category = new CategoryDTO(categoryService.save(category));
 		} else {
-			category = categoryService.getByName(name).map(CategoryDTO::new).orElse(null);
+			category = categoryService.getByName(name, categoryTypeDTO.getId()).map(CategoryDTO::new).orElse(null);
 		}
 
 		return category;
