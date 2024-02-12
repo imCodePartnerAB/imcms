@@ -12,7 +12,9 @@ public interface CategoryService {
 
     Optional<Category> getById(int id);
 
-    Optional<Category> getByName(String name);
+    Optional<Category> getByName(String name, int categoryTypeId);
+
+    Optional<Category> getByName(String name, String categoryTypeName);
 
     Category save(Category saveMe);
 

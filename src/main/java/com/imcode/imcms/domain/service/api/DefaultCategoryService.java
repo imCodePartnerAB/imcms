@@ -52,8 +52,13 @@ class DefaultCategoryService implements CategoryService {
     }
 
 	@Override
-	public Optional<Category> getByName(String name) {
-		return categoryRepository.getByName(name).map(CategoryDTO::new);
+	public Optional<Category> getByName(String name, int categoryTypeId) {
+		return categoryRepository.getByNameAndTypeId(name, categoryTypeId).map(CategoryDTO::new);
+	}
+
+	@Override
+	public Optional<Category> getByName(String name, String categoryTypeName) {
+		return categoryRepository.getByNameAndTypeName(name, categoryTypeName).map(CategoryDTO::new);
 	}
 
 	@Override

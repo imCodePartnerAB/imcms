@@ -35,7 +35,9 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     @Query(value = "DELETE FROM document_categories WHERE category_id = ?1", nativeQuery = true)
     void deleteDocumentCategory(int categoryId);
 
-	Optional<CategoryJPA> getByName(String name);
+	Optional<CategoryJPA> getByNameAndTypeName(String name, String categoryTypeName);
+
+    Optional<CategoryJPA> getByNameAndTypeId(String name, int categoryTypeId);
 
 	boolean existsByName(String name);
 }
