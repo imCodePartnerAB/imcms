@@ -18,6 +18,10 @@ events.on('imcms-version-modified', () => {
     imcms.document.hasNewerVersion = true;
 });
 
+events.on('imcms-version-published', () => {
+    imcms.document.hasNewerVersion = false;
+});
+
 events.on('imcms-publish-new-version-current-doc', () => {
     window.location.href = imcms.contextPath + '/api/publish-document/' + imcms.document.id;
     events.trigger('imcms-alert-publish-new-version');
@@ -25,6 +29,7 @@ events.on('imcms-publish-new-version-current-doc', () => {
 
 events.on('imcms-alert-publish-new-version', () => {
     alert('The version is published with status APPROVED ' + dateFormatter.format(new Date(), 'yyyy-mm-dd HH:MM'));
+    events.trigger('imcms-version-published');
 });
 
 sessionTimeoutManagement.initOrUpdateSessionTimeout();
