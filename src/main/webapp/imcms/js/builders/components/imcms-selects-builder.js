@@ -70,12 +70,12 @@ define("imcms-selects-builder",
             ;
 
             // todo: implement labeling selected item by [selected] attribute
-
             $select.removeClass(DROP_DOWN_LIST__ACTIVE__CLASS)
                 .parent()
                 .find("input")
                 .data("content", content)
-                .val(value);
+                .val(value)
+                .trigger("input");
 
             onSelected && onSelected.call && onSelected(value);
 
@@ -322,10 +322,11 @@ define("imcms-selects-builder",
                 });
 
                 $selectElements.push($selectedValInput);
-
                 const $resultImcmsSelect = selectBEM.buildBlock(
                     "<div>", blockElements, (attributes["class"] ? {"class": attributes["class"]} : {})
                 ).append($selectElements);
+
+                $resultImcmsSelect.$input = $selectedValInput;
 
                 bindApi($resultImcmsSelect, $selectedValInput);
 
