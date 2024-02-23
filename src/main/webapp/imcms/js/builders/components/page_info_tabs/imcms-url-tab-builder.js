@@ -27,6 +27,13 @@ define("imcms-url-tab-builder",
         UrlTab.prototype.fillTabDataFromDocument = document => {
             /** @namespace document.documentURL */
             $urlInputContainer.setValue(document.documentURL.url);
+            $urlInputContainer.isChanged = function () {
+                const oldValue = document.documentURL.url;
+                const newValue = $urlInputContainer.getValue();
+
+                return oldValue !== newValue;
+            }
+
         };
         UrlTab.prototype.saveData = function (document) {
             if (!this.isDocumentTypeSupported(document.type)) {
@@ -38,10 +45,14 @@ define("imcms-url-tab-builder",
         };
         UrlTab.prototype.clearTabData = () => {
             $urlInputContainer.setValue('');
-            tabData = {};
+            tabData = {
+                versionedFields: []
+            };
         };
 
         UrlTab.prototype.getDocLink = () => texts.documentationLink;
+
+        UrlTab.prototype.getVersionedFields = () => [$urlInputContainer];
 
         return new UrlTab(texts.name, docTypes.URL);
     }

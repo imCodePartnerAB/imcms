@@ -4,8 +4,8 @@
  */
 define('imcms-page-info-tab',
     [
-        'imcms-window-tab-builder', 'imcms-i18n-texts'
-    ], function (TabWindowBuilder, texts) {
+        'imcms-window-tab-builder', 'imcms-i18n-texts', 'jquery'
+    ], function (TabWindowBuilder, texts, $) {
 
     const PageInfoTab = function (name, supportedDocumentType) {
         TabWindowBuilder.call(this, name);
@@ -30,5 +30,8 @@ define('imcms-page-info-tab',
 
     PageInfoTab.prototype.getDocLink = () => texts.pageInfo.documentationLink;
 
+    PageInfoTab.prototype.getVersionedFields = () => {
+        //override
+    }
     return PageInfoTab;
 });

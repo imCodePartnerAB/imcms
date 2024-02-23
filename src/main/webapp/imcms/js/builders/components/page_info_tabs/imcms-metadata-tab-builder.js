@@ -10,12 +10,14 @@ define('imcms-metadata-tab-builder',
 
 		const MetadataTab = function (name, docType) {
 			PageInfoTab.apply(this, arguments);
+			fetchMetaTags();
 		};
 
-		const tabData = {};
+		const tabData = {
+			versionedFields: []
+		};
 
 		function buildMetadataContainer() {
-			fetchMetaTags();
 			tabData.documentMetadataList = [];
 			return tabData.$metadataContainer = $('<div>');
 		}
@@ -39,16 +41,32 @@ define('imcms-metadata-tab-builder',
 
 			metadata ? $metaTagSelect.selectValue(metadata.metaTag.id) : $metaTagSelect.selectFirst();
 
+			$metaTagSelect.$input.isChanged = function () {
+				const oldValue = metadata ? metadata.metaTag.id : '';
+				const newValue = Number($metaTagSelect.getSelectedValue());
+
+				return oldValue !== newValue;
+			}
+			tabData.versionedFields.push($metaTagSelect.$input);
+
 			return $metaTagSelect
 		}
 
 		function buildMetaTagTextArea(meta) {
-			return components.texts.textAreaField("<div>", {
+			const $metaTag = components.texts.textAreaField("<div>", {
 				name: "data",
 				html: meta ? meta.content : '',
 				class: 'imcms-flex--w-70 imcms-flex--ml-auto',
 				resizable: true
 			});
+
+			$metaTag.isChanged=function () {
+				const oldValue=meta ? meta.content : '';
+				const newValue= $metaTag.getValue();
+
+				return oldValue !== newValue;
+			}
+			return $metaTag;
 		}
 
 		function buildMetadataRowRemove($metadataRow, metadataElement) {
@@ -79,6 +97,10 @@ define('imcms-metadata-tab-builder',
 			if(!(imcms.availableLanguages.length > 1)){
 				$languageTitle.hide();
 			}
+
+			$addRow.click(()=>{
+				$("#save-and-publish-btn").slideDown();
+			})
 
 			return new BEM({
 				block: 'imcms-metadata-head'
@@ -125,6 +147,8 @@ define('imcms-metadata-tab-builder',
 			const $metaTagContent = buildMetaTagTextArea(metadata),
 				$metaTagSelect = buildMetaTagSelect(metadata);
 
+			tabData.versionedFields.push($metaTagContent);
+
 			const $metadataRow = new BEM({
 				block: 'imcms-metadata-row'
 			}).buildBlock("<div>",
@@ -143,7 +167,9 @@ define('imcms-metadata-tab-builder',
 			};
 
 			const $remove = buildMetadataRowRemove($metadataRow, metadataElement);
-
+			$remove.click(()=>{
+				$("#save-and-publish-btn").slideDown();
+			})
 			tabData.documentMetadataList.push(metadataElement);
 			$metadataRow.append($remove);
 
@@ -157,10 +183,8 @@ define('imcms-metadata-tab-builder',
 		];
 
 		MetadataTab.prototype.fillTabDataFromDocument = (document) => {
-			tabData.readMetaTagsRequest.then(() => {
-				tabData.document = document;
-				tabData.$metadataContainer.append(document.commonContents.map(buildMetadata));
-			});
+			tabData.document = document;
+			tabData.$metadataContainer.append(document.commonContents.map(buildMetadata));
 		};
 
 		MetadataTab.prototype.saveData = (document) => {
@@ -184,9 +208,12 @@ define('imcms-metadata-tab-builder',
 
 		MetadataTab.prototype.clearTabData = () => {
 			tabData.$metadataContainer.empty();
+			tabData.versionedFields = [];
 		};
 
 		MetadataTab.prototype.getDocLink = () => texts.documentationLink;
+
+		MetadataTab.prototype.getVersionedFields = () => tabData.versionedFields;
 
 		return new MetadataTab(texts.name, docTypes.TEXT);
 	});

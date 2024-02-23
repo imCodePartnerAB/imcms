@@ -21,7 +21,9 @@ define("imcms-appearance-tab-builder",
             }
         });
 
-        const tabData = {};
+        const tabData = {
+			versionedFields: []
+        };
 
         function buildDocumentAliasBlock(commonContent) {
 	        const $aliasTitle = components.texts.titleText("<div>", texts.alias);
@@ -36,6 +38,15 @@ define("imcms-appearance-tab-builder",
 		        placeholder: texts.aliasPlaceholder,
 		        class: "imcms-flex--w-50"
 	        });
+
+	        $documentAlias.isChanged=function () {
+		        const oldValue=commonContent.docId ? commonContent.alias : '';
+				const newValue= $documentAlias.getValue();
+
+		        return oldValue !== newValue;
+	        }
+
+	        tabData.versionedFields.push($documentAlias);
 
 	        const $suggestAliasButton = components.buttons.positiveButton({
 		        text: texts.makeSuggestion,
@@ -83,10 +94,10 @@ define("imcms-appearance-tab-builder",
 				    if ($documentAlias.getValue()) {
 					    modal.buildConfirmWindow(
 						    texts.confirmOverwritingAlias,
-						    () => $documentAlias.setValue(uniqueAlias)
+						    () => $documentAlias.setValue(uniqueAlias).trigger("input")
 					    );
 				    } else {
-					    $documentAlias.setValue(uniqueAlias);
+					    $documentAlias.setValue(uniqueAlias).trigger("input");
 				    }
 			    });
 		    }
@@ -106,27 +117,57 @@ define("imcms-appearance-tab-builder",
 	        const $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
 			        name: commonContent.language.name.toLowerCase(), // fixme: or native name?
 			        text: commonContent.language.name,
-			        checked: commonContent.enabled ? "checked" : undefined
+			        checked: commonContent.enabled ? "checked" : undefined,
 		        }),
 		        $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [$checkbox]),
 		        $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>",
-					[{"checkboxes": $checkboxWrapper}], {
-					class: 'common-content-language-checkbox'
-				}),
+			        [{"checkboxes": $checkboxWrapper}], {
+				        class: 'common-content-language-checkbox'
+			        });
 
-		        $aliasBlock = buildDocumentAliasBlock(commonContent),
-		        $pageTitle = components.texts.textBox("<div>", {
+	        $checkbox.isChanged = function () {
+		        const oldValue = commonContent.enabled;
+		        const newValue = $checkbox.isChecked();
+
+		        return oldValue !== newValue;
+	        }
+
+	        tabData.versionedFields.push($checkbox);
+
+	        const $aliasBlock = buildDocumentAliasBlock(commonContent);
+
+	        const $pageTitle = components.texts.textBox("<div>", {
 			        name: "title",
 			        text: texts.title,
 			        value: commonContent.docId ? commonContent.headline : ''
 		        }),
-		        $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
-		        $menuText = components.texts.textArea("<div>", {
+		        $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]);
+
+			$pageTitle.isChanged=function () {
+				const oldValue=commonContent.docId ? commonContent.headline : '';
+				const newValue=$pageTitle.getValue();
+
+				return oldValue!==newValue;
+			}
+
+	        tabData.versionedFields.push($pageTitle);
+
+	        const $menuText = components.texts.textArea("<div>", {
 			        text: texts.menuText,
 			        html: commonContent.docId ? commonContent.menuText : '',
 			        name: "menu-text"
-                }),
-                $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]);
+		        }).attr('data-old-value', commonContent.docId ? commonContent.menuText : ''),
+		        $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]);
+
+
+	        $menuText.isChanged=function () {
+		        const oldValue=commonContent.docId ? commonContent.menuText : '';
+				const newValue=$menuText.getValue();
+
+					return oldValue!==newValue;
+	        }
+
+	        tabData.versionedFields.push($menuText);
 
             tabData.commonContents = tabData.commonContents || [];
 
@@ -275,10 +316,13 @@ define("imcms-appearance-tab-builder",
 
             tabData.$showIn.selectFirst();
             tabData.$showDefaultLang.setChecked(true); //default value
+	        tabData.versionedFields = [];
         };
         AppearanceTab.prototype.isValid = () => tabData.commonContents.reduce((isChecked, commonContent) => isChecked || commonContent.checkbox.isChecked(), false);
 
 		AppearanceTab.prototype.getDocLink = () => texts.documentationLink;
+
+		AppearanceTab.prototype.getVersionedFields = () => tabData.versionedFields;
 
         return new AppearanceTab(texts.name);
     }

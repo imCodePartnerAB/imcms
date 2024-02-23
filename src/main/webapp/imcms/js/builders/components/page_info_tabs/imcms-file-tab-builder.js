@@ -45,22 +45,46 @@ define("imcms-file-tab-builder",
                 checked: file.defaultFile
             });
 
+            $isDefaultFileRadioBtn.isChanged = function () {
+                const oldValue = file.defaultFile;
+                const newValue = $isDefaultFileRadioBtn.isChecked();
+
+                return oldValue !== newValue;
+            }
+
+            tabData.versionedFields.push($isDefaultFileRadioBtn);
+
             let $row;
+            const $id = components.texts.textInput({value: file.fileId});
+            $id.isChanged = function () {
+                const oldValue = file.fileId;
+                const newValue = $id.val();
+
+                return oldValue !== newValue;
+            }
+
+            tabData.versionedFields.push($id);
+
+            const $delete = components.controls.remove(() => {
+                $row.remove();
+
+                let files;
+                if ($row.find('input:radio').is(':checked') && (files = $filesListContainerBody.children()).length > 0) {
+                    $(files[0]).find('input:radio').prop('checked', true);
+                }
+            });
+
+            $delete.click(()=>{
+                $("#save-and-publish-btn").slideDown();
+            })
 
             return ($row = new BEM({
                 block: "file-row",
                 elements: {
-                    "id": components.texts.textInput({value: file.fileId}),
+                    "id": $id,
                     "name": components.texts.infoText("<div>", file.originalFilename),
                     "default": $isDefaultFileRadioBtn,
-                    "delete": components.controls.remove(() => {
-                        $row.remove();
-
-                        let files;
-                        if($row.find('input:radio').is(':checked') && (files = $filesListContainerBody.children()).length > 0){
-                            $(files[0]).find('input:radio').prop('checked', true);
-                        }
-                    })
+                    "delete": $delete
                 }
             }).buildBlockStructure("<div>", {
                 "class": "files-container-body__file-row",
@@ -119,7 +143,9 @@ define("imcms-file-tab-builder",
                 });
         }
 
-        let tabData = {};
+        let tabData = {
+            versionedFields: []
+        };
 
         const FilesTab = function (name, docType) {
             PageInfoTab.apply(this, arguments);
@@ -128,6 +154,7 @@ define("imcms-file-tab-builder",
         FilesTab.prototype = Object.create(PageInfoTab.prototype);
 
         FilesTab.prototype.tabElementsFactory = function () {
+            let fileInputChanged = false;
             $fileInput = $("<input>", {
                 type: "file",
                 style: "display: none;",
@@ -148,6 +175,9 @@ define("imcms-file-tab-builder",
 
                     if (filesToBuild.length !== this.files.length) {
                         modal.buildWarningWindow("There are files with duplicate names you have tried to upload. Please change their names before upload!");
+                        fileInputChanged = false;
+                    } else {
+                        fileInputChanged = true;
                     }
 
                     appendFiles(transformFilesToDTO(filesToBuild));
@@ -155,6 +185,11 @@ define("imcms-file-tab-builder",
                 }
             });
 
+            $fileInput.isChanged = function () {
+                return fileInputChanged;
+            }
+
+            tabData.versionedFields.push($fileInput);
             const $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
 
             const $uploadNewFilesButton = components.buttons.positiveButton({
@@ -194,10 +229,14 @@ define("imcms-file-tab-builder",
         FilesTab.prototype.clearTabData = () => {
             $filesListContainerBody.empty();
             $fileInput.val('');
-            tabData = {};
+            tabData = {
+                versionedFields: []
+            };
         };
 
         FilesTab.prototype.getDocLink = () => texts.documentationLink;
+
+        FilesTab.prototype.getVersionedFields = () => tabData.versionedFields;
 
         return new FilesTab(texts.name, docTypes.FILE);
     }
