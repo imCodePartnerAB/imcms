@@ -8,11 +8,11 @@ define("imcms-page-info-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms",
         "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api", "imcms-publish-document-rest-api",
         "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types',
-	    'imcms-formatters'
+	    'imcms-formatters', 'lodash'
     ],
     (BEM, components, WindowBuilder, pageInfoTabs, $, events, imcms,
      documentsRestApi, docFilesAjaxApi, rolesRestApi, publishDocumentRestApi,
-     modal, texts, appearanceTab, docTypes, docPermissionTypes, formatters) => {
+     modal, texts, appearanceTab, docTypes, docPermissionTypes, formatters, lodash) => {
 
         texts = texts.pageInfo;
 
@@ -20,6 +20,7 @@ define("imcms-page-info-builder",
         const WORKING_VERSION = 0;
 
         let windowPageInfoTabsBuilder;
+        let isStandalone = false;
 
         let panels$, documentDTO, $usageDetails, $saveAndPublishBtn, $saveBtn, $nextBtn, $loadingAnimation;
         let $title = $('<a>');
@@ -52,14 +53,13 @@ define("imcms-page-info-builder",
             );
         }
 
-        function saveAndClose(onDocumentSavedCallback) {
+        function saveAndClose(publishDocumentCallback) {
             windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
-
-	        const commonContents = documentDTO.commonContents;
 
             $loadingAnimation.show();
             saveDoc(documentDTO)
                 .done((savedDoc) => {
+                    $loadingAnimation.hide();
 
                     if (documentDTO.newFiles) {
                         // files saved separately because of different content types and in file-doc case
@@ -68,33 +68,20 @@ define("imcms-page-info-builder",
                     }
 
 	                if (documentDTO.id === imcms.document.id) {
-                        if(savedDoc.currentVersion.id === WORKING_VERSION){
-                            events.trigger("imcms-version-modified");
-                        }
+                        if (savedDoc.currentVersion.id === WORKING_VERSION) events.trigger("imcms-version-modified");
+
 	                } else {
 		                documentDTO.id = savedDoc.id;
 	                }
 
-	                let duplicateLanguageAliases = [];
-	                commonContents.forEach((commonContent, index) => {
-		                const prevAlias = commonContent.alias;
-		                const newAlias = savedDoc.commonContents[index].alias;
-		                if (prevAlias !== newAlias && prevAlias !== "") {
-			                duplicateLanguageAliases.push(savedDoc.commonContents[index].language.name);
-		                }
-	                })
-
-	                if (duplicateLanguageAliases.length) {
-		                documentDTO = savedDoc;
-		                $loadingAnimation.hide();
-		                modal.buildErrorWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
-	                } else {
-		                $loadingAnimation.hide();
-		                pageInfoWindowBuilder.closeWindow();
-		                if (onDocumentSavedCallback) {
-			                onDocumentSavedCallback(savedDoc);
-		                }
-					}
+                    const duplicateLanguageAliases = findDuplicateAliases(documentDTO, savedDoc);
+                    if (duplicateLanguageAliases.length) {
+                        documentDTO = savedDoc;
+                        modal.buildErrorWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
+                    } else {
+                        publishDocumentCallback ? publishDocumentCallback(savedDoc) : performOnDocumentSavedCallback();
+                        pageInfoWindowBuilder.closeWindow();
+                    }
                 })
 	            .fail(() => {
 		            modal.buildErrorWindow(texts.error.createDocumentFailed)
@@ -102,37 +89,48 @@ define("imcms-page-info-builder",
 	            });
         }
 
+        function findDuplicateAliases(documentDTO, savedDoc) {
+            return documentDTO.commonContents.filter((commonContent, index) => {
+                const prevAlias = commonContent.alias;
+                const newAlias = savedDoc.commonContents[index].alias;
+
+                return prevAlias !== newAlias && prevAlias !== "";
+            }).map((commonContent, index) => savedDoc.commonContents[index].language.name);
+        }
+        
+        function performOnDocumentSavedCallback() {
+            if (onDocumentSaved) {
+                let requestData = {docId: documentDTO.id};
+                documentsRestApi.read(requestData).done((document) => {
+                    onDocumentSaved(document, true);
+                }).fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed))
+            }
+        }
+
 	    function saveDoc(document) {
 		    return document.id ? documentsRestApi.replace(document) : documentsRestApi.create(document);
 	    }
 
-        function saveAndPublishAndReload() {
-            saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
+        function publishAndReload() {
+            events.trigger("imcms-publish-new-version-current-doc");
         }
 
-        function saveAndPublishAndClose() {
-            saveAndClose(() => {
-                publishDocumentRestApi.publish(documentDTO.id)
-                    .always(() => {
-                        events.trigger("imcms-alert-publish-new-version");
-
-                        let requestData = {docId: documentDTO.id};
-                        documentsRestApi.read(requestData).done((document) => {
-                            onDocumentSaved(document, true);
-                        }).fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed))
-                    })
-            });
+        function publish() {
+            publishDocumentRestApi.publish(documentDTO.id)
+                .always(() => {
+                    events.trigger("imcms-alert-publish-new-version");
+                    performOnDocumentSavedCallback();
+                })
         }
 
         function confirmSaving() {
-            const onDocumentSavedCallback = onDocumentSaved != null ?
-                (doc) => onDocumentSaved(doc, true) : null;
-
-            modal.buildConfirmWindow(texts.confirmMessage, () => saveAndClose(onDocumentSavedCallback));
+            modal.buildConfirmWindow(texts.confirmMessage, saveAndClose);
         }
 
-        function confirmSavingAndPublishing(saveAndPublish){
-            modal.buildConfirmWindow(texts.confirmMessageOnSaveAndPublish, saveAndPublish);
+        function confirmSavingAndPublishing(){
+            const publishFunc = onDocumentSaved ? publish : publishAndReload;
+
+            modal.buildConfirmWindow(texts.confirmMessageOnSaveAndPublish, () => saveAndClose(publishFunc));
         }
 
         function validateDoc() {
@@ -178,13 +176,11 @@ define("imcms-page-info-builder",
                 style: 'display: none',
             });
 
-            const saveAndPublish = documentDTO.type === docTypes.TEXT ?
-                ifValidDocInfo(saveAndPublishAndReload) : ifValidDocInfo(saveAndPublishAndClose);
-
             $saveAndPublishBtn = components.buttons.saveButton({
+                id: 'save-and-publish-btn',
                 text: texts.buttons.saveAndPublish,
-                click: () => confirmSavingAndPublishing(saveAndPublish),
-                style: "display: none;"
+                click: ifValidDocInfo(confirmSavingAndPublishing),
+                style: 'display: none;'
             });
 
             $nextBtn = components.buttons.positiveButton({
@@ -207,7 +203,7 @@ define("imcms-page-info-builder",
 
             const buttons = [$cancelBtn, $saveBtn, $nextBtn, $loadingAnimation, $usageDetails];
 
-            if (imcms.isSuperAdmin && imcms.isVersioningAllowed) {
+            if (imcms.isVersioningAllowed && imcms.accessToPublishCurrentDoc) {
                 buttons.unshift($saveAndPublishBtn);
             }
 
@@ -215,6 +211,12 @@ define("imcms-page-info-builder",
             if(versionNo) return [];
 
             return buttons;
+        }
+
+        function documentHasNewerVersion(doc) {
+            const versionId = doc ? doc.currentVersion.id : documentDTO.currentVersion.id;
+
+            return versionId === WORKING_VERSION || (imcms.document.id === documentDTO.id && imcms.document.hasNewerVersion);
         }
 
         function buildPageInfo(docId, onDocumentSavedCallback) {
@@ -232,14 +234,27 @@ define("imcms-page-info-builder",
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
 
-        function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId) {
+        function toggleButtonVisibility() {
+            const isAnyVersionFieldChanged= isAnyVersionedFieldChanged();
 
-            if ((docId === imcms.document.id && imcms.document.hasNewerVersion) ||
-                (documentDTO.id && documentDTO.type !== docTypes.TEXT)) {
+            isAnyVersionFieldChanged ? $saveAndPublishBtn.slideDown() : $saveAndPublishBtn.slideUp();
+        }
 
-                $saveAndPublishBtn.css("display", "block");
+        function isAnyVersionedFieldChanged (){
+            const versionedFields = lodash.flatten(windowPageInfoTabsBuilder.getAllTabBuilders().filter(tab => tab.getVersionedFields()).map(tab => tab.getVersionedFields()));
+
+            for (let i = 0; i < versionedFields.length; i++) {
+                const $field = versionedFields[i];
+
+                if ($field.isChanged && $field.isChanged()) {
+                    return true;
+                }
             }
 
+            return false;
+        }
+
+        function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId) {
             const linkData = imcms.contextPath + '/api/admin/page-info?meta-id=' + documentDTO.id;
 
             const newDocText = documentDTO.type === docTypes.TEXT
@@ -257,9 +272,14 @@ define("imcms-page-info-builder",
             windowPageInfoTabsBuilder.getAllTabBuilders().forEach((tab) => {
                 if (tab.isDocumentTypeSupported(documentDTO.type)) {
                     tab.fillTabDataFromDocument(documentDTO);
-
                 } else {
                     tab.hideTab();
+                }
+
+                if (tab.getVersionedFields()) {
+                    tab.getVersionedFields().forEach(versionedField=> {
+                        versionedField.on("input", toggleButtonVisibility)
+                    })
                 }
             });
 
@@ -267,9 +287,12 @@ define("imcms-page-info-builder",
                 setEnabledExcessTabs(false);
             }
 
-            documentDTO.id || documentDTO.type === docTypes.TEXT
-                ? $saveBtn.show()
-                : $nextBtn.show();
+            if (documentDTO.id || documentDTO.type === docTypes.TEXT){
+                $saveBtn.show();
+                if (documentHasNewerVersion()) $saveAndPublishBtn.show();
+            }else {
+                $nextBtn.show();
+            }
         }
 
         function setEnabledExcessTabs(isEnabled) {
@@ -316,6 +339,10 @@ define("imcms-page-info-builder",
         let onDocumentSaved;
 
         return {
+            standalone: function () {
+                isStandalone = true;
+                return this;
+            },
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
 
