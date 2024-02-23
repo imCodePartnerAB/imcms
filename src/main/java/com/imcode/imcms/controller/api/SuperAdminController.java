@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
@@ -37,14 +38,17 @@ public class SuperAdminController {
     private final TextService textService;
     private final AccessService accessService;
     private final LanguageService languageService;
+    private final VersionService versionService;
 
     SuperAdminController(TextService textService,
                          AccessService accessService,
-                         LanguageService languageService) {
+                         LanguageService languageService,
+                         VersionService versionService) {
 
         this.textService = textService;
         this.accessService = accessService;
         this.languageService = languageService;
+	    this.versionService = versionService;
     }
 
     @RequestMapping("/manager")
@@ -211,6 +215,10 @@ public class SuperAdminController {
                                     ModelAndView mav) {
 
         mav.addObject("targetDocId", metaId);
+        //duplicate same attributes because SuperAdminController and ViewDocumentController get docId in different ways
+        mav.addObject("accessToPublishCurrentDoc", accessService.hasUserPublishAccess(Imcms.getUser(), metaId));
+        mav.addObject("hasNewerVersion", versionService.hasNewerVersion(metaId));
+
         addCommonModelData(returnUrl, request, mav);
     }
 

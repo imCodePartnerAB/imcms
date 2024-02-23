@@ -29,15 +29,18 @@ public class ViewControllerAdvice {
     private final String imagesPath;
     private final String documentationLink;
     private final boolean isImageEditorAltTextRequired;
+    private final boolean isVersioningAllowed;
 
     public ViewControllerAdvice(LanguageService languageService,
                                 @Qualifier("storageImagePath") String imagesPath,
                                 @Value("${documentation-host}") String documentationLink,
-                                @Value("${image.editor.alt-text.required}") boolean isImageEditorAltTextRequired){
+                                @Value("${image.editor.alt-text.required}") boolean isImageEditorAltTextRequired,
+                                @Value("${document.versioning:true}") boolean isVersioningAllowed) {
         this.languageService = languageService;
         this.imagesPath = imagesPath;
         this.documentationLink = documentationLink;
         this.isImageEditorAltTextRequired = isImageEditorAltTextRequired;
+        this.isVersioningAllowed = isVersioningAllowed;
     }
 
     @ModelAttribute
@@ -53,7 +56,9 @@ public class ViewControllerAdvice {
         model.addAttribute("documentationLink", documentationLink);
         model.addAttribute("isImageEditorAltTextRequired", isImageEditorAltTextRequired);
         model.addAttribute("loggedOnUser", loggedOnUser);
-        if(loggedOnUser != null){
+        model.addAttribute("isVersioningAllowed", isVersioningAllowed);
+
+        if (loggedOnUser != null) {
             model.addAttribute("isSuperAdmin", loggedOnUser.isSuperAdmin());
             model.addAttribute("userLanguage", loggedOnUser.getLanguage());
         }

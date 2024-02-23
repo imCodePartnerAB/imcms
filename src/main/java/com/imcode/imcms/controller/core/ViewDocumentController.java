@@ -191,7 +191,6 @@ public class ViewDocumentController {
         mav.addObject("publicAlias", getPublicAlias(textDocument));
         mav.addObject("language", language);
         mav.addObject("isEditMode", isEditMode);
-        mav.addObject("isVersioningAllowed", isVersioningAllowed);
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("isInWasteBasket", textDocument.isInWasteBasket());
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
