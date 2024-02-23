@@ -13,6 +13,10 @@ define("imcms-radio-buttons-builder",
             };
         }
 
+        function apiIsChecked($input) {
+            return () => $input.prop("checked");
+        }
+
         const radioBEM = new bemBuilder({
                 block: "imcms-radio",
                 elements: {}
@@ -63,6 +67,7 @@ define("imcms-radio-buttons-builder",
                 ]);
 
                 buildBlock.setChecked = apiSetChecked($input);
+                buildBlock.isChecked = apiIsChecked($input);
 
                 return buildBlock;
             },
