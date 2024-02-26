@@ -11,7 +11,7 @@ import com.imcode.imcms.persistence.repository.DocumentWasteBasketRepository;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
@@ -101,9 +101,9 @@ public class DefaultDocumentWasteBasketService implements DocumentWasteBasketSer
         invalidateDocumentAfterCommit(docIds);
     }
 
-    private void invalidateDocumentAfterCommit(List<Integer> docIds){
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter(){
-            public void afterCommit(){
+    private void invalidateDocumentAfterCommit(List<Integer> docIds) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            public void afterCommit() {
                 docIds.forEach(documentMapper::invalidateDocument);
             }
         });
