@@ -278,7 +278,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLISHER_NAME, doc.getPublished().getBy());
 
         addFieldIfNotNull.accept(DocumentIndex.FIELD__CREATED_DATETIME, doc.getCreated().getFormattedDate());
-        addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getCurrentVersion().getFormattedDate());
+        addFieldIfNotNull.accept(DocumentIndex.FIELD__MODIFIED_DATETIME, doc.getModified().getFormattedDate());
         addFieldIfNotNull.accept(DocumentIndex.FIELD__ACTIVATED_DATETIME, doc.getPublished().getFormattedDate());
         addFieldIfNotNull.accept(DocumentIndex.FIELD__PUBLICATION_START_DATETIME,
                 doc.getPublished().getFormattedDate());
