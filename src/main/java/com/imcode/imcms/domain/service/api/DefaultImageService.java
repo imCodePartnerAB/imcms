@@ -132,7 +132,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
 
         return repository.findByVersionAndLanguageAndLoopIndex(
                         versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
-                .parallelStream()
+                .stream()
                 .map(imageJPA ->    //use cache
                         self.getImage(docId, imageJPA.getIndex(), langCode, new LoopEntryRefDTO(imageJPA.getLoopEntryRef()))
                 ).toList();

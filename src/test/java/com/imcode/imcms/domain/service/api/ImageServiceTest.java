@@ -40,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -100,6 +101,10 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
+    @Qualifier("ehCacheCacheManager")
+    EhCacheCacheManager cacheManager;
+
+    @Autowired
     @Qualifier("imageStorageClient")
     private StorageClient storageClient;
 
@@ -110,6 +115,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     public void setUp() {
         imageRepository.deleteAll();
         workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+
+        cacheManager.getCacheNames().forEach(cacheName -> cacheManager.getCacheManager().getEhcache(cacheName).removeAll());
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
