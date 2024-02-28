@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
 import java.util.function.*;
@@ -237,11 +239,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final MenuDTO savedMenu = menuToMenuDTO.apply(repository.save(menu));
 
         super.updateWorkingVersion(docId);
-        if(Imcms.isVersioningAllowed()){
-            super.updateVersionInIndex(docId);
-        }else{
-            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
-        }
+        indexAndCacheActualizationAfterCommit(docId);
 
         return savedMenu;
     }
@@ -568,5 +566,13 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
         return currentMenuItems;
+    }
+
+    private void indexAndCacheActualizationAfterCommit(int docId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            public void afterCommit() {
+                indexAndCacheActualization(docId);
+            }
+        });
     }
 }

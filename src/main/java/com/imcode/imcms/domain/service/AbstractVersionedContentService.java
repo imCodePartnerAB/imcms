@@ -38,7 +38,11 @@ public abstract class AbstractVersionedContentService<JPA, Repository extends Ve
         versionService.updateWorkingVersion(docId);
     }
 
-    protected void updateVersionInIndex(int docId){
-        Imcms.getServices().getDocumentMapper().getDocumentIndex().updateDocumentVersion(docId);    // TODO: 29.08.2022 Try to update only the required fields in the index
+    protected void indexAndCacheActualization(int docId) {
+        if (Imcms.isVersioningAllowed()) {
+            Imcms.getServices().getDocumentMapper().getDocumentIndex().updateDocumentVersion(docId);
+        } else {
+            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
+        }
     }
 }

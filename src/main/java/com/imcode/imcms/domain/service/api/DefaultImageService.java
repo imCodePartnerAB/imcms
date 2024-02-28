@@ -30,6 +30,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
@@ -130,7 +132,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
 
         return repository.findByVersionAndLanguageAndLoopIndex(
                         versionService.getDocumentWorkingVersion(docId), languageJPA, loopIndex)
-                .parallelStream()
+                .stream()
                 .map(imageJPA ->    //use cache
                         self.getImage(docId, imageJPA.getIndex(), langCode, new LoopEntryRefDTO(imageJPA.getLoopEntryRef()))
                 ).toList();
@@ -213,12 +215,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         imageCacheManager.removeOtherImagesFromCacheByKey(""+docId);
 
         super.updateWorkingVersion(docId);
-        if(Imcms.isVersioningAllowed()){
-            super.updateVersionInIndex(docId);
-        }else{
-            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
-            imageCacheManager.removePublicImagesFromCacheByKey(""+docId);
-        }
+        indexAndCacheActualizationAfterCommit(docId);
     }
 
     @CacheEvict(cacheNames = OTHER_CACHE_NAME, allEntries = true)
@@ -329,12 +326,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             }
 
             super.updateWorkingVersion(docId);
-            if(Imcms.isVersioningAllowed()){
-                super.updateVersionInIndex(docId);
-            }else{
-                Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
-                imageCacheManager.removePublicImagesFromCacheByKey(""+docId);
-            }
+            indexAndCacheActualizationAfterCommit(docId);
         }
     }
 
@@ -416,5 +408,16 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     @Override
     protected ImageJPA removeId(ImageJPA image, Version version) {
         return new ImageJPA(image, version);
+    }
+
+    private void indexAndCacheActualizationAfterCommit(int docId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            public void afterCommit() {
+                indexAndCacheActualization(docId);
+                if (!Imcms.isVersioningAllowed()) {
+                    imageCacheManager.removePublicImagesFromCacheByKey("" + docId);
+                }
+            }
+        });
     }
 }

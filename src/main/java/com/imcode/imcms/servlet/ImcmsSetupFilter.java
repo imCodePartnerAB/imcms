@@ -3,11 +3,11 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -207,8 +207,9 @@ public class ImcmsSetupFilter implements Filter {
             writeUserLanguageCookie(response, language.getCode());
 
         } else if (commonContentService.existsByAlias(documentIdString)) {
-            final DocumentDomainObject document = services.getDocumentMapper().getDocument(documentIdString);
-            if (document != null && !document.isDefaultLanguageAliasEnabled()) {    //don't change the user language if the document has one common alias
+            final DocumentMapper documentMapper = services.getDocumentMapper();
+            final Integer documentId = documentMapper.toDocumentId(documentIdString);
+            if (documentId != null && !documentMapper.getDefaultDocument(documentId).isDefaultLanguageAliasEnabled()) {    //don't change the user language if the document has one common alias
                 language = commonContentService.getByAlias(documentIdString).get().getLanguage();
                 writeUserLanguageCookie(response, language.getCode());
             }

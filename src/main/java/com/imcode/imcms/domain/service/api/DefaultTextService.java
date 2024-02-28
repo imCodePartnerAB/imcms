@@ -15,6 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -143,11 +145,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         }
 
         super.updateWorkingVersion(docId);
-        if(Imcms.isVersioningAllowed()){
-            super.updateVersionInIndex(docId);
-        }else{
-            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
-        }
+        indexAndCacheActualizationAfterCommit(docId);
 
         textHistoryService.save(text);
 
@@ -307,4 +305,12 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 				.stream().map(TextDTO::new)
 				.collect(Collectors.toList());
 	}
+
+    private void indexAndCacheActualizationAfterCommit(int docId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            public void afterCommit() {
+                indexAndCacheActualization(docId);
+            }
+        });
+    }
 }

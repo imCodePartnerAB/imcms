@@ -10,9 +10,10 @@ import com.imcode.imcms.model.LoopEntry;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.LoopRepository;
-import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,11 +77,7 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
         loopForSave.setId(loopId);
         repository.save(loopForSave);
         super.updateWorkingVersion(docId);
-        if(Imcms.isVersioningAllowed()){
-            super.updateVersionInIndex(docId);
-        }else{
-            Imcms.getServices().getDocumentMapper().invalidateDocument(docId);
-        }
+        indexAndCacheActualizationAfterCommit(docId);
     }
 
     @Override
@@ -166,5 +163,13 @@ public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA,
         }
 
         return loop.getId();
+    }
+
+    private void indexAndCacheActualizationAfterCommit(int docId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            public void afterCommit() {
+                indexAndCacheActualization(docId);
+            }
+        });
     }
 }

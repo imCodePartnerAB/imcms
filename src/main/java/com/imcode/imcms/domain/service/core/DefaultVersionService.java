@@ -134,6 +134,7 @@ public class DefaultVersionService implements VersionService {
     public void updateWorkingVersion(int docId) {
         final Version workingVersion = getDocumentWorkingVersion(docId);
         workingVersion.setModifiedDt(new Date());
+        workingVersion.setModifiedBy(userService.getUser(Imcms.getUser().getId()));
         versionRepository.save(workingVersion);
     }
 }
