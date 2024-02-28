@@ -1568,6 +1568,13 @@
 	width: 100%;
 }
 
+.imcms-import-entity-reference-manager-row__select .imcms-drop-down-list__select-item-value{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
 .imcms-import-documents-tab{
 	padding-top: 1%;
 }

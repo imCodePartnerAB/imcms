@@ -311,3 +311,15 @@
     width: 6px;
     height: 6px;
 }
+
+.sections-container__edit-area::-webkit-scrollbar-thumb{
+    background-color: #abacad;
+}
+.sections-container__edit-area::-webkit-scrollbar-track{
+    background-color: transparent;
+}
+.sections-container__edit-area::-webkit-scrollbar{
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
