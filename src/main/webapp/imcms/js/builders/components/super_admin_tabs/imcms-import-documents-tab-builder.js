@@ -677,7 +677,6 @@ define(
 		}
 
 		function buildEditImportedDocumentsSection() {
-			// const $resultContainer = $('<div>', {'class': 'table-import-documents'});
 			const $resultContainer = tab.$editArea;
 			const $builder = new ImportDocumentListBuilder($resultContainer);
 			const $listBtn = buildListDocumentsBtn();
@@ -731,26 +730,21 @@ define(
 					}
 				}
 
-				let options;
-				if (reference.type === ImportEntityType.CATEGORY_TYPE)
-					options = tab.$categoryTypeOptions;
-				if (reference.type === ImportEntityType.CATEGORY)
-					options = tab.$categoryOptions;
-				if (reference.type === ImportEntityType.ROLE)
-					options = tab.$roleOptions;
-				if (reference.type === ImportEntityType.TEMPLATE)
-					options = tab.$templateOptions;
-
 				const $select = components.selects.imcmsSelect("<div>", {
 					emptySelect: true,
 				});
 
 				const $responseMessageDiv = $("<div style='width: fit-content; padding-left: 5%; font-size: smaller;'>");
 
-				components.selects.addOptionsToSelect(options, $select, onReferenceOptionClick($responseMessageDiv))
+				loadLocalEntities(reference.type).done((localEntities) => {
+					const options = localEntities.map(mapToOption);
+					components.selects.addOptionsToSelect(options, $select, onReferenceOptionClick($responseMessageDiv))
 
-				if (options.length)
-					$select.find('.imcms-drop-down-list__items').children().first().on('click', () => onNoneReferenceOptionClick($responseMessageDiv));
+					if (options.length)
+						$select.find('.imcms-drop-down-list__items').children().first().on('click', () => onNoneReferenceOptionClick($responseMessageDiv));
+
+					$select.selectValue(reference.linkedEntityId);
+				});
 
 				$select.append($responseMessageDiv)
 
@@ -770,22 +764,27 @@ define(
 				return components.texts.titleText("<div>", text);
 			}
 
-			function loadResources(importEntityType) {
-				if (importEntityType === ImportEntityType.CATEGORY_TYPE)
-					categoryTypesRestApi.read().done(categoryTypes => tab.$categoryTypeOptions = categoryTypes.map(mapToOption));
-				if (importEntityType === ImportEntityType.CATEGORY)
-					categoriesRestApi.read().done(categories => tab.$categoryOptions = categories.map(mapToOption));
-				if (importEntityType === ImportEntityType.ROLE)
-					rolesRestApi.read().done(roles => tab.$roleOptions = roles.map(mapToOption));
-				if (importEntityType === ImportEntityType.TEMPLATE)
-					templatesRestApi.read().done(templates => tab.$templateOptions = templates.map(mapToOption));
+			function loadLocalEntities(importEntityType) {
+				switch (importEntityType) {
+					case ImportEntityType.CATEGORY_TYPE: {
+						return categoryTypesRestApi.read();
+					}
+					case ImportEntityType.CATEGORY: {
+						return categoriesRestApi.read();
+					}
+					case ImportEntityType.ROLE: {
+						return rolesRestApi.read();
+					}
+					case ImportEntityType.TEMPLATE: {
+						return templatesRestApi.read();
+					}
+				}
 			}
 
 			function buildButton(name, importEntityType) {
 				return components.buttons.neutralButton({
 					text: name,
 					click: () => {
-						loadResources(importEntityType);
 						$importEntityReferenceContainer.empty();
 						importEntityReferenceRestApi.getAllReferences(importEntityType)
 							.done(references => {
@@ -815,9 +814,10 @@ define(
 									}).buildBlockStructure("<div>", {});
 
 									$importEntityReferenceContainer.append($row);
-									$select.selectValue(reference.linkedEntityId);
 								})
 							})
+
+
 					}
 				});
 			}
@@ -982,6 +982,7 @@ define(
 			})
 			$nextBtn.on('click', () => {
 				tab.tabbedContent.next();
+				tab.$editArea.off("scroll")
 			})
 
 			tab.$backBtn.on('click', () => {
