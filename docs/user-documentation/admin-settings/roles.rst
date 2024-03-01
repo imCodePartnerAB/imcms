@@ -29,6 +29,18 @@ ImCMS 6 provides flexible access control. A role is used to classify users and g
 .. seealso:: Read more about access control :doc:`here </user-documentation/access-control>`
 
 ---------------
+External to Local Role Management
+---------------
+
+.. image:: _static/external-to-local-roles.png
+
+1 - Authentication Provider. For each external role from auth provider you can link local one. So external role will behave as local.
+
+2 - External Role. External role name from authentication provider.
+
+3 - Local roles select. Here you can select one or multiple local roles. So external role will behave like selected.
+
+---------------
 Role Management
 ---------------
 
