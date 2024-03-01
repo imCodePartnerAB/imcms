@@ -53,7 +53,7 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 	private final ExecutorService importExecutor = Executors.newSingleThreadExecutor();
 	private Future importFuture = CompletableFuture.completedFuture(null);
-	private final ImportProgress progress = new ImportProgress();
+	private volatile ImportProgress progress = new ImportProgress();
 
 	public DefaultImportDocumentService(Path importDirectoryPath,
 										ObjectMapper mapper,
@@ -210,8 +210,8 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 			importDocumentIdsUnderImporting.clear();
 			progress.finish();
-			documentMapper.invalidateDocuments(getMetaIds(importDocsId));
 			documentsCache.invalidateCache();
+			documentMapper.invalidateDocuments(getMetaIds(importDocsId));
 			log.info("Importing documents thread end!");
 		}
 
