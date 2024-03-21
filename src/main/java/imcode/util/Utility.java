@@ -10,6 +10,7 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.domain.component.TextContentFilter;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.SessionInfoDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
@@ -19,6 +20,7 @@ import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneType;
 import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.servlet.ImageFetcher;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -35,9 +37,11 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
@@ -107,11 +111,16 @@ public class Utility {
 	private static TextContentFilter textContentFilter;
 	private static ImcmsServices services;
 	private static CSRFTokenManager csrfTokenManager;
+	private static String storageImagePath;
 
-	public Utility(TextContentFilter textContentFilter, ImcmsServices services, CSRFTokenManager csrfTokenManager) {
+	public Utility(TextContentFilter textContentFilter,
+				   ImcmsServices services,
+				   CSRFTokenManager csrfTokenManager,
+				   @Qualifier("storageImagePath") String storageImagePath) {
 		Utility.textContentFilter = textContentFilter;
 		Utility.services = services;
 		Utility.csrfTokenManager = csrfTokenManager;
+		Utility.storageImagePath = storageImagePath;
 	}
 
 	public static TextContentFilter getTextContentFilter() {
@@ -770,6 +779,16 @@ public class Utility {
 			return true;
 		} catch (NumberParseException e) {
 			return false;
+		}
+	}
+
+	@SneakyThrows
+	public static String buildImageUrlPathRelativeToContextPath(ImageDTO imageDTO){
+		if(StringUtils.isNotBlank(imageDTO.getGeneratedFilePath())){
+			return new URIBuilder().setPath(storageImagePath).
+					addParameter(ImageFetcher.PATH_PARAMETER, imageDTO.getGeneratedFilePath()).build().toString();
+		}else{
+			return null;
 		}
 	}
 
