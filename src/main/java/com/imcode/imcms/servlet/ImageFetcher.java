@@ -7,6 +7,7 @@ import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import imcode.server.Imcms;
 import imcode.util.ImcmsImageUtils;
+import imcode.util.Utility;
 import imcode.util.image.Resize;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,7 @@ public class ImageFetcher extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        final String path = request.getParameter(PATH_PARAMETER);
+        final String path = Utility.unescapeValue(request.getParameter(PATH_PARAMETER));
         final String width = request.getParameter(WIDTH_PARAMETER);
         final String height = request.getParameter(HEIGHT_PARAMETER);
 

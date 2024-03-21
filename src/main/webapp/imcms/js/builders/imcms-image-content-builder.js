@@ -672,7 +672,7 @@ define("imcms-image-content-builder",
                     ),
                     "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
                     'open-image': components.buttons.openInNewWindow('<a>', {
-                        href: `${imcms.imagesPath}?path=${imageFile.path}`,
+                        href: `${imcms.imagesPath}?path=${encodeURIComponent(imageFile.path)}`,
                         title: texts.openImage,
                         target: '_blank'
                     }),
@@ -715,7 +715,7 @@ define("imcms-image-content-builder",
 
         //build image with lazy loading!
         function buildImage(imageFile, folder) {
-            let dataSrc = `${imcms.imagesPath}?path=${imageFile.path}`;
+            let dataSrc = `${imcms.imagesPath}?path=${encodeURIComponent(imageFile.path)}`;
             //Reduce image weight by resizing
             if(imageFile.size.toLowerCase().endsWith("mb")){
                 dataSrc += "&height=146";
