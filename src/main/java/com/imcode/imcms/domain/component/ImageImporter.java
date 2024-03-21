@@ -55,7 +55,6 @@ public class ImageImporter {
 		final ImageDTO image = importImageToImage.apply(importImage, docId, language);
 
 		imageService.saveImage(image);
-		imageService.regenerateImage(image);
 	}
 
 	private void createTargetFolder(String targetFolder) {
