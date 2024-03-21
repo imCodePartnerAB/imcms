@@ -750,8 +750,27 @@ define(
                     const imageRequestData = getImageRequestData(imcms.language.code);
 
                     imageRestApi.read(imageRequestData)
-                        .done(reloadImageOnPage)
+                        .done((imageDTO) => {
+                            reloadImageOnPage(imageDTO);
+
+                            if(!imageDTO.generatedFilename)
+                                modal.buildErrorWindow(texts.error.generateFailed);
+                        })
                         .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+                }
+
+
+                function checkGeneratedImage(successfulCallback){
+                    const imageRequestData = getImageRequestData(imcms.language.code);
+
+                    imageRestApi.read(imageRequestData)
+                        .done((imageDTO) => {
+                            if(!imageDTO.generatedFilename){
+                                modal.buildErrorWindow(texts.error.generateFailed);
+                            }else{
+                                successfulCallback();
+                            }
+                        })
                 }
 
                 function callBackAltText(continueSaving) {
@@ -766,7 +785,7 @@ define(
                                 if (!standaloneEditor) {
                                     onImageSaved();
                                 } else {
-                                    imageWindowBuilder.closeWindow();
+                                    checkGeneratedImage(() => imageWindowBuilder.closeWindow());
                                 }
                             })
                             .fail((response) => {

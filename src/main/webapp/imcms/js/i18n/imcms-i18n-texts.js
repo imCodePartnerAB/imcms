@@ -625,7 +625,9 @@ const texts = {
                 error: {
                     loadFailed: 'Det gick inte att ladda bilden. Försök igen',
                     removeFailed: 'Misslyckades med att ta bort bilden. Försök igen',
-                    createFailed: 'Misslyckades med att skapa bild. Försök igen'
+                    createFailed: 'Misslyckades med att skapa bild. Försök igen',
+                    loadHistoryFailed: 'Det gick inte att läsa in historiken',
+                    generateFailed: 'Data sparad men kunde inte generera bild. Försök igen'
                 }
             },
             imageMetadata: {
@@ -1888,7 +1890,8 @@ const texts = {
                     loadFailed: 'Failed to load image. Try again',
                     removeFailed: 'Failed to remove image. Try again',
                     createFailed: 'Failed to create image. Try again',
-                    loadHistoryFailed: 'Failed to load history'
+                    loadHistoryFailed: 'Failed to load history',
+                    generateFailed: 'Data saved, but failed to generate image. Try again'
                 }
             },
             imageMetadata: {
@@ -3151,7 +3154,8 @@ const texts = {
                     loadFailed: 'Bildet kunne ikke lastes inn. Prøv igjen',
                     removeFailed: 'Kunne ikke slette bildet. Prøv igjen',
                     createFailed: 'Kunne ikke lage bildet. Prøv igjen',
-                    loadHistoryFailed: 'Kunne ikke laste inn loggen'
+                    loadHistoryFailed: 'Kunne ikke laste inn loggen',
+                    generateFailed: 'Data lagret, men klarte ikke å generere bilde. Prøv igjen'
                 }
             },
             imageMetadata: {
