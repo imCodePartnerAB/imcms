@@ -350,7 +350,7 @@ public class ImcmsImageUtils {
 
             return generateImage(tempFile, image);
         } catch (Exception ex) {
-            log.warn(ex.getMessage(), ex);
+            log.warn("Failed to generate image: " + image, ex);
             return null;
         } finally {
             IOUtils.closeQuietly(input);

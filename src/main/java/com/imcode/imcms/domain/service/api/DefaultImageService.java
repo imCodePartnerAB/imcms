@@ -280,7 +280,12 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 imageDTO.getGeneratedFilename());
         if(!storageClient.exists(path)){
             byte[] content = ImcmsImageUtils.generateImage(imageDTO);
-            saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+
+            if(content != null && content.length > 0){
+                saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+            }else{
+                log.warn("Failed to generate image: " + imageDTO);
+            }
         }
     }
 
@@ -359,7 +364,13 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
             imageDTO.setGeneratedFilename(ImcmsImageUtils.generateImageFileName(imageDTO));
 
             byte[] content = ImcmsImageUtils.generateImage(imageDTO);
-            saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+
+            if(content != null && content.length > 0){
+                saveGeneratedImageFile(imageDTO.getGeneratedFilename(), content);
+            }else{
+                imageDTO.setGeneratedFilename(null);
+                log.warn("Failed to generate image: " + imageDTO);
+            }
         }
     }
 
