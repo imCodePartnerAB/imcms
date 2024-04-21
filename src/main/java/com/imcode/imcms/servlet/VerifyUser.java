@@ -69,7 +69,10 @@ public class VerifyUser extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
 
         String name = StringUtils.defaultString(req.getParameter(REQUEST_PARAMETER__USERNAME), (String) req.getSession().getAttribute(REQUEST_PARAMETER__USERNAME));
-        String passwd = StringUtils.defaultString(req.getParameter(REQUEST_PARAMETER__PASSWORD), (String) req.getSession().getAttribute(REQUEST_PARAMETER__PASSWORD));
+        String passwd = Utility.unescapeValue(StringUtils.defaultString(
+                req.getParameter(REQUEST_PARAMETER__PASSWORD),
+                (String) req.getSession().getAttribute(REQUEST_PARAMETER__PASSWORD)
+        ));
 
 	    if (StringUtils.isAnyBlank(name, passwd)) {
             goToLoginFailedPage(req, res, null);
