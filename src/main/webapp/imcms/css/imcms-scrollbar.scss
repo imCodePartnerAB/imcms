@@ -323,3 +323,51 @@
     width: 6px;
     height: 6px;
 }
+
+@supports (-moz-appearance:none) {
+    .imcms-right-side__images-container,
+    .imcms-right-side,
+    .imcms-left-side,
+    .user-properties-content__properties,
+    .first-sub-files,
+    .second-sub-files,
+    .templates-data,
+    .documents-data,
+    .user-properties-content__properties,
+    .imcms-modal-body__optional-box,
+    .imcms-modal-body__view-box,
+    .imcms-content-manager__left-side,
+    .imcms-drop-down-list__items,
+    .imcms-text-area__input,
+    .imcms-preview-img-area,
+    .imcms-originally-img-area,
+    .image-cropping-block,
+    .imcms-editable-controls-area,
+    .imcms-image_editor__right-side,
+    .image-exif-window .imcms-pop-up-modal__body,
+    .imcms-history-mode__entries,
+    .imcms-menu-list__items,
+    .imcms-document-list__items,
+    .imcms-users-search-result,
+    .imcms-pop-up-modal,
+    .imcms-info-page,
+    .roles-table,
+    .rules-table-elements,
+    .templates-css-edit-area-container__edit-area,
+    .imcms-doc-version-table,
+    .imcms-doc-basket-table-block__table,
+    .imcms-import-entity-reference-manager-body__container,
+    .table-import-documents,
+    .edit-imported-documents-section .list-input .list-input__meta-id-list-select,
+    .import-section .list-input .list-input__meta-id-list-select,
+    .alias-control-section .list-input .list-input__meta-id-list-select,
+    .import-entity-references-section .import-entity-references-section__import-entity-reference-container,
+    .sections-container__edit-area {
+        scrollbar-color: #abacad transparent;
+    }
+
+    .first-sub-files,
+    .second-sub-files {
+        scrollbar-width: thin;
+    }
+}
