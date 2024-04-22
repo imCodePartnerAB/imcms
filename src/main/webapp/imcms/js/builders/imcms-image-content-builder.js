@@ -782,7 +782,10 @@ define("imcms-image-content-builder",
         }
 
         function buildImagesNotRecursive(folder) {
-	        folder.$images = folder.files.map((imageFile) => buildImage(imageFile, folder));
+	        folder.$images = folder.files
+                // sort so that smaller files are loaded first
+                .sort((file1 , file2) => convertFormattedSizeToBytes(file1.size) - convertFormattedSizeToBytes(file2.size))
+                .map((imageFile) => buildImage(imageFile, folder));
             viewModel.$images = viewModel.$images.concat(folder.$images);
 
             //Start lazy loading
@@ -819,6 +822,23 @@ define("imcms-image-content-builder",
                 setTimeout(setImage, 300);
             }
             //End lazy loading
+        }
+
+        function convertFormattedSizeToBytes(size) {
+            try {
+                const units = {
+                    'b' : 1,
+                    'kb': 1024,
+                    'mb': 1024 * 1024,
+                    'gb': 1024 * 1024 * 1024
+                };
+                const regex = /^(\d+)([a-z]+)$/i;   //for example, 1b, 120kb, 5mb
+                const [, value, unit] = regex.exec(size.toLowerCase());
+                return parseInt(value) * units[unit];
+            } catch (e) {
+                console.error("Image size conversion error. ", e);
+                return 0;
+            }
         }
 
 	    function scrollToSelectedImage() {
