@@ -236,15 +236,23 @@
                 </div>
 
                 <div class="imcms-field">
-                    <div class="imcms-text-box">
-                        <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                    <div class="imcms-text-box" style="display: flex;">
+                        <label class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp_superadmin_part.htm/2" bundle="${resource_property}"/></label>
-                        <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
-                        <c:if test="${editedUser.createDate ne null}">
-                            &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12" bundle="${resource_property}"/>
-                            &nbsp; <fmt:formatDate value="${editedUser.createDate}"
-                                                   pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
-                        </c:if>
+
+                        <div class="imcms-checkbox imcms-checkboxes__checkbox" style="padding: 9px 0 0 8px;">
+                            <input type="checkbox" id="activated" name="active"
+                                   value="1"${editedUser.active ? 'checked' : ''}
+                                   class="imcms-checkbox__checkbox">
+                            <label for="activated" class="imcms-label imcms-checkbox__label"></label>
+                        </div>
+
+                        <span style="padding-top: 6px;">
+                            <c:if test="${editedUser.createDate ne null}">
+                                <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12" bundle="${resource_property}"/>
+                                <fmt:formatDate value="${editedUser.createDate}" pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+                            </c:if>
+                        </span>
                     </div>
                 </div>
 
