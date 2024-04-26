@@ -1,7 +1,7 @@
 package imcode.server.document.index;
 
 import com.imcode.imcms.api.SearchResult;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
@@ -91,7 +91,7 @@ public interface DocumentIndex {
 	List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
 	/**
-	 * * @deprecated - Use better {@link SearchDocumentService#searchDocuments(String, PageRequestDTO)}
+	 * * @deprecated - Use better {@link SearchDocumentService#searchDocuments(String, DocumentPageRequestDTO)}
 	 */
 	@Deprecated
 	SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
@@ -107,7 +107,7 @@ public interface DocumentIndex {
     /**
      * @since 6.0
      */
-    IndexSearchResult search(SolrQuery query) throws IndexException;
+    IndexSearchResult<DocumentStoredFields> search(SolrQuery query) throws IndexException;
 
     /**
      * Adds default document to index.

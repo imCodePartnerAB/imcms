@@ -46,7 +46,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     @Override
-    public IndexSearchResult search(SolrQuery solrQuery) throws IndexException {
+    public IndexSearchResult<DocumentStoredFields> search(SolrQuery solrQuery) throws IndexException {
         return index.search(solrQuery);
     }
 

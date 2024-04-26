@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.component;
 
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.Imcms;
@@ -67,7 +68,7 @@ public class DocumentSearchQueryConverter {
         return convertToSolrQuery(searchQuery, null, limitSearch);
     }
 
-    public SolrQuery convertToSolrQuery(String searchQuery, PageRequestDTO page, boolean limitSearch) {
+    public SolrQuery convertToSolrQuery(String searchQuery, DocumentPageRequestDTO page, boolean limitSearch) {
         final UserDomainObject user = Imcms.getUser();
         final SolrQuery solrQuery = new SolrQuery(searchQuery);
 
@@ -126,7 +127,7 @@ public class DocumentSearchQueryConverter {
 	    PageRequestDTO page = searchQuery.getPage();
 
 	    if (page == null) {
-		    page = new PageRequestDTO();
+		    page = new DocumentPageRequestDTO();
 	    }
 
 	    solrQuery.setStart(page.getSkip());

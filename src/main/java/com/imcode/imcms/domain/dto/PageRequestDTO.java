@@ -1,74 +1,64 @@
 package com.imcode.imcms.domain.dto;
 
-import imcode.server.document.index.DocumentIndex;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-public class PageRequestDTO {
+public abstract class PageRequestDTO {
+	public static final int DEFAULT_PAGE_SIZE_FOR_UI = Integer.MAX_VALUE;
+	protected static final int DEFAULT_PAGE_NUMBER = 0;
 
-    public static final int DEFAULT_PAGE_SIZE_FOR_UI = Integer.MAX_VALUE;
-    private static final int DEFAULT_PAGE_NUMBER = 0;
+	protected PageRequest pageRequest;
 
-    private PageRequest pageRequest;
+	protected Sort.Direction direction;
+	protected String property;
 
-    private Sort.Direction direction;
-    private String property;
+	protected int skip;
 
-    private int skip;
+	public PageRequestDTO(String property, PageRequest pageRequest, Sort.Direction direction) {
+		this.property = property;
+		this.pageRequest = pageRequest;
+		this.direction = direction;
+	}
 
-    public PageRequestDTO() {
-	    this.pageRequest = PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE_FOR_UI);
-	    this.property = DocumentIndex.FIELD__MODIFIED_DATETIME;
-	    this.direction = Sort.Direction.DESC;
-    }
+	public PageRequestDTO(String property, PageRequest pageRequest, Sort.Direction direction, int skip) {
+		this.property = property;
+		this.pageRequest = pageRequest;
+		this.direction = direction;
+		this.skip = skip;
+	}
 
-    public PageRequestDTO(int defaultPageSize) {
-	    this.pageRequest = PageRequest.of(DEFAULT_PAGE_NUMBER, defaultPageSize);
-	    this.property = DocumentIndex.FIELD__MODIFIED_DATETIME;
-	    this.direction = Sort.Direction.DESC;
-    }
+	public int getSize() {
+		return pageRequest.getPageSize();
+	}
 
-    public PageRequestDTO(String property, Sort.Direction direction, int skip, int size) {
-	    this.property = property;
-	    this.direction = direction;
-	    this.skip = skip;
+	public void setSize(int size) {
+		pageRequest = PageRequest.of(pageRequest.getPageNumber(), size, pageRequest.getSort());
+	}
 
-	    final Sort sort = Sort.by(direction, property);
-	    this.pageRequest = PageRequest.of(DEFAULT_PAGE_NUMBER, size, sort);
-    }
+	public Sort getSort() {
+		return pageRequest.getSort();
+	}
 
-    public int getSize() {
-        return pageRequest.getPageSize();
-    }
+	private void setSort() {
+		final Sort sort = Sort.by(this.direction, this.property);
+		pageRequest = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
+	}
 
-    public void setSize(int size) {
-	    pageRequest = PageRequest.of(pageRequest.getPageNumber(), size, pageRequest.getSort());
-    }
+	public void setDirection(Sort.Direction direction) {
+		this.direction = direction;
+		setSort();
+	}
 
-    public Sort getSort() {
-        return pageRequest.getSort();
-    }
+	public void setProperty(String property) {
+		this.property = property;
+		setSort();
+	}
 
-    private void setSort() {
-	    final Sort sort = Sort.by(this.direction, this.property);
-	    pageRequest = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
-    }
+	public int getSkip() {
+		return skip;
+	}
 
-    public void setDirection(Sort.Direction direction) {
-        this.direction = direction;
-        setSort();
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
-        setSort();
-    }
-
-    public int getSkip() {
-        return skip;
-    }
-
-    public void setSkip(int skip) {
-        this.skip = skip;
-    }
+	public void setSkip(int skip) {
+		this.skip = skip;
+	}
 }

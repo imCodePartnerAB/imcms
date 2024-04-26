@@ -62,7 +62,7 @@ public class DocumentIndexImpl implements DocumentIndex {
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
             return search(solrQuery)
-                    .documentStoredFieldsList()
+                    .storedFieldsList()
                     .stream()
                     .map(DocumentStoredFields::id)
                     .map(documentMapper::<DocumentDomainObject>getDefaultDocument)
@@ -104,24 +104,24 @@ public class DocumentIndexImpl implements DocumentIndex {
 	}
 
     @Override
-    public IndexSearchResult search(SolrQuery solrQuery) throws IndexException {
+    public IndexSearchResult<DocumentStoredFields> search(SolrQuery solrQuery) throws IndexException {
         val queryResponse = service.query(solrQuery);
-        return new IndexSearchResult(solrQuery, queryResponse);
+        return new DocumentIndexSearchResult(solrQuery, queryResponse);
     }
 
     @Override
     public void indexDocument(int docId) throws IndexException {
-        service.update(new AddDocToIndex(docId));
+        service.update(new AddDocToIndex(String.valueOf(docId)));
     }
 
     @Override
     public void removeDocument(int docId) throws IndexException {
-        service.update(new DeleteDocFromIndex(docId));
+        service.update(new DeleteDocFromIndex(String.valueOf(docId)));
     }
 
 	@Override
 	public void updateDocumentVersion(int docId) throws IndexException {
-		service.update(new UpdateDocumentVersionInIndex(docId));
+		service.update(new UpdateDocumentVersionInIndex(String.valueOf(docId)));
 	}
 
     @Override

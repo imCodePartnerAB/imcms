@@ -5,14 +5,11 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 
-import java.util.AbstractList;
 import java.util.List;
 
-public class IndexSearchResult {
-
+public abstract class IndexSearchResult<T> {
     private final SolrQuery solrQuery;
     private final SolrDocumentList solrDocumentList;
-    private final List<DocumentStoredFields> documentStoredFieldsList;
 
     private final int size;
     private final boolean isEmpty;
@@ -22,17 +19,6 @@ public class IndexSearchResult {
         this.solrDocumentList = queryResponse.getResults();
         this.size = solrDocumentList.size();
         this.isEmpty = size == 0;
-        this.documentStoredFieldsList = new AbstractList<DocumentStoredFields>() {
-            @Override
-            public DocumentStoredFields get(int i) {
-                return new DocumentStoredFields(solrDocumentList.get(i));
-            }
-
-            @Override
-            public int size() {
-                return size;
-            }
-        };
     }
 
     public long found() {
@@ -59,10 +45,6 @@ public class IndexSearchResult {
         return !isEmpty && index >= 0 && index < size;
     }
 
-    public List<DocumentStoredFields> documentStoredFieldsList() {
-        return documentStoredFieldsList;
-    }
-
     public SolrQuery solrQuery() {
         return solrQuery.getCopy();
     }
@@ -70,4 +52,6 @@ public class IndexSearchResult {
     public SolrDocumentList solrDocumentList(){
         return solrDocumentList;
     }
+
+    public abstract List<T> storedFieldsList();
 }
