@@ -22,9 +22,7 @@ import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.*;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexFactory;
-import imcode.server.document.index.ResolvingQueryIndex;
+import imcode.server.document.index.*;
 import imcode.util.io.FileUtility;
 import lombok.SneakyThrows;
 import org.apache.commons.beanutils.BeanUtils;
@@ -174,6 +172,11 @@ public class MainConfig {
         documentMapper.setDocumentIndex(resolvingQueryIndex);
 
         return resolvingQueryIndex;
+    }
+
+    @Bean
+    public ImageFileIndex imageFileIndex(ImageFileIndexFactory imageFileIndexFactory){
+        return imageFileIndexFactory.create();
     }
 
     @Bean

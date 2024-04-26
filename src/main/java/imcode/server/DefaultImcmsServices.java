@@ -16,6 +16,7 @@ import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.index.ImageFileIndex;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
@@ -173,6 +174,9 @@ public class DefaultImcmsServices implements ImcmsServices {
 	@Autowired
 	private MultiFactorAuthenticationService multiFactorAuthenticationService;
 
+    @Getter
+    private ImageFileIndex imageFileIndex;
+
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
@@ -191,7 +195,9 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 MenuService menuService,
                                 AuthenticationProvidersService authenticationProvidersService,
                                 LanguageService languageService,
-                                TemplateCSSService templateCSSService, TextService textService) {
+                                TemplateCSSService templateCSSService,
+                                TextService textService,
+                                ImageFileIndex imageFileIndex) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -215,6 +221,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.menuService = menuService;
         this.authenticationProvidersService = authenticationProvidersService;
         this.languageService = languageService;
+	    this.imageFileIndex = imageFileIndex;
     }
 
     @PostConstruct

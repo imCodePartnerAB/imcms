@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.index.ImageFileIndex;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
@@ -147,4 +148,6 @@ public interface ImcmsServices {
     ImageCompressor getImageCompressor();
 
 	MultiFactorAuthenticationService getMultiFactorAuthenticationService();
+
+    ImageFileIndex getImageFileIndex();
 }
