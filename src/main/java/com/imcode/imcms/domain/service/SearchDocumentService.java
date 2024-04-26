@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -25,11 +25,11 @@ public interface SearchDocumentService {
 
     SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery);
 
-    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, PageRequestDTO page, boolean limitSearch);
+    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, DocumentPageRequestDTO page, boolean limitSearch);
 
-    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, PageRequestDTO page);
+    List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery, DocumentPageRequestDTO page);
 
-    SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, PageRequestDTO page, boolean limitSearch);
+    SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, DocumentPageRequestDTO page, boolean limitSearch);
 
-    SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, PageRequestDTO page);
+    SolrDocumentList searchDocumentsReturnSolrDocumentList(String stringSearchQuery, DocumentPageRequestDTO page);
 }

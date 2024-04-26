@@ -20,7 +20,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
     private static final String SKIP_KEY = "skip";
     private static final String TAKE_KEY = "take";
     private static final String SEARCH_REQUEST_KEY = "sr";
-    private volatile IndexSearchResult searchResult;
+    private volatile IndexSearchResult<DocumentStoredFields> searchResult;
     private volatile List<DocumentStoredFields> resultList;
     private volatile ContentManagementSystem contentManagementSystem;
     private volatile String searchRequest = "";
@@ -44,7 +44,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
 
         if (!searchResult.isEmpty()) {
             currentItemIndex = -1;
-            resultList = searchResult.documentStoredFieldsList().subList(
+            resultList = searchResult.storedFieldsList().subList(
                     (skip) >= searchResult.size() ? 0 : skip,
                     (skip + take) >= searchResult.size() ? searchResult.size() : (skip + take)
             );

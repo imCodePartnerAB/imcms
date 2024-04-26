@@ -28,7 +28,7 @@ public class SearchQueryDTO implements Serializable {
 
     private List<Integer> categoriesId;
 
-    private PageRequestDTO page;
+    private DocumentPageRequestDTO page;
 
     /**
      * Restrict search relative to this role.
