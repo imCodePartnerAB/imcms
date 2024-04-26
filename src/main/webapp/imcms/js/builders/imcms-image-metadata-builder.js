@@ -181,12 +181,24 @@ define("imcms-image-metadata-builder",
                 value: imageDTO.exifInfo.customExif.copyright
             });
 
+            metadataEditorWindowData.$altText = components.texts.textField('<div>', {
+                text: texts.altText,
+                value: imageDTO.exifInfo.customExif.alternateText
+            });
+
+            metadataEditorWindowData.$descriptionText = components.texts.textField('<div>', {
+                text: texts.descriptionText,
+                value: imageDTO.exifInfo.customExif.descriptionText
+            });
+
             return new BEM({
                 block: "imcms-image-metadata",
                 elements: {
                     "photographer": metadataEditorWindowData.$photographer,
                     "uploaded-by": metadataEditorWindowData.$uploadedBy,
                     "copyright": metadataEditorWindowData.$copyright,
+                    "alt-text": metadataEditorWindowData.$altText,
+                    "description-text": metadataEditorWindowData.$descriptionText,
                     "license-period": buildLicensePeriodField()
                 }
             }).buildBlockStructure("<div>");
@@ -238,6 +250,8 @@ define("imcms-image-metadata-builder",
                 photographer: metadataEditorWindowData.$photographer.$input.val(),
                 uploadedBy: metadataEditorWindowData.$uploadedBy.$input.val(),
                 copyright: metadataEditorWindowData.$copyright.$input.val(),
+                alternateText: metadataEditorWindowData.$altText.$input.val(),
+                descriptionText: metadataEditorWindowData.$descriptionText.$input.val(),
                 licensePeriodStart: metadataEditorWindowData.$dateStart.getDate(),
                 licensePeriodEnd: metadataEditorWindowData.$dateEnd.getDate()
             }
