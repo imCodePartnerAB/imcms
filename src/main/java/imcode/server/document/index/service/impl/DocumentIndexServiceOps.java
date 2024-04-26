@@ -2,6 +2,7 @@ package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.service.IndexServiceOps;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
  * An instance of this class is thread save.
  */
 @Component
-public class DocumentIndexServiceOps {
+public class DocumentIndexServiceOps implements IndexServiceOps {
 
     private static final Logger logger = LogManager.getLogger(DocumentIndexServiceOps.class);
 
@@ -68,11 +69,14 @@ public class DocumentIndexServiceOps {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
+    @Override
     public QueryResponse query(SolrClient solrClient, SolrQuery solrQuery) throws SolrServerException, IOException {
         return solrClient.query(solrQuery);
     }
 
-    public void addDocsToIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
+    @Override
+    public void addToIndex(SolrClient solrClient, String id) throws SolrServerException, IOException {
+        final int docId = Integer.parseInt(id);
         final SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
 
         if (solrInputDoc != null) {
@@ -83,7 +87,9 @@ public class DocumentIndexServiceOps {
         }
     }
 
-    public void deleteDocsFromIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
+    @Override
+    public void deleteFromIndex(SolrClient solrClient, String id) throws SolrServerException, IOException {
+        final int docId = Integer.parseInt(id);
         String query = mkSolrDocsDeleteQuery(docId);
 
         solrClient.deleteByQuery(query);
@@ -91,7 +97,9 @@ public class DocumentIndexServiceOps {
         logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
-	public void updateDocumentVersionInIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
+    @Override
+    public void updateDocumentVersionInIndex(SolrClient solrClient, String id) throws SolrServerException, IOException {
+        final int docId = Integer.parseInt(id);
 		final SolrInputDocument solrInputDocument = prepareSolrInputDocForVersionUpdate(docId);
 
 		if (solrInputDocument != null) {
@@ -102,6 +110,7 @@ public class DocumentIndexServiceOps {
 		}
 	}
 
+    @Override
     public void rebuildIndex(SolrClient solrClient) {
         rebuildIndex(solrClient, indexRebuildProgress -> {
         });
@@ -109,7 +118,7 @@ public class DocumentIndexServiceOps {
 
     @SneakyThrows
     private void rebuildIndex(SolrClient solrClient, Consumer<IndexRebuildProgress> progressCallback) {
-        logger.debug("Rebuilding index.");
+        logger.debug("Rebuilding documents index.");
 
         final List<Integer> ids = documentMapper.getAllDocumentIds();
 
@@ -148,6 +157,7 @@ public class DocumentIndexServiceOps {
         logger.debug("Index rebuild is complete.");
     }
 
+    @Override
     public long getAmountOfIndexedDocuments() {
         return indexedDocumentsAmount.get();
     }
