@@ -33,6 +33,10 @@ public class DataOfTimeLastUseJPA implements Serializable {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date timeLastReindex;
 
+    @Column(name = "time_last_image_files_reindex")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeLastImageFilesReindex;
+
     @Column(name = "time_last_remove_public_cache")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date timeLastRemovePublicCache;
