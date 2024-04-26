@@ -14,7 +14,7 @@ define(
 
         let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer, $imageSizeInfo, $imageInfoPath, $compressionContainer;
         let $restrictedStyleWidth, $restrictedStyleHeight, $editableControls;
-        let $altText, $imgLink, $langFlags, $allLanguagesCheckBox;
+        let $altText, $descriptionText, $imgLink, $langFlags, $allLanguagesCheckBox;
         let $advancedModeBtn, $imageHistoryBtn, $imageHistoryEntries, $cancelHistoryBtn, cancelImageData;
         const imgPosition = {
             align: "NONE",
@@ -77,6 +77,7 @@ define(
 
             clonedImageData.allLanguages = $allLanguagesCheckBox.isChecked();
             clonedImageData.alternateText = $altText.$input.val();
+            clonedImageData.descriptionText = $descriptionText.$input.val();
             clonedImageData.linkUrl = $imgLink.$input.val();
 
             clonedImageData.align = imgPosition.align;
@@ -168,6 +169,13 @@ define(
                             'alt-suggest-btn': $makeSuggestButton
                         }
                     }).buildBlockStructure("<div>");
+                }
+
+                function buildDescriptionTextBox() {
+                    return opts.imageDataContainers.$descriptionText = $descriptionText = components.texts.textBox("<div>", {
+                        text: texts.descriptionText,
+                        name: "descriptionText"
+                    })
                 }
 
                 function buildImageLinkTextBox() {
@@ -552,6 +560,7 @@ define(
                         }
                     });
                     const $altTextContainer = buildAltTextContainer();
+                    const $descriptionTextBox = buildDescriptionTextBox();
                     const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = $langFlags = buildImageLangFlags();
                     const $allLangs = buildAllLanguagesCheckbox();
@@ -569,6 +578,7 @@ define(
 
                     return editableControlsBEM.buildBlock("<div>", [
                         {"text-box": $altTextContainer},
+                        {"text-box": $descriptionTextBox},
                         {"text-box": $imageLinkTextBox},
                         {"flags": $langFlags},
                         {"checkboxes": $allLangs},

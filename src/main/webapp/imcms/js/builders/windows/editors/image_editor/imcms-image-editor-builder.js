@@ -186,6 +186,15 @@ define(
             fillLeftSideData(imageData);
 
             imageDataContainers.$altText.$input.val(imageData.alternateText);
+            if (imageData.alternateText.trim() === '' && imageData.exifInfo){
+                imageDataContainers.$altText.$input.val(imageData.exifInfo.customExif.alternateText);
+            }
+
+            imageDataContainers.$descriptionText.$input.val(imageData.descriptionText);
+            if (imageData.descriptionText.trim() === '' && imageData.exifInfo){
+                imageDataContainers.$descriptionText.$input.val(imageData.exifInfo.customExif.descriptionText);
+            }
+
             imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
             imageDataContainers.$allLanguagesCheckBox.find("input")
