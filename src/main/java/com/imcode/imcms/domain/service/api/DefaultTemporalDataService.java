@@ -7,8 +7,9 @@ import com.imcode.imcms.domain.service.TemporalDataService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.DataOfTimeLastUseJPA;
 import com.imcode.imcms.persistence.repository.TemporalTimeLastUseRepository;
+import imcode.server.document.index.ImageFileIndex;
 import imcode.server.document.index.ResolvingQueryIndex;
-import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import imcode.server.document.index.service.IndexServiceOps;
 import net.sf.ehcache.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,24 +44,31 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     private final DocumentsCache publicDocumentsCache;
     private final ResolvingQueryIndex resolvingQueryIndex;
+    private final ImageFileIndex imageFileIndex;
     private final DocumentMapper documentMapper;
     private final TemporalTimeLastUseRepository temporalTimeLastUseRepository;
 
-    private final DocumentIndexServiceOps documentIndexServiceOps;
+    private final IndexServiceOps documentIndexServiceOps;
+    private final IndexServiceOps imageFileIndexServiceOps;
     private final DocumentService<DocumentDTO> defaultDocumentService;
+//	private final ImageFolderService imageFolderService;
 
     public DefaultTemporalDataService(DocumentsCache publicDocumentsCache,
                                       ResolvingQueryIndex resolvingQueryIndex,
+                                      ImageFileIndex imageFileIndex,
                                       DocumentMapper documentMapper,
                                       TemporalTimeLastUseRepository temporalTimeLastUseRepository,
-                                      DocumentIndexServiceOps documentIndexServiceOps,
+                                      IndexServiceOps documentIndexServiceOps,
+                                      IndexServiceOps imageFileIndexServiceOps,
                                       DocumentService<DocumentDTO> defaultDocumentService) {
         this.publicDocumentsCache = publicDocumentsCache;
         this.resolvingQueryIndex = resolvingQueryIndex;
-        this.documentMapper = documentMapper;
+	    this.imageFileIndex = imageFileIndex;
+	    this.documentMapper = documentMapper;
         this.temporalTimeLastUseRepository = temporalTimeLastUseRepository;
         this.documentIndexServiceOps = documentIndexServiceOps;
-        this.defaultDocumentService = defaultDocumentService;
+	    this.imageFileIndexServiceOps = imageFileIndexServiceOps;
+	    this.defaultDocumentService = defaultDocumentService;
     }
 
     @Override
@@ -105,12 +113,29 @@ public class DefaultTemporalDataService implements TemporalDataService {
         return defaultDocumentService.countDocuments();
     }
 
-    @Override
+	@Override
+	public long rebuildImageFileIndexAndGetDocumentsAmount() {
+		if (getAmountOfIndexedImageFiles() == -1) {
+			imageFileIndex.rebuild();
+
+			final DataOfTimeLastUseJPA updatedLastDate = getLastUseDateTime(REINDEX_IMAGE_FILES_NAME);
+			logger.error("Last-date-image-files-reindex: {}", formatter.format(updatedLastDate.getTimeLastReindex()));
+		}
+
+		return defaultDocumentService.countDocuments();
+	}
+
+	@Override
     public long getAmountOfIndexedDocuments() {
         return documentIndexServiceOps.getAmountOfIndexedDocuments();
     }
 
-    @Override
+	@Override
+	public long getAmountOfIndexedImageFiles() {
+		return imageFileIndexServiceOps.getAmountOfIndexedDocuments();
+	}
+
+	@Override
     public String getDateInvalidateDocumentCache() {
         return getFormattedLastDateTime(PUBLIC_CACHE_NAME);
     }
@@ -130,7 +155,12 @@ public class DefaultTemporalDataService implements TemporalDataService {
         return getFormattedLastDateTime(REINDEX_NAME);
     }
 
-    @Override
+	@Override
+	public String getDateImageFilesReIndex() {
+		return getFormattedLastDateTime(REINDEX_IMAGE_FILES_NAME);
+	}
+
+	@Override
     public String getDateAddedInCacheDocuments() {
         return getFormattedLastDateTime(BUILD_CACHE_NAME);
     }
@@ -203,6 +233,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 	    final DataOfTimeLastUseJPA receivedDate = temporalTimeLastUseRepository.getOne(IDENTIFIER_LAST_DATA_USE);
 	    final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
+        final Date timeLastImageFilesReindex = receivedDate.getTimeLastImageFilesReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
         final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
         final Date timeLastBuildCache = receivedDate.getTimeLastBuildCache();
@@ -232,6 +263,10 @@ public class DefaultTemporalDataService implements TemporalDataService {
                 if (timeLastBuildCache != null) {
                     formattedLastDataTime = formatter.format(timeLastBuildCache);
                 }
+	        case REINDEX_IMAGE_FILES_NAME:
+				if (timeLastReindex!=null){
+					formattedLastDataTime = formatter.format(timeLastImageFilesReindex);
+				}
         }
 
         return formattedLastDataTime;
@@ -246,6 +281,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 	    final Integer id = receivedDate.getId();
         final Date timeLastRemovePublicCache = receivedDate.getTimeLastRemovePublicCache();
         final Date timeLastReindex = receivedDate.getTimeLastReindex();
+        final Date timeLastImageFilesReindex = receivedDate.getTimeLastImageFilesReindex();
         final Date timeLastRemoveStaticCache = receivedDate.getTimeLastRemoveStaticCache();
         final Date timeLastRemoveOtherCache = receivedDate.getTimeLastRemoveOtherCache();
         final Date timeLastBuildCache = receivedDate.getTimeLastBuildCache();
@@ -253,36 +289,42 @@ public class DefaultTemporalDataService implements TemporalDataService {
         switch (nameDate) {
             case PUBLIC_CACHE_NAME:
                 updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
-                        id, timeLastReindex, currentDate,
+                        id, timeLastReindex, timeLastImageFilesReindex, currentDate,
                         timeLastRemoveStaticCache, timeLastRemoveOtherCache, timeLastBuildCache
                 ));
                 break;
             case STATIC_CACHE_NAME:
 
                 updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
-                        id, timeLastReindex, timeLastRemovePublicCache,
+                        id, timeLastReindex, timeLastImageFilesReindex, timeLastRemovePublicCache,
                         currentDate, timeLastRemoveOtherCache, timeLastBuildCache
                 ));
                 break;
             case OTHER_CACHE_NAME:
 
                 updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
-                        id, timeLastReindex, timeLastRemovePublicCache,
+                        id, timeLastReindex, timeLastImageFilesReindex, timeLastRemovePublicCache,
                         timeLastRemoveStaticCache, currentDate, timeLastBuildCache
                 ));
                 break;
             case REINDEX_NAME:
                 updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
-                        id, currentDate, timeLastRemovePublicCache,
+                        id, currentDate, timeLastImageFilesReindex, timeLastRemovePublicCache,
                         timeLastRemoveStaticCache, timeLastRemoveOtherCache,timeLastBuildCache
                 ));
                 break;
             case BUILD_CACHE_NAME:
                 updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
-                        id, timeLastReindex, timeLastRemovePublicCache,
+		                id, timeLastReindex, timeLastImageFilesReindex, timeLastRemovePublicCache,
                         timeLastRemoveStaticCache, timeLastRemoveOtherCache, currentDate
                 ));
                 break;
+	        case REINDEX_IMAGE_FILES_NAME:
+		        updatedLastDate = temporalTimeLastUseRepository.saveAndFlush(new DataOfTimeLastUseJPA(
+				        id, timeLastReindex, currentDate, timeLastRemovePublicCache,
+				        timeLastRemoveStaticCache, timeLastRemoveOtherCache, timeLastBuildCache
+		        ));
+		        break;
         }
 
         return updatedLastDate;

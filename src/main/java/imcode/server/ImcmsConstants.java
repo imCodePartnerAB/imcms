@@ -174,6 +174,7 @@ ImcmsConstants {
     public static final String PUBLIC_CACHE_NAME = "PublicDocumentsCache";
 
     public static final String REINDEX_NAME = "ReIndexing";
+    public static final String REINDEX_IMAGE_FILES_NAME = "ReIndexingImageFiles";
     public static final String BUILD_CACHE_NAME = "BuildCaching";
 
     public static final String IMCMS_HEADER_CACHING_ACTIVE = "Process-Caching-Active";

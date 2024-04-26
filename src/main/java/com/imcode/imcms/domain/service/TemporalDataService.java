@@ -12,7 +12,11 @@ public interface TemporalDataService {
 
     long rebuildDocumentIndexAndGetDocumentsAmount();
 
+    long rebuildImageFileIndexAndGetDocumentsAmount();
+
     long getAmountOfIndexedDocuments();
+
+    long getAmountOfIndexedImageFiles();
 
     String getDateInvalidateDocumentCache();
 
@@ -21,6 +25,8 @@ public interface TemporalDataService {
     String getDateInvalidateContentCache();
 
     String getDateDocumentReIndex();
+
+    String getDateImageFilesReIndex();
 
     String getDateAddedInCacheDocuments();
 

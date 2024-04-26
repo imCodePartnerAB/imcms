@@ -43,9 +43,19 @@ public class TemporalDataController {
         return temporalDataService.rebuildDocumentIndexAndGetDocumentsAmount();
     }
 
+    @DeleteMapping("/image-file-index")
+    public long rebuildImageFileIndex() {
+        return temporalDataService.rebuildImageFileIndexAndGetDocumentsAmount();
+    }
+
     @GetMapping("/indexed-documents-amount")
     public long getAmountOfIndexedDocuments() {
         return temporalDataService.getAmountOfIndexedDocuments();
+    }
+
+    @GetMapping("/indexed-image-file-metadata-amount")
+    public long getAmountOfIndexedImageFiles() {
+        return temporalDataService.getAmountOfIndexedImageFiles();
     }
 
     @DeleteMapping("/public-document")
@@ -66,6 +76,11 @@ public class TemporalDataController {
     @GetMapping(value = "/date-reindex", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getDateDocumentReindex() {
         return temporalDataService.getDateDocumentReIndex();
+    }
+
+    @GetMapping(value = "/date-image-files-reindex", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String getDateImageFilesReindex(){
+        return temporalDataService.getDateImageFilesReIndex();
     }
 
     @GetMapping(value = "/date-public-document", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
