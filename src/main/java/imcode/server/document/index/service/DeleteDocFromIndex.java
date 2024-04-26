@@ -15,16 +15,16 @@ import static imcode.server.document.index.service.IndexUpdateOperation.DELETE;
 @ToString
 public final class DeleteDocFromIndex implements IndexUpdateOp {
 
-    private final int docId;
+    private final String docId;
 	private final IndexUpdateOperation operation;
 
-    public DeleteDocFromIndex(int docId) {
+    public DeleteDocFromIndex(String docId) {
         this.docId = docId;
 	    this.operation = DELETE;
     }
 
     @Override
-    public int docId() {
+    public String docId() {
         return docId;
     }
 

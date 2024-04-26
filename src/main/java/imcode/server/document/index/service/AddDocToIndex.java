@@ -15,16 +15,16 @@ import static imcode.server.document.index.service.IndexUpdateOperation.ADD;
 @ToString
 public final class AddDocToIndex implements IndexUpdateOp {
 
-    private final int docId;
+    private final String docId;
 	private final IndexUpdateOperation operation;
 
-    public AddDocToIndex(int docId) {
+    public AddDocToIndex(String docId) {
         this.docId = docId;
 	    this.operation = ADD;
     }
 
     @Override
-    public int docId() {
+    public String docId() {
         return docId;
     }
 

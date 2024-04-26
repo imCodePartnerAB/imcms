@@ -8,16 +8,16 @@ import static imcode.server.document.index.service.IndexUpdateOperation.UPDATE_V
 @EqualsAndHashCode
 @ToString
 public final class UpdateDocumentVersionInIndex implements IndexUpdateOp {
-	private final int docId;
+	private final String docId;
 	private final IndexUpdateOperation operation;
 
-	public UpdateDocumentVersionInIndex(int docId) {
+	public UpdateDocumentVersionInIndex(String docId) {
 		this.docId = docId;
 		this.operation = UPDATE_VERSION;
 	}
 
 	@Override
-	public int docId() {
+	public String docId() {
 		return docId;
 	}
 
