@@ -87,6 +87,7 @@ public class Imcms {
         try {
             users = new InheritableThreadLocal<>();
             services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty();
+            services.getImageFileIndex().getService().rebuildIfEmpty();
             startInvoked = false;
 
         } catch (Exception e) {
