@@ -14,12 +14,17 @@ import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.storage.StorageClient;
 import com.imcode.imcms.storage.StoragePath;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
+import imcode.server.document.index.ImageFileIndex;
 import imcode.server.document.textdocument.FileStorageImageSource;
+import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +38,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,18 +58,21 @@ class DefaultImageFileService implements ImageFileService {
     private final StoragePath storageImagesPath;
 
     private final Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO;
+    private final ImageFileIndex imageFileIndex;
 
     DefaultImageFileService(Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO,
                             ImageService imageService,
                             ImageFolderCacheManager imageFolderCacheManager,
                             @Value("${ImagePath}") String imagesPath, ImageCacheMapper imageCacheMapper,
-                            @Qualifier("imageStorageClient") StorageClient storageClient) {
+                            @Qualifier("imageStorageClient") StorageClient storageClient,
+                            @Lazy ImageFileIndex imageFileIndex) {
         this.storagePathToImageFileDTO = storagePathToImageFileDTO;
 	    this.imageService = imageService;
         this.imageFolderCacheManager = imageFolderCacheManager;
         this.storageImagesPath = StoragePath.get(DIRECTORY, imagesPath);
         this.imageCacheMapper = imageCacheMapper;
         this.storageClient = storageClient;
+	    this.imageFileIndex = imageFileIndex;
     }
 
     @Override
@@ -77,6 +86,7 @@ class DefaultImageFileService implements ImageFileService {
             final StoragePath destination = getDestinationFolder(targetFolderPath, file.getOriginalFilename());
 
             storageClient.put(destination, file.getInputStream());
+            imageFileIndex.indexImageFile(storageImagesPath.relativize(destination).toString());
             mapAndAddToList.apply(destination);
         }
 
@@ -93,11 +103,18 @@ class DefaultImageFileService implements ImageFileService {
         storageClient.put(destination, Files.newInputStream(filePath));
 
         imageFolderCacheManager.invalidate(targetFolderPath);
+        imageFileIndex.indexImageFile(storageImagesPath.relativize(destination).toString());
 
         return storagePathToImageFileDTO.apply(destination);
 	}
 
-	private StoragePath getTargetFolder(String folder) {
+    @Override
+    public ImageFileDTO getImageFile(String path) {
+        final StoragePath storagePath = StoragePath.get(SourceFile.FileType.FILE, ImcmsImageUtils.imagesPath, path);
+        return storagePathToImageFileDTO.apply(storagePath);
+    }
+
+    private StoragePath getTargetFolder(String folder) {
         StoragePath targetFolderPath = storageImagesPath;
 
         if (!(folder == null || folder.isEmpty())) {
@@ -141,6 +158,7 @@ class DefaultImageFileService implements ImageFileService {
             storageClient.delete(pathToDelete, true);
 
             imageFolderCacheManager.invalidate(pathToDelete.getParentPath());
+            imageFileIndex.removeImageFile(imageFileDTOPath);
         }
         return usages;
     }
@@ -184,6 +202,9 @@ class DefaultImageFileService implements ImageFileService {
 
         imageFolderCacheManager.invalidate(imageFilePath.getParentPath(), destinationImageFilePath.getParentPath());
 
+        imageFileIndex.removeImageFile(filePath);
+        imageFileIndex.indexImageFile(storageImagesPath.relativize(destinationImageFilePath).toString());
+
         return storagePathToImageFileDTO.apply(destinationImageFilePath);
 	}
 
@@ -201,6 +222,7 @@ class DefaultImageFileService implements ImageFileService {
         }
 
         imageFolderCacheManager.invalidate(storagePath.getParentPath());
+        imageFileIndex.indexImageFile(storageImagesPath.relativize(storagePath).toString());
 
         return storagePathToImageFileDTO.apply(storagePath);
     }
@@ -211,6 +233,47 @@ class DefaultImageFileService implements ImageFileService {
                 .replace("(", "").replace(")", "");
         final StoragePath storagePath = storageImagesPath.resolve(FILE, FilenameUtils.getPath(imagePath), originalFilename);
         return storageClient.exists(storagePath);
+	}
+
+    @Override
+    public SolrInputDocument index(String path) {
+        final ImageFileDTO imageFile = getImageFile(path);
+        return index(imageFile);
+    }
+
+    @SneakyThrows
+	@Override
+	public SolrInputDocument index(ImageFileDTO imageFile) {
+        final SolrInputDocument solrDoc = new SolrInputDocument();
+
+        final BiConsumer<String, Object> addFieldIfNotNull = (name, value) -> {
+            if (value != null) solrDoc.addField(name, value);
+        };
+
+        solrDoc.addField(ImageFileIndex.FIELD__ID, imageFile.getPath());
+        solrDoc.addField(ImageFileIndex.FIELD__NAME, imageFile.getName());
+        solrDoc.addField(ImageFileIndex.FIELD__PATH, imageFile.getPath());
+        solrDoc.addField(ImageFileIndex.FIELD__UPLOADED, DateConstants.DATETIME_DOC_FORMAT.get().parse(imageFile.getUploaded()));
+        solrDoc.addField(ImageFileIndex.FIELD__SIZE, imageFile.getSize());
+        solrDoc.addField(ImageFileIndex.FIELD__WIDTH, imageFile.getWidth());
+        solrDoc.addField(ImageFileIndex.FIELD__HEIGHT, imageFile.getHeight());
+
+        final ExifDTO exifInfo = imageFile.getExifInfo();
+
+        for (String exif : exifInfo.getAllExifInfo()) {
+            solrDoc.addField(ImageFileIndex.FIELD__ALL_EXIF, exif);
+        }
+
+        final ExifDTO.CustomExifDTO customExif = exifInfo.getCustomExif();
+        addFieldIfNotNull.accept(ImageFileIndex.FIELD__PHOTOGRAPHER, customExif.getPhotographer());
+        addFieldIfNotNull.accept(ImageFileIndex.FIELD__UPLOADED_BY, customExif.getUploadedBy());
+        addFieldIfNotNull.accept(ImageFileIndex.FIELD__COPYRIGHT, customExif.getCopyright());
+        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_START, customExif.getLicensePeriodStart());
+        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_END, customExif.getLicensePeriodEnd());
+        addFieldIfNotNull.accept(ImageFileIndex.ALT_TEXT, customExif.getAlternateText());
+        addFieldIfNotNull.accept(ImageFileIndex.DESCRIPTION_TEXT, customExif.getDescriptionText());
+
+        return solrDoc;
 	}
 
 }

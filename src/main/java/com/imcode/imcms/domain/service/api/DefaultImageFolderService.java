@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.component.ImageFolderCacheManager;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
@@ -15,11 +16,13 @@ import com.imcode.imcms.storage.exception.ForbiddenDeleteStorageFileException;
 import com.imcode.imcms.storage.exception.StorageFileNotFoundException;
 import com.imcode.imcms.storage.exception.SuchStorageFileExistsException;
 import imcode.server.ImcmsConstants;
+import imcode.server.document.index.ImageFileIndex;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +46,7 @@ class DefaultImageFolderService implements ImageFolderService {
     private final ImageFileService imageFileService;
 	private final ImageService imageService;
     private final ImageFolderCacheManager imageFolderCacheManager;
+    private final ImageFileIndex imageFileIndex;
 
     private final StorageClient storageClient;
     private final StoragePath storageImagesPath;
@@ -50,9 +54,12 @@ class DefaultImageFolderService implements ImageFolderService {
 
     DefaultImageFolderService(BiFunction<StoragePath, Boolean, ImageFolderDTO> storagePathToImageFolderDTO,
                               Function<StoragePath, ImageFileDTO> storagePathToImageFileDTO,
-                              ImageFileService imageFileService, ImageService imageService,
+                              ImageFileService imageFileService,
+                              ImageService imageService,
                               ImageFolderCacheManager ImageFolderCacheManager,
-                              @Qualifier("imageStorageClient") StorageClient storageClient, @Value("${ImagePath}") String imagesPath) {
+                              @Qualifier("imageStorageClient") StorageClient storageClient,
+                              @Value("${ImagePath}") String imagesPath,
+                              @Lazy ImageFileIndex imageFileIndex) {
 	    this.storagePathToImageFolderDTO = storagePathToImageFolderDTO;
         this.storagePathToImageFileDTO = storagePathToImageFileDTO;
         this.imageFileService = imageFileService;
@@ -60,7 +67,8 @@ class DefaultImageFolderService implements ImageFolderService {
         this.imageFolderCacheManager = ImageFolderCacheManager;
         this.storageClient = storageClient;
         this.storageImagesPath = StoragePath.get(DIRECTORY, imagesPath);
-        this.storageGeneratedImagesPath = storageImagesPath.resolve(DIRECTORY, ImcmsConstants.IMAGE_GENERATED_FOLDER);
+	    this.imageFileIndex = imageFileIndex;
+	    this.storageGeneratedImagesPath = storageImagesPath.resolve(DIRECTORY, ImcmsConstants.IMAGE_GENERATED_FOLDER);
     }
 
     @PostConstruct
@@ -116,9 +124,16 @@ class DefaultImageFolderService implements ImageFolderService {
 		    imageService.updateImage(imageDTO);
 	    });
 
+        storageClient.walk(folderPath).stream().filter(storagePath -> storagePath.getType().equals(SourceFile.FileType.FILE)).forEach(storagePath -> {
+            imageFileIndex.removeImageFile(storageImagesPath.relativize(storagePath).toString());
+        });
+
         storageClient.move(folderPath, newFolderPath);
 
         imageFolderCacheManager.invalidate(folderPath, folderPath.getParentPath(), storageImagesPath);
+        storageClient.walk(newFolderPath).stream().filter(storagePath -> storagePath.getType().equals(SourceFile.FileType.FILE)).forEach(storagePath -> {
+            imageFileIndex.indexImageFile(storageImagesPath.relativize(storagePath).toString());
+        });
     }
 
     @Override
@@ -142,6 +157,13 @@ class DefaultImageFolderService implements ImageFolderService {
         if (canBeDeleted(deleteMe)) {
             final String imageFolderRelativePath = deleteMe.getPath();
             final StoragePath folderToDeletePath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
+
+            //not required index deletion because folder can be deleted only if is empty.
+            // so to delete folder user needs to delete all nested files and in this situation index will be cleared
+//            storageClient.walk(folderToDeletePath).stream().filter(storagePath -> storagePath.getType().equals(SourceFile.FileType.FILE)).forEach(storagePath -> {
+//                imageFileIndex.removeImageFile(storageImagesPath.relativize(storagePath).toString());
+//            });
+
             storageClient.delete(folderToDeletePath, true);
 
             imageFolderCacheManager.invalidate(folderToDeletePath, folderToDeletePath.getParentPath(), storageImagesPath);
@@ -189,5 +211,9 @@ class DefaultImageFolderService implements ImageFolderService {
         final StoragePath folderToCheckPath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
 
         return storageClient.exists(folderToCheckPath);
+    }
+
+    private List<StoragePath> walkImageFolder(StoragePath storagePath){
+        return storageClient.walk(storagePath);
     }
 }

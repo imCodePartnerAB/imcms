@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.ExifDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ public interface ImageFileService {
 
 	ImageFileDTO saveNewImageFile(String folder, Path filePath) throws IOException;
 
+	ImageFileDTO getImageFile(String path);
+
     List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException;
 
     List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath);
@@ -31,4 +34,8 @@ public interface ImageFileService {
     ImageFileDTO editCommentMetadata(String path, ExifDTO.CustomExifDTO customExif) throws IOException;
 
 	boolean exists(String imagePath);
+
+	SolrInputDocument index(String path);
+
+	SolrInputDocument index(ImageFileDTO imageFile);
 }
