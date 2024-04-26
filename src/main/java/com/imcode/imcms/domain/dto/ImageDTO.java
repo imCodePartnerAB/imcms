@@ -25,6 +25,7 @@ public class ImageDTO extends ImageData {
     protected boolean inText;
     private boolean allLanguages;
     private String alternateText;
+    private String descriptionText;
     private String linkUrl;
     private ExifDTO exifInfo;
     private String sizeFormatted;
@@ -57,6 +58,7 @@ public class ImageDTO extends ImageData {
         this.generatedFilePath = "";
         this.generatedFilename = "";
         this.alternateText = " ";
+        this.descriptionText = " ";
         this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;
@@ -86,6 +88,7 @@ public class ImageDTO extends ImageData {
         this.generatedFilePath = ofNullable(from.generatedFilePath).orElse("");
         this.generatedFilename = ofNullable(from.generatedFilename).orElse("");
         this.alternateText = defaultToTrim(from.getAlternateText());
+        this.descriptionText = defaultToTrim(from.getDescriptionText());
         this.format = from.format;
         this.width = from.width;
         this.height = from.height;

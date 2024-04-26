@@ -27,7 +27,9 @@ public class ExifDTO {
             UPLOADED_BY,
             COPYRIGHT,
             LICENSE_PERIOD_START,
-            LICENSE_PERIOD_END;
+            LICENSE_PERIOD_END,
+            ALT_TEXT,
+            DESCRIPTION_TEXT;
         }
 
         private String photographer;
@@ -37,6 +39,8 @@ public class ExifDTO {
         private Date licensePeriodStart;
         @JsonFormat(pattern = DateConstants.DATE_FORMAT_STRING)
         private Date licensePeriodEnd;
+        private String alternateText;
+        private String descriptionText;
 
         public static String mapToString(CustomExifDTO customExif){
             SimpleDateFormat formatter = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
@@ -52,6 +56,10 @@ public class ExifDTO {
                 keyValuePairs.add(Key.LICENSE_PERIOD_START.name() + "/=" + formatter.format(customExif.getLicensePeriodStart()));
             if(customExif.getLicensePeriodEnd() != null)
                 keyValuePairs.add(Key.LICENSE_PERIOD_END.name() + "/=" + formatter.format(customExif.getLicensePeriodEnd()));
+            if (customExif.getAlternateText()!=null)
+                keyValuePairs.add(Key.ALT_TEXT.name()+"/="+customExif.getAlternateText());
+	        if (customExif.getDescriptionText()!=null)
+		        keyValuePairs.add(Key.DESCRIPTION_TEXT.name() + "/=" + customExif.getDescriptionText());
 
             return String.join("/;", keyValuePairs);
         }
@@ -76,7 +84,9 @@ public class ExifDTO {
                     case UPLOADED_BY -> customExif.setUploadedBy(value);
                     case LICENSE_PERIOD_START -> customExif.setLicensePeriodStart(formatter.parse(value));
                     case LICENSE_PERIOD_END -> customExif.setLicensePeriodEnd(formatter.parse(value));
-                }
+	                case ALT_TEXT -> customExif.setAlternateText(value);
+	                case DESCRIPTION_TEXT -> customExif.setDescriptionText(value);
+				}
             }
 
             return customExif;

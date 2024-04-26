@@ -53,6 +53,9 @@ public class ImageJPA implements Serializable {
     @Column(name = "alt_text")
     private String alternateText = "";
 
+    @Column(name = "description_text")
+    private String descriptionText = "";
+
     @Column(name = "low_scr")
     private String lowResolutionUrl = "";
 
@@ -110,6 +113,7 @@ public class ImageJPA implements Serializable {
         this.border = from.border;
         this.align = from.align;
         this.alternateText = from.alternateText;
+        this.descriptionText = from.descriptionText;
         this.lowResolutionUrl = from.lowResolutionUrl;
         this.target = from.target;
         this.linkUrl = from.linkUrl;

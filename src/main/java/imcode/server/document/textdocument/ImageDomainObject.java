@@ -34,6 +34,7 @@ public class ImageDomainObject extends ImageDTO implements Cloneable {
     private volatile int border;
     private volatile String align = "";
     private volatile String alternateText = "";
+    private volatile String descriptionText = "";
     private volatile String lowResolutionUrl = "";
     private volatile String target = "";
     private volatile Long archiveImageId;

@@ -165,6 +165,7 @@ class MappingConfig {
             dto.setInText(image.isInText());
             //IMCMS-506 altText should always contain a value
             dto.setAlternateText(StringUtils.defaultIfEmpty(image.getAlternateText().trim(), " "));
+            dto.setDescriptionText(StringUtils.defaultIfEmpty(image.getDescriptionText().trim(), " "));
             dto.setLinkUrl(image.getLinkUrl());
             dto.setBorder(image.getBorder());
             dto.setAlign(image.getAlign());
@@ -212,6 +213,7 @@ class MappingConfig {
             dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
             dto.setInText(image.isInText());
             dto.setAlternateText(StringUtils.defaultIfEmpty(image.getAlternateText().trim(), " "));
+            dto.setDescriptionText(StringUtils.defaultIfEmpty(image.getDescriptionText().trim(), " "));
             dto.setLinkUrl(image.getLinkUrl());
             dto.setBorder(image.getBorder());
             dto.setAlign(image.getAlign());
@@ -252,6 +254,7 @@ class MappingConfig {
             image.setAllLanguages(imageDTO.isAllLanguages());
             image.setInText(imageDTO.isInText());
             image.setAlternateText(StringUtils.defaultIfEmpty(imageDTO.getAlternateText().trim(), " "));
+            image.setDescriptionText(StringUtils.defaultIfEmpty(imageDTO.getDescriptionText().trim(), " "));
             image.setLinkUrl(imageDTO.getLinkUrl());
             image.setBorder(imageDTO.getBorder());
             image.setAlign(imageDTO.getAlign());
@@ -747,6 +750,7 @@ class MappingConfig {
             image.setTarget(importImage.getTarget());
             image.setAlign(importImage.getAlign());
             image.setAlternateText(StringUtils.defaultString(importImage.getAltText(), " "));
+            image.setAlternateText(" ");
             image.setLowResolutionUrl(importImage.getLowResolutionUrl());
             image.setPath(importImage.getImageUrl());
             image.setLinkUrl(image.getLinkUrl());

@@ -52,6 +52,9 @@ public class ImageHistoryJPA implements Serializable {
     @Column(name = "alt_text")
     private String alternateText = "";
 
+    @Column(name = "description_text")
+    private String descriptionText = "";
+
     @Column(name = "low_scr")
     private String lowResolutionUrl = "";
 
@@ -116,6 +119,7 @@ public class ImageHistoryJPA implements Serializable {
         this.border = image.getBorder();
         this.align = image.getAlign();
         this.alternateText = image.getAlternateText();
+        this.descriptionText = image.getDescriptionText();
         this.lowResolutionUrl = image.getLowResolutionUrl();
         this.target = image.getTarget();
         this.linkUrl = image.getLinkUrl();
