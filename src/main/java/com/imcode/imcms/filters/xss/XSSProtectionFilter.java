@@ -30,6 +30,7 @@ public final class XSSProtectionFilter implements Filter {
         whiteList.add(API_PREFIX + "/texts");
         whiteList.add(API_PREFIX + "/texts/validate");
         whiteList.add(API_PREFIX + "/documents/search");
+        whiteList.add(API_PREFIX + "/images/files/search");
         whiteList.add(API_PREFIX + "/files" + SUBDIRECTORIES);
 
         include = Boolean.parseBoolean(Imcms.getServerProperties().getProperty("xss-include"));
