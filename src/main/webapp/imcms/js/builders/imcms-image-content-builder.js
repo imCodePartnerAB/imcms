@@ -5,10 +5,12 @@
 define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-image-metadata-builder", "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts", 'imcms'
+        "imcms-image-metadata-builder", "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts",
+	    'imcms', 'imcms-image-files-search-rest-api'
     ],
     function (imageFilesREST, imageFoldersREST, BEM, components,
-              imageMetadataWindowBuilder, primitives, modal, $, texts, imcms) {
+              imageMetadataWindowBuilder, primitives, modal, $, texts,
+              imcms, imageFilesSearchRestApi) {
         const OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         const SUBFOLDER_CLASS = "imcms-folders__subfolder";
         const ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -21,7 +23,9 @@ define("imcms-image-content-builder",
         let selectedFullImagePath;
 	    let selectedImageChanged = false;
 
-        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect;
+	    let searchEnabled = false;
+		let $errorMsg;
+        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $searchTextBox;
 
         let viewModel = {
             root: {},
@@ -418,6 +422,8 @@ define("imcms-image-content-builder",
         }
 
         function onFolderClick(folder) {
+	        if (searchEnabled) return;
+
             activeFolder = folder;
 	        selectedImageChanged = false;
             $(`.${ACTIVE_FOLDER_CLASS}`).removeClass(ACTIVE_FOLDER_CLASS);
@@ -519,7 +525,7 @@ define("imcms-image-content-builder",
 					    dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
 
 					    subfolder.files.push(imageFile);
-					    if(subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder));
+					    if (subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder, true));
 
 						refreshOnFolderClickListener(dragged.folderData);
 						refreshOnFolderClickListener(subfolder);
@@ -714,7 +720,7 @@ define("imcms-image-content-builder",
 	    ;
 
         //build image with lazy loading!
-        function buildImage(imageFile, folder) {
+        function buildImage(imageFile, folder, draggable) {
             let dataSrc = `${imcms.imagesPath}?path=${encodeURIComponent(imageFile.path)}`;
             //Reduce image weight by resizing
             if(imageFile.size.toLowerCase().endsWith("mb")){
@@ -722,7 +728,7 @@ define("imcms-image-content-builder",
             }
             imageFile.src = dataSrc;
 
-            return new BEM({
+	        const $image = new BEM({
                 block: "imcms-choose-img-wrap",
                 elements: {
                     "img": $("<img>", {
@@ -737,19 +743,32 @@ define("imcms-image-content-builder",
                 "data-image-name": imageFile.name,
                 style: "display: none",
             }).on({
-	            'mousedown': function (event) {
-		            $imageContent = $(this);
-		            onMouseDownImageHandler(imageFile)
-	            },
-	            'mouseup dragend': onMouseUpAndDragEndImageHandler,
-	            'dragstart': (event)=> onDragStartImageHandler(event, folder, imageFile),
-	            'drag': function (event) {
-	            }
-            });
+		        'mousedown': function (event) {
+			        $imageContent = $(this);
+			        selectImage.call($imageContent, imageFile);
+			        selectedImageChanged = false;		        },
+	        });
+
+	        if (draggable) makeImageDraggable($image, imageFile, folder);
+
+	        return $image;
         }
 
+	    function makeImageDraggable($image, imageFile, folder) {
+		    return $image.off('mousedown mouseup dragend dragstart drag').on({
+			    'mousedown': function (event) {
+				    $imageContent = $(this);
+				    onMouseDownImageHandler(imageFile)
+			    },
+			    'mouseup dragend': onMouseUpAndDragEndImageHandler,
+			    'dragstart': (event) => onDragStartImageHandler(event, folder, imageFile),
+			    'drag': function (event) {
+			    }
+		    });
+	    }
+
         function buildImageImmediately(imageFile, folder) {
-            let $imgContainer = buildImage(imageFile, folder).css("display", "block");
+            let $imgContainer = buildImage(imageFile, folder, true).css("display", "block");
 
             let $img = $imgContainer.find('img');
 	        $img.on("load", () => {
@@ -785,12 +804,16 @@ define("imcms-image-content-builder",
 	        folder.$images = folder.files
                 // sort so that smaller files are loaded first
                 .sort((file1 , file2) => convertFormattedSizeToBytes(file1.size) - convertFormattedSizeToBytes(file2.size))
-                .map((imageFile) => buildImage(imageFile, folder));
+                .map((imageFile) => buildImage(imageFile, folder, true));
             viewModel.$images = viewModel.$images.concat(folder.$images);
 
-            //Start lazy loading
-            let numberOfUnloaded = folder.$images.length;
-            let loadedImages = [];
+			startImageLazyLoading(folder);
+        }
+
+		function startImageLazyLoading(folder) {
+			//Start lazy loading
+			let numberOfUnloaded = folder.$images.length;
+			let loadedImages = [];
 
             folder.$images.forEach($imageContainer => {
                 $imageContainer.css("display", "block");
@@ -918,7 +941,7 @@ define("imcms-image-content-builder",
         function buildSortingSelect() {
             return $sortingSelect = components.selects.imcmsSelect("<div>", {
                 text: texts.sortBy,
-                onSelected: sortImagesBySortingValue,
+	            onSelected: (value) => searchEnabled ? searchImages(value) : sortImagesBySortingValue(value),
             }, [{
                 text: texts.sorting.default,
                 "data-value": sortingValues.default,
@@ -936,6 +959,131 @@ define("imcms-image-content-builder",
                 "data-value": sortingValues.dateOldFirst,
             }]);
         }
+
+	    let currentDocumentNumber = 0;
+	    const defaultPageSize = 100;
+
+	    const term = 'term';
+	    const sortProperty = 'page.property';
+	    const sortDirection = 'page.direction';
+	    const pageSkip = 'page.skip';
+
+	    const defaultSortPropertyValue = 'uploaded'
+	    const asc = 'ASC';
+	    const desc = 'DESC';
+
+	    const searchQueryObj = {
+		    'term': '',
+		    'page.skip': currentDocumentNumber,
+		    'page.size': defaultPageSize,
+	    };
+
+	    function buildSearchField() {
+		    $searchTextBox = components.texts.textBox('<div>', {
+			    id: 'searchText',
+			    name: 'search',
+			    value: texts.search.searchInputText,
+			    'placeholder': texts.search.searchInputPlaceholder,
+			    text: texts.search.text,
+		    }).addClass('search-btn');
+
+		    const $closeSearchBtn = components.buttons.closeButton({
+			    click: function () {
+				    searchEnabled = false;
+
+					$(this).hide();
+				    $searchTextBox.animate({width: '20%'}).addClass('search-btn');
+				    $searchTextBox.$input.attr('type', 'button')
+					    .val(texts.search.searchInputText);
+
+				    $imagesContainer.children().remove();
+				    $(`.${ACTIVE_FOLDER_CLASS}`).click();
+				    $errorMsg.slideUp();
+			    }
+		    }).css('display', 'none');
+
+		    $searchTextBox.$input.attr('type', 'button');
+		    $searchTextBox.$input.on('click', function () {
+			    searchEnabled = true;
+			    const $this = $(this);
+
+			    if ($this.attr('type') === 'input') return;
+
+			    $searchTextBox.animate({width: '35%'})
+				    .removeClass('search-btn');
+
+			    $this.attr({
+				    'type': 'input',
+				    'value': '',
+				    'placeholder': texts.search.searchInputPlaceholder
+			    }).removeClass('search-btn');
+
+			    $closeSearchBtn.show();
+			    searchImages();
+		    })
+
+		    $searchTextBox.append($closeSearchBtn, buildErrorBlock());
+		    $searchTextBox.$input.on('input', searchImages);
+
+		    return $searchTextBox;
+	    }
+
+		function searchImages(sortingValue) {
+			searchQueryObj[term] =  $searchTextBox.$input.val().trim().replace(/:/g, '\\:');
+
+			switch (sortingValue) {
+				case sortingValues.nameAsc: {
+					searchQueryObj[sortProperty] = "name";
+					searchQueryObj[sortDirection] = asc;
+					break;
+				}
+				case sortingValues.nameDesc: {
+					searchQueryObj[sortProperty] = "name";
+					searchQueryObj[sortDirection] = desc;
+					break;
+				}
+				case sortingValues.dateOldFirst: {
+					searchQueryObj[sortProperty] = defaultSortPropertyValue;
+					searchQueryObj[sortDirection] = asc;
+					break;
+				}
+				case sortingValues.dateNewFirst:
+					searchQueryObj[sortProperty] = defaultSortPropertyValue;
+					searchQueryObj[sortDirection] = desc;
+					break;
+				case sortingValues.default:
+				default: {
+					break;
+				}
+			}
+
+			imageFilesSearchRestApi.read(searchQueryObj)
+				.done((images) => {
+					$imagesContainer.children().remove();
+
+					if (!images || (images.length === 0)) {
+						$errorMsg.slideDown();
+						return;
+					} else {
+						$errorMsg.slideUp();
+					}
+
+					const imageList = images.map(imageFile => buildImage(imageFile, null, false));
+
+					startImageLazyLoading({$images: imageList});
+					$imagesContainer.append(imageList);
+				})
+				.fail(() => {
+					$errorMsg.slideDown();
+				})
+		}
+
+	    function buildErrorBlock() {
+		    $errorMsg = components.texts.errorText('<div>', texts.error.searchFailed, {style: 'display: none;'});
+		    const errorMsgContainer = $('<div class="imcms-toolbar-images-tools-search__error">');
+		    errorMsgContainer.append($errorMsg);
+		    return errorMsgContainer;
+	    }
 
         function getSelectedSortingBy() {
             return $sortingSelect.getSelectedValue() || sortingValues.default;
@@ -1023,6 +1171,7 @@ define("imcms-image-content-builder",
 
         return {
             buildSortingSelect,
+	        buildSearchField,
             getSelectedImage: () => selectedImage,
 	        isSelectedImageChanged: () => selectedImageChanged,
             loadAndBuildContent: options => {
@@ -1062,6 +1211,7 @@ define("imcms-image-content-builder",
                     $folder: [],
                     $images: []
                 };
+	            searchEnabled = false;
             }
         };
     }

@@ -254,6 +254,7 @@ module.exports = {
                     'imcms-rest-api',
                     'imcms-image-files-rest-api',
                     'imcms-image-folders-rest-api',
+                    'imcms-image-files-search-rest-api',
                     'imcms-documents-rest-api',
                     'imcms-document-basket-rest-api',
                     'imcms-documents-search-rest-api',

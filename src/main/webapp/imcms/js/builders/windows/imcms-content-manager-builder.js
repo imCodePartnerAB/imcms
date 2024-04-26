@@ -49,8 +49,9 @@ define(
 
             function buildToolsContainer() {
                 return new BEM({
-                    block: 'imcms-toolbar-images-select',
+                    block: 'imcms-toolbar-images-tools',
                     elements: {
+                        'search': imageContentBuilder.buildSearchField(),
                         'sorting': imageContentBuilder.buildSortingSelect(),
                     }
                 }).buildBlockStructure('<div>');
