@@ -4,7 +4,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
@@ -89,7 +89,7 @@ class SearchDocumentServiceTest {
             given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
         }
 
-        given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
+        given(indexSearchResult.storedFieldsList()).willReturn(documentStoredFieldsList);
 
         final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO, limitSearch);
 
@@ -98,7 +98,7 @@ class SearchDocumentServiceTest {
         assertTrue(expected.containsAll(actual));
 
         then(documentIndex).should().search(eq(searchQueryDTO), eq(limitSearch));
-        then(indexSearchResult).should().documentStoredFieldsList();
+        then(indexSearchResult).should().storedFieldsList();
     }
 
     @Test
@@ -143,7 +143,7 @@ class SearchDocumentServiceTest {
             given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
         }
 
-        given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
+        given(indexSearchResult.storedFieldsList()).willReturn(documentStoredFieldsList);
 
         final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(query, limitSearch);
 
@@ -152,7 +152,7 @@ class SearchDocumentServiceTest {
         assertTrue(expected.containsAll(actual));
 
         then(documentIndex).should().search(eq(query), eq(limitSearch));
-        then(indexSearchResult).should().documentStoredFieldsList();
+        then(indexSearchResult).should().storedFieldsList();
 
     }
 
@@ -180,7 +180,7 @@ class SearchDocumentServiceTest {
                 "+version_no:" + DocumentIndex.FIELD__VERSION_NO +
                 "+(category_id:" + DocumentIndex.FIELD__CATEGORY_ID + " category_id:" + DocumentIndex.FIELD__CATEGORY_ID + ")";
 
-        final PageRequestDTO page = new PageRequestDTO(DocumentIndex.FIELD__META_HEADLINE, Sort.Direction.ASC, 0, 100);
+        final DocumentPageRequestDTO page = new DocumentPageRequestDTO(DocumentIndex.FIELD__META_HEADLINE, Sort.Direction.ASC, 0, 100);
 
         final boolean limitSearch = true;
         given(documentIndex.search(eq(query), eq(page), eq(limitSearch)))
@@ -200,7 +200,7 @@ class SearchDocumentServiceTest {
             given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
         }
 
-        given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
+        given(indexSearchResult.storedFieldsList()).willReturn(documentStoredFieldsList);
 
         final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(query, page, limitSearch);
 
@@ -209,6 +209,6 @@ class SearchDocumentServiceTest {
         assertTrue(expected.containsAll(actual));
 
         then(documentIndex).should().search(eq(query), eq(page), eq(limitSearch));
-        then(indexSearchResult).should().documentStoredFieldsList();
+        then(indexSearchResult).should().storedFieldsList();
     }
 }

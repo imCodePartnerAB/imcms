@@ -36,7 +36,7 @@ public class MockDocumentIndex implements DocumentIndex {
 	}
 
 	@Override
-    public IndexSearchResult search(SolrQuery query) throws IndexException {
+    public IndexSearchResult<DocumentStoredFields> search(SolrQuery query) throws IndexException {
         return null;
     }
 

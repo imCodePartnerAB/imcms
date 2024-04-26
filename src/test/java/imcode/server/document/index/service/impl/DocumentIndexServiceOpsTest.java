@@ -2,13 +2,14 @@ package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.service.IndexServiceOps;
 import imcode.server.document.index.service.SolrClientFactory;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -58,7 +59,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 	private static SolrClient solrClient;
 
 	@InjectMocks
-	private DocumentIndexServiceOps documentIndexServiceOps;
+	private IndexServiceOps documentIndexServiceOps;
 	@Mock
 	private DocumentIndexer documentIndexer;
 
@@ -71,7 +72,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
     public static void setUp() throws Exception {
 	    FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
-	    solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), false);
+	    solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), , false);
 
 	    final UserDomainObject user = new UserDomainObject(1);
 	    user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
@@ -144,7 +145,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         assertEquals(solrDocumentList.size(), 1);
         assertEquals(solrDocumentList.get(0).getFieldValue(titleField), headlineValue);
 
-        documentIndexServiceOps.deleteDocsFromIndex(solrClient, getDocId(id));
+        documentIndexServiceOps.deleteFromIndex(solrClient, String.valueOf(getDocId(id)));
 
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
         assertEquals(solrDocumentList.size(), 0);
@@ -314,9 +315,9 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         final int pageSize = 5;
         final int id = ++documentSize;
 
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
-        pageRequestDTO.setSkip(pageSize);
-        pageRequestDTO.setSize(pageSize);
+        final DocumentPageRequestDTO documentPageRequestDTO = new DocumentPageRequestDTO();
+        documentPageRequestDTO.setSkip(pageSize);
+        documentPageRequestDTO.setSize(pageSize);
 
         final SolrInputDocument solrInputDocument = addRequiredFields(id);
         solrInputDocument.addField(titleField, testHeadline);
@@ -324,7 +325,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
         indexDocument(id, solrInputDocument);
 
 
-        searchQueryDTO.setPage(pageRequestDTO);
+        searchQueryDTO.setPage(documentPageRequestDTO);
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
@@ -543,11 +544,11 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
             indexDocument(id, solrInputDocument);
         }
 
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
-        pageRequestDTO.setProperty(property);
-        pageRequestDTO.setDirection(direction);
+        final DocumentPageRequestDTO documentPageRequestDTO = new DocumentPageRequestDTO();
+        documentPageRequestDTO.setProperty(property);
+        documentPageRequestDTO.setDirection(direction);
 
-        searchQueryDTO.setPage(pageRequestDTO);
+        searchQueryDTO.setPage(documentPageRequestDTO);
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
@@ -572,7 +573,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
         when(documentIndexer.index(docId)).thenReturn(solrInputDocument);
 
-        documentIndexServiceOps.addDocsToIndex(solrClient, docId);
+        documentIndexServiceOps.addToIndex(solrClient, String.valueOf(docId));
     }
 
     private SolrInputDocument addRequiredFields(int id) {

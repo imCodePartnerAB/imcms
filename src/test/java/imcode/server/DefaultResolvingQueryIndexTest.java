@@ -1,7 +1,7 @@
 package imcode.server;
 
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexSearchResult;
@@ -64,7 +64,7 @@ public class DefaultResolvingQueryIndexTest {
     public void search_When_SearchQueryIsString_And_PageRequestIsNotNull_Expect_IndexSearchResultIsNotNull3() {
         final SolrQuery solrQuery = new SolrQuery();
         final String strSolrQuery = new String();
-        final PageRequestDTO page = new PageRequestDTO();
+        final DocumentPageRequestDTO page = new DocumentPageRequestDTO();
 
         when(documentSearchQueryConverter.convertToSolrQuery(strSolrQuery, page,true)).thenReturn(solrQuery);
         when(documentSearchQueryConverter.convertToSolrQuery(strSolrQuery, page, false)).thenReturn(solrQuery);

@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.component;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.TextDocument;
-import com.imcode.imcms.domain.dto.PageRequestDTO;
+import com.imcode.imcms.domain.dto.DocumentPageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import imcode.server.Imcms;
@@ -143,11 +143,11 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final int expectedPage = 1;
         final int expectedSize = 10;
 
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
-        pageRequestDTO.setSkip(expectedPage * expectedSize);
-        pageRequestDTO.setSize(expectedSize);
+        final DocumentPageRequestDTO documentPageRequestDTO = new DocumentPageRequestDTO();
+        documentPageRequestDTO.setSkip(expectedPage * expectedSize);
+        documentPageRequestDTO.setSize(expectedSize);
 
-        searchQueryDTO.setPage(pageRequestDTO);
+        searchQueryDTO.setPage(documentPageRequestDTO);
 
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
@@ -170,11 +170,11 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final String expectedProperty = DocumentIndex.FIELD__META_HEADLINE; // by title
         final Sort.Direction expectedDirection = Sort.Direction.ASC;
 
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
-        pageRequestDTO.setProperty(expectedProperty);
-        pageRequestDTO.setDirection(expectedDirection);
+        final DocumentPageRequestDTO documentPageRequestDTO = new DocumentPageRequestDTO();
+        documentPageRequestDTO.setProperty(expectedProperty);
+        documentPageRequestDTO.setDirection(expectedDirection);
 
-        searchQueryDTO.setPage(pageRequestDTO);
+        searchQueryDTO.setPage(documentPageRequestDTO);
 
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO, true);
 
@@ -325,7 +325,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final int skip = 45;
         final int size = 100;
 
-        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, skip, size);
+        final DocumentPageRequestDTO page = new DocumentPageRequestDTO(property, Sort.Direction.ASC, skip, size);
         final String expectedSort = String.format("sort=%s+%s", property, Sort.Direction.ASC.toString().toLowerCase());
         final String expectedStart = "start=" + skip;
         final String expectedRows = "rows=" + size;
@@ -344,7 +344,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
                 "+status:" + Document.PublicationStatus.APPROVED;
         final String property = DocumentIndex.FIELD__META_HEADLINE;
-        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, 45, 100);
+        final DocumentPageRequestDTO page = new DocumentPageRequestDTO(property, Sort.Direction.ASC, 45, 100);
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, true);
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
@@ -359,7 +359,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
                 "+status:" + Document.PublicationStatus.APPROVED;
         final String property = DocumentIndex.FIELD__META_HEADLINE;
-        final PageRequestDTO page = new PageRequestDTO(property, Sort.Direction.ASC, 45, 100);
+        final DocumentPageRequestDTO page = new DocumentPageRequestDTO(property, Sort.Direction.ASC, 45, 100);
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query, page, false);
 
         assertNull(solrQuery.getFilterQueries());
