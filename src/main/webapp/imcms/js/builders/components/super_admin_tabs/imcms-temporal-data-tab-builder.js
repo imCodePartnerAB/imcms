@@ -113,13 +113,13 @@ define(
             });
         }
 
-        function buildReindexRow() {
+        function buildReindexRow(title, api) {
             function buildReindexTitleMessage() {
-                return components.texts.titleText('<div>', texts.actions.rebuildIndex, {});
+                return components.texts.titleText('<div>', title, {});
             }
 
             function init($button, date) {
-                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                api.getAmountOfIndexedDocuments().done(currentAmount => {
                     if (currentAmount !== -1) {
                         $button
                             .attr('disabled', '')
@@ -135,7 +135,7 @@ define(
             }
 
             function disableButtonWhileIndexing($button, date, interval) {
-                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                api.getAmountOfIndexedDocuments().done(currentAmount => {
                     if (currentAmount === -1) {
                         clearInterval(interval);
                         date.updateDate();
@@ -151,7 +151,7 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
-                const lastUpdate = new DateLabel(temporalDataApi.getDateDocumentIndex, texts.lastUpdate);
+                const lastUpdate = new DateLabel(api.getDateDocumentIndex, texts.lastUpdate);
                 const timeLeft = new TimeLabel(texts.timeLeft);
                 timeLeft.getLabel().hide();
 
@@ -182,12 +182,12 @@ define(
                     .addClass(DISABLED_BUTTON_CLASS_NAME);
                 $success.hide();
 
-                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                api.getAmountOfIndexedDocuments().done(currentAmount => {
                     if (currentAmount === -1) {
                         $loading.text('0%');
                         $loading.show();
 
-                        temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
+                        api.rebuildDocumentIndex().done(totalAmount => {
                             time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_REINDEX));
                             time.getLabel().show();
 
@@ -206,7 +206,7 @@ define(
             }
 
             function updateLoading($button, $loading, $success, interval, totalAmount, date, time) {
-                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                api.getAmountOfIndexedDocuments().done(currentAmount => {
 
                     if (currentAmount === -1) {
                         clearInterval(interval);
@@ -243,6 +243,23 @@ define(
                     'actions': buildReindexActions(),
                 }
             }).buildBlockStructure('<div>');
+        }
+
+        function buildReindexDocumentsRow() {
+            return buildReindexRow(texts.actions.rebuildIndex, {
+                "getAmountOfIndexedDocuments": temporalDataApi.getAmountOfIndexedDocuments,
+                "getDateDocumentIndex": temporalDataApi.getDateDocumentIndex,
+                "rebuildDocumentIndex": temporalDataApi.rebuildDocumentIndex,
+            });
+        }
+
+        function buildReindexImageFilesRow() {
+            return buildReindexRow(texts.actions.rebuildImageFilesIndex, {
+                "getAmountOfIndexedDocuments": temporalDataApi.getAmountOfIndexedImageFiles,
+                "getDateDocumentIndex": temporalDataApi.getDateImageFilesReindex,
+                "rebuildDocumentIndex": temporalDataApi.rebuildImageFileIndex,
+
+            });
         }
 
         function buildPublicDocumentCacheRow() {
@@ -480,7 +497,8 @@ define(
         TemporalAdminTab.prototype.getDocLink = () => texts.documentationLink;
 
         return new TemporalAdminTab(texts.name, [
-            buildReindexRow(),
+            buildReindexDocumentsRow(),
+            buildReindexImageFilesRow(),
             buildPublicDocumentCacheRow(),
             buildStaticContentRow(),
             buildOtherContentRow(),
