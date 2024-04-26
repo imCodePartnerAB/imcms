@@ -514,6 +514,11 @@ const texts = {
                 openImage: "Öppna bild i nytt fönster",
                 editMetadata: "Redigera metadata",
                 sortBy: 'Sortera på',
+                search: {
+                    searchInputText: "Klicka för att aktivera sökning",
+                    searchInputPlaceholder: "Skriv för att hitta bilden",
+                    text: "Sök vilken bild som helst"
+                },
                 sorting: {
                     default: 'Standard',
                     az: 'A-Ö',
@@ -526,7 +531,8 @@ const texts = {
                     checkFailed: 'Misslyckades med att kontrollera. Försök igen',
                     addFolderFailed: 'Misslyckades med att lägga till mapp. Försök igen',
                     loadImagesFailed: 'Misslyckades med att hämta bilder. Försök igen',
-                    uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen'
+                    uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen',
+                    searchFailed: "Inget sökresultat"
                 },
             },
             image: {
@@ -596,6 +602,7 @@ const texts = {
                 warnChange: 'Alt-texten är inte tom! Vill du ändra alt-text?',
                 altText: "Alt. text (För synnedsatta. Bör anges)",
                 altTextRequired: "Alt. text krävs!",
+                descriptionText: "Beskrivningstext",
                 imageLink: "Bildlänk (URL)",
                 allLangs: "Alla språk",
                 advanced: "Avancerad",
@@ -642,6 +649,8 @@ const texts = {
                 uploadedBy: 'Uppladdad av',
                 modifiedDate: 'Ändrat datum',
                 copyright: 'Copyright',
+                altText: "Alternativ text",
+                descriptionText: "Beskrivningstext",
                 licensePeriod: 'Licensperiod',
                 titleAllExifMode: 'All Exif Information',
                 titleCustomExifMode: 'Anpassad metadata',
@@ -1228,6 +1237,7 @@ const texts = {
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Indexera om innehållet',
+                    rebuildImageFilesIndex:"Bygg om bildfilsindex",
                     deletePublicDocCache: 'Töm publik dokumentcahce',
                     deleteOtherCache: 'Töm annan cache',
                     deleteStaticCache: 'Töm statisk cache',
@@ -1777,6 +1787,11 @@ const texts = {
                 openImage: "Open image in new window",
                 editMetadata: "Edit metadata",
                 sortBy: 'Sort by',
+                search: {
+                    searchInputText:"Click to enable search",
+                    searchInputPlaceholder: "Type to find image",
+                    text: "Search any image"
+                },
                 sorting: {
                     default: 'Default',
                     az: 'A-Z',
@@ -1789,7 +1804,8 @@ const texts = {
                     checkFailed: 'Failed to check. Try again',
                     addFolderFailed: 'Failed to add folder. Try again',
                     loadImagesFailed: 'Failed to fetch images. Try again',
-                    uploadImagesFailed: 'Failed to fetch images. Try again'
+                    uploadImagesFailed: 'Failed to fetch images. Try again',
+                    searchFailed: "No search result"
                 },
             },
             image: {
@@ -1859,6 +1875,7 @@ const texts = {
                 warnChange: 'Alt text isn\'t empty! Do you want to change alt text?',
                 altText: "Alt. text (For visually impaired. Should be specified)",
                 altTextRequired: "Alt. text is required",
+                descriptionText: "Description text",
                 imageLink: "Image link (URL)",
                 allLangs: "All languages",
                 advanced: "Advanced",
@@ -1906,6 +1923,8 @@ const texts = {
                 uploadedBy: 'Uploaded by',
                 modifiedDate: 'Modified date',
                 copyright: 'Copyright',
+                altText: "Alternative text",
+                descriptionText: "Description text",
                 licensePeriod: 'License period',
                 titleAllExifMode: 'All Exif Information',
                 titleCustomExifMode: 'Custom Metadata',
@@ -2492,6 +2511,7 @@ const texts = {
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindex documents',
+                    rebuildImageFilesIndex:"Rebuild Image Files Index",
                     deletePublicDocCache: 'Delete public documents cache',
                     deleteOtherCache: 'Delete other web cache',
                     deleteStaticCache: 'Delete static web cache',
@@ -3041,6 +3061,11 @@ const texts = {
                 openImage: "Åpne bildet i nytt vindu",
                 editMetadata: "Rediger metadata",
                 sortBy: 'Sorter etter',
+                search: {
+                    searchInputText:"Klikk for å aktivere søk",
+                    searchInputPlaceholder: "Skriv for å finne bildet",
+                    text: "Søk på et hvilket som helst bilde"
+                },
                 sorting: {
                     default: 'Standard',
                     az: 'A-Å',
@@ -3053,7 +3078,8 @@ const texts = {
                     checkFailed: 'Kunne ikke sjekke. Prøv igjen',
                     addFolderFailed: 'Kunne ikke legge til mappe. Prøv igjen',
                     loadImagesFailed: 'Kunne ikke hente bilder. Prøv igjen',
-                    uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen'
+                    uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen',
+                    searchFailed: "Ingen søkeresultat"
                 },
             },
             image: {
@@ -3123,6 +3149,7 @@ const texts = {
                 warnChange: 'Alt-teksten er ikke tom! Vil du endre alt-tekst?',
                 altText: "Alt. tekst (For synshemmede. Bør spesifiseres)",
                 altTextRequired: "Alternativ tekst kreves!",
+                descriptionText: "Beskrivelsestekst",
                 imageLink: "Bildelink (URL)",
                 allLangs: "Alle språk",
                 advanced: "Avansert",
@@ -3170,6 +3197,8 @@ const texts = {
                 uploadedBy: 'Lastet opp av',
                 modifiedDate: 'Endret dato',
                 copyright: 'Copyright',
+                altText: "Alternativ tekst",
+                descriptionText: "Beskrivelsestekst",
                 licensePeriod: 'Lisensperiode',
                 titleAllExifMode: 'All Exif Informasjon',
                 titleCustomExifMode: 'Egendefinert Metadata',
@@ -3755,6 +3784,7 @@ const texts = {
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindekser innholdet',
+                    rebuildImageFilesIndex:"Gjenoppbygg bildefilindeks",
                     deletePublicDocCache: 'Tøm offentlig dokumentcache',
                     deleteOtherCache: 'Tøm annen cache',
                     deleteStaticCache: 'Tøm statisk cache',
