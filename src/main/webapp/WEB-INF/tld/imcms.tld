@@ -222,6 +222,11 @@
     </tag-file>
 
     <tag-file>
+        <name>image:data</name>
+        <path>/WEB-INF/tags/imcms/admin/imageData.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>text</name>
         <path>/WEB-INF/tags/imcms/admin/text.tag</path>
     </tag-file>
