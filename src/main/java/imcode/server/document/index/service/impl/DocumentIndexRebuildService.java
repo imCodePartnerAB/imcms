@@ -1,6 +1,7 @@
 package imcode.server.document.index.service.impl;
 
 import imcode.server.document.index.service.DocumentIndexService;
+import imcode.server.document.index.service.IndexServiceFactory;
 import imcode.server.document.index.service.IndexUpdateOp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class DocumentIndexRebuildService implements DocumentIndexService, IndexR
     );
     private final String pathToSolr;
     private final BiFunction<String, Boolean, SolrClient> solrClientFactory;
-    private final DocumentIndexServiceFactory documentIndexServiceFactory;
+    private final IndexServiceFactory documentIndexServiceFactory;
 
     private Consumer<ServiceFailure> failureHandler = failure -> {
         try {
@@ -68,7 +69,7 @@ public class DocumentIndexRebuildService implements DocumentIndexService, IndexR
     };
 
     public DocumentIndexRebuildService(String pathToSolr, BiFunction<String, Boolean, SolrClient> solrClientFactory,
-                                       long periodInMinutes, DocumentIndexServiceFactory documentIndexServiceFactory) {
+                                       long periodInMinutes, IndexServiceFactory documentIndexServiceFactory) {
         this.pathToSolr = pathToSolr;
         this.solrClientFactory = solrClientFactory;
         this.documentIndexServiceFactory = documentIndexServiceFactory;
@@ -135,7 +136,7 @@ public class DocumentIndexRebuildService implements DocumentIndexService, IndexR
         }
     }
 
-    private ManagedDocumentIndexService newManagedService(boolean recreateDataDir) {
+    private DocumentIndexService newManagedService(boolean recreateDataDir) {
         final SolrClient solrClient = solrClientFactory.apply(pathToSolr, recreateDataDir);
         return documentIndexServiceFactory.create(solrClient, solrClient, failureHandler);
     }

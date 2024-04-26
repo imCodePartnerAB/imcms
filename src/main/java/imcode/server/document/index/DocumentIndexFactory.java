@@ -1,9 +1,9 @@
 package imcode.server.document.index;
 
 import imcode.server.Config;
+import imcode.server.document.index.service.IndexServiceFactory;
 import imcode.server.document.index.service.SolrClientFactory;
 import imcode.server.document.index.service.impl.DocumentIndexRebuildService;
-import imcode.server.document.index.service.impl.DocumentIndexServiceFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
@@ -17,10 +17,11 @@ import java.util.function.Function;
 public class DocumentIndexFactory {
 
     private static Logger logger = LogManager.getLogger(DocumentIndexFactory.class);
-    private final DocumentIndexServiceFactory documentIndexServiceFactory;
+    private final IndexServiceFactory documentIndexServiceFactory;
     private final Config config;
 
-    public DocumentIndexFactory(DocumentIndexServiceFactory documentIndexServiceFactory, Config config) {
+    public DocumentIndexFactory(IndexServiceFactory documentIndexServiceFactory,
+                                Config config) {
         this.documentIndexServiceFactory = documentIndexServiceFactory;
         this.config = config;
     }
@@ -42,7 +43,7 @@ public class DocumentIndexFactory {
             solrClientFactory = SolrClientFactory::createHttpSolrClient;
 
         } else if (oSolrHome.isPresent()) {
-            solrPath = oSolrHome.get();
+            solrPath = oSolrHome.get() + '/' + SolrClientFactory.DEFAULT_CORE_NAME;
             solrClientFactory = SolrClientFactory::createEmbeddedSolrClient;
 
         } else {

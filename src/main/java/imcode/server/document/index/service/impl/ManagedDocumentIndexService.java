@@ -3,6 +3,7 @@ package imcode.server.document.index.service.impl;
 import com.imcode.imcms.util.ThreadUtility;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.index.service.DocumentIndexService;
+import imcode.server.document.index.service.IndexServiceOps;
 import imcode.server.document.index.service.IndexUpdateOp;
 import imcode.server.document.index.service.IndexUpdateOperation;
 import org.apache.logging.log4j.LogManager;
@@ -40,13 +41,15 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private volatile Future indexUpdateFuture = CompletableFuture.completedFuture(null);
     private volatile Future indexRebuildFuture = CompletableFuture.completedFuture(null);
 
-    private SolrClient solrClientReader;
-    private SolrClient solrClientWriter;
-    private DocumentIndexServiceOps serviceOps;
-    private Consumer<ServiceFailure> failureHandler;
+    private final SolrClient solrClientReader;
+    private final SolrClient solrClientWriter;
+    private final IndexServiceOps serviceOps;
+    private final Consumer<ServiceFailure> failureHandler;
 
-    ManagedDocumentIndexService(SolrClient solrClientReader, SolrClient solrClientWriter,
-                                DocumentIndexServiceOps serviceOps, Consumer<ServiceFailure> failureHandler) {
+    ManagedDocumentIndexService(SolrClient solrClientReader,
+                                SolrClient solrClientWriter,
+                                IndexServiceOps serviceOps,
+                                Consumer<ServiceFailure> failureHandler) {
         this.solrClientReader = solrClientReader;
         this.solrClientWriter = solrClientWriter;
         this.serviceOps = serviceOps;
@@ -160,18 +163,18 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     }
 
     private void updateIndexes() {
-        logger.info("Index update thread invoked for " + indexUpdateRequests.size() + " update requests.");
+	    logger.info("Index update thread invoked for {} update requests. ServiceOps {}", indexUpdateRequests.size(), serviceOps.getClass());
 
         while (!indexUpdateRequests.isEmpty()) {
             try {
                 final IndexUpdateOp updateOp = indexUpdateRequests.take();
                 final IndexUpdateOperation indexUpdateOperation = updateOp.operation();
 
-	            final int docId = updateOp.docId();
+	            final String id = updateOp.docId();
 	            switch (indexUpdateOperation) {
-		            case ADD -> serviceOps.addDocsToIndex(solrClientWriter, docId);
-		            case DELETE -> serviceOps.deleteDocsFromIndex(solrClientWriter, docId);
-		            case UPDATE_VERSION -> serviceOps.updateDocumentVersionInIndex(solrClientWriter, docId);
+		            case ADD -> serviceOps.addToIndex(solrClientWriter, id);
+		            case DELETE -> serviceOps.deleteFromIndex(solrClientWriter, id);
+		            case UPDATE_VERSION -> serviceOps.updateDocumentVersionInIndex(solrClientWriter, id);
 	            }
             } catch (InterruptedException e) {
                 logger.debug("document-index-update thread [" + toString() + "] was interrupted");
@@ -185,6 +188,6 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
             }
         }
 
-        logger.info("Index update thread finished.");
+        logger.info("Index update thread finished.  ServiceOps {}", serviceOps.getClass());
     }
 }
