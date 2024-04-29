@@ -148,7 +148,7 @@ public class ImageFileIndexServiceOps implements IndexServiceOps {
 
 	@Override
 	public void updateDocumentVersionInIndex(SolrClient solrClient, String id) throws SolrServerException, IOException {
-		//not supported operation, don`t use it
+		throw new UnsupportedOperationException("Document version update not supported in imageFiles index.");
 	}
 
 	@Override
