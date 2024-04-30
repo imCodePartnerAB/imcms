@@ -10,6 +10,11 @@
     width: 100%;
 }
 
+.imcms-main-folders-controls .imcms-control--sort-asc:hover,
+.imcms-main-folders-controls .imcms-control--sort-desc:hover {
+    filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(198deg) brightness(119%) contrast(119%);
+}
+
 .imcms-main-folders-controls__control {
     float: right;
 }

@@ -25,7 +25,7 @@ define("imcms-image-content-builder",
 
 	    let searchEnabled = false;
 		let $errorMsg;
-        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $searchTextBox;
+        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $searchTextBox, $folderSortingBtn;
 
         let viewModel = {
             root: {},
@@ -41,6 +41,29 @@ define("imcms-image-content-builder",
             dateOldFirst: 'date-old-first',
         };
 
+	    let currentDocumentNumber = 0;
+	    const defaultPageSize = 100;
+
+	    const term = 'term';
+	    const sortProperty = 'page.property';
+	    const sortDirection = 'page.direction';
+	    const pageSkip = 'page.skip';
+
+	    const defaultSortPropertyValue = 'uploaded'
+	    const asc = 'ASC';
+	    const desc = 'DESC';
+
+	    const searchQueryObj = {
+		    'term': '',
+		    'page.skip': currentDocumentNumber,
+		    'page.size': defaultPageSize,
+	    };
+
+	    const sortAscClassName = 'imcms-control--sort-asc';
+	    const sortDescClassName = 'imcms-control--sort-desc';
+
+	    let folderSorting = asc;
+
         const rootFolderBEM = new BEM({
             block: "imcms-left-side",
             elements: {
@@ -51,7 +74,7 @@ define("imcms-image-content-builder",
 
         function onFolderRenamed(oldFolderPath, response) {
 
-            this.$block.parent().attr("data-folder-name", this.name);
+            this.$block.parent().data("folder-name", this.name);
 
             this.$block.prev()
                 .find(".imcms-folder__name")
@@ -67,6 +90,7 @@ define("imcms-image-content-builder",
                 selectedImage.path = selectedFullImagePath;
                 selectedImageChanged = true;
             }
+	        sortFolders();
         }
 
         function onFolderCreated(oldFolderPath, response) {
@@ -91,6 +115,7 @@ define("imcms-image-content-builder",
                     }
                 ).prependTo($parent);
             }
+	        sortFolders();
         }
 
         const folderControlsBuilder = {
@@ -116,9 +141,64 @@ define("imcms-image-content-builder",
                 e.preventDefault();
                 e.stopPropagation();
                 setCheckFolder(folder);
-            }).attr("title", texts.checkFolderImagesUsage)
+            }).attr("title", texts.checkFolderImagesUsage),
+
+	        sort: () => components.controls.sortDesc(function (e) {
+		        e.preventDefault();
+		        e.stopPropagation();
+		        toggleSortingIcon($(this));
+		        sortFolders();
+	        }).attr("title", desc),
         };
 
+	    function toggleSortingIcon($sortingIcon) {
+		    if ($sortingIcon.hasClass(sortDescClassName)) {
+			    $sortingIcon.removeClass(sortDescClassName).addClass(sortAscClassName).attr("title", desc);
+			    folderSorting = asc;
+			    return;
+		    }
+
+		    $sortingIcon.removeClass(sortAscClassName).addClass(sortDescClassName).attr("title", asc);
+		    folderSorting = desc;
+	    }
+
+	    function sortFolders() {
+		    const alphabeticalComparator = (a, b) => {
+			    const name1 = String($(a).data('folder-name'));
+			    const name2 = String($(b).data('folder-name'));
+
+			    if (folderSorting === asc) return name1.toLowerCase().localeCompare(name2.toLowerCase());
+
+			    return name2.toLowerCase().localeCompare(name1.toLowerCase());
+		    }
+
+		    const $folders = $("[data-folders-lvl]");
+		    const groups = {};
+		    $folders.each(function () {
+			    const $this = $(this);
+			    const folderPath = getFolderPath($this);
+
+			    const key = folderPath.substring(0, folderPath.lastIndexOf("/"));
+
+			    if (!groups[key]) {
+				    groups[key] = [];
+			    }
+			    groups[key].push(this);
+		    })
+
+		    $.each(groups, function (path, folders) {
+			    folders.sort(alphabeticalComparator)
+		    })
+
+		    $.each(groups, function (path, folders) {
+			    folders.forEach(folder => {
+				    const $folder = $(folder);
+
+				    $folder.parent().append(folder);
+			    });
+		    })
+	    }
+		
         function buildRootControls(rootFile) {
             return new BEM({
                 block: "imcms-main-folders-controls",
@@ -388,6 +468,7 @@ define("imcms-image-content-builder",
 
         function buildRootFolderControlElements(rootFile) {
             const controlsElements = [
+	            $folderSortingBtn = folderControlsBuilder.sort(),
                 folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL),
                 folderControlsBuilder.check(rootFile)
             ];
@@ -902,6 +983,8 @@ define("imcms-image-content-builder",
                 activeFolder.$folder.find('.imcms-main-folders-controls').addClass(ACTIVE_FOLDER_CLASS);
                 showImagesIn(viewModel.root);
             }
+
+	        $folderSortingBtn.click();
         }
 
         function openParentFolders(folder) {
@@ -941,7 +1024,7 @@ define("imcms-image-content-builder",
         function buildSortingSelect() {
             return $sortingSelect = components.selects.imcmsSelect("<div>", {
                 text: texts.sortBy,
-	            onSelected: (value) => searchEnabled ? searchImages(value) : sortImagesBySortingValue(value),
+	            onSelected: (sort) => searchEnabled ? searchImages(sort) : sortImagesBySortingValue(sort),
             }, [{
                 text: texts.sorting.default,
                 "data-value": sortingValues.default,
@@ -959,24 +1042,6 @@ define("imcms-image-content-builder",
                 "data-value": sortingValues.dateOldFirst,
             }]);
         }
-
-	    let currentDocumentNumber = 0;
-	    const defaultPageSize = 100;
-
-	    const term = 'term';
-	    const sortProperty = 'page.property';
-	    const sortDirection = 'page.direction';
-	    const pageSkip = 'page.skip';
-
-	    const defaultSortPropertyValue = 'uploaded'
-	    const asc = 'ASC';
-	    const desc = 'DESC';
-
-	    const searchQueryObj = {
-		    'term': '',
-		    'page.skip': currentDocumentNumber,
-		    'page.size': defaultPageSize,
-	    };
 
 	    function buildSearchField() {
 		    $searchTextBox = components.texts.textBox('<div>', {
