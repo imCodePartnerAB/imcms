@@ -65,13 +65,9 @@
 
         <field name="path" type="string" indexed="true" stored="true" required="true" multiValued="false"/>
 
-<!--        <field name="format" type="string" indexed="true" stored="true" required="true" multiValued="false"/>-->
-
         <field name="uploaded" type="date" indexed="true" stored="true" required="true" multiValued="false"/>
 
         <field name="size" type="string" indexed="true" stored="true" required="true" multiValued="false"/>
-
-<!--        <field name="resolution" type="string" indexed="true" stored="true" required="false" multiValued="false"/>-->
 
         <field name="width" type="int" indexed="true" stored="true" required="false" multiValued="false"/>
 
