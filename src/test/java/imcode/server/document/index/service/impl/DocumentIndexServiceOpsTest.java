@@ -45,7 +45,7 @@ import static org.mockito.BDDMockito.when;
 public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 
 	private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
-	private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
+    private static final File testSolrFolder = new File("WEB-INF/solr/" + SolrClientFactory.DEFAULT_CORE_NAME).getAbsoluteFile();
 	private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
 	private static final List<String> mockData = new ArrayList<>();
 	private final String testHeadline = "testHeadline";
@@ -59,7 +59,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
 	private static SolrClient solrClient;
 
 	@InjectMocks
-	private IndexServiceOps documentIndexServiceOps;
+	private DocumentIndexServiceOps documentIndexServiceOps;
 	@Mock
 	private DocumentIndexer documentIndexer;
 
@@ -72,7 +72,7 @@ public class DocumentIndexServiceOpsTest extends WebAppSpringTestConfig {
     public static void setUp() throws Exception {
 	    FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
-	    solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), , false);
+	    solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), false);
 
 	    final UserDomainObject user = new UserDomainObject(1);
 	    user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
