@@ -45,6 +45,14 @@
 
         <div>imcms:image tag without style attribute</div>
         <imcms:image no="100"/>
+        <imcms:image:data no="100">
+            <div>
+                <b>Image data:</b>
+                <div>Image alternateText: ${alternateText}</div>
+                <div>Image descriptionText: ${descriptionText}</div>
+            </div>
+        </imcms:image:data>
+        <br>
 
         <div>imcms:image tag with attribute style="width: 100px;"</div>
         <imcms:image no="101" style="width: 100px;"/>
