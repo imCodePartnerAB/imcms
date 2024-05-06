@@ -81,19 +81,19 @@
         <field name="all_exif" type="string" indexed="true" stored="true" multiValued="true" required="false"/>
 
         <!-- metadata fields -->
-        <field name="photographer" type="string" indexed="true" stored="true" required="false" multiValued="false"/>
+        <field name="photographer" type="text_general_html_strip" indexed="true" stored="true" required="false" multiValued="false"/>
 
-        <field name="uploaded_by" type="string" indexed="true" stored="true" required="false" multiValued="false"/>
+        <field name="uploaded_by" type="text_general_html_strip" indexed="true" stored="true" required="false" multiValued="false"/>
 
-        <field name="copyright" type="string" indexed="true" stored="true" required="false" multiValued="false"/>
+        <field name="copyright" type="text_general_html_strip" indexed="true" stored="true" required="false" multiValued="false"/>
 
         <field name="license_period_start" type="date" indexed="true" stored="true" required="false" multiValued="false"/>
 
         <field name="license_period_end" type="date" indexed="true" stored="true" required="false" multiValued="false"/>
 
-        <field name="alt_text" type="string" indexed="true" stored="true" required="false" multiValued="false"/>
+        <field name="alt_text" type="text_general_html_strip" indexed="true" stored="true" required="false" multiValued="false"/>
 
-        <field name="description_text" type="string" indexed="true" stored="true" required="false" multiValued="false"/>
+        <field name="description_text" type="text_general_html_strip" indexed="true" stored="true" required="false" multiValued="false"/>
 
         <!--        <copyField source="model_year" dest="model_year_text"/>-->
         <!--        <copyField source="social_security_number" dest="social_security_number_ngram"/>-->
