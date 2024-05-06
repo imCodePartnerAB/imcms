@@ -2511,7 +2511,7 @@ const texts = {
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindex documents',
-                    rebuildImageFilesIndex:"Rebuild Image Files Index",
+                    rebuildImageFilesIndex:"Rebuild image files index",
                     deletePublicDocCache: 'Delete public documents cache',
                     deleteOtherCache: 'Delete other web cache',
                     deleteStaticCache: 'Delete static web cache',

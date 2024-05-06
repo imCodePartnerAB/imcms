@@ -264,7 +264,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
                     formattedLastDataTime = formatter.format(timeLastBuildCache);
                 }
 	        case REINDEX_IMAGE_FILES_NAME:
-				if (timeLastReindex!=null){
+				if (timeLastImageFilesReindex!=null){
 					formattedLastDataTime = formatter.format(timeLastImageFilesReindex);
 				}
         }
