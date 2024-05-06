@@ -291,6 +291,11 @@ public class ImageOp {
         return this;
     }
 
+    public ImageOp verbose(){
+        args.add("-verbose");
+        return this;
+    }
+
     public ImageOp format(String expression){
         args.add("-format");
         args.add(addQuotes(expression));

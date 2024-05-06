@@ -402,7 +402,11 @@ public class ImcmsImageUtils {
     }
 
     public static String getCommentMetadata(InputStream inputStream){
-        final byte[] result = new ImageOp(imageMagickPath).identify().format("%c").input(inputStream, 0).identifyProcess();
+        final byte[] result = new ImageOp(imageMagickPath).identify()
+                .verbose()
+                .format("%c")
+                .input(inputStream, 0)
+                .identifyProcess();
         return Optional.ofNullable(result)
                 .map(String::new)
                 .orElse("");
