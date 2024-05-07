@@ -735,6 +735,14 @@ define("imcms-image-content-builder",
 
         function buildImageDescription(imageFile) {
             /** @namespace imageFile.uploaded */
+
+            let $imgTitle = $("<div>", {
+                    "class": "imcms-title",
+                    text: imageFile.name,
+                }
+            );
+            components.overlays.defaultTooltip($imgTitle, '/' + imageFile.path);
+
             return new BEM({
                 block: "imcms-choose-img-description",
                 elements: {
@@ -751,12 +759,7 @@ define("imcms-image-content-builder",
                             });
                         }
                     }),
-                    "img-title": $("<div>", {
-                            "class": "imcms-title",
-                            text: imageFile.name,
-                            title: imageFile.name
-                        }
-                    ),
+                    "img-title": $imgTitle,
                     "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
                     'open-image': components.buttons.openInNewWindow('<a>', {
                         href: `${imcms.imagesPath}?path=${encodeURIComponent(imageFile.path)}`,
