@@ -1060,7 +1060,7 @@ define("imcms-image-content-builder",
 				    searchEnabled = false;
 
 					$(this).hide();
-				    $searchTextBox.animate({width: '20%'}).addClass('search-btn');
+				    $searchTextBox.animate({width: '20%', 'min-width': '135px'}).addClass('search-btn');
 				    $searchTextBox.$input.attr('type', 'button')
 					    .val(texts.search.searchInputText);
 
@@ -1077,7 +1077,7 @@ define("imcms-image-content-builder",
 
 			    if ($this.attr('type') === 'input') return;
 
-			    $searchTextBox.animate({width: '35%'})
+			    $searchTextBox.animate({width: '35%', 'min-width': '185px'})
 				    .removeClass('search-btn');
 
 			    $this.attr({

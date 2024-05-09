@@ -515,9 +515,9 @@ const texts = {
                 editMetadata: "Redigera metadata",
                 sortBy: 'Sortera på',
                 search: {
-                    searchInputText: "Klicka för att aktivera sökning",
-                    searchInputPlaceholder: "Skriv för att hitta bilden",
-                    text: "Sök vilken bild som helst"
+                    searchInputText: "Klicka för att aktivera",
+                    searchInputPlaceholder: "Enter för att söka",
+                    text: "Sök i bildarkivet"
                 },
                 sorting: {
                     default: 'Standard',
@@ -1788,7 +1788,7 @@ const texts = {
                 editMetadata: "Edit metadata",
                 sortBy: 'Sort by',
                 search: {
-                    searchInputText:"Click to enable search",
+                    searchInputText:"Click to enable",
                     searchInputPlaceholder: "Type to find image",
                     text: "Search any image"
                 },
@@ -3062,9 +3062,9 @@ const texts = {
                 editMetadata: "Rediger metadata",
                 sortBy: 'Sorter etter',
                 search: {
-                    searchInputText:"Klikk for å aktivere søk",
-                    searchInputPlaceholder: "Skriv for å finne bildet",
-                    text: "Søk på et hvilket som helst bilde"
+                    searchInputText:"Klikk for å aktivere",
+                    searchInputPlaceholder: "Enter for å søke",
+                    text: "Søk i bildearkivet"
                 },
                 sorting: {
                     default: 'Standard',

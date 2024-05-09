@@ -71,15 +71,18 @@
 
 .imcms-toolbar-images-tools__search {
   width: 35%;
+  min-width: 185px;
   position: relative;
 }
 
 .imcms-toolbar-images-tools__search.search-btn{
   width: 20%;
+  min-width: 135px;
 }
 
 .imcms-toolbar-images-tools__search > input {
   width: 100%;
+  padding: 8px 25px 8px 15px;
   display: inline-block;
   text-align: left;
   cursor: text;
@@ -88,7 +91,7 @@
 .imcms-toolbar-images-tools__search > button {
   display: block;
   position: absolute;
-  right: 3px;
+  right: 7px;
   bottom: 12px;
 }
 
