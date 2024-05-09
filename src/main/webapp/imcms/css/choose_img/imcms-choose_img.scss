@@ -148,10 +148,13 @@
 }
 
  .imcms-choose-img-description .loading-animation{
-	left: 103px;
-	top: 25px;
-	width: 20px;
-	height: 20px;
+     width: 20px;
+     height: 20px;
+     position: absolute;
+     bottom: initial;
+     right: -8px;
+     left: initial;
+     top: initial;
 }
 
  .imcms-choose-img-description .loading-animation:before{
