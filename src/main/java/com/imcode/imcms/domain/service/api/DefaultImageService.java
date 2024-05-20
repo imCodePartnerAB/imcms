@@ -294,7 +294,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
 	public void updateImage(ImageDTO imageDTO) {
 		final Integer docId = imageDTO.getDocId();
 		final Version version = versionService.getDocumentWorkingVersion(docId);
-		final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
+		final LanguageJPA language = new LanguageJPA(languageService.getByCode(imageDTO.getLangCode()));
 
 		saveImage(imageDTO, language, version);
 	}

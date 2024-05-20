@@ -72,13 +72,18 @@ class DefaultLanguageService implements LanguageService {
 
     @Cacheable(cacheNames = LANGUAGE_CACHE_NAME, key = "#code")
     @Override
-    public Language findByCode(String code) {
+    public Language findByCode(String code) throws LanguageNotAvailableException{
         code = convertLanguage(code);
 
         if (!availableLanguages.contains(code)) {
             throw new LanguageNotAvailableException(code);
         }
         return new LanguageDTO(languageRepository.findByCode(code));
+    }
+
+    @Override
+    public Language getByCode(String code) {
+        return new LanguageDTO(languageRepository.findByCode(convertLanguage(code)));
     }
 
     @Override
