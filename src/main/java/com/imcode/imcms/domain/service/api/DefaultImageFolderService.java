@@ -175,16 +175,17 @@ class DefaultImageFolderService implements ImageFolderService {
         final StoragePath folderPath = storageImagesPath.resolve(DIRECTORY, folderToGetImages.getPath());
 
         return imageFolderCacheManager.getOrPut(folderPath, () -> {
-                    List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
-                            .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
-                            .map(storagePathToImageFileDTO)
-                            .collect(Collectors.toList());
-
-                    folderToGetImages.setFiles(folderFiles);
-
-                    return folderToGetImages;
-                }
-        );
+            if (folderPath.equals(storageImagesPath)) {
+                return getImageFolder();
+            } else {
+                List<ImageFileDTO> folderFiles = storageClient.listPaths(folderPath).parallelStream()
+                        .filter(filePath -> Format.isImage(FilenameUtils.getExtension(filePath.toString())))
+                        .map(storagePathToImageFileDTO)
+                        .collect(Collectors.toList());
+                folderToGetImages.setFiles(folderFiles);
+                return folderToGetImages;
+            }
+        });
     }
 
     @Override
