@@ -5,6 +5,8 @@ import org.apache.solr.common.SolrDocument;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ImageFileStoredFields {
 
@@ -34,12 +36,12 @@ public class ImageFileStoredFields {
 		return solrDocument.getFieldValue(ImageFileIndex.FIELD__SIZE).toString();
 	}
 
-	public int width(){
-		return (int) solrDocument.getFieldValue(ImageFileIndex.FIELD__WIDTH);
+	public Integer width(){
+		return (Integer) solrDocument.getFieldValue(ImageFileIndex.FIELD__WIDTH);
 	}
 
-	public int height(){
-		return (int) solrDocument.getFieldValue(ImageFileIndex.FIELD__HEIGHT);
+	public Integer height(){
+		return (Integer) solrDocument.getFieldValue(ImageFileIndex.FIELD__HEIGHT);
 	}
 
 	public String photographer() {
@@ -85,7 +87,11 @@ public class ImageFileStoredFields {
 	}
 
 	public List<String> allExif() {
-		return solrDocument.getFieldValues(ImageFileIndex.FIELD__ALL_EXIF).stream().map(String::valueOf).toList();
+		return Optional.ofNullable(solrDocument.getFieldValues(ImageFileIndex.FIELD__ALL_EXIF))
+				.map(values -> values.stream()
+						.map(String::valueOf)
+						.collect(Collectors.toList()))
+				.orElseGet(List::of);
 	}
 
 	public ExifDTO exifInfo() {
