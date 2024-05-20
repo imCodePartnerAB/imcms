@@ -503,7 +503,9 @@ define("imcms-image-content-builder",
         }
 
         function onFolderClick(folder) {
-	        if (searchEnabled) return;
+	        if (searchEnabled){
+                $searchTextBox.$closeSearchBtn.click();
+            }
 
             activeFolder = folder;
 	        selectedImageChanged = false;
@@ -567,18 +569,18 @@ define("imcms-image-content-builder",
         }
 
 	    function onDragEnterFolderHandler(event) {
-		    if (!isTargetFolderTheSameAsCurrent(this))
+		    if (searchEnabled || !isTargetFolderTheSameAsCurrent(this))
 			    addBorderToFolder(this);
 		    openSubFoldersOnDoubleClick(this);
 	    }
 
 	    function onDragLeaveFolderHandler(event) {
-		    if (!isTargetFolderTheSameAsCurrent(this))
+		    if (searchEnabled || !isTargetFolderTheSameAsCurrent(this))
 			    removeBorderFromFolder(this);
 	    }
 
 	    function onDragLeaveRootFolderHandler(event) {
-		    if (!isTargetFolderTheSameAsCurrent(this)) {
+		    if (searchEnabled || !isTargetFolderTheSameAsCurrent(this)) {
 			    removeBorderFromRootFolder(this);
 		    }
 	    }
@@ -590,7 +592,7 @@ define("imcms-image-content-builder",
 	    const $loadingAnimation = $("<div class='loading-animation'></div>");
 
 	    function onDropFolderHandler(event, subfolder) {
-		    if (!isTargetFolderTheSameAsCurrent(event.target)) {
+		    if (searchEnabled || !isTargetFolderTheSameAsCurrent(event.target)) {
 			    const imageFileName = dragged.imageData.name;
 			    const imageFileFolder = dragged.imageData.path;
 			    const destinationFolder = subfolder.path;
@@ -602,16 +604,33 @@ define("imcms-image-content-builder",
 			    imageFilesREST.moveImageFile(dragged.imageData)
 				    .done((imageFile) => {
 					    selectedImageChanged = false;
-					    dragged.folderData.files = removeElementFromArray(dragged.folderData.files, dragged.imageData);
-					    dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
 
-					    subfolder.files.push(imageFile);
-					    if (subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder, true));
+                        //we can't trace folder content when search is enabled, so we need to retrieve images again
+                        if(searchEnabled){
+                            let $newImage = buildImageImmediately(imageFile, null);
+                            $(dragged.imageElement).replaceWith($newImage);
+                            selectImage.call($newImage, imageFile);
 
-						refreshOnFolderClickListener(dragged.folderData);
+                            let cleanFilesInFolders = (folder) => {
+                                folder.files = [];
+                                folder.$images = [];
+                                folder.imagesAreLoaded = false;
+                                if(folder.folders) folder.folders.forEach(f => cleanFilesInFolders(f));
+                            }
+                            cleanFilesInFolders(viewModel.root);
+                        }else{
+                            dragged.folderData.files = removeElementFromArray(dragged.folderData.files, dragged.imageData);
+                            dragged.folderData.$images = removeElementFromArray(dragged.folderData.$images, dragged.imageElement);
+                            dragged.imageElement.remove();
+
+                            subfolder.files.push(imageFile);
+                            if (subfolder.$images) subfolder.$images.push(buildImage(imageFile, subfolder));
+
+                            refreshOnFolderClickListener(dragged.folderData);
+                        }
+
 						refreshOnFolderClickListener(subfolder);
 
-					    dragged.imageElement.remove();
 					    selectedFullImagePath = selectedFullImagePath.startsWith('/') ? selectedFullImagePath.substring(1) : selectedFullImagePath;
 						if (selectedFullImagePath === dragged.imageData.name) {
 						    selectedFullImagePath = imageFile.path;
@@ -804,7 +823,7 @@ define("imcms-image-content-builder",
 	    ;
 
         //build image with lazy loading!
-        function buildImage(imageFile, folder, draggable) {
+        function buildImage(imageFile, folder) {
             let dataSrc = `${imcms.imagesPath}?path=${encodeURIComponent(imageFile.path)}`;
             //Reduce image weight by resizing
             if(imageFile.size.toLowerCase().endsWith("mb")){
@@ -812,7 +831,7 @@ define("imcms-image-content-builder",
             }
             imageFile.src = dataSrc;
 
-	        const $image = new BEM({
+	        return new BEM({
                 block: "imcms-choose-img-wrap",
                 elements: {
                     "img": $("<img>", {
@@ -827,32 +846,19 @@ define("imcms-image-content-builder",
                 "data-image-name": imageFile.name,
                 style: "display: none",
             }).on({
-		        'mousedown': function (event) {
-			        $imageContent = $(this);
-			        selectImage.call($imageContent, imageFile);
-			        selectedImageChanged = false;		        },
-	        });
-
-	        if (draggable) makeImageDraggable($image, imageFile, folder);
-
-	        return $image;
+                'mousedown': function (event) {
+                    $imageContent = $(this);
+                    onMouseDownImageHandler(imageFile)
+                },
+                'mouseup dragend': onMouseUpAndDragEndImageHandler,
+                'dragstart': (event) => onDragStartImageHandler(event, folder, imageFile),
+                'drag': function (event) {
+                }
+            });
         }
 
-	    function makeImageDraggable($image, imageFile, folder) {
-		    return $image.off('mousedown mouseup dragend dragstart drag').on({
-			    'mousedown': function (event) {
-				    $imageContent = $(this);
-				    onMouseDownImageHandler(imageFile)
-			    },
-			    'mouseup dragend': onMouseUpAndDragEndImageHandler,
-			    'dragstart': (event) => onDragStartImageHandler(event, folder, imageFile),
-			    'drag': function (event) {
-			    }
-		    });
-	    }
-
         function buildImageImmediately(imageFile, folder) {
-            let $imgContainer = buildImage(imageFile, folder, true).css("display", "block");
+            let $imgContainer = buildImage(imageFile, folder).css("display", "block");
 
             let $img = $imgContainer.find('img');
 	        $img.on("load", () => {
@@ -885,10 +891,7 @@ define("imcms-image-content-builder",
         }
 
         function buildImagesNotRecursive(folder) {
-	        folder.$images = folder.files
-                // sort so that smaller files are loaded first
-                .sort((file1 , file2) => convertFormattedSizeToBytes(file1.size) - convertFormattedSizeToBytes(file2.size))
-                .map((imageFile) => buildImage(imageFile, folder, true));
+	        folder.$images = folder.files.map((imageFile) => buildImage(imageFile, folder));
             viewModel.$images = viewModel.$images.concat(folder.$images);
 
 			startImageLazyLoading(folder);
@@ -1055,7 +1058,7 @@ define("imcms-image-content-builder",
 			    text: texts.search.text,
 		    }).addClass('search-btn');
 
-		    const $closeSearchBtn = components.buttons.closeButton({
+		    let $closeSearchBtn = components.buttons.closeButton({
 			    click: function () {
 				    searchEnabled = false;
 
@@ -1069,6 +1072,8 @@ define("imcms-image-content-builder",
 				    $errorMsg.slideUp();
 			    }
 		    }).css('display', 'none');
+
+            $searchTextBox.$closeSearchBtn = $closeSearchBtn;
 
 		    $searchTextBox.$input.attr('type', 'button');
 		    $searchTextBox.$input.on('click', function () {
@@ -1136,7 +1141,7 @@ define("imcms-image-content-builder",
 						$errorMsg.slideUp();
 					}
 
-					const imageList = images.map(imageFile => buildImage(imageFile, null, false));
+					const imageList = images.map(imageFile => buildImage(imageFile, null));
 
 					startImageLazyLoading({$images: imageList});
 					$imagesContainer.append(imageList);
