@@ -36,10 +36,13 @@ import java.util.stream.Stream;
 /**
  * Cache Supervisor Filter, desires should chain go through ehcache filter or not
  *
+ *  @deprecated this filter is implemented in a strange way, sets weird header values, and caches the entire response.
+ *
  * @author Serhii from Ubrainians for Imcode
  * @author Dmytro from Ubrainians for Imcode
  * 04.11.16
  */
+@Deprecated
 public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter {
 
     private static final int MILLISECONDS_PER_SECOND = 1000;

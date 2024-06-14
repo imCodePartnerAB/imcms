@@ -47,55 +47,6 @@
     </filter>
 
     <filter>
-        <filter-name>StaticContentCacheSupervisor</filter-name>
-        <filter-class>com.imcode.imcms.filters.ImcmsCacheSupervisor</filter-class>
-        <init-param>
-            <param-name>suppressStackTrace</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cacheName</param-name>
-            <param-value>StaticContentCachingFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cacheMarkers</param-name>
-            <!-- Note that markers will be searched in request URL using String#contains() method -->
-            <param-value>
-                .jpg
-                .jpeg
-                .gif
-                .png
-                .ico
-                .woff
-                .pdf
-                .ttf
-                .svg
-            </param-value>
-        </init-param>
-    </filter>
-
-    <filter>
-        <filter-name>OtherContentCacheSupervisor</filter-name>
-        <filter-class>com.imcode.imcms.filters.ImcmsCacheSupervisor</filter-class>
-        <init-param>
-            <param-name>suppressStackTrace</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cacheName</param-name>
-            <param-value>OtherContentCachingFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cacheMarkers</param-name>
-            <param-value>
-                .jsp
-                .js
-                .css
-            </param-value>
-        </init-param>
-    </filter>
-
-    <filter>
         <display-name>CSRF Protection Filter</display-name>
         <filter-name>CSRFProtectionFilter</filter-name>
         <filter-class>com.imcode.imcms.filters.CSRFProtectionFilter</filter-class>
@@ -158,16 +109,6 @@
 
     <filter-mapping>
         <filter-name>characterEncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>StaticContentCacheSupervisor</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>OtherContentCacheSupervisor</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
