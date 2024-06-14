@@ -30,8 +30,8 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +47,7 @@ import java.util.*;
 @Component
 public class ImcmsImageUtils {
 
-    private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
+    private static final Logger log = LogManager.getLogger(ImcmsImageUtils.class);
     private static final int GEN_FILE_LENGTH = 255;
 
     public static String imagesPath;

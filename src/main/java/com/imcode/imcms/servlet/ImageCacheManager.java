@@ -5,15 +5,15 @@ import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Collection;
 
 @Deprecated
 public class ImageCacheManager {
-    private static final Log log = LogFactory.getLog(ImageCacheManager.class);
+    private static final Logger log = LogManager.getLogger(ImageCacheManager.class);
 
     private static final int CACHE_BUCKETS_COUNT = 40;
 

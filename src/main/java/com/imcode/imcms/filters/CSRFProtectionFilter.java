@@ -4,8 +4,8 @@ import com.imcode.imcms.components.CSRFTokenManager;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.http.client.methods.HttpGet;
 
 import javax.servlet.*;
@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 public final class CSRFProtectionFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(CSRFProtectionFilter.class);
+    private static final Logger log = LogManager.getLogger(CSRFProtectionFilter.class);
     private final CSRFTokenManager csrfTokenManager = Imcms.getServices().getManagedBean(CSRFTokenManager.class);
     private final boolean include = Boolean.parseBoolean(Imcms.getServerProperties().getProperty("csrf-include"));
 

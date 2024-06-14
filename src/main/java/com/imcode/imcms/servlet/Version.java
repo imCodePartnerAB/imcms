@@ -7,8 +7,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ import java.sql.SQLException;
  */
 public class Version extends HttpServlet {
 
-    private static final Log logger = LogFactory.getLog(Version.class);
+    private static final Logger logger = LogManager.getLogger(Version.class);
 
     private final static String VERSION_FILE = "/WEB-INF/version.txt";
     private final static String DB_SCHEMA_FILE = "schema.xml";
