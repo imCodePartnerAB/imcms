@@ -12,6 +12,7 @@ import imcode.util.image.Resize;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 
@@ -45,15 +48,27 @@ public class ImageFetcher extends HttpServlet {
         final String width = request.getParameter(WIDTH_PARAMETER);
         final String height = request.getParameter(HEIGHT_PARAMETER);
 
-        if(StringUtils.isBlank(path)){
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
+        try (final StorageFile file = imageStorageClient.getFile(StoragePath.get(FILE, imagesPath, path))) {
+            final long lastModifiedHeader =
+                    Optional.of(request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE))
+                            .filter(val -> val != -1)
+                            .orElse(request.getDateHeader(HttpHeaders.LAST_MODIFIED));
+            //the header only include whole seconds, we should discard the 3 least significant digits for a proper comparison
+            final long lastModified = (file.lastModified() / 1000) * 1000;
+            if (lastModified == lastModifiedHeader) {
+                response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
+            }
+            response.setHeader(HttpHeaders.CACHE_CONTROL, "public, max-age=" + TimeUnit.HOURS.toSeconds(2));
+            response.setDateHeader(HttpHeaders.LAST_MODIFIED, lastModified);
 
-        if(StringUtils.isBlank(width) && StringUtils.isBlank(height)){
-            fetchImage(path, response);
-        }else{
-            generateImage(path, width, height, response);
+            if (StringUtils.isBlank(width) && StringUtils.isBlank(height)) {
+                fetchImage(path, response);
+            } else {
+                generateImage(path, width, height, response);
+            }
+        } catch (StorageFileNotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -65,8 +80,6 @@ public class ImageFetcher extends HttpServlet {
             response.setContentType(new Tika().detect(path));
 
             IOUtils.copy(file.getContent(), responseOutputStream);
-        }catch(StorageFileNotFoundException e){
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
