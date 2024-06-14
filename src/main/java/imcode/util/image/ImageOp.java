@@ -3,18 +3,21 @@ package imcode.util.image;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ImageOp {
-    private static final Log log = LogFactory.getLog(ImageOp.class);
+    private static final Logger log = LogManager.getLogger(ImageOp.class);
 
     private static final boolean PLATFORM_WINDOWS = System.getProperty("os.name").contains("Windows");
 
@@ -51,29 +54,34 @@ public class ImageOp {
     }
 
     public static ImageInfo getImageInfo(File file) {
+        Process process = null;
         try {
             String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
             final String[] processArgs = getIdentifyProcessArgs(ImcmsImageUtils.imageMagickPath, fileToIdentify);
-            Process process = new ProcessBuilder(processArgs).start();
+            process = new ProcessBuilder(processArgs).start();
 
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
-            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
+            ByteArrayInputStreamHandler inputHandler = new ByteArrayInputStreamHandler(process.getInputStream());
             errorHandler.start();
             inputHandler.start();
-            inputHandler.join();
 
-            return processImageInfo(inputHandler);
+            final int exitCode = process.waitFor();
+            return processImageInfo(handleResultProcess(exitCode, inputHandler, errorHandler, processArgs));
         } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
+            log.fatal("Exception while receiving image info", ex);
+        }finally {
+            if(process != null) process.destroy();
         }
         return null;
     }
 
     public static ImageInfo getImageInfo(String imageMagickPath, InputStream inputStream) {
+        Process process = null;
         try {
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(imageMagickPath, "-[0]")).start();
+            final String[] processArgs = getIdentifyProcessArgs(imageMagickPath, "-[0]");
+            process = new ProcessBuilder().start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
-            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
+            ByteArrayInputStreamHandler inputHandler = new ByteArrayInputStreamHandler(process.getInputStream());
             errorHandler.start();
             inputHandler.start();
 
@@ -85,12 +93,12 @@ public class ImageOp {
                 IOUtils.closeQuietly(output);
             }
 
-            inputHandler.join();
-
-            return processImageInfo(inputHandler);
+            final int exitCode = process.waitFor();
+            return processImageInfo(handleResultProcess(exitCode, inputHandler, errorHandler, processArgs));
         } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
+            log.fatal("Exception while receiving image info", ex);
         } finally {
+            if(process != null) process.destroy();
             IOUtils.closeQuietly(inputStream);
         }
 
@@ -115,9 +123,9 @@ public class ImageOp {
         return args;
     }
 
-    private static ImageInfo processImageInfo(StringInputStreamHandler inputHandler) {
-        if (inputHandler.getData() != null) {
-            String input = inputHandler.getData();
+    private static ImageInfo processImageInfo(byte[] inputData) {
+        if (inputData != null && inputData.length > 0) {
+            String input = new String(inputData, StandardCharsets.UTF_8);
 
             Matcher formatMatcher = FORMAT_PATTERN.matcher(input);
             Format format = null;
@@ -361,8 +369,9 @@ public class ImageOp {
     }
 
     private byte[] processToByteArray(List<String> arguments) {
+        Process process = null;
         try {
-            Process process = new ProcessBuilder(arguments).start();
+            process = new ProcessBuilder(arguments).start();
 
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             ByteArrayInputStreamHandler dataHandler = new ByteArrayInputStreamHandler(process.getInputStream());
@@ -371,18 +380,12 @@ public class ImageOp {
 
             copyData(process);
 
-            if (process.waitFor() != 0) {
-                errorHandler.join();
-                log.error(errorHandler.getData());
-            } else {
-                errorHandler.join();
-                dataHandler.join();
-
-                return dataHandler.getData();
-            }
+            final int exitCode = process.waitFor();
+            return handleResultProcess(exitCode, dataHandler, errorHandler, arguments.toArray(String[]::new));
         } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
+            log.fatal("Exception while generating image", ex);
         } finally {
+            if(process != null) process.destroy();
             IOUtils.closeQuietly(dataStream);
         }
 
@@ -400,8 +403,9 @@ public class ImageOp {
         List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
+        Process process = null;
         try {
-            Process process = new ProcessBuilder(arguments).start();
+            process = new ProcessBuilder(arguments).start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             errorHandler.start();
 
@@ -428,6 +432,7 @@ public class ImageOp {
                 }
             }
         } finally {
+            if(process != null) process.destroy();
             IOUtils.closeQuietly(dataStream);
         }
 
@@ -450,5 +455,27 @@ public class ImageOp {
                 IOUtils.closeQuietly(output);
             }
         }
+    }
+
+    private static byte[] handleResultProcess(int exitCode,
+                                              ByteArrayInputStreamHandler dataHandler,
+                                              StringInputStreamHandler errorHandler,
+                                              String[] processArgs) throws InterruptedException {
+        if (exitCode != 0) {
+            errorHandler.join();
+            log.error(String.format("Error while while executing ImageMagick command: %s, exit code: %d, message: %s",
+                    Arrays.toString(processArgs), exitCode, errorHandler.getData()));
+        } else {
+            errorHandler.join();
+            dataHandler.join();
+
+            if(StringUtils.isNotBlank(errorHandler.getData()))  //ImageMagick always returns exit code 0 (success) even if a failure occurs
+                log.error(String.format("Error while executing ImageMagick command: %s, message: %s",
+                        Arrays.toString(processArgs), errorHandler.getData()));
+
+            return dataHandler.getData();
+        }
+
+        return null;
     }
 }
