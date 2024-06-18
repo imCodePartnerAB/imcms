@@ -763,7 +763,7 @@ define(
                         .done((imageDTO) => {
                             reloadImageOnPage(imageDTO);
 
-                            if(!imageDTO.generatedFilename)
+                            if(imageDTO.path && !imageDTO.generatedFilename)
                                 modal.buildErrorWindow(texts.error.generateFailed);
                         })
                         .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
