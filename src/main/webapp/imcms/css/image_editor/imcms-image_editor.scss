@@ -59,10 +59,10 @@
 }
 
 .imcms-image_editor__right-side {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     position: relative;
     width: 26%;
-    height: 88%;
     height: -webkit-calc(100% - 110px);
     height: -moz-calc(100% - 110px);
     height: -o-calc(100% - 110px);

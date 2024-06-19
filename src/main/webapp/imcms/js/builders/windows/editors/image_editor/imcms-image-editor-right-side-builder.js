@@ -226,14 +226,10 @@ define(
                                 $advancedControls.css("display", "block");
                                 $btn.attr("data-state", "true").text(texts.simple);
                                 $imageHistoryBtn.css("display", "none");
-
-                                $(".imcms-editable-controls-area").css("height", calculateEditableControlsHeight());
                             } else {
                                 $advancedControls.css("display", "none");
                                 $btn.attr("data-state", "false").text(texts.advanced);
                                 $imageHistoryBtn.css("display", "block");
-
-                                $(".imcms-editable-controls-area").css("height", "inherit");
                             }
                         }
                     });
@@ -457,8 +453,6 @@ define(
                                 showHistory($imageHistoryContainer);
                                 $btn.attr("data-state", "true").text(texts.hideHistory);
                                 $advancedModeBtn.css("display", "none");
-
-                                $(".imcms-editable-controls-area").css("height", calculateEditableControlsHeight());
                             } else {
                                 cancelImageData = null;
                                 $cancelHistoryBtn.css("display", "none");
@@ -466,8 +460,6 @@ define(
                                 $imageHistoryContainer.css("display", "none");
                                 $btn.attr("data-state", "false").text(texts.showHistory);
                                 if(imageData.path) $advancedModeBtn.css("display", "block");
-
-                                $(".imcms-editable-controls-area").css("height", "inherit");
                             }
                         }
                     });
@@ -586,13 +578,6 @@ define(
                         {"advanced-mode": $advancedControls},
                         {"history-mode": $imageHistoryContainer}
                     ]);
-                }
-
-                function calculateEditableControlsHeight(){
-                    let infoImageHeight = $(".imcms-info-edit-image").last().innerHeight();
-                    let footerHeight = $(".imcms-image_editor__footer").last().innerHeight();
-                    let restrictedImageHeight = $(".imcms-restricted-style").last().innerHeight() | 0;
-                    return "calc(100% - " + (infoImageHeight + footerHeight + restrictedImageHeight + 1) + "px)";
                 }
 
                 function removeAndClose() {
