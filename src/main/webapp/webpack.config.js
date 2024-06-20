@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebpackOnBuildPlugin = require("on-build-webpack");
 const walkDirectoryRecursively = require("./imcms/js/components/imcms-walk-directory-recursively");
 const fs = require("fs");
-const buildDir = './../../../build/libs/exploded/imcms-6.0.0-beta21.war/dist';
+const buildDir = './../../../build/libs/exploded/imcms-6.0.0-beta22-SNAPSHOT.war/dist';
 
 module.exports = merge(baseConfig, {
     mode: 'development',
