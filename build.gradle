@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "com.imcode.imcms"
-version = "6.0.0-beta21-SNAPSHOT"
+version = "6.0.0-beta21"
 
 description = "imCMS"
 
