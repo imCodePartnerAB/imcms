@@ -76,7 +76,8 @@ define("imcms-menu-editor-builder",
             },
             $menuArea,
             isMouseDown = false,
-            isPasted = false
+            isPasted = false,
+            isChanged = false
         ;
 
         function get$menuItemsList() {
@@ -164,7 +165,7 @@ define("imcms-menu-editor-builder",
                 .toArray();
         }
 
-        function saveMenuElements(opts) {
+        function saveMenuElements(opts, onSaved) {
             const menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
                 .map(mapToMenuItem)
                 .toArray();
@@ -179,22 +180,39 @@ define("imcms-menu-editor-builder",
             menusRestApi.create(menuDTO)
                 .done(() => {
                     onMenuSaved();
-                    menuWindowBuilder.closeWindow();
+
+                    isChanged = false;
+                    if(onSaved) onSaved();
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
 
         }
 
-        function saveAndClose(opts) {
-            if (document.getElementById('saveAndCloseMenuArea').classList.contains('imcms-button--disabled-click')) {
+        function save(opts, onSaved) {
+            if (document.getElementById('saveMenuArea').classList.contains('imcms-button--disabled-click')) {
                 alert(texts.error.fixInvalidPosition);
             } else {
-                saveMenuElements(opts);
+                saveMenuElements(opts, onSaved);
+            }
+        }
+
+        function closeMenuEditor(opts) {
+            if(isChanged) {
+                modal.buildModalWindow(texts.closeSaveConfirmation, confirmed => {
+                    if (confirmed) {
+                        save(opts, () => menuWindowBuilder.closeWindow());
+                    } else {
+                        menuWindowBuilder.closeWindow();
+                    }
+                });
+            }else{
+                menuWindowBuilder.closeWindow();
             }
         }
 
         function buildHead(opts) {
-            const $head = menuWindowBuilder.buildHead(`${texts.title} - ${texts.page} ${opts.docId}, ${texts.menuTitle} ${opts.menuIndex} - ${texts.teaser} : `);
+            let title = `${texts.title} - ${texts.page} ${opts.docId}, ${texts.menuTitle} ${opts.menuIndex} - ${texts.teaser} : `;
+            const $head = menuWindowBuilder.buildHead(title, () => closeMenuEditor(opts));
             $head.find('.imcms-title').append($title);
 
             return $head;
@@ -673,11 +691,11 @@ define("imcms-menu-editor-builder",
         }
 
         function buildFooter(opts) {
-            const $saveAndClose = components.buttons.saveButton({
-                    id: 'saveAndCloseMenuArea',
-                    text: texts.saveAndClose,
+            const $save = components.buttons.saveButton({
+                    id: 'saveMenuArea',
+                    text: texts.save,
                     click: () => {
-                        saveAndClose(opts)
+                        save(opts)
                     }
                 }),
                 $dataInput = primitivesBuilder.imcmsInput({
@@ -686,7 +704,7 @@ define("imcms-menu-editor-builder",
                     change: createItem
                 });
 
-            return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
+            return WindowBuilder.buildFooter([$save, $dataInput]);
         }
 
         function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
@@ -966,6 +984,8 @@ define("imcms-menu-editor-builder",
         }
 
         function reorderMenuListBySortNumber(menuItems, menuItemId, highlight) {
+            isChanged = true;
+
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             getDeepSortedItemsBySortNumber(menuItems);
 
@@ -1163,12 +1183,12 @@ define("imcms-menu-editor-builder",
 		    function removeAndAddClassForInCorrectData($input, isAdd) {
 			    if ($input.hasClass('imcms-menu-incorrect-data-light')) {
 				    $input.removeClass('imcms-menu-incorrect-data-light');
-				    document.getElementById('saveAndCloseMenuArea').classList.remove('imcms-button--disabled-click');
+				    document.getElementById('saveMenuArea').classList.remove('imcms-button--disabled-click');
 			    }
 			    if (isAdd) {
 				    $input.addClass('imcms-menu-incorrect-data-light');
 				    alert(texts.error.invalidPosition);
-				    document.getElementById('saveAndCloseMenuArea').classList.add('imcms-button--disabled-click')
+				    document.getElementById('saveMenuArea').classList.add('imcms-button--disabled-click')
 			    }
 		    }
 
@@ -1596,6 +1616,7 @@ define("imcms-menu-editor-builder",
         }
 
         function rebuildAllMenuItemsInMenuContainer(menuItems, typeSort) {
+            isChanged = true;
             $menuElementsContainer.find('.imcms-menu-list').remove();
             let $menuItemsSortedList = buildMenuEditorContent(menuItems, typeSort);
             $menuElementsContainer.append($menuItemsSortedList);
@@ -1767,6 +1788,8 @@ define("imcms-menu-editor-builder",
             $title.text("Menu Editor");
             $menuElementsContainer.add($documentsContainer).empty();
             documentEditorBuilder.clearData();
+
+            isChanged = false;
         }
 
         const menuWindowBuilder = new WindowBuilder({
@@ -1774,7 +1797,7 @@ define("imcms-menu-editor-builder",
             loadDataStrategy: loadMenuEditorContent,
             clearDataStrategy: clearData,
             onEscKeyPressed: "close",
-            onEnterKeyPressed: saveAndClose
+            onEnterKeyPressed: save
         });
 
         let $tag;

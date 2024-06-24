@@ -437,7 +437,8 @@ const texts = {
                 version: 'Ver',
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
-                saveAndClose: "Spara och stäng",
+                save: "Spara",
+                closeSaveConfirmation: "Du har osparade ändringar i menyn. Vill du spara dessa innan du stänger menyn?",
                 sortNumberTitle: 'Sortera efter siffror',
                 visibility: {
                     name: 'Syn',
@@ -1710,7 +1711,8 @@ const texts = {
                 status: "State",
                 version: 'Ver',
                 removeConfirmation: "Do you want to remove the menu item \"",
-                saveAndClose: "Save and close",
+                save: "Save",
+                closeSaveConfirmation: "You have unsaved changes in the menu. Do you want to save them before you close the menu?",
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 sortNumberTitle: 'Sort by numbers',
                 visibility: {
@@ -2984,7 +2986,8 @@ const texts = {
                 version: 'Ver',
                 removeConfirmation: "Vil du fjerne menypunktet \"",
                 confirmFlatSortMessage: 'Hvis du bytter til en annen type, vil TreeSort gå tilbake til en flat meny! Vil du fortsette?',
-                saveAndClose: "Lagre og lukk",
+                save: "Lagre",
+                closeSaveConfirmation: "Du har ulagrede endringer i menyen. Vil du lagre dem før du lukker menyen?",
                 sortNumberTitle: 'Sorter etter tall',
                 visibility: {
                     name: 'Vis',
