@@ -1237,10 +1237,11 @@ define("imcms-menu-editor-builder",
 		    reorderMenuListBySortNumber(items, documentId, true);
 	    }
 
-	    function onInputEnterPressed(e) {
-		    if (e.which === 13)
-			    onInputBlur(e)
-	    }
+        function onInputEnterPressed(e) {
+            if (e.which === 13) {
+                e.target.blur();
+            }
+        }
 
         function setSortNumbersInMenuItems(menuElements, treeKey) {
             for (let i = 0; i < menuElements.length; i++) {
