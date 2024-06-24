@@ -47,7 +47,8 @@ define("imcms-standalone-editor-toolbar-builder",
                         } else break;
 
                         $itemContainer = $("<div>")
-                            .append(componentsBuilder.buttons.closeButton().click(onClose).css("margin-top","15px"))
+                            .append(componentsBuilder.buttons.closeButton().click(onClose)
+                                .css("top","45%").css("right","20px"))
                             .addClass("imcms-editor-toolbar-panel--close-button");
                         break;
                     case 'logo':

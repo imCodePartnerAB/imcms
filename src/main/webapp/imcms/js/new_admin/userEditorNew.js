@@ -506,7 +506,7 @@ $(function () {
     loadLanguages();
     unBlockingUser();
 
-    $('.imcms-info-head__close').click(onRedirectSuperAdminPage);
+    $('.imcms-button--close').click(onRedirectSuperAdminPage);
 
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);

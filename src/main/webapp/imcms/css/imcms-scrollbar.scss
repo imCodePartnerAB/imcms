@@ -324,6 +324,18 @@
     height: 6px;
 }
 
+.w3c-validation-result .imcms-pop-up-modal__body::-webkit-scrollbar-thumb{
+    background-color: #abacad;
+}
+.w3c-validation-result .imcms-pop-up-modal__body::-webkit-scrollbar-track{
+    background-color: transparent;
+}
+.w3c-validation-result .imcms-pop-up-modal__body::-webkit-scrollbar{
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
 @supports (-moz-appearance:none) {
     .imcms-right-side__images-container,
     .imcms-right-side,
@@ -362,7 +374,8 @@
     .import-section .list-input .list-input__meta-id-list-select,
     .alias-control-section .list-input .list-input__meta-id-list-select,
     .import-entity-references-section .import-entity-references-section__import-entity-reference-container,
-    .sections-container__edit-area {
+    .sections-container__edit-area,
+    .w3c-validation-result .imcms-pop-up-modal__body{
         scrollbar-color: #abacad transparent;
     }
 

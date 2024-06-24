@@ -168,10 +168,27 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--close {
     display: block;
-    background: url("#{$context-path}/imcms/images/window/icon_window_close.png") no-repeat center;
-    width: 15px;
-    height: 15px;
+    position: relative;
+    background: transparent;
+    width: 12px;
+    height: 12px;
     padding: 0;
+    opacity: 1;
+}
+.imcms-button--close:before,
+.imcms-button--close:after {
+    position: absolute;
+    top: 0;
+    content: ' ';
+    height: 12px;
+    width: 1px;
+    background-color: #333;
+}
+.imcms-button--close:before {
+    transform: rotate(45deg);
+}
+.imcms-button--close:after {
+    transform: rotate(-45deg);
 }
 
 .imcms-button--window-normal:hover,
