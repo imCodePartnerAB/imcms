@@ -232,8 +232,6 @@ define("imcms-menu-editor-builder",
             const $originItem = $(".imcms-menu-items--is-drag");
             const $originItemParent = $originItem.parent("[data-menu-items-lvl]");
             const $originDropItem = $(".imcms-menu-items--is-drop");
-            //save scroll position
-            const menuItemsListScrollPosition = get$menuItemsList().scrollTop();
 
             $frame.remove();
             toggleUserSelect(false);
@@ -246,7 +244,6 @@ define("imcms-menu-editor-builder",
                 $originDropItem.find(".children-triangle").first().click();
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
 	            reorderMenuListBySortNumber(getAllMenuItems());
-                get$menuItemsList().scrollTop(menuItemsListScrollPosition);
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
             }
@@ -984,6 +981,7 @@ define("imcms-menu-editor-builder",
         }
 
         function reorderMenuListBySortNumber(menuItems, menuItemId, highlight) {
+            const menuItemsListScrollPosition = get$menuItemsList().scrollTop();
             isChanged = true;
 
             const currentTypeSort = document.getElementById('type-sort').value.trim();
@@ -1005,6 +1003,8 @@ define("imcms-menu-editor-builder",
 					}, 5000);
 				}
 			}
+            //save scroll position
+            get$menuItemsList().scrollTop(menuItemsListScrollPosition);
         }
 
         function findPlaceMenuElement(menuItems, index) {
