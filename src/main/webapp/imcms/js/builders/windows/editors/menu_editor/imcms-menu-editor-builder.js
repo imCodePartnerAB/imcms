@@ -77,7 +77,7 @@ define("imcms-menu-editor-builder",
             $menuArea,
             isMouseDown = false,
             isPasted = false,
-            isChanged = false
+            isUnsaved = false
         ;
 
         function get$menuItemsList() {
@@ -165,7 +165,7 @@ define("imcms-menu-editor-builder",
                 .toArray();
         }
 
-        function saveMenuElements(opts, onSaved) {
+        function saveMenuElements(opts, onSavedCallback) {
             const menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
                 .map(mapToMenuItem)
                 .toArray();
@@ -181,23 +181,23 @@ define("imcms-menu-editor-builder",
                 .done(() => {
                     onMenuSaved();
 
-                    isChanged = false;
-                    if(onSaved) onSaved();
+                    isUnsaved = false;
+                    if(onSavedCallback) onSavedCallback();
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
 
         }
 
-        function save(opts, onSaved) {
+        function save(opts, onSavedCallback) {
             if (document.getElementById('saveMenuArea').classList.contains('imcms-button--disabled-click')) {
                 alert(texts.error.fixInvalidPosition);
             } else {
-                saveMenuElements(opts, onSaved);
+                saveMenuElements(opts, onSavedCallback);
             }
         }
 
         function closeMenuEditor(opts) {
-            if(isChanged) {
+            if(isUnsaved) {
                 modal.buildModalWindow(texts.closeSaveConfirmation, confirmed => {
                     if (confirmed) {
                         save(opts, () => menuWindowBuilder.closeWindow());
@@ -211,7 +211,7 @@ define("imcms-menu-editor-builder",
         }
 
         function buildHead(opts) {
-            let title = `${texts.title} - ${texts.page} ${opts.docId}, ${texts.menuTitle} ${opts.menuIndex} - ${texts.teaser} : `;
+            const title = `${texts.title} - ${texts.page} ${opts.docId}, ${texts.menuTitle} ${opts.menuIndex} - ${texts.teaser} : `;
             const $head = menuWindowBuilder.buildHead(title, () => closeMenuEditor(opts));
             $head.find('.imcms-title').append($title);
 
@@ -982,7 +982,7 @@ define("imcms-menu-editor-builder",
 
         function reorderMenuListBySortNumber(menuItems, menuItemId, highlight) {
             const menuItemsListScrollPosition = get$menuItemsList().scrollTop();
-            isChanged = true;
+            isUnsaved = true;
 
             const currentTypeSort = document.getElementById('type-sort').value.trim();
             getDeepSortedItemsBySortNumber(menuItems);
@@ -1617,7 +1617,7 @@ define("imcms-menu-editor-builder",
         }
 
         function rebuildAllMenuItemsInMenuContainer(menuItems, typeSort) {
-            isChanged = true;
+            isUnsaved = true;
             $menuElementsContainer.find('.imcms-menu-list').remove();
             let $menuItemsSortedList = buildMenuEditorContent(menuItems, typeSort);
             $menuElementsContainer.append($menuItemsSortedList);
@@ -1790,7 +1790,7 @@ define("imcms-menu-editor-builder",
             $menuElementsContainer.add($documentsContainer).empty();
             documentEditorBuilder.clearData();
 
-            isChanged = false;
+            isUnsaved = false;
         }
 
         const menuWindowBuilder = new WindowBuilder({

@@ -24,6 +24,7 @@ define("imcms-loop-editor-builder",
 	    const MISSING_ICON_IMAGE = "/imcms/images/icon_missing_image.png";
 
         let currentLoop;
+        let isUnsaved = false;
 
         const LOOP_ITEM_CLASS = "imcms-loop-item";
 
@@ -62,20 +63,21 @@ define("imcms-loop-editor-builder",
             return currentLoop;
         }
 
-        function onLoopSaved() {
+        function onLoopSaved(onSavedCallback) {
+            isUnsaved = false;
             reloadElement($tag, () => {
                 // TODO: It doesn't work with import in arguments
                 const editorsInit = require("imcms-editors-initializer");
                 editorsInit.initEditors();
             });
-            loopWindowBuilder.closeWindow();
+            if(onSavedCallback) onSavedCallback();
             events.trigger("imcms-version-modified");
         }
 
-        function onSaveAndCloseClicked() {
+        function onSaveClicked(onSavedCallback) {
             const loopElement = getLoopData();
             loopREST.create(loopElement)
-                .done(onLoopSaved)
+                .done(() => onLoopSaved(onSavedCallback))
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
 
@@ -104,6 +106,7 @@ define("imcms-loop-editor-builder",
 					    $(this).addClass('imcms-loop-items-list__item-dragging')
 				    },
 				    'dragend': function () {
+                        isUnsaved = true;
 					    $(this).removeClass('imcms-loop-items-list__item-dragging')
 				    },
 				    'drag': enableAutoScrollOnDrag
@@ -162,6 +165,8 @@ define("imcms-loop-editor-builder",
             }
 
             function onCreateNewClicked() {
+                isUnsaved = true;
+
                 const newLoopEntry = {
                     index: getMaxLoopItemID() + 1,
 	                image: MISSING_ICON_IMAGE,
@@ -173,7 +178,22 @@ define("imcms-loop-editor-builder",
 				enableDragging()
             }
 
-            const $head = loopWindowBuilder.buildHead(`${texts.title} - ${texts.page} ${opts.docId}, ${texts.loopTitle} ${opts.index} - ${texts.teaser} : `);
+            function closeLoopEditor() {
+                if(isUnsaved) {
+                    modal.buildModalWindow(texts.closeSaveConfirmation, confirmed => {
+                        if (confirmed) {
+                            onSaveClicked(() => loopWindowBuilder.closeWindow());
+                        } else {
+                            loopWindowBuilder.closeWindow();
+                        }
+                    });
+                }else{
+                    loopWindowBuilder.closeWindow();
+                }
+            }
+
+            const title = `${texts.title} - ${texts.page} ${opts.docId}, ${texts.loopTitle} ${opts.index} - ${texts.teaser} : `;
+            const $head = loopWindowBuilder.buildHead(title, closeLoopEditor);
             $head.find(".imcms-title").append($title);
 
             const $footer = WindowBuilder.buildFooter([
@@ -182,8 +202,8 @@ define("imcms-loop-editor-builder",
                     click: onCreateNewClicked
                 }),
                 components.buttons.saveButton({
-                    text: texts.saveAndClose,
-                    click: onSaveAndCloseClicked
+                    text: texts.save,
+                    click: onSaveClicked
                 }),
 	            components.buttons.negativeButton({
 		            text: texts.resetSorting,
@@ -232,6 +252,7 @@ define("imcms-loop-editor-builder",
 
         function buildControls() {
             const $remove = components.controls.remove(() => {
+                isUnsaved = true;
                 $remove.parents("." + LOOP_ITEM_CLASS).remove();
             });
 
@@ -262,6 +283,7 @@ define("imcms-loop-editor-builder",
             const $isEnabled = $("<div>").append(components.checkboxes.imcmsCheckbox("<div>", {
                 name: "isEnabled" + loopEntry.no,
                 checked: loopEntry.enabled ? "checked" : undefined,
+                change: () => isUnsaved = true
             }));
             $isEnabled.modifiers = modifiers.CONTROLS;
 
@@ -357,6 +379,7 @@ define("imcms-loop-editor-builder",
             events.trigger("loop editor closed");
             $title.text("Loop Editor");
             $body.empty();
+            isUnsaved = false;
         }
 
 	    function loadData(opts) {
@@ -379,7 +402,7 @@ define("imcms-loop-editor-builder",
             loadDataStrategy: loadData,
             clearDataStrategy: clearData,
             onEscKeyPressed: "close",
-            onEnterKeyPressed: onSaveAndCloseClicked
+            onEnterKeyPressed: onSaveClicked
         });
 
         let $tag;
