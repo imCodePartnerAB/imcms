@@ -33,6 +33,11 @@
     text-align: -webkit-center;
 }
 
+.imcms-keyword__keyword .imcms-button--close:after,
+.imcms-keyword__keyword .imcms-button--close:before{
+    width: 1px;
+}
+
 .imcms-keyword__keyword:last-child {
     margin-right: 0;
 }

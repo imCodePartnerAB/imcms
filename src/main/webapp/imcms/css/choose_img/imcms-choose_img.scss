@@ -129,6 +129,11 @@
     display: block;
 }
 
+.imcms-choose-img-wrap .imcms-button--close::before,
+.imcms-choose-img-wrap .imcms-button--close::after{
+    width: 1px;
+}
+
 .imcms-choose-img-description .imcms-choose-img-description__open-image,
 .imcms-choose-img-description .imcms-choose-img-description__edit-metadata {
     display: inline-block;

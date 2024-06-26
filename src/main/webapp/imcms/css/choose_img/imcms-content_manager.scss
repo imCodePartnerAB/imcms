@@ -92,7 +92,7 @@
   display: block;
   position: absolute;
   right: 7px;
-  bottom: 12px;
+  bottom: 14px;
 }
 
 .imcms-toolbar-images-tools__search.search-btn > input {
@@ -102,6 +102,11 @@
 
 .imcms-toolbar-images-tools__search > label {
 margin-bottom: 7px;
+}
+
+.imcms-toolbar-images-tools__search .imcms-button--close::before,
+.imcms-toolbar-images-tools__search .imcms-button--close::after{
+  width: 1px;
 }
 
 .imcms-toolbar-images-tools__sorting {

@@ -181,14 +181,22 @@ a[class^="imcms"].imcms-button--neutral:hover {
     top: 0;
     content: ' ';
     height: 12px;
-    width: 1px;
+    width: 2px;
     background-color: #333;
 }
 .imcms-button--close:before {
     transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
 }
 .imcms-button--close:after {
     transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
 }
 
 .imcms-button--window-normal:hover,

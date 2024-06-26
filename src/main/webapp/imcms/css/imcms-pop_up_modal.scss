@@ -91,8 +91,13 @@
     }
 }
 
-.imcms-pop-up-modal__head .imcms-buttons__button{
+.imcms-head__toolbar .imcms-buttons__button{
     margin-top: 0;
+}
+
+.imcms-head__toolbar .imcms-button--close:after,
+.imcms-head__toolbar .imcms-button--close:before{
+    width: 1px;
 }
 
 .imcms-modal-size--auto {
