@@ -370,8 +370,6 @@ define(
 		    $documentImageDataContainer.empty();
 	    };
 
-        AllDataTab.prototype.getDocLink = () => localization.documentationLink;
-
         return new AllDataTab(localization.name);
         }
     );

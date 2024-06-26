@@ -40,8 +40,8 @@ define("imcms-page-info-builder",
 
         function openDocumentationWindow(){
             const currentTabIndex = parseInt(windowPageInfoTabsBuilder.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
-            const docLink = imcms.documentationLink +
-                windowPageInfoTabsBuilder.getAllTabBuilders()[currentTabIndex].getDocLink();
+            const tabDocLink = windowPageInfoTabsBuilder.getAllTabBuilders()[currentTabIndex].getDocLink();
+            const docLink = tabDocLink ? imcms.documentationLink + tabDocLink : imcms.documentationLink;
             window.open(docLink)
         }
 

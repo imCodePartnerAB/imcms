@@ -50,8 +50,8 @@ define(
 
         function openDocumentationWindow(){
             const currentTabIndex = parseInt(superAdminTabs.getActiveTab().attr(TAB_INDEX_ATTRIBUTE));
-            const docLink = imcms.documentationLink +
-                superAdminTabs.getAllTabBuilders()[currentTabIndex].getDocLink();
+            const tabDocLink = superAdminTabs.getAllTabBuilders()[currentTabIndex].getDocLink();
+            const docLink = tabDocLink ? imcms.documentationLink + tabDocLink : imcms.documentationLink;
             window.open(docLink)
         }
 
