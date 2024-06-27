@@ -1102,7 +1102,7 @@ define("imcms-image-content-builder",
 	    }
 
 		function searchImages(sortingValue) {
-			searchQueryObj[term] =  $searchTextBox.$input.val().trim().replace(/:/g, '\\:');
+			searchQueryObj[term] =  $searchTextBox.$input.val().toLowerCase().trim().replace(/:/g, '\\:');
 
 			switch (sortingValue) {
 				case sortingValues.nameAsc: {
