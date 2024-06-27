@@ -60,6 +60,7 @@
 
 .imcms-image_editor__right-side {
     display: flex;
+    overflow-y: auto;
     flex-direction: column;
     position: relative;
     width: 26%;
