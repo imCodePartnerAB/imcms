@@ -4,11 +4,14 @@ import com.imcode.imcms.domain.dto.ImageFilePageRequestDTO;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchImageFileQueryDTO;
 import imcode.server.document.index.ImageFileIndex;
+import imcode.util.DateConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,16 +20,33 @@ public class ImageFileSearchQueryConverter {
 
 	public SolrQuery convertToSolrQuery(SearchImageFileQueryDTO searchQuery) {
 
-		final SolrQuery solrQuery = new SolrQuery(termToDefaultQuery(searchQuery.getTerm()));
+		final SolrQuery solrQuery = new SolrQuery(termToDefaultQuery(searchQuery.getTerm(), searchQuery.getFilterBy()));
 
-		prepareSolrQueryPaging(searchQuery, solrQuery);
+		prepareSolrQueryPaging(searchQuery.getPage(), solrQuery);
 
 		return solrQuery;
 	}
 
-	private String termToDefaultQuery(String term) {
+	private String termToDefaultQuery(final String term, SearchImageFileQueryDTO.FilterBy filterType) {
 		if (StringUtils.isBlank(term)) return "*:*";
 
+        switch (filterType) {
+            case BEFORE_LICENSE_PERIOD_START:
+            case BEFORE_LICENSE_PERIOD_END:
+                return String.format("%s:[* TO %s]", filterType.getIndexFieldName(), processDateTerm(term));
+            case AFTER_LICENSE_PERIOD_START:
+            case AFTER_LICENSE_PERIOD_END:
+                return String.format("%s:[%s TO *]", filterType.getIndexFieldName(), processDateTerm(term));
+            case ALL:
+                return getDefaultSearchFields().stream()
+                        .map(field -> String.format("%s:(%s)", field, processTerm(term)))
+                        .collect(Collectors.joining(" "));
+            default:
+                return String.format("%s:(%s)", filterType.getIndexFieldName(), processTerm(term));
+        }
+	}
+
+	private String processTerm(String term){
 		if (!term.startsWith("\"") && !term.endsWith("\"")) {
 			String[] splits = term.split("\\s+");
 
@@ -38,13 +58,19 @@ public class ImageFileSearchQueryConverter {
 			term = termBuilder.toString().trim();
 		}
 
-		final String finalTerm = term;
-		return getSearchFields().stream()
-				.map(field -> String.format("%s:(%s)", field, finalTerm))
-				.collect(Collectors.joining(" "));
+		return term;
 	}
 
-	private List<String> getSearchFields() {
+	private String processDateTerm(String term){
+		try {
+			final Date dateTerm = DateConstants.DATE_FORMAT.get().parse(term);
+			return DateConstants.SOLR_DATE_FORMAT.get().format(dateTerm);
+		} catch (ParseException e) {
+			return "*";
+		}
+	}
+
+	private List<String> getDefaultSearchFields() {
 		return List.of(ImageFileIndex.FIELD__ID,
 				ImageFileIndex.FIELD__NAME,
 				ImageFileIndex.FIELD__PATH,
@@ -58,9 +84,7 @@ public class ImageFileSearchQueryConverter {
 				ImageFileIndex.DESCRIPTION_TEXT);
 	}
 
-	private void prepareSolrQueryPaging(SearchImageFileQueryDTO searchQuery, SolrQuery solrQuery) {
-		PageRequestDTO page = searchQuery.getPage();
-
+	public void prepareSolrQueryPaging(PageRequestDTO page, SolrQuery solrQuery) {
 		if (page == null) {
 			page = new ImageFilePageRequestDTO();
 		}
