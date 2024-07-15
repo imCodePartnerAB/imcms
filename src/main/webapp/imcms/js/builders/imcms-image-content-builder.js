@@ -25,7 +25,8 @@ define("imcms-image-content-builder",
 
 	    let searchEnabled = false;
 		let $errorMsg;
-        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $searchTextBox, $folderSortingBtn;
+        let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $folderSortingBtn
+        let $searchBtn, $searchTextBox, $searchDateBox, $filterSelect;
 
         let viewModel = {
             root: {},
@@ -41,6 +42,19 @@ define("imcms-image-content-builder",
             dateOldFirst: 'date-old-first',
         };
 
+        const filterValues = {
+            all: 'ALL',
+            photographer: 'PHOTOGRAPHER',
+            uploadedBy: 'UPLOADED_BY',
+            copyright: 'COPYRIGHT',
+            altText: 'ALT_TEXT',
+            descriptionText: 'DESCRIPTION_TEXT',
+            beforeLicensePeriodStart: 'BEFORE_LICENSE_PERIOD_START',
+            afterLicensePeriodStart: 'AFTER_LICENSE_PERIOD_START',
+            beforeLicensePeriodEnd: 'BEFORE_LICENSE_PERIOD_END',
+            afterLicensePeriodEnd: 'AFTER_LICENSE_PERIOD_END',
+        };
+
 	    let currentDocumentNumber = 0;
 	    const defaultPageSize = 100;
 
@@ -48,6 +62,7 @@ define("imcms-image-content-builder",
 	    const sortProperty = 'page.property';
 	    const sortDirection = 'page.direction';
 	    const pageSkip = 'page.skip';
+        const filterBy = 'filterBy';
 
 	    const defaultSortPropertyValue = 'uploaded'
 	    const asc = 'ASC';
@@ -57,6 +72,7 @@ define("imcms-image-content-builder",
 		    'term': '',
 		    'page.skip': currentDocumentNumber,
 		    'page.size': defaultPageSize,
+            'filterBy': filterValues.ALL
 	    };
 
 	    const sortAscClassName = 'imcms-control--sort-asc';
@@ -503,9 +519,7 @@ define("imcms-image-content-builder",
         }
 
         function onFolderClick(folder) {
-	        if (searchEnabled){
-                $searchTextBox.$closeSearchBtn.click();
-            }
+	        if (searchEnabled) closeSearch();
 
             activeFolder = folder;
 	        selectedImageChanged = false;
@@ -1030,7 +1044,7 @@ define("imcms-image-content-builder",
         function buildSortingSelect() {
             return $sortingSelect = components.selects.imcmsSelect("<div>", {
                 text: texts.sortBy,
-	            onSelected: (sort) => searchEnabled ? searchImages(sort) : sortImagesBySortingValue(sort),
+	            onSelected: (sort) => searchEnabled ? searchImages() : sortImagesBySortingValue(sort),
             }, [{
                 text: texts.sorting.default,
                 "data-value": sortingValues.default,
@@ -1049,61 +1063,173 @@ define("imcms-image-content-builder",
             }]);
         }
 
+        function buildSearchBlock() {
+            return new BEM({
+                block: "imcms-search-image",
+                elements: {
+                    "button": buildSearchButton(),
+                    "text-box": buildSearchField(),
+                    "date-picker": buildSearchDateField(),
+                    "filter": buildSearchFilterSelect()
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildSearchButton(){
+            return $searchBtn = components.buttons.searchButton({
+                title: texts.search.searchInputText,
+                click: () => {
+                    searchEnabled = true;
+
+                    $filterSelect.selectFirst();
+
+                    $searchBtn.slideUp(() => {
+                        $filterSelect.slideDown(() => {
+                            $searchTextBox.slideDown(() => {
+                                $searchTextBox.$closeBtn.show();
+                            });
+                        })
+                    });
+
+                    searchImages();
+                }
+            });
+        }
+
 	    function buildSearchField() {
 		    $searchTextBox = components.texts.textBox('<div>', {
 			    id: 'searchText',
 			    name: 'search',
-			    value: texts.search.searchInputText,
 			    'placeholder': texts.search.searchInputPlaceholder,
 			    text: texts.search.text,
-		    }).addClass('search-btn');
-
-		    let $closeSearchBtn = components.buttons.closeButton({
-			    click: function () {
-				    searchEnabled = false;
-
-					$(this).hide();
-				    $searchTextBox.animate({width: '20%', 'min-width': '135px'}).addClass('search-btn');
-				    $searchTextBox.$input.attr('type', 'button')
-					    .val(texts.search.searchInputText);
-
-				    $imagesContainer.children().remove();
-				    $(`.${ACTIVE_FOLDER_CLASS}`).click();
-				    $errorMsg.slideUp();
-			    }
 		    }).css('display', 'none');
 
-            $searchTextBox.$closeSearchBtn = $closeSearchBtn;
+		    let $closeBtn = components.buttons.closeButton({
+			    click: closeSearch
+		    }).css('display', 'none');
 
-		    $searchTextBox.$input.attr('type', 'button');
-		    $searchTextBox.$input.on('click', function () {
-			    searchEnabled = true;
-			    const $this = $(this);
+            $searchTextBox.$closeBtn = $closeBtn;
 
-			    if ($this.attr('type') === 'input') return;
-
-			    $searchTextBox.animate({width: '35%', 'min-width': '185px'})
-				    .removeClass('search-btn');
-
-			    $this.attr({
-				    'type': 'input',
-				    'value': '',
-				    'placeholder': texts.search.searchInputPlaceholder
-			    }).removeClass('search-btn');
-
-			    $closeSearchBtn.show();
-			    searchImages();
-		    })
-
-		    $searchTextBox.append($closeSearchBtn, buildErrorBlock());
+		    $searchTextBox.append($closeBtn, buildErrorBlock());
 		    $searchTextBox.$input.on('input', searchImages);
 
 		    return $searchTextBox;
 	    }
 
-		function searchImages(sortingValue) {
-			searchQueryObj[term] =  $searchTextBox.$input.val().toLowerCase().trim().replace(/:/g, '\\:');
+        function buildSearchDateField() {
+            let $datePicker = components.dateTime.datePickerCalendar({title: texts.search.searchInputPlaceholder});
+            $datePicker.setChangeEvent(searchImages);
 
+            let $closeBtn = components.buttons.closeButton({
+                click: closeSearch
+            }).css('display', 'none');
+
+            $searchDateBox = new BEM({
+                block: "imcms-search-image-date",
+                elements: {
+                    "label": $('<label>').text(texts.search.text).addClass('imcms-label'),
+                    "field": $datePicker,
+                    "close": $closeBtn,
+                    "error": buildErrorBlock()
+                }
+            }).buildBlockStructure("<div>").css('display', 'none');
+
+            $searchDateBox.$datePicker = $datePicker;
+            $searchDateBox.$closeBtn = $closeBtn;
+
+            return $searchDateBox;
+        }
+
+        function closeSearch(){
+            let $searchField = $searchTextBox.is(":hidden") ? $searchDateBox : $searchTextBox;
+
+            searchEnabled = false;
+
+            $searchField.$closeBtn.hide();
+            $searchField.slideUp(() => {
+                $filterSelect.slideUp(() => {
+                    $searchBtn.slideDown();
+                })
+            });
+
+            $imagesContainer.children().remove();
+            $(`.${ACTIVE_FOLDER_CLASS}`).click();
+            $errorMsg.slideUp();
+        }
+
+        function buildSearchFilterSelect() {
+            return $filterSelect = components.selects.imcmsSelect("<div>", {
+                text: texts.search.filterBy,
+                onSelected: changeSearchFieldType,
+                emptySelect: false,
+            }, [{
+                text: texts.search.filter.all,
+                "data-value": filterValues.all,
+            }, {
+                text: texts.search.filter.photographer,
+                "data-value": filterValues.photographer,
+            }, {
+                text: texts.search.filter.uploadedBy,
+                "data-value": filterValues.uploadedBy,
+            }, {
+                text: texts.search.filter.copyright,
+                "data-value": filterValues.copyright,
+            }, {
+                text: texts.search.filter.altText,
+                "data-value": filterValues.altText,
+            }, {
+                text: texts.search.filter.descriptionText,
+                "data-value": filterValues.descriptionText,
+            }, {
+                text: texts.search.filter.beforeLicensePeriodStart,
+                "data-value": filterValues.beforeLicensePeriodStart,
+            }, {
+                text: texts.search.filter.afterLicensePeriodStart,
+                "data-value": filterValues.afterLicensePeriodStart,
+            }, {
+                text: texts.search.filter.beforeLicensePeriodEnd,
+                "data-value": filterValues.beforeLicensePeriodEnd,
+            }, {
+                text: texts.search.filter.afterLicensePeriodEnd,
+                "data-value": filterValues.afterLicensePeriodEnd,
+            }]).css("display", "none");
+        }
+
+        function changeSearchFieldType(value){
+            switch (value) {
+                case filterValues.beforeLicensePeriodStart:
+                case filterValues.afterLicensePeriodStart:
+                case filterValues.beforeLicensePeriodEnd:
+                case filterValues.afterLicensePeriodEnd:
+                    $searchTextBox.$closeBtn.hide();
+                    $searchTextBox.slideUp(() => {
+                        $searchDateBox.slideDown(() => {
+                            $searchDateBox.$closeBtn.show();
+                            searchImages();
+                        });
+                    });
+                    break;
+                default:
+                    $searchDateBox.$closeBtn.hide();
+                    $searchDateBox.slideUp(() => {
+                        $searchTextBox.slideDown(() => {
+                            $searchTextBox.$closeBtn.show();
+                            searchImages();
+                        });
+                    });
+            }
+        }
+
+		function searchImages() {
+            if (!$searchTextBox.is(":hidden")) {
+                searchQueryObj[term] = $searchTextBox.$input.val().toLowerCase().trim().replace(/:/g, '\\:')
+            } else {
+                searchQueryObj[term] = $searchDateBox.$datePicker.getDate();
+            }
+
+            searchQueryObj[filterBy] = $filterSelect.getSelectedValue();
+
+            const sortingValue = $sortingSelect.getSelectedValue();
 			switch (sortingValue) {
 				case sortingValues.nameAsc: {
 					searchQueryObj[sortProperty] = "name";
@@ -1244,7 +1370,7 @@ define("imcms-image-content-builder",
 
         return {
             buildSortingSelect,
-	        buildSearchField,
+            buildSearchBlock,
             getSelectedImage: () => selectedImage,
 	        isSelectedImageChanged: () => selectedImageChanged,
             loadAndBuildContent: options => {

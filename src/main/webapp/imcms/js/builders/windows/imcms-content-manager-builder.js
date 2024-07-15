@@ -51,7 +51,7 @@ define(
                 return new BEM({
                     block: 'imcms-toolbar-images-tools',
                     elements: {
-                        'search': imageContentBuilder.buildSearchField(),
+                        'search': imageContentBuilder.buildSearchBlock(),
                         'sorting': imageContentBuilder.buildSortingSelect(),
                     }
                 }).buildBlockStructure('<div>');

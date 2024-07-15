@@ -519,7 +519,20 @@ const texts = {
                 search: {
                     searchInputText: "Klicka för att aktivera",
                     searchInputPlaceholder: "Enter för att söka",
-                    text: "Sök i bildarkivet"
+                    text: "Sök i bildarkivet",
+                    filterBy: 'Filtrera efter',
+                    filter: {
+                        all: 'Alla',
+                        photographer: 'Fotograf',
+                        uploadedBy: 'Uppladdad av',
+                        copyright: 'Copyright',
+                        altText: 'Alternativ text',
+                        descriptionText: 'Beskrivningstext',
+                        beforeLicensePeriodStart: 'Licensen börjar innan',
+                        afterLicensePeriodStart: 'Licensen börjar efter',
+                        beforeLicensePeriodEnd: 'Licensen löper ut innan',
+                        afterLicensePeriodEnd: 'Licensen löper ut efter',
+                    }
                 },
                 sorting: {
                     default: 'Standard',
@@ -1794,7 +1807,20 @@ const texts = {
                 search: {
                     searchInputText:"Click to enable",
                     searchInputPlaceholder: "Type to find image",
-                    text: "Search any image"
+                    text: "Search any image",
+                    filterBy: 'Filter by',
+                    filter: {
+                        all: 'All',
+                        photographer: 'Photographer',
+                        uploadedBy: 'Uploaded by',
+                        copyright: 'Copyright',
+                        altText: 'Alternative text',
+                        descriptionText: 'Description text',
+                        beforeLicensePeriodStart: 'License starts before',
+                        afterLicensePeriodStart: 'License starts after',
+                        beforeLicensePeriodEnd: 'License expires before',
+                        afterLicensePeriodEnd: 'License expires after',
+                    }
                 },
                 sorting: {
                     default: 'Default',
@@ -3070,7 +3096,20 @@ const texts = {
                 search: {
                     searchInputText:"Klikk for å aktivere",
                     searchInputPlaceholder: "Enter for å søke",
-                    text: "Søk i bildearkivet"
+                    text: "Søk i bildearkivet",
+                    filterBy: 'Filteren op',
+                    filter: {
+                        all: 'Alle',
+                        photographer: 'Fotograf',
+                        uploadedBy: 'Lastet opp av',
+                        copyright: 'Copyright',
+                        altText: 'Alternativ tekst',
+                        descriptionText: 'Beskrivelsestekst',
+                        beforeLicensePeriodStart: 'Licentie begint voor',
+                        afterLicensePeriodStart: 'Licentie begint na',
+                        beforeLicensePeriodEnd: 'Licentie verloopt voor',
+                        afterLicensePeriodEnd: 'Licentie verloopt na',
+                    }
                 },
                 sorting: {
                     default: 'Standard',
