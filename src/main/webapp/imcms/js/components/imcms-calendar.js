@@ -30,7 +30,7 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
                 .find(".imcms-day--today")
                 .removeClass("imcms-day--today");
 
-            curDateInput.val(year + "-" + month + "-" + date);
+            curDateInput.val(year + "-" + month + "-" + date).trigger('change');
             $thisDay.addClass("imcms-day--today");
         }
     }

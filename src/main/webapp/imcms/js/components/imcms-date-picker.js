@@ -119,12 +119,19 @@ define("imcms-date-picker",
             };
         }
 
+        function bindChangeEventSetter($dateBoxContainer){
+            return (event) => {
+                $dateBoxContainer.find(".imcms-current-date__input").on('change', event);
+            };
+        }
+
         $(document).click(closeCalendar);
 
         return ($dateBoxContainer, withCalendar) => {
             $dateBoxContainer.setDate = bindDateSetter($dateBoxContainer);
             $dateBoxContainer.setCurrentDate = bindCurrentDateSetter($dateBoxContainer);
             $dateBoxContainer.getDate = bindDateGetter($dateBoxContainer);
+            $dateBoxContainer.setChangeEvent = bindChangeEventSetter($dateBoxContainer);
 
             if (!withCalendar) {
                 return $dateBoxContainer;
