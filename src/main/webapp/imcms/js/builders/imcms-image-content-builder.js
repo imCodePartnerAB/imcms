@@ -24,7 +24,6 @@ define("imcms-image-content-builder",
 	    let selectedImageChanged = false;
 
 	    let searchEnabled = false;
-		let $errorMsg;
         let $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn, $sortingSelect, $folderSortingBtn
         let $searchBtn, $searchTextBox, $searchDateBox, $filterSelect;
 
@@ -1108,10 +1107,13 @@ define("imcms-image-content-builder",
 			    click: closeSearch
 		    }).css('display', 'none');
 
-            $searchTextBox.$closeBtn = $closeBtn;
+            let $errorMsg = buildErrorBlock();
 
-		    $searchTextBox.append($closeBtn, buildErrorBlock());
+		    $searchTextBox.append($closeBtn, $errorMsg);
 		    $searchTextBox.$input.on('input', searchImages);
+
+            $searchTextBox.$closeBtn = $closeBtn;
+            $searchTextBox.$errorMsg = $errorMsg;
 
 		    return $searchTextBox;
 	    }
@@ -1124,18 +1126,21 @@ define("imcms-image-content-builder",
                 click: closeSearch
             }).css('display', 'none');
 
+            let $errorMsg = buildErrorBlock();
+
             $searchDateBox = new BEM({
                 block: "imcms-search-image-date",
                 elements: {
                     "label": $('<label>').text(texts.search.text).addClass('imcms-label'),
                     "field": $datePicker,
                     "close": $closeBtn,
-                    "error": buildErrorBlock()
+                    "error": $errorMsg
                 }
             }).buildBlockStructure("<div>").css('display', 'none');
 
             $searchDateBox.$datePicker = $datePicker;
             $searchDateBox.$closeBtn = $closeBtn;
+            $searchDateBox.$errorMsg = $errorMsg;
 
             return $searchDateBox;
         }
@@ -1154,7 +1159,7 @@ define("imcms-image-content-builder",
 
             $imagesContainer.children().remove();
             $(`.${ACTIVE_FOLDER_CLASS}`).click();
-            $errorMsg.slideUp();
+            $searchField.$errorMsg.slideUp();
         }
 
         function buildSearchFilterSelect() {
@@ -1221,9 +1226,12 @@ define("imcms-image-content-builder",
         }
 
 		function searchImages() {
+            let $searchField;
             if (!$searchTextBox.is(":hidden")) {
+                $searchField = $searchTextBox;
                 searchQueryObj[term] = $searchTextBox.$input.val().toLowerCase().trim().replace(/:/g, '\\:')
             } else {
+                $searchField = $searchDateBox;
                 searchQueryObj[term] = $searchDateBox.$datePicker.getDate();
             }
 
@@ -1261,10 +1269,10 @@ define("imcms-image-content-builder",
 					$imagesContainer.children().remove();
 
 					if (!images || (images.length === 0)) {
-						$errorMsg.slideDown();
+                        $searchField.$errorMsg.slideDown();
 						return;
 					} else {
-						$errorMsg.slideUp();
+                        $searchField.$errorMsg.slideUp();
 					}
 
 					const imageList = images.map(imageFile => buildImage(imageFile, null));
@@ -1272,15 +1280,13 @@ define("imcms-image-content-builder",
 					startImageLazyLoading({$images: imageList});
 					$imagesContainer.append(imageList);
 				})
-				.fail(() => {
-					$errorMsg.slideDown();
-				})
+				.fail(() => modal.buildErrorWindow(texts.error.searchFailed));
 		}
 
 	    function buildErrorBlock() {
-		    $errorMsg = components.texts.errorText('<div>', texts.error.searchFailed, {style: 'display: none;'});
 		    const errorMsgContainer = $('<div class="imcms-toolbar-images-tools-search__error">');
-		    errorMsgContainer.append($errorMsg);
+		    errorMsgContainer.append(components.texts.errorText('<div>', texts.search.emptyResult));
+            errorMsgContainer.css('display', 'none');
 		    return errorMsgContainer;
 	    }
 

@@ -532,7 +532,8 @@ const texts = {
                         afterLicensePeriodStart: 'Licensen börjar efter',
                         beforeLicensePeriodEnd: 'Licensen löper ut innan',
                         afterLicensePeriodEnd: 'Licensen löper ut efter',
-                    }
+                    },
+                    emptyResult: 'Inget sökresultat'
                 },
                 sorting: {
                     default: 'Standard',
@@ -547,7 +548,7 @@ const texts = {
                     addFolderFailed: 'Misslyckades med att lägga till mapp. Försök igen',
                     loadImagesFailed: 'Misslyckades med att hämta bilder. Försök igen',
                     uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen',
-                    searchFailed: "Inget sökresultat"
+                    searchFailed: "Misslyckades med att söka bilder"
                 },
             },
             image: {
@@ -1820,7 +1821,8 @@ const texts = {
                         afterLicensePeriodStart: 'License starts after',
                         beforeLicensePeriodEnd: 'License expires before',
                         afterLicensePeriodEnd: 'License expires after',
-                    }
+                    },
+                    emptyResult: 'No search result'
                 },
                 sorting: {
                     default: 'Default',
@@ -1835,7 +1837,7 @@ const texts = {
                     addFolderFailed: 'Failed to add folder. Try again',
                     loadImagesFailed: 'Failed to fetch images. Try again',
                     uploadImagesFailed: 'Failed to fetch images. Try again',
-                    searchFailed: "No search result"
+                    searchFailed: "Failed to search images"
                 },
             },
             image: {
@@ -3109,7 +3111,8 @@ const texts = {
                         afterLicensePeriodStart: 'Licentie begint na',
                         beforeLicensePeriodEnd: 'Licentie verloopt voor',
                         afterLicensePeriodEnd: 'Licentie verloopt na',
-                    }
+                    },
+                    emptyResult: "Ingen søkeresultat"
                 },
                 sorting: {
                     default: 'Standard',
@@ -3124,7 +3127,7 @@ const texts = {
                     addFolderFailed: 'Kunne ikke legge til mappe. Prøv igjen',
                     loadImagesFailed: 'Kunne ikke hente bilder. Prøv igjen',
                     uploadImagesFailed: 'Kunne ikke laste opp bilder. Prøv igjen',
-                    searchFailed: "Ingen søkeresultat"
+                    searchFailed: "Kunne ikke zoeken"
                 },
             },
             image: {
