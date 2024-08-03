@@ -3,7 +3,7 @@ Image Data Tag
 
 The *Image Data* tag represents the Alternate text and Description text.
 
-.. seealso:: Read also the :doc:`Image Attributes </user-documentation/editors/image/image-editor.html#image-attributes>` article.
+.. seealso:: Read also about :doc:`Image Attributes </user-documentation/editors/image/image-editor.html>`.
 
 .. code-block:: jsp
 
