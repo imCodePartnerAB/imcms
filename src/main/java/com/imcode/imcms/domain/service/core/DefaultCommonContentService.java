@@ -118,11 +118,6 @@ public class DefaultCommonContentService
     }
 
 	@Override
-	public Optional<CommonContent> getByAlias(String alias) {
-		return repository.findFirstByAlias(alias).map(CommonContentDTO::new);
-	}
-
-	@Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
         final Set<CommonContentJPA> toSave = saveUs.stream().map(commonContent -> {
 	        final String headline = commonContent.getHeadline();
@@ -204,25 +199,41 @@ public class DefaultCommonContentService
 
 	@Override
     public List<CommonContent> getAll() {
-        return repository.findAll()
-                .stream()
+        return repository.findAll().stream()
                 .map(CommonContentDTO::new)
                 .collect(toList());
     }
 
-	@Override
+    @Override
+    public List<CommonContent> getByAlias(String alias) {
+        return repository.findByAliasAndLatestAndWorkingVersions(alias).stream()
+                .map(CommonContentDTO::new)
+                .collect(toList());
+    }
+
+    @Override
+    public Optional<CommonContent> getPublicByAlias(String alias) {
+        return repository.findByAliasAndLatestVersion(alias).map(CommonContentDTO::new);
+    }
+
+    @Override
 	public Boolean existsByAlias(String alias) {
-		return repository.existsByAlias(alias);
+		return repository.existsByAliasAndLatestAndWorkingVersions(alias);
 	}
 
+    @Override
+    public Boolean existsPublicByAlias(String alias) {
+        return repository.existsByAliasAndLatestVersion(alias);
+    }
+
 	@Override
-	public Integer getDocIdByAlias(String alias) {
-		return repository.findDocIdByAlias(alias);
+	public Optional<Integer> getDocIdByPublicAlias(String alias) {
+		return repository.getDocIdByAliasAndLatestVersion(alias);
 	}
 
 	@Override
 	public List<String> getAllAliases() {
-		return repository.findAllAliases();
+		return repository.findAllAliasesByLatestAndWorkingVersions();
 	}
 
 	@Override
@@ -245,7 +256,9 @@ public class DefaultCommonContentService
     }
 
     private List<CommonContent> getByAliasAndMaxWorkingVersion(String alias){
-        return repository.findByAliasAndMaxWorkingVersion(alias).stream().map(CommonContentDTO::new).collect(toList());
+        return repository.findByAliasAndLatestAndWorkingVersions(alias).stream()
+                .map(CommonContentDTO::new)
+                .collect(toList());
     }
 
     private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {

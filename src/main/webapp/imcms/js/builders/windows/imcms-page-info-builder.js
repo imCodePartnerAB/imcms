@@ -77,7 +77,7 @@ define("imcms-page-info-builder",
                     const duplicateLanguageAliases = findDuplicateAliases(documentDTO, savedDoc);
                     if (duplicateLanguageAliases.length) {
                         documentDTO = savedDoc;
-                        modal.buildErrorWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
+                        modal.buildWarningWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
                     } else {
                         publishDocumentCallback ? publishDocumentCallback(savedDoc) : performOnDocumentSavedCallback();
                         pageInfoWindowBuilder.closeWindow();

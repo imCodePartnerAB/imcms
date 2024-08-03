@@ -206,11 +206,11 @@ public class ImcmsSetupFilter implements Filter {
             language = languageService.findByCode(requestedLangCode);
             writeUserLanguageCookie(response, language.getCode());
 
-        } else if (commonContentService.existsByAlias(documentIdString)) {
+        } else if (commonContentService.existsPublicByAlias(documentIdString)) {
             final DocumentMapper documentMapper = services.getDocumentMapper();
             final Integer documentId = documentMapper.toDocumentId(documentIdString);
             if (documentId != null && !documentMapper.getDefaultDocument(documentId).isDefaultLanguageAliasEnabled()) {    //don't change the user language if the document has one common alias
-                language = commonContentService.getByAlias(documentIdString).get().getLanguage();
+                language = commonContentService.getPublicByAlias(documentIdString).get().getLanguage();
                 writeUserLanguageCookie(response, language.getCode());
             }
 		}

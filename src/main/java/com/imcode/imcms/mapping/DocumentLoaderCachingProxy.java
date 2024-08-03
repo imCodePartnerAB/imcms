@@ -126,18 +126,18 @@ public class DocumentLoaderCachingProxy {
      */
     public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, () -> {
-	        Integer docId = commonContentService.getDocIdByAlias(docAlias);
+	        Optional<Integer> docId = commonContentService.getDocIdByPublicAlias(docAlias);
 
-	        if (docId != null) {
-		        Optional.ofNullable(idsToAliases.get(docId)).ifPresentOrElse(aliases -> {
+	        if (docId.isPresent()) {
+		        Optional.ofNullable(idsToAliases.get(docId.get())).ifPresentOrElse(aliases -> {
 			        aliases.add(docAlias);
-			        idsToAliases.put(docId, aliases);
+			        idsToAliases.put(docId.get(), aliases);
 		        }, () -> {
-			        idsToAliases.put(docId, new HashSet<>(List.of(docAlias)));
+			        idsToAliases.put(docId.get(), new HashSet<>(List.of(docAlias)));
 		        });
 	        }
 
-	        return docId;
+	        return docId.orElse(null);
         });
     }
 

@@ -37,8 +37,6 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
      */
     CommonContent getOrCreate(int docId, int versionNo, Language language);
 
-	Optional<CommonContent> getByAlias(String alias);
-
     <T extends CommonContent> void save(int docId, Collection<T> saveUs);
 
     Set<CommonContent> getByVersion(Version version);
@@ -47,9 +45,18 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
 
     List<CommonContent> getAll();
 
+    /**
+     * Gets list of common content by alias for working and published versions.
+     */
+    List<CommonContent> getByAlias(String alias);
+
+    Optional<CommonContent> getPublicByAlias(String alias);
+
 	Boolean existsByAlias(String alias);
 
-	Integer getDocIdByAlias(String alias);
+    Boolean existsPublicByAlias(String alias);
+
+    Optional<Integer> getDocIdByPublicAlias(String alias);
 
 	List<String> getAllAliases();
 

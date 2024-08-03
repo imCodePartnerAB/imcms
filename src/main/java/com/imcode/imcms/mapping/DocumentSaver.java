@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -339,13 +340,13 @@ public class DocumentSaver {
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
 	    String alias = document.getAlias();
 
-	    if (StringUtils.isNotBlank(alias)) {
-		    Integer documentId = commonContentService.getDocIdByAlias(alias);
-		    if (documentId != null && !documentId.equals(document.getId())) {
-			    throw new AliasAlreadyExistsInternalException(
-					    String.format("Alias %s is already in use by document %d.", alias, documentId));
-		    }
-	    }
+        if(StringUtils.isBlank(alias)) return;
+
+        List<CommonContent> existingContents = commonContentService.getByAlias(alias);
+        if(!existingContents.isEmpty() && existingContents.get(0).getDocId() != document.getId()){
+            throw new AliasAlreadyExistsInternalException(
+                    String.format("Alias %s is already in use by document %d.", alias, existingContents.get(0).getDocId()));
+        }
     }
 
     // todo: check permission

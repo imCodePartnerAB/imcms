@@ -52,7 +52,7 @@ public class CommonContentDataInitializer extends TestDataCleaner {
 
         int index = 0;
 
-        while(commonContentRepository.existsByAlias(aliasEnResult) && commonContentRepository.existsByAlias(aliasSEResult)){
+        while(commonContentRepository.existsByAliasAndLatestAndWorkingVersions(aliasEnResult) && commonContentRepository.existsByAliasAndLatestAndWorkingVersions(aliasSEResult)){
             index++;
             aliasEnResult = aliasEn + "_" + index;
             aliasSEResult = aliasSE + "_" + index;
