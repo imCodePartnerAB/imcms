@@ -7,6 +7,7 @@ Tags
     admin
     text
     image
+    image-data
     menu
     loop
     metadata

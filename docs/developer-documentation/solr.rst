@@ -36,8 +36,9 @@ But ImCMS support remote Solr server and all that is needed is put url address t
 
 	# Remote SOLr server URL
 	# Type: Http(s) URL; optional
-	# Unless specified imCMS uses embedded SOLr server.
+	# Unless specified imCMS uses embedded Solr server.
 	SolrUrl=
+	ImageFilesMetadataSolrUrl=
 
 ----------------
 Index Management

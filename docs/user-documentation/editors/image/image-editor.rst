@@ -163,6 +163,8 @@ Image Attributes
 
 .. image:: _static/editor/alt-text-example.png
 
+**Description text** - the text that can be be displayed in :doc:`Image Data tag </developer-documentation/design/tags/image-data>`.
+
 **Image link** - the link that will open in a new tab if the user clicks on the image.
 
 ********

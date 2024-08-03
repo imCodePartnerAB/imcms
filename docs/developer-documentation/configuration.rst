@@ -213,6 +213,14 @@ Document
 
 .. code-block:: properties
 
+    # What url-prefix to map document-id:s to, relative to the context path.
+    # The default "/" makes the relative path to document 1001 be "/1001".
+    # With a context path of "/imcms/", the complete path to document 1001 then becomes "/imcms/1001".
+    # !NOTE if documentPathPrefix is not default - close it with slash.
+    DocumentPathPrefix=/
+
+.. code-block:: properties
+
     # Enable/disable document versioning feature.
     # Possible values: true, false.
     document.versioning=true
@@ -385,6 +393,7 @@ Solr/index
     # Remote SOLr server URL.
     # Type: Http(s) URL.
     SolrUrl =
+    ImageFilesMetadataSolrUrl =
 
 
     # The number of minutes between scheduled indexings, default 0 means no scheduled indexings.

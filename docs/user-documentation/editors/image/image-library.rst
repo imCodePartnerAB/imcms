@@ -6,6 +6,7 @@ In this article:
     - `Choose Image`_
     - `File Management`_
     - `Custom Metadata`_
+    - `Image Search`_
 
 .. |create| image:: _static/library/icon_folder_controll_create.png
 .. |edit| image:: _static/library/ic_text_editor.png
@@ -13,8 +14,10 @@ In this article:
 
 .. |check| image:: _static/library/icon_folder_controll_reverse_check.png
 
-.. |metadata| image:: _static/library/icon_metadata.png
+.. |metadata| image:: _static/library/icon_metadata.svg
     :height: 12pt
+
+.. |search| image:: _static/library/icon_image_search.png
 
 ------------
 Introduction
@@ -72,3 +75,12 @@ Custom Metadata
 ImCMS provides the ability to edit some metadata values. To do this, you have to click |metadata|.
 
 .. image:: _static/library/metadata-editor.png
+
+------------
+Image Search
+------------
+
+ImCMS provides the ability to search for images by name, path and metadata. To do this, click |search|.
+You can also select a filter.
+
+.. image:: _static/library/image_search.png
