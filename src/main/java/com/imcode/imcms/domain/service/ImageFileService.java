@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public interface ImageFileService {
 
 	boolean exists(String imagePath);
 
-	SolrInputDocument index(String path);
+	SolrInputDocument index(String path) throws ParseException;
 
-	SolrInputDocument index(ImageFileDTO imageFile);
+	SolrInputDocument index(ImageFileDTO imageFile) throws ParseException;
 }

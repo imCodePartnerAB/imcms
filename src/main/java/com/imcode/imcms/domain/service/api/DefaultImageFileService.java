@@ -19,7 +19,6 @@ import imcode.server.document.textdocument.FileStorageImageSource;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -236,14 +236,13 @@ class DefaultImageFileService implements ImageFileService {
 	}
 
     @Override
-    public SolrInputDocument index(String path) {
+    public SolrInputDocument index(String path) throws ParseException {
         final ImageFileDTO imageFile = getImageFile(path);
         return index(imageFile);
     }
 
-    @SneakyThrows
 	@Override
-	public SolrInputDocument index(ImageFileDTO imageFile) {
+	public SolrInputDocument index(ImageFileDTO imageFile) throws ParseException {
         final SolrInputDocument solrDoc = new SolrInputDocument();
 
         final BiConsumer<String, Object> addFieldIfNotNull = (name, value) -> {
