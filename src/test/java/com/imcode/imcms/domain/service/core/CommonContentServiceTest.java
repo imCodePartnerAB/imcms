@@ -9,11 +9,14 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.function.TriFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static imcode.server.ImcmsConstants.ENG_CODE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -62,6 +66,10 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() {
         tearDown();
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
     }
 
     @AfterEach
@@ -157,7 +165,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMultiple_When_OneDocumentDoesNotExist_Expect_MapWithoutNonexistentDoc() {
+    public void getOrCreateCommonContentMultiple_When_OneDocumentDoesNotExist_Expect_MapWithoutNonexistentDoc() {
         final int numberOfExistingDocument = 3;
 
         final Map<Integer, List<CommonContent>> createdCommonContents =
@@ -482,4 +490,223 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
         assertEquals(expected.size(), actual.size());
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void getByVersionAndLanguage_When_PassWorkingVersion_Expect_WorkingCommonContent() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+
+        final Version versionWorking = versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
+        final CommonContentDTO expectedCC = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode()))
+                .findAny().map(CommonContentDTO::new).get();
+
+        assertEquals(expectedCC, commonContentService.getByVersionAndLanguage(versionWorking, expectedCC.getLanguage()).get());
+    }
+
+    @Test
+    public void getByVersionAndLanguage_When_PassLatestVersion_Expect_LatestCommonContent() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+
+        final Version version1 = versionDataInitializer.createData(1, DOC_ID);
+        final CommonContentDTO expectedCC = ccVersion1.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode()))
+                .findAny().map(CommonContentDTO::new).get();
+
+        assertEquals(expectedCC, commonContentService.getByVersionAndLanguage(version1, expectedCC.getLanguage()).get());
+    }
+
+    @Test
+    public void getByAlias_Expect_WorkingAndLatestCommonContent() {
+        final Set<CommonContentDTO> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final Version workingVersion = versionRepository.findByDocIdAndNo(DOC_ID, WORKING_VERSION_INDEX);
+        final Version version1 = versionDataInitializer.createData(1, DOC_ID);
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        commonContentService.createVersionedContent(workingVersion, version1);
+        commonContentService.createVersionedContent(workingVersion, version2);
+
+        final Set<CommonContentDTO> ccVersion2 = commonContentRepository.findByVersion(version2).stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final String aliasEng = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+
+        final Set<CommonContentDTO> expectedEngCC = new HashSet<>();
+        expectedEngCC.add(ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get());
+        expectedEngCC.add(ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get());
+
+        Set<CommonContent> resultCC = new HashSet<>(commonContentService.getByAlias(aliasEng));
+        assertEquals(expectedEngCC, resultCC);
+    }
+
+    @Test
+    public void getByAlias_When_PassRandomAlias_Expect_EmptyResult() {
+        final Set<CommonContentDTO> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final Version workingVersion = versionRepository.findByDocIdAndNo(DOC_ID, WORKING_VERSION_INDEX);
+        final Version version1 = versionDataInitializer.createData(1, DOC_ID);
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        commonContentService.createVersionedContent(workingVersion, version1);
+        commonContentService.createVersionedContent(workingVersion, version2);
+
+        String randomAlias = "random-alias";
+
+        List<CommonContent> resultCC = commonContentService.getByAlias(randomAlias);
+        assertTrue(resultCC.isEmpty());
+    }
+
+    @Test
+    public void getPublicByAlias_When_PassPublicAlias_Expect_PublicCommonContent() {
+        final Set<CommonContentDTO> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final Version workingVersion = versionRepository.findByDocIdAndNo(DOC_ID, WORKING_VERSION_INDEX);
+        final Version version1 = versionDataInitializer.createData(1, DOC_ID);
+        final Version version2 = versionDataInitializer.createData(2, DOC_ID);
+
+        commonContentService.createVersionedContent(workingVersion, version1);
+        commonContentService.createVersionedContent(workingVersion, version2);
+
+        final Set<CommonContentDTO> ccVersion2 = commonContentRepository.findByVersion(version2).stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final String aliasEng = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+
+        CommonContentDTO expectedEngCC = ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get();
+
+        CommonContent resultCC = commonContentService.getPublicByAlias(aliasEng).get();
+        assertEquals(expectedEngCC, resultCC);
+    }
+
+    @Test
+    public void getPublicByAlias_When_ThereIsNoPublicVersion_Expect_EmptyResult() {
+        final Set<CommonContentDTO> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX, true, true)
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+
+        final String aliasEng = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+
+        Optional<CommonContent> resultCC = commonContentService.getPublicByAlias(aliasEng);
+        assertTrue(resultCC.isEmpty());
+    }
+
+    @Test
+    public void existsByAlias_When_PassWorkingAlias_Expect_True() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngWorkingVersion = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        assertTrue(commonContentService.existsByAlias(aliasEngWorkingVersion));
+    }
+
+    @Test
+    public void existsByAlias_When_PassLatestAlias_Expect_True() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngLatestVersion = ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        assertTrue(commonContentService.existsByAlias(aliasEngLatestVersion));
+    }
+
+    @Test
+    public void existsByAlias_When_PassNotWorkingLatestAlias_Expect_False() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngNotLatestVersion = ccVersion1.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        assertFalse(commonContentService.existsByAlias(aliasEngNotLatestVersion));
+    }
+
+    @Test
+    public void existsPublicByAlias_When_PassLatestAlias_Expect_True() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngLatestVersion = ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        assertTrue(commonContentService.existsPublicByAlias(aliasEngLatestVersion));
+    }
+
+    @Test
+    public void existsPublicByAlias_When_PassWorkingAlias_Expect_False() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngWorkingVersion = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        assertFalse(commonContentService.existsPublicByAlias(aliasEngWorkingVersion));
+    }
+
+    @Test
+    public void getDocIdByPublicAlias_Expect_DocIdLatestVersion() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngWorkingVersion = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        final String aliasEngNotLatestVersion = ccVersion1.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        final String aliasEngLatestVersion = ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+
+        assertTrue(commonContentService.getDocIdByPublicAlias(aliasEngWorkingVersion).isEmpty());
+        assertTrue(commonContentService.getDocIdByPublicAlias(aliasEngNotLatestVersion).isEmpty());
+        assertEquals(DOC_ID, commonContentService.getDocIdByPublicAlias(aliasEngLatestVersion).get());
+    }
+
+    @Test
+    public void getAllAliases_Expect_ListOfWorkingAndLatestAliases() {
+        final List<CommonContent> ccWorking = commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX,
+                true, true);
+        final List<CommonContent> ccVersion1 = commonContentDataInitializer.createData(DOC_ID, 1,
+                true, true);
+        final List<CommonContent> ccVersion2 = commonContentDataInitializer.createData(DOC_ID, 2,
+                true, true);
+
+        final String aliasEngWorkingVersion = ccWorking.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        final String aliasEngNotLatestVersion = ccVersion1.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+        final String aliasEngLatestVersion = ccVersion2.stream().filter(cc -> ENG_CODE.equals(cc.getLanguage().getCode())).findAny().get().getAlias();
+
+        final List<String> allAliases = commonContentService.getAllAliases();
+
+        assertTrue(allAliases.contains(aliasEngWorkingVersion));
+        assertFalse(allAliases.contains(aliasEngNotLatestVersion));
+        assertTrue(allAliases.contains(aliasEngLatestVersion));
+    }
+
 }
