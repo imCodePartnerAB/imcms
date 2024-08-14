@@ -70,6 +70,7 @@ import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -692,6 +693,16 @@ public class Utility {
         if(date == null) return null;
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
+
+	public static LocalDate convertDateToLocalDate(Date date){
+		if(date == null) return null;
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
+	public static Date convertLocalDateToDate(LocalDate localDate){
+		if(localDate == null) return null;
+		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	}
 
 	/**
 	 * @return mapped langCode from Cookie to Language, if cookie not available get default language

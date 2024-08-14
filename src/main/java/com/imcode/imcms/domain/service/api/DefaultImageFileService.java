@@ -267,8 +267,10 @@ class DefaultImageFileService implements ImageFileService {
         addFieldIfNotNull.accept(ImageFileIndex.FIELD__PHOTOGRAPHER, customExif.getPhotographer());
         addFieldIfNotNull.accept(ImageFileIndex.FIELD__UPLOADED_BY, customExif.getUploadedBy());
         addFieldIfNotNull.accept(ImageFileIndex.FIELD__COPYRIGHT, customExif.getCopyright());
-        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_START, customExif.getLicensePeriodStart());
-        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_END, customExif.getLicensePeriodEnd());
+        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_START,
+                Utility.convertLocalDateToDate(customExif.getLicensePeriodStart()));
+        addFieldIfNotNull.accept(ImageFileIndex.LICENSE_PERIOD_END,
+                Utility.convertLocalDateToDate(customExif.getLicensePeriodEnd()));
         addFieldIfNotNull.accept(ImageFileIndex.ALT_TEXT, customExif.getAlternateText());
         addFieldIfNotNull.accept(ImageFileIndex.DESCRIPTION_TEXT, customExif.getDescriptionText());
 

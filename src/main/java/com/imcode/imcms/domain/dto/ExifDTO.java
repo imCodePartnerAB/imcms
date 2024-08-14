@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -36,14 +36,14 @@ public class ExifDTO {
         private String uploadedBy;
         private String copyright;
         @JsonFormat(pattern = DateConstants.DATE_FORMAT_STRING)
-        private Date licensePeriodStart;
+        private LocalDate licensePeriodStart;
         @JsonFormat(pattern = DateConstants.DATE_FORMAT_STRING)
-        private Date licensePeriodEnd;
+        private LocalDate licensePeriodEnd;
         private String alternateText;
         private String descriptionText;
 
         public static String mapToString(CustomExifDTO customExif){
-            SimpleDateFormat formatter = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateConstants.DATE_FORMAT_STRING);
 
             List<String> keyValuePairs = new ArrayList<>();
             if(StringUtils.isNotBlank(customExif.getPhotographer()))
@@ -53,9 +53,9 @@ public class ExifDTO {
             if(StringUtils.isNotBlank(customExif.getUploadedBy()))
                 keyValuePairs.add(Key.UPLOADED_BY.name() + "/=" + customExif.getUploadedBy());
             if(customExif.getLicensePeriodStart() != null)
-                keyValuePairs.add(Key.LICENSE_PERIOD_START.name() + "/=" + formatter.format(customExif.getLicensePeriodStart()));
+                keyValuePairs.add(Key.LICENSE_PERIOD_START.name() + "/=" + customExif.getLicensePeriodStart().format(formatter));
             if(customExif.getLicensePeriodEnd() != null)
-                keyValuePairs.add(Key.LICENSE_PERIOD_END.name() + "/=" + formatter.format(customExif.getLicensePeriodEnd()));
+                keyValuePairs.add(Key.LICENSE_PERIOD_END.name() + "/=" + customExif.getLicensePeriodEnd().format(formatter));
             if (customExif.getAlternateText()!=null)
                 keyValuePairs.add(Key.ALT_TEXT.name()+"/="+customExif.getAlternateText());
 	        if (customExif.getDescriptionText()!=null)
@@ -64,10 +64,10 @@ public class ExifDTO {
             return String.join("/;", keyValuePairs);
         }
 
-        public static CustomExifDTO mapToCustomExif(String string) throws ParseException, IllegalArgumentException {
+        public static CustomExifDTO mapToCustomExif(String string) throws DateTimeParseException, IllegalArgumentException {
             CustomExifDTO customExif = new CustomExifDTO();
 
-            SimpleDateFormat formatter = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateConstants.DATE_FORMAT_STRING);
 
             final String[] keyValuePairs = string.split("/;");
             for (String keyValuePair: keyValuePairs){
@@ -82,8 +82,8 @@ public class ExifDTO {
                     case PHOTOGRAPHER -> customExif.setPhotographer(value);
                     case COPYRIGHT -> customExif.setCopyright(value);
                     case UPLOADED_BY -> customExif.setUploadedBy(value);
-                    case LICENSE_PERIOD_START -> customExif.setLicensePeriodStart(formatter.parse(value));
-                    case LICENSE_PERIOD_END -> customExif.setLicensePeriodEnd(formatter.parse(value));
+                    case LICENSE_PERIOD_START -> customExif.setLicensePeriodStart(LocalDate.parse(value, formatter));
+                    case LICENSE_PERIOD_END -> customExif.setLicensePeriodEnd(LocalDate.parse(value, formatter));
 	                case ALT_TEXT -> customExif.setAlternateText(value);
 	                case DESCRIPTION_TEXT -> customExif.setDescriptionText(value);
 				}

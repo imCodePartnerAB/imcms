@@ -1,8 +1,10 @@
 package imcode.server.document.index;
 
 import com.imcode.imcms.domain.dto.ExifDTO;
+import imcode.util.Utility;
 import org.apache.solr.common.SolrDocument;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,12 +58,16 @@ public class ImageFileStoredFields {
 		return (String) solrDocument.getFieldValue(ImageFileIndex.FIELD__COPYRIGHT);
 	}
 
-	public Date licensePeriodStart() {
-		return (Date) solrDocument.getFieldValue(ImageFileIndex.LICENSE_PERIOD_START);
+	public LocalDate licensePeriodStart() {
+		return Utility.convertDateToLocalDate(
+				(Date) solrDocument.getFieldValue(ImageFileIndex.LICENSE_PERIOD_START)
+		);
 	}
 
-	public Date licensePeriodEnd() {
-		return (Date) solrDocument.getFieldValue(ImageFileIndex.LICENSE_PERIOD_END);
+	public LocalDate licensePeriodEnd() {
+		return Utility.convertDateToLocalDate(
+				(Date) solrDocument.getFieldValue(ImageFileIndex.LICENSE_PERIOD_END)
+		);
 	}
 
 	public String altText() {
