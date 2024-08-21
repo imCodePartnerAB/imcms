@@ -72,7 +72,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     @Override
     public void setAsWorkingVersion(int docId, int versionNo){
         defaultDelegatingByTypeDocumentService.setAsWorkingVersion(docId, versionNo);
-        defaultDelegatingByTypeDocumentService.index(docId);
+        invalidateDocument(docId);
     }
 
     @Override
