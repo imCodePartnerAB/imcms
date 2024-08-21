@@ -844,7 +844,7 @@ define("imcms-image-content-builder",
             }
             imageFile.src = dataSrc;
 
-	        return new BEM({
+	        let $image = new BEM({
                 block: "imcms-choose-img-wrap",
                 elements: {
                     "img": $("<img>", {
@@ -868,6 +868,10 @@ define("imcms-image-content-builder",
                 'drag': function (event) {
                 }
             });
+
+            $image.imgSize = imageFile.size;
+
+            return $image;
         }
 
         function buildImageImmediately(imageFile, folder) {
@@ -915,19 +919,24 @@ define("imcms-image-content-builder",
 			let numberOfUnloaded = folder.$images.length;
 			let loadedImages = [];
 
-            folder.$images.forEach($imageContainer => {
-                $imageContainer.css("display", "block");
+            // sort so that smaller files are loaded first
+            debugger;
+            folder.$images.slice()
+                .sort((file1 , file2) =>
+                    convertFormattedSizeToBytes(file1.imgSize) - convertFormattedSizeToBytes(file2.imgSize))
+                .forEach($imageContainer => {
+                    $imageContainer.css("display", "block");
 
-                let $img = $imageContainer.find('img');
-                //Preload
-                let newImg = new Image;
-                newImg.onload = function () {
-                    loadedImages.unshift($img);
+                    let $img = $imageContainer.find('img');
+                    //Preload
+                    let newImg = new Image;
+                    newImg.onload = function () {
+                        loadedImages.unshift($img);
 
-                    numberOfUnloaded -= 1;
-                }
-                newImg.src = $img.data("src");
-            });
+                        numberOfUnloaded -= 1;
+                    }
+                    newImg.src = $img.data("src");
+                });
 
             let setImage = function (){
                 if(numberOfUnloaded || loadedImages.length){
