@@ -38,9 +38,7 @@ class DocumentController {
                        @Value("#{'${DeleteProtectedMetaIds}'.split(',')}") List<Integer> deleteProtectedMetaIds) {
         this.documentService = documentService;
 	    this.documentMapper = documentMapper;
-        this.deleteProtectedMetaIds = deleteProtectedMetaIds/*.stream()
-                .map(id -> Integer.parseInt(id.trim()))
-                .collect(Collectors.toList())*/;
+        this.deleteProtectedMetaIds = deleteProtectedMetaIds;
     }
 
     @GetMapping

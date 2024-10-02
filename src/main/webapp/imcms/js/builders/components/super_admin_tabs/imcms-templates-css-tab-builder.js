@@ -189,7 +189,6 @@ define(
 		function onSaveButtonClick() {
 			const templateName = tab.$templatesSelect.getSelectedValue()
 			const css = tab.$templateCSSEditArea.val();
-			console.log(css)
 			switchLoadingAnimation(tab.$templateCSSEditArea, tab.$loadingAnimationWrapEditArea, true);
 			templatesCSSRestApi.replace(templateName, css ? css : " ")
 				.done(() => {
