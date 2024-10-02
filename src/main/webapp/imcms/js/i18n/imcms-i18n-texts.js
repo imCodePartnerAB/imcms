@@ -279,7 +279,8 @@ const texts = {
             },
             error: {
 	            createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
-	            loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
+                uploadDocumentFiles: 'Misslyckades med att ladda upp filer',
+                loadDocumentFailed: 'Misslyckades att ladda. Kanske har du inte tillgång',
 	            duplicateAlias: 'Dokumentet innehåller dubblettalias i: %s språk',
 	            noAccess: "Ingen tillgång till sidinformation"
             },
@@ -1568,6 +1569,7 @@ const texts = {
             },
             error: {
 	            createDocumentFailed: 'Failed to save document. Try again',
+                uploadDocumentFiles: 'Failed to upload files',
 	            loadDocumentFailed: 'Failed to load. Maybe you do not have access',
 	            duplicateAlias: 'The document contains duplicate alias in: %s languages',
 	            loadRolesFailed: "Failed to fetch roles",
@@ -2858,6 +2860,7 @@ const texts = {
             },
             error: {
                 createDocumentFailed: 'Kunne ikke lagre dokumentet. Prøv igjen',
+                uploadDocumentFiles: 'Kunne ikke laste opp filer',
                 loadDocumentFailed: 'Kunne ikke laste. Prøv igjen',
                 duplicateAlias: 'Dokumentet inneholder duplikatalias på: %s språk',
                 loadRolesFailed: "Kunne ikke hente roller",

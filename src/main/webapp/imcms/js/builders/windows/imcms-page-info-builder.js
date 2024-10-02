@@ -59,29 +59,39 @@ define("imcms-page-info-builder",
             $loadingAnimation.show();
             saveDoc(documentDTO)
                 .done((savedDoc) => {
-                    $loadingAnimation.hide();
 
+                    let deferred;
                     if (documentDTO.newFiles) {
                         // files saved separately because of different content types and in file-doc case
                         documentDTO.newFiles.append("docId", savedDoc.id);
-	                    docFilesAjaxApi.postFiles(documentDTO.newFiles);
+                        deferred = docFilesAjaxApi.postFiles(documentDTO.newFiles);
+                    }else{
+                        deferred = $.Deferred(function() {
+                            this.resolve();
+                        }).promise();
                     }
 
-	                if (documentDTO.id === imcms.document.id) {
-                        if (savedDoc.currentVersion.id === WORKING_VERSION) events.trigger("imcms-version-modified");
+                    deferred.done(() => {
+                        $loadingAnimation.hide();
 
-	                } else {
-		                documentDTO.id = savedDoc.id;
-	                }
+                        if (documentDTO.id === imcms.document.id) {
+                            if (savedDoc.currentVersion.id === WORKING_VERSION) events.trigger("imcms-version-modified");
+                        } else {
+                            documentDTO.id = savedDoc.id;
+                        }
 
-                    const duplicateLanguageAliases = findDuplicateAliases(documentDTO, savedDoc);
-                    if (duplicateLanguageAliases.length) {
-                        documentDTO = savedDoc;
-                        modal.buildWarningWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
-                    } else {
-                        publishDocumentCallback ? publishDocumentCallback(savedDoc) : performOnDocumentSavedCallback();
-                        pageInfoWindowBuilder.closeWindow();
-                    }
+                        const duplicateLanguageAliases = findDuplicateAliases(documentDTO, savedDoc);
+                        if (duplicateLanguageAliases.length) {
+                            documentDTO = savedDoc;
+                            modal.buildWarningWindow(texts.error.duplicateAlias.replace('%s', formatters.arrayOfStringsToFormattedString(duplicateLanguageAliases)));
+                        } else {
+                            publishDocumentCallback ? publishDocumentCallback(savedDoc) : performOnDocumentSavedCallback();
+                            pageInfoWindowBuilder.closeWindow();
+                        }
+                    }).fail(() => {
+                        modal.buildErrorWindow(texts.error.uploadDocumentFiles);
+                        $loadingAnimation.hide();
+                    });
                 })
 	            .fail(() => {
 		            modal.buildErrorWindow(texts.error.createDocumentFailed)
@@ -184,6 +194,7 @@ define("imcms-page-info-builder",
             });
 
             $nextBtn = components.buttons.positiveButton({
+                id: 'next-btn',
                 text: texts.buttons.next + ' \u2b95',
                 click: moveToNextTabOrEnableOthersAndReplaceButton([$saveBtn, $saveAndPublishBtn]),
                 style: 'display: none',
@@ -237,7 +248,8 @@ define("imcms-page-info-builder",
         function toggleButtonVisibility() {
             const isAnyVersionFieldChanged= isAnyVersionedFieldChanged();
 
-            isAnyVersionFieldChanged ? $saveAndPublishBtn.slideDown() : $saveAndPublishBtn.slideUp();
+            isAnyVersionFieldChanged && $nextBtn.is(":hidden") ?
+                $saveAndPublishBtn.slideDown() : $saveAndPublishBtn.slideUp();
         }
 
         function isAnyVersionedFieldChanged (){

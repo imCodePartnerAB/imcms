@@ -74,8 +74,8 @@ define("imcms-file-tab-builder",
                 }
             });
 
-            $delete.click(()=>{
-                $("#save-and-publish-btn").slideDown();
+            $delete.click(()=> {
+                showSaveAndPublish();
             })
 
             return ($row = new BEM({
@@ -143,6 +143,10 @@ define("imcms-file-tab-builder",
                 });
         }
 
+        function showSaveAndPublish(){
+            if($("#next-btn").is(":hidden")) $("#save-and-publish-btn").slideDown();
+        }
+
         let tabData = {
             versionedFields: []
         };
@@ -178,6 +182,7 @@ define("imcms-file-tab-builder",
                         fileInputChanged = false;
                     } else {
                         fileInputChanged = true;
+                        showSaveAndPublish();
                     }
 
                     appendFiles(transformFilesToDTO(filesToBuild));
