@@ -1,16 +1,13 @@
-.imcms-right-side__images-container::-webkit-scrollbar-track,
 .imcms-right-side::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
-.imcms-right-side__images-container::-webkit-scrollbar,
 .imcms-right-side::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
 	height: 6px;
 }
 
-.imcms-right-side__images-container::-webkit-scrollbar-thumb,
 .imcms-right-side::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
@@ -61,11 +58,23 @@
     background-color: #abacad;
 }
 
-.imcms-content-manager__left-side::-webkit-scrollbar-thumb {
-    background-color: #6c7383;
+.imcms-right-side__images-container::-webkit-scrollbar-track,
+.imcms-content-manager__left-side::-webkit-scrollbar-track{
+    background-color: transparent;
 }
 
-.imcms-drop-down-list__items::-webkit-scrollbar-track
+.imcms-right-side__images-container::-webkit-scrollbar,
+.imcms-content-manager__left-side::-webkit-scrollbar{
+    background-color: transparent;
+    width: 8px;
+}
+
+.imcms-right-side__images-container::-webkit-scrollbar-thumb,
+.imcms-content-manager__left-side::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
+
+.imcms-drop-down-list__items::-webkit-scrollbar-track,
 .imcms-text-area__input::-webkit-scrollbar-track {
     background-color: transparent;
     -webkit-border-radius: 5px;
