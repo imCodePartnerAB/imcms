@@ -306,17 +306,17 @@ class MappingConfig {
 
 	        final AuditDTO archivationDto = documentDTO.getArchived();
 	        final Date archivationDate = archivationDto.getFormattedDate();
-	        meta.setArchiverId(archivationDate == null ? null : currentUserId);
+	        meta.setArchiverId(archivationDate == null ? null : archivationDto.getId());
 	        meta.setArchivedDatetime(archivationDate);
 
 	        final AuditDTO publicationDto = documentDTO.getPublished();
 	        final Date publicationDate = publicationDto.getFormattedDate();
-	        meta.setPublisherId(publicationDate == null ? null : currentUserId);
+	        meta.setPublisherId(publicationDate == null ? null : publicationDto.getId());
 	        meta.setPublicationStartDatetime(publicationDate);
 
 	        final AuditDTO publicationEndDto = documentDTO.getPublicationEnd();
 	        final Date publicationEndDate = publicationEndDto.getFormattedDate();
-	        meta.setDepublisherId(publicationEndDate == null ? null : currentUserId);
+	        meta.setDepublisherId(publicationEndDate == null ? null : publicationEndDto.getId());
 	        meta.setPublicationEndDatetime(publicationEndDate);
 
 	        meta.setProperties(documentDTO.getProperties());

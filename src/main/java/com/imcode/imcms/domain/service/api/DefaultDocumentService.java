@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
+import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
@@ -144,11 +145,16 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     public DocumentDTO save(DocumentDTO saveMe) {
 	    final boolean isNew = (saveMe.getId() == null);
 
+        if(!isNew){
+            metaRepository.findById(saveMe.getId()).ifPresent(existentMeta -> {
+                saveMe.setDocumentWasteBasket(existentMeta.getDocumentWasteBasket());
+                updateArchiverAndDepublisherIfNecessary(saveMe, existentMeta);
+            });
+        }
+
         final Map<Integer, Meta.Permission> roleIdToPermission = saveMe.getRoleIdToPermission();
         roleIdToPermission.remove(Roles.USER.getId());
         saveMe.setRoleIdToPermission(roleIdToPermission);
-
-        saveMe.setDocumentWasteBasket(metaRepository.findWasteBasket(saveMe.getId()));
 
 	    final Meta meta = documentSaver.apply(saveMe);
         final Integer docId = meta.getId();
@@ -165,6 +171,26 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
 	    return get(docId);
+    }
+
+    private void updateArchiverAndDepublisherIfNecessary(DocumentDTO saveMe, Meta meta){
+        if(Objects.equals(meta.getArchivedDatetime(), saveMe.getArchived().getFormattedDate())){
+            saveMe.getArchived().setId(meta.getArchiverId());
+        }else{
+            saveMe.getArchived().setId(Imcms.getUser().getId());
+        }
+
+        if(Objects.equals(meta.getPublicationEndDatetime(), saveMe.getPublicationEnd().getFormattedDate())){
+            saveMe.getPublicationEnd().setId(meta.getDepublisherId());
+        }else{
+            saveMe.getPublicationEnd().setId(Imcms.getUser().getId());
+        }
+
+        if(Objects.equals(meta.getPublicationStartDatetime(), saveMe.getPublished().getFormattedDate())){
+            saveMe.getPublished().setId(meta.getPublisherId());
+        }else{
+            saveMe.getPublished().setId(Imcms.getUser().getId());
+        }
     }
 
     private AuditDTO auditData(Date date, UserDomainObject currentUser) {

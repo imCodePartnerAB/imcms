@@ -22,6 +22,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 @Transactional
@@ -447,9 +449,203 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         documentService.save(documentDTO);
         savedDocumentDTO = documentService.get(createdDoc.getId());
 
-        assertEquals(emptyArchivedAudit, savedDocumentDTO.getArchived());
-        assertEquals(emptyPublishedAudit, savedDocumentDTO.getPublished());
-        assertEquals(emptyDepublishedAudit, savedDocumentDTO.getPublicationEnd());
+        assertEquals(new AuditDTO(), savedDocumentDTO.getArchived());
+        assertEquals(new AuditDTO(), savedDocumentDTO.getPublished());
+        assertEquals(new AuditDTO(), savedDocumentDTO.getPublicationEnd());
+    }
+
+    @Test
+    public void save_When_ModifiedSet_Expect_ModifiedSavedAsSet() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final AuditDTO modifiedAudit = new AuditDTO();
+        modifiedAudit.setDateTime(new Date());
+        documentDTO.setModified(modifiedAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(Imcms.getUser().getId(), savedDocumentDTO.getModified().getId());
+        assertEquals(modifiedAudit.getFormattedDate(), savedDocumentDTO.getModified().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_ModifiedSetAsEmpty_Expect_ModifiedSetAsCurrentDate() {
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        documentDTO.setModified(new AuditDTO());
+        assertNotEquals(currentUser.getId(), documentDTO.getModified().getId());
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(Imcms.getUser().getId(), savedDocumentDTO.getModified().getId());
+        assertNotNull(savedDocumentDTO.getModified().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_ArchivedHasNotChanged_Expect_ArchiverIdSetAsBefore() {
+        final int previousArchiverId = 1;
+
+        final AuditDTO archivedAudit = new AuditDTO();
+        archivedAudit.setDateTime(new Date());
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setArchiverId(previousArchiverId);
+        meta.setArchivedDatetime(archivedAudit.getFormattedDate());
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        documentDTO.setArchived(archivedAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertNotEquals(currentUser.getId(), savedDocumentDTO.getArchived().getId());
+        assertEquals(previousArchiverId, savedDocumentDTO.getArchived().getId());
+        assertEquals(archivedAudit.getFormattedDate(), savedDocumentDTO.getArchived().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_ArchivedHasNewDate_Expect_ArchiverIdSetAsCurrentUser() {
+        final int previousArchiverId = 1;
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setArchiverId(previousArchiverId);
+        meta.setArchivedDatetime(new Date());
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final AuditDTO archivedAudit = new AuditDTO();
+        archivedAudit.setDateTime(DateUtils.addHours(new Date(), -1));
+        documentDTO.setArchived(archivedAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(currentUser.getId(), savedDocumentDTO.getArchived().getId());
+        assertEquals(archivedAudit.getFormattedDate(), savedDocumentDTO.getArchived().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_PublicationEndHasNotChanged_Expect_DepublisherIdSetAsBefore() {
+        final int previousDepublisherId = 1;
+
+        final AuditDTO publishedEndAudit = new AuditDTO();
+        publishedEndAudit.setDateTime(new Date());
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setDepublisherId(previousDepublisherId);
+        meta.setPublicationEndDatetime(publishedEndAudit.getFormattedDate());
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        documentDTO.setPublicationEnd(publishedEndAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertNotEquals(currentUser.getId(), savedDocumentDTO.getPublicationEnd().getId());
+        assertEquals(previousDepublisherId, savedDocumentDTO.getPublicationEnd().getId());
+        assertEquals(publishedEndAudit.getFormattedDate(), savedDocumentDTO.getPublicationEnd().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_PublicationEndHasNewDate_Expect_DepublisherIdSetAsCurrentUser() {
+        final int previousDepublisherId = 1;
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setArchiverId(previousDepublisherId);
+        meta.setPublicationEndDatetime(DateUtils.addHours(new Date(), -1));
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final AuditDTO publicationEndAudit = new AuditDTO();
+        publicationEndAudit.setDateTime(DateUtils.addHours(new Date(), -3));
+        documentDTO.setPublicationEnd(publicationEndAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(currentUser.getId(), savedDocumentDTO.getPublicationEnd().getId());
+        assertEquals(publicationEndAudit.getFormattedDate(), savedDocumentDTO.getPublicationEnd().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_PublicationStartHasNotChanged_Expect_PublisherIdSetAsBefore() {
+        final int previousPublisherId = 1;
+
+        final AuditDTO publishedAudit = new AuditDTO();
+        publishedAudit.setDateTime(new Date());
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setPublisherId(previousPublisherId);
+        meta.setPublicationStartDatetime(publishedAudit.getFormattedDate());
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        documentDTO.setPublished(publishedAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertNotEquals(currentUser.getId(), savedDocumentDTO.getPublished().getId());
+        assertEquals(previousPublisherId, savedDocumentDTO.getPublished().getId());
+        assertEquals(publishedAudit.getFormattedDate(), savedDocumentDTO.getPublished().getFormattedDate());
+    }
+
+    @Test
+    public void save_When_PublicationStartHasNewDate_Expect_PublisherIdSetAsCurrentUser() {
+        final int previousPublisherId = 1;
+
+        final Meta meta = metaRepository.findById(createdDoc.getId()).get();
+        meta.setArchiverId(previousPublisherId);
+        meta.setPublicationStartDatetime(DateUtils.addHours(new Date(), -1));
+        metaRepository.saveAndFlush(meta);
+
+        final User currentUser = userDataInitializer.createData("currentUser");
+        final UserDomainObject currentUserDomainObject = new UserDomainObject(currentUser);
+        Imcms.setUser(currentUserDomainObject);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final AuditDTO publishedAudit = new AuditDTO();
+        publishedAudit.setDateTime(DateUtils.addHours(new Date(), -3));
+        documentDTO.setPublished(publishedAudit);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(currentUser.getId(), savedDocumentDTO.getPublished().getId());
+        assertEquals(publishedAudit.getFormattedDate(), savedDocumentDTO.getPublished().getFormattedDate());
     }
 
     @Test
