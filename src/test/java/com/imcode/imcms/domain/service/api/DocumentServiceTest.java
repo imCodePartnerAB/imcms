@@ -489,13 +489,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void save_When_ArchivedHasNotChanged_Expect_ArchiverIdSetAsBefore() {
         final int previousArchiverId = 1;
+        final Date archivedDate = new Date();
 
         final AuditDTO archivedAudit = new AuditDTO();
-        archivedAudit.setDateTime(new Date());
+        archivedAudit.setDateTime(archivedDate);
 
         final Meta meta = metaRepository.findById(createdDoc.getId()).get();
         meta.setArchiverId(previousArchiverId);
-        meta.setArchivedDatetime(archivedAudit.getFormattedDate());
+        meta.setArchivedDatetime(archivedDate);
         metaRepository.saveAndFlush(meta);
 
         final User currentUser = userDataInitializer.createData("currentUser");
@@ -543,13 +544,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void save_When_PublicationEndHasNotChanged_Expect_DepublisherIdSetAsBefore() {
         final int previousDepublisherId = 1;
+        final Date publishedEndDate = new Date();
 
         final AuditDTO publishedEndAudit = new AuditDTO();
-        publishedEndAudit.setDateTime(new Date());
+        publishedEndAudit.setDateTime(publishedEndDate);
 
         final Meta meta = metaRepository.findById(createdDoc.getId()).get();
         meta.setDepublisherId(previousDepublisherId);
-        meta.setPublicationEndDatetime(publishedEndAudit.getFormattedDate());
+        meta.setPublicationEndDatetime(publishedEndDate);
         metaRepository.saveAndFlush(meta);
 
         final User currentUser = userDataInitializer.createData("currentUser");
@@ -597,13 +599,14 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Test
     public void save_When_PublicationStartHasNotChanged_Expect_PublisherIdSetAsBefore() {
         final int previousPublisherId = 1;
+        final Date publishedDate = new Date();
 
         final AuditDTO publishedAudit = new AuditDTO();
-        publishedAudit.setDateTime(new Date());
+        publishedAudit.setDateTime(publishedDate);
 
         final Meta meta = metaRepository.findById(createdDoc.getId()).get();
         meta.setPublisherId(previousPublisherId);
-        meta.setPublicationStartDatetime(publishedAudit.getFormattedDate());
+        meta.setPublicationStartDatetime(publishedDate);
         metaRepository.saveAndFlush(meta);
 
         final User currentUser = userDataInitializer.createData("currentUser");

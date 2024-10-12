@@ -148,7 +148,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         if(!isNew){
             metaRepository.findById(saveMe.getId()).ifPresent(existentMeta -> {
                 saveMe.setDocumentWasteBasket(existentMeta.getDocumentWasteBasket());
-                updateArchiverAndDepublisherIfNecessary(saveMe, existentMeta);
+                updateAuditsIfNecessary(saveMe, existentMeta);
             });
         }
 
@@ -173,20 +173,26 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 	    return get(docId);
     }
 
-    private void updateArchiverAndDepublisherIfNecessary(DocumentDTO saveMe, Meta meta){
-        if(Objects.equals(meta.getArchivedDatetime(), saveMe.getArchived().getFormattedDate())){
+    private void updateAuditsIfNecessary(DocumentDTO saveMe, Meta meta){
+        final BiFunction<Date, Date, Boolean> compareWithoutSeconds = (date1, date2) -> {
+            if (date1 == date2) return true;
+            if (date1 == null || date2 == null) return false;
+            return date1.getTime()/1000 == date2.getTime()/1000;
+        };
+
+        if(compareWithoutSeconds.apply(meta.getArchivedDatetime(), saveMe.getArchived().getFormattedDate())){
             saveMe.getArchived().setId(meta.getArchiverId());
         }else{
             saveMe.getArchived().setId(Imcms.getUser().getId());
         }
 
-        if(Objects.equals(meta.getPublicationEndDatetime(), saveMe.getPublicationEnd().getFormattedDate())){
+        if(compareWithoutSeconds.apply(meta.getPublicationEndDatetime(), saveMe.getPublicationEnd().getFormattedDate())){
             saveMe.getPublicationEnd().setId(meta.getDepublisherId());
         }else{
             saveMe.getPublicationEnd().setId(Imcms.getUser().getId());
         }
 
-        if(Objects.equals(meta.getPublicationStartDatetime(), saveMe.getPublished().getFormattedDate())){
+        if(compareWithoutSeconds.apply(meta.getPublicationStartDatetime(), saveMe.getPublished().getFormattedDate())){
             saveMe.getPublished().setId(meta.getPublisherId());
         }else{
             saveMe.getPublished().setId(Imcms.getUser().getId());
