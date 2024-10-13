@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -177,7 +178,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final BiFunction<Date, Date, Boolean> compareWithoutSeconds = (date1, date2) -> {
             if (date1 == date2) return true;
             if (date1 == null || date2 == null) return false;
-            return date1.getTime()/1000 == date2.getTime()/1000;
+            return date1.toInstant().truncatedTo(ChronoUnit.MINUTES)
+                    .equals(date2.toInstant().truncatedTo(ChronoUnit.MINUTES));
         };
 
         if(compareWithoutSeconds.apply(meta.getArchivedDatetime(), saveMe.getArchived().getFormattedDate())){
