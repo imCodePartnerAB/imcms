@@ -439,6 +439,8 @@ const texts = {
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 save: "Spara",
+                saveClose: "Spara & stäng",
+                savedAlert: "Menyn har sparats framgångsrikt",
                 closeSaveConfirmation: "Du har osparade ändringar i menyn. Vill du spara dessa innan du stänger menyn?",
                 sortNumberTitle: 'Sortera efter siffror',
                 visibility: {
@@ -1729,6 +1731,8 @@ const texts = {
                 version: 'Ver',
                 removeConfirmation: "Do you want to remove the menu item \"",
                 save: "Save",
+                saveClose: "Save & close",
+                savedAlert: "Menu saved successfully",
                 closeSaveConfirmation: "You have unsaved changes in the menu. Do you want to save them before you close the menu?",
                 confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 sortNumberTitle: 'Sort by numbers',
@@ -1752,7 +1756,7 @@ const texts = {
                     loadFailed: 'Failed to load. Try again',
                     invalidSortNumber: 'Invalid data sort number!',
                     invalidPosition: 'Invalid position!',
-                    fixInvalidPosition: 'Menu area has invalid position item! Please fix it !'
+                    fixInvalidPosition: 'Menu area has invalid position item! Please fix it!'
                 },
                 typesSort: {
                     treeSort: 'Tree sort',
@@ -3020,6 +3024,8 @@ const texts = {
                 removeConfirmation: "Vil du fjerne menypunktet \"",
                 confirmFlatSortMessage: 'Hvis du bytter til en annen type, vil TreeSort gå tilbake til en flat meny! Vil du fortsette?',
                 save: "Lagre",
+                saveClose: "Lagre & lukk",
+                savedAlert: "Menyen er lagret vellykket",
                 closeSaveConfirmation: "Du har ulagrede endringer i menyen. Vil du lagre dem før du lukker menyen?",
                 sortNumberTitle: 'Sorter etter tall',
                 visibility: {

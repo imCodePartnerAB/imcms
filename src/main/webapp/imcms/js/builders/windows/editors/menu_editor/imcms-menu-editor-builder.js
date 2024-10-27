@@ -37,6 +37,8 @@ define("imcms-menu-editor-builder",
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         const $title = $('<a>');
+        let $loadingAnimation = $('<div>').addClass('menuEditor loading-animation').css("display", "none");
+
         const localizeTypesSort = [
             texts.typesSort.treeSort,
             texts.typesSort.manual,
@@ -177,19 +179,25 @@ define("imcms-menu-editor-builder",
                 typeSort: document.getElementById('type-sort').value.trim()
             };
 
+            $loadingAnimation.show();
             menusRestApi.create(menuDTO)
                 .done(() => {
                     onMenuSaved();
 
+                    $loadingAnimation.hide();
                     isUnsaved = false;
                     if(onSavedCallback) onSavedCallback();
                 })
-                .fail(() => modal.buildErrorWindow(texts.error.createFailed));
+                .fail(() => {
+                    $loadingAnimation.hide();
+                    modal.buildErrorWindow(texts.error.createFailed)
+                });
 
         }
 
         function save(opts, onSavedCallback) {
-            if (document.getElementById('saveMenuArea').classList.contains('imcms-button--disabled-click')) {
+            if (document.getElementById('saveMenuArea').classList.contains('imcms-button--disabled-click') ||
+                document.getElementById('saveAndCloseMenuArea').classList.contains('imcms-button--disabled-click')) {
                 alert(texts.error.fixInvalidPosition);
             } else {
                 saveMenuElements(opts, onSavedCallback);
@@ -200,7 +208,10 @@ define("imcms-menu-editor-builder",
             if(isUnsaved) {
                 modal.buildModalWindow(texts.closeSaveConfirmation, confirmed => {
                     if (confirmed) {
-                        save(opts, () => menuWindowBuilder.closeWindow());
+                        save(opts, () => {
+                            alert(texts.savedAlert);
+                            menuWindowBuilder.closeWindow();
+                        });
                     } else {
                         menuWindowBuilder.closeWindow();
                     }
@@ -692,7 +703,19 @@ define("imcms-menu-editor-builder",
                     id: 'saveMenuArea',
                     text: texts.save,
                     click: () => {
-                        save(opts)
+                        save(opts, () => {
+                            alert(texts.savedAlert);
+                        })
+                    }
+                }),
+                $saveAndClose = components.buttons.saveButton({
+                    id: 'saveAndCloseMenuArea',
+                    text: texts.saveClose,
+                    click: () => {
+                        save(opts, () => {
+                            alert(texts.savedAlert);
+                            menuWindowBuilder.closeWindow();
+                        })
                     }
                 }),
                 $dataInput = primitivesBuilder.imcmsInput({
@@ -701,7 +724,7 @@ define("imcms-menu-editor-builder",
                     change: createItem
                 });
 
-            return WindowBuilder.buildFooter([$save, $dataInput]);
+            return WindowBuilder.buildFooter([$saveAndClose, $save, $loadingAnimation, $dataInput]);
         }
 
         function removeMenuItemFromEditor(currentMenuItem, activeMultiRemove) {
@@ -1184,11 +1207,13 @@ define("imcms-menu-editor-builder",
 			    if ($input.hasClass('imcms-menu-incorrect-data-light')) {
 				    $input.removeClass('imcms-menu-incorrect-data-light');
 				    document.getElementById('saveMenuArea').classList.remove('imcms-button--disabled-click');
+                    document.getElementById('saveAndCloseMenuArea').classList.remove('imcms-button--disabled-click');
 			    }
 			    if (isAdd) {
 				    $input.addClass('imcms-menu-incorrect-data-light');
 				    alert(texts.error.invalidPosition);
 				    document.getElementById('saveMenuArea').classList.add('imcms-button--disabled-click')
+                    document.getElementById('saveAndCloseMenuArea').classList.add('imcms-button--disabled-click')
 			    }
 		    }
 
