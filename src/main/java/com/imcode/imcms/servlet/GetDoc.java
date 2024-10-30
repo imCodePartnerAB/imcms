@@ -33,6 +33,8 @@ import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
 public class GetDoc extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
+    public static final String REQUEST_PARAMETER__DOWNLOAD_FILE = "download";
+
     private final static Logger TRACK_LOG = LogManager.getLogger(ImcmsConstants.ACCESS_LOG);
     private final static Logger LOG = LogManager.getLogger(GetDoc.class.getName());
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.jsp";
@@ -135,6 +137,8 @@ public class GetDoc extends HttpServlet {
 
     private static void getFileDoc(FileDocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException {
         final String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
+        final String download = req.getParameter(REQUEST_PARAMETER__DOWNLOAD_FILE);
+
         final FileDocumentFile file = document.getFileOrDefault(fileId);
 
         if (file == null) {
@@ -146,7 +150,7 @@ public class GetDoc extends HttpServlet {
             try (ServletOutputStream out = res.getOutputStream()) {
                 try {
                     final int len = inputStream.available();
-                    setResponseContentAttributes(res, file, len);
+                    setResponseContentAttributes(res, file, len, Boolean.parseBoolean(download));
                     IOUtils.copy(inputStream, out);
                 } catch (SocketException ex) {
                     LOG.debug("Exception occurred", ex);
@@ -157,15 +161,16 @@ public class GetDoc extends HttpServlet {
         }
     }
 
-    private static void setResponseContentAttributes(HttpServletResponse res, FileDocumentFile file, int len) {
-
+    private static void setResponseContentAttributes(HttpServletResponse res, FileDocumentFile file, int len, boolean download) {
         final String originalFilename = file.getOriginalFilename();
-        final String contentDisposition = "attachment; filename=\"" + originalFilename + "\"";
-        final String mimeType = file.getMimeType();
+        final String contentDisposition = String.format("%s; filename=\"%s\"", download ? "attachment" : "inline", originalFilename);
+        res.setHeader("Content-Disposition", contentDisposition);
 
         res.setContentLength(len);
+
+        final String mimeType = file.getMimeType();
         res.setContentType(mimeType);
-        res.setHeader("Content-Disposition", contentDisposition);
+
 	    res.setStatus(HttpServletResponse.SC_OK);
     }
 
