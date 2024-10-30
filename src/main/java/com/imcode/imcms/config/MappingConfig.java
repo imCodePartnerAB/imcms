@@ -390,6 +390,9 @@ class MappingConfig {
             Version currentVersion = versionService.getCurrentVersion(metaId);
             dto.setCurrentVersion(new AuditDTO(currentVersion.getNo(), currentVersion.getModifiedBy().getLogin(), currentVersion.getModifiedDt()));
 
+            Version workingVersion = versionService.getDocumentWorkingVersion(metaId);
+            dto.setWorkingVersion(new AuditDTO(workingVersion.getNo(), workingVersion.getModifiedBy().getLogin(), workingVersion.getModifiedDt()));
+
             Version latestVersion = versionService.getLatestVersion(metaId);
             dto.setLatestVersion(new AuditDTO(latestVersion.getNo(), latestVersion.getCreatedBy().getLogin(), latestVersion.getCreatedDt()));
 

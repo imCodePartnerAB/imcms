@@ -38,6 +38,7 @@ public class DocumentDTO extends Document implements Cloneable {
 	private AuditDTO created;
 	private boolean defaultLanguageAliasEnabled;
 	private Meta.DisabledLanguageShowMode disabledLanguageShowMode;
+	private AuditDTO workingVersion;
 	private AuditDTO currentVersion;
 	private AuditDTO latestVersion;
 	private Set<String> keywords;
@@ -144,7 +145,8 @@ public class DocumentDTO extends Document implements Cloneable {
                     new AuditDTO(), auditDTO -> auditDTO.setId(Version.WORKING_VERSION_INDEX)
             );
 
-            cloneDocumentDTO.setCurrentVersion(version);
+            cloneDocumentDTO.setWorkingVersion(version);
+			cloneDocumentDTO.setCurrentVersion(version);
             cloneDocumentDTO.setCreated(new AuditDTO());
             cloneDocumentDTO.setModified(new AuditDTO());
             cloneDocumentDTO.setArchived(new AuditDTO());

@@ -93,6 +93,7 @@ define("imcms-status-tab-builder",
         const statusRows = [
             {title: texts.created, dataTitle: "created"},
             {title: texts.modified, dataTitle: "modified"},
+            {title: texts.modifiedContent, dataTitle: "workingVersion"},
             {title: texts.archived, dataTitle: "archived"},
             {title: texts.published, dataTitle: "published"},
             {title: texts.publicationEnd, dataTitle: "publicationEnd"}

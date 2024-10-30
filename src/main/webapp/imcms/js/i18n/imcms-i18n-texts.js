@@ -236,6 +236,7 @@ const texts = {
                 archived: "Arkiverad",
                 published: "Publicerad",
                 publicationEnd: "Publicering avslutad",
+                modifiedContent: "Ändrat innehåll",
                 by: "Av"
             },
             cache: {
@@ -1528,6 +1529,7 @@ const texts = {
                 archived: "Archived",
                 published: "Published",
                 publicationEnd: "Publication end",
+                modifiedContent: "Modified content",
                 by: "By"
             },
             cache: {
@@ -2821,6 +2823,7 @@ const texts = {
                 archived: "Arkivert",
                 published: "Publisert",
                 publicationEnd: "Publisering fullført",
+                modifiedContent: "Endret innhold",
                 by: "Av"
             },
             cache: {
