@@ -34,5 +34,9 @@ public interface BasicImportDocumentInfoService extends DeleterByDocumentId {
 
 	boolean isImported(int importDocId);
 
+	List<BasicImportDocumentInfoDTO> getImportedByIdRange(int startId, int endId);
+
+	List<BasicImportDocumentInfoDTO> getImportedByIds(int[] ids);
+
 	Optional<Integer> toMetaId(int importDocId);
 }

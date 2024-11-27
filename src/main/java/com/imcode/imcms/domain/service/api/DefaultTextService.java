@@ -300,10 +300,14 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 	}
 
 	@Override
-	public List<Text> getTextsContaining(String content) {
-		return repository.findByTextContaining(content)
-				.stream().map(TextDTO::new)
-				.collect(Collectors.toList());
+	public void replaceText(String target, String replacement) {
+        List<TextJPA> updatedTexts = repository.findByTextContaining(target).stream()
+                .peek(text -> {
+                    final String modifiedText = text.getText().replaceAll(target, replacement);
+                    text.setText(modifiedText);
+                })
+                .toList();
+        repository.saveAll(updatedTexts);
 	}
 
     private void indexAndCacheActualizationAfterCommit(int docId) {

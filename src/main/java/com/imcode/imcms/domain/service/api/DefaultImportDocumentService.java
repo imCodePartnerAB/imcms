@@ -113,79 +113,84 @@ public class DefaultImportDocumentService implements ImportDocumentService {
 
 	@Override
 	public void removeAlias(int importDocId) {
-		final String alias = "import/" + importDocId;
+			removeAlias(basicImportDocumentInfoService.getById(importDocId).get());
+	}
 
-		commonContentService.removeAlias(alias);
-		basicImportDocumentInfoService.toMetaId(importDocId).ifPresent(Imcms.getServices().getDocumentMapper()::invalidateDocument);
-		log.info(String.format("Alias: %s in document with id(rb4): %d has been removed!", alias, importDocId));
+	@Override
+	public void removeAlias(BasicImportDocumentInfoDTO importDocId) {
+		final String alias = "import/" + importDocId.getId();
+		commonContentService.removeAlias(importDocId.getMetaId(), alias);
 
+		documentMapper.invalidateDocument(importDocId.getMetaId());
+		log.info(String.format("Alias: %s in document with id(rb4): %d has been removed!", alias, importDocId.getId()));
 	}
 
 	@Override
 	public void removeAliases(int[] importDocIds) {
-		final int[] importedDocumentIds = getImportedDocumentIds(importDocIds);
-		for (int importDocId : importedDocumentIds) {
-			removeAlias(importDocId);
+		final List<BasicImportDocumentInfoDTO> importedDocuments =
+				basicImportDocumentInfoService.getImportedByIds(importDocIds);
+		for (BasicImportDocumentInfoDTO importDocInfo : importedDocuments) {
+			removeAlias(importDocInfo);
 		}
 	}
 
 	@Override
 	public void removeAliasesInRange(int startId, int endId) {
-		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
-		for (int importDocId : importedDocumentIds) {
-			removeAlias(importDocId);
+		log.error(String.format("Start removing aliases from %d to %d document ids(rb4)", startId, endId));
+
+		final List<BasicImportDocumentInfoDTO> importedDocuments =
+				basicImportDocumentInfoService.getImportedByIdRange(startId, endId);
+		for (BasicImportDocumentInfoDTO importDocInfo : importedDocuments) {
+			removeAlias(importDocInfo);
 		}
+
+		log.error(String.format("End of removing aliases from %d to %d document ids(rb4)", startId, endId));
 	}
 
 	@Override
 	public void replaceAlias(int importDocId) {
-		final String alias = "/import/" + importDocId;
-
-		final List<Text> textsContainingAlias = textService.getTextsContaining(alias);
-		basicImportDocumentInfoService.toMetaId(importDocId).ifPresent(metaId -> {
-			textsContainingAlias.forEach(text -> {
-				final String modifiedText = text.getText().replaceAll(alias, '/' + Integer.toString(metaId));
-				text.setText(modifiedText);
-
-				textService.save(text);
-			});
-		});
-		log.info(String.format("Alias: %s in document texts with id(rb4): %d has been replaced to: %s!", alias, importDocId, importDocId));
-
-		removeAlias(importDocId);
+		replaceAlias(basicImportDocumentInfoService.getById(importDocId).get());
 	}
 
 	@Override
-	public void replaceAliases(int[] metaIds) {
-		final int[] importedDocumentIds = getImportedDocumentIds(metaIds);
-		for (int importDocId : importedDocumentIds) {
-			replaceAlias(importDocId);
+	public void replaceAlias(BasicImportDocumentInfoDTO importDocInfo) {
+		final int previousDocId = importDocInfo.getId();
+		final String alias = "/import/" + previousDocId;
+		final int metaId = importDocInfo.getMetaId();
+
+		textService.replaceText(alias, "/" + metaId);
+
+		log.info(String.format("Alias: %s in document texts with id(rb4): %d has been replaced to: %s!",
+				alias, previousDocId, metaId));
+
+		removeAlias(importDocInfo);
+	}
+
+	@Override
+	public void replaceAliases(int[] importDocIds) {
+		final List<BasicImportDocumentInfoDTO> importedDocuments =
+				basicImportDocumentInfoService.getImportedByIds(importDocIds);
+		for (BasicImportDocumentInfoDTO importDocInfo : importedDocuments) {
+			replaceAlias(importDocInfo);
 		}
 	}
 
 	@Override
 	public void replaceAliasesInRange(int startId, int endId) {
-		final int[] importedDocumentIds = getImportedDocumentIds(startId, endId);
-		for (int importDocId : importedDocumentIds) {
-			replaceAlias(importDocId);
+		log.error(String.format("Start replacing aliases from %d to %d document ids(rb4)", startId, endId));
+
+		final List<BasicImportDocumentInfoDTO> importedDocuments =
+				basicImportDocumentInfoService.getImportedByIdRange(startId, endId);
+		for (BasicImportDocumentInfoDTO importDocInfo : importedDocuments) {
+			replaceAlias(importDocInfo);
 		}
+
+		log.error(String.format("End of replacing aliases from %d to %d document ids(rb4)", startId, endId));
 	}
 
 	private int[] getAvailableImportDocumentIdsForImport(int startId, int endId) {
 		return IntStream.rangeClosed(startId, endId)
 				.filter(id -> Files.exists(importDirectoryPath.resolve(id + ".json")))
-				.toArray();
-	}
-
-	private int[] getImportedDocumentIds(int startId, int endId) {
-		return IntStream.rangeClosed(startId, endId)
-				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.isImported(id))
-				.toArray();
-	}
-
-	private int[] getImportedDocumentIds(int[] metaIds) {
-		return IntStream.of(metaIds)
-				.filter(id -> basicImportDocumentInfoService.exists(id) && basicImportDocumentInfoService.isImported(id))
 				.toArray();
 	}
 

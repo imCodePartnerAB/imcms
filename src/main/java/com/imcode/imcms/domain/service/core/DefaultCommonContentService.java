@@ -237,8 +237,8 @@ public class DefaultCommonContentService
 	}
 
 	@Override
-	public void removeAlias(String alias) {
-		repository.removeAlias(alias);
+	public void removeAlias(int docId, String alias) {
+		repository.removeAlias(docId, alias);
 	}
 
 	@Override

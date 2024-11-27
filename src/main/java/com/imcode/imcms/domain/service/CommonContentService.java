@@ -60,5 +60,5 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
 
 	List<String> getAllAliases();
 
-	void removeAlias(String alias);
+	void removeAlias(int docId, String alias);
 }

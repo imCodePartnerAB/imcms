@@ -92,6 +92,20 @@ public class DefaultBasicImportDocumentInfoService implements BasicImportDocumen
 	}
 
 	@Override
+	public List<BasicImportDocumentInfoDTO> getImportedByIdRange(int startId, int endId) {
+		return basicImportDocumentInfoRepository.findAllImportedByIdRange(startId, endId).stream()
+				.map(BasicImportDocumentInfoDTO::new)
+				.toList();
+	}
+
+	@Override
+	public List<BasicImportDocumentInfoDTO> getImportedByIds(int[] ids) {
+		return basicImportDocumentInfoRepository.findAllImportedByIds(ids).stream()
+				.map(BasicImportDocumentInfoDTO::new)
+				.toList();
+	}
+
+	@Override
 	public Optional<Integer> toMetaId(int importDocId) {
 		return basicImportDocumentInfoRepository.findMetaId(importDocId);
 	}

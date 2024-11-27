@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,8 +27,18 @@ public interface BasicImportDocumentInfoRepository extends JpaRepository<BasicIm
 
 	Page<BasicImportDocumentInfoJPA> findAllByIdIn(Set<Integer> docIdList, Pageable pageable);
 
-	@Query("select case when (count(b) > 0) then true else false end from BasicImportDocumentInfoJPA b where b.id=:id and b.status='Imported'")
+	@Query("select case when (count(b) > 0) then true else false end " +
+			"from BasicImportDocumentInfoJPA b " +
+			"where b.id=:id and lower(b.status)=lower('Imported')")
 	boolean isImported(@Param("id") Integer id);
+
+	@Query("select b from BasicImportDocumentInfoJPA b " +
+			"where (b.id >= :startId and b.id <= :endId) and lower(b.status)=lower('Imported')")
+	List<BasicImportDocumentInfoJPA> findAllImportedByIdRange(@Param("startId") int startId, @Param("endId") int endId);
+
+	@Query("select b from BasicImportDocumentInfoJPA b " +
+			"where b.id IN (:ids) and lower(b.status)=lower('Imported')")
+	List<BasicImportDocumentInfoJPA> findAllImportedByIds(@Param("ids") int[] ids);
 
 	@Query("select b.metaId from BasicImportDocumentInfoJPA b where b.id=:importDocId")
 	Optional<Integer> findMetaId(@Param("importDocId") Integer importDocId);

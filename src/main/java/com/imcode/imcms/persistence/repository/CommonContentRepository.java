@@ -75,8 +75,8 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 	List<String> findAllAliasesByLatestAndWorkingVersions();
 
 	@Modifying
-	@Query("update CommonContentJPA set alias = null where alias=:alias")
-	void removeAlias(@Param("alias") String alias);
+	@Query("update CommonContentJPA set alias = null where docId=:id and alias=:alias")
+	void removeAlias(@Param("id") int id, @Param("alias") String alias);
 
 	@Modifying
 	@Query("DELETE FROM CommonContentJPA t WHERE t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")
