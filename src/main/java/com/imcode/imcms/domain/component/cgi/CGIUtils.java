@@ -17,7 +17,6 @@ import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.impl.AuthnRequestBuilder;
 import org.opensaml.saml2.core.impl.IssuerBuilder;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.ws.security.SecurityPolicy;
 import org.opensaml.ws.security.SecurityPolicyResolver;
 import org.opensaml.ws.security.SecurityPolicyRule;
@@ -28,7 +27,6 @@ import org.opensaml.ws.security.provider.StaticSecurityPolicyResolver;
 import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.io.MarshallingException;
-import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 
@@ -38,7 +36,6 @@ import java.util.List;
 
 public final class CGIUtils {
 	private static final Logger logger = LogManager.getLogger(CGIUtils.class);
-	private static final HTTPPostDecoder decoder = new HTTPPostDecoder();
 
 	public static AuthnRequest buildRequest(String id, String redirectUrl) {
 		final CGIConfig cgiConfig = CGIConfig.getInstance();
@@ -75,10 +72,10 @@ public final class CGIUtils {
 			samlMessageContext.setSecurityPolicyResolver(getSecurityPolicyResolver(request.isSecure()));
 			samlMessageContext.setLocalEntityId(CGIConfig.getInstance().getSpProviderId());
 
-			decoder.decode(samlMessageContext);
+			new HTTPPostDecoder().decode(samlMessageContext);
 
 			return samlMessageContext;
-		} catch (MessageDecodingException | SecurityException e) {
+		} catch (Exception e) {
 			logger.error("Error while decoding CGI response", e);
 			throw new RuntimeException(e);
 		}

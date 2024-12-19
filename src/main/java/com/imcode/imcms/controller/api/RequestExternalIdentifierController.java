@@ -8,6 +8,8 @@ import com.imcode.imcms.model.ExternalUser;
 import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,6 +37,8 @@ import static imcode.server.ImcmsConstants.API_PREFIX;
 @RequestMapping(EXTERNAL_IDENTIFIERS_PATH)
 class RequestExternalIdentifierController {
 
+    private static final Logger log = LogManager.getLogger(RequestExternalIdentifierController.class);
+
     static final String EXTERNAL_IDENTIFIERS_PATH = "/external-identifiers/";
     static final String EXTERNAL_IDENTIFIER_REDIRECT_URI = "logged-in";
 
@@ -52,12 +56,16 @@ class RequestExternalIdentifierController {
                                                         @RequestParam(value = REQUEST_PARAMETER__NEXT_URL, required = false) String nextUrl,
                                                         HttpServletRequest request,
                                                         HttpSession session) {
+        try{
+            final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(identifierId);
 
-        final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(identifierId);
-
-        return new ModelAndView(new RedirectView(provider.buildAuthenticationURL(
-                getRedirectURL(identifierId, request), session.getId(), nextUrl
-        )));
+            return new ModelAndView(new RedirectView(provider.buildAuthenticationURL(
+                    getRedirectURL(identifierId, request), session.getId(), nextUrl
+            )));
+        }catch (Exception e){
+            log.error("Error while going to external login page", e);
+            throw e;
+        }
     }
 
     @SneakyThrows
@@ -78,18 +86,22 @@ class RequestExternalIdentifierController {
     @RequestMapping(EXTERNAL_IDENTIFIER_REDIRECT_URI + "/{identifierId}")
     public ModelAndView processExternalAuthResponse(@PathVariable String identifierId,
                                                     HttpServletRequest request, HttpServletResponse response) {
+        try{
+            final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(
+                    identifierId
+            );
 
-        final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(
-                identifierId
-        );
+            String nextURL = provider.processAuthentication(request);
+            nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
 
-        String nextURL = provider.processAuthentication(request);
-        nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
+            final ExternalUser user = userService.saveExternalUser(provider.getUser(request));
+            Utility.makeUserLoggedIn(request, response, user);
 
-        final ExternalUser user = userService.saveExternalUser(provider.getUser(request));
-        Utility.makeUserLoggedIn(request, response, user);
-
-        return new ModelAndView(new RedirectView(nextURL));
+            return new ModelAndView(new RedirectView(nextURL));
+        } catch (Exception e){
+            log.error("Error while processing external auth response", e);
+            throw e;
+        }
     }
 
     @ResponseBody

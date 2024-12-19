@@ -13,6 +13,9 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 public class CGIUserDTO implements ExternalUserDTO {
+
+	private static final String FAKE_EMAIL_DOMAIN = "@fake.external.imcode.com";
+
 	private String nameId;
 	private Map<String, String> attributes;
 	private DateTime validTo;
@@ -25,6 +28,7 @@ public class CGIUserDTO implements ExternalUserDTO {
 		user.setFirstName(attributes.get("Subject_GivenName"));
 		user.setLastName(attributes.get("Subject_Surname"));
 		user.setPassword("");
+		user.setEmail(user.getLoginName() + FAKE_EMAIL_DOMAIN);
 		user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
 		user.setCompany(attributes.get("Subject_OrganisationName"));
 		user.setSessionId(attributes.get("CertificateSerialNumber"));

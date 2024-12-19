@@ -73,9 +73,9 @@ public class CGIAuthenticationProvider extends AuthenticationProvider implements
 
 	@Override
 	public void updateAuthData(HttpServletRequest request) {
-		if (cgiAuthHelper.isAuthDataExpired(cgiAuthHelper.getAuthenticationResult(request))) {
-			processAuthentication(request);
-		}
+//		if (cgiAuthHelper.isAuthDataExpired(cgiAuthHelper.getAuthenticationResult(request))) {
+//			processAuthentication(request);
+//		}
 	}
 
 	@Override
