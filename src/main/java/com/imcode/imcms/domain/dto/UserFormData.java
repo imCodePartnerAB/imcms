@@ -3,13 +3,16 @@ package com.imcode.imcms.domain.dto;
 import com.imcode.imcms.model.UserData;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.LanguageMapper;
+import imcode.server.user.PhoneNumber;
 import imcode.server.user.UserDomainObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -71,6 +74,16 @@ public class UserFormData extends UserData {
 
         final int[] roles = from.getRoleIds().stream().mapToInt(Integer::intValue).toArray();
         setRoleIds(roles);
+
+        List<PhoneNumber> localPhones = new ArrayList<>(from.getPhoneNumbers());
+        Integer[] localUserPhoneNumberType = new Integer[localPhones.size()];
+        String[] localUserPhoneNumber = new String[localPhones.size()];
+        for(int i = 0; i<localPhones.size(); i++){
+            localUserPhoneNumberType[i] = localPhones.get(i).getType().getId();
+            localUserPhoneNumber[i] = localPhones.get(i).getNumber();
+        }
+        setUserPhoneNumber(localUserPhoneNumber);
+        setUserPhoneNumberType(localUserPhoneNumberType);
 
         setPasswordReset(from.getPasswordReset());
     }

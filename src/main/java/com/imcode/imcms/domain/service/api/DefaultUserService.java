@@ -372,9 +372,15 @@ class DefaultUserService implements UserService {
         user.setRoleIds(linkedLocalRoleIds);
 
         final User savedUser = userRepository.findByLogin(user.getLogin());
-
         if (savedUser != null) {
+            Set<Integer> roleIds = userRolesService.getRoleIdsByUser(savedUser.getId());
+            Set<PhoneNumber> phones = phoneService.getUserPhones(savedUser.getId()).stream()
+                    .map(phone -> new PhoneNumber(phone.getNumber(), PhoneNumberType.getPhoneNumberTypeById(phone.getPhoneType().getId())))
+                    .collect(Collectors.toSet());
+
             user.setId(savedUser.getId());
+            user.setRoleIds(roleIds);
+            user.setPhoneNumbers(new HashSet<>(phones));
         }
 
         saveUser(new UserFormData(user));
