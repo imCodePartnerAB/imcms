@@ -40,20 +40,20 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
     public DocumentRoles getDocumentRoles(int documentId, UserDomainObject user) {
         final Meta meta = metaRepository.getOne(documentId);
 
-        if (user.isImcmsExternal()) {
-            final ExternalUser externalUser = (ExternalUser) user;
-
-            final Set<Role> allLinkedLocalRoles = externalToLocalRoleLinkService.toLinkedLocalRoles(
-                    externalUser.getExternalRoles()
-            );
-            final Set<DocumentRole> allDocRoles = documentRolesRepository.findByDocument_Id(documentId);
-
-            final Set<DocumentRole> localDocRolesLinkedToExternal = allDocRoles.stream()
-                    .filter(documentRole -> allLinkedLocalRoles.contains(new RoleDTO(documentRole.getRole())))
-                    .collect(Collectors.toSet());
-
-            return new DocumentRoles(new ArrayList<>(localDocRolesLinkedToExternal), meta);
-        }
+//        if (user.isImcmsExternal()) {
+//            final ExternalUser externalUser = (ExternalUser) user;
+//
+//            final Set<Role> allLinkedLocalRoles = externalToLocalRoleLinkService.toLinkedLocalRoles(
+//                    externalUser.getExternalRoles()
+//            );
+//            final Set<DocumentRole> allDocRoles = documentRolesRepository.findByDocument_Id(documentId);
+//
+//            final Set<DocumentRole> localDocRolesLinkedToExternal = allDocRoles.stream()
+//                    .filter(documentRole -> allLinkedLocalRoles.contains(new RoleDTO(documentRole.getRole())))
+//                    .collect(Collectors.toSet());
+//
+//            return new DocumentRoles(new ArrayList<>(localDocRolesLinkedToExternal), meta);
+//        }
 
         final List<DocumentRole> roleList = documentRolesRepository.getDocumentRolesByUserIdAndDocId(
                 user.getId(), documentId

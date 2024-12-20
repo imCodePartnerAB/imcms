@@ -1,10 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.UserLockValidator;
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.PasswordResetDTO;
+import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.domain.dto.UserGDPRDataDTO;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.model.*;
+import com.imcode.imcms.model.ExternalUser;
+import com.imcode.imcms.model.Phone;
+import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
@@ -364,27 +370,45 @@ class DefaultUserService implements UserService {
 
     @Override
     public ExternalUser saveExternalUser(ExternalUser user) {
-        final Set<Integer> linkedLocalRoleIds = externalToLocalRoleService.toLinkedLocalRoles(user.getExternalRoles())
-                .stream()
-                .map(Role::getId)
-                .collect(Collectors.toSet());
-
-        user.setRoleIds(linkedLocalRoleIds);
-
         final User savedUser = userRepository.findByLogin(user.getLogin());
-        if (savedUser != null) {
-            Set<Integer> roleIds = userRolesService.getRoleIdsByUser(savedUser.getId());
-            Set<PhoneNumber> phones = phoneService.getUserPhones(savedUser.getId()).stream()
+        if(savedUser != null){
+            user.setId(savedUser.getId());
+            user.setActive(savedUser.isActive());
+            user.setEmail(savedUser.getEmail());
+            user.setAddress(savedUser.getAddress());
+            user.setCity(savedUser.getCity());
+            user.setCompany(savedUser.getCompany());
+            user.setCountry(savedUser.getCountry());
+            user.setCreateDate(savedUser.getCreateDate());
+            user.setRef(savedUser.getRef());
+            user.setOneTimePassword(savedUser.getOneTimePassword());
+            user.setTwoFactoryAuthenticationEnabled(savedUser.isTwoFactoryAuthenticationEnabled());
+            user.setProvince(savedUser.getProvince());
+            user.setTitle(savedUser.getTitle());
+            user.setZip(savedUser.getZip());
+            user.setBlockedDate(savedUser.getBlockedDate());
+            user.setAttempts(savedUser.getAttempts());
+            user.setLastLoginDate(savedUser.getLastLoginDate());
+
+            user.setLanguageIso639_2(savedUser.getLanguageIso639_2());
+            user.setRoleIds(userRolesService.getRoleIdsByUser(savedUser.getId()));
+            user.setPhoneNumbers(new HashSet<>(phoneService.getUserPhones(savedUser.getId()).stream()
                     .map(phone -> new PhoneNumber(phone.getNumber(), PhoneNumberType.getPhoneNumberTypeById(phone.getPhoneType().getId())))
+                    .collect(Collectors.toSet())));
+
+            saveUser(new UserFormData(user));
+            return user;
+        } else {
+            final Set<Integer> linkedLocalRoleIds = externalToLocalRoleService.toLinkedLocalRoles(user.getExternalRoles())
+                    .stream()
+                    .map(Role::getId)
                     .collect(Collectors.toSet());
 
-            user.setId(savedUser.getId());
-            user.setRoleIds(roleIds);
-            user.setPhoneNumbers(new HashSet<>(phones));
+            user.setRoleIds(linkedLocalRoleIds);
+
+            saveUser(new UserFormData(user));
+
+            return user;
         }
-
-        saveUser(new UserFormData(user));
-
-        return user;
     }
 }
