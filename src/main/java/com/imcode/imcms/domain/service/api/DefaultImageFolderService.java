@@ -102,7 +102,7 @@ class DefaultImageFolderService implements ImageFolderService {
     public void renameFolder(ImageFolderDTO renameMe) {
         final String newName = renameMe.getName();
         final String imageFolderRelativePath = renameMe.getPath();
-        final String newImageFolderRelativePath = imageFolderRelativePath.replaceAll("\\w+$", newName);
+        final String newImageFolderRelativePath = imageFolderRelativePath.replaceAll("([^/]+)$", newName);
 
         final StoragePath folderPath = storageImagesPath.resolve(DIRECTORY, imageFolderRelativePath);
         final StoragePath newFolderPath = storageImagesPath.resolve(DIRECTORY, newImageFolderRelativePath);
