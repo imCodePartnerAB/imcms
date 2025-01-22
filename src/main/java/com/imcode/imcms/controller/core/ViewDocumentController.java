@@ -14,6 +14,7 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -83,7 +84,7 @@ public class ViewDocumentController {
 
     @RequestMapping({"", "/"})
     public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
-            throws IOException {
+            throws IOException, ServletException {
 
         final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
         final TextDocumentDomainObject textDocument = getTextDocument(docId, request);
@@ -107,7 +108,7 @@ public class ViewDocumentController {
                                         String docIdentifier,
                                         HttpServletRequest request,
                                         HttpServletResponse response,
-                                        ModelAndView mav) throws IOException {
+                                        ModelAndView mav) throws IOException, ServletException {
 
         final UserDomainObject user = Imcms.getUser();
 
@@ -134,7 +135,7 @@ public class ViewDocumentController {
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
                 || (!hasUserViewAccess(userContentPermission) && !textDocument.isVisible())
                 || (!user.isSuperAdmin() && documentWasteBasketService.isDocumentInWasteBasket(docId))) {
-            response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            Utility.forwardToLogin(request, response, HttpServletResponse.SC_FOUND);
             return null;
         }
 
