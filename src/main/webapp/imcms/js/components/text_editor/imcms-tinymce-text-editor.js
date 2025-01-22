@@ -31,7 +31,7 @@ define(
         const listsPlugins = ['bullist', 'numlist'].join(' ');
         const horizontalLinePlugin = 'hr';
         const textAlignPlugins = ['alignleft', 'aligncenter', 'alignright', 'alignjustify'].join(' ');
-        const specialInsertsPlugins = ['link', imageInText.pluginName].join(' ');
+        const specialInsertsPlugins = ['link', 'unlink', imageInText.pluginName].join(' ');
         const customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
         const fullscreenPlugin = fullScreenPlugin.pluginName;
         const saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
