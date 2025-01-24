@@ -135,7 +135,7 @@ public class ViewDocumentController {
         if (((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userContentPermission))
                 || (!hasUserViewAccess(userContentPermission) && !textDocument.isVisible())
                 || (!user.isSuperAdmin() && documentWasteBasketService.isDocumentInWasteBasket(docId))) {
-            Utility.forwardToLogin(request, response, HttpServletResponse.SC_FOUND);
+            Utility.forwardToLogin(request, response, HttpServletResponse.SC_OK);
             return null;
         }
 
