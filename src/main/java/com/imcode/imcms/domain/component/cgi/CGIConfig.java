@@ -3,12 +3,12 @@ package com.imcode.imcms.domain.component.cgi;
 import imcode.server.Imcms;
 import lombok.Data;
 import org.apache.commons.httpclient.HttpClient;
+import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.BasicParserPool;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Timer;
 
@@ -38,14 +38,16 @@ public class CGIConfig {
 			final IDPSSODescriptor idpssoDescriptor = entityDescriptor.getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
 
 			idpssoDescriptor.getSingleSignOnServices().forEach(singleSignOnService -> {
-				idpSSOLoginUrl = singleSignOnService.getLocation();
+				if(singleSignOnService.getBinding().equals(SAMLConstants.SAML2_REDIRECT_BINDING_URI)){
+					idpSSOLoginUrl = singleSignOnService.getLocation();
+				}
 			});
 
 //			idpssoDescriptor.getSingleLogoutServices().forEach(singleLogoutService -> {
 //				idpSSOLogoutUrl = singleLogoutService.getLocation();
 //			});
 
-			this.spProviderId = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+			this.spProviderId = Imcms.getServerProperties().getProperty("cgi.entity-id");
 		} catch (MetadataProviderException e) {
 			throw new RuntimeException(e);
 		}

@@ -53,7 +53,7 @@ public final class CGIUtils {
 		authRequest.setID(id);
 		authRequest.setForceAuthn(false);
 		authRequest.setIssueInstant(DateTime.now());
-		authRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+		authRequest.setProtocolBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
 		authRequest.setAssertionConsumerServiceURL(redirectUrl);
 		authRequest.setIssuer(issuer);
 		authRequest.setVersion(SAMLVersion.VERSION_20);
