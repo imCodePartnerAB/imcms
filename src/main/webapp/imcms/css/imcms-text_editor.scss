@@ -347,8 +347,8 @@ div.imcms-editor-content--text {
     cursor: pointer;
 }
 
-.mce-floatpanel {
-    position: absolute !important;
+.mce-floatpanel .mce-dragh{
+    pointer-events: none;
 }
 
 .imcms-editor-toolbar__fullscreen {
