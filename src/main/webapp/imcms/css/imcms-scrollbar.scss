@@ -4,8 +4,8 @@
 
 .imcms-right-side::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-	height: 6px;
+    width: 10px;
+	height: 10px;
 }
 
 .imcms-right-side::-webkit-scrollbar-thumb {
@@ -16,7 +16,6 @@
     background-color: transparent;
 }
 
-.user-properties-content__properties::-webkit-scrollbar,
 .imcms-left-side::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
@@ -44,8 +43,8 @@
 .imcms-modal-body__optional-box::-webkit-scrollbar,
 .imcms-modal-body__view-box::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .first-sub-files::-webkit-scrollbar-thumb,
@@ -66,7 +65,7 @@
 .imcms-right-side__images-container::-webkit-scrollbar,
 .imcms-content-manager__left-side::-webkit-scrollbar{
     background-color: transparent;
-    width: 8px;
+    width: 10px;
 }
 
 .imcms-right-side__images-container::-webkit-scrollbar-thumb,
@@ -88,7 +87,14 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+}
+
+.imcms-drop-down-list__items::-webkit-scrollbar {
     width: 6px;
+}
+
+.imcms-text-area__input::-webkit-scrollbar {
+    width: 10px;
 }
 
 .imcms-drop-down-list__items::-webkit-scrollbar-thumb,
@@ -109,8 +115,8 @@
 .imcms-originally-img-area::-webkit-scrollbar,
 .image-cropping-block::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-preview-img-area::-webkit-scrollbar-thumb,
@@ -127,7 +133,7 @@
 .imcms-editable-controls-area::-webkit-scrollbar,
 .imcms-image_editor__right-side::-webkit-scrollbar{
     background-color: transparent;
-    width: 6px;
+    width: 10px;
     height: 10px;
 }
 
@@ -146,8 +152,8 @@
 
 .image-exif-window .imcms-pop-up-modal__body::-webkit-scrollbar{
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-history-mode__entries::-webkit-scrollbar-track {
@@ -156,7 +162,7 @@
 
 .imcms-history-mode__entries::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
+    width: 10px;
     height: 10px;
 }
 
@@ -170,8 +176,8 @@
 
 .imcms-menu-list__items::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-menu-list__items::-webkit-scrollbar-thumb {
@@ -184,8 +190,8 @@
 
 .imcms-document-list__items::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-document-list__items::-webkit-scrollbar-thumb {
@@ -202,7 +208,7 @@
 .imcms-pop-up-modal::-webkit-scrollbar,
 .imcms-info-page::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
+    width: 10px;
 }
 
 .imcms-users-search-result::-webkit-scrollbar-thumb,
@@ -219,8 +225,8 @@
 .roles-table::-webkit-scrollbar,
 .rules-table-elements::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .roles-table::-webkit-scrollbar-thumb,
@@ -238,8 +244,8 @@
 
 .templates-css-edit-area-container__edit-area::-webkit-scrollbar {
 	background-color: transparent;
-	width: 6px;
-	height: 6px;
+	width: 10px;
+	height: 10px;
 }
 
 .imcms-doc-version-table::-webkit-scrollbar-thumb {
@@ -252,8 +258,8 @@
 
 .imcms-doc-version-table::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-doc-basket-table-block__table::-webkit-scrollbar-thumb {
@@ -266,8 +272,8 @@
 
 .imcms-doc-basket-table-block__table::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .imcms-import-entity-reference-manager-body__container::-webkit-scrollbar-thumb {
@@ -280,8 +286,8 @@
 
 .imcms-import-entity-reference-manager-body__container::-webkit-scrollbar{
 	background-color: transparent;
-	width: 6px;
-	height: 6px;
+	width: 10px;
+	height: 10px;
 }
 
 .table-import-documents::-webkit-scrollbar-thumb{
@@ -294,8 +300,8 @@
 
 .table-import-documents::-webkit-scrollbar{
 	background-color: transparent;
-	width: 6px;
-	height: 6px;
+	width: 10px;
+	height: 10px;
 }
 
 .edit-imported-documents-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar-thumb,
@@ -317,8 +323,8 @@
 .alias-control-section .list-input .list-input__meta-id-list-select::-webkit-scrollbar,
 .import-entity-references-section .import-entity-references-section__import-entity-reference-container::-webkit-scrollbar {
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .sections-container__edit-area::-webkit-scrollbar-thumb{
@@ -329,8 +335,8 @@
 }
 .sections-container__edit-area::-webkit-scrollbar{
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 .w3c-validation-result .imcms-pop-up-modal__body::-webkit-scrollbar-thumb{
@@ -341,8 +347,8 @@
 }
 .w3c-validation-result .imcms-pop-up-modal__body::-webkit-scrollbar{
     background-color: transparent;
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 
 @supports (-moz-appearance:none) {
