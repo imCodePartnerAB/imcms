@@ -10,12 +10,10 @@ import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.decoding.HTTPPostDecoder;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.Response;
+import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.core.impl.AuthnRequestBuilder;
 import org.opensaml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.saml2.core.impl.NameIDPolicyBuilder;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.ws.security.SecurityPolicy;
 import org.opensaml.ws.security.SecurityPolicyResolver;
@@ -45,6 +43,10 @@ public final class CGIUtils {
 				"urn:oasis:names:tc:SAML:2.0:assertion", "Issuer", "saml2p");
 		issuer.setValue(cgiConfig.getSpProviderId());
 
+		NameIDPolicy nameIDPolicy = new NameIDPolicyBuilder().buildObject();
+		nameIDPolicy.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+		nameIDPolicy.setAllowCreate(true);
+
 		/* Creation of AuthRequestObject */
 		AuthnRequestBuilder authRequestBuilder = new AuthnRequestBuilder();
 
@@ -53,11 +55,12 @@ public final class CGIUtils {
 		authRequest.setID(id);
 		authRequest.setForceAuthn(false);
 		authRequest.setIssueInstant(DateTime.now());
-		authRequest.setProtocolBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+		authRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 		authRequest.setAssertionConsumerServiceURL(redirectUrl);
 		authRequest.setIssuer(issuer);
 		authRequest.setVersion(SAMLVersion.VERSION_20);
 		authRequest.setDestination(cgiConfig.getIdpSSOLoginUrl());
+		authRequest.setNameIDPolicy(nameIDPolicy);
 
 		return authRequest;
 	}

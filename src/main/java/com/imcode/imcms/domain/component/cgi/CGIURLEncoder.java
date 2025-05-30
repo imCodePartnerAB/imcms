@@ -7,6 +7,7 @@ import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
 import org.opensaml.util.URLBuilder;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.xml.util.Pair;
+import org.opensaml.xml.util.XMLHelper;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
@@ -38,7 +39,12 @@ public final class CGIURLEncoder extends HTTPRedirectDeflateEncoder {
 				queryParams.add(new Pair<>("RelayState", relayState));
 			}
 
-			return urlBuilder.buildURL();
+			final String url = urlBuilder.buildURL();
+
+			logger.info("SAML url -> " + url);
+			logger.info("SAMLRequest -> " + XMLHelper.nodeToString(this.marshallMessage(message)));
+
+			return url;
 		} catch (MessageEncodingException e) {
 			logger.error("Error during message compression", e);
 			throw new RuntimeException("Error during message compression", e);

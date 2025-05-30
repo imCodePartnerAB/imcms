@@ -41,6 +41,7 @@ class RequestExternalIdentifierController {
 
     static final String EXTERNAL_IDENTIFIERS_PATH = "/external-identifiers/";
     static final String EXTERNAL_IDENTIFIER_REDIRECT_URI = "logged-in";
+    static final String HTTPS = "https";
 
     private final AuthenticationProvidersService authenticationProvidersService;
     private final UserService userService;
@@ -52,16 +53,16 @@ class RequestExternalIdentifierController {
     }
 
     @RequestMapping("login/{identifierId}")
-    public ModelAndView goToExternalIdentifierLoginPage(@PathVariable("identifierId") String identifierId,
+    public RedirectView goToExternalIdentifierLoginPage(@PathVariable("identifierId") String identifierId,
                                                         @RequestParam(value = REQUEST_PARAMETER__NEXT_URL, required = false) String nextUrl,
                                                         HttpServletRequest request,
                                                         HttpSession session) {
         try{
             final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(identifierId);
 
-            return new ModelAndView(new RedirectView(provider.buildAuthenticationURL(
+            return new RedirectView(provider.buildAuthenticationURL(
                     getRedirectURL(identifierId, request), session.getId(), nextUrl
-            )));
+            ));
         }catch (Exception e){
             log.error("Error while going to external login page", e);
             throw e;
@@ -71,13 +72,13 @@ class RequestExternalIdentifierController {
     @SneakyThrows
     String getRedirectURL(String identifierId, HttpServletRequest request) {
         final URL url = new URL(request.getRequestURL().toString());
-        final String protocol = url.getProtocol();
+//        final String protocol = url.getProtocol();
         final String host = url.getHost();
         final int port = url.getPort();
 
         final String protocolHostPort = (port == -1)// if the port is not explicitly specified in the input, it will be -1.
-                ? String.format("%s://%s", protocol, host)
-                : String.format("%s://%s:%d", protocol, host, port);
+                ? String.format("%s://%s", HTTPS, host)
+                : String.format("%s://%s:%d", HTTPS, host, port);
 
         return protocolHostPort + request.getContextPath() + API_PREFIX + EXTERNAL_IDENTIFIERS_PATH
                 + EXTERNAL_IDENTIFIER_REDIRECT_URI + "/" + identifierId;
