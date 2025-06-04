@@ -75,7 +75,9 @@ public final class CGIUtils {
 			samlMessageContext.setSecurityPolicyResolver(getSecurityPolicyResolver(request.isSecure()));
 			samlMessageContext.setLocalEntityId(CGIConfig.getInstance().getSpProviderId());
 
-			new HTTPPostDecoder().decode(samlMessageContext);
+			HTTPPostDecoder decoder = new HTTPPostDecoder();
+			decoder.setURIComparator(new IgnoreSchemeURIComparator());
+			decoder.decode(samlMessageContext);
 
 			return samlMessageContext;
 		} catch (Exception e) {
