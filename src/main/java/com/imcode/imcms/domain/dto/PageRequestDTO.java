@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -13,6 +14,10 @@ public abstract class PageRequestDTO {
 	protected String property;
 
 	protected int skip;
+
+	public PageRequestDTO(PageRequest pageRequest) {
+		this.pageRequest = pageRequest;
+	}
 
 	public PageRequestDTO(String property, PageRequest pageRequest, Sort.Direction direction) {
 		this.property = property;
@@ -40,7 +45,8 @@ public abstract class PageRequestDTO {
 	}
 
 	private void setSort() {
-		final Sort sort = Sort.by(this.direction, this.property);
+		Sort sort = this.direction != null && StringUtils.isNotBlank(this.property) ?
+				Sort.by(this.direction, this.property) : Sort.unsorted();
 		pageRequest = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
 	}
 

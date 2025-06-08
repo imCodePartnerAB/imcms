@@ -2,7 +2,7 @@ Document Manager
 ==================
 
 In this article:
-    - `Introduction`_
+    - `Document Search`_
     - `Document Management`_
 
 .. |pencil| image:: _static/ic_text_editor.png
@@ -19,6 +19,26 @@ The *Document Manager* displays all documents sorted by date modified.
 You can change the order and sorting by clicking on the heading of a column.
 Besides, you can change the search results by entering some free text, selecting the owner of the document
 or the category which the document should have (take a look at the fields above the table).
+
+.. warning:: The user may not be able to see all documents due to lack of permissions. Also a document may be search disabled.
+             How permissions affect you can read in the article :doc:`Access Control</user-documentation/access-control>`.
+
+.. image:: _static/document-manager.png
+
+---------------
+Document Search
+---------------
+
+The *Document Manager* displays all documents sorted by date modified by default.
+You can change the order and sorting by clicking on the heading of a column.
+Besides, you can change the search results by entering some free text, selecting the owner of the document
+or the category which the document should have (take a look at the fields above the table).
+
+When sorting is disabled, the system sorts documents based on score.
+When you enter a search term, the system searches in the following order of priority:
+document number → headline → alias → URL of a URL document → keywords → page content.
+Additionally, the system gives higher priority to fields where the text starts with the term than to fields
+where the term appears in the middle.
 
 .. warning:: The user may not be able to see all documents due to lack of permissions. Also a document may be search disabled.
              How permissions affect you can read in the article :doc:`Access Control</user-documentation/access-control>`.

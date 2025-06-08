@@ -201,7 +201,7 @@ define('imcms-document-editor-builder',
                     const textFieldValue = $(this).val().toLowerCase().trim().replace(/:/g, '\\:');
                     //todo: maybe add support all special symbols in the future.. ?
                     if (searchQueryObj[term] !== textFieldValue) {
-                        appendDocuments(term, textFieldValue, true, true);
+                        appendDocuments(term, textFieldValue, true, false);
                     }
                 });
 
@@ -217,7 +217,7 @@ define('imcms-document-editor-builder',
             function buildUsersFilterSelect() {
                 const onSelected = value => {
                     if (searchQueryObj[userId] !== value) {
-                        appendDocuments(userId, value, true, true);
+                        appendDocuments(userId, value, true, false);
                     }
                 };
 
@@ -248,7 +248,7 @@ define('imcms-document-editor-builder',
             function buildCategoriesFilterSelect() {
                 const onSelected = value => {
                     if (searchQueryObj[categoriesId][0] !== value) {
-                        appendDocuments(categoriesId, {0: value}, true, true);
+                        appendDocuments(categoriesId, {0: value}, true, false);
                     }
                 };
 
@@ -383,10 +383,11 @@ define('imcms-document-editor-builder',
                 .addClass(sortDescClassName);
         }
 
-        function discardPreviousSortingIcon() {
+        function dehighlightPreviousSorting() {
             $('.imcms-document-list__titles').find(sortDescClass)
                 .removeClass(sortDescClassName)
                 .addClass(sortAscClassName);
+            $('.imcms-document-list-titles__title--active').removeClass('imcms-document-list-titles__title--active');
         }
 
         function isActiveHeader($sortingHeader) {
@@ -397,15 +398,9 @@ define('imcms-document-editor-builder',
             if (isAlreadyAscendingSorting()) {
                 setSortingDirection(desc);
                 highlightSorting($sortingHeader);
-
-            } else if (isDefaultSorting(bySorting)) {
-                setSortingDirection(asc);
-                highlightSorting($sortingHeader);
-
             } else {
-                setDefaultSortProperties();
-                highlightDefaultSorting();
-                setDefaultSortingIcons();
+                setSortBy(null);
+                dehighlightPreviousSorting();
             }
         }
 
@@ -415,7 +410,7 @@ define('imcms-document-editor-builder',
 
             } else {
                 setSortBy(bySorting);
-                discardPreviousSortingIcon();
+                dehighlightPreviousSorting();
                 highlightSorting($sortingHeader);
             }
 
@@ -485,12 +480,14 @@ define('imcms-document-editor-builder',
 
             const $typeColumnHead = buildTitleRow({
                 text: texts.sort.type,
+                bySorting: 'doc_type_id',
                 elementClass: 'imcms-grid-col-18',
                 modifiers: ['type'],
             });
 
             const $statusColumnHead = buildTitleRow({
                 text: texts.sort.status,
+                bySorting: 'status',
                 elementClass: 'imcms-grid-col-1',
                 modifiers: ['status'],
             });
@@ -1450,6 +1447,7 @@ define('imcms-document-editor-builder',
         }
 
         function loadDocumentEditorContent($documentsContainer, opts) {
+            setDefaultSortProperties();
             docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
                     pushDocumentsInArray(documentList);
@@ -1458,7 +1456,7 @@ define('imcms-document-editor-builder',
                     $editorBody = buildEditorBody(newDocsList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
-                    setDefaultSortProperties();
+                    setDefaultSortingIcons();
                 })
                 .fail(() => {
                     errorMsg.slideDown();

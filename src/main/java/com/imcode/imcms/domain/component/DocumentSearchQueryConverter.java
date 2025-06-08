@@ -6,6 +6,8 @@ import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.domain.Sort.Order;
 
@@ -40,6 +43,7 @@ public class DocumentSearchQueryConverter {
         }
 
         final SolrQuery solrQuery = new SolrQuery(indexQuery.toString());
+        solrQuery.setIncludeScore(true);
 
         if (searchQuery.getUserId() != null) {
             final String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchQuery.getUserId();
@@ -84,43 +88,53 @@ public class DocumentSearchQueryConverter {
     private String termToDefaultQuery(String term, SearchQueryDTO.SearchRange searchRange, String language){
         if(StringUtils.isBlank(term)) return "*:*";
 
-        if(!term.startsWith("\"") && !term.endsWith("\"")){
-            String[] splits = term.split("\\s+");
+        List<SearchFieldDTO> searchFields = getSearchFieldsByRange(searchRange, language);
+        if(term.startsWith("\"") && term.endsWith("\"")){   //If enclosed in quotes, search for an exact match
+            return searchFields.stream()
+                    .map(searchField ->
+                            String.format("%s:(%s)^%d", searchField.getName(), term, searchField.getPriorityContains()))
+                    .collect(Collectors.joining(" "));
+        } else {
+            final String[] splits = term.split("\\s+");
 
-            StringBuilder termBuilder = new StringBuilder();
-            for(String split: splits){
-                termBuilder.append(String.format("*%s* ", split));
-            }
-
-            term = termBuilder.toString().trim();
+            final String startsWithTerm = Arrays.stream(splits)
+                    .map(split -> String.format("%s*", split))
+                    .collect(Collectors.joining(" "));
+            final String containsTerm = Arrays.stream(splits)
+                    .map(split -> String.format("*%s*", split))
+                    .collect(Collectors.joining(" "));
+            return searchFields.stream()
+                    .flatMap(searchField -> Stream.of(
+                            String.format("%s:(%s)^%d", searchField.getName(), startsWithTerm, searchField.getPriorityStartsWith()),
+                            String.format("%s:(%s)^%d", searchField.getName(), containsTerm, searchField.getPriorityContains())
+                    ))
+                    .collect(Collectors.joining(" "));
         }
-
-        final String finalTerm = term;
-        return getSearchFieldsByRange(searchRange, language).stream()
-                        .map(field -> String.format("%s:(%s)", field, finalTerm))
-                        .collect(Collectors.joining(" "));
     }
 
-    private List<String> getSearchFieldsByRange(SearchQueryDTO.SearchRange searchRange, String language) {
+    private List<SearchFieldDTO> getSearchFieldsByRange(SearchQueryDTO.SearchRange searchRange, String language) {
+        List<SearchFieldDTO> searchFields = new ArrayList<>();
+
         switch (searchRange) {
-            case BASIC:
-                return List.of(DocumentIndex.FIELD__META_ID,
-                        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
-                        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
-                        DocumentIndex.FIELD__META_ALIAS + "_" + language,
-                        DocumentIndex.FIELD_META_ALIAS + "_" + language);
             case ALL:
             default:
-                return List.of(DocumentIndex.FIELD__META_ID,
-                        DocumentIndex.FIELD_META_HEADLINE + "_" + language,
-                        DocumentIndex.FIELD__META_HEADLINE + "_" + language,
-                        DocumentIndex.FIELD__META_TEXT,
-                        DocumentIndex.FIELD__KEYWORD,
-                        DocumentIndex.FIELD__TEXT,
-                        DocumentIndex.FIELD__META_ALIAS + "_" + language,
-                        DocumentIndex.FIELD_META_ALIAS + "_" + language,
-                        DocumentIndex.FIELD__URL);
+                searchFields.addAll(List.of(
+                        new SearchFieldDTO(DocumentIndex.FIELD__URL, 6, 3),
+                        new SearchFieldDTO(DocumentIndex.FIELD__KEYWORD, 4, 2),
+                        new SearchFieldDTO(DocumentIndex.FIELD__META_TEXT, 1, 1),
+                        new SearchFieldDTO(DocumentIndex.FIELD__TEXT, 1, 1)
+                ));
+            case BASIC:
+                searchFields.addAll(List.of(
+                        new SearchFieldDTO(DocumentIndex.FIELD__META_ID, 9, 5),
+                        new SearchFieldDTO(DocumentIndex.FIELD_META_HEADLINE + "_" + language, 8, 5),
+                        new SearchFieldDTO(DocumentIndex.FIELD__META_HEADLINE + "_" + language, 8, 5),
+                        new SearchFieldDTO(DocumentIndex.FIELD__META_ALIAS + "_" + language, 7, 5),
+                        new SearchFieldDTO(DocumentIndex.FIELD_META_ALIAS + "_" + language, 7, 5)
+                ));
         }
+
+        return searchFields;
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
@@ -134,12 +148,10 @@ public class DocumentSearchQueryConverter {
 	    solrQuery.setRows(page.getSize());
 
 	    Sort sort = page.getSort();
-	    if (sort == Sort.unsorted()) {
-		    sort = Sort.by(Order.desc(DocumentIndex.FIELD__MODIFIED_DATETIME));
-	    }
-	    final Order order = sort.iterator().next();
-
-	    solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+	    if (sort != Sort.unsorted()) {
+            final Order order = sort.iterator().next();
+            solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+        }
     }
 
     private String generateFilters(Set<Integer> roleIds) {
@@ -156,4 +168,13 @@ public class DocumentSearchQueryConverter {
 
         return searchAndAccessFilter.toString();
     }
+
+    @Data
+    @AllArgsConstructor
+    private class SearchFieldDTO{
+        String name;
+        int priorityStartsWith;
+        int priorityContains;
+    }
+
 }

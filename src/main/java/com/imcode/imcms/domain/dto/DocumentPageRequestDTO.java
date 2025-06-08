@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.domain.service.MenuService;
 import imcode.server.document.index.DocumentIndex;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -8,8 +7,7 @@ import org.springframework.data.domain.Sort;
 public class DocumentPageRequestDTO extends PageRequestDTO {
 
 	public DocumentPageRequestDTO() {
-		super(DocumentIndex.FIELD__MODIFIED_DATETIME, PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE_FOR_UI),
-				Sort.Direction.DESC);
+		super(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE_FOR_UI));
 	}
 
 	public DocumentPageRequestDTO(int defaultPageSize) {
