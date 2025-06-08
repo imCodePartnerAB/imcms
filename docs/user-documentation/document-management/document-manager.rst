@@ -11,20 +11,6 @@ In this article:
 .. |copy| image:: _static/icon_folder_controll_copy.png
     :height: 12pt
 
-------------
-Introduction
-------------
-
-The *Document Manager* displays all documents sorted by date modified.
-You can change the order and sorting by clicking on the heading of a column.
-Besides, you can change the search results by entering some free text, selecting the owner of the document
-or the category which the document should have (take a look at the fields above the table).
-
-.. warning:: The user may not be able to see all documents due to lack of permissions. Also a document may be search disabled.
-             How permissions affect you can read in the article :doc:`Access Control</user-documentation/access-control>`.
-
-.. image:: _static/document-manager.png
-
 ---------------
 Document Search
 ---------------
