@@ -355,12 +355,17 @@ define('imcms-document-editor-builder',
         function highlightDefaultSorting() {
             const $defaultSortingHeader = $('.imcms-document-editor-body .imcms-document-list-titles__title--modified-date');
             highlightSorting($defaultSortingHeader);
+            setDefaultSortingIcons();
+            components.overlays.changeTooltipText($defaultSortingHeader, texts.sort.freeText);
         }
 
         function highlightSorting($sortingHeader) {
             if (isActiveHeader($sortingHeader)) {
                 const $sortingIcon = $sortingHeader.find('.imcms-document-list-title-row__icon');
                 toggleSortingIcon($sortingIcon)
+                components.overlays.changeTooltipText($sortingHeader, texts.sort.freeText);
+            } else {
+                components.overlays.changeTooltipText($sortingHeader, texts.sort.desc);
             }
 
             $('.imcms-document-list-titles__title--active').removeClass('imcms-document-list-titles__title--active');
@@ -387,7 +392,12 @@ define('imcms-document-editor-builder',
             $('.imcms-document-list__titles').find(sortDescClass)
                 .removeClass(sortDescClassName)
                 .addClass(sortAscClassName);
-            $('.imcms-document-list-titles__title--active').removeClass('imcms-document-list-titles__title--active');
+
+            let $previousSortingHeader = $('.imcms-document-list-titles__title--active');
+            if($previousSortingHeader.length){
+                components.overlays.changeTooltipText($previousSortingHeader, texts.sort.asc);
+                $previousSortingHeader.removeClass('imcms-document-list-titles__title--active');
+            }
         }
 
         function isActiveHeader($sortingHeader) {
@@ -507,6 +517,10 @@ define('imcms-document-editor-builder',
             if (!opts.inMenu) {
                 elements.actions = buildActionSelect();
             }
+
+            elements.title.forEach($titleRow => {
+                components.overlays.defaultTooltip($titleRow, texts.sort.asc);
+            });
 
             return new BEM({
                 block: 'imcms-document-list-titles',
@@ -1456,7 +1470,6 @@ define('imcms-document-editor-builder',
                     $editorBody = buildEditorBody(newDocsList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
-                    setDefaultSortingIcons();
                 })
                 .fail(() => {
                     errorMsg.slideDown();

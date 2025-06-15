@@ -367,7 +367,10 @@ const texts = {
                     published: "Publ",
                     type: "Typ",
                     status: "Status",
-                    version: 'Ver'
+                    version: 'Ver',
+                    asc: 'Sortera stigande',
+                    desc: 'Sortera fallande',
+                    freeText: 'Sortera på fritext'
                 },
                 id: {
                     tooltip: {
@@ -1661,7 +1664,10 @@ const texts = {
                     published: "Publ",
                     type: "Type",
                     status: "State",
-                    version: 'Ver'
+                    version: 'Ver',
+                    asc: 'Sort ascending',
+                    desc: 'Sort descending',
+                    freeText: 'Sort by Free text'
                 },
                 id: {
                     tooltip: {
@@ -2954,7 +2960,10 @@ const texts = {
                     published: "Publ",
                     type: "Type",
                     status: "Status",
-                    version: 'Ver'
+                    version: 'Ver',
+                    asc: 'Sorter stigende',
+                    desc: 'Sorter synkende',
+                    freeText: 'Sorter på fritekst'
                 },
                 id: {
                     tooltip: {
