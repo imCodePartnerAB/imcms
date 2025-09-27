@@ -6,6 +6,7 @@ import com.imcode.imcms.model.ExternalUserDTO;
 import imcode.server.ImcmsConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.util.Map;
@@ -28,9 +29,9 @@ public class CGIUserDTO implements ExternalUserDTO {
 		user.setPassword("");
 		user.setEmail(null);
 		user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-		user.setCompany(attributes.get("Subject_OrganisationName"));
+		user.setCompany(StringUtils.defaultString(attributes.get("Subject_OrganisationName")));
+		user.setCountry(StringUtils.defaultString(attributes.get("Subject_CountryName")));
 		user.setSessionId(attributes.get("CertificateSerialNumber"));
-		user.setCountry(attributes.get("Subject_CountryName"));
 
 		return user;
 	}
