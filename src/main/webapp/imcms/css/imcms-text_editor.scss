@@ -347,6 +347,10 @@ div.imcms-editor-content--text {
     cursor: pointer;
 }
 
+.mce-floatpanel.mce-menu{
+    position: absolute !important;
+}
+
 .mce-floatpanel .mce-dragh{
     pointer-events: none;
 }
