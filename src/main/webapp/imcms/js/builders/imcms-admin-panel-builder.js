@@ -6,10 +6,10 @@ define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
         "jquery", "imcms", "imcms-events", "imcms-top-panel-visibility-initiator",
-        "imcms-i18n-texts", "imcms-admin-panel-settings-builder", "imcms-modal-window-builder"
+        "imcms-i18n-texts", "imcms-admin-panel-settings-builder", "imcms-modal-window-builder", "imcms-loading-page-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events,
-              panelVisibility, texts, panelSettings, modal) {
+              panelVisibility, texts, panelSettings, modal, loadingPageBuilder) {
 
         let $panelContainer, $panel;
 
@@ -22,6 +22,7 @@ define("imcms-admin-panel-builder",
 
         function publishDoc() {
             $(this).hasClass(panelItemHasNewerVersionClass) && events.trigger("imcms-publish-new-version-current-doc");
+            loadingPageBuilder.buildLoadingPage();
         }
 
         function showPageInfo() {

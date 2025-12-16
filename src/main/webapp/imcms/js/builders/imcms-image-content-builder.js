@@ -5,12 +5,12 @@
 define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-image-metadata-builder", "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts",
-	    'imcms', 'imcms-image-files-search-rest-api'
+        "imcms-image-metadata-builder", "imcms-primitives-builder", "imcms-modal-window-builder", "imcms-loading-page-builder",
+        "jquery", "imcms-i18n-texts", 'imcms', 'imcms-image-files-search-rest-api'
     ],
     function (imageFilesREST, imageFoldersREST, BEM, components,
-              imageMetadataWindowBuilder, primitives, modal, $, texts,
-              imcms, imageFilesSearchRestApi) {
+              imageMetadataWindowBuilder, primitives, modal, loadingPageBuilder,
+              $, texts, imcms, imageFilesSearchRestApi) {
         const OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         const SUBFOLDER_CLASS = "imcms-folders__subfolder";
         const ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -1402,6 +1402,7 @@ define("imcms-image-content-builder",
                 const saveImageRequestData = formData;
                 saveImageRequestData.append("folder", getFolderPath(activeFolder.$folder));
 
+                loadingPageBuilder.buildLoadingPage();
                 imageFilesREST.postFiles(saveImageRequestData)
                     .done(uploadedImageFiles => {
                         const $newImages = uploadedImageFiles.map(imageFile => buildImageImmediately(imageFile, activeFolder));
@@ -1412,8 +1413,12 @@ define("imcms-image-content-builder",
                         viewModel.$images = viewModel.$images.concat($newImages);
                         selectImage.call($newImages[0], uploadedImageFiles[0]);
                         selectedImageChanged = false;
+                        loadingPageBuilder.removeLoadingPage();
                     })
-                    .fail(() => modal.buildErrorWindow(texts.error.uploadImagesFailed));
+                    .fail(() => {
+                        loadingPageBuilder.removeLoadingPage();
+                        modal.buildErrorWindow(texts.error.uploadImagesFailed)
+                    });
             },
             clearContent: () => {
                 activeFolder = selectedImage = null;

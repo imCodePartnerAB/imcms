@@ -119,6 +119,7 @@ define('imcms-document-editor-builder',
                 setDefaultSortingIcons();
             }
 
+            showLoadAnimation(texts.freeTextAnimation);
             docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
                     if (!documentList || (documentList.length === 0)) {
@@ -133,9 +134,11 @@ define('imcms-document-editor-builder',
                     documentList.forEach(document => {
                         $documentsList.append(buildDocument(document, currentEditorOptions, false));
                     });
+                    hideLoadAnimation();
                 })
                 .fail(() => {
                     errorMsg.slideDown();
+                    hideLoadAnimation();
                 });
         }
 
@@ -155,6 +158,20 @@ define('imcms-document-editor-builder',
             if(index) docs[index] = document;
 
             refreshDocumentInList(document, true);
+        }
+
+        function showLoadAnimation(text) {
+            const $animationBlock = $('.imcms-document-editor-head-tool__load');
+            $animationBlock.css({
+                'visibility': 'visible',
+            });
+            const $animationText = $animationBlock.find('.animation-copying__text');
+            $animationText.text(text);
+        }
+
+        function hideLoadAnimation() {
+            const $animationBlock = $('.imcms-document-editor-head-tool__load');
+            $animationBlock.css('visibility', 'hidden');
         }
 
         let $textField;
@@ -178,7 +195,7 @@ define('imcms-document-editor-builder',
                 });
             }
 
-            function buildLoadCopyAnimation() {
+            function buildLoadAnimation() {
                 return new BEM({
                     block: 'animation-copying',
                     elements: {
@@ -295,7 +312,7 @@ define('imcms-document-editor-builder',
             const $categoriesFilter = toolBEM.buildBlock('<div>', [{'select': buildCategoriesFilterSelect()}]);
             $categoriesFilter.modifiers = ['grid-col-4'];
 
-            const $loadingAnimation = toolBEM.buildBlock('<div>', [{'load': buildLoadCopyAnimation()}]);
+            const $loadingAnimation = toolBEM.buildBlock('<div>', [{'load': buildLoadAnimation()}]);
             $loadingAnimation.modifiers = ['grid-col-1'];
 
             const $multiRemoveDocs = toolBEM.buildBlock('<div>', [{'remove': buildSwitchesOffOnButtons()}]);
@@ -790,16 +807,16 @@ define('imcms-document-editor-builder',
 
             if (opts.copyEnable) {
                 function onConfirm() {
-                    const $animationBlock = $('.imcms-document-editor-head-tool__load');
-	                $animationBlock.css({
-		                'visibility': 'visible',
-					});
+                    showLoadAnimation(texts.controls.copy.action);
                     docCopyRestApi.copy(document.id)
                         .done(copiedDocument => {
                             addDocumentToList(copiedDocument);
-                            $animationBlock.css('visibility', 'hidden');
+                            hideLoadAnimation();
                         })
-                        .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
+                        .fail(() => {
+                            modal.buildErrorWindow(texts.error.copyDocumentFailed);
+                            hideLoadAnimation();
+                        });
                 }
 
                 const $controlCopy = components.controls.copy(() => {
@@ -1574,9 +1591,11 @@ define('imcms-document-editor-builder',
                         return;
                     }
 
+                    showLoadAnimation(texts.controls.removeAnimation);
                     docRestApi.removeByIds(documentIds).done(() => {
                         removeDocumentsFromEditor(documentIds);
                         alert(texts.deleteInfo)
+                        hideLoadAnimation();
                     }).fail((response) => {
                         let errorText;
                         if(response.responseText){
@@ -1586,18 +1605,22 @@ define('imcms-document-editor-builder',
                             errorText = texts.error.removeDocumentFailed;
                         }
                         modal.buildErrorWindow(errorText);
+                        hideLoadAnimation();
                     })
                 });
             });
         }
 
         function putToWasteBasket(docIds){
+            showLoadAnimation(texts.controls.putToBasketAnimation);
             docBasketRestApi.createByIds(docIds).done(() => {
                 docIds.forEach(docId => {
                     refreshDocumentStatus(docId, docStatus.getDocumentStatusTexts('WASTE_BASKET'), "red", "transparent");
                 });
+                hideLoadAnimation();
             }).fail(() => {
                 modal.buildErrorWindow(texts.error.putToWasteBasketFailed);
+                hideLoadAnimation();
             });
         }
 

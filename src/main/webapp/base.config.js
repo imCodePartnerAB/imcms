@@ -205,7 +205,7 @@ module.exports = {
                             'imcms-rule-editor',
                             'imcms-rule-to-row-transformer',
                             'imcms-field-wrapper',
-                            'imcms-overlays-builder',
+                            'imcms-overlays-builder'
                         ]
                     },
                     windows: {
@@ -247,7 +247,8 @@ module.exports = {
                         'imcms-image-metadata-builder',
                         'imcms-admin-panel-builder',
                         'imcms-site-specific-admin-panel',
-                        'imcms-standalone-editor-toolbar-builder'
+                        'imcms-standalone-editor-toolbar-builder',
+                        'imcms-loading-page-builder'
                     ]
                 },
                 rest: [
