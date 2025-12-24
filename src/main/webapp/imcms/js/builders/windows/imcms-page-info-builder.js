@@ -6,12 +6,12 @@ define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms",
-        "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api", "imcms-publish-document-rest-api",
+        "imcms-documents-rest-api", "imcms-file-doc-files-rest-api", "imcms-roles-rest-api", "imcms-publish-document-rest-api", "imcms-loading-page-builder",
         "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder', 'imcms-document-types', 'imcms-document-permission-types',
 	    'imcms-formatters', 'lodash'
     ],
     (BEM, components, WindowBuilder, pageInfoTabs, $, events, imcms,
-     documentsRestApi, docFilesAjaxApi, rolesRestApi, publishDocumentRestApi,
+     documentsRestApi, docFilesAjaxApi, rolesRestApi, publishDocumentRestApi, loadingPageBuilder,
      modal, texts, appearanceTab, docTypes, docPermissionTypes, formatters, lodash) => {
 
         texts = texts.pageInfo;
@@ -123,11 +123,14 @@ define("imcms-page-info-builder",
 
         function publishAndReload() {
             events.trigger("imcms-publish-new-version-current-doc");
+            loadingPageBuilder.buildLoadingPage();
         }
 
         function publish() {
+            loadingPageBuilder.buildLoadingPage();
             publishDocumentRestApi.publish(documentDTO.id)
                 .always(() => {
+                    loadingPageBuilder.removeLoadingPage();
                     events.trigger("imcms-alert-publish-new-version");
                     performOnDocumentSavedCallback();
                 })
