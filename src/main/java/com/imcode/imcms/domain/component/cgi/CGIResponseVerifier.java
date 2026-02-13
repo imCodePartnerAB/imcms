@@ -130,7 +130,7 @@ public class CGIResponseVerifier {
 		final DateTime notBefore = conditions.getNotBefore();
 		logger.debug("Not before condition : " + notBefore);
 
-		if ((notBefore != null) && currentTime.isBefore(notBefore)) {
+		if ((notBefore != null) && currentTime.isBefore(notBefore.minusSeconds(1))) {//a small clock skew
 			logger.error("Assertion is not conformed with notBefore condition");
 			throw new SAMLException("Assertion is not conformed with notBefore condition");
 		}
